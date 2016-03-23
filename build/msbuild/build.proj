@@ -1,0 +1,27 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask AssemblyFile="App_Data\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.Zip" />
+  
+  <PropertyGroup>
+    <To Condition=" '$(To)' == '' ">..\deploy\</To>
+
+    <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
+	<DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
+	<DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectToBuild Include="$(DirCSharp)OnlineEditorsExample.csproj"/>
+    <ProjectToBuild Include="$(DirMvc)OnlineEditorsExampleMVC.csproj"/>
+  </ItemGroup>
+
+  <Target Name="Build">
+    <MSBuild
+        Projects="@(ProjectToBuild)"
+        Targets="Build"
+        Properties="Configuration=Release"
+        RebaseOutputs="true"
+        StopOnFirstFailure="true"/>
+  </Target>
+
+</Project>

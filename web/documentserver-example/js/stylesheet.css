@@ -1,0 +1,108 @@
+﻿/*
+ *
+ * (c) Copyright Ascensio System Limited 2010-2016
+ *
+ * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
+ * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
+ * In accordance with Section 7(a) of the GNU GPL its Section 15 shall be amended to the effect that 
+ * Ascensio System SIA expressly excludes the warranty of non-infringement of any third-party rights.
+ *
+ * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR
+ * FITNESS FOR A PARTICULAR PURPOSE. For more details, see GNU GPL at https://www.gnu.org/copyleft/gpl.html
+ *
+ * You can contact Ascensio System SIA by email at sales@onlyoffice.com
+ *
+ * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
+ * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
+ *
+ * Pursuant to Section 7 § 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
+ * relevant author attributions when distributing the software. If the display of the logo in its graphic 
+ * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
+ * in every copy of the program you distribute. 
+ * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ *
+*/
+
+html {
+    height: 100%;
+    width: 100%;
+}
+body {
+    background: #fff;
+    color: #333;
+    font-family: Arial, Tahoma,sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+form {
+    height: 100%;
+}
+div {
+    margin: 0;
+    padding: 0;
+}
+
+
+.top-panel {
+    background: url("logo.png") no-repeat 30px center #3D4A6B;
+    height: 80px;
+    width: 100%;
+}
+.main-panel {
+    margin: 105px auto 0;
+    width: 350px;
+}
+.portal-name {
+    color: #3D4A6B;
+    font-size: 20px;
+}
+.portal-descr {
+    display: inline-block;
+    line-height: 20px;
+    margin-bottom: 24px;
+    width: 480px;
+}
+.document-url {
+    height: 65px;
+    resize: vertical;
+    width: 350px;
+}
+.embedded {
+    margin: 105px auto 0;
+    width: 640px;
+}
+
+.button, .button:visited, .button:hover, .button:active {
+    display: inline-block;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;    
+    cursor:pointer;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    touch-callout: none;
+    -o-touch-callout: none;
+    -moz-touch-callout: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 4px 12px;
+
+    color: #fff; 
+
+    background: #3D96C6;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: #3D96C6;
+}

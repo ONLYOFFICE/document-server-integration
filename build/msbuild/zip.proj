@@ -1,0 +1,47 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask AssemblyFile="MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.Zip" />
+  
+  <PropertyGroup>
+    <To Condition=" '$(To)' == '' ">..\deploy\</To>
+    <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
+	<DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
+	<DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+	<DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
+	<DirNodeJS>$(RootDir)web\documentserver-example\nodejs\</DirNodeJS>
+	<DirPHP>$(RootDir)web\documentserver-example\php\</DirPHP>
+	<DirRuby>$(RootDir)web\documentserver-example\ruby\</DirRuby>
+  </PropertyGroup>
+
+  <Target Name="Build">
+    <ItemGroup>
+      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)App_Data\*.dll;$(DirCSharp)obj\**;" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesCSharp)" WorkingDirectory="$(DirCSharp)" ZipFileName="$(To).Net (C#) Example.zip" />
+
+    <ItemGroup>
+      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**;$(DirMvc)packages\**;" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesMVC)" WorkingDirectory="$(DirMvc)" ZipFileName="$(To).Net (C# MVC) Example.zip" />
+
+    <ItemGroup>
+      <ZipFilesJava Include="$(DirJava)**" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesJava)" WorkingDirectory="$(DirJava)" ZipFileName="$(To)Java Example.zip" />
+
+    <ItemGroup>
+      <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**;$(DirNodeJS)run.bat" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesNodeJS)" WorkingDirectory="$(DirNodeJS)" ZipFileName="$(To)Node.js Example.zip" />
+
+    <ItemGroup>
+      <ZipFilesPHP Include="$(DirPHP)**" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesPHP)" WorkingDirectory="$(DirPHP)" ZipFileName="$(To)PHP Example.zip" />
+
+    <ItemGroup>
+      <ZipFilesRuby Include="$(DirRuby)**" />
+    </ItemGroup>
+    <Zip Files="@(ZipFilesRuby)" WorkingDirectory="$(DirRuby)" ZipFileName="$(To)Ruby Example.zip" />
+  </Target>
+
+</Project>

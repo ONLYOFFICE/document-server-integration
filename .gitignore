@@ -1,0 +1,8 @@
+**/obj/
+**/bin/
+*.suo
+*.user
+/build/deploy
+/build/*.log
+/web/documentserver-example/csharp-mvc/packages
+/web/documentserver-example/nodejs/node_modules
