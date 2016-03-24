@@ -23,7 +23,9 @@
  *
 */
 
-var config = require("../config");
+var configServer = require('config').get('server');
+var siteUrl = configServer.get('siteUrl');
+var tempStorageUrl = siteUrl + configServer.get('tempStorageUrl');
 
 var fileUtility = {};
 
@@ -32,7 +34,7 @@ fileUtility.getFileName = function (url, withoutExtension) {
 
     var filename;
 
-    if (config.tempStorageUrl && url.indexOf(config.tempStorageUrl) == 0) {
+    if (tempStorageUrl && url.indexOf(tempStorageUrl) == 0) {
         var params = getUrlParams(url);
         filename = params == null ? null : params["filename"];
     } else {

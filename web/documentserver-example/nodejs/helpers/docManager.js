@@ -29,7 +29,8 @@ var fileUtility = require("./fileUtility");
 var documentService = require("./documentService");
 var cacheManager = require("./cacheManager");
 var guidManager = require("./guidManager");
-var config = require("../config");
+var configServer = require('config').get('server');
+var storageFolder = configServer.get('storageFolder');
 var os = require("os");
 const readline = require('readline');
 
@@ -135,7 +136,7 @@ docManager.getFileData = function (fileName, userAddress) {
 }
 
 docManager.getFileUri = function (fileName) {
-    if (config.haveExternalIp) {
+    if (configServer.get('haveExternalIp')) {
         var filePath = docManager.getlocalFileUri(fileName);
         return filePath;
     }
@@ -145,7 +146,7 @@ docManager.getFileUri = function (fileName) {
 
 docManager.getlocalFileUri = function (fileName, version) {
     var serverPath = docManager.getProtocol() + "://" + docManager.req.get("host");
-    var storagePath = config.storageFolder.length ? config.storageFolder + "/" : "";
+    var storagePath = storageFolder.length ? storageFolder + "/" : "";
     var hostAddress = docManager.curUserHostAddress();
     var url = serverPath + "/" + storagePath + hostAddress + "/" + encodeURIComponent(fileName);
     if (!version) {
@@ -167,7 +168,7 @@ docManager.getCallback = function (fileName) {
 }
 
 docManager.storagePath = function (fileName, userAddress) {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress(userAddress));
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
     if (!fileSystem.existsSync(directory)) {
         fileSystem.mkdirSync(directory);
     }
@@ -175,7 +176,7 @@ docManager.storagePath = function (fileName, userAddress) {
 }
 
 docManager.historyPath = function (fileName, userAddress, create) {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress(userAddress));
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
     if (!fileSystem.existsSync(directory)) {
         return "";
     }
@@ -212,7 +213,7 @@ docManager.changesUser = function (fileName, userAddress, version) {
 }
 
 docManager.getStoredFiles = function () {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress());
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress());
     if (!fileSystem.existsSync(directory)) {
         return [];
     }

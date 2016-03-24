@@ -30,7 +30,7 @@ var bodyParser = require("body-parser");
 var fileSystem = require("fs");
 var formidable = require("formidable");
 var syncRequest = require("sync-request");
-var config = require("./config");
+var configServer = require('config').get('server');
 var docManager = require("./helpers/docManager");
 var documentService = require("./helpers/documentService");
 var fileUtility = require("./helpers/fileUtility");
@@ -84,9 +84,9 @@ app.get("/", function (req, res) {
         docManager.init(__dirname, req, res);
 
         res.render("index", {
-            preloaderUrl: config.preloaderUrl,
-            convertExts: config.convertedDocs.join(","),
-            editedExts: config.editedDocs.join(","),
+            preloaderUrl: configServer.get('siteUrl') + configServer.get('preloaderUrl'),
+            convertExts: configServer.get('convertedDocs').join(","),
+            editedExts: configServer.get('editedDocs').join(","),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams()
         });
@@ -105,7 +105,7 @@ app.post("/upload", function (req, res) {
     docManager.storagePath(""); //mkdir if not exist
 
     var userIp = docManager.curUserHostAddress();
-    var uploadDir = "./public/" + config.storageFolder + "/" + userIp;
+    var uploadDir = "./public/" + configServer.get('storageFolder') + "/" + userIp;
 
     var form = new formidable.IncomingForm();
     form.uploadDir = uploadDir;
@@ -117,7 +117,7 @@ app.post("/upload", function (req, res) {
 
         file.name = docManager.getCorrectName(file.name);
 
-        if (config.maxFileSize < file.size || file.size <= 0) {
+        if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
             fileSystem.unlinkSync(file.path);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File size is incorrect\"}");
@@ -125,7 +125,7 @@ app.post("/upload", function (req, res) {
             return;
         }
 
-        var exts = new Array().concat(config.viewedDocs, config.editedDocs, config.convertedDocs);
+        var exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
         var curExt = fileUtility.getFileExtension(file.name);
 
         if (exts.indexOf(curExt) == -1) {
@@ -214,7 +214,7 @@ app.get("/convert", function (req, res) {
     }
 
     try {
-        if (config.convertedDocs.indexOf(fileExt) != -1) {
+        if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
             var key = documentService.generateRevisionId(fileUri);
             var res = documentService.getConvertedUriAsync(fileUri, fileExt, internalFileExt, key, callback);
         } else {
@@ -365,7 +365,7 @@ app.get("/editor", function (req, res) {
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit 
         var type = req.query.type || "desktop"; //type: embedded/mobile/desktop
-        var canEdit = config.editedDocs.indexOf(fileUtility.getFileExtension(fileName)) != -1;
+        var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;
 
         var historyPath = docManager.historyPath(fileName, userAddress);
         var countVersion = 1;
@@ -398,7 +398,7 @@ app.get("/editor", function (req, res) {
         history.push(docManager.getHistory(fileName, changes, key, countVersion));
 
         var argss = {
-            apiUrl: config.apiUrl,
+            apiUrl: configServer.get('apiUrl'),
             file: {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),

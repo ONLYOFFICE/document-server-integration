@@ -26,12 +26,12 @@
 var path = require("path");
 var urllib = require("urllib");
 var syncRequest = require("sync-request");
-var fileSystem = require("fs");
 var xml2js = require("xml2js");
 var fileUtility = require("./fileUtility");
 var cacheManager = require("./cacheManager");
 var guidManager = require("./guidManager");
-var config = require("../config");
+var configServer = require('config').get('server');
+var siteUrl = configServer.get('siteUrl');
 
 var documentService = {};
 
@@ -45,7 +45,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     var res = documentService.getResponseUri(xml);
 
     return res.value;
-}
+};
 
 documentService.getConvertedUriAsync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);
@@ -61,13 +61,13 @@ documentService.getConvertedUriAsync = function (documentUri, fromExtension, toE
     title,
     documentRevisionId);
 
-    urllib.request(config.converterUrl + params, callback);
-}
+    urllib.request(siteUrl + configServer.get('converterUrl') + params, callback);
+};
 
 documentService.getExternalUri = function (fileStream, contentLength, contentType, documentRevisionId) {
     var params = documentService.convertParams.format("", "", "", "", documentRevisionId);
 
-    var urlTostorage = config.storageUrl + params;
+    var urlTostorage = siteUrl + configServer.get('storageUrl') + params;
 
     var response = syncRequest("POST", urlTostorage, {
         headers: {
@@ -81,7 +81,7 @@ documentService.getExternalUri = function (fileStream, contentLength, contentTyp
     var res = documentService.getResponseUri(response.body.toString());
 
     return res.value;
-}
+};
 
 documentService.generateRevisionId = function (expectedKey) {
     if (expectedKey.length > 20) {
@@ -91,7 +91,7 @@ documentService.generateRevisionId = function (expectedKey) {
     var key = expectedKey.replace(new RegExp("[^0-9-.a-zA-Z_=]", "g"), "_");
 
     return key.substring(0, Math.min(key.length, 20));
-}
+};
 
 documentService.sendRequestToConvertService = function (documentUri, fromExtension, toExtension, documentRevisionId) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);
@@ -107,9 +107,9 @@ documentService.sendRequestToConvertService = function (documentUri, fromExtensi
     title,
     documentRevisionId);
 
-    var res = syncRequest("GET", config.converterUrl + params);
+    var res = syncRequest("GET", siteUrl + configServer.get('converterUrl') + params);
     return res.getBody("utf8");
-}
+};
 
 documentService.processConvertServiceResponceError = function (errorCode) {
     var errorMessage = "";
@@ -151,7 +151,7 @@ documentService.processConvertServiceResponceError = function (errorCode) {
     }
 
     throw { message: errorMessage };
-}
+};
 
 documentService.getResponseUri = function (xml) {
     var json = documentService.convertXmlStringToJson(xml);
@@ -189,7 +189,7 @@ documentService.getResponseUri = function (xml) {
         key: percent,
         value: uri
     };
-}
+};
 
 documentService.convertXmlStringToJson = function (xml) {
     var res;
@@ -199,7 +199,7 @@ documentService.convertXmlStringToJson = function (xml) {
     });
 
     return res;
-}
+};
 
 documentService.commandRequest = function (method, documentRevisionId) {
     documentRevisionId = documentService.generateRevisionId(documentRevisionId);
@@ -207,8 +207,8 @@ documentService.commandRequest = function (method, documentRevisionId) {
     method,
     documentRevisionId);
 
-    var res = syncRequest("GET", config.commandUrl + params).getBody("utf8");
+    var res = syncRequest("GET", siteUrl + configServer.get('commandUrl') + params).getBody("utf8");
     return JSON.parse(res).error;
-}
+};
 
 module.exports = documentService;
