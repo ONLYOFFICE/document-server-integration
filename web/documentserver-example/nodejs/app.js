@@ -34,6 +34,7 @@ var configServer = require('config').get('server');
 var docManager = require("./helpers/docManager");
 var documentService = require("./helpers/documentService");
 var fileUtility = require("./helpers/fileUtility");
+var siteUrl = configServer.get('siteUrl');
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -84,7 +85,7 @@ app.get("/", function (req, res) {
         docManager.init(__dirname, req, res);
 
         res.render("index", {
-            preloaderUrl: configServer.get('siteUrl') + configServer.get('preloaderUrl'),
+            preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
             convertExts: configServer.get('convertedDocs').join(","),
             editedExts: configServer.get('editedDocs').join(","),
             storedFiles: docManager.getStoredFiles(),
@@ -398,7 +399,7 @@ app.get("/editor", function (req, res) {
         history.push(docManager.getHistory(fileName, changes, key, countVersion));
 
         var argss = {
-            apiUrl: configServer.get('apiUrl'),
+            apiUrl: siteUrl + configServer.get('apiUrl'),
             file: {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
