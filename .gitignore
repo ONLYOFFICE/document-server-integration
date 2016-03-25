@@ -6,5 +6,5 @@
 /build/*.log
 /web/documentserver-example/csharp-mvc/packages
 /web/documentserver-example/nodejs/node_modules
-/web/documentserver-example/nodejs/public/__ffff_127.0.0.1
+/web/documentserver-example/nodejs/public/files
 **/.idea

@@ -261,17 +261,13 @@ app.post("/track", function (req, res) {
                     var historyPath = docManager.historyPath(fileName, userAddress);
                     if (historyPath == "") {
                         historyPath = docManager.historyPath(fileName, userAddress, true);
-                        if (!fileSystem.existsSync(historyPath)) {
-                            fileSystem.mkdirSync(historyPath);
-                        }
+                        docManager.createDirectory(historyPath);
                     }
 
                     var count_version = docManager.countVersion(historyPath);
                     version = count_version + 1;
                     versionPath = docManager.versionPath(fileName, userAddress, version);
-                    if (!fileSystem.existsSync(versionPath)) {
-                        fileSystem.mkdirSync(versionPath);
-                    }
+                    docManager.createDirectory(versionPath);
 
                     var downloadZip = body.changesurl;
                     if (downloadZip) {

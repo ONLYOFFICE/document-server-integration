@@ -22,7 +22,7 @@
     "viewedDocs": [".ppt", ".pps", ".odp", ".pdf", ".djvu", ".epub", ".xps"],
     "editedDocs": [".docx", ".doc", ".odt", ".xlsx", ".xls", ".ods", ".csv", ".pptx", ".ppsx", ".rtf", ".txt", ".mht", ".html", ".htm"],
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
-    "storageFolder": "",
+    "storageFolder": "files",
     "haveExternalIp": false,
     "maxFileSize": 5242880
   }
