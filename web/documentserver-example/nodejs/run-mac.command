@@ -1,6 +1,8 @@
 #!/bin/bash
 
-BASEDIR=$(pwd)
+BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+
+cd $BASEDIR
 
 echo "----------------------------------------"
 echo "Install nodejs modules "
