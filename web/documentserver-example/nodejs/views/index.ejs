@@ -183,6 +183,8 @@
                                         <span title="<%= storedFiles[i].url %>"><%= storedFiles[i].name %></span></a>
                                     <a href="<%= storedFiles[i].url %>">
                                         <img class="icon-download" src="images/download-24.png" alt="download" /></a>
+                                    <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
+                                        <img class="icon-delete" src="images/delete-24.png" alt="delete" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">

@@ -482,3 +482,7 @@ footer {
 .icon-download {
     margin-bottom: -5px;
 }
+.icon-delete {
+    cursor: pointer;
+    margin-bottom: -6px;
+}
