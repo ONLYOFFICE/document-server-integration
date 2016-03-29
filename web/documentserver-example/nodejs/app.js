@@ -227,6 +227,46 @@ app.get("/convert", function (req, res) {
 
 });
 
+app.delete("/file", function (req, res) {
+    try {
+        docManager.init(__dirname, req, res);
+
+        var fileName = req.query.filename;
+        console.log("fileName " + fileName)
+
+        var filePath = docManager.storagePath(fileName)
+        console.log("filePath " + filePath)
+        fileSystem.unlinkSync(filePath);
+
+        var userAddress = docManager.curUserHostAddress();
+        var historyPath = docManager.historyPath(fileName, userAddress, true);
+
+        var deleteFolderRecursive = function (path) {
+            if (fileSystem.existsSync(path)) {
+                var files = fileSystem.readdirSync(path);
+                files.forEach(function (file, index) {
+                    var curPath = path + "/" + file;
+                    if (fileSystem.lstatSync(curPath).isDirectory()) {
+                        deleteFolderRecursive(curPath);
+                    } else {
+                        fileSystem.unlinkSync(curPath);
+                    }
+                });
+                fileSystem.rmdirSync(path);
+            }
+        };
+        console.log("historyPath " + historyPath)
+        deleteFolderRecursive(historyPath);
+
+        console.log("done")
+        res.write("{\"success\":true}");
+    } catch (ex) {
+        console.log(ex)
+        res.write(JSON.stringify(ex));
+    }
+    res.end();
+});
+
 app.post("/track", function (req, res) {
 
     docManager.init(__dirname, req, res);
