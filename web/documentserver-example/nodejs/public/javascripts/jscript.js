@@ -262,6 +262,22 @@ if (typeof jQuery != "undefined") {
         jq.unblockUI();
     });
 
+    jq(document).on("click", ".delete-file", function () {
+        var fileName = jq(this).attr("data");
+
+        var requestAddress = "file?filename=" + fileName;
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            type: "delete",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
     jq.dropdownToggle({
         switcherSelector: ".question",
         dropdownID: "hint"
