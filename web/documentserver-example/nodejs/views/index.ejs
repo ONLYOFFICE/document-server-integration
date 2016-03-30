@@ -97,66 +97,20 @@
 
         <ul class="try-editor-list">
             <li>
-                <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>&create=true">Create Document</a>
+                <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>&create=true">Create <br />Document</a>
             </li>
             <li>
-                <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>&create=true">Create Spreadsheet</a>
+                <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>&create=true">Create <br />Spreadsheet</a>
             </li>
             <li>
-                <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>&create=true">Create Presentation</a>
+                <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>&create=true">Create <br />Presentation</a>
             </li>
         </ul>
-
-        <div class="help-block">
-            <span>Sample documents</span>
-            <br />
-            <br />
-            <div class="stored-list">
-                <div id="UserFiles">
-                    <table cellspacing="0" cellpadding="0" width="100%">
-                        <thead>
-                            <tr class="tableHeader">
-                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
-                                <td colspan="3" class="tableHeaderCell">Viewers</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% 
-                            var listDemo = [{ext:"docx", type:"text"}, {ext:"xlsx", type:"spreadsheet"}, {ext:"pptx", type:"presentation"}];
-                            for (var i = 0; i < listDemo.length; i++) { %>
-                            <tr>
-                                <td class="contentCells">
-                                    <a class="stored-edit <%= listDemo[i].type %> reload-page" href="editor?fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <span>sample.docx</span></a>
-                                </td>
-                                <td class="contentCells contentCells-icon">
-                                    <a class="reload-page" href="editor?fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="editor" /></a>
-                                </td>
-                                <td class="contentCells contentCells-shift contentCells-icon">
-                                    <a class="reload-page" href="editor?type=mobile&fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile editor" /></a>
-                                </td>
-                                <td class="contentCells contentCells-icon">
-                                    <a class="reload-page" href="editor?mode=view&fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="viewer" /></a>
-                                </td>
-                                <td class="contentCells contentCells-icon">
-                                    <a class="reload-page" href="editor?type=mobile&mode=view&fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile viewer" /></a>
-                                </td>
-                                <td class="contentCells contentCells-icon">
-                                    <a class="reload-page" href="editor?type=embedded&fileExt=<%= listDemo[i].ext + params %>" target="_blank">
-                                        <img src="images/embeded-24.png" alt="embedded" /></a>
-                                </td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <label class="create-sample">
+            <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+        </label>
+        <br />
+        <br />
 
         <% if (storedFiles.length > 0)
            { %>
@@ -166,7 +120,6 @@
             <br />
             <br />
             <div class="stored-list">
-                <div id="UserFiles">
                     <table cellspacing="0" cellpadding="0" width="100%">
                         <thead>
                             <tr class="tableHeader">
@@ -210,7 +163,6 @@
                             <% } %>
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
         <% } %>

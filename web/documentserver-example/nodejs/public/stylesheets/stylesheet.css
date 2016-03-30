@@ -421,6 +421,7 @@ footer {
     cursor: default;
     font-family: 'Open Sans', sans-serif;
     font-size: 13px;
+    height: 40px;
     -khtml-user-select: none;
     user-select: none;
     -moz-user-select: none;
@@ -434,7 +435,7 @@ footer {
     text-align: left;
 }
 .contentCells {
-    padding: 2px 1px 2px 5px;
+    padding: 4px 1px 4px 5px;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     border-bottom: 1px solid #e5e5e5;
