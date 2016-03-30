@@ -99,11 +99,7 @@ pre.hljs {
     margin-top: 0px;
 }
 .save-original {
-    color: #929597;
-    line-height: 20px;
-    margin-left: 16px;
-    white-space: nowrap;
-    width: 272px;
+    margin-left: 30px;
 }
 label .checkbox {
     margin: 0 5px 3px 0;
@@ -143,13 +139,13 @@ label .checkbox {
 
 .try-editor-list {
     list-style: none;
-    margin: 0;
+    margin: 0 0 16px;
     padding: 0;
 }
 .try-editor-list li {
     float: left;
-    margin: 25px;
-    width: 150px;
+    margin: 0 15px;
+    width: 100px;
 }
 .try-editor {
     background-color: transparent;
@@ -172,7 +168,9 @@ label .checkbox {
 .try-editor.presentation {
     background-image: url("../images/file_pptx.png");
 }
-
+.create-sample {
+    margin-left: 75px;
+}
 .button, .button:visited, .button:hover, .button:active {
     display: inline-block;
     font-weight: normal;
@@ -216,26 +214,39 @@ label .checkbox {
     color: #333;
 }
 
-.file-upload {
-    cursor: pointer;
-    margin-bottom: 8px;
-    padding: 0 !important;
-    overflow: hidden;
-    position: relative;
+.upload-panel {
+    border-right: 1px solid #D1D1D1;
+    float: left;
+    margin-right: 25px;
 }
-.file-upload span {
+.file-upload {
+    background: url("../images/file_upload.png") no-repeat center 0 transparent;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
     font-weight: bold;
-    line-height: 42px;
-    margin: 2px 50px;
+    height: 45px;
+    margin: 0 40px 16px;
+    overflow: hidden;
+    padding-top: 100px;
+    position: relative;
+    text-align: center;
+    width: 100px;
 }
 .file-upload input {
     cursor: pointer;
-    font-size: 23px;
     opacity: 0;
     position: absolute;
     right: 0;
     top: 0;
     transform: translate(-300px, 0) scale(4);
+}
+.create-panel {
+    float: left;
+}
+.upload-panel,
+.create-panel {
+    padding: 10px 0;
 }
 
 #mainProgress {

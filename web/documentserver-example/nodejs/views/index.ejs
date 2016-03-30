@@ -82,33 +82,49 @@
             </tr>
         </table>
         <br />
-        <div class="file-upload button gray">
-            <span>Upload file</span>
-            <input type="file" id="fileupload" name="uploadedFile" data-url="upload?<%= params %>" />
-        </div>
-        <label class="save-original">
-            <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-        </label>
-        <span class="question"></span>
         <br />
-        <br />
-        <br />
-        <span class="try-descr">Or, you can view and edit sample documents –click on one of the links below.</span>
 
-        <ul class="try-editor-list">
-            <li>
-                <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>">Create <br />Document</a>
-            </li>
-            <li>
-                <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>">Create <br />Spreadsheet</a>
-            </li>
-            <li>
-                <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>">Create <br />Presentation</a>
-            </li>
-        </ul>
-        <label class="create-sample">
-            <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
-        </label>
+        <div class="help-block">
+            <span>Upload your file or create new file</span>
+            <br />
+            <br />
+            <div class="clearFix">
+                <div class="upload-panel clearFix">
+                    <a class="file-upload">Upload
+                        <br />
+                        File
+                        <input type="file" id="fileupload" name="uploadedFile" data-url="upload?<%= params %>" />
+                    </a>
+                    <br />
+                    <label class="save-original">
+                        <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Keep file format
+                    </label>
+                    <span class="question"></span>
+                </div>
+                <div class="create-panel clearFix">
+                    <ul class="try-editor-list clearFix">
+                        <li>
+                            <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>">Create
+                                <br />
+                                Document</a>
+                        </li>
+                        <li>
+                            <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>">Create
+                                <br />
+                                Spreadsheet</a>
+                        </li>
+                        <li>
+                            <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>">Create
+                                <br />
+                                Presentation</a>
+                        </li>
+                    </ul>
+                    <label class="create-sample">
+                        <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+                    </label>
+                </div>
+            </div>
+        </div>
         <br />
         <br />
 
@@ -120,16 +136,16 @@
             <br />
             <br />
             <div class="stored-list">
-                    <table cellspacing="0" cellpadding="0" width="100%">
-                        <thead>
-                            <tr class="tableHeader">
-                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
-                                <td colspan="3" class="tableHeaderCell">Viewers</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% for (var i = 0; i < storedFiles.length; i++) { %>
+                <table cellspacing="0" cellpadding="0" width="100%">
+                    <thead>
+                        <tr class="tableHeader">
+                            <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                            <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
+                            <td colspan="3" class="tableHeaderCell">Viewers</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (var i = 0; i < storedFiles.length; i++) { %>
                             <tr>
                                 <td class="contentCells">
                                     <a class="stored-edit <%= storedFiles[i].documentType%>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
@@ -160,9 +176,9 @@
                                         <img src="images/embeded-24.png" alt="embedded" /></a>
                                 </td>
                             </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
+                        <% } %>
+                    </tbody>
+                </table>
             </div>
         </div>
         <% } %>
