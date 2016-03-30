@@ -282,9 +282,9 @@ if (typeof jQuery != "undefined") {
         jq(".try-editor").each(function () {
             var href = jq(this).attr("href");
             if (jq("#createSample").is(":checked")) {
-                href = href.replace("&create=true", "");
+                href += "&sample=true";
             } else {
-                href += "&create=true";
+                href = href.replace("&sample=true", "");
             }
             jq(this).attr("href", href);
         });
