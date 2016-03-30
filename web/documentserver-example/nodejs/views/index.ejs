@@ -97,17 +97,17 @@
 
         <ul class="try-editor-list">
             <li>
-                <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>">Sample Document</a>
+                <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>&create=true">Create Document</a>
             </li>
             <li>
-                <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>">Sample Spreadsheet</a>
+                <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>&create=true">Create Spreadsheet</a>
             </li>
             <li>
-                <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>">Sample Presentation</a>
+                <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>&create=true">Create Presentation</a>
             </li>
         </ul>
 
-        <!--<div class="help-block">
+        <div class="help-block">
             <span>Sample documents</span>
             <br />
             <br />
@@ -156,7 +156,7 @@
                     </table>
                 </div>
             </div>
-        </div>-->
+        </div>
 
         <% if (storedFiles.length > 0)
            { %>
