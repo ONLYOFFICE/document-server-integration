@@ -426,6 +426,19 @@ footer {
 #tableRow {
     vertical-align: top;
 }
+.tableRow {
+	background: transparent;
+
+    -moz-transition: all 0.2s ease-in-out;
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+.tableRow:hover {
+	background-color: #ebebeb;
+}
+
 .tableHeader {
     background: transparent;
     color: #333;

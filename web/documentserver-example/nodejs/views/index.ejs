@@ -146,7 +146,7 @@
                     </thead>
                     <tbody>
                         <% for (var i = 0; i < storedFiles.length; i++) { %>
-                            <tr>
+                            <tr class="tableRow">
                                 <td class="contentCells">
                                     <a class="stored-edit <%= storedFiles[i].documentType%>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <span title="<%= storedFiles[i].url %>"><%= storedFiles[i].name %></span></a>
