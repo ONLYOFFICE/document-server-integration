@@ -278,6 +278,18 @@ if (typeof jQuery != "undefined") {
         });
     });
 
+    jq("#createSample").click(function () {
+        jq(".try-editor").each(function () {
+            var href = jq(this).attr("href");
+            if (jq("#createSample").is(":checked")) {
+                href += "&sample=true";
+            } else {
+                href = href.replace("&sample=true", "");
+            }
+            jq(this).attr("href", href);
+        });
+    });
+
     jq.dropdownToggle({
         switcherSelector: ".question",
         dropdownID: "hint"
