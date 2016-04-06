@@ -74,23 +74,6 @@ header img {
     margin-bottom: 20px;
     width: 600px;
 }
-pre
-{
-    border: 1px solid #CCC;
-    background-color: #fff;
-    border-radius: 3px;
-    display: block;
-    font-family: Monaco,Andale Mono,Courier New,monospace;
-    font-size: 12px;
-    line-height: 18px;
-    margin: 18px 0 24px;
-    padding: 8px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-pre.hljs {
-    padding-left: 35px;
-}
 .features-list {
     padding-left: 16px;
     list-style: outside none disc;
