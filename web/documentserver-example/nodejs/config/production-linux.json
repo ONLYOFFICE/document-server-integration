@@ -1,0 +1,7 @@
+﻿{
+  "server": {
+    "siteUrl": "http://localhost/",
+    "haveExternalIp": true,
+    "maxFileSize": 104857600
+  }
+}
