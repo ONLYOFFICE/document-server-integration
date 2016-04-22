@@ -28,7 +28,6 @@ var urllib = require("urllib");
 var syncRequest = require("sync-request");
 var xml2js = require("xml2js");
 var fileUtility = require("./fileUtility");
-var cacheManager = require("./cacheManager");
 var guidManager = require("./guidManager");
 var configServer = require('config').get('server');
 var siteUrl = configServer.get('siteUrl');
