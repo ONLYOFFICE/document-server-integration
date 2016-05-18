@@ -215,7 +215,7 @@ label .checkbox {
     position: absolute;
     right: 0;
     top: 0;
-    transform: translate(-300px, 0) scale(4);
+    transform: translate(555px, 60px) scale(8);
 }
 .create-panel {
     float: left;
