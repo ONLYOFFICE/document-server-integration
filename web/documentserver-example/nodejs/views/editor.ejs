@@ -137,7 +137,7 @@
                             comments: true,
                             feedback: true,
                             goback: {
-                                url: "<%= editor.getServerUrl %>",
+                                url: ("<%= editor.type %>" == "embedded" ? null : "<%= editor.getServerUrl %>"),
                             },
                         },
                     },
