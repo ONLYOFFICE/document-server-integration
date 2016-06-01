@@ -30,10 +30,11 @@ var bodyParser = require("body-parser");
 var fileSystem = require("fs");
 var formidable = require("formidable");
 var syncRequest = require("sync-request");
-var config = require("./config");
+var configServer = require('config').get('server');
 var docManager = require("./helpers/docManager");
 var documentService = require("./helpers/documentService");
 var fileUtility = require("./helpers/fileUtility");
+var siteUrl = configServer.get('siteUrl');
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -84,9 +85,9 @@ app.get("/", function (req, res) {
         docManager.init(__dirname, req, res);
 
         res.render("index", {
-            preloaderUrl: config.preloaderUrl,
-            convertExts: config.convertedDocs.join(","),
-            editedExts: config.editedDocs.join(","),
+            preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
+            convertExts: configServer.get('convertedDocs').join(","),
+            editedExts: configServer.get('editedDocs').join(","),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams()
         });
@@ -105,7 +106,7 @@ app.post("/upload", function (req, res) {
     docManager.storagePath(""); //mkdir if not exist
 
     var userIp = docManager.curUserHostAddress();
-    var uploadDir = "./public/" + config.storageFolder + "/" + userIp;
+    var uploadDir = "./public/" + configServer.get('storageFolder') + "/" + userIp;
 
     var form = new formidable.IncomingForm();
     form.uploadDir = uploadDir;
@@ -117,7 +118,7 @@ app.post("/upload", function (req, res) {
 
         file.name = docManager.getCorrectName(file.name);
 
-        if (config.maxFileSize < file.size || file.size <= 0) {
+        if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
             fileSystem.unlinkSync(file.path);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File size is incorrect\"}");
@@ -125,7 +126,7 @@ app.post("/upload", function (req, res) {
             return;
         }
 
-        var exts = new Array().concat(config.viewedDocs, config.editedDocs, config.convertedDocs);
+        var exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
         var curExt = fileUtility.getFileExtension(file.name);
 
         if (exts.indexOf(curExt) == -1) {
@@ -178,7 +179,7 @@ app.get("/convert", function (req, res) {
 
         response.write(JSON.stringify(result));
         response.end();
-    }
+    };
 
     var callback = function (err, data) {
         if (err) {
@@ -191,12 +192,12 @@ app.get("/convert", function (req, res) {
         }
 
         try {
-            var responseUri = documentService.getResponseUri(data.toString())
+            var responseUri = documentService.getResponseUri(data.toString());
             var result = responseUri.key;
             var newFileUri = responseUri.value;
 
             if (result != 100) {
-                writeResult(fileName, result, null)
+                writeResult(fileName, result, null);
                 return;
             }
 
@@ -207,23 +208,65 @@ app.get("/convert", function (req, res) {
 
             fileSystem.unlinkSync(docManager.storagePath(fileName));
 
-            writeResult(correctName, null, null)
-        } catch (ex) {
-            writeResult(null, null, ex.message)
+            var userAddress = docManager.curUserHostAddress();
+            var historyPath = docManager.historyPath(fileName, userAddress, true);
+            var correctHistoryPath = docManager.historyPath(correctName, userAddress, true);
+
+            fileSystem.renameSync(historyPath, correctHistoryPath);
+
+            fileSystem.renameSync(path.join(correctHistoryPath, fileName + ".txt"), path.join(correctHistoryPath, correctName + ".txt"));
+
+            writeResult(correctName, null, null);
+        } catch (e) {
+            writeResult(null, null, e.message);
         }
-    }
+    };
 
     try {
-        if (config.convertedDocs.indexOf(fileExt) != -1) {
+        if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
             var key = documentService.generateRevisionId(fileUri);
-            var res = documentService.getConvertedUriAsync(fileUri, fileExt, internalFileExt, key, callback);
+            documentService.getConvertedUriAsync(fileUri, fileExt, internalFileExt, key, callback);
         } else {
-            writeResult(fileName, null, null)
+            writeResult(fileName, null, null);
         }
     } catch (ex) {
-        writeResult(null, null, ex.message)
+        writeResult(null, null, ex.message);
     }
+});
 
+app.delete("/file", function (req, res) {
+    try {
+        docManager.init(__dirname, req, res);
+
+        var fileName = req.query.filename;
+
+        var filePath = docManager.storagePath(fileName)
+        fileSystem.unlinkSync(filePath);
+
+        var userAddress = docManager.curUserHostAddress();
+        var historyPath = docManager.historyPath(fileName, userAddress, true);
+
+        var deleteFolderRecursive = function (path) {
+            if (fileSystem.existsSync(path)) {
+                var files = fileSystem.readdirSync(path);
+                files.forEach(function (file, index) {
+                    var curPath = path + "/" + file;
+                    if (fileSystem.lstatSync(curPath).isDirectory()) {
+                        deleteFolderRecursive(curPath);
+                    } else {
+                        fileSystem.unlinkSync(curPath);
+                    }
+                });
+                fileSystem.rmdirSync(path);
+            }
+        };
+        deleteFolderRecursive(historyPath);
+
+        res.write("{\"success\":true}");
+    } catch (ex) {
+        res.write(JSON.stringify(ex));
+    }
+    res.end();
 });
 
 app.post("/track", function (req, res) {
@@ -260,17 +303,13 @@ app.post("/track", function (req, res) {
                     var historyPath = docManager.historyPath(fileName, userAddress);
                     if (historyPath == "") {
                         historyPath = docManager.historyPath(fileName, userAddress, true);
-                        if (!fileSystem.existsSync(historyPath)) {
-                            fileSystem.mkdirSync(historyPath);
-                        }
+                        docManager.createDirectory(historyPath);
                     }
 
                     var count_version = docManager.countVersion(historyPath);
                     version = count_version + 1;
                     versionPath = docManager.versionPath(fileName, userAddress, version);
-                    if (!fileSystem.existsSync(versionPath)) {
-                        fileSystem.mkdirSync(versionPath);
-                    }
+                    docManager.createDirectory(versionPath);
 
                     var downloadZip = body.changesurl;
                     if (downloadZip) {
@@ -352,7 +391,7 @@ app.get("/editor", function (req, res) {
         var lastname = req.query.lastname ? req.query.lastname : "Smith";
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo((req.query.create ? "new." : "sample.") + fileExt, userid, firstname + " " + lastname);
+            var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, firstname + " " + lastname);
 
             var redirectPath = docManager.getProtocol() + "://" + docManager.req.get("host") + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();
             res.redirect(redirectPath);
@@ -360,50 +399,53 @@ app.get("/editor", function (req, res) {
         }
 
         var userAddress = docManager.curUserHostAddress();
-        var fileName = req.query.fileName;
+        fileName = req.query.fileName;
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit 
         var type = req.query.type || "desktop"; //type: embedded/mobile/desktop
-        var canEdit = config.editedDocs.indexOf(fileUtility.getFileExtension(fileName)) != -1;
+        var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;
 
-        var historyPath = docManager.historyPath(fileName, userAddress);
         var countVersion = 1;
-        changes = null;
 
-        if (historyPath != '') {
+        if (configServer.get('haveExternalIp')) {
+            var historyPath = docManager.historyPath(fileName, userAddress);
+            changes = null;
 
-            countVersion = docManager.countVersion(historyPath) + 1;
-            var prev_path = docManager.getlocalFileUri(fileName, 1) + "/prev" + fileUtility.getFileExtension(fileName);
-            var diff_path = null;
-            for (var i = 1; i < countVersion; i++) {
-                var keyPath = docManager.keyPath(fileName, userAddress, i);
-                var keyVersion = "" + fileSystem.readFileSync(keyPath);
-                history.push(docManager.getHistory(fileName, changes, keyVersion, i));
+            if (historyPath != '') {
 
-                prevUrl.push(prev_path);
-                prev_path = docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName);
+                countVersion = docManager.countVersion(historyPath) + 1;
+                var prevPath = docManager.getlocalFileUri(fileName, 1) + "/prev" + fileUtility.getFileExtension(fileName);
+                var diffPath = null;
+                for (var i = 1; i < countVersion; i++) {
+                    var keyPath = docManager.keyPath(fileName, userAddress, i);
+                    var keyVersion = "" + fileSystem.readFileSync(keyPath);
+                    history.push(docManager.getHistory(fileName, changes, keyVersion, i));
 
-                diff.push(diff_path);
-                diff_path = docManager.getlocalFileUri(fileName, i) + "/diff.zip";
+                    prevUrl.push(prevPath);
+                    prevPath = docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName);
 
-                var changesFile = docManager.changesPath(fileName, userAddress, i);
-                var changes = docManager.getChanges(changesFile);
+                    diff.push(diffPath);
+                    diffPath = docManager.getlocalFileUri(fileName, i) + "/diff.zip";
+
+                    var changesFile = docManager.changesPath(fileName, userAddress, i);
+                    var changes = docManager.getChanges(changesFile);
+                }
+                prevUrl.push(prevPath);
+                diff.push(diffPath);
+            } else {
+                prevUrl.push(url);
             }
-            prevUrl.push(prev_path);
-            diff.push(diff_path);
-        } else {
-            prevUrl.push(url)
+            history.push(docManager.getHistory(fileName, changes, key, countVersion));
         }
-        history.push(docManager.getHistory(fileName, changes, key, countVersion));
 
         var argss = {
-            apiUrl: config.apiUrl,
+            apiUrl: siteUrl + configServer.get('apiUrl'),
             file: {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
-                version: countVersion
+                version: countVersion,
             },
             editor: {
                 type: type,
@@ -418,17 +460,16 @@ app.get("/editor", function (req, res) {
                 lang: lang,
                 userid: userid,
                 firstname: firstname,
-                lastname: lastname
+                lastname: lastname,
             },
             history: history,
             setHistoryData: {
-                url: prevUrl || "", //из файла прочитать ссылки
-                urlDiff: diff || ""
-            }
+                url: prevUrl,
+                urlDiff: diff,
+            },
         };
 
         res.render("editor", argss);
-
     }
     catch (ex) {
         res.status(500);

@@ -29,7 +29,8 @@ var fileUtility = require("./fileUtility");
 var documentService = require("./documentService");
 var cacheManager = require("./cacheManager");
 var guidManager = require("./guidManager");
-var config = require("../config");
+var configServer = require('config').get('server');
+var storageFolder = configServer.get('storageFolder');
 var os = require("os");
 const readline = require('readline');
 
@@ -44,11 +45,28 @@ docManager.dir = null;
 docManager.req = null;
 docManager.res = null;
 
+docManager.existsSync = function(path) {
+    var res = true;
+    try {
+        fileSystem.accessSync(path, fileSystem.F_OK);
+    } catch (e) {
+        res = false;
+    }
+    return res;
+};
+docManager.createDirectory = function(path) {
+    if (!this.existsSync(path)) {
+        fileSystem.mkdirSync(path);
+    }
+};
+
 docManager.init = function (dir, req, res) {
     docManager.dir = dir;
     docManager.req = req;
     docManager.res = res;
-}
+
+    this.createDirectory(path.join(docManager.dir, "public", storageFolder));
+};
 
 docManager.getLang = function () {
     if (docManager.req.query.lang) {
@@ -56,7 +74,7 @@ docManager.getLang = function () {
     } else {
         return "en"
     }
-}
+};
 
 docManager.getCustomParams = function () {
     var params = "";
@@ -83,7 +101,7 @@ docManager.getCustomParams = function () {
     params += (type ? "&type=" + type : "");
 
     return params;
-}
+};
 
 docManager.getCorrectName = function (fileName, userAddress) {
     var baseName = fileUtility.getFileName(fileName, true);
@@ -91,13 +109,13 @@ docManager.getCorrectName = function (fileName, userAddress) {
     var name = baseName + ext;
     var index = 1;
 
-    while (fileSystem.existsSync(docManager.storagePath(name, userAddress))) {
+    while (this.existsSync(docManager.storagePath(name, userAddress))) {
         name = baseName + " (" + index + ")" + ext;
         index++;
     }
 
     return name;
-}
+};
 
 docManager.createDemo = function (demoName, userid, username) {
     var fileName = docManager.getCorrectName(demoName);
@@ -107,7 +125,7 @@ docManager.createDemo = function (demoName, userid, username) {
     docManager.saveFileData(fileName, userid, username);
 
     return fileName;
-}
+};
 
 docManager.saveFileData = function (fileName, userid, username) {
     var userAddress = docManager.curUserHostAddress();
@@ -118,45 +136,42 @@ docManager.saveFileData = function (fileName, userid, username) {
     var date_format = date_create.getFullYear() + "-" + month + "-" + date_create.getDate() + " " + date_create.getHours() + ":" + minutes + ":" + sec;
 
     var file_info = docManager.historyPath(fileName, userAddress, true);
-    if (!fileSystem.existsSync(file_info)) {
-        fileSystem.mkdirSync(file_info);
-    }
+    this.createDirectory(file_info);
 
     fileSystem.writeFileSync(path.join(file_info, fileName + ".txt"), date_format + "," + userid + "," + username);
-}
+};
 
 docManager.getFileData = function (fileName, userAddress) {
     var file_info = docManager.historyPath(fileName, userAddress, true);
-    if (!fileSystem.existsSync(file_info)) {
+    if (!this.existsSync(file_info)) {
         return ["2016-01-01", "uid-1", "John Smith"];
     }
 
     return ((fileSystem.readFileSync(path.join(file_info, fileName + ".txt"))).toString()).split(",");
-}
+};
 
 docManager.getFileUri = function (fileName) {
-    if (config.haveExternalIp) {
-        var filePath = docManager.getlocalFileUri(fileName);
-        return filePath;
+    if (configServer.get('haveExternalIp')) {
+        return docManager.getlocalFileUri(fileName);
     }
 
     return docManager.getExternalUri(fileName);
-}
+};
 
 docManager.getlocalFileUri = function (fileName, version) {
     var serverPath = docManager.getProtocol() + "://" + docManager.req.get("host");
-    var storagePath = config.storageFolder.length ? config.storageFolder + "/" : "";
+    var storagePath = storageFolder.length ? storageFolder + "/" : "";
     var hostAddress = docManager.curUserHostAddress();
     var url = serverPath + "/" + storagePath + hostAddress + "/" + encodeURIComponent(fileName);
     if (!version) {
         return url;
     }
     return url + "-history/" + version;
-}
+};
 
 docManager.getServerUrl = function () {
     return docManager.getProtocol() + "://" + docManager.req.get("host");
-}
+};
 
 docManager.getCallback = function (fileName) {
     var server = docManager.getProtocol() + "://" + docManager.req.get("host");
@@ -164,86 +179,98 @@ docManager.getCallback = function (fileName) {
     var handler = "/track?useraddress=" + encodeURIComponent(hostAddress) + "&filename=" + encodeURIComponent(fileName);
 
     return server + handler;
-}
+};
 
 docManager.storagePath = function (fileName, userAddress) {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress(userAddress));
-    if (!fileSystem.existsSync(directory)) {
-        fileSystem.mkdirSync(directory);
-    }
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    this.createDirectory(directory);
     return path.join(directory, fileName);
-}
+};
 
 docManager.historyPath = function (fileName, userAddress, create) {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress(userAddress));
-    if (!fileSystem.existsSync(directory)) {
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    if (!this.existsSync(directory)) {
         return "";
     }
     directory = path.join(directory, fileName + "-history");
-    if (!create && !fileSystem.existsSync(path.join(directory, "1"))) {
+    if (!create && !this.existsSync(path.join(directory, "1"))) {
         return "";
     }
     return directory;
-}
+};
 
 docManager.versionPath = function (fileName, userAddress, version) {
     var historyPath = docManager.historyPath(fileName, userAddress, true);
     return path.join(historyPath, "" + version);
-}
+};
 
 docManager.prevFilePath = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "prev" + fileUtility.getFileExtension(fileName));
-}
+};
 
 docManager.diffPath = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "diff.zip");
-}
+};
 
 docManager.changesPath = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "changes.txt");
-}
+};
 
 docManager.keyPath = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "key.txt");
-}
+};
 
 docManager.changesUser = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "user.txt");
-}
+};
 
 docManager.getStoredFiles = function () {
-    var directory = path.join(docManager.dir, "public", config.storageFolder, docManager.curUserHostAddress());
-    if (!fileSystem.existsSync(directory)) {
-        return [];
-    }
-    var result = new Array();
+    var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress());
+    this.createDirectory(directory);
+    var result = [];
     var storedFiles = fileSystem.readdirSync(directory);
     for (var i = 0; i < storedFiles.length; i++) {
-        if (!fileSystem.lstatSync(path.join(directory, storedFiles[i])).isDirectory()) {
-            result.push({
+        var stats = fileSystem.lstatSync(path.join(directory, storedFiles[i]));
+
+        if (!stats.isDirectory()) {
+
+            var time = stats.mtime.getTime();
+            var item = {
+                time: time,
                 name: storedFiles[i],
                 url: docManager.getlocalFileUri(storedFiles[i]),
                 documentType: fileUtility.getFileType(storedFiles[i])
-            });
+            };
+
+            if (!result.length) {
+                result.push(item);
+            } else {
+                for (var j = 0; j < result.length; j++) {
+                    if (time > result[j].time) {
+                        break;
+                    }
+                }
+                result.splice(j, 0, item);
+            }
         }
     }
     return result;
-}
+};
 
 docManager.getProtocol = function () {
     return docManager.req.headers["x-forwarded-proto"] || docManager.req.protocol;
-}
+};
 
 docManager.curUserHostAddress = function (userAddress) {
     if (!userAddress)
         userAddress = docManager.req.headers["x-forwarded-for"] || docManager.req.connection.remoteAddress;
 
     return userAddress.replace(new RegExp("[^0-9a-zA-Z.=]", "g"), "_");
-}
+};
 
 docManager.copyFile = function (exist, target) {
     fileSystem.writeFileSync(target, fileSystem.readFileSync(exist));
-}
+};
 
 docManager.getExternalUri = function (fileName) {
     var documentRevisionId = docManager.getKey(fileName);
@@ -264,7 +291,7 @@ docManager.getExternalUri = function (fileName) {
     catch (ex) {
         throw ex;
     }
-}
+};
 
 docManager.getInternalExtension = function (fileType) {
     if (fileType == fileUtility.fileType.text)
@@ -277,7 +304,7 @@ docManager.getInternalExtension = function (fileType) {
         return ".pptx";
 
     return ".docx";
-}
+};
 
 docManager.getKey = function (fileName) {
     var userAddress = docManager.curUserHostAddress();
@@ -288,21 +315,25 @@ docManager.getKey = function (fileName) {
         key += docManager.countVersion(historyPath);
     }
 
+    historyPath = docManager.historyPath(fileName, userAddress, true);
+    var stat = fileSystem.statSync(historyPath);
+    key += stat.mtime.toString();
+
     return documentService.generateRevisionId(key);
-}
+};
 
 docManager.getDate = function (date) {
     var minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes().toString();
     return date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + minutes;
-}
+};
 
 docManager.getChanges = function (fileName) {
     return JSON.parse(fileSystem.readFileSync(fileName));
-}
+};
 
-docManager.countVersion = function (directory) {
+docManager.countVersion = function(directory) {
     var i = 0;
-    while (fileSystem.existsSync(path.join(directory, '' + (i + 1)))) {
+    while (this.existsSync(path.join(directory, '' + (i + 1)))) {
         i++;
     }
     return i;
@@ -310,14 +341,13 @@ docManager.countVersion = function (directory) {
 
 docManager.getHistory = function (fileName, content, keyVersion, version) {
     var contentJson = content ? content[0] : null;
-    var history = {};
 
     var userAddress = docManager.curUserHostAddress();
     var username = content ? contentJson.username : (docManager.getFileData(fileName, userAddress))[2];
     var userid = content ? contentJson.userid : (docManager.getFileData(fileName, userAddress))[1];
     var date = content ? contentJson.date : (docManager.getFileData(fileName, userAddress))[0];
 
-    history = {
+    return {
         key: keyVersion,
         version: version,
         created: date,
@@ -327,8 +357,6 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
         },
         changes: content
     };
-
-    return history;
 };
 
 module.exports = docManager;

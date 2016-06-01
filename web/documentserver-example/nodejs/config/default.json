@@ -1,0 +1,29 @@
+﻿{
+  "log": {
+    "appenders": [
+      {
+        "type": "console"
+      }
+    ],
+    "replaceConsole": "true",
+    "levels": {
+      "nodeJS": "Debug"
+    }
+  },
+  "server": {
+    "port": 3000,
+    "siteUrl": "https://doc.onlyoffice.com/",
+    "commandUrl": "coauthoring/CommandService.ashx",
+    "storageUrl": "FileUploader.ashx",
+    "converterUrl": "ConvertService.ashx",
+    "tempStorageUrl": "ResourceService.ashx",
+    "apiUrl": "web-apps/apps/api/documents/api.js",
+    "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
+    "viewedDocs": [".ppt", ".pps", ".odp", ".pdf", ".djvu", ".epub", ".xps"],
+    "editedDocs": [".docx", ".doc", ".odt", ".xlsx", ".xls", ".ods", ".csv", ".pptx", ".ppsx", ".rtf", ".txt", ".mht", ".html", ".htm"],
+    "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
+    "storageFolder": "files",
+    "haveExternalIp": false,
+    "maxFileSize": 5242880
+  }
+}

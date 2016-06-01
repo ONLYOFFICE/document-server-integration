@@ -26,11 +26,24 @@
 var cache = {};
 
 exports.put = function (key, value) {
-    cache[key] = value;
+    cache[key] = { value:value, time: new Date().getTime()};
 }
 
 exports.containsKey = function (key) {
-    return typeof cache[key] != "undefined";
+    if (typeof cache[key] == "undefined"){
+        return false;
+    }
+
+    var secondsCache = 30;
+
+    var t1 = new Date(cache[key].time + (1000 * secondsCache));
+    var t2 = new Date();
+    if (t1 < t2 ){
+        delete cache[key];
+        return false;
+    }
+
+    return true;
 }
 
 exports.get = function (key) {

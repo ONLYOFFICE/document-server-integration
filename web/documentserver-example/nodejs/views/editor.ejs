@@ -94,7 +94,7 @@
                 innerAlert(event.data);
         };
 
-        var сonnectEditor = function () {
+        var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
@@ -137,7 +137,7 @@
                             comments: true,
                             feedback: true,
                             goback: {
-                                url: "<%= editor.getServerUrl %>",
+                                url: ("<%= editor.type %>" == "embedded" ? null : "<%= editor.getServerUrl %>"),
                             },
                         },
                     },
@@ -154,26 +154,9 @@
         };
 
         if (window.addEventListener) {
-            window.addEventListener("load", сonnectEditor);
+            window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", сonnectEditor);
-        }
-
-        function getXmlHttp() {
-            var xmlhttp;
-            try {
-                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (ex) {
-                    xmlhttp = false;
-                }
-            }
-            if (!xmlhttp && typeof XMLHttpRequest != "undefined") {
-                xmlhttp = new XMLHttpRequest();
-            }
-            return xmlhttp;
+            window.attachEvent("load", connectEditor);
         }
 
     </script>
