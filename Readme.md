@@ -1,9 +1,9 @@
 
 ## Document Server integration example
 
-These examples show the way to integrate [ONLYOFFICE Document Server][2] using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby. 
+These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby. 
 
-More information on how to use these examples can be found here - [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
+More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
 
 ## Project Information
 
