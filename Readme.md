@@ -9,7 +9,7 @@ More information on how to use these examples can be found here: [http://api.onl
 
 Official website: [http://www.onlyoffice.org](http://onlyoffice.org "http://www.onlyoffice.org")
 
-Code repository: [https://github.com/ONLYOFFICE/sdkjs](https://github.com/ONLYOFFICE/sdkjs "https://github.com/ONLYOFFICE/sdkjs")
+Code repository: [https://github.com/ONLYOFFICE/document-server-integration](https://github.com/ONLYOFFICE/document-server-integration "https://github.com/ONLYOFFICE/document-server-integration")
 
 SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.onlyoffice.com")
 
