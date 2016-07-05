@@ -24,7 +24,7 @@
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
     "haveExternalIp": false,
-    "maxFileSize": 5242880,
+    "maxFileSize": 1073741824,
 //    "fileChoiceUrl": "https://testinfo.teamlab.info/products/files/filechoice.aspx?fileType=xlsx&mailmerge=true"
   },
   "plugins": {
@@ -41,26 +41,25 @@
               "chess/icon.png",
               "chess/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "true",
-            "isModal": "true",
-            "isInsideMode": "false",
+            "isVisual": true,
+            "isModal": true,
+            "isInsideMode": false,
             "initDataType": "ole",
             "initData": "",
-            "isUpdateOleOnResize": "true",
+            "isUpdateOleOnResize": true,
             "buttons": [
               {
                 "text": "Ok",
-                "primary": "true"
+                "primary": true
               },
               {
                 "text": "Cancel",
-                "primary": "false"
+                "primary": false
               }
             ]
           },
@@ -71,22 +70,21 @@
               "chess/icon.png",
               "chess/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "true",
-            "isModal": "true",
-            "isInsideMode": "false",
+            "isVisual": true,
+            "isModal": true,
+            "isInsideMode": false,
             "initDataType": "none",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": [
               {
                 "text": "Ok",
-                "primary": "true"
+                "primary": true
               }
             ]
           }
@@ -103,22 +101,21 @@
               "glavred/icon.png",
               "glavred/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "true",
-            "isModal": "true",
-            "isInsideMode": "false",
+            "isVisual": true,
+            "isModal": true,
+            "isInsideMode": false,
             "initDataType": "text",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": [
               {
                 "text": "Ok",
-                "primary": "true"
+                "primary": true
               }
             ]
           }
@@ -135,18 +132,17 @@
               "bold/icon.png",
               "bold/icon@2x.png"
             ],
-            "isViewer": "false",
+            "isViewer": false,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "false",
-            "isModal": "false",
-            "isInsideMode": "false",
+            "isVisual": false,
+            "isModal": false,
+            "isInsideMode": false,
             "initDataType": "none",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": []
           }
         ]
@@ -162,18 +158,17 @@
               "speech/icon.png",
               "speech/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "false",
-            "isModal": "false",
-            "isInsideMode": "false",
+            "isVisual": false,
+            "isModal": false,
+            "isInsideMode": false,
             "initDataType": "text",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": []
           }
         ]
@@ -189,22 +184,21 @@
               "youtube/icon.png",
               "youtube/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "true",
-            "isModal": "true",
-            "isInsideMode": "false",
+            "isVisual": true,
+            "isModal": true,
+            "isInsideMode": false,
             "initDataType": "ole",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": [
               {
                 "text": "Ok",
-                "primary": "true"
+                "primary": true
               },
               {
                 "text": "Cancel",
@@ -225,18 +219,16 @@
               "cbr/icon.png",
               "cbr/icon@2x.png"
             ],
-            "isViewer": "false",
+            "isViewer": false,
             "EditorsSupport": [
-              "word",
-              "cell",
-              "slide"
+              "cell"
             ],
-            "isVisual": "false",
-            "isModal": "false",
-            "isInsideMode": "false",
+            "isVisual": false,
+            "isModal": false,
+            "isInsideMode": false,
             "initDataType": "none",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": []
           }
         ]
@@ -253,20 +245,20 @@
               "ocr/icon.png",
               "ocr/icon@2x.png"
             ],
-            "isViewer": "false",
+            "isViewer": false,
             "EditorsSupport": [
               "word"
             ],
-            "isVisual": "true",
-            "isModal": "false",
-            "isInsideMode": "false",
+            "isVisual": true,
+            "isModal": false,
+            "isInsideMode": false,
             "initDataType": "html",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": [
               {
                 "text": "Insert In Document",
-                "primary": "true"
+                "primary": true
               },
               {
                 "text": "Cancel",
@@ -287,18 +279,17 @@
               "yandextranslate/icon.png",
               "yandextranslate/icon@2x.png"
             ],
-            "isViewer": "false",
+            "isViewer": false,
             "EditorsSupport": [
               "word",
-              "cell",
               "slide"
             ],
-            "isVisual": "false",
-            "isModal": "false",
-            "isInsideMode": "false",
+            "isVisual": false,
+            "isModal": false,
+            "isInsideMode": false,
             "initDataType": "text",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": []
           }
         ]
@@ -314,20 +305,20 @@
               "clipart/icon.png",
               "clipart/icon@2x.png"
             ],
-            "isViewer": "true",
+            "isViewer": true,
             "EditorsSupport": [
               "word"
             ],
-            "isVisual": "true",
-            "isModal": "false",
-            "isInsideMode": "true",
+            "isVisual": true,
+            "isModal": false,
+            "isInsideMode": true,
             "initDataType": "none",
             "initData": "",
-            "isUpdateOleOnResize": "false",
+            "isUpdateOleOnResize": false,
             "buttons": [
               {
                 "text": "Ok",
-                "primary": "true"
+                "primary": true
               }
             ]
           }
