@@ -44,7 +44,5 @@ module OnlineEditorsExampleRuby
     Rails.configuration.urlApi="https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js"
     Rails.configuration.urlPreloader="https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html"
 
-    Rails.configuration.haveExternalIp=false #service can access the document on the url
-
   end
 end

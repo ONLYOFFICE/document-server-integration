@@ -89,44 +89,13 @@ class DocumentHelper
     def get_file_uri(file_name)
       uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
 
-      if Rails.configuration.haveExternalIp
-        return uri
-      end
-
-      get_external_uri(uri)
+      return uri
     end
 
     def get_callback(file_name)
 
       @@base_url + '/track?type=track&userAddress=' + cur_user_host_address(nil)  + '&fileName=' + URI::encode(file_name)
 
-    end
-
-    def get_external_uri(local_uri)
-
-      begin
-        uri = @@runtime_cache[local_uri]
-
-        if uri == nil
-
-          file_name = URI::decode(File.basename(local_uri))
-          file_storage_path = DocumentHelper.storage_path(file_name, nil)
-          data = File.open(file_storage_path, 'rb') {|io| io.read}
-
-          key = ServiceConverter.generate_revision_id(local_uri)
-          uri = ServiceConverter.get_external_uri(data, data.length, nil, key)
-
-          @@runtime_cache[local_uri] = uri
-
-        end
-
-        return uri
-
-      rescue => ex
-        raise ex.message
-      end
-
-      local_uri
     end
 
     def get_internal_extension(file_type)

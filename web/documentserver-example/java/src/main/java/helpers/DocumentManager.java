@@ -24,7 +24,6 @@ public class DocumentManager
     private static HttpServletRequest request;
     private static HttpServletResponse response;
 
-    private static final Map<String, String> CacheMap = new HashMap<>();
     private static final String ExternalIPCacheKey = "ExternalIPCacheKey";
 
     public static void Init(HttpServletRequest req, HttpServletResponse resp){
@@ -175,12 +174,7 @@ public class DocumentManager
             
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName);
             
-            if (HaveExternalIP(filePath))
-            {
-                return filePath;
-            }
-
-            return GetExternalUri(filePath);
+            return filePath;
         }
         catch(Exception ex)
         {
@@ -200,63 +194,6 @@ public class DocumentManager
         String query = "?type=track&userAddress=" + URLEncoder.encode(hostAddress) + "&fileName=" + URLEncoder.encode(fileName);
         
         return serverPath + "/IndexServlet" + query;
-    }
-
-    public static Boolean HaveExternalIP(String filePath)
-    {
-        if(CacheMap.containsKey(ExternalIPCacheKey))
-            return Boolean.parseBoolean(CacheMap.get(ExternalIPCacheKey));
-
-        Boolean haveExternalIP = false;
-        
-        try
-        {
-            String extension = FileUtility.GetFileExtension(filePath);
-            String internalExtension = GetInternalExtension(FileUtility.GetFileType(filePath));
-
-            Pair<Integer, String> res = ServiceConverter.GetConvertedUri(filePath, extension, internalExtension, UUID.randomUUID().toString(), false);
-
-            if(res != null)
-            {
-                haveExternalIP = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            haveExternalIP = false;
-        }
-
-        CacheMap.put(ExternalIPCacheKey, haveExternalIP.toString());
-        
-        return haveExternalIP;
-    }
-
-    public static String GetExternalUri(String localUri) throws Exception
-    {
-        String documentRevisionId = ServiceConverter.GenerateRevisionId(localUri);
-        
-        if(CacheMap.containsKey(documentRevisionId))
-            return CacheMap.get(documentRevisionId);
-        
-        try
-        {
-            URL url = new URL(localUri);
-            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-            InputStream inputStream = connection.getInputStream();
-            String contentType = connection.getContentType();           
-
-            String externalUri = ServiceConverter.GetExternalUri(inputStream, inputStream.available(), contentType, documentRevisionId);
-            
-            connection.disconnect();
-            
-            CacheMap.put(documentRevisionId, externalUri);
-            
-            return externalUri;
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
     }
 
     public static String GetInternalExtension(FileType fileType)

@@ -1,7 +1,6 @@
 ﻿{
   "server": {
     "siteUrl": "/",
-    "haveExternalIp": true,
     "maxFileSize": 104857600
   }
 }

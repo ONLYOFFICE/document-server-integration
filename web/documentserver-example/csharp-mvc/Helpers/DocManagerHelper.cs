@@ -117,12 +117,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     Query = ""
                 };
 
-            if (HaveExternalIP())
-            {
-                return uri.ToString();
-            }
-
-            return GetExternalUri(uri.ToString());
+            return uri.ToString();
         }
 
         public static string GetCallback(string fileName)
@@ -138,61 +133,6 @@ namespace OnlineEditorsExampleMVC.Helpers
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
             };
             return callbackUrl.ToString();
-        }
-
-        private static bool? _haveExternalIP;
-
-        public static bool HaveExternalIP()
-        {
-            if (!_haveExternalIP.HasValue)
-            {
-                string convertUri;
-                try
-                {
-                    var uri = new UriBuilder(HttpContext.Current.Request.Url)
-                    {
-                        Path = HttpRuntime.AppDomainAppVirtualPath + "/App_Data/demo.docx",
-                        Query = ""
-                    };
-                    var fileUri = uri.ToString();
-
-                    ServiceConverter.GetConvertedUri(fileUri, "docx", "docx", Guid.NewGuid().ToString(), false, out convertUri);
-                }
-                catch
-                {
-                    convertUri = string.Empty;
-                }
-
-                _haveExternalIP = !string.IsNullOrEmpty(convertUri);
-            }
-
-            return _haveExternalIP.Value;
-        }
-
-        public static string GetExternalUri(string localUri)
-        {
-            try
-            {
-                var uri = HttpRuntime.Cache.Get(localUri) as string;
-                if (string.IsNullOrEmpty(uri))
-                {
-
-                    var webRequest = WebRequest.Create(localUri);
-                    using (var response = webRequest.GetResponse())
-                    using (var responseStream = response.GetResponseStream())
-                    {
-                        var key = ServiceConverter.GenerateRevisionId(localUri);
-                        uri = ServiceConverter.GetExternalUri(responseStream, response.ContentLength, response.ContentType, key);
-                    }
-                    HttpRuntime.Cache.Insert(localUri, uri, null, DateTime.Now.Add(TimeSpan.FromMinutes(2)), Cache.NoSlidingExpiration);
-                }
-                return uri;
-            }
-            catch (Exception)
-            {
-
-            }
-            return localUri;
         }
 
         public static string GetInternalExtension(FileUtility.FileType fileType)

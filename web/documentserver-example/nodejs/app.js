@@ -410,36 +410,34 @@ app.get("/editor", function (req, res) {
 
         var countVersion = 1;
 
-        if (configServer.get('haveExternalIp')) {
-            var historyPath = docManager.historyPath(fileName, userAddress);
-            changes = null;
+        var historyPath = docManager.historyPath(fileName, userAddress);
+        changes = null;
 
-            if (historyPath != '') {
+        if (historyPath != '') {
 
-                countVersion = docManager.countVersion(historyPath) + 1;
-                var prevPath = docManager.getlocalFileUri(fileName, 1) + "/prev" + fileUtility.getFileExtension(fileName);
-                var diffPath = null;
-                for (var i = 1; i < countVersion; i++) {
-                    var keyPath = docManager.keyPath(fileName, userAddress, i);
-                    var keyVersion = "" + fileSystem.readFileSync(keyPath);
-                    history.push(docManager.getHistory(fileName, changes, keyVersion, i));
+            countVersion = docManager.countVersion(historyPath) + 1;
+            var prevPath = docManager.getlocalFileUri(fileName, 1) + "/prev" + fileUtility.getFileExtension(fileName);
+            var diffPath = null;
+            for (var i = 1; i < countVersion; i++) {
+                var keyPath = docManager.keyPath(fileName, userAddress, i);
+                var keyVersion = "" + fileSystem.readFileSync(keyPath);
+                history.push(docManager.getHistory(fileName, changes, keyVersion, i));
 
-                    prevUrl.push(prevPath);
-                    prevPath = docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName);
-
-                    diff.push(diffPath);
-                    diffPath = docManager.getlocalFileUri(fileName, i) + "/diff.zip";
-
-                    var changesFile = docManager.changesPath(fileName, userAddress, i);
-                    var changes = docManager.getChanges(changesFile);
-                }
                 prevUrl.push(prevPath);
+                prevPath = docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName);
+
                 diff.push(diffPath);
-            } else {
-                prevUrl.push(url);
+                diffPath = docManager.getlocalFileUri(fileName, i) + "/diff.zip";
+
+                var changesFile = docManager.changesPath(fileName, userAddress, i);
+                var changes = docManager.getChanges(changesFile);
             }
-            history.push(docManager.getHistory(fileName, changes, key, countVersion));
+            prevUrl.push(prevPath);
+            diff.push(diffPath);
+        } else {
+            prevUrl.push(url);
         }
+        history.push(docManager.getHistory(fileName, changes, key, countVersion));
 
         var argss = {
             apiUrl: siteUrl + configServer.get('apiUrl'),
