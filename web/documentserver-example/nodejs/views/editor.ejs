@@ -109,11 +109,11 @@
                         key: "<%= editor.key %>",
                         info: {
                             author: "Me",
-                            created: new Date().toDateString(),
+                            created: new Date().toDateString()
                         },
                         permissions: {
                             edit: "<%= editor.isEdit %>" == "true",
-                            download: true,
+                            download: true
                         }   
                     },
                     editorConfig: {
@@ -123,13 +123,13 @@
                         user: {
                             id: "<%= editor.userid %>",
                             firstname: "<%= editor.firstname %>",
-                            lastname: "<%= editor.lastname %>",
+                            lastname: "<%= editor.lastname %>"
                         },
                         embedded: {
                             saveUrl: "<%= file.uri %>",
                             embedUrl: "<%= file.uri %>",
                             shareUrl: "<%= file.uri %>",
-                            toolbarDocked: "top",
+                            toolbarDocked: "top"
                         },
                         customization: {
                             about: true,
@@ -137,9 +137,11 @@
                             comments: true,
                             feedback: true,
                             goback: {
-                                url: ("<%= editor.type %>" == "embedded" ? null : "<%= editor.getServerUrl %>"),
-                            },
+                                url: ("<%= editor.type %>" == "embedded" ? null : "<%= editor.getServerUrl %>")
+                            }
                         },
+                        fileChoiceUrl: "<%= editor.fileChoiceUrl %>",
+                        plugins: <%- JSON.stringify(editor.plugins) %>
                     },
                     events: {
                         "onReady": onReady,
@@ -148,8 +150,8 @@
                         "onError": onError,
                         "onRequestHistory":  onRequestHistory,
                         "onRequestHistoryData": onRequestHistoryData,
-                        "onRequestHistoryClose": onRequestHistoryClose,
-                    },
+                        "onRequestHistoryClose": onRequestHistoryClose
+                    }
             });
         };
 

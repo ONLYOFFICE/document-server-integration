@@ -30,12 +30,14 @@ var bodyParser = require("body-parser");
 var fileSystem = require("fs");
 var formidable = require("formidable");
 var syncRequest = require("sync-request");
-var configServer = require('config').get('server');
+var config = require('config');
+var configServer = config.get('server');
 var docManager = require("./helpers/docManager");
 var documentService = require("./helpers/documentService");
 var fileUtility = require("./helpers/fileUtility");
 var siteUrl = configServer.get('siteUrl');
-
+var fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
+var plugins = config.get('plugins');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -445,7 +447,7 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
-                version: countVersion,
+                version: countVersion
             },
             editor: {
                 type: type,
@@ -461,12 +463,14 @@ app.get("/editor", function (req, res) {
                 userid: userid,
                 firstname: firstname,
                 lastname: lastname,
+                fileChoiceUrl: fileChoiceUrl,
+                plugins: plugins
             },
             history: history,
             setHistoryData: {
                 url: prevUrl,
-                urlDiff: diff,
-            },
+                urlDiff: diff
+            }
         };
 
         res.render("editor", argss);
@@ -474,7 +478,6 @@ app.get("/editor", function (req, res) {
     catch (ex) {
         res.status(500);
         res.render("error", { message: ex.message, error: ex });
-        return;
     }
 });
 
