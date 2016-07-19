@@ -4,7 +4,7 @@ class FileUtility
 
   @@exts_spreadsheet = %w(.xls .xlsx .ods .csv)
 
-  @@exts_presentation = %w(.ppt .pptx .odp)
+  @@exts_presentation = %w(.pps .ppsx .ppt .pptx .odp)
 
   class << self
 

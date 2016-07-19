@@ -63,6 +63,7 @@ namespace OnlineEditorsExampleMVC.Models
 
         public static readonly List<string> ExtsPresentation = new List<string>
             {
+				".pps", ".ppsx",
                 ".ppt", ".pptx",
                 ".odp"
             };
