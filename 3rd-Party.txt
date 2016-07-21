@@ -1,0 +1,30 @@
+Document Server integration example uses code from the following 3rd party projects.
+
+
+1. jQuery - Query is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. (http://jquery.com/)
+
+License:        The MIT License (MIT)
+License File:   web\documentserver-example\csharp\licenses\MIT-LICENSE.txt
+License File:   web\documentserver-example\csharp-mvc\licenses\MIT-LICENSE.txt
+
+
+2. jQuery BlockUI Plugin - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (http://malsup.com/jquery/block/)
+
+License:        MIT, GPL
+
+
+3. jQuery UI - jQuery  UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library. Whether you're  building highly interactive web applications or you just need to add a date picker to a form control, jQuery UI is the perfect choice.  (http://jqueryui.com/)
+
+License:        MIT
+
+
+4. jQuery-File-Upload  - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.  (https://github.com/blueimp/jQuery-File-Upload)
+
+License:        MIT
+
+
+5. Open Sans - Open Sans is a humanist sans serif typeface designed by Steve Matteson, Type Director of Ascender Corp. This version contains the complete 897 character set, which includes the standard ISO Latin 1, Latin CE, Greek and Cyrillic character sets. Open Sans was designed with an upright stress, open forms and a neutral, yet friendly appearance. It was optimized for print, web, and mobile interfaces, and has excellent legibility characteristics in its letterforms.
+Steve Matteson
+
+License:        Apache License, version 2.0
+

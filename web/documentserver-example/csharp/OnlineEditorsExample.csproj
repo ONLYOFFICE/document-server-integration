@@ -58,6 +58,9 @@
     <Content Include="App_Themes\images\icon_docx.png" />
     <Content Include="App_Themes\images\icon_pptx.png" />
     <Content Include="App_Themes\images\icon_xlsx.png" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="licenses\MIT-LICENSE.txt" />
+    <Content Include="ReadMe.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
