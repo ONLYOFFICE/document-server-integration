@@ -151,11 +151,7 @@ docManager.getFileData = function (fileName, userAddress) {
 };
 
 docManager.getFileUri = function (fileName) {
-    if (configServer.get('haveExternalIp')) {
-        return docManager.getlocalFileUri(fileName);
-    }
-
-    return docManager.getExternalUri(fileName);
+	return docManager.getlocalFileUri(fileName);
 };
 
 docManager.getlocalFileUri = function (fileName, version) {
@@ -270,27 +266,6 @@ docManager.curUserHostAddress = function (userAddress) {
 
 docManager.copyFile = function (exist, target) {
     fileSystem.writeFileSync(target, fileSystem.readFileSync(exist));
-};
-
-docManager.getExternalUri = function (fileName) {
-    var documentRevisionId = docManager.getKey(fileName);
-
-    if (cacheManager.containsKey(documentRevisionId))
-        return cacheManager.get(documentRevisionId);
-
-    try {
-        var storagePath = docManager.storagePath(decodeURIComponent(fileName));
-        var content = fileSystem.readFileSync(storagePath);
-
-        var externalUri = documentService.getExternalUri(content, content.length, null, documentRevisionId);
-
-        cacheManager.put(documentRevisionId, externalUri);
-
-        return externalUri;
-    }
-    catch (ex) {
-        throw ex;
-    }
 };
 
 docManager.getInternalExtension = function (fileType) {

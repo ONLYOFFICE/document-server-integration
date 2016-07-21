@@ -80,7 +80,7 @@ fileUtility.documentExts = [".docx", ".doc", ".odt", ".rtf", ".txt", ".html", ".
 
 fileUtility.spreadsheetExts = [".xls", ".xlsx", ".ods", ".csv"];
 
-fileUtility.presentationExts = [".ppt", ".pptx", ".odp"];
+fileUtility.presentationExts = [".pps", ".ppsx", ".ppt", ".pptx", ".odp"];
 
 function getUrlParams(url) {
     try {

@@ -23,7 +23,6 @@
     "editedDocs": [".docx", ".doc", ".odt", ".xlsx", ".xls", ".ods", ".csv", ".pptx", ".ppsx", ".rtf", ".txt", ".mht", ".html", ".htm"],
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
-    "haveExternalIp": false,
     "maxFileSize": 1073741824,
 //    "fileChoiceUrl": "https://testinfo.teamlab.info/products/files/filechoice.aspx?fileType=xlsx&mailmerge=true"
   },

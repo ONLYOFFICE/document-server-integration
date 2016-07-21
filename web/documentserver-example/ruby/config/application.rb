@@ -41,10 +41,8 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.urlStorage="https://doc.onlyoffice.com/FileUploader.ashx"
     Rails.configuration.urlConverter="https://doc.onlyoffice.com/ConvertService.ashx"
-    Rails.configuration.urlApi="https://doc.onlyoffice.com/OfficeWeb/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="https://doc.onlyoffice.com/OfficeWeb/apps/api/documents/cache-scripts.html"
-
-    Rails.configuration.haveExternalIp=false #service can access the document on the url
+    Rails.configuration.urlApi="https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js"
+    Rails.configuration.urlPreloader="https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html"
 
   end
 end

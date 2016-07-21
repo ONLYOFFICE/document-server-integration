@@ -42,7 +42,7 @@ public class FileUtility
 
     public static List<String> ExtsPresentation = Arrays.asList
     (
-        ".ppt", ".pptx",".odp"
+        ".pps", ".ppsx", ".ppt", ".pptx",".odp"
     );
     
 

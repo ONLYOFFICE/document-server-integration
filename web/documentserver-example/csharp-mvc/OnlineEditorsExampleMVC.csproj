@@ -150,6 +150,8 @@
     <Content Include="Content\stylesheet.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="ReadMe.txt" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
@@ -164,6 +166,10 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\Error.aspx" />
+    <Content Include="licenses\EntityFramework.license" />
+    <Content Include="licenses\Microsoft.Web.Infrastructure.license" />
+    <Content Include="licenses\Newtonsoft.Json.license" />
+    <Content Include="licenses\WebGrease.license" />
     <None Include="packages.config" />
     <None Include="web.appsettings.config" />
     <Content Include="WebEditor.ashx" />

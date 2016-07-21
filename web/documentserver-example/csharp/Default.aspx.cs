@@ -161,13 +161,7 @@ namespace OnlineEditorsExample
         {
             var uri = Host;
             uri.Path = VirtualPath + fileName;
-
-            if (HaveExternalIP())
-            {
-                return uri.ToString();
-            }
-
-            return GetExternalUri(uri.ToString());
+            return uri.ToString();
         }
 
         public static string DocumentType(string fileName)
@@ -328,66 +322,6 @@ namespace OnlineEditorsExample
                 name = baseName + " (" + i + ")" + ext;
             }
             return name;
-        }
-
-        private static bool? _haveExternalIP;
-
-        public static bool HaveExternalIP()
-        {
-            if (!_haveExternalIP.HasValue)
-            {
-                string convertUri;
-                try
-                {
-                    var uri = Host;
-                    uri.Path = VirtualPath + "demo.docx";
-                    var fileUri = uri.ToString();
-
-                    ServiceConverter.GetConvertedUri(fileUri, "docx", "docx", Guid.NewGuid().ToString(), false, out convertUri);
-                }
-                catch
-                {
-                    convertUri = string.Empty;
-                }
-
-                _haveExternalIP = !string.IsNullOrEmpty(convertUri);
-            }
-
-            return _haveExternalIP.Value;
-        }
-
-        public static string GetExternalUri(string localUri)
-        {
-            try
-            {
-                var uri = HttpRuntime.Cache.Get(localUri) as string;
-                if (string.IsNullOrEmpty(uri))
-                {
-
-                    var webRequest = (HttpWebRequest)WebRequest.Create(localUri);
-
-                    // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                    if (IsMono)
-                    {
-                        ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                    }
-
-                    using (var response = webRequest.GetResponse())
-                    using (var responseStream = response.GetResponseStream())
-                    {
-                        var key = ServiceConverter.GenerateRevisionId(localUri);
-                        uri = ServiceConverter.GetExternalUri(responseStream, response.ContentLength, response.ContentType, key);
-                    }
-                    HttpRuntime.Cache.Remove(localUri);
-                    HttpRuntime.Cache.Insert(localUri, uri, null, DateTime.Now.Add(TimeSpan.FromMinutes(2)), Cache.NoSlidingExpiration);
-                }
-                return uri;
-            }
-            catch (Exception)
-            {
-
-            }
-            return localUri;
         }
 
         protected static List<string> GetStoredFiles()

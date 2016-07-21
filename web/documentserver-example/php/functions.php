@@ -29,62 +29,9 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/common.php' );
 
 
-function HaveExternalIP() {
-    $_haveExternalIPCacheFile = "cache/haveExternalIP.txt";
-    $_cacheTimeSeconds = 1 * 60 * 60; // cache for 1 hour
-
-    $_haveExternalIPObj = unserialize(file_get_contents($_haveExternalIPCacheFile));
-
-    if (!(isset($_haveExternalIPObj) &&
-        is_array($_haveExternalIPObj) &&
-        isset($_haveExternalIPObj['haveExternalIP']) &&
-        isset($_haveExternalIPObj['updDate']) &&
-        is_bool($_haveExternalIPObj['haveExternalIP']) &&
-        is_int($_haveExternalIPObj['updDate']) &&
-        $_haveExternalIPObj['updDate'] + $_cacheTimeSeconds >= time()))
-    {
-        $convertUri = "";
-        try
-        {
-            $demoName = "demo.docx";
-            $fileUri = getVirtualPath() . $demoName;
-
-            if (!file_exists($fileUri)){
-                if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoName)))
-                {
-                    $errors= error_get_last();
-                    $err = "Copy demo file error: " . $errors['type'] . "\r\n".$errors['message'];
-
-                    sendlog("HaveExternalIP errors: " . $err, "logs/common.log");
-                    throw new Exception($err);
-                } else {
-                    GetConvertedUri($fileUri, "docx", "docx", guid(), FALSE, $convertUri);
-                }
-            }
-        }
-        catch (Exception $e) {
-            $convertUri = "";
-        }
-
-        $_haveExternalIPObj = array(
-                            'haveExternalIP' => ($convertUri != ""),
-                            'updDate' => time()
-                           );
-
-        file_put_contents($_haveExternalIPCacheFile, serialize($_haveExternalIPObj));
-    }
-
-    return $_haveExternalIPObj['haveExternalIP'];
-}
-
 function FileUri($file_name) {
     $uri = getVirtualPath() . $file_name;
-
-    if (HaveExternalIP()) {
-        return $uri;
-    }
-
-    return GetExternalFileUri($uri);
+	return $uri;
 }
 
 function GetExternalFileUri($local_uri) {
