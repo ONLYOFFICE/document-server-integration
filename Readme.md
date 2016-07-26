@@ -22,4 +22,4 @@ If you have any problems with or questions about [ONLYOFFICE Document Server][2]
   
 ## License
 
-web-apps is released under the MIT License. See the LICENSE.txt file for more information.
+document-server-integration is released under the MIT License. See the LICENSE.txt file for more information.
