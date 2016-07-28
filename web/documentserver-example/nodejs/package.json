@@ -10,6 +10,9 @@
     "name": "ONLYOFFICE",
     "email": ""
   },
+  "bugs": {
+    "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
+  },
   "dependencies": {
     "body-parser": "~1.15.2",
     "config": "^1.21.0",
