@@ -1,4 +1,6 @@
 
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](http://www.gnu.org/licenses/agpl-3.0.ru.html) ![Release](https://img.shields.io/badge/Release-v4.1.0-blue.svg?style=flat)
+
 ## Document Server integration example
 
 These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby. 
