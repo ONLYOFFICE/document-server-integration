@@ -30,7 +30,7 @@ var tempStorageUrl = siteUrl + configServer.get('tempStorageUrl');
 var fileUtility = {};
 
 fileUtility.getFileName = function (url, withoutExtension) {
-    if (!url) return null;
+    if (!url) return "";
 
     var filename;
 

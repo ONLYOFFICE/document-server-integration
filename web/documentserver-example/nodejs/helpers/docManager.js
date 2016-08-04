@@ -178,6 +178,7 @@ docManager.getCallback = function (fileName) {
 };
 
 docManager.storagePath = function (fileName, userAddress) {
+    fileName = fileUtility.getFileName(fileName);
     var directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
     this.createDirectory(directory);
     return path.join(directory, fileName);
