@@ -185,10 +185,10 @@ app.get("/convert", function (req, res) {
 
     var callback = function (err, data) {
         if (err) {
-            if (err.name === "ConnectionTimeoutError") {
+            if (err.name === "ConnectionTimeoutError" || err.name === "ResponseTimeoutError") {
                 writeResult(fileName, 0, null);
             } else {
-                writeResult(null, null, err);
+                writeResult(null, null, JSON.stringify(err));
             }
             return;
         }
