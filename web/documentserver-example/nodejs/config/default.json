@@ -102,7 +102,6 @@
             ],
             "isViewer": true,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": true,
             "isModal": true,
@@ -132,7 +131,6 @@
             ],
             "isViewer": false,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": false,
             "isModal": false,
@@ -301,7 +299,6 @@
             ],
             "isViewer": false,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": false,
             "isModal": false,
@@ -382,7 +379,7 @@
 
 			"icons"           : ["translate/icon.png", "translate/icon@2x.png"],
 			"isViewer"        : true,
-			"EditorsSupport"  : ["word", "cell", "slide"],
+			"EditorsSupport"  : [],
 
 			"isVisual"        : true,
 			"isModal"         : false,
@@ -410,7 +407,7 @@
 
           "icons"           : ["templates/icon.png", "templates/icon@2x.png"],
           "isViewer"        : true,
-          "EditorsSupport"  : ["word"],
+          "EditorsSupport"  : [],
 
           "isVisual"        : true,
           "isModal"         : false,
