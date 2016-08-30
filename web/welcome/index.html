@@ -72,6 +72,17 @@
         </div>
         <br>
         <div class="help-block">
+            <span>Have license?</span>
+            <br>
+            If you bought Document Server and received the license.lic file, you can place it to your installation to obtain the software full version. In case you are a Debian based Linux distributive user, the license file is placed to the following folder: 
+            <pre>/var/www/onlyoffice/Data/license.lic</pre>
+            In case you are using the docker container, the license.lic file can be placed to any folder (e.g. /opt/onlyoffice/Data/license.lic), but you will need to mount this folder when the container starts:
+            <pre>docker run -itd -p 80:80 \
+-v /opt/onlyoffice/Data:/var/www/onlyoffice/Data \
+onlyoffice4enterprise/documentserver-ee</pre>
+        </div>
+        <br>
+        <div class="help-block">
             <span>Any questions?</span>
             <br>
             Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
