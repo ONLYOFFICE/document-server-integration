@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--*
+ *
+ * (c) Copyright Ascensio System Limited 2010-2016
+ *
+ * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
+ * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
+ * In accordance with Section 7(a) of the GNU GPL its Section 15 shall be amended to the effect that 
+ * Ascensio System SIA expressly excludes the warranty of non-infringement of any third-party rights.
+ *
+ * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR
+ * FITNESS FOR A PARTICULAR PURPOSE. For more details, see GNU GPL at https://www.gnu.org/copyleft/gpl.html
+ *
+ * You can contact Ascensio System SIA by email at sales@onlyoffice.com
+ *
+ * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
+ * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
+ *
+ * Pursuant to Section 7 § 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
+ * relevant author attributions when distributing the software. If the display of the logo in its graphic 
+ * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
+ * in every copy of the program you distribute. 
+ * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ *
+*-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <title>ONLYOFFICE™ Integration Edition</title>
+    <link href="css/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+</head>
+<body>
+    <header>
+        <a href="">
+            <img src="css/logo.png" alt="ONLYOFFICE™">
+        </a>
+    </header>
+    <div class="main-panel">
+        <span class="portal-name">ONLYOFFICE™ Integration Edition – Welcome!</span>
+        <br>
+        <br>
+        <span class="portal-descr">Congratulations! Your Document Server has successfully started. Now you can integrate ONLYOFFICE™ collaborative online document editing into your Web Application and use this Integration Edition to open, edit and save your own documents with the most popular file formats, such as .DOCX, .XLSX, .PPTX, etc. Our editors are fully implemented in HTML5!</span>
+        <ul class="features-list">
+            <li>Open, Edit and Save existing documents for in-browser editing using ONLYOFFICE™ Server documents.</li>
+            <li>Collaborative co-editing functions – chat, comments and other multi-user features.</li>
+            <li>Use of Auto-save function.</li>
+            <li>All editing operations are processed on this virtual machine. Your documents stay under your complete control.</li>
+        </ul>
+        <br>
+        <div class="help-block">
+            <span>Want to learn the magic?</span>
+            <br>
+            Explore ONLYOFFICE™ Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
+        </div>
+        <br>
+        <div class="help-block">
+            <span>Still not sure where to start?</span>
+            <br>
+            Give a try to our test example which will allow you to upload your own local Office files from your computer for testing. It can be easily run with the following commands:
+
+            <pre>sudo docker exec $(sudo docker ps -q) sudo supervisorctl start onlyoffice-documentserver:example</pre>
+
+            Add the example to the autostart:
+            <pre>sudo docker exec $(sudo docker ps -q) sudo sed 's,autostart=false,autostart=true,' -i /etc/supervisor/conf.d/onlyoffice-documentserver-example.conf</pre>
+
+            Once started the example will be available <a href="/example">here</a>.
+            <br>
+            Please note, that the example is used for demonstration purposes only and it can be accessed by anyone. Once you finish examining it, we recommend that you disable this example for security reasons.
+        </div>
+        <br>
+        <div class="help-block">
+            <span>Have license?</span>
+            <br>
+            If you bought Document Server and received the license.lic file, you can place it to your installation to obtain the software full version. In case you are a Debian based Linux distributive user, the license file is placed to the following folder: 
+            <pre>/var/www/onlyoffice/Data/license.lic</pre>
+            In case you are using the docker container, the license.lic file can be placed to any folder (e.g. /opt/onlyoffice/Data/license.lic), but you will need to mount this folder when the container starts:
+            <pre>docker run -itd -p 80:80 \
+-v /opt/onlyoffice/Data:/var/www/onlyoffice/Data \
+onlyoffice4enterprise/documentserver-ee</pre>
+        </div>
+        <br>
+        <div class="help-block">
+            <span>Any questions?</span>
+            <br>
+            Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
+        </div>
+    </div>
+
+    <footer>© Ascensio Systems Inc 2016. All rights reserved.</footer>
+</body>
+</html>
