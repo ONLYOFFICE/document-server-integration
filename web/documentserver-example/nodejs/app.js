@@ -160,7 +160,7 @@ app.post("/upload", function (req, res) {
 
 app.get("/convert", function (req, res) {
 
-    var fileName = req.query.filename;
+    var fileName = fileUtility.getFileName(req.query.filename);
     var fileUri = docManager.getFileUri(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
@@ -185,12 +185,12 @@ app.get("/convert", function (req, res) {
 
     var callback = function (err, data) {
         if (err) {
-            if (err.name === "ConnectionTimeoutError") {
+            if (err.name === "ConnectionTimeoutError" || err.name === "ResponseTimeoutError") {
                 writeResult(fileName, 0, null);
-                return;
             } else {
-                throw { message: err };
+                writeResult(null, null, JSON.stringify(err));
             }
+            return;
         }
 
         try {
@@ -240,7 +240,7 @@ app.delete("/file", function (req, res) {
     try {
         docManager.init(__dirname, req, res);
 
-        var fileName = req.query.filename;
+        var fileName = fileUtility.getFileName(req.query.filename);
 
         var filePath = docManager.storagePath(fileName)
         fileSystem.unlinkSync(filePath);
@@ -276,7 +276,7 @@ app.post("/track", function (req, res) {
     docManager.init(__dirname, req, res);
 
     var userAddress = req.query.useraddress;
-    var fileName = req.query.filename;
+    var fileName = fileUtility.getFileName(req.query.filename);
     var version = 0;
 
     var processTrack = function (response, body, fileName, userAddress) {
@@ -401,7 +401,7 @@ app.get("/editor", function (req, res) {
         }
 
         var userAddress = docManager.curUserHostAddress();
-        fileName = req.query.fileName;
+        fileName = fileUtility.getFileName(req.query.fileName);
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit 

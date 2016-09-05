@@ -1,4 +1,6 @@
 
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](http://www.gnu.org/licenses/agpl-3.0.ru.html) ![Release](https://img.shields.io/badge/Release-v4.1.0-blue.svg?style=flat)
+
 ## Document Server integration example
 
 These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby. 
@@ -15,10 +17,11 @@ SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.
 
 ## User Feedback and Support
 
-If you have any problems with or questions about [ONLYOFFICE Document Server][2], please visit our official forum to find answers to your questions: [dev.onlyoffice.org][1].
+If you have any problems with or questions about [ONLYOFFICE Document Server][2], please visit our official forum to find answers to your questions: [dev.onlyoffice.org][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][3].
 
   [1]: http://dev.onlyoffice.org
   [2]: https://github.com/ONLYOFFICE/DocumentServer
+  [3]: http://stackoverflow.com/questions/tagged/onlyoffice
   
 ## License
 
