@@ -29,6 +29,50 @@
   "plugins": {
     "url": "../../../../sdkjs-plugins/",
     "pluginsData": [
+	
+		{
+			"name"       : "hello world",
+			"guid"       : "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}",
+			"baseUrl"    : "",
+			"variations" : [
+				{
+					"description"         : "hello world",
+					"url"                 : "helloworld/index.html",
+					"icons"               : ["helloworld/icon.png", "helloworld/icon@2x.png"],
+					"isViewer"            : false,
+					"EditorsSupport"      : ["word"],
+					"isVisual"            : false,
+					"isModal"             : true,
+					"isInsideMode"        : false,
+					"initDataType"        : "none",
+					"initData"            : "",
+					"isUpdateOleOnResize" : true,
+					"buttons"             : []
+				},
+				{
+					"description"         : "About",
+					"url"                 : "helloworld/index_about.html",
+					"icons"               : ["helloworld/icon.png", "helloworld/icon@2x.png"],
+					"isViewer"            : false,
+					"EditorsSupport"      : ["word"],
+					"isVisual"            : true,
+					"isModal"             : true,
+					"isInsideMode"        : false,
+					"initDataType"        : "none",
+					"initData"            : "",
+					"isUpdateOleOnResize" : true,
+					"buttons"         : [
+						{
+							"text": "Ok",
+							"primary": true
+						}
+					],
+
+					"size" : [392, 147]
+				}
+			]
+		},
+	
       {
         "name": "chess (fen)",
         "guid": "asc.{FFE1F462-1EA2-4391-990D-4CC84940B754}",
@@ -43,6 +87,7 @@
             "isViewer": true,
             "EditorsSupport": [
               "word",
+			  "cell",
               "slide"
             ],
             "isVisual": true,
@@ -72,6 +117,7 @@
             "isViewer": true,
             "EditorsSupport": [
               "word",
+			  "cell",
               "slide"
             ],
             "isVisual": true,
@@ -102,7 +148,6 @@
             ],
             "isViewer": true,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": true,
             "isModal": true,
@@ -132,7 +177,6 @@
             ],
             "isViewer": false,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": false,
             "isModal": false,
@@ -183,6 +227,7 @@
             "isViewer": true,
             "EditorsSupport": [
               "word",
+			  "cell",
               "slide"
             ],
             "isVisual": true,
@@ -234,60 +279,61 @@
         ]
       },
       {
-        "name": "ocr(Tesseract.js)",
-        "guid": "asc.{440EBF13-9B19-4BD8-8621-05200E58140B}",
-        "baseUrl": "",
-        "variations": [
-           {
-            "description" : "ocr",
-            "url"         : "ocr/index.html",
+		"name" : "OCR",
+		"guid" : "asc.{440EBF13-9B19-4BD8-8621-05200E58140B}",
+		"baseUrl" : "",
 
-            "icons"           : ["ocr/icon.png", "ocr/icon@2x.png"],
-            "isViewer"        : false,
-            "EditorsSupport"  : ["word"],
+		"variations" : [
+			{
+				"description" : "ocr",
+				"url"         : "ocr/index.html",
 
-            "isVisual"        : true,
-            "isModal"         : true,
-            "isInsideMode"    : false,
+				"icons"           : ["ocr/icon.png", "ocr/icon@2x.png"],
+				"isViewer"        : false,
+				"EditorsSupport"  : ["word"],
 
-            "initDataType"    : "none",
-            "initData"        : "",
+				"isVisual"        : true,
+				"isModal"         : true,
+				"isInsideMode"    : false,
 
-            "isUpdateOleOnResize" : false,
+				"initDataType"    : "none",
+				"initData"        : "",
 
-            "buttons"         : [ { "text": "Insert Text", "primary": true},
-                { "text": "Cancel", "primary": false } ],
+				"isUpdateOleOnResize" : false,
 
-            "size" : [592, 100]
-        },
-        {
-            "description" : "About",
-            "url"         : "ocr/index_about.html",
+				"buttons"         : [ { "text": "Insert Text", "primary": true},
+					{ "text": "Cancel", "primary": false } ],
 
-            "icons"           : ["ocr/icon.png", "ocr/icon@2x.png"],
-            "isViewer"        : false,
-            "EditorsSupport"  : ["word"],
+				"size" : [592, 100]
+			},
+			{
+				"description" : "About",
+				"url"         : "ocr/index_about.html",
 
-            "isVisual"        : true,
-            "isModal"         : true,
-            "isInsideMode"    : false,
+				"icons"           : ["ocr/icon.png", "ocr/icon@2x.png"],
+				"isViewer"        : false,
+				"EditorsSupport"  : ["word"],
 
-            "initDataType"    : "none",
-            "initData"        : "",
+				"isVisual"        : true,
+				"isModal"         : true,
+				"isInsideMode"    : false,
 
-            "isUpdateOleOnResize" : false,
+				"initDataType"    : "none",
+				"initData"        : "",
 
-            "buttons"         : [
-                {
-					"text": "Ok",
-					"primary": true
-				}
-			  ],
+				"isUpdateOleOnResize" : false,
 
-            "size" : [392, 147]
-        }
-        ]
-      },
+				"buttons"         : [
+					{
+						"text": "Ok",
+						"primary": true
+					}
+				],
+
+				"size" : [392, 147]
+			}
+		]
+	},
       {
         "name": "Yandex Translate to Russian",
         "guid": "asc.{D3E759F7-3947-4BD6-B066-E184BBEDC675}",
@@ -301,7 +347,6 @@
             ],
             "isViewer": false,
             "EditorsSupport": [
-              "word"
             ],
             "isVisual": false,
             "isModal": false,
@@ -382,7 +427,7 @@
 
 			"icons"           : ["translate/icon.png", "translate/icon@2x.png"],
 			"isViewer"        : true,
-			"EditorsSupport"  : ["word", "cell", "slide"],
+			"EditorsSupport"  : [],
 
 			"isVisual"        : true,
 			"isModal"         : false,
@@ -410,7 +455,7 @@
 
           "icons"           : ["templates/icon.png", "templates/icon@2x.png"],
           "isViewer"        : true,
-          "EditorsSupport"  : ["word"],
+          "EditorsSupport"  : [],
 
           "isVisual"        : true,
           "isModal"         : false,
