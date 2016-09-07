@@ -74,40 +74,11 @@ header img {
     margin-bottom: 20px;
     width: 600px;
 }
-.save-original {
-    margin-left: 30px;
-}
 label .checkbox {
     margin: 0 5px 3px 0;
     vertical-align: middle;
 }
-.question {
-    background: url("../images/question_small.png") no-repeat center center transparent;
-    cursor: pointer;
-    display: inline-block;
-    height: 16px;
-    margin-bottom: -4px;
-    width: 16px;
-}
-#hint {
-    background-color: #FFFFFF;
-    border: 1px solid #8E908F;
-    display: none;
-    margin: 4px 0 0 -32px;
-    max-width: 415px;
-    padding: 10px 15px 15px;
-    word-wrap: break-word;
-    z-index: 255;
-}
-.corner {
-    background: url("../images/corner.png") no-repeat scroll 0 0 transparent;
-    height: 6px;
-    left: 35px;
-    margin-top: -15px;
-    position: absolute;
-    width: 9px;
-    z-index: 261;
-}
+
 .try-descr {
     font-size: 16px;
     white-space : nowrap;
