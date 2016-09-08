@@ -96,8 +96,9 @@ app.get("/", function (req, res) {
 
     }
     catch (ex) {
+        console.log(ex);
         res.status(500);
-        res.render("error", { message: ex.message, error: ex });
+        res.render("error", { message: "Server error" });
         return;
     }
 });
@@ -220,7 +221,8 @@ app.get("/convert", function (req, res) {
 
             writeResult(correctName, null, null);
         } catch (e) {
-            writeResult(null, null, e.message);
+            console.log(e);
+            writeResult(null, null, "Server error");
         }
     };
 
@@ -232,7 +234,8 @@ app.get("/convert", function (req, res) {
             writeResult(fileName, null, null);
         }
     } catch (ex) {
-        writeResult(null, null, ex.message);
+        console.log(ex);
+        writeResult(null, null, "Server error");
     }
 });
 
@@ -266,7 +269,8 @@ app.delete("/file", function (req, res) {
 
         res.write("{\"success\":true}");
     } catch (ex) {
-        res.write(JSON.stringify(ex));
+        console.log(ex);
+        res.write("Server error");
     }
     res.end();
 });
@@ -293,6 +297,7 @@ app.post("/track", function (req, res) {
                 try {
                     downloadUri = documentService.getConvertedUri(downloadUri, downloadExt, curExt, key);
                 } catch (ex) {
+                    console.log(ex);
                     fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress)
                 }
             }
@@ -336,6 +341,7 @@ app.post("/track", function (req, res) {
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(path, file.getBody());
             } catch (ex) {
+                console.log(ex);
             }
         }
 
@@ -347,6 +353,7 @@ app.post("/track", function (req, res) {
                     try {
                         documentService.commandRequest("forcesave", key);
                     } catch (ex) {
+                        console.log(ex);
                     }
                 }
             }
@@ -474,8 +481,9 @@ app.get("/editor", function (req, res) {
         res.render("editor", argss);
     }
     catch (ex) {
+        console.log(ex);
         res.status(500);
-        res.render("error", { message: ex.message, error: ex });
+        res.render("error", { message: "Server error" });
     }
 });
 
