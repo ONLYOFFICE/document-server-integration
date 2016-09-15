@@ -81,7 +81,7 @@
             docEditor.setHistoryData({
                         version: version,
                         url: url_arr[version-1] != "" ? url_arr[version-1]: null,
-                        urlDiff: urlDiff_arr[version-1] != "" ? urlDiff_arr[version-1]: null, 
+                        urlDiff: urlDiff_arr[version-1] != "" ? urlDiff_arr[version-1]: null
                     });
         };
 
@@ -158,7 +158,7 @@
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", connectEditor);
+            window.attachEvent("onload", connectEditor);
         }
 
     </script>
