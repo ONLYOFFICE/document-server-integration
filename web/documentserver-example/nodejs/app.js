@@ -152,7 +152,6 @@ app.post("/upload", function (req, res) {
                 var lastname = req.query.lastname ? req.query.lastname : "Smith";
 
                 docManager.saveFileData(file.name, userid, firstname + " " + lastname);
-                docManager.getFileData(file.name, docManager.curUserHostAddress());
             }
             res.end();
         });
