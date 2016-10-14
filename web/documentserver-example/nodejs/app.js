@@ -324,10 +324,10 @@ app.post("/track", function (req, res) {
                         fileSystem.writeFileSync(path_changes, diffZip.getBody());
                     }
 
-                    var changeshistory = body.changeshistory;
+                    var changeshistory = body.history || body.changeshistory;
                     if (changeshistory) {
                         var path_changes_json = docManager.changesPath(fileName, userAddress, version);
-                        fileSystem.writeFileSync(path_changes_json, body.changeshistory);
+                        fileSystem.writeFileSync(path_changes_json, changeshistory);
                     }
 
                     var path_key = docManager.keyPath(fileName, userAddress, version);
