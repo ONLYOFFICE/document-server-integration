@@ -330,18 +330,17 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
     var userAddress = docManager.curUserHostAddress();
     var username = content ? (oldVersion ? contentJson.username : contentJson.user.name) : (docManager.getFileData(fileName, userAddress))[2];
     var userid = content ? (oldVersion ? contentJson.userid : contentJson.user.id) : (docManager.getFileData(fileName, userAddress))[1];
-    var date = content ? (oldVersion ? contentJson.date : contentJson.created) : (docManager.getFileData(fileName, userAddress))[0];
-
-    return {
-        key: keyVersion,
-        version: version,
-        created: date,
-        user: {
-            id: userid,
-            name: username
-        },
-        changes: content
+    var created = content ? (oldVersion ? contentJson.date : contentJson.created) : (docManager.getFileData(fileName, userAddress))[0];
+    var res = (content && !oldVersion) ? content : {changes: content};
+    res.key = keyVersion;
+    res.version = version;
+    res.created = created;
+    res.user = {
+        id: userid,
+        name: username
     };
+
+    return res;
 };
 
 module.exports = docManager;
