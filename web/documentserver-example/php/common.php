@@ -140,7 +140,7 @@ function getClientIp() {
 }
 
 function serverPath() {
-    return $_SERVER['HTTP_REFERER'];
+    return 'http://' . $_SERVER['HTTP_HOST'];
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
@@ -197,7 +197,7 @@ function getVirtualPath() {
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
 
-    $virtPath = rtrim(serverPath(), '/') . '/' . $storagePath . getCurUserHostAddress() . '/';
+    $virtPath = serverPath() . '/' . $storagePath . getCurUserHostAddress() . '/';
     sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
     return $virtPath;
 }

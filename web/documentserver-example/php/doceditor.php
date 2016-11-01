@@ -90,7 +90,7 @@
     }
 
     function getCallbackUrl($fileName) {
-        return rtrim(serverPath(), '/') . '/'
+        return serverPath() . '/'
                     . "webeditor-ajax.php"
                     . "?type=track&userAddress=" . getClientIp()
                     . "&fileName=" . urlencode($fileName);
@@ -214,7 +214,7 @@
                             about: true,
                             feedback: true,
                             goback: {
-                                url: "<?php echo rtrim(serverPath(), '/') ?>/index.php",
+                                url: "<?php echo serverPath() ?>/index.php",
                             },
                         },
                     },
