@@ -76,13 +76,13 @@
         var onRequestHistoryData = function (data) {
             var version = data.data;
             var url_arr = "<%= setHistoryData.url %>".split(",");
-            var urlDiff_arr = "<%= setHistoryData.urlDiff %>".split(",");
+            var changesUrl_arr = "<%= setHistoryData.changesUrl %>".split(",");
 
             docEditor.setHistoryData({
-                        version: version,
-                        url: url_arr[version-1] != "" ? url_arr[version-1]: null,
-                        urlDiff: urlDiff_arr[version-1] != "" ? urlDiff_arr[version-1]: null
-                    });
+                version: version,
+                url: url_arr[version - 1] != "" ? url_arr[version - 1] : null,
+                changesUrl: changesUrl_arr[version - 1] != "" ? changesUrl_arr[version - 1] : null
+            });
         };
 
         var onRequestHistoryClose = function (event){

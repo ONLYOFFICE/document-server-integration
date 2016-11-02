@@ -473,7 +473,7 @@ app.get("/editor", function (req, res) {
             history: history,
             setHistoryData: {
                 url: prevUrl,
-                urlDiff: diff
+                changesUrl: diff
             }
         };
 
