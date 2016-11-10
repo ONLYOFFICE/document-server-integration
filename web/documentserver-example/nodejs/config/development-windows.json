@@ -2,5 +2,21 @@
   "server": {
     "port": 80,
     "siteUrl": "http://127.0.0.1:8001/"
+  },
+  "plugins": {
+    "pluginsData": [
+		"helloworld/config.json",
+		"chess/config.json",
+		"glavred/config.json",
+		"speech/config.json",
+		"youtube/config.json",
+		"cbr/config.json",
+		"num2word/config.json",
+		"ocr/config.json",
+		"yandextranslaterus/config.json",
+		"clipart/config.json",
+		"translate/config.json",
+		"templates/config.json"
+    ]
   }
 }

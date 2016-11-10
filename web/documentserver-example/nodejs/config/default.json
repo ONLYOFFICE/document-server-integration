@@ -33,7 +33,6 @@
 		"speech/config.json",
 		"youtube/config.json",
 		"cbr/config.json",
-		"num2word/config.json",
 		"ocr/config.json",
 		"clipart/config.json"
     ]
