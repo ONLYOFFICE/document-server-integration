@@ -1,7 +1,19 @@
 {
   "server": {
     "siteUrl": "/",
-    "maxFileSize": 104857600
+    "maxFileSize": 104857600,
+    "static":[
+      {
+        "name": "/public",
+        "path": "public",
+        "options": {"maxAge": "7d"}
+      },
+      {
+        "name": "/sdkjs-plugins",
+        "path": "sdkjs-plugins",
+        "options": {"maxAge": "7d"}
+      }
+    ]
   },
   "plugins": {
     "url": "/sdkjs-plugins/"

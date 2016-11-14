@@ -74,6 +74,13 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.static(path.join(__dirname, "public")));
+if (config.has('server.static')) {
+  var staticContent = config.get('server.static');
+  for (var i = 0; i < staticContent.length; ++i) {
+    var staticContentElem = staticContent[i];
+    app.use(staticContentElem['name'], express.static(staticContentElem['path'], staticContentElem['options']));
+  }
+}
 app.use(favicon(__dirname + "/public/images/favicon.ico"));
 
 

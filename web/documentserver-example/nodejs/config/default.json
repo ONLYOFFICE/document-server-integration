@@ -23,7 +23,13 @@
     "editedDocs": [".docx", ".doc", ".odt", ".xlsx", ".xls", ".ods", ".csv", ".pptx", ".ppsx", ".rtf", ".txt", ".mht", ".html", ".htm"],
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
-    "maxFileSize": 1073741824
+    "maxFileSize": 1073741824,
+    "static":[
+      {
+        "name": "/public",
+        "path": "public"
+      }
+    ]
   },
   "plugins": {
     "url": "../../../../sdkjs-plugins/",
