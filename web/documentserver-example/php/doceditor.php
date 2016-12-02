@@ -42,11 +42,11 @@
     {
         $filename = $_GET["fileID"];
     }
-    $type = $_GET["type"];
+    $createExt = $_GET["fileExt"];
 
-    if (!empty($type))
+    if (!empty($createExt))
     {
-        $filename = tryGetDefaultByType($type);
+        $filename = tryGetDefaultByType($createExt);
 
         $new_url = "doceditor.php?fileID=" . $filename;
         header('Location: ' . $new_url, true);
@@ -56,24 +56,8 @@
     $fileuri = FileUri($filename);
 
 
-    function tryGetDefaultByType($type) {
-        $ext;
-        switch ($type)
-        {
-            case "document":
-                $ext = ".docx";
-                break;
-            case "spreadsheet":
-                $ext = ".xlsx";
-                break;
-            case "presentation":
-                $ext = ".pptx";
-                break;
-            default:
-                return;
-        }
-
-        $demoName = "demo" . $ext;
+    function tryGetDefaultByType($createExt) {
+        $demoName = "demo." . $createExt;
         $demoFilename = GetCorrectName($demoName);
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
@@ -168,7 +152,7 @@
                     width: "100%",
                     height: "100%",
 
-                    type: "<?php echo ($_GET["action"] != "embedded" ?  "desktop" : "embedded") ?>",
+                    type: "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : "desktop")) ?>",
                     documentType: "<?php echo getDocumentType($filename) ?>",
                     document: {
                         title: fileName,

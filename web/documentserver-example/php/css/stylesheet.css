@@ -67,7 +67,7 @@ header img {
     width: 100%;
 }
 .main-panel {
-    margin: 80px auto;
+    margin: 80px auto 16px;
     width: 600px;
 }
 .portal-name {
@@ -279,11 +279,11 @@ label .checkbox {
     position: absolute;
     visibility: hidden;
 }
-.bottom-panel {
-    bottom: 0;
-    position: fixed;
+footer {
     text-align: right;
-    width: 100%;
+    width: auto;
+    margin-bottom: 15px;
+    margin-right: 15px;
 }
 .help-block span {
     font-size: 16px;
@@ -380,4 +380,102 @@ label .checkbox {
     height: 0;
     clear: both;
     visibility: hidden;
+}
+
+.td100 {
+    width: 100%;
+}
+
+.block-lang {
+    padding-right: 10px;
+    padding-top: 9px;
+} 
+/*Icon table*/
+#tableRow {
+    vertical-align: top;
+}
+.tableRow {
+    background: transparent;
+
+    -moz-transition: all 0.2s ease-in-out;
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+.tableRow:hover {
+    background-color: #ebebeb;
+}
+
+.tableHeader {
+    background: transparent;
+    color: #333;
+    cursor: default;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    height: 40px;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.tableHeaderCell {
+    padding: 2px 1px 2px 5px;
+    text-align: center;
+}
+.tableHeaderCellFileName {
+    text-align: left;
+}
+.contentCells {
+    padding: 4px 1px 4px 5px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.contentCells-shift {
+    padding-right: 30px;
+}
+.contentCells-icon {
+    width: 6%;
+}
+.contentCellsSmall {
+    padding: 5px 1px 5px 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    text-align: center;
+}
+.primaryRow {
+    background-color: #e9e9e9;
+}
+.secondaryRow {
+    background-color: #F9F9F9;
+}
+.select-user {
+    margin-left: 15px;
+}
+.user-block-table {
+    height: 100%;
+    width: 100%;
+}
+.user-block-table td {
+    background-color: #F4F4F4;
+    border-bottom: 1px solid white;
+    padding: 12px 0;
+}
+#user, #language {
+    width: 130px;
+}
+.icon-download {
+    margin-bottom: -5px;
+}
+.icon-delete {
+    cursor: pointer;
+    margin-bottom: -6px;
 }

@@ -73,10 +73,10 @@
             </a>
         </header>
         <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE™ Online Editors</span>
+            <span class="portal-name">ONLYOFFICE™ Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
             <div class="file-upload button gray">
                 <span>Choose file</span>
@@ -91,38 +91,81 @@
             <br />
             <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
             <ul class="try-editor-list">
-                <li><a class="try-editor document" href="doceditor.php?type=document" target="_blank">Create<br />Sample Document</a></li>
-                <li><a class="try-editor spreadsheet" href="doceditor.php?type=spreadsheet" target="_blank">Create<br />Sample Spreadsheet</a></li>
-                <li><a class="try-editor presentation" href="doceditor.php?type=presentation" target="_blank">Create<br />Sample Presentation</a></li>
+                <li><a class="try-editor document" href="doceditor.php?fileExt=docx" target="_blank">Create<br />Sample Document</a></li>
+                <li><a class="try-editor spreadsheet" href="doceditor.php?fileExt=xlsx" target="_blank">Create<br />Sample Spreadsheet</a></li>
+                <li><a class="try-editor presentation" href="doceditor.php?fileExt=pptx" target="_blank">Create<br />Sample Presentation</a></li>
             </ul>
 
             <div class="help-block">
                 <span>Your documents</span>
                 <br />
                 <br />
-                <ul class="stored-list">
-                <?php $storedFiles = getStoredFiles();
-                    foreach ($storedFiles as &$storeFile) 
-                    {
-                        echo '<li class="clearFix">';
-                        echo '<a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
-                        echo '<span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
-                        echo '</a>';
-                        echo '<a class="stored-download" href="'.$storeFile->url.'">Download</a>';
-                        echo '</li>';
-                    }
-                ?>
-                </ul>
+
+                <div class="stored-list">
+                    <div id="UserFiles">  
+                        <table cellspacing="0" cellpadding="0" width="100%">
+                            <thead>
+                                <tr class="tableHeader">
+                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                    <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="3" class="tableHeaderCell">Viewers</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php $storedFiles = getStoredFiles();
+                                foreach ($storedFiles as &$storeFile) 
+                                {
+                                    echo '<tr class="tableRow" title'.$storeFile->name.'>';
+                                    echo ' <td class="contentCells">';
+                                    echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
+                                    echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
+                                    echo '  </a>';
+                                    echo '  <a href="'.$storeFile->url.'">';
+                                    echo '   <img class="icon-download" src="css/images/download-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&type=mobile" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&action=view" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&action=view&type=mobile" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&type=embedded" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/embeded-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo '</tr>';
+                                }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
             <br />
             <br />
             <br />
             <div class="help-block">
-                <span>Want to learn how it works?</span>
-
+                <span>Want to learn the magic?</span>
                 <br />
-                Read the editor <a href="http://api.onlyoffice.com/editors/howitworks">API Documentation</a>
+                Explore ONLYOFFICE™ Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
             </div>
             <br />
             <br />
@@ -130,7 +173,7 @@
             <div class="help-block">
                 <span>Any questions?</span>
                 <br />
-                Please, <a href="mailto:sales@onlyoffice.com">submit your request</a> and we'll help you shortly.
+                Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
             </div>
         </div>
 
@@ -173,7 +216,7 @@
         </div>
 
         <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
-        <div class="bottom-panel">&copy; Ascensio System SIA <?php echo date("Y") ?>. All rights reserved.</div>
+        <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
 
     </form>
     </body>
