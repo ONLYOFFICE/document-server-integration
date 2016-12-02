@@ -299,7 +299,7 @@ label .checkbox {
     max-width: 450px;
     margin-bottom: -6px;
     overflow: hidden;
-    padding: 4px 0 1px 34px;
+    padding: 8px 0 1px 34px;
     text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -316,6 +316,7 @@ label .checkbox {
 .stored-edit span {
     font-size: 12px;
     line-height: 12px;
+    vertical-align: top;
 }
 .stored-edit:hover span {
     text-decoration: underline;

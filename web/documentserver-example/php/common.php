@@ -28,6 +28,7 @@
 <?php
 
 require_once( dirname(__FILE__) . '/config.php' );
+require_once( dirname(__FILE__) . '/functions.php' );
 
 function sendlog($msg, $logFileName) {
     file_put_contents($logFileName, $msg . PHP_EOL, FILE_APPEND);
@@ -249,7 +250,6 @@ function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
 
-
 function GetCorrectName($fileName) {
     $path_parts = pathinfo($fileName);
 
@@ -262,6 +262,13 @@ function GetCorrectName($fileName) {
         $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;
     }
     return $name;
+}
+
+function getDocEditorKey($fileName) {
+    $key = getCurUserHostAddress() . FileUri($fileName);
+    $stat = filemtime(getStoragePath($fileName));
+    $key = $key . $stat;
+    return GenerateRevisionId($key);
 }
 
 ?>

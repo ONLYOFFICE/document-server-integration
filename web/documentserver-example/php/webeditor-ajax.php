@@ -181,7 +181,7 @@ function convert() {
         if ($fileUri == "") {
             $fileUri = FileUri($fileName);
         }
-        $key = GenerateRevisionId($fileUri);
+        $key = getDocEditorKey($fileName);
 
         $newFileUri;
         $result;

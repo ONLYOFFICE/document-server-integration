@@ -85,10 +85,6 @@
         return $demoFilename;
     }
 
-    function getDocEditorKey($fileUri) {
-        return GenerateRevisionId(getCurUserHostAddress() . "/" . basename($fileUri));
-    }
-
     function getCallbackUrl($fileName) {
         return serverPath() . '/'
                     . "webeditor-ajax.php"
@@ -178,7 +174,7 @@
                         title: fileName,
                         url: "<?php echo $fileuri ?>",
                         fileType: fileType,
-                        key: "<?php echo getDocEditorKey($fileuri) ?>",
+                        key: "<?php echo getDocEditorKey($filename) ?>",
 
                         info: {
                             author: "Me",
@@ -214,7 +210,7 @@
                             about: true,
                             feedback: true,
                             goback: {
-                                url: "<?php echo serverPath() ?>/index.php",
+                                url: "<?php echo serverPath() ?>",
                             },
                         },
                     },
