@@ -31,11 +31,6 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/common.php' );
 
 
-function FileUri($file_name) {
-    $uri = getVirtualPath() . $file_name;
-	return $uri;
-}
-
 function GetExternalFileUri($local_uri) {
     $externalUri = '';
 

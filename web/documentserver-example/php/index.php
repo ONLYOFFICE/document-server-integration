@@ -67,7 +67,6 @@
     </head>
     <body>
         <form id="form1">
-
         <div class="top-panel"></div>
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE™ Online Editors</span>
@@ -92,6 +91,26 @@
                 <li><a class="try-editor spreadsheet" href="doceditor.php?type=spreadsheet" target="_blank">Create<br />Sample Spreadsheet</a></li>
                 <li><a class="try-editor presentation" href="doceditor.php?type=presentation" target="_blank">Create<br />Sample Presentation</a></li>
             </ul>
+
+            <div class="help-block">
+                <span>Your documents</span>
+                <br />
+                <br />
+                <ul class="stored-list">
+                <?php $storedFiles = getStoredFiles();
+                    foreach ($storedFiles as &$storeFile) 
+                    {
+                        echo '<li class="clearFix">';
+                        echo '<a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
+                        echo '<span title="'.$storeFile->url.'">'.$storeFile->name.'</span>';
+                        echo '</a>';
+                        echo '<a class="stored-download" href="'.$storeFile->url.'">Download</a>';
+                        echo '</li>';
+                    }
+                ?>
+                </ul>
+            </div>
+
             <br />
             <br />
             <br />

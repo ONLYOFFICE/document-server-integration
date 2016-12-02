@@ -192,6 +192,44 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . $fileName;
 }
 
+function getStoredFiles() {
+    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+
+    $result = array();
+    if ($storagePath != "")
+    {
+        $directory =  $directory  . DIRECTORY_SEPARATOR;
+
+        if (!file_exists($directory) && !is_dir($directory)) {
+            return $result;
+        }
+    }
+
+    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+
+    if (!file_exists($directory) && !is_dir($directory)) {
+        return $result;
+    } 
+
+    $cdir = scandir($directory);
+    foreach ($cdir as $key => $fileName)
+    {
+        if (!in_array($fileName,array(".","..")))
+        {
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName))
+            {
+                $result[] = (object) array(
+                'name' => $fileName,
+                'url' => FileUri($fileName),
+                'documentType' => getDocumentType($fileName)
+                );
+            }
+        }
+    }
+    return $result;
+}
+
 function getVirtualPath() {
     $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
@@ -200,6 +238,11 @@ function getVirtualPath() {
     $virtPath = serverPath() . '/' . $storagePath . getCurUserHostAddress() . '/';
     sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
     return $virtPath;
+}
+
+function FileUri($file_name) {
+    $uri = getVirtualPath() . $file_name;
+    return $uri;
 }
 
 function getFileExts() {
