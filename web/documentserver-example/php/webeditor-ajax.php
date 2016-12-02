@@ -150,14 +150,33 @@ function track() {
 
             $userAddress = $_GET["userAddress"];
             $fileName = $_GET["fileName"];
-            $storagePath = getStoragePath($fileName, $userAddress);
 
             $downloadUri = $data["url"];
+
+            $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
+            $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));
+
+            if ($downloadExt != $curExt) {
+                $key = getDocEditorKey(downloadUri);
+
+                try {
+                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "logs/webedior-ajax.log");
+                    $convertedUri;
+                    $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
+                    $downloadUri = $convertedUri;
+                } catch (Exception $e) {
+                    sendlog("Convert after save ".$e->getMessage(), "logs/webedior-ajax.log");
+                    $result["error"] = "error: " . $e->getMessage();
+                    return $result;
+                }
+            }
+
             $saved = 1;
 
             if (($new_data = file_get_contents($downloadUri))===FALSE){
                 $saved = 0;
             } else {
+                $storagePath = getStoragePath($fileName, $userAddress);
                 file_put_contents($storagePath, $new_data, LOCK_EX);
             }
 
