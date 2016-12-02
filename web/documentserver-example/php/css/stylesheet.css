@@ -48,7 +48,18 @@ div {
 a, a:hover, a:visited {
     color: #333;
 }
+header {
+    height: 44px;
+    background: #3D4A6B;
+    height: 80px;
+    margin: 0 auto;
+    min-width: 600px;
+    width: auto;
+}
 
+header img {
+    margin: 12px 0 0 16px;
+}
 
 .top-panel {
     background: url("images/logo.png") no-repeat 30px center #3D4A6B;

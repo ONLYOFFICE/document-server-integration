@@ -67,7 +67,11 @@
     </head>
     <body>
         <form id="form1">
-        <div class="top-panel"></div>
+        <header>
+            <a href="/">
+                <img src ="css/images/logo.png" alt="ONLYOFFICE™" />
+            </a>
+        </header>
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE™ Online Editors</span>
             <br />
@@ -102,7 +106,7 @@
                     {
                         echo '<li class="clearFix">';
                         echo '<a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
-                        echo '<span title="'.$storeFile->url.'">'.$storeFile->name.'</span>';
+                        echo '<span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
                         echo '</a>';
                         echo '<a class="stored-download" href="'.$storeFile->url.'">Download</a>';
                         echo '</li>';
