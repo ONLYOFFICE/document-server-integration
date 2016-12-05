@@ -29,6 +29,8 @@
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
+
+    $user = $_GET["user"];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,8 +60,6 @@
 
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
 
-        <script type="text/javascript" src="js/jscript.js"></script>
-
         <script type="text/javascript">
             var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
             var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
@@ -77,6 +77,37 @@
             <br />
             <br />
             <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+
+            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="middle" width="30%">
+                        <span class="select-user">Username:</span>
+                        <select class="select-user" id="user">
+                            <option value="0">Jonn Smith</option>
+                            <option value="1">Mark Pottato</option>
+                            <option value="2">Hamish Mitchell</option>
+                        </select>
+                    </td>
+                    <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
+                </tr>
+                <!--<tr>
+                    <td valign="middle" width="30%">
+                        <select class="select-user" id="language">
+                            <option value="en" selected>English</option>
+                            <option value="de">Deutsch</option>
+                            <option value="es">Espanol</option>
+                            <option value="fr">Francais</option>
+                            <option value="it">Italiano</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Русский</option>
+                            <option value="sl">Slovenian</option>
+                        </select>
+                    </td>
+                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE&trade; editors interface.</td>
+                </tr>-->
+            </table>
+            <br />
+        <br />
 
             <div class="help-block">
                 <span>Upload your file or create new file</span>
@@ -97,17 +128,17 @@
                     <div class="create-panel clearFix">
                         <ul class="try-editor-list clearFix">
                             <li>
-                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx">Create
+                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Document</a>
                             </li>
                             <li>
-                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx">Create
+                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Spreadsheet</a>
                             </li>
                             <li>
-                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx">Create
+                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Presentation</a>
                             </li>
@@ -142,7 +173,7 @@
                                 {
                                     echo '<tr class="tableRow" title'.$storeFile->name.'>';
                                     echo ' <td class="contentCells">';
-                                    echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
+                                    echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
                                     echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
                                     echo '  </a>';
                                     echo '  <a href="'.$storeFile->url.'">';
@@ -153,27 +184,27 @@
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
                                     echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-shift contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&type=mobile" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=mobile" target="_blank">';
                                     echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&action=view" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view" target="_blank">';
                                     echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&action=view&type=mobile" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=mobile" target="_blank">';
                                     echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&type=embedded" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=embedded" target="_blank">';
                                     echo '   <img class="icon-download" src="css/images/embeded-24.png" alt="download" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
@@ -241,6 +272,7 @@
         <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
         <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
 
+        <script type="text/javascript" src="js/jscript.js"></script>
     </form>
     </body>
 </html>

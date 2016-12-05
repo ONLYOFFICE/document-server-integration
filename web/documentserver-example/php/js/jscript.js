@@ -26,6 +26,16 @@
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
+    user = getUrlVars()["user"];
+    if ("" != user && undefined != user)
+        jq("#user").val(user);
+    else
+        user = jq("#user").val();
+
+    jq(document).on("change", "#user", function() {
+        window.location = "?user=" + jq(this).val();
+    });
+
     jq(function () {
         jq('#fileupload').fileupload({
             dataType: 'json',
@@ -166,7 +176,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?fileID=" + fileId;
+        var url = "doceditor.php?fileID=" + fileId + "&user=" + user;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -175,7 +185,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=view&fileID=" + fileId;
+        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -184,7 +194,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?type=embedded&fileID=" + fileId;
+        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -238,3 +248,14 @@ if (typeof jQuery != "undefined") {
         });
     });
 }
+
+function getUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+};

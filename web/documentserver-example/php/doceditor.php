@@ -48,7 +48,7 @@
     {
         $filename = tryGetDefaultByType($createExt);
 
-        $new_url = "doceditor.php?fileID=" . $filename;
+        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
         header('Location: ' . $new_url, true);
         exit;
     }
@@ -153,6 +153,8 @@
                 }
             ?>
 
+            var user = [{id:"0","name":"Jonn Smith","firstname":"John","lastname":"Smith"}, {id:"1","name":"Mark Pottato","firstname":"Mark","lastname":"Pottato"}, {id:"2","name":"Hamish Mitchell","firstname":"Hamish","lastname":"Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];            
+
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
                     width: "100%",
@@ -183,11 +185,7 @@
 
                         callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
 
-                        user: {
-                            id: "<?php echo getClientIp() ?>",
-                            firstname: "John",
-                            lastname: "Smith",
-                        },
+                        user: user,
 
                         embedded: {
                             saveUrl: "<?php echo $fileuri ?>",
