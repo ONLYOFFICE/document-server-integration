@@ -140,29 +140,29 @@
                                     <a class="stored-edit <%= storedFiles[i].documentType%>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <span title="<%= storedFiles[i].url %>"><%= storedFiles[i].name %></span></a>
                                     <a href="<%= storedFiles[i].url %>">
-                                        <img class="icon-download" src="images/download-24.png" alt="download" /></a>
+                                        <img class="icon-download" src="images/download-24.png" alt="Download" title="Download" /></a>
                                     <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                        <img class="icon-delete" src="images/delete-24.png" alt="delete" /></a>
+                                        <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="editor" /></a>
+                                        <img src="images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
                                     <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile editor" /></a>
+                                        <img src="images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="viewer" /></a>
+                                        <img src="images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile viewer" /></a>
+                                        <img src="images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/embeded-24.png" alt="embedded" /></a>
+                                        <img src="images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                 </td>
                             </tr>
                         <% } %>
