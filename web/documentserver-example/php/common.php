@@ -145,6 +145,13 @@ function serverPath() {
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
+    if ($GLOBALS['ALONE']) {
+        if (empty($GLOBALS['STORAGE_PATH'])) {
+            return "Storage";
+        } else {
+            return "";
+        }
+    }
     if (is_null($userAddress)) {$userAddress = getClientIp();}
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
