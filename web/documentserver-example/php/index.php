@@ -148,6 +148,9 @@
                                     echo '  <a href="'.$storeFile->url.'">';
                                     echo '   <img class="icon-download" src="css/images/download-24.png" alt="download" /></a>';
                                     echo '  </a>';
+                                    echo '  <a class="delete-file" data="'.$storeFile->name.'">';
+                                    echo '   <img class="icon-delete" src="css/images/delete-24.png" alt="delete" /></a>';
+                                    echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'" target="_blank">';

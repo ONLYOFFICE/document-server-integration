@@ -210,6 +210,22 @@ if (typeof jQuery != "undefined") {
         jq.unblockUI();
     });
 
+    jq(document).on("click", ".delete-file", function () {
+        var fileName = jq(this).attr("data");
+
+        var requestAddress = "webeditor-ajax.php?type=delete&fileName=" + fileName;
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            type: "get",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
     jq(document).on("click", "#createSample", function () {
         jq(".try-editor").each(function () {
             var href = jq(this).attr("href");

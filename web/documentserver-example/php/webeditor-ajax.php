@@ -68,6 +68,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = track();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "delete":
+            $response_array = delete();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -240,6 +244,21 @@ function convert() {
 
     $result["filename"] = $fileName;
     return $result;
+}
+
+function delete() {
+    try {
+        $fileName = $_GET["fileName"];
+
+        $filePath = getStoragePath($fileName);
+
+        unlink($filePath);
+    }
+    catch (Exception $e) {
+        sendlog("Deletion ".$e->getMessage(), "logs/webedior-ajax.log");
+        $result["error"] = "error: " . $e->getMessage();
+        return $result;
+    }
 }
 
 ?>
