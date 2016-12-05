@@ -76,7 +76,13 @@
             <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">This interactive example demonstrates a way to integrate ONLYOFFICE™ collaborative online document editing into your Web Application. Our editors are fully implemented in HTML5! You may upload your own documents for testing, using the "Upload file" button and uploading local Office files from your computer. You can upload the documents with the most popular file formats, such as .DOCX, .XLSX, .PPTX, etc.</span>
+            <ul class="features-list">
+                <li>Open, Edit and Save existing documents for in-browser editing using ONLYOFFICE™ Server documents.</li>
+                <li>Collaborative co-editing functions – chat, comments and other multi-user features.</li>
+                <li>Use of Auto-save function.</li>
+                <li>All editing operations are processed on this virtual machine. Your documents stay under your complete control.</li>
+            </ul>
 
             <div class="file-upload button gray">
                 <span>Choose file</span>
@@ -89,12 +95,18 @@
             <br />
             <br />
             <br />
-            <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
+            <span class="try-descr">Or, you can view and edit sample documents – click on one of the links below.</span>
+
             <ul class="try-editor-list">
-                <li><a class="try-editor document reload-page" href="doceditor.php?fileExt=docx" target="_blank">Create<br />Sample Document</a></li>
-                <li><a class="try-editor spreadsheet reload-page" href="doceditor.php?fileExt=xlsx" target="_blank">Create<br />Sample Spreadsheet</a></li>
-                <li><a class="try-editor presentation reload-page" href="doceditor.php?fileExt=pptx" target="_blank">Create<br />Sample Presentation</a></li>
+                <li><a class="try-editor document reload-page" href="doceditor.php?fileExt=docx" target="_blank">Create <br />Document</a></li>
+                <li><a class="try-editor spreadsheet reload-page" href="doceditor.php?fileExt=xlsx" target="_blank">Create <br />Spreadsheet</a></li>
+                <li><a class="try-editor presentation reload-page" href="doceditor.php?fileExt=pptx" target="_blank">Create <br />Presentation</a></li>
             </ul>
+            <label class="create-sample">
+                <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+            </label>
+            <br />
+            <br />
 
             <div class="help-block">
                 <span>Your documents</span>

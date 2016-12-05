@@ -57,7 +57,7 @@
 
 
     function tryGetDefaultByType($createExt) {
-        $demoName = "demo." . $createExt;
+        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
         $demoFilename = GetCorrectName($demoName);
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
