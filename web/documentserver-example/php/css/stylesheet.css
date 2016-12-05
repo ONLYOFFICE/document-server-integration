@@ -61,11 +61,6 @@ header img {
     margin: 12px 0 0 16px;
 }
 
-.top-panel {
-    background: url("images/logo.png") no-repeat 30px center #3D4A6B;
-    height: 80px;
-    width: 100%;
-}
 .main-panel {
     margin: 80px auto 16px;
     width: 600px;
@@ -94,6 +89,7 @@ label .checkbox {
     cursor: pointer;
     display: inline-block;
     height: 16px;
+    margin-bottom: -4px;
     width: 16px;
 }
 #hint {

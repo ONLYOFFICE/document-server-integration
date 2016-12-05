@@ -192,12 +192,12 @@ if (typeof jQuery != "undefined") {
         jq("#embeddedView").attr("src", url);
     });
 
-    jq(document).on("click", ".try-editor", function () {
+    jq(document).on("click", ".reload-page", function () {
         setTimeout(function () { document.location.reload(); }, 1000);
         return true;
     });
 
-    jq(document).on("mouseup", ".try-editor", function (event) {
+    jq(document).on("mouseup", ".reload-page", function (event) {
         if (event.which == 2) {
             setTimeout(function () { document.location.reload(); }, 1000);
         }

@@ -36,7 +36,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>ONLYOFFICE™</title>
+        <title>ONLYOFFICE Integration Edition</title>
 
         <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
@@ -69,14 +69,14 @@
         <form id="form1">
         <header>
             <a href="/">
-                <img src ="css/images/logo.png" alt="ONLYOFFICE™" />
+                <img src ="css/images/logo.png" alt="ONLYOFFICE" />
             </a>
         </header>
         <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE™ Integration Edition – Welcome!</span>
+            <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
             <div class="file-upload button gray">
                 <span>Choose file</span>
@@ -91,9 +91,9 @@
             <br />
             <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
             <ul class="try-editor-list">
-                <li><a class="try-editor document" href="doceditor.php?fileExt=docx" target="_blank">Create<br />Sample Document</a></li>
-                <li><a class="try-editor spreadsheet" href="doceditor.php?fileExt=xlsx" target="_blank">Create<br />Sample Spreadsheet</a></li>
-                <li><a class="try-editor presentation" href="doceditor.php?fileExt=pptx" target="_blank">Create<br />Sample Presentation</a></li>
+                <li><a class="try-editor document reload-page" href="doceditor.php?fileExt=docx" target="_blank">Create<br />Sample Document</a></li>
+                <li><a class="try-editor spreadsheet reload-page" href="doceditor.php?fileExt=xlsx" target="_blank">Create<br />Sample Spreadsheet</a></li>
+                <li><a class="try-editor presentation reload-page" href="doceditor.php?fileExt=pptx" target="_blank">Create<br />Sample Presentation</a></li>
             </ul>
 
             <div class="help-block">
@@ -165,7 +165,7 @@
             <div class="help-block">
                 <span>Want to learn the magic?</span>
                 <br />
-                Explore ONLYOFFICE™ Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
+                Explore ONLYOFFICE Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
             </div>
             <br />
             <br />
