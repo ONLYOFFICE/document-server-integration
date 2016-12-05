@@ -76,35 +76,48 @@
             <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">This interactive example demonstrates a way to integrate ONLYOFFICE™ collaborative online document editing into your Web Application. Our editors are fully implemented in HTML5! You may upload your own documents for testing, using the "Upload file" button and uploading local Office files from your computer. You can upload the documents with the most popular file formats, such as .DOCX, .XLSX, .PPTX, etc.</span>
-            <ul class="features-list">
-                <li>Open, Edit and Save existing documents for in-browser editing using ONLYOFFICE™ Server documents.</li>
-                <li>Collaborative co-editing functions – chat, comments and other multi-user features.</li>
-                <li>Use of Auto-save function.</li>
-                <li>All editing operations are processed on this virtual machine. Your documents stay under your complete control.</li>
-            </ul>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
-            <div class="file-upload button gray">
-                <span>Choose file</span>
-                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
+            <div class="help-block">
+                <span>Upload your file or create new file</span>
+                <br />
+                <br />
+                <div class="clearFix">
+                    <div class="upload-panel clearFix">
+                        <a class="file-upload">Upload
+                            <br />
+                            File
+                            <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
+                        </a>
+                        <br />
+                        <label class="save-original">
+                            <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Keep file format
+                        </label>
+                    </div>
+                    <div class="create-panel clearFix">
+                        <ul class="try-editor-list clearFix">
+                            <li>
+                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx">Create
+                                    <br />
+                                    Document</a>
+                            </li>
+                            <li>
+                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx">Create
+                                    <br />
+                                    Spreadsheet</a>
+                            </li>
+                            <li>
+                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx">Create
+                                    <br />
+                                    Presentation</a>
+                            </li>
+                        </ul>
+                        <label class="create-sample">
+                            <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+                        </label>
+                    </div>
+                </div>
             </div>
-            <label class="save-original">
-                <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-            </label>
-            <span class="question"></span>
-            <br />
-            <br />
-            <br />
-            <span class="try-descr">Or, you can view and edit sample documents – click on one of the links below.</span>
-
-            <ul class="try-editor-list">
-                <li><a class="try-editor document reload-page" href="doceditor.php?fileExt=docx" target="_blank">Create <br />Document</a></li>
-                <li><a class="try-editor spreadsheet reload-page" href="doceditor.php?fileExt=xlsx" target="_blank">Create <br />Spreadsheet</a></li>
-                <li><a class="try-editor presentation reload-page" href="doceditor.php?fileExt=pptx" target="_blank">Create <br />Presentation</a></li>
-            </ul>
-            <label class="create-sample">
-                <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
-            </label>
             <br />
             <br />
 
@@ -187,11 +200,6 @@
                 <br />
                 Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
             </div>
-        </div>
-
-        <div id="hint">
-            <div class="corner"></div>
-            If you check this option the file will be saved both in the original and converted into Office Open XML format for faster viewing and editing. In other case the document will be overwritten by its copy in Office Open XML format.
         </div>
 
         <div id="mainProgress">

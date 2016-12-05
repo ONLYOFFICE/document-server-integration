@@ -221,9 +221,4 @@ if (typeof jQuery != "undefined") {
             jq(this).attr("href", href);
         });
     });
-
-    jq.dropdownToggle({
-        switcherSelector: ".question",
-        dropdownID: "hint"
-    });
 }
