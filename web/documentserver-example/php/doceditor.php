@@ -40,7 +40,7 @@
     }
     else
     {
-        $filename = $_GET["fileID"];
+        $filename = basename($_GET["fileID"]);
     }
     $createExt = $_GET["fileExt"];
 
@@ -146,6 +146,12 @@
         };
 
         var сonnectEditor = function () {
+
+            <?php
+                if (!file_exists(getStoragePath($filename))) {
+                    echo "alert('File not found'); return;";
+                }
+            ?>
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
