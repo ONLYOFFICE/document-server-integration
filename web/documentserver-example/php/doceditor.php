@@ -40,15 +40,15 @@
     }
     else
     {
-        $filename = $_GET["fileID"];
+        $filename = basename($_GET["fileID"]);
     }
-    $type = $_GET["type"];
+    $createExt = $_GET["fileExt"];
 
-    if (!empty($type))
+    if (!empty($createExt))
     {
-        $filename = tryGetDefaultByType($type);
+        $filename = tryGetDefaultByType($createExt);
 
-        $new_url = "doceditor.php?fileID=" . $filename;
+        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
         header('Location: ' . $new_url, true);
         exit;
     }
@@ -56,24 +56,8 @@
     $fileuri = FileUri($filename);
 
 
-    function tryGetDefaultByType($type) {
-        $ext;
-        switch ($type)
-        {
-            case "document":
-                $ext = ".docx";
-                break;
-            case "spreadsheet":
-                $ext = ".xlsx";
-                break;
-            case "presentation":
-                $ext = ".pptx";
-                break;
-            default:
-                return;
-        }
-
-        $demoName = "demo" . $ext;
+    function tryGetDefaultByType($createExt) {
+        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
         $demoFilename = GetCorrectName($demoName);
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
@@ -83,10 +67,6 @@
         }
 
         return $demoFilename;
-    }
-
-    function getDocEditorKey($fileUri) {
-        return GenerateRevisionId(getCurUserHostAddress() . "/" . basename($fileUri));
     }
 
     function getCallbackUrl($fileName) {
@@ -103,7 +83,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-    <title>ONLYOFFICE™</title>
+    <title>ONLYOFFICE</title>
 
     <style>
         html {
@@ -167,18 +147,26 @@
 
         var сonnectEditor = function () {
 
+            <?php
+                if (!file_exists(getStoragePath($filename))) {
+                    echo "alert('File not found'); return;";
+                }
+            ?>
+
+            var user = [{id:"0","name":"Jonn Smith","firstname":"John","lastname":"Smith"}, {id:"1","name":"Mark Pottato","firstname":"Mark","lastname":"Pottato"}, {id:"2","name":"Hamish Mitchell","firstname":"Hamish","lastname":"Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];            
+
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
                     width: "100%",
                     height: "100%",
 
-                    type: "<?php echo ($_GET["action"] != "embedded" ?  "desktop" : "embedded") ?>",
+                    type: "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : "desktop")) ?>",
                     documentType: "<?php echo getDocumentType($filename) ?>",
                     document: {
                         title: fileName,
                         url: "<?php echo $fileuri ?>",
                         fileType: fileType,
-                        key: "<?php echo getDocEditorKey($fileuri) ?>",
+                        key: "<?php echo getDocEditorKey($filename) ?>",
 
                         info: {
                             author: "Me",
@@ -197,11 +185,7 @@
 
                         callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
 
-                        user: {
-                            id: "<?php echo getClientIp() ?>",
-                            firstname: "John",
-                            lastname: "Smith",
-                        },
+                        user: user,
 
                         embedded: {
                             saveUrl: "<?php echo $fileuri ?>",
@@ -214,7 +198,7 @@
                             about: true,
                             feedback: true,
                             goback: {
-                                url: "<?php echo serverPath() ?>/index.php",
+                                url: "<?php echo serverPath() ?>",
                             },
                         },
                     },

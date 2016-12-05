@@ -28,6 +28,7 @@
 <?php
 
 require_once( dirname(__FILE__) . '/config.php' );
+require_once( dirname(__FILE__) . '/functions.php' );
 
 function sendlog($msg, $logFileName) {
     file_put_contents($logFileName, $msg . PHP_EOL, FILE_APPEND);
@@ -144,6 +145,13 @@ function serverPath() {
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
+    if ($GLOBALS['ALONE']) {
+        if (empty($GLOBALS['STORAGE_PATH'])) {
+            return "Storage";
+        } else {
+            return "";
+        }
+    }
     if (is_null($userAddress)) {$userAddress = getClientIp();}
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
@@ -192,6 +200,44 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . $fileName;
 }
 
+function getStoredFiles() {
+    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+
+    $result = array();
+    if ($storagePath != "")
+    {
+        $directory =  $directory  . DIRECTORY_SEPARATOR;
+
+        if (!file_exists($directory) && !is_dir($directory)) {
+            return $result;
+        }
+    }
+
+    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+
+    if (!file_exists($directory) && !is_dir($directory)) {
+        return $result;
+    } 
+
+    $cdir = scandir($directory);
+    foreach ($cdir as $key => $fileName)
+    {
+        if (!in_array($fileName,array(".","..")))
+        {
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName))
+            {
+                $result[] = (object) array(
+                'name' => $fileName,
+                'url' => FileUri($fileName),
+                'documentType' => getDocumentType($fileName)
+                );
+            }
+        }
+    }
+    return $result;
+}
+
 function getVirtualPath() {
     $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
@@ -202,10 +248,14 @@ function getVirtualPath() {
     return $virtPath;
 }
 
+function FileUri($file_name) {
+    $uri = getVirtualPath() . $file_name;
+    return $uri;
+}
+
 function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
-
 
 function GetCorrectName($fileName) {
     $path_parts = pathinfo($fileName);
@@ -219,6 +269,13 @@ function GetCorrectName($fileName) {
         $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;
     }
     return $name;
+}
+
+function getDocEditorKey($fileName) {
+    $key = getCurUserHostAddress() . FileUri($fileName);
+    $stat = filemtime(getStoragePath($fileName));
+    $key = $key . $stat;
+    return GenerateRevisionId($key);
 }
 
 ?>

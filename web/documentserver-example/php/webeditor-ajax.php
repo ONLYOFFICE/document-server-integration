@@ -68,6 +68,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = track();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "delete":
+            $response_array = delete();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -150,14 +154,33 @@ function track() {
 
             $userAddress = $_GET["userAddress"];
             $fileName = $_GET["fileName"];
-            $storagePath = getStoragePath($fileName, $userAddress);
 
             $downloadUri = $data["url"];
+
+            $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
+            $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));
+
+            if ($downloadExt != $curExt) {
+                $key = getDocEditorKey(downloadUri);
+
+                try {
+                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "logs/webedior-ajax.log");
+                    $convertedUri;
+                    $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
+                    $downloadUri = $convertedUri;
+                } catch (Exception $e) {
+                    sendlog("Convert after save ".$e->getMessage(), "logs/webedior-ajax.log");
+                    $result["error"] = "error: " . $e->getMessage();
+                    return $result;
+                }
+            }
+
             $saved = 1;
 
             if (($new_data = file_get_contents($downloadUri))===FALSE){
                 $saved = 0;
             } else {
+                $storagePath = getStoragePath($fileName, $userAddress);
                 file_put_contents($storagePath, $new_data, LOCK_EX);
             }
 
@@ -181,7 +204,7 @@ function convert() {
         if ($fileUri == "") {
             $fileUri = FileUri($fileName);
         }
-        $key = GenerateRevisionId($fileUri);
+        $key = getDocEditorKey($fileName);
 
         $newFileUri;
         $result;
@@ -221,6 +244,21 @@ function convert() {
 
     $result["filename"] = $fileName;
     return $result;
+}
+
+function delete() {
+    try {
+        $fileName = $_GET["fileName"];
+
+        $filePath = getStoragePath($fileName);
+
+        unlink($filePath);
+    }
+    catch (Exception $e) {
+        sendlog("Deletion ".$e->getMessage(), "logs/webedior-ajax.log");
+        $result["error"] = "error: " . $e->getMessage();
+        return $result;
+    }
 }
 
 ?>

@@ -29,6 +29,8 @@
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
+
+    $user = $_GET["user"];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -36,7 +38,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>ONLYOFFICE™</title>
+        <title>ONLYOFFICE Integration Edition</title>
 
         <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
@@ -58,8 +60,6 @@
 
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
 
-        <script type="text/javascript" src="js/jscript.js"></script>
-
         <script type="text/javascript">
             var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
             var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
@@ -67,39 +67,164 @@
     </head>
     <body>
         <form id="form1">
-
-        <div class="top-panel"></div>
+        <header>
+            <a href="/">
+                <img src ="css/images/logo.png" alt="ONLYOFFICE" />
+            </a>
+        </header>
         <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE™ Online Editors</span>
+            <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
-            <div class="file-upload button gray">
-                <span>Choose file</span>
-                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
+            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="middle" width="30%">
+                        <span class="select-user">Username:</span>
+                        <select class="select-user" id="user">
+                            <option value="0">Jonn Smith</option>
+                            <option value="1">Mark Pottato</option>
+                            <option value="2">Hamish Mitchell</option>
+                        </select>
+                    </td>
+                    <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
+                </tr>
+                <!--<tr>
+                    <td valign="middle" width="30%">
+                        <select class="select-user" id="language">
+                            <option value="en" selected>English</option>
+                            <option value="de">Deutsch</option>
+                            <option value="es">Espanol</option>
+                            <option value="fr">Francais</option>
+                            <option value="it">Italiano</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Русский</option>
+                            <option value="sl">Slovenian</option>
+                        </select>
+                    </td>
+                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE&trade; editors interface.</td>
+                </tr>-->
+            </table>
+            <br />
+        <br />
+
+            <div class="help-block">
+                <span>Upload your file or create new file</span>
+                <br />
+                <br />
+                <div class="clearFix">
+                    <div class="upload-panel clearFix">
+                        <a class="file-upload">Upload
+                            <br />
+                            File
+                            <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
+                        </a>
+                        <br />
+                        <label class="save-original">
+                            <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Keep file format
+                        </label>
+                    </div>
+                    <div class="create-panel clearFix">
+                        <ul class="try-editor-list clearFix">
+                            <li>
+                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
+                                    <br />
+                                    Document</a>
+                            </li>
+                            <li>
+                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
+                                    <br />
+                                    Spreadsheet</a>
+                            </li>
+                            <li>
+                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
+                                    <br />
+                                    Presentation</a>
+                            </li>
+                        </ul>
+                        <label class="create-sample">
+                            <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+                        </label>
+                    </div>
+                </div>
             </div>
-            <label class="save-original">
-                <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-            </label>
-            <span class="question"></span>
             <br />
             <br />
-            <br />
-            <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
-            <ul class="try-editor-list">
-                <li><a class="try-editor document" href="doceditor.php?type=document" target="_blank">Create<br />Sample Document</a></li>
-                <li><a class="try-editor spreadsheet" href="doceditor.php?type=spreadsheet" target="_blank">Create<br />Sample Spreadsheet</a></li>
-                <li><a class="try-editor presentation" href="doceditor.php?type=presentation" target="_blank">Create<br />Sample Presentation</a></li>
-            </ul>
+
+            <div class="help-block">
+                <span>Your documents</span>
+                <br />
+                <br />
+
+                <div class="stored-list">
+                    <div id="UserFiles">  
+                        <table cellspacing="0" cellpadding="0" width="100%">
+                            <thead>
+                                <tr class="tableHeader">
+                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                    <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="3" class="tableHeaderCell">Viewers</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php $storedFiles = getStoredFiles();
+                                foreach ($storedFiles as &$storeFile) 
+                                {
+                                    echo '<tr class="tableRow" title'.$storeFile->name.'>';
+                                    echo ' <td class="contentCells">';
+                                    echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
+                                    echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
+                                    echo '  </a>';
+                                    echo '  <a href="'.$storeFile->url.'">';
+                                    echo '   <img class="icon-download" src="css/images/download-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo '  <a class="delete-file" data="'.$storeFile->name.'">';
+                                    echo '   <img class="icon-delete" src="css/images/delete-24.png" alt="delete" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=mobile" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/desktop-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=mobile" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/mobile-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=embedded" target="_blank">';
+                                    echo '   <img class="icon-download" src="css/images/embeded-24.png" alt="download" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo '</tr>';
+                                }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
             <br />
             <br />
             <br />
             <div class="help-block">
-                <span>Want to learn how it works?</span>
-
+                <span>Want to learn the magic?</span>
                 <br />
-                Read the editor <a href="http://api.onlyoffice.com/editors/howitworks">API Documentation</a>
+                Explore ONLYOFFICE Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
             </div>
             <br />
             <br />
@@ -107,13 +232,8 @@
             <div class="help-block">
                 <span>Any questions?</span>
                 <br />
-                Please, <a href="mailto:sales@onlyoffice.com">submit your request</a> and we'll help you shortly.
+                Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
             </div>
-        </div>
-
-        <div id="hint">
-            <div class="corner"></div>
-            If you check this option the file will be saved both in the original and converted into Office Open XML format for faster viewing and editing. In other case the document will be overwritten by its copy in Office Open XML format.
         </div>
 
         <div id="mainProgress">
@@ -150,8 +270,9 @@
         </div>
 
         <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
-        <div class="bottom-panel">&copy; Ascensio System SIA <?php echo date("Y") ?>. All rights reserved.</div>
+        <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
 
+        <script type="text/javascript" src="js/jscript.js"></script>
     </form>
     </body>
 </html>
