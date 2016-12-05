@@ -76,7 +76,7 @@
             <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
             <table class="user-block-table" cellspacing="0" cellpadding="0">
                 <tr>

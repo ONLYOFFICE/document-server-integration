@@ -23,7 +23,7 @@
  *
 *-->
 
-<%@ Page Title="ONLYOFFICE™" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVC.Models.FileModel>" %>
+<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVC.Models.FileModel>" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
@@ -36,7 +36,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
-    <title><%= Model.FileName + " - ONLYOFFICE™" %></title>
+    <title><%= Model.FileName + " - ONLYOFFICE" %></title>
     
     <%: Styles.Render("~/Content/editor") %>
 

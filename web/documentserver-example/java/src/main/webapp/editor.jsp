@@ -35,7 +35,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>ONLYOFFICE™</title>
+        <title>ONLYOFFICE</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
