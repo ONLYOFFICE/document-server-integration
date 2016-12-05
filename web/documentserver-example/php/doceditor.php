@@ -1,4 +1,5 @@
-<!--*
+<?php
+/*
  *
  * (c) Copyright Ascensio System Limited 2010-2016
  *
@@ -21,7 +22,8 @@
  * in every copy of the program you distribute. 
  * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
  *
-*-->
+*/
+?>
 
 <?php
     require_once( dirname(__FILE__) . '/config.php' );
@@ -88,7 +90,7 @@
     }
 
     function getCallbackUrl($fileName) {
-        return rtrim(serverPath(), '/') . '/'
+        return serverPath() . '/'
                     . "webeditor-ajax.php"
                     . "?type=track&userAddress=" . getClientIp()
                     . "&fileName=" . urlencode($fileName);
@@ -212,7 +214,7 @@
                             about: true,
                             feedback: true,
                             goback: {
-                                url: "<?php echo rtrim(serverPath(), '/') ?>/index.php",
+                                url: "<?php echo serverPath() ?>/index.php",
                             },
                         },
                     },
