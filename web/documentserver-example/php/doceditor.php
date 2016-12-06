@@ -153,7 +153,7 @@
                 }
             ?>
 
-            var user = [{id:"0","name":"Jonn Smith","firstname":"John","lastname":"Smith"}, {id:"1","name":"Mark Pottato","firstname":"Mark","lastname":"Pottato"}, {id:"2","name":"Hamish Mitchell","firstname":"Hamish","lastname":"Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];            
+            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];            
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {

@@ -82,11 +82,8 @@ docManager.getCustomParams = function () {
     var userid = docManager.req.query.userid;
     params += (userid ? "&userid=" + userid : "");
 
-    var firstname = docManager.req.query.firstname;
-    params += (firstname ? "&firstname=" + firstname : "");
-
-    var lastname = docManager.req.query.lastname;
-    params += (lastname ? "&lastname=" + lastname : "");
+    var name = docManager.req.query.name;
+    params += (name ? "&name=" + name : "");
 
     var lang = docManager.req.query.lang;
     params += (lang ? "&lang=" + docManager.getLang() : "");

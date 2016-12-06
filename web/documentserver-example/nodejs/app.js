@@ -155,10 +155,9 @@ app.post("/upload", function (req, res) {
                 res.write("{ \"filename\": \"" + file.name + "\"}");
 
                 var userid = req.query.userid ? req.query.userid : "uid-1";
-                var firstname = req.query.firstname ? req.query.firstname : "Jonn";
-                var lastname = req.query.lastname ? req.query.lastname : "Smith";
+                var name = req.query.name ? req.query.name : "Jonn Smith";
 
-                docManager.saveFileData(file.name, userid, firstname + " " + lastname);
+                docManager.saveFileData(file.name, userid, name);
             }
             res.end();
         });
@@ -402,11 +401,10 @@ app.get("/editor", function (req, res) {
         var diff = [];
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
-        var firstname = req.query.firstname ? req.query.firstname : "Jonn";
-        var lastname = req.query.lastname ? req.query.lastname : "Smith";
+        var name = req.query.name ? req.query.name : "Jonn Smith";
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, firstname + " " + lastname);
+            var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, name);
 
             var redirectPath = docManager.getProtocol() + "://" + docManager.req.get("host") + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();
             res.redirect(redirectPath);
@@ -472,8 +470,7 @@ app.get("/editor", function (req, res) {
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,
-                firstname: firstname,
-                lastname: lastname,
+                name: name,
                 fileChoiceUrl: fileChoiceUrl,
                 plugins: plugins
             },

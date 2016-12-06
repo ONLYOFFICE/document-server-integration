@@ -106,8 +106,7 @@
 
                         user: {
                             id: "<%= Model.CurUserHostAddress() %>",
-                            firstname: "John",
-                            lastname: "Smith",
+                            name: "John Smith",
                         },
 
                         embedded: {

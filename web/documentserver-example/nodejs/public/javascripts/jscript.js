@@ -25,14 +25,12 @@
 
 var language;
 var userid;
-var firstname;
-var lastname;
+var name;
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
-    firstname = getUrlVars()["firstname"];
-    lastname = getUrlVars()["lastname"];
+    name = getUrlVars()["name"];
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
 
@@ -43,12 +41,8 @@ if (typeof jQuery != "undefined") {
 
 
     jq("#language").change(function() {
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
-        //alert(language);
-        lastname = arUser[1];
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&firstname=" + firstname + "&lastname=" + lastname;
+        var name = jq('#user option:selected').text();
+        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&name=" + name;
     });
     
 
@@ -57,29 +51,16 @@ if (typeof jQuery != "undefined") {
     else
         userid = jq("#user").val();
 
-    if ("" != firstname && undefined != firstname)
-        firstname=getUrlVars()["firstname"];
-    else{
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
+    if ("" != name && undefined != name) {
+        name=getUrlVars()["name"];
     }
-    if ("" != lastname && undefined != lastname)
-        lastname=getUrlVars()["lastname"];
-    else{
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        lastname = arUser[1];
+    else {
+        name = jq('#user option:selected').text();
     }
 
     jq("#user").change(function() {
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
-        lastname = arUser[1];
-        
-//var fn = jq('#user option:selected').attr('value-fn');
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&firstname=" + arUser[0] + "&lastname=" + arUser[1];
+        var name = jq('#user option:selected').text();
+        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&name=" + name;
     });
 
     jq(function () {
@@ -217,7 +198,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + name;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -226,7 +207,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + name;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -235,7 +216,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + name;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");

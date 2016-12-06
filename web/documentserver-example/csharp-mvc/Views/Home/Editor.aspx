@@ -112,8 +112,7 @@
 
                         user: {
                             id: "<%= DocManagerHelper.CurUserHostAddress() %>",
-                            firstname: 'John',
-                            lastname: 'Smith',
+                            name: "John Smith",
                         },
 
                         embedded: {

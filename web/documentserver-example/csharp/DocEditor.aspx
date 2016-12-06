@@ -105,8 +105,7 @@
 
                         user: {
                             id: "<%= _Default.CurUserHostAddress(null) %>",
-                            firstname: "John",
-                            lastname: "Smith",
+                            name: "John Smith",
                         },
 
                         embedded: {
