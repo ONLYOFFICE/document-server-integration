@@ -135,7 +135,9 @@ function getClientIp() {
         getenv('HTTP_FORWARDED_FOR')?:
         getenv('HTTP_FORWARDED')?:
         getenv('REMOTE_ADDR')?:
-        '';
+        'Storage';
+
+    $ipaddress = preg_replace("/[^0-9a-zA-Z.=]/", "_", $ipaddress);
 
     return $ipaddress;
 }
