@@ -250,6 +250,9 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     }
 
     libxml_use_internal_errors(true);
+    if (!function_exists('simplexml_load_file')){
+         throw new Exception("Server can't read xml");
+    }
     $data = simplexml_load_string($response_xml_data);
     if (!$data) {
         $exc = "Bad Response. Errors: ";
@@ -314,6 +317,9 @@ function GetResponseUri($x_document_response, &$response_uri) {
     $resultPercent = 0;
 
     libxml_use_internal_errors(true);
+    if (!function_exists('simplexml_load_file')){
+         throw new Exception("Server can't read xml");
+    }
     $data = simplexml_load_string($x_document_response);
 
     if (!$data) {
