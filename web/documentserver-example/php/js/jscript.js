@@ -118,7 +118,11 @@ if (typeof jQuery != "undefined") {
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
-                    var response = jq.parseJSON(responseText);
+                    try {
+                        var response = jq.parseJSON(responseText);
+                    } catch (e)	{
+                        response = { error: e };
+                    }
 
                     if (response.error) {
                         jq(".current").removeClass("current");
