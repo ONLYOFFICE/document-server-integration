@@ -234,7 +234,7 @@ app.get("/convert", function (req, res) {
     try {
         if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
             var key = documentService.generateRevisionId(fileUri);
-            documentService.getConvertedUriAsync(fileUri, fileExt, internalFileExt, key, callback);
+            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback);
         } else {
             writeResult(fileName, null, null);
         }
@@ -290,9 +290,7 @@ app.post("/track", function (req, res) {
 
     var processTrack = function (response, body, fileName, userAddress) {
 
-        var processSave = function (body, fileName, userAddress, newVersion) {
-
-            var downloadUri = body.url;
+        var processSave = function (downloadUri, body, fileName, userAddress, resp, newVersion) {
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = fileUtility.getFileExtension(downloadUri);
 
@@ -300,7 +298,10 @@ app.post("/track", function (req, res) {
                 var key = documentService.generateRevisionId(downloadUri);
 
                 try {
-                    downloadUri = documentService.getConvertedUri(downloadUri, downloadExt, curExt, key);
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function(dUri){
+                        processSave(dUri, body, fileName, userAddress, resp, newVersion)
+                    });
+                    return;
                 } catch (ex) {
                     console.log(ex);
                     fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress)
@@ -348,6 +349,9 @@ app.post("/track", function (req, res) {
             } catch (ex) {
                 console.log(ex);
             }
+
+            response.write("{\"error\":0}");
+            response.end();
         }
 
         if (body.status == 1) { //Editing
@@ -362,14 +366,14 @@ app.post("/track", function (req, res) {
                     }
                 }
             }
-        } else if (body.status == 2 || body.status == 3) { //MustSave, Corrupted
-            processSave(body, fileName, userAddress, true);
-        } else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
-            processSave(body, fileName, userAddress);
-        }
 
-        response.write("{\"error\":0}");
-        response.end();
+            response.write("{\"error\":0}");
+            response.end();
+        } else if (body.status == 2 || body.status == 3) { //MustSave, Corrupted
+            processSave(body.url, body, fileName, userAddress, response, true);
+        } else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
+            processSave(body.url, body, fileName, userAddress, response);
+        }
     }
 
     var readbody = function (request, response, fileName, userAddress) {
