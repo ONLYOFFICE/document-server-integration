@@ -100,23 +100,6 @@ function DoUpload($fileUri) {
 }
 
 
-function generateUrlToConverter($document_uri, $from_extension, $to_extension, $title, $document_revision_id, $is_async) {
-    $urlToConverterParams = array(
-                                "url" => $document_uri,
-                                "outputtype" => trim($to_extension,'.'),
-                                "filetype" => trim($from_extension, '.'),
-                                "title" => $title,
-                                "key" => $document_revision_id);
-
-    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'] . "?" . http_build_query($urlToConverterParams);
-
-    if ($is_async)
-        $urlToConverter = $urlToConverter . "&async=true";
-
-    return $urlToConverter;
-}
-
-
 function generateUrlToStorage($document_uri, $from_extension, $to_extension, $title, $document_revision_id) {
 
     return $GLOBALS['DOC_SERV_STORAGE_URL'] . "?" . http_build_query(
@@ -221,16 +204,29 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $document_revision_id = GenerateRevisionId($document_revision_id);
 
-    $urlToConverter = generateUrlToConverter($document_uri, $from_extension, $to_extension, $title, $document_revision_id, $is_async);
+    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'];
+
+    $data = json_encode(
+        array(
+            "async" => $is_async,
+            "url" => $document_uri,
+            "outputtype" => trim($to_extension,'.'),
+            "filetype" => trim($from_extension, '.'),
+            "title" => $title,
+            "key" => $document_revision_id
+        )
+    );
 
     $response_xml_data;
     $countTry = 0;
 
     $opts = array('http' => array(
-            'method'  => 'GET',
-            'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'] 
-        )
-    );
+                'method'  => 'POST',
+                'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
+                'header'=> "Content-type: application/json\r\n",
+                'content' => $data
+            )
+        );
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
         $opts['ssl'] = array( 'verify_peer'   => FALSE );
