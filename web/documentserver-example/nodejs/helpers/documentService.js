@@ -35,7 +35,6 @@ var siteUrl = configServer.get('siteUrl');
 var documentService = {};
 
 documentService.storageParams = "?key={0}";
-documentService.commandParams = "?c={0}&key={1}";
 documentService.userIp = null;
 
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
@@ -67,7 +66,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 
     urllib.request(siteUrl + configServer.get('converterUrl'),
         {
-            method: "POST", headers: {
+            method: "POST",
+            headers: {
                 'Content-Type': 'application/json'
             },
             data: params
@@ -194,14 +194,22 @@ documentService.convertXmlStringToJson = function (xml) {
     return res;
 };
 
-documentService.commandRequest = function (method, documentRevisionId) {
+documentService.commandRequest = function (method, documentRevisionId, callback) {
     documentRevisionId = documentService.generateRevisionId(documentRevisionId);
-    var params = documentService.commandParams.format(
-    method,
-    documentRevisionId);
+    var params = {
+        c: method,
+        key: documentRevisionId
+    };
 
-    var res = syncRequest("GET", siteUrl + configServer.get('commandUrl') + params).getBody("utf8");
-    return JSON.parse(res).error;
+    urllib.request(siteUrl + configServer.get('commandUrl'),
+        {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: params
+        },
+        callback);
 };
 
 module.exports = documentService;
