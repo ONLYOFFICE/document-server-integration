@@ -352,7 +352,7 @@ app.post("/track", function (req, res) {
 
             response.write("{\"error\":0}");
             response.end();
-        }
+        };
 
         if (body.status == 1) { //Editing
             if (body.actions && body.actions[0].type == 0) { //finished edit
@@ -371,10 +371,13 @@ app.post("/track", function (req, res) {
             response.end();
         } else if (body.status == 2 || body.status == 3) { //MustSave, Corrupted
             processSave(body.url, body, fileName, userAddress, response, true);
-        } else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
+        } else if (body.status == 4) { // Closed
+			response.write("{\"error\":0}");
+			response.end();
+		} else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
             processSave(body.url, body, fileName, userAddress, response);
         }
-    }
+    };
 
     var readbody = function (request, response, fileName, userAddress) {
         var content = "";
@@ -385,7 +388,7 @@ app.post("/track", function (req, res) {
             var body = JSON.parse(content);
             processTrack(response, body, fileName, userAddress);
         });
-    }
+    };
 
     if (req.body.hasOwnProperty("status")) {
         processTrack(res, req.body, fileName, userAddress);
