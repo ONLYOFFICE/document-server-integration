@@ -367,16 +367,15 @@ app.post("/track", function (req, res) {
                 }
             }
 
-            response.write("{\"error\":0}");
-            response.end();
-        } else if (body.status == 2 || body.status == 3) { //MustSave, Corrupted
-            processSave(body.url, body, fileName, userAddress, response, true);
-        } else if (body.status == 4) { // Closed
-			response.write("{\"error\":0}");
-			response.end();
-		} else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
-            processSave(body.url, body, fileName, userAddress, response);
+        } else if (body.status == 2 || body.status == 3 //MustSave, Corrupted
+                   || body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
+            var newVersion = (body.status == 2 || body.status == 3);
+            processSave(body.url, body, fileName, userAddress, response, newVersion);
+            return;
         }
+
+        response.write("{\"error\":0}");
+        response.end();
     };
 
     var readbody = function (request, response, fileName, userAddress) {
