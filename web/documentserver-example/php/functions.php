@@ -249,8 +249,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     if (!function_exists('simplexml_load_file')){
          throw new Exception("Server can't read xml");
     }
-    $data = simplexml_load_string($response_xml_data);
-    if (!$data) {
+    $response_data = simplexml_load_string($response_xml_data);
+    if (!$response_data) {
         $exc = "Bad Response. Errors: ";
         foreach(libxml_get_errors() as $error) {
             $exc = $exc . "\t" . $error->message;
@@ -258,7 +258,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         throw new Exception ($exc);
     }
 
-    return $data;
+    return $response_data;
 }
 
 

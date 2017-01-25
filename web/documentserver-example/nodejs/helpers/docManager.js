@@ -152,7 +152,7 @@ docManager.getFileUri = function (fileName) {
 };
 
 docManager.getlocalFileUri = function (fileName, version) {
-    var serverPath = docManager.getProtocol() + "://" + docManager.req.get("host");
+    var serverPath = docManager.getServerUrl();
     var storagePath = storageFolder.length ? storageFolder + "/" : "";
     var hostAddress = docManager.curUserHostAddress();
     var url = serverPath + "/" + storagePath + hostAddress + "/" + encodeURIComponent(fileName);
@@ -167,7 +167,7 @@ docManager.getServerUrl = function () {
 };
 
 docManager.getCallback = function (fileName) {
-    var server = docManager.getProtocol() + "://" + docManager.req.get("host");
+    var server = docManager.getServerUrl();
     var hostAddress = docManager.curUserHostAddress();
     var handler = "/track?useraddress=" + encodeURIComponent(hostAddress) + "&filename=" + encodeURIComponent(fileName);
 
