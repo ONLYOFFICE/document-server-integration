@@ -163,7 +163,7 @@
                             <thead>
                                 <tr class="tableHeader">
                                     <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="3" class="tableHeaderCell contentCells-shift">Editors</td>
                                     <td colspan="3" class="tableHeaderCell">Viewers</td>
                                 </tr>
                             </thead>
@@ -188,10 +188,16 @@
                                     echo '   <img src="css/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo ' <td class="contentCells contentCells-icon">';
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=mobile" target="_blank">';
                                     echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
                                     echo '  </a>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    if ($storeFile->documentType == "text") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review" target="_blank">';
+                                    echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
+                                    echo '  </a>';
+                                    }
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view" target="_blank">';
