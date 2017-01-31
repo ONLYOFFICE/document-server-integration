@@ -114,8 +114,9 @@
                             created: new Date().toDateString()
                         },
                         permissions: {
+                            download: true,
                             edit: "<%= editor.isEdit %>" == "true",
-                            download: true
+                            review: true,
                         }   
                     },
                     editorConfig: {
