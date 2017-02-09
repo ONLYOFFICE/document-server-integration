@@ -201,7 +201,7 @@ function convert() {
     if (in_array("." + $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $_GET["fileUri"];
-        if ($fileUri == "") {
+        if ($fileUri == NULL || $fileUri == "") {
             $fileUri = FileUri($fileName);
         }
         $key = getDocEditorKey($fileName);
