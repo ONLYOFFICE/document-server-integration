@@ -71,6 +71,10 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
@@ -127,7 +131,8 @@
                         'onReady': onReady,
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
-                        'onError': onError
+                        'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     }
                 });
         };

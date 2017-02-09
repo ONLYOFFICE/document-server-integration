@@ -144,6 +144,10 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -207,6 +211,7 @@
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     }
                 });
         };
