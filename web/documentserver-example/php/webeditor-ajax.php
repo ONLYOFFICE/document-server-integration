@@ -202,7 +202,7 @@ function convert() {
 
         $fileUri = $_GET["fileUri"];
         if ($fileUri == NULL || $fileUri == "") {
-            $fileUri = FileUri($fileName);
+            $fileUri = FileUri($fileName, TRUE);
         }
         $key = getDocEditorKey($fileName);
 

@@ -18,6 +18,8 @@ $GLOBALS['DOC_SERV_API_URL'] = "https://doc.onlyoffice.com/web-apps/apps/api/doc
 
 $GLOBALS['DOC_SERV_PRELOADER_URL'] = "https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html";
 
+$GLOBALS['EXAMPLE_URL'] = "";
+
 
 $GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx",
                                     ".ods", ".csv");

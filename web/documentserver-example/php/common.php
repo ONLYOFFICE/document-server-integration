@@ -142,8 +142,10 @@ function getClientIp() {
     return $ipaddress;
 }
 
-function serverPath() {
-    return 'http://' . $_SERVER['HTTP_HOST'];
+function serverPath($forDocumentServer) {
+    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != "" 
+        ? $GLOBALS['EXAMPLE_URL'] 
+        : ('http://' . $_SERVER['HTTP_HOST']);
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
@@ -240,18 +242,18 @@ function getStoredFiles() {
     return array_reverse($result);
 }
 
-function getVirtualPath() {
+function getVirtualPath($forDocumentServer) {
     $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
 
-    $virtPath = serverPath() . '/' . $storagePath . getCurUserHostAddress() . '/';
+    $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
     sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
     return $virtPath;
 }
 
-function FileUri($file_name) {
-    $uri = getVirtualPath() . $file_name;
+function FileUri($file_name, $forDocumentServer) {
+    $uri = getVirtualPath($forDocumentServer) . $file_name;
     return $uri;
 }
 

@@ -31,7 +31,6 @@
     require_once( dirname(__FILE__) . '/functions.php' );
 
     $filename;
-    $fileuri;
 
     $externalUrl = $_GET["fileUrl"];
     if (!empty($externalUrl))
@@ -53,8 +52,8 @@
         exit;
     }
 
-    $fileuri = FileUri($filename);
-
+    $fileuri = FileUri($filename, true);
+    $fileuriUser = FileUri($filename);
 
     function tryGetDefaultByType($createExt) {
         $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
@@ -70,7 +69,7 @@
     }
 
     function getCallbackUrl($fileName) {
-        return serverPath() . '/'
+        return serverPath(TRUE) . '/'
                     . "webeditor-ajax.php"
                     . "?type=track&userAddress=" . getClientIp()
                     . "&fileName=" . urlencode($fileName);
@@ -189,9 +188,9 @@
                         user: user,
 
                         embedded: {
-                            saveUrl: "<?php echo $fileuri ?>",
-                            embedUrl: "<?php echo $fileuri ?>",
-                            shareUrl: "<?php echo $fileuri ?>",
+                            saveUrl: "<?php echo $fileuriUser ?>",
+                            embedUrl: "<?php echo $fileuriUser ?>",
+                            shareUrl: "<?php echo $fileuriUser ?>",
                             toolbarDocked: "top",
                         },
 
