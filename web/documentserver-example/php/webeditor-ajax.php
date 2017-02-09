@@ -16,11 +16,11 @@
  * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
  * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
  *
- * Pursuant to Section 7 ง 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
+ * Pursuant to Section 7 ยง 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
  * relevant author attributions when distributing the software. If the display of the logo in its graphic 
  * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
  * in every copy of the program you distribute. 
- * Pursuant to Section 7 ง 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ * Pursuant to Section 7 ยง 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
  *
 */
 ?>
@@ -58,7 +58,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
     switch($type) { //Switch case for value of type
         case "upload":
             $response_array = upload();
-            $response_array['status'] = $response_array['error'] != NULL ? 'error' : 'success';
+            $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
         case "convert":
             $response_array = convert();
