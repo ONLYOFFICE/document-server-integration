@@ -223,21 +223,21 @@ function getStoredFiles() {
     } 
 
     $cdir = scandir($directory);
-    foreach ($cdir as $key => $fileName)
-    {
-        if (!in_array($fileName,array(".","..")))
-        {
-            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName))
-            {
-                $result[] = (object) array(
-                'name' => $fileName,
-                'url' => FileUri($fileName),
-                'documentType' => getDocumentType($fileName)
-                );
+    $result = array();
+    foreach($cdir as $key => $fileName) {
+        if (!in_array($fileName,array(".", ".."))) {
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {   
+                $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
+                $result[$dat] = (object) array(
+                        "name" => $fileName,
+                        "url" => FileUri($fileName),
+                        "documentType" => getDocumentType($fileName)
+                    );
             }
         }
     }
-    return $result;
+    ksort($result);
+    return array_reverse($result);
 }
 
 function getVirtualPath() {
