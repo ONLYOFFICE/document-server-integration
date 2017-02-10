@@ -139,12 +139,12 @@ docManager.saveFileData = function (fileName, userid, username) {
 };
 
 docManager.getFileData = function (fileName, userAddress) {
-    var file_info = docManager.historyPath(fileName, userAddress, true);
-    if (!this.existsSync(file_info)) {
+    const history = path.join(docManager.historyPath(fileName, userAddress, true), fileName + ".txt");
+    if (!this.existsSync(history)) {
         return ["2016-01-01", "uid-1", "John Smith"];
     }
 
-    return ((fileSystem.readFileSync(path.join(file_info, fileName + ".txt"))).toString()).split(",");
+    return ((fileSystem.readFileSync(history)).toString()).split(",");
 };
 
 docManager.getFileUri = function (fileName) {
