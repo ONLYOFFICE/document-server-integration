@@ -129,8 +129,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
                 Query = "type=track"
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
             };
             return callbackUrl.ToString();
         }

@@ -71,8 +71,9 @@
     function getCallbackUrl($fileName) {
         return serverPath(TRUE) . '/'
                     . "webeditor-ajax.php"
-                    . "?type=track&userAddress=" . getClientIp()
-                    . "&fileName=" . urlencode($fileName);
+                    . "?type=track"
+                    . "&fileName=" . urlencode($fileName)
+                    . "&userAddress=" . getClientIp();
     }
 
 ?>

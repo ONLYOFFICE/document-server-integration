@@ -169,7 +169,7 @@ docManager.getServerUrl = function () {
 docManager.getCallback = function (fileName) {
     var server = docManager.getServerUrl();
     var hostAddress = docManager.curUserHostAddress();
-    var handler = "/track?useraddress=" + encodeURIComponent(hostAddress) + "&filename=" + encodeURIComponent(fileName);
+    var handler = "/track?filename=" + encodeURIComponent(fileName) + "&useraddress=" + encodeURIComponent(hostAddress);
 
     return server + handler;
 };

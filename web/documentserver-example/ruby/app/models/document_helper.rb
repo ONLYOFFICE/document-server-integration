@@ -94,7 +94,7 @@ class DocumentHelper
 
     def get_callback(file_name)
 
-      @@base_url + '/track?type=track&userAddress=' + cur_user_host_address(nil)  + '&fileName=' + URI::encode(file_name)
+      @@base_url + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 

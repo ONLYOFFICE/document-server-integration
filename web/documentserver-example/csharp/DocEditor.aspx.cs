@@ -61,8 +61,8 @@ namespace OnlineEditorsExample
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
                 callbackUrl.Query = "type=track"
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
-                                    + "&fileName=" + HttpUtility.UrlEncode(FileName);
+                                    + "&fileName=" + HttpUtility.UrlEncode(FileName)
+                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
                 return callbackUrl.ToString();
             }
         }
