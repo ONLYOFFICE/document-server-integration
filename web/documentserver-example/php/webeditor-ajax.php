@@ -58,7 +58,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
     switch($type) { //Switch case for value of type
         case "upload":
             $response_array = upload();
-            $response_array['status'] = $response_array['error'] != NULL ? 'error' : 'success';
+            $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
         case "convert":
             $response_array = convert();
