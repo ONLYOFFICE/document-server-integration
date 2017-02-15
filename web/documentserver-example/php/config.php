@@ -20,6 +20,8 @@ $GLOBALS['DOC_SERV_PRELOADER_URL'] = "https://doc.onlyoffice.com/web-apps/apps/a
 
 $GLOBALS['EXAMPLE_URL'] = "";
 
+$GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
+
 
 $GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx",
                                     ".ods", ".csv");

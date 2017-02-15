@@ -145,7 +145,7 @@
                                         <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                    <a href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
@@ -154,12 +154,12 @@
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
                                     <% if (storedFiles[i].documentType == "text") { %>
-                                    <a href="editor?mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                    <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="editor?mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                    <a href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">

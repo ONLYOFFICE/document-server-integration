@@ -422,7 +422,11 @@ app.get("/editor", function (req, res) {
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit 
-        var type = req.query.type || "desktop"; //type: embedded/mobile/desktop
+        var type = req.query.type || ""; //type: embedded/mobile/desktop
+        if (type == "") {
+                type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+            }
+
         var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;
 
         var countVersion = 1;

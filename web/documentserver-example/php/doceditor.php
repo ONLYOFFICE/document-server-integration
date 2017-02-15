@@ -157,14 +157,18 @@
                 }
             ?>
 
-            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];            
+            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];
+            var type = "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""))) ?>";
+            if (type == "") {
+                type = new RegExp("<?php echo $GLOBALS['MOBILE_REGEX'] ?>", "i").test(window.navigator.userAgent) ? "mobile" : "desktop";
+            }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
                     width: "100%",
                     height: "100%",
 
-                    type: "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : "desktop")) ?>",
+                    type: type,
                     documentType: "<?php echo getDocumentType($filename) ?>",
                     document: {
                         title: fileName,
