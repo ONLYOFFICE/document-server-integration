@@ -16,7 +16,9 @@
 		"yandextranslaterus/config.json",
 		"clipart/config.json",
 		"translate/config.json",
-		"templates/config.json"
+		"templates/config.json",
+		"telegram/config.json",
+		"invoices/config.json"
     ],
     "UIpluginsData": []
   }
