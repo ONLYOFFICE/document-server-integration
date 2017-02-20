@@ -5,20 +5,20 @@
   },
   "plugins": {
     "pluginsData": [
-		"helloworld/config.json",
-		"chess/config.json",
-		"glavred/config.json",
-		"speech/config.json",
-		"youtube/config.json",
-		"cbr/config.json",
-		"num2word/config.json",
-		"ocr/config.json",
-		"yandextranslaterus/config.json",
-		"clipart/config.json",
-		"translate/config.json",
-		"templates/config.json",
-		"telegram/config.json",
-		"invoices/config.json"
+		"../../../../sdkjs-plugins/helloworld/config.json",
+		"../../../../sdkjs-plugins/chess/config.json",
+		"../../../../sdkjs-plugins/glavred/config.json",
+		"../../../../sdkjs-plugins/speech/config.json",
+		"../../../../sdkjs-plugins/youtube/config.json",
+		"../../../../sdkjs-plugins/cbr/config.json",
+		"../../../../sdkjs-plugins/num2word/config.json",
+		"../../../../sdkjs-plugins/ocr/config.json",
+		"../../../../sdkjs-plugins/yandextranslaterus/config.json",
+		"../../../../sdkjs-plugins/clipart/config.json",
+		"../../../../sdkjs-plugins/translate/config.json",
+		"../../../../sdkjs-plugins/templates/config.json",
+		"../../../../sdkjs-plugins/telegram/config.json",
+		"../../../../sdkjs-plugins/invoices/config.json"
     ],
     "UIpluginsData": []
   }
