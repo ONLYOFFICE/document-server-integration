@@ -141,7 +141,7 @@ docManager.saveFileData = function (fileName, userid, username) {
 docManager.getFileData = function (fileName, userAddress) {
     const history = path.join(docManager.historyPath(fileName, userAddress, true), fileName + ".txt");
     if (!this.existsSync(history)) {
-        return ["2016-01-01", "uid-1", "John Smith"];
+        return ["2017-01-01", "uid-1", "John Smith"];
     }
 
     return ((fileSystem.readFileSync(history)).toString()).split(",");

@@ -1,13 +1,13 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <UsingTask AssemblyFile="App_Data\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.Zip" />
-  
+
   <PropertyGroup>
     <To Condition=" '$(To)' == '' ">..\deploy\</To>
 
     <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
-	<DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
-	<DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+    <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
+    <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
   </PropertyGroup>
 
   <ItemGroup>
