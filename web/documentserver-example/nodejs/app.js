@@ -23,37 +23,39 @@
  *
 */
 
-var express = require("express");
-var path = require("path");
-var favicon = require("serve-favicon");
-var bodyParser = require("body-parser");
-var fileSystem = require("fs");
-var formidable = require("formidable");
-var syncRequest = require("sync-request");
-var config = require('config');
-var configServer = config.get('server');
-var docManager = require("./helpers/docManager");
-var documentService = require("./helpers/documentService");
-var fileUtility = require("./helpers/fileUtility");
-var siteUrl = configServer.get('siteUrl');
-var fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
-var plugins = config.get('plugins');
+const express = require("express");
+const path = require("path");
+const favicon = require("serve-favicon");
+const bodyParser = require("body-parser");
+const fileSystem = require("fs");
+const formidable = require("formidable");
+const syncRequest = require("sync-request");
+const config = require('config');
+const configServer = config.get('server');
+const docManager = require("./helpers/docManager");
+const documentService = require("./helpers/documentService");
+const fileUtility = require("./helpers/fileUtility");
+const siteUrl = configServer.get('siteUrl');
+const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
+const plugins = config.get('plugins');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 String.prototype.hashCode = function () {
-    for (var ret = 0, i = 0, len = this.length; i < len; i++) {
+	const len = this.length;
+	let ret = 0;
+    for (let i = 0; i < len; i++) {
         ret = (31 * ret + this.charCodeAt(i)) << 0;
     }
     return ret;
 };
 String.prototype.format = function () {
-    var text = this.toString();
+    let text = this.toString();
 
     if (!arguments.length) return text;
 
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
         text = text.replace(new RegExp("\\{" + i + "\\}", "gi"), arguments[i]);
     }
 
@@ -61,11 +63,9 @@ String.prototype.format = function () {
 };
 
 
-var app = express();
-
-
+const app = express();
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs")
+app.set("view engine", "ejs");
 
 
 app.use(function (req, res, next) {
@@ -75,9 +75,9 @@ app.use(function (req, res, next) {
 
 app.use(express.static(path.join(__dirname, "public")));
 if (config.has('server.static')) {
-  var staticContent = config.get('server.static');
-  for (var i = 0; i < staticContent.length; ++i) {
-    var staticContentElem = staticContent[i];
+  const staticContent = config.get('server.static');
+  for (let i = 0; i < staticContent.length; ++i) {
+    const staticContentElem = staticContent[i];
     app.use(staticContentElem['name'], express.static(staticContentElem['path'], staticContentElem['options']));
   }
 }
@@ -115,16 +115,16 @@ app.post("/upload", function (req, res) {
     docManager.init(__dirname, req, res);
     docManager.storagePath(""); //mkdir if not exist
 
-    var userIp = docManager.curUserHostAddress();
-    var uploadDir = "./public/" + configServer.get('storageFolder') + "/" + userIp;
+    const userIp = docManager.curUserHostAddress();
+    const uploadDir = "./public/" + configServer.get('storageFolder') + "/" + userIp;
 
-    var form = new formidable.IncomingForm();
+    const form = new formidable.IncomingForm();
     form.uploadDir = uploadDir;
     form.keepExtensions = true;
 
     form.parse(req, function (err, fields, files) {
 
-        var file = files.uploadedFile;
+        const file = files.uploadedFile;
 
         file.name = docManager.getCorrectName(file.name);
 
@@ -136,8 +136,8 @@ app.post("/upload", function (req, res) {
             return;
         }
 
-        var exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
-        var curExt = fileUtility.getFileExtension(file.name);
+        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
+        const curExt = fileUtility.getFileExtension(file.name);
 
         if (exts.indexOf(curExt) == -1) {
             fileSystem.unlinkSync(file.path);
@@ -154,8 +154,8 @@ app.post("/upload", function (req, res) {
             } else {
                 res.write("{ \"filename\": \"" + file.name + "\"}");
 
-                var userid = req.query.userid ? req.query.userid : "uid-1";
-                var name = req.query.name ? req.query.name : "Jonn Smith";
+                const userid = req.query.userid ? req.query.userid : "uid-1";
+                const name = req.query.name ? req.query.name : "Jonn Smith";
 
                 docManager.saveFileData(file.name, userid, name);
             }
@@ -233,7 +233,7 @@ app.get("/convert", function (req, res) {
 
     try {
         if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
-            var key = documentService.generateRevisionId(fileUri);
+            const key = documentService.generateRevisionId(fileUri);
             documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback);
         } else {
             writeResult(fileName, null, null);
@@ -246,31 +246,37 @@ app.get("/convert", function (req, res) {
 
 app.delete("/file", function (req, res) {
     try {
-        docManager.init(__dirname, req, res);
+		const cleanFolderRecursive = function (folder, me) {
+			if (fileSystem.existsSync(folder)) {
+				const files = fileSystem.readdirSync(folder);
+				files.forEach(function (file) {
+					const curPath = path.join(folder, file);
+					if (fileSystem.lstatSync(curPath).isDirectory()) {
+						cleanFolderRecursive(curPath, true);
+					} else {
+						fileSystem.unlinkSync(curPath);
+					}
+				});
+				if (me) {
+					fileSystem.rmdirSync(folder);
+				}
+			}
+		};
 
-        var fileName = fileUtility.getFileName(req.query.filename);
+    	docManager.init(__dirname, req, res);
+        let fileName = req.query.filename;
+        if (fileName) {
+			fileName = fileUtility.getFileName(fileName);
 
-        var filePath = docManager.storagePath(fileName)
-        fileSystem.unlinkSync(filePath);
+			const filePath = docManager.storagePath(fileName);
+			fileSystem.unlinkSync(filePath);
 
-        var userAddress = docManager.curUserHostAddress();
-        var historyPath = docManager.historyPath(fileName, userAddress, true);
-
-        var deleteFolderRecursive = function (path) {
-            if (fileSystem.existsSync(path)) {
-                var files = fileSystem.readdirSync(path);
-                files.forEach(function (file, index) {
-                    var curPath = path + "/" + file;
-                    if (fileSystem.lstatSync(curPath).isDirectory()) {
-                        deleteFolderRecursive(curPath);
-                    } else {
-                        fileSystem.unlinkSync(curPath);
-                    }
-                });
-                fileSystem.rmdirSync(path);
-            }
-        };
-        deleteFolderRecursive(historyPath);
+			const userAddress = docManager.curUserHostAddress();
+			const historyPath = docManager.historyPath(fileName, userAddress, true);
+			cleanFolderRecursive(historyPath, true);
+		} else {
+			cleanFolderRecursive(docManager.storagePath(''), false);
+		}
 
         res.write("{\"success\":true}");
     } catch (ex) {
@@ -501,7 +507,7 @@ app.get("/editor", function (req, res) {
 });
 
 app.use(function (req, res, next) {
-    var err = new Error("Not Found");
+    const err = new Error("Not Found");
     err.status = 404;
     next(err);
 });
