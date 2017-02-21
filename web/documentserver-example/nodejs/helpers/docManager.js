@@ -344,7 +344,7 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
 docManager.cleanFolderRecursive = function (folder, me) {
 	if (fileSystem.existsSync(folder)) {
 		const files = fileSystem.readdirSync(folder);
-		files.forEach(function (file) {
+		files.forEach((file) => {
 			const curPath = path.join(folder, file);
 			if (fileSystem.lstatSync(curPath).isDirectory()) {
 				this.cleanFolderRecursive(curPath, true);
