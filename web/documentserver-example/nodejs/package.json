@@ -14,16 +14,16 @@
     "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
   },
   "dependencies": {
-    "body-parser": "~1.15.2",
+    "body-parser": "^1.16.1",
     "config": "^1.21.0",
     "debug": "~2.2.0",
     "ejs": "~2.5.1",
-    "express": "^4.14.0",
+    "express": "^4.14.1",
     "formidable": "^1.1.1",
     "log4js": "^0.6.38",
     "serve-favicon": "~2.3.0",
-    "sync-request": "~3.0.1",
-    "urllib": "~2.11.0",
+    "sync-request": "^4.0.1",
+    "urllib": "^2.20.0",
     "xml2js": "~0.4.17"
   },
   "license": "MIT",
