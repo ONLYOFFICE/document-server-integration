@@ -116,20 +116,29 @@ app.post("/upload", function (req, res) {
     docManager.storagePath(""); //mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();
-    const uploadDir = "./public/" + configServer.get('storageFolder') + "/" + userIp;
+    const uploadDir = path.join("./public", configServer.get('storageFolder'), userIp);
+    const uploadDirTmp = path.join(uploadDir, 'tmp');
+    docManager.createDirectory(uploadDirTmp);
 
     const form = new formidable.IncomingForm();
-    form.uploadDir = uploadDir;
+    form.uploadDir = uploadDirTmp;
     form.keepExtensions = true;
 
     form.parse(req, function (err, fields, files) {
+    	if (err) {
+			docManager.cleanFolderRecursive(uploadDirTmp, true);
+			res.writeHead(200, { "Content-Type": "text/plain" });
+			res.write("{ \"error\": \"" + err.message + "\"}");
+			res.end();
+			return;
+		}
 
         const file = files.uploadedFile;
 
         file.name = docManager.getCorrectName(file.name);
 
         if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
-            fileSystem.unlinkSync(file.path);
+			docManager.cleanFolderRecursive(uploadDirTmp, true);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File size is incorrect\"}");
             res.end();
@@ -140,7 +149,7 @@ app.post("/upload", function (req, res) {
         const curExt = fileUtility.getFileExtension(file.name);
 
         if (exts.indexOf(curExt) == -1) {
-            fileSystem.unlinkSync(file.path);
+			docManager.cleanFolderRecursive(uploadDirTmp, true);
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File type is not supported\"}");
             res.end();
@@ -148,6 +157,7 @@ app.post("/upload", function (req, res) {
         }
 
         fileSystem.rename(file.path, uploadDir + "/" + file.name, function (err) {
+			docManager.cleanFolderRecursive(uploadDirTmp, true);
             res.writeHead(200, { "Content-Type": "text/plain" });
             if (err) {
                 res.write("{ \"error\": \"" + err + "\"}");
@@ -246,23 +256,6 @@ app.get("/convert", function (req, res) {
 
 app.delete("/file", function (req, res) {
     try {
-		const cleanFolderRecursive = function (folder, me) {
-			if (fileSystem.existsSync(folder)) {
-				const files = fileSystem.readdirSync(folder);
-				files.forEach(function (file) {
-					const curPath = path.join(folder, file);
-					if (fileSystem.lstatSync(curPath).isDirectory()) {
-						cleanFolderRecursive(curPath, true);
-					} else {
-						fileSystem.unlinkSync(curPath);
-					}
-				});
-				if (me) {
-					fileSystem.rmdirSync(folder);
-				}
-			}
-		};
-
     	docManager.init(__dirname, req, res);
         let fileName = req.query.filename;
         if (fileName) {
@@ -273,9 +266,9 @@ app.delete("/file", function (req, res) {
 
 			const userAddress = docManager.curUserHostAddress();
 			const historyPath = docManager.historyPath(fileName, userAddress, true);
-			cleanFolderRecursive(historyPath, true);
+			docManager.cleanFolderRecursive(historyPath, true);
 		} else {
-			cleanFolderRecursive(docManager.storagePath(''), false);
+			docManager.cleanFolderRecursive(docManager.storagePath(''), false);
 		}
 
         res.write("{\"success\":true}");

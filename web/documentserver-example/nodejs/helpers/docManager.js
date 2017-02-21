@@ -341,4 +341,21 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
     return res;
 };
 
+docManager.cleanFolderRecursive = function (folder, me) {
+	if (fileSystem.existsSync(folder)) {
+		const files = fileSystem.readdirSync(folder);
+		files.forEach(function (file) {
+			const curPath = path.join(folder, file);
+			if (fileSystem.lstatSync(curPath).isDirectory()) {
+				this.cleanFolderRecursive(curPath, true);
+			} else {
+				fileSystem.unlinkSync(curPath);
+			}
+		});
+		if (me) {
+			fileSystem.rmdirSync(folder);
+		}
+	}
+};
+
 module.exports = docManager;
