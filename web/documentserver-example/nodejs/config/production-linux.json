@@ -2,8 +2,5 @@
   "server": {
     "siteUrl": "/",
     "maxFileSize": 104857600
-  },
-  "plugins": {
-    "url": "/sdkjs-plugins/"
   }
 }

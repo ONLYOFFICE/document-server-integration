@@ -34,14 +34,6 @@
   },
   "plugins": {
     "url": "",
-    "pluginsData": [
-		"../../../../sdkjs-plugins/helloworld/config.json",
-		"../../../../sdkjs-plugins/chess/config.json",
-		"../../../../sdkjs-plugins/speech/config.json",
-		"../../../../sdkjs-plugins/youtube/config.json",
-		"../../../../sdkjs-plugins/cbr/config.json",
-		"../../../../sdkjs-plugins/ocr/config.json",
-		"../../../../sdkjs-plugins/clipart/config.json"
-    ]
+    "pluginsData": []
   }
 }
