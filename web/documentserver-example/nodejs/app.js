@@ -30,6 +30,7 @@ const bodyParser = require("body-parser");
 const fileSystem = require("fs");
 const formidable = require("formidable");
 const syncRequest = require("sync-request");
+const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
 const docManager = require("./helpers/docManager");
@@ -38,6 +39,10 @@ const fileUtility = require("./helpers/fileUtility");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
 const plugins = config.get('plugins');
+const cfgSignatureEnable = configServer.get('token.enable');
+const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
+const cfgSignatureSecret = configServer.get('token.secret');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -395,6 +400,29 @@ app.post("/track", function (req, res) {
         });
     };
 
+    //checkjwt
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        var checkJwtHeaderRes = documentService.checkJwtHeader(req);
+        if (checkJwtHeaderRes) {
+            if (checkJwtHeaderRes.payload) {
+                body = checkJwtHeaderRes.payload;
+            }
+            if (checkJwtHeaderRes.query) {
+                if (checkJwtHeaderRes.query.useraddress) {
+                    userAddress = checkJwtHeaderRes.query.useraddress;
+                }
+                if (checkJwtHeaderRes.query.filename) {
+                    fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
+                }
+            }
+            processTrack(res, body, fileName, userAddress);
+        } else {
+            res.write("{\"error\":1}");
+            res.end();
+        }
+        return;
+    }
+
     if (req.body.hasOwnProperty("status")) {
         processTrack(res, req.body, fileName, userAddress);
     } else {
@@ -479,6 +507,7 @@ app.get("/editor", function (req, res) {
                 type: type,
                 documentType: fileUtility.getFileType(fileName),
                 key: key,
+                token: "",
                 callbackUrl: docManager.getCallback(fileName),
                 isEdit: canEdit && mode != "review",
                 mode: canEdit && mode != "view" ? "edit" : "view",
@@ -498,7 +527,18 @@ app.get("/editor", function (req, res) {
             }
         };
 
-        res.render("editor", argss);
+        if (cfgSignatureEnable) {
+            app.render('config', argss, function(err, html){
+                if (err) {
+                    console.log(err);
+                } else {
+                    argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                }
+                res.render("editor", argss);
+              });
+        } else {
+              res.render("editor", argss);
+        }
     }
     catch (ex) {
         console.log(ex);

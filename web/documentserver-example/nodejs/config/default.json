@@ -30,7 +30,16 @@
         "name": "/public",
         "path": "public"
       }
-    ]
+    ],
+    "token": {
+        "enable": true,
+        "useforrequest": true,
+        "algorithmRequest": "HS256",
+        "authorizationHeader": "Authorization",
+        "authorizationHeaderPrefix": "Bearer ",
+        "secret": "secret",
+        "expiresIn": "5m"
+    }
   },
   "plugins": {
     "url": "",

@@ -24,12 +24,22 @@
 */
 
 var path = require("path");
+var urlModule = require("url");
 var urllib = require("urllib");
 var xml2js = require("xml2js");
+var jwt = require("jsonwebtoken");
+var jwa = require("jwa");
 var fileUtility = require("./fileUtility");
 var guidManager = require("./guidManager");
 var configServer = require('config').get('server');
 var siteUrl = configServer.get('siteUrl');
+var cfgSignatureEnable = configServer.get('token.enable');
+var cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+var cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
+var cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
+var cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
+var cfgSignatureSecret = configServer.get('token.secret');
+var cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
 var documentService = {};
 
@@ -64,12 +74,19 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         key: documentRevisionId
     };
 
-    urllib.request(siteUrl + configServer.get('converterUrl'),
+    var uri = siteUrl + configServer.get('converterUrl');
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    }
+
+    urllib.request(uri,
         {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             data: params
         },
         callback);
@@ -79,15 +96,22 @@ documentService.getExternalUri = function (fileStream, contentLength, contentTyp
     documentRevisionId = documentService.generateRevisionId(documentRevisionId);
 
     var urlTostorage = siteUrl + configServer.get('storageUrl') + "?key=" + documentRevisionId;
+    var headers = {
+        "Content-Type": contentType == null ? "application/octet-stream" : contentType,
+        "Content-Length": contentLength.toString(),
+        "charset": "utf-8"
+    };
+
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        const hmac = jwa(cfgSignatureSecretAlgorithmRequest);
+        var payloadhash = hmac.sign(fileStream, cfgSignatureSecret);
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(urlTostorage, undefined, undefined, payloadhash);
+    }
 
     urllib.request(urlTostorage,
         {
             method: "POST",
-            headers: {
-                "Content-Type": contentType == null ? "application/octet-stream" : contentType,
-                "Content-Length": contentLength.toString(),
-                "charset": "utf-8"
-            },
+            headers: headers,
             data: fileStream
         },
         function (err, data) {
@@ -116,10 +140,10 @@ documentService.processConvertServiceResponceError = function (errorCode) {
 
     switch (errorCode) {
         case -20:
-            errorMessage = errorMessageTemplate + "vkey deciphering error";
+            errorMessage = errorMessageTemplate + "Error encrypt signature";
             break;
         case -8:
-            errorMessage = errorMessageTemplate + "Error document VKey";
+            errorMessage = errorMessageTemplate + "Error document signature";
             break;
         case -7:
             errorMessage = errorMessageTemplate + "Error document request";
@@ -207,15 +231,43 @@ documentService.commandRequest = function (method, documentRevisionId, callback)
         key: documentRevisionId
     };
 
-    urllib.request(siteUrl + configServer.get('commandUrl'),
+    var uri = siteUrl + configServer.get('commandUrl');
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    }
+
+    urllib.request(uri,
         {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             data: params
         },
         callback);
 };
+
+documentService.checkJwtHeader = function (req) {
+  var decoded = null;
+  var authorization = req.get(cfgSignatureAuthorizationHeader);
+  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+    var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    try {
+      decoded = jwt.verify(token, cfgSignatureSecret);
+    } catch (err) {
+        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+    }
+  }
+  return decoded;
+}
+
+documentService.fillJwtByUrl = function (uri, opt_dataObject, opt_iss, opt_payloadhash) {
+  var parseObject = urlModule.parse(uri, true);
+  var payload = {query: parseObject.query, payload: opt_dataObject, payloadhash: opt_payloadhash};
+
+  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn, issuer: opt_iss};
+  return jwt.sign(payload, cfgSignatureSecret, options);
+}
 
 module.exports = documentService;
