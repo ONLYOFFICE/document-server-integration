@@ -44,8 +44,6 @@
     <script type="text/javascript" language="javascript">
 
         var docEditor;
-        var fileName = "<%= file.name %>";
-        var fileType = "<%= file.ext %>";
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -102,53 +100,7 @@
 
         var connectEditor = function () {
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor",
-                {
-                    width: "100%",
-                    height: "100%",
-                    type: "<%= editor.type %>",
-                    documentType: "<%= editor.documentType %>",
-                    document: {
-                        title: fileName,
-                        url: "<%= file.uri %>",
-                        fileType: fileType,
-                        key: "<%= editor.key %>",
-                        info: {
-                            author: "Me",
-                            created: new Date().toDateString()
-                        },
-                        permissions: {
-                            download: true,
-                            edit: "<%= editor.isEdit %>" == "true",
-                            review: true,
-                        }   
-                    },
-                    editorConfig: {
-                        mode: "<%= editor.mode %>",
-                        lang: "<%= editor.lang %>",
-                        callbackUrl: "<%- editor.callbackUrl %>",
-                        user: {
-                            id: "<%= editor.userid %>",
-                            name: "<%= editor.name %>",
-                        },
-                        embedded: {
-                            saveUrl: "<%= file.uri %>",
-                            embedUrl: "<%= file.uri %>",
-                            shareUrl: "<%= file.uri %>",
-                            toolbarDocked: "top"
-                        },
-                        customization: {
-                            about: true,
-                            chat: true,
-                            comments: true,
-                            feedback: true,
-                            goback: {
-                                url: "<%= editor.getServerUrl %>"
-                            }
-                        },
-                        fileChoiceUrl: "<%= editor.fileChoiceUrl %>",
-                        plugins: <%- JSON.stringify(editor.plugins) %>
-                    },
+            docEditor = new DocsAPI.DocEditor("iframeEditor", {<% include config %>,
                     events: {
                         "onReady": onReady,
                         "onDocumentStateChange": onDocumentStateChange,

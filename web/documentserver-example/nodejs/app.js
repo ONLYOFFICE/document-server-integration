@@ -472,7 +472,8 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
-                version: countVersion
+                version: countVersion,
+                created: new Date().toDateString()
             },
             editor: {
                 type: type,
@@ -482,13 +483,13 @@ app.get("/editor", function (req, res) {
                 isEdit: canEdit && mode != "review",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
-                getServerUrl: docManager.getServerUrl(),
+                getServerUrl: type == "embedded" ? null : "\"" + docManager.getServerUrl() + "\"",
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,
                 name: name,
                 fileChoiceUrl: fileChoiceUrl,
-                plugins: plugins
+                plugins: JSON.stringify(plugins)
             },
             history: history,
             setHistoryData: {
