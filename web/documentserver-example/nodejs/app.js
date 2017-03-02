@@ -135,6 +135,13 @@ app.post("/upload", function (req, res) {
 
         const file = files.uploadedFile;
 
+        if (file == undefined) {
+            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.write("{ \"error\": \"Uploaded file not found\"}");
+            res.end();
+            return;
+        }
+
         file.name = docManager.getCorrectName(file.name);
 
         if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
