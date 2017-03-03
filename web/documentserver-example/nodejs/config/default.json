@@ -32,7 +32,7 @@
       }
     ],
     "token": {
-        "enable": true,
+        "enable": false,
         "useforrequest": true,
         "algorithmRequest": "HS256",
         "authorizationHeader": "Authorization",
