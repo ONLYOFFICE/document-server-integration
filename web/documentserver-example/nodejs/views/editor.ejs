@@ -75,14 +75,9 @@
 
         var onRequestHistoryData = function (data) {
             var version = data.data;
-            var url_arr = "<%= setHistoryData.url %>".split(",");
-            var changesUrl_arr = "<%= setHistoryData.changesUrl %>".split(",");
+            var historyData = <%- JSON.stringify(historyData) %> || null;
 
-            docEditor.setHistoryData({
-                version: version,
-                url: url_arr[version - 1] != "" ? url_arr[version - 1] : null,
-                changesUrl: changesUrl_arr[version - 1] != "" ? changesUrl_arr[version - 1] : null
-            });
+            docEditor.setHistoryData(historyData[version-1]);
         };
 
         var onRequestHistoryClose = function (event){

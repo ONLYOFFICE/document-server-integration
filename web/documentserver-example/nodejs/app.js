@@ -437,8 +437,7 @@ app.get("/editor", function (req, res) {
 
         var fileExt = req.query.fileExt;
         var history = [];
-        var prevUrl = [];
-        var diff = [];
+        var historyData = [];
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
         var name = req.query.name ? req.query.name : "Jonn Smith";
@@ -466,33 +465,49 @@ app.get("/editor", function (req, res) {
         var countVersion = 1;
 
         var historyPath = docManager.historyPath(fileName, userAddress);
-        changes = null;
+        var changes = null;
+        var keyVersion = key;
 
         if (historyPath != '') {
 
             countVersion = docManager.countVersion(historyPath) + 1;
-            var prevPath = docManager.getlocalFileUri(fileName, 1) + "/prev" + fileUtility.getFileExtension(fileName);
-            var diffPath = null;
-            for (var i = 1; i < countVersion; i++) {
-                var keyPath = docManager.keyPath(fileName, userAddress, i);
-                var keyVersion = "" + fileSystem.readFileSync(keyPath);
+            for (var i = 1; i <= countVersion; i++) {
+                if (i < countVersion) {
+                    var keyPath = docManager.keyPath(fileName, userAddress, i);
+                    keyVersion = "" + fileSystem.readFileSync(keyPath);
+                } else {
+                    keyVersion = key;
+                }
                 history.push(docManager.getHistory(fileName, changes, keyVersion, i));
 
-                prevUrl.push(prevPath);
-                prevPath = docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName);
-
-                diff.push(diffPath);
-                diffPath = docManager.getlocalFileUri(fileName, i) + "/diff.zip";
-
-                var changesFile = docManager.changesPath(fileName, userAddress, i);
-                var changes = docManager.getChanges(changesFile);
+                var historyD = {
+                    version: i,
+                    key: keyVersion,
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName)),
+                };
+                if (i > 1) {
+                    historyD.previous = {
+                        key: historyData[i-2].key,
+                        url: historyData[i-2].url,
+                        
+                    };
+                    historyD.changesUrl = docManager.getlocalFileUri(fileName, i-1) + "/diff.zip";
+                }
+                historyData.push(historyD);
+                
+                if (i < countVersion) {
+                    var changesFile = docManager.changesPath(fileName, userAddress, i);
+                    changes = docManager.getChanges(changesFile);
+                }
             }
-            prevUrl.push(prevPath);
-            diff.push(diffPath);
         } else {
-            prevUrl.push(url);
+            history.push(docManager.getHistory(fileName, changes, keyVersion, countVersion));
+            historyData.push({
+                version: countVersion,
+                key: key,
+                url: url
+            });
         }
-        history.push(docManager.getHistory(fileName, changes, key, countVersion));
 
         var argss = {
             apiUrl: siteUrl + configServer.get('apiUrl'),
@@ -521,10 +536,7 @@ app.get("/editor", function (req, res) {
                 plugins: JSON.stringify(plugins)
             },
             history: history,
-            setHistoryData: {
-                url: prevUrl,
-                changesUrl: diff
-            }
+            historyData: historyData
         };
 
         if (cfgSignatureEnable) {
