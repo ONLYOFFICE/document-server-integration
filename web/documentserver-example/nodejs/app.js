@@ -509,6 +509,12 @@ app.get("/editor", function (req, res) {
             });
         }
 
+        if (cfgSignatureEnable) {
+            for (var i = 0; i < historyData.length; i++) {
+                historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+            }
+        }
+
         var argss = {
             apiUrl: siteUrl + configServer.get('apiUrl'),
             file: {
