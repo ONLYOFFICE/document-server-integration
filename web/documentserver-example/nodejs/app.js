@@ -120,9 +120,12 @@ app.get("/download", function(req, res) {
     docManager.init(__dirname, req, res);
 
     var fileName = fileUtility.getFileName(req.query.fileName);
-
     var userAddress = docManager.curUserHostAddress();
-    var path = docManager.storagePath(fileName, userAddress);
+
+    var path = docManager.forcesavePath(fileName, userAddress, false);
+    if (path == "") {
+        path = docManager.storagePath(fileName, userAddress);
+    }
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
     res.setHeader("Content-Type", mime.lookup(path));
@@ -373,6 +376,11 @@ app.post("/track", function (req, res) {
 
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(path, file.getBody());
+
+                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
+                if (forcesavePath != "") {
+                    fileSystem.unlinkSync(forcesavePath);
+                }
             } catch (ex) {
                 console.log(ex);
             }
