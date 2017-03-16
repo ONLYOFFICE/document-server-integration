@@ -138,8 +138,8 @@
                             <tr class="tableRow" title="<%=storedFiles[i].name%>">
                                 <td class="contentCells">
                                     <a class="stored-edit <%= storedFiles[i].documentType %>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <span title="<%= storedFiles[i].url %>"><%= storedFiles[i].name %></span></a>
-                                    <a href="<%= storedFiles[i].url %>">
+                                        <span title="<%= storedFiles[i].name %>"><%= storedFiles[i].name %></span></a>
+                                    <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
                                         <img class="icon-download" src="images/download-24.png" alt="Download" title="Download" /></a>
                                     <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
                                         <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
