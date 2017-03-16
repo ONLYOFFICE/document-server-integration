@@ -301,7 +301,7 @@ app.post("/track", function (req, res) {
 
     var processTrack = function (response, body, fileName, userAddress) {
 
-        var processSave = function (downloadUri, body, fileName, userAddress, resp, newVersion) {
+        var processSave = function (downloadUri, body, fileName, userAddress, resp) {
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = fileUtility.getFileExtension(downloadUri);
 
@@ -309,8 +309,8 @@ app.post("/track", function (req, res) {
                 var key = documentService.generateRevisionId(downloadUri);
 
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function(dUri){
-                        processSave(dUri, body, fileName, userAddress, resp, newVersion)
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (dUri) {
+                        processSave(dUri, body, fileName, userAddress, resp)
                     });
                     return;
                 } catch (ex) {
@@ -323,40 +323,75 @@ app.post("/track", function (req, res) {
 
                 var path = docManager.storagePath(fileName, userAddress);
 
-                if (newVersion) {
-                    var historyPath = docManager.historyPath(fileName, userAddress);
-                    if (historyPath == "") {
-                        historyPath = docManager.historyPath(fileName, userAddress, true);
-                        docManager.createDirectory(historyPath);
-                    }
-
-                    var count_version = docManager.countVersion(historyPath);
-                    version = count_version + 1;
-                    versionPath = docManager.versionPath(fileName, userAddress, version);
-                    docManager.createDirectory(versionPath);
-
-                    var downloadZip = body.changesurl;
-                    if (downloadZip) {
-                        var path_changes = docManager.diffPath(fileName, userAddress, version);
-                        var diffZip = syncRequest("GET", downloadZip);
-                        fileSystem.writeFileSync(path_changes, diffZip.getBody());
-                    }
-
-                    var changeshistory = body.changeshistory || JSON.stringify(body.history);
-                    if (changeshistory) {
-                        var path_changes_json = docManager.changesPath(fileName, userAddress, version);
-                        fileSystem.writeFileSync(path_changes_json, changeshistory);
-                    }
-
-                    var path_key = docManager.keyPath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_key, body.key);
-
-                    var path_prev = docManager.prevFilePath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
+                var historyPath = docManager.historyPath(fileName, userAddress);
+                if (historyPath == "") {
+                    historyPath = docManager.historyPath(fileName, userAddress, true);
+                    docManager.createDirectory(historyPath);
                 }
+
+                var count_version = docManager.countVersion(historyPath);
+                version = count_version + 1;
+                versionPath = docManager.versionPath(fileName, userAddress, version);
+                docManager.createDirectory(versionPath);
+
+                var downloadZip = body.changesurl;
+                if (downloadZip) {
+                    var path_changes = docManager.diffPath(fileName, userAddress, version);
+                    var diffZip = syncRequest("GET", downloadZip);
+                    fileSystem.writeFileSync(path_changes, diffZip.getBody());
+                }
+
+                var changeshistory = body.changeshistory || JSON.stringify(body.history);
+                if (changeshistory) {
+                    var path_changes_json = docManager.changesPath(fileName, userAddress, version);
+                    fileSystem.writeFileSync(path_changes_json, changeshistory);
+                }
+
+                var path_key = docManager.keyPath(fileName, userAddress, version);
+                fileSystem.writeFileSync(path_key, body.key);
+
+                var path_prev = docManager.prevFilePath(fileName, userAddress, version);
+                fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
 
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(path, file.getBody());
+            } catch (ex) {
+                console.log(ex);
+            }
+
+            response.write("{\"error\":0}");
+            response.end();
+        };
+
+        var processForceSave = function (downloadUri, body, fileName, userAddress, resp) {
+            var curExt = fileUtility.getFileExtension(fileName);
+            var downloadExt = fileUtility.getFileExtension(downloadUri);
+
+            if (downloadExt != curExt) {
+                var key = documentService.generateRevisionId(downloadUri);
+
+                try {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (dUri) {
+                        processForceSave(dUri, body, fileName, userAddress, resp)
+                    });
+                    return;
+                } catch (ex) {
+                    console.log(ex);
+                    fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress)
+                }
+            }
+
+            try {
+
+                var path = docManager.storagePath(fileName, userAddress);
+
+                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
+                if (forcesavePath == "") {
+                    forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
+                }
+
+                var file = syncRequest("GET", downloadUri);
+                fileSystem.writeFileSync(forcesavePath, file.getBody());
             } catch (ex) {
                 console.log(ex);
             }
@@ -378,10 +413,11 @@ app.post("/track", function (req, res) {
                 }
             }
 
-        } else if (body.status == 2 || body.status == 3 //MustSave, Corrupted
-                   || body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
-            var newVersion = (body.status == 2 || body.status == 3);
-            processSave(body.url, body, fileName, userAddress, response, newVersion);
+        } else if (body.status == 2 || body.status == 3) { //MustSave, Corrupted
+            processSave(body.url, body, fileName, userAddress, response);
+            return;
+        } else if (body.status == 6 || body.status == 7) { //MustForceSave, CorruptedForceSave
+            processForceSave(body.url, body, fileName, userAddress, response);
             return;
         }
 

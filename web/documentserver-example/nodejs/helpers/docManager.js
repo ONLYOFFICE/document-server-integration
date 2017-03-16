@@ -181,6 +181,23 @@ docManager.storagePath = function (fileName, userAddress) {
     return path.join(directory, fileName);
 };
 
+docManager.forcesavePath = function (fileName, userAddress, create) {
+    let directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    if (!this.existsSync(directory)) {
+        return "";
+    }
+    directory = path.join(directory, fileName + "-history");
+    if (!create && !this.existsSync(directory)) {
+        return "";
+    }
+    this.createDirectory(directory);
+    directory = path.join(directory, fileName);
+    if (!create && !this.existsSync(directory)) {
+        return "";
+    }
+    return directory;
+};
+
 docManager.historyPath = function (fileName, userAddress, create) {
     let directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
     if (!this.existsSync(directory)) {
@@ -289,9 +306,9 @@ docManager.getKey = function (fileName) {
         key += docManager.countVersion(historyPath);
     }
 
-    historyPath = docManager.historyPath(fileName, userAddress, true);
+    /*historyPath = docManager.historyPath(fileName, userAddress, true);
     const stat = fileSystem.statSync(historyPath);
-    key += stat.mtime.toString();
+    key += stat.mtime.toString();*/
 
     return documentService.generateRevisionId(key);
 };
