@@ -33,6 +33,7 @@ const syncRequest = require("sync-request");
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
+const mime = require("mime");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
@@ -113,6 +114,23 @@ app.get("/", function (req, res) {
         res.render("error", { message: "Server error" });
         return;
     }
+});
+
+app.get("/download", function(req, res) {
+    docManager.init(__dirname, req, res);
+
+    var fileName = fileUtility.getFileName(req.query.fileName);
+
+    var userAddress = docManager.curUserHostAddress();
+    var path = docManager.storagePath(fileName, userAddress);
+
+    res.setHeader("Content-Length", fileSystem.statSync(path).size);
+    res.setHeader("Content-Type", mime.lookup(path));
+
+    res.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+    var filestream = fileSystem.createReadStream(path);
+    filestream.pipe(res);
 });
 
 app.post("/upload", function (req, res) {
@@ -487,7 +505,7 @@ app.get("/editor", function (req, res) {
         }
 
         var userAddress = docManager.curUserHostAddress();
-        fileName = fileUtility.getFileName(req.query.fileName);
+        var fileName = fileUtility.getFileName(req.query.fileName);
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit 
