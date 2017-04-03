@@ -24,23 +24,25 @@
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
     "maxFileSize": 1073741824,
+    "mobileRegEx": "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino",
     "static":[
       {
         "name": "/public",
         "path": "public"
       }
-    ]
+    ],
+    "token": {
+        "enable": false,
+        "useforrequest": true,
+        "algorithmRequest": "HS256",
+        "authorizationHeader": "Authorization",
+        "authorizationHeaderPrefix": "Bearer ",
+        "secret": "secret",
+        "expiresIn": "5m"
+    }
   },
   "plugins": {
-    "url": "../../../../sdkjs-plugins/",
-    "pluginsData": [
-		"helloworld/config.json",
-		"chess/config.json",
-		"speech/config.json",
-		"youtube/config.json",
-		"cbr/config.json",
-		"ocr/config.json",
-		"clipart/config.json"
-    ]
+    "url": "",
+    "pluginsData": []
   }
 }

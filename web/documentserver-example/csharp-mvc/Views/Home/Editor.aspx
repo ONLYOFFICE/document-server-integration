@@ -1,6 +1,6 @@
 ﻿<!--*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -23,7 +23,7 @@
  *
 *-->
 
-<%@ Page Title="ONLYOFFICE™" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVC.Models.FileModel>" %>
+<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVC.Models.FileModel>" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
@@ -36,7 +36,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
-    <title><%= Model.FileName + " - ONLYOFFICE™" %></title>
+    <title><%= Model.FileName + " - ONLYOFFICE" %></title>
     
     <%: Styles.Render("~/Content/editor") %>
 
@@ -78,6 +78,10 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
@@ -112,8 +116,7 @@
 
                         user: {
                             id: "<%= DocManagerHelper.CurUserHostAddress() %>",
-                            firstname: 'John',
-                            lastname: 'Smith',
+                            name: "John Smith",
                         },
 
                         embedded: {
@@ -136,6 +139,7 @@
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     }
                 });
         };

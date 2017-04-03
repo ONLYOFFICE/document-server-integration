@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -28,13 +28,7 @@
 <?php
 
 require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/common.php' );
 
-
-function FileUri($file_name) {
-    $uri = getVirtualPath() . $file_name;
-	return $uri;
-}
 
 function GetExternalFileUri($local_uri) {
     $externalUri = '';
@@ -103,23 +97,6 @@ function DoUpload($fileUri) {
     }
 
     return $_fileName;
-}
-
-
-function generateUrlToConverter($document_uri, $from_extension, $to_extension, $title, $document_revision_id, $is_async) {
-    $urlToConverterParams = array(
-                                "url" => $document_uri,
-                                "outputtype" => trim($to_extension,'.'),
-                                "filetype" => trim($from_extension, '.'),
-                                "title" => $title,
-                                "key" => $document_revision_id);
-
-    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'] . "?" . http_build_query($urlToConverterParams);
-
-    if ($is_async)
-        $urlToConverter = $urlToConverter . "&async=true";
-
-    return $urlToConverter;
 }
 
 
@@ -227,16 +204,29 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $document_revision_id = GenerateRevisionId($document_revision_id);
 
-    $urlToConverter = generateUrlToConverter($document_uri, $from_extension, $to_extension, $title, $document_revision_id, $is_async);
+    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'];
+
+    $data = json_encode(
+        array(
+            "async" => $is_async,
+            "url" => $document_uri,
+            "outputtype" => trim($to_extension,'.'),
+            "filetype" => trim($from_extension, '.'),
+            "title" => $title,
+            "key" => $document_revision_id
+        )
+    );
 
     $response_xml_data;
     $countTry = 0;
 
     $opts = array('http' => array(
-            'method'  => 'GET',
-            'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'] 
-        )
-    );
+                'method'  => 'POST',
+                'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
+                'header'=> "Content-type: application/json\r\n",
+                'content' => $data
+            )
+        );
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
         $opts['ssl'] = array( 'verify_peer'   => FALSE );
@@ -256,8 +246,11 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     }
 
     libxml_use_internal_errors(true);
-    $data = simplexml_load_string($response_xml_data);
-    if (!$data) {
+    if (!function_exists('simplexml_load_file')){
+         throw new Exception("Server can't read xml");
+    }
+    $response_data = simplexml_load_string($response_xml_data);
+    if (!$response_data) {
         $exc = "Bad Response. Errors: ";
         foreach(libxml_get_errors() as $error) {
             $exc = $exc . "\t" . $error->message;
@@ -265,7 +258,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         throw new Exception ($exc);
     }
 
-    return $data;
+    return $response_data;
 }
 
 
@@ -320,6 +313,9 @@ function GetResponseUri($x_document_response, &$response_uri) {
     $resultPercent = 0;
 
     libxml_use_internal_errors(true);
+    if (!function_exists('simplexml_load_file')){
+         throw new Exception("Server can't read xml");
+    }
     $data = simplexml_load_string($x_document_response);
 
     if (!$data) {

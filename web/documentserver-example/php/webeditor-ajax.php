@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -58,7 +58,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
     switch($type) { //Switch case for value of type
         case "upload":
             $response_array = upload();
-            $response_array['status'] = $response_array['error'] != NULL ? 'error' : 'success';
+            $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
         case "convert":
             $response_array = convert();
@@ -66,6 +66,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             die (json_encode($response_array));
         case "track":
             $response_array = track();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
+        case "delete":
+            $response_array = delete();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
         default:
@@ -150,14 +154,33 @@ function track() {
 
             $userAddress = $_GET["userAddress"];
             $fileName = $_GET["fileName"];
-            $storagePath = getStoragePath($fileName, $userAddress);
 
             $downloadUri = $data["url"];
+
+            $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
+            $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));
+
+            if ($downloadExt != $curExt) {
+                $key = getDocEditorKey(downloadUri);
+
+                try {
+                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "logs/webedior-ajax.log");
+                    $convertedUri;
+                    $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
+                    $downloadUri = $convertedUri;
+                } catch (Exception $e) {
+                    sendlog("Convert after save ".$e->getMessage(), "logs/webedior-ajax.log");
+                    $result["error"] = "error: " . $e->getMessage();
+                    return $result;
+                }
+            }
+
             $saved = 1;
 
             if (($new_data = file_get_contents($downloadUri))===FALSE){
                 $saved = 0;
             } else {
+                $storagePath = getStoragePath($fileName, $userAddress);
                 file_put_contents($storagePath, $new_data, LOCK_EX);
             }
 
@@ -178,10 +201,10 @@ function convert() {
     if (in_array("." + $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $_GET["fileUri"];
-        if ($fileUri == "") {
-            $fileUri = FileUri($fileName);
+        if ($fileUri == NULL || $fileUri == "") {
+            $fileUri = FileUri($fileName, TRUE);
         }
-        $key = GenerateRevisionId($fileUri);
+        $key = getDocEditorKey($fileName);
 
         $newFileUri;
         $result;
@@ -221,6 +244,21 @@ function convert() {
 
     $result["filename"] = $fileName;
     return $result;
+}
+
+function delete() {
+    try {
+        $fileName = $_GET["fileName"];
+
+        $filePath = getStoragePath($fileName);
+
+        unlink($filePath);
+    }
+    catch (Exception $e) {
+        sendlog("Deletion ".$e->getMessage(), "logs/webedior-ajax.log");
+        $result["error"] = "error: " . $e->getMessage();
+        return $result;
+    }
 }
 
 ?>

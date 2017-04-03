@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -25,6 +25,16 @@
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
+
+    user = getUrlVars()["user"];
+    if ("" != user && undefined != user)
+        jq("#user").val(user);
+    else
+        user = jq("#user").val();
+
+    jq(document).on("change", "#user", function() {
+        window.location = "?user=" + jq(this).val();
+    });
 
     jq(function () {
         jq('#fileupload').fileupload({
@@ -108,7 +118,11 @@ if (typeof jQuery != "undefined") {
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
-                    var response = jq.parseJSON(responseText);
+                    try {
+                        var response = jq.parseJSON(responseText);
+                    } catch (e)	{
+                        response = { error: e };
+                    }
 
                     if (response.error) {
                         jq(".current").removeClass("current");
@@ -166,28 +180,42 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?fileID=" + fileId;
+        var url = "doceditor.php?fileID=" + fileId + "&user=" + user;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=view&fileID=" + fileId;
+        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=embedded&fileID=" + fileId;
+        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
 
         jq("#embeddedView").attr("src", url);
+    });
+
+    jq(document).on("click", ".reload-page", function () {
+        setTimeout(function () { document.location.reload(); }, 1000);
+        return true;
+    });
+
+    jq(document).on("mouseup", ".reload-page", function (event) {
+        if (event.which == 2) {
+            setTimeout(function () { document.location.reload(); }, 1000);
+        }
+        return true;
     });
 
     jq(document).on("click", "#cancelEdit, .dialog-close", function () {
@@ -196,8 +224,42 @@ if (typeof jQuery != "undefined") {
         jq.unblockUI();
     });
 
-    jq.dropdownToggle({
-        switcherSelector: ".question",
-        dropdownID: "hint"
+    jq(document).on("click", ".delete-file", function () {
+        var fileName = jq(this).attr("data");
+
+        var requestAddress = "webeditor-ajax.php?type=delete&fileName=" + fileName;
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            type: "get",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
+    jq(document).on("click", "#createSample", function () {
+        jq(".try-editor").each(function () {
+            var href = jq(this).attr("href");
+            if (jq("#createSample").is(":checked")) {
+                href += "&sample=true";
+            } else {
+                href = href.replace("&sample=true", "");
+            }
+            jq(this).attr("href", href);
+        });
     });
 }
+
+function getUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+};

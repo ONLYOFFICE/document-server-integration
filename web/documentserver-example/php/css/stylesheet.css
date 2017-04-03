@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -48,15 +48,21 @@ div {
 a, a:hover, a:visited {
     color: #333;
 }
-
-
-.top-panel {
-    background: url("images/logo.png") no-repeat 30px center #3D4A6B;
+header {
+    height: 44px;
+    background: #3D4A6B;
     height: 80px;
-    width: 100%;
+    margin: 0 auto;
+    min-width: 600px;
+    width: auto;
 }
+
+header img {
+    margin: 12px 0 0 16px;
+}
+
 .main-panel {
-    margin: 80px auto;
+    margin: 80px auto 16px;
     width: 600px;
 }
 .portal-name {
@@ -69,41 +75,13 @@ a, a:hover, a:visited {
     width: 600px;
 }
 .save-original {
-    color: #929597;
-    line-height: 20px;
-    margin-left: 16px;
-    white-space: nowrap;
-    width: 272px;
+    margin-left: 30px;
 }
 label .checkbox {
     vertical-align: middle;
 }
-.question {
-    background: url("images/question_small.png") no-repeat center center transparent;
-    cursor: pointer;
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-}
-#hint {
-    background-color: #FFFFFF;
-    border: 1px solid #8E908F;
-    display: none;
-    margin: 4px 0 0 -32px;
-    max-width: 415px;
-    padding: 10px 15px 15px;
-    word-wrap: break-word;
-    z-index: 255;
-}
-.corner {
-    background: url("images/corner.png") no-repeat scroll 0 0 transparent;
-    height: 6px;
-    left: 35px;
-    margin-top: -15px;
-    position: absolute;
-    width: 9px;
-    z-index: 261;
-}
+
+
 .try-descr {
     font-size: 16px;
     white-space : nowrap;
@@ -111,13 +89,13 @@ label .checkbox {
 
 .try-editor-list {
     list-style: none;
-    margin: 0;
+    margin: 0 0 16px;
     padding: 0;
 }
 .try-editor-list li {
     float: left;
-    margin: 25px;
-    width: 150px;
+    margin: 0 15px;
+    width: 100px;
 }
 .try-editor {
     background-color: transparent;
@@ -139,6 +117,9 @@ label .checkbox {
 }
 .try-editor.presentation {
     background-image: url("images/file_pptx.png");
+}
+.create-sample {
+    margin-left: 75px;
 }
 
 .button, .button:visited, .button:hover, .button:active {
@@ -183,25 +164,39 @@ label .checkbox {
     border: 1px solid #E9EAEA;
 }
 
-.file-upload {
-    cursor: pointer;
-    margin-bottom: 8px;
-    padding: 0 !important;
-    overflow: hidden;
-    position: relative;
+.upload-panel {
+    border-right: 1px solid #D1D1D1;
+    float: left;
+    margin-right: 25px;
 }
-.file-upload span {
-    line-height: 21px;
-    margin: 2px 12px;
+.file-upload {
+    background: url("images/file_upload.png") no-repeat center 0 transparent;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 45px;
+    margin: 0 40px 16px;
+    overflow: hidden;
+    padding-top: 100px;
+    position: relative;
+    text-align: center;
+    width: 100px;
 }
 .file-upload input {
     cursor: pointer;
-    font-size: 23px;
     opacity: 0;
     position: absolute;
     right: 0;
     top: 0;
-    transform: translate(-300px, 0) scale(4);
+    transform: translate(555px, 60px) scale(8);
+}
+.create-panel {
+    float: left;
+}
+.upload-panel,
+.create-panel {
+    padding: 10px 0;
 }
 
 #mainProgress {
@@ -268,17 +263,68 @@ label .checkbox {
     position: absolute;
     visibility: hidden;
 }
-.bottom-panel {
-    bottom: 0;
-    position: fixed;
+footer {
     text-align: right;
-    width: 100%;
+    width: auto;
+    margin-bottom: 15px;
+    margin-right: 15px;
 }
 .help-block span {
     font-size: 16px;
     line-height: 26px;
 }
 
+.stored-list {
+    border-top: 1px solid #D1D1D1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.stored-list li {
+    border-bottom: 1px solid #D1D1D1;
+    line-height: 28px;
+    padding: 0 8px;
+}
+.stored-edit {
+    background-color: transparent;
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 16px;
+    max-width: 250px;
+    margin-bottom: -6px;
+    overflow: hidden;
+    padding: 8px 0 1px 34px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.stored-edit.text {
+    background-image: url("images/icon_docx.png");
+}
+.stored-edit.spreadsheet {
+    background-image: url("images/icon_xlsx.png");
+}
+.stored-edit.presentation {
+    background-image: url("images/icon_pptx.png");
+}
+.stored-edit span {
+    font-size: 12px;
+    line-height: 12px;
+    vertical-align: top;
+}
+.stored-edit:hover span {
+    text-decoration: underline;
+}
+.stored-download {
+    color: #787878;
+    float: right;
+    text-decoration: none;
+}
+.stored-download:hover {
+    color: #787878;
+    text-decoration: underline;
+}
 
 
 
@@ -310,4 +356,110 @@ label .checkbox {
     -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     -webkit-box-shadow:0 2px 4px rgba(0, 0, 0, 0.5);
     padding: 0 !important;
+}
+
+.clearFix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.td100 {
+    width: 100%;
+}
+
+.block-lang {
+    padding-right: 10px;
+    padding-top: 9px;
+} 
+/*Icon table*/
+#tableRow {
+    vertical-align: top;
+}
+.tableRow {
+    background: transparent;
+
+    -moz-transition: all 0.2s ease-in-out;
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+.tableRow:hover {
+    background-color: #ebebeb;
+}
+
+.tableHeader {
+    background: transparent;
+    color: #333;
+    cursor: default;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    height: 40px;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.tableHeaderCell {
+    padding: 2px 1px 2px 5px;
+    text-align: center;
+}
+.tableHeaderCellFileName {
+    text-align: left;
+}
+.contentCells {
+    padding: 4px 1px 4px 5px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+.contentCells-shift {
+    padding-right: 30px;
+}
+.contentCells-icon {
+    width: 6%;
+}
+.contentCellsSmall {
+    padding: 5px 1px 5px 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    text-align: center;
+}
+.primaryRow {
+    background-color: #e9e9e9;
+}
+.secondaryRow {
+    background-color: #F9F9F9;
+}
+.select-user {
+    margin-left: 15px;
+}
+.user-block-table {
+    height: 100%;
+    width: 100%;
+}
+.user-block-table td {
+    background-color: #F4F4F4;
+    border-bottom: 1px solid white;
+    padding: 12px 0;
+}
+#user, #language {
+    width: 130px;
+}
+.icon-download {
+    margin-bottom: -5px;
+}
+.icon-delete {
+    cursor: pointer;
+    margin-bottom: -6px;
 }

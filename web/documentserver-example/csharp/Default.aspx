@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="OnlineEditorsExample._Default" Title="ONLYOFFICE™" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="OnlineEditorsExample._Default" Title="ONLYOFFICE" %>
 
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Linq" %>
@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>ONLYOFFICE™</title>
+    <title>ONLYOFFICE</title>
 
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
 
@@ -43,10 +43,10 @@
 
         <div class="top-panel"></div>
         <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE™ Online Editors</span>
+            <span class="portal-name">ONLYOFFICE Online Editors</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
 
             <div class="file-upload button gray">
                 <span>Choose file</span>
@@ -99,7 +99,7 @@
                    if (examples.Any())
                    { %>
                 <br />
-                Download the code for the sample of ONLYOFFICE™ Online Editors to find out the details.
+                Download the code for the sample of ONLYOFFICE Online Editors to find out the details.
                 <br />
                 <br />
                 <% foreach (var example in examples)

@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -25,14 +25,12 @@
 
 var language;
 var userid;
-var firstname;
-var lastname;
+var username;
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
-    firstname = getUrlVars()["firstname"];
-    lastname = getUrlVars()["lastname"];
+    username = getUrlVars()["name"];
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
 
@@ -43,43 +41,26 @@ if (typeof jQuery != "undefined") {
 
 
     jq("#language").change(function() {
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
-        //alert(language);
-        lastname = arUser[1];
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&firstname=" + firstname + "&lastname=" + lastname;
+        var username = jq('#user option:selected').text();
+        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&name=" + username;
     });
-    
+
 
     if ("" != userid && undefined != userid)
         jq("#user").val(userid);
     else
         userid = jq("#user").val();
 
-    if ("" != firstname && undefined != firstname)
-        firstname=getUrlVars()["firstname"];
-    else{
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
+    if ("" != username && undefined != username) {
+        username = getUrlVars()["name"];
     }
-    if ("" != lastname && undefined != lastname)
-        lastname=getUrlVars()["lastname"];
-    else{
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        lastname = arUser[1];
+    else {
+        username = jq('#user option:selected').text();
     }
 
     jq("#user").change(function() {
-        var user = jq('#user option:selected').text();
-        var arUser = user.split(' ');
-        firstname = arUser[0];
-        lastname = arUser[1];
-        
-//var fn = jq('#user option:selected').attr('value-fn');
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&firstname=" + arUser[0] + "&lastname=" + arUser[1];
+        var username = jq('#user option:selected').text();
+        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&name=" + username;
     });
 
     jq(function () {
@@ -217,7 +198,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -226,7 +207,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -235,7 +216,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&firstname=" +firstname +"&lastname=" + lastname;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");

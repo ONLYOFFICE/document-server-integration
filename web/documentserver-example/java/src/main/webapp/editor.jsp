@@ -1,6 +1,6 @@
 <!--*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -35,7 +35,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>ONLYOFFICE™</title>
+        <title>ONLYOFFICE</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
@@ -72,6 +72,10 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
@@ -106,8 +110,7 @@
 
                         user: {
                             id: "<%= Model.CurUserHostAddress() %>",
-                            firstname: "John",
-                            lastname: "Smith",
+                            name: "John Smith",
                         },
 
                         embedded: {
@@ -130,6 +133,7 @@
                         "onDocumentStateChange": onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         "onError": onError,
+                        "onOutdatedVersion": onOutdatedVersion,
                     }
                 });
         };

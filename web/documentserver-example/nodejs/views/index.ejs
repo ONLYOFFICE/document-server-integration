@@ -1,6 +1,6 @@
 ﻿<!--*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -30,7 +30,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
-    <title>ONLYOFFICE™ Integration Edition</title>
+    <title>ONLYOFFICE Integration Edition</title>
     <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" />
@@ -39,14 +39,14 @@
 <body>
     <header>
         <a href="/">
-            <img src ='images/logo.png' alt="ONLYOFFICE™" />
+            <img src ='images/logo.png' alt="ONLYOFFICE" />
         </a>
     </header>
     <div class="main-panel">
-        <span class="portal-name">ONLYOFFICE™ Integration Edition – Welcome!</span>
+        <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
         <br />
         <br />
-        <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+        <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
         <table class="user-block-table" cellspacing="0" cellpadding="0">
             <tr>
                 <td valign="middle" width="30%">
@@ -129,7 +129,7 @@
                     <thead>
                         <tr class="tableHeader">
                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                            <td colspan="2" class="tableHeaderCell contentCells-shift">Editors</td>
+                            <td colspan="3" class="tableHeaderCell contentCells-shift">Editors</td>
                             <td colspan="3" class="tableHeaderCell">Viewers</td>
                         </tr>
                     </thead>
@@ -137,32 +137,38 @@
                         <% for (var i = 0; i < storedFiles.length; i++) { %>
                             <tr class="tableRow" title="<%=storedFiles[i].name%>">
                                 <td class="contentCells">
-                                    <a class="stored-edit <%= storedFiles[i].documentType%>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <span title="<%= storedFiles[i].url %>"><%= storedFiles[i].name %></span></a>
-                                    <a href="<%= storedFiles[i].url %>">
-                                        <img class="icon-download" src="images/download-24.png" alt="download" /></a>
+                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <span title="<%= storedFiles[i].name %>"><%= storedFiles[i].name %></span></a>
+                                    <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
+                                        <img class="icon-download" src="images/download-24.png" alt="Download" title="Download" /></a>
                                     <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                        <img class="icon-delete" src="images/delete-24.png" alt="delete" /></a>
+                                        <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="editor" /></a>
+                                    <a href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
-                                    <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile editor" /></a>
+                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                    <% } %>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="editor?mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/desktop-24.png" alt="viewer" /></a>
+                                    <a href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/mobile-24.png" alt="mobile viewer" /></a>
+                                        <img src="images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                        <img src="images/embeded-24.png" alt="embedded" /></a>
+                                        <img src="images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                 </td>
                             </tr>
                         <% } %>
@@ -177,7 +183,7 @@
         <div class="help-block">
             <span>Want to learn the magic?</span>
             <br />
-            Explore ONLYOFFICE™ Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
+            Explore ONLYOFFICE Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
         </div>
         <br />
         <br />
@@ -221,7 +227,7 @@
 
     <span id="loadScripts" data-docs="<%= preloaderUrl %>"></span>
 
-    <footer>&copy; Ascensio Systems Inc 2016. All rights reserved.</footer>
+    <footer>&copy; Ascensio Systems Inc 2017. All rights reserved.</footer>
 
     <script type="text/javascript" src="javascripts/jquery-1.8.2.js"></script>
     <script type="text/javascript" src="javascripts/jquery-ui.js"></script>

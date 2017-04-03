@@ -191,7 +191,7 @@ public class DocumentManager
     {
         String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         String hostAddress = CurUserHostAddress(null);
-        String query = "?type=track&userAddress=" + URLEncoder.encode(hostAddress) + "&fileName=" + URLEncoder.encode(fileName);
+        String query = "?type=track&fileName=" + URLEncoder.encode(fileName) + "&userAddress=" + URLEncoder.encode(hostAddress);
         
         return serverPath + "/IndexServlet" + query;
     }

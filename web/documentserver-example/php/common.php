@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -28,6 +28,7 @@
 <?php
 
 require_once( dirname(__FILE__) . '/config.php' );
+require_once( dirname(__FILE__) . '/functions.php' );
 
 function sendlog($msg, $logFileName) {
     file_put_contents($logFileName, $msg . PHP_EOL, FILE_APPEND);
@@ -134,16 +135,27 @@ function getClientIp() {
         getenv('HTTP_FORWARDED_FOR')?:
         getenv('HTTP_FORWARDED')?:
         getenv('REMOTE_ADDR')?:
-        '';
+        'Storage';
+
+    $ipaddress = preg_replace("/[^0-9a-zA-Z.=]/", "_", $ipaddress);
 
     return $ipaddress;
 }
 
-function serverPath() {
-    return 'http://' . $_SERVER['HTTP_HOST'];
+function serverPath($forDocumentServer) {
+    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != "" 
+        ? $GLOBALS['EXAMPLE_URL'] 
+        : ('http://' . $_SERVER['HTTP_HOST']);
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
+    if ($GLOBALS['ALONE']) {
+        if (empty($GLOBALS['STORAGE_PATH'])) {
+            return "Storage";
+        } else {
+            return "";
+        }
+    }
     if (is_null($userAddress)) {$userAddress = getClientIp();}
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
@@ -192,20 +204,62 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . $fileName;
 }
 
-function getVirtualPath() {
+function getStoredFiles() {
+    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+
+    $result = array();
+    if ($storagePath != "")
+    {
+        $directory =  $directory  . DIRECTORY_SEPARATOR;
+
+        if (!file_exists($directory) && !is_dir($directory)) {
+            return $result;
+        }
+    }
+
+    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+
+    if (!file_exists($directory) && !is_dir($directory)) {
+        return $result;
+    } 
+
+    $cdir = scandir($directory);
+    $result = array();
+    foreach($cdir as $key => $fileName) {
+        if (!in_array($fileName,array(".", ".."))) {
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {   
+                $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
+                $result[$dat] = (object) array(
+                        "name" => $fileName,
+                        "url" => FileUri($fileName),
+                        "documentType" => getDocumentType($fileName)
+                    );
+            }
+        }
+    }
+    ksort($result);
+    return array_reverse($result);
+}
+
+function getVirtualPath($forDocumentServer) {
     $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
 
-    $virtPath = serverPath() . '/' . $storagePath . getCurUserHostAddress() . '/';
+    $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
     sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
     return $virtPath;
+}
+
+function FileUri($file_name, $forDocumentServer) {
+    $uri = getVirtualPath($forDocumentServer) . $file_name;
+    return $uri;
 }
 
 function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
-
 
 function GetCorrectName($fileName) {
     $path_parts = pathinfo($fileName);
@@ -219,6 +273,13 @@ function GetCorrectName($fileName) {
         $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;
     }
     return $name;
+}
+
+function getDocEditorKey($fileName) {
+    $key = getCurUserHostAddress() . FileUri($fileName);
+    $stat = filemtime(getStoragePath($fileName));
+    $key = $key . $stat;
+    return GenerateRevisionId($key);
 }
 
 ?>

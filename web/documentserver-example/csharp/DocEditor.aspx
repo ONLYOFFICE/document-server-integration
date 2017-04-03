@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DocEditor.aspx.cs" Inherits="OnlineEditorsExample.DocEditor" Title="ONLYOFFICE™" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="DocEditor.aspx.cs" Inherits="OnlineEditorsExample.DocEditor" Title="ONLYOFFICE" %>
 
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="OnlineEditorsExample" %>
@@ -9,7 +9,7 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
-    <title>ONLYOFFICE™</title>
+    <title>ONLYOFFICE</title>
 
     <style>
         html {
@@ -71,6 +71,10 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
@@ -105,8 +109,7 @@
 
                         user: {
                             id: "<%= _Default.CurUserHostAddress(null) %>",
-                            firstname: "John",
-                            lastname: "Smith",
+                            name: "John Smith",
                         },
 
                         embedded: {
@@ -128,7 +131,8 @@
                         'onReady': onReady,
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
-                        'onError': onError
+                        'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     }
                 });
         };

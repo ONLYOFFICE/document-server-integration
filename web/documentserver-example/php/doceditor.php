@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -31,7 +31,6 @@
     require_once( dirname(__FILE__) . '/functions.php' );
 
     $filename;
-    $fileuri;
 
     $externalUrl = $_GET["fileUrl"];
     if (!empty($externalUrl))
@@ -40,40 +39,24 @@
     }
     else
     {
-        $filename = $_GET["fileID"];
+        $filename = basename($_GET["fileID"]);
     }
-    $type = $_GET["type"];
+    $createExt = $_GET["fileExt"];
 
-    if (!empty($type))
+    if (!empty($createExt))
     {
-        $filename = tryGetDefaultByType($type);
+        $filename = tryGetDefaultByType($createExt);
 
-        $new_url = "doceditor.php?fileID=" . $filename;
+        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
         header('Location: ' . $new_url, true);
         exit;
     }
 
-    $fileuri = FileUri($filename);
+    $fileuri = FileUri($filename, true);
+    $fileuriUser = FileUri($filename);
 
-
-    function tryGetDefaultByType($type) {
-        $ext;
-        switch ($type)
-        {
-            case "document":
-                $ext = ".docx";
-                break;
-            case "spreadsheet":
-                $ext = ".xlsx";
-                break;
-            case "presentation":
-                $ext = ".pptx";
-                break;
-            default:
-                return;
-        }
-
-        $demoName = "demo" . $ext;
+    function tryGetDefaultByType($createExt) {
+        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
         $demoFilename = GetCorrectName($demoName);
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
@@ -85,15 +68,12 @@
         return $demoFilename;
     }
 
-    function getDocEditorKey($fileUri) {
-        return GenerateRevisionId(getCurUserHostAddress() . "/" . basename($fileUri));
-    }
-
     function getCallbackUrl($fileName) {
-        return serverPath() . '/'
+        return serverPath(TRUE) . '/'
                     . "webeditor-ajax.php"
-                    . "?type=track&userAddress=" . getClientIp()
-                    . "&fileName=" . urlencode($fileName);
+                    . "?type=track"
+                    . "&fileName=" . urlencode($fileName)
+                    . "&userAddress=" . getClientIp();
     }
 
 ?>
@@ -103,7 +83,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-    <title>ONLYOFFICE™</title>
+    <title>ONLYOFFICE</title>
 
     <style>
         html {
@@ -165,20 +145,36 @@
                 innerAlert(event.data);
         };
 
+        var onOutdatedVersion = function (event) {
+            location.reload(true);
+        };
+
         var сonnectEditor = function () {
+
+            <?php
+                if (!file_exists(getStoragePath($filename))) {
+                    echo "alert('File not found'); return;";
+                }
+            ?>
+
+            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];
+            var type = "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""))) ?>";
+            if (type == "") {
+                type = new RegExp("<?php echo $GLOBALS['MOBILE_REGEX'] ?>", "i").test(window.navigator.userAgent) ? "mobile" : "desktop";
+            }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor",
                 {
                     width: "100%",
                     height: "100%",
 
-                    type: "<?php echo ($_GET["action"] != "embedded" ?  "desktop" : "embedded") ?>",
+                    type: type,
                     documentType: "<?php echo getDocumentType($filename) ?>",
                     document: {
                         title: fileName,
                         url: "<?php echo $fileuri ?>",
                         fileType: fileType,
-                        key: "<?php echo getDocEditorKey($fileuri) ?>",
+                        key: "<?php echo getDocEditorKey($filename) ?>",
 
                         info: {
                             author: "Me",
@@ -186,8 +182,9 @@
                         },
 
                         permissions: {
-                            edit: <?php echo (in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) ? "true" : "false") ?>,
                             download: true,
+                            edit: <?php echo (in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? "true" : "false") ?>,
+                            review: true
                         }
                     },
                     editorConfig: {
@@ -197,16 +194,12 @@
 
                         callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
 
-                        user: {
-                            id: "<?php echo getClientIp() ?>",
-                            firstname: "John",
-                            lastname: "Smith",
-                        },
+                        user: user,
 
                         embedded: {
-                            saveUrl: "<?php echo $fileuri ?>",
-                            embedUrl: "<?php echo $fileuri ?>",
-                            shareUrl: "<?php echo $fileuri ?>",
+                            saveUrl: "<?php echo $fileuriUser ?>",
+                            embedUrl: "<?php echo $fileuriUser ?>",
+                            shareUrl: "<?php echo $fileuriUser ?>",
                             toolbarDocked: "top",
                         },
 
@@ -214,7 +207,7 @@
                             about: true,
                             feedback: true,
                             goback: {
-                                url: "<?php echo serverPath() ?>/index.php",
+                                url: "<?php echo serverPath() ?>",
                             },
                         },
                     },
@@ -223,6 +216,7 @@
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     }
                 });
         };

@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -24,62 +24,104 @@
 */
 
 var path = require("path");
+var urlModule = require("url");
 var urllib = require("urllib");
-var syncRequest = require("sync-request");
 var xml2js = require("xml2js");
+var jwt = require("jsonwebtoken");
+var jwa = require("jwa");
 var fileUtility = require("./fileUtility");
 var guidManager = require("./guidManager");
 var configServer = require('config').get('server');
 var siteUrl = configServer.get('siteUrl');
+var cfgSignatureEnable = configServer.get('token.enable');
+var cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+var cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
+var cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
+var cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
+var cfgSignatureSecret = configServer.get('token.secret');
+var cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
 var documentService = {};
 
-documentService.convertParams = "?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}";
-documentService.commandParams = "?c={0}&key={1}";
 documentService.userIp = null;
 
-documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId) {
-    var xml = documentService.sendRequestToConvertService(documentUri, fromExtension, toExtension, documentRevisionId);
+documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
+    documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
 
-    var res = documentService.getResponseUri(xml);
-
-    return res.value;
+    documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, function (err, data) {
+        if (err) {
+            callback();
+            return;
+        }
+        var res = documentService.getResponseUri(data);
+        callback(res.value);
+    });
 };
 
-documentService.getConvertedUriAsync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
+documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);
 
     var title = fileUtility.getFileName(documentUri) || guidManager.newGuid();
 
     documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
 
-    var params = documentService.convertParams.format(
-    encodeURIComponent(documentUri),
-    toExtension.replace(".", ""),
-    fromExtension.replace(".", ""),
-    title,
-    documentRevisionId);
+    var params = {
+        async: async,
+        url: documentUri,
+        outputtype: toExtension.replace(".", ""),
+        filetype: fromExtension.replace(".", ""),
+        title: title,
+        key: documentRevisionId
+    };
 
-    urllib.request(siteUrl + configServer.get('converterUrl') + params, callback);
+    var uri = siteUrl + configServer.get('converterUrl');
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    }
+
+    urllib.request(uri,
+        {
+            method: "POST",
+            headers: headers,
+            data: params
+        },
+        callback);
 };
 
-documentService.getExternalUri = function (fileStream, contentLength, contentType, documentRevisionId) {
-    var params = documentService.convertParams.format("", "", "", "", documentRevisionId);
+documentService.getExternalUri = function (fileStream, contentLength, contentType, documentRevisionId, callback) {
+    documentRevisionId = documentService.generateRevisionId(documentRevisionId);
 
-    var urlTostorage = siteUrl + configServer.get('storageUrl') + params;
+    var urlTostorage = siteUrl + configServer.get('storageUrl') + "?key=" + documentRevisionId;
+    var headers = {
+        "Content-Type": contentType == null ? "application/octet-stream" : contentType,
+        "Content-Length": contentLength.toString(),
+        "charset": "utf-8"
+    };
 
-    var response = syncRequest("POST", urlTostorage, {
-        headers: {
-            "Content-Type": contentType == null ? "application/octet-stream" : contentType,
-            "Content-Length": contentLength.toString(),
-            "charset": "utf-8"
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        const hmac = jwa(cfgSignatureSecretAlgorithmRequest);
+        var payloadhash = hmac.sign(fileStream, cfgSignatureSecret);
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(urlTostorage, undefined, undefined, payloadhash);
+    }
+
+    urllib.request(urlTostorage,
+        {
+            method: "POST",
+            headers: headers,
+            data: fileStream
         },
-        body: fileStream
-    });
-
-    var res = documentService.getResponseUri(response.body.toString());
-
-    return res.value;
+        function (err, data) {
+            if (err) {
+                callback();
+                return;
+            }
+            var res = documentService.getResponseUri(data);
+            callback(res.value);
+        });
 };
 
 documentService.generateRevisionId = function (expectedKey) {
@@ -92,34 +134,16 @@ documentService.generateRevisionId = function (expectedKey) {
     return key.substring(0, Math.min(key.length, 20));
 };
 
-documentService.sendRequestToConvertService = function (documentUri, fromExtension, toExtension, documentRevisionId) {
-    fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);
-
-    var title = fileUtility.getFileName(documentUri) || guidManager.newGuid();
-
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
-
-    var params = documentService.convertParams.format(
-    encodeURIComponent(documentUri),
-    toExtension.replace(".", ""),
-    fromExtension.replace(".", ""),
-    title,
-    documentRevisionId);
-
-    var res = syncRequest("GET", siteUrl + configServer.get('converterUrl') + params);
-    return res.getBody("utf8");
-};
-
 documentService.processConvertServiceResponceError = function (errorCode) {
     var errorMessage = "";
     var errorMessageTemplate = "Error occurred in the ConvertService: ";
 
     switch (errorCode) {
         case -20:
-            errorMessage = errorMessageTemplate + "vkey deciphering error";
+            errorMessage = errorMessageTemplate + "Error encrypt signature";
             break;
         case -8:
-            errorMessage = errorMessageTemplate + "Error document VKey";
+            errorMessage = errorMessageTemplate + "Error document signature";
             break;
         case -7:
             errorMessage = errorMessageTemplate + "Error document request";
@@ -200,14 +224,50 @@ documentService.convertXmlStringToJson = function (xml) {
     return res;
 };
 
-documentService.commandRequest = function (method, documentRevisionId) {
+documentService.commandRequest = function (method, documentRevisionId, callback) {
     documentRevisionId = documentService.generateRevisionId(documentRevisionId);
-    var params = documentService.commandParams.format(
-    method,
-    documentRevisionId);
+    var params = {
+        c: method,
+        key: documentRevisionId
+    };
 
-    var res = syncRequest("GET", siteUrl + configServer.get('commandUrl') + params).getBody("utf8");
-    return JSON.parse(res).error;
+    var uri = siteUrl + configServer.get('commandUrl');
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    }
+
+    urllib.request(uri,
+        {
+            method: "POST",
+            headers: headers,
+            data: params
+        },
+        callback);
 };
+
+documentService.checkJwtHeader = function (req) {
+  var decoded = null;
+  var authorization = req.get(cfgSignatureAuthorizationHeader);
+  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+    var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    try {
+      decoded = jwt.verify(token, cfgSignatureSecret);
+    } catch (err) {
+        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+    }
+  }
+  return decoded;
+}
+
+documentService.fillJwtByUrl = function (uri, opt_dataObject, opt_iss, opt_payloadhash) {
+  var parseObject = urlModule.parse(uri, true);
+  var payload = {query: parseObject.query, payload: opt_dataObject, payloadhash: opt_payloadhash};
+
+  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn, issuer: opt_iss};
+  return jwt.sign(payload, cfgSignatureSecret, options);
+}
 
 module.exports = documentService;

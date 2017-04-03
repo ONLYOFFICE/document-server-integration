@@ -1,6 +1,6 @@
 ﻿<!--*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -23,7 +23,7 @@
  *
 *-->
 
-<%@ Page Title="ONLYOFFICE™" Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
+<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
@@ -35,7 +35,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
-    <title>ONLYOFFICE™</title>
+    <title>ONLYOFFICE</title>
 
     <link href="<%: Url.Content("~/favicon.ico") %>" rel="shortcut icon" type="image/x-icon" />
 
@@ -46,10 +46,10 @@
 <body>
     <div class="top-panel"></div>
     <div class="main-panel">
-        <span class="portal-name">ONLYOFFICE™ Online Editors</span>
+        <span class="portal-name">ONLYOFFICE Online Editors</span>
         <br />
         <br />
-        <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE™ Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+        <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Online Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
 
         <div class="file-upload button gray">
             <span>Choose file</span>

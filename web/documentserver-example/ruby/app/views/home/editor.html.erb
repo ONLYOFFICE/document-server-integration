@@ -34,6 +34,10 @@
             innerAlert(event.data);
     };
 
+    var onOutdatedVersion = function (event) {
+        location.reload(true);
+    };
+
     var сonnectEditor = function () {
 
         docEditor = new DocsAPI.DocEditor("iframeEditor",
@@ -68,8 +72,7 @@
 
                         user: {
                             id: "<%= @file.cur_user_host_address %>",
-                            firstname: "John",
-                            lastname: "Smith",
+                            name: "John Smith",
                         },
 
                         embedded: {
@@ -91,6 +94,7 @@
                         'onReady': onReady,
                         'onDocumentStateChange': onDocumentStateChange,
                         'onError': onError,
+                        'onOutdatedVersion': onOutdatedVersion,
                     },
                 });
     };

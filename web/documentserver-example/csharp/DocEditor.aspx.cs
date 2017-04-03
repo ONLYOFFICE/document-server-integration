@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -61,8 +61,8 @@ namespace OnlineEditorsExample
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
                 callbackUrl.Query = "type=track"
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
-                                    + "&fileName=" + HttpUtility.UrlEncode(FileName);
+                                    + "&fileName=" + HttpUtility.UrlEncode(FileName)
+                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
                 return callbackUrl.ToString();
             }
         }

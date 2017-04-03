@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System Limited 2010-2016
+ * (c) Copyright Ascensio System Limited 2010-2017
  *
  * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
  * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
@@ -213,19 +214,25 @@ namespace OnlineEditorsExampleMVC.Helpers
                                      : documentRevisionId;
             documentRevisionId = GenerateRevisionId(documentRevisionId);
 
-            var urlDocumentService = DocumentConverterUrl + ConvertParams;
-            var urlToConverter = String.Format(urlDocumentService,
-                                               HttpUtility.UrlEncode(documentUri),
-                                               toExtension.Trim('.'),
-                                               fromExtension.Trim('.'),
-                                               title,
-                                               documentRevisionId);
-
-            if (isAsync)
-                urlToConverter += "&async=true";
-
-            var req = (HttpWebRequest) WebRequest.Create(urlToConverter);
+            var req = (HttpWebRequest)WebRequest.Create(DocumentConverterUrl);
+            req.Method = "POST";
+            req.ContentType = "text/json";
             req.Timeout = ConvertTimeout;
+
+            var bodyString = string.Format("{{\"async\": {0},\"filetype\": \"{1}\",\"key\": \"{2}\",\"outputtype\": \"{3}\",\"title\": \"{4}\",\"url\": \"{5}\"}}",
+                                           isAsync.ToString().ToLower(),
+                                           fromExtension.Trim('.'),
+                                           documentRevisionId,
+                                           toExtension.Trim('.'),
+                                           title,
+                                           documentUri);
+
+            var bytes = Encoding.UTF8.GetBytes(bodyString);
+            req.ContentLength = bytes.Length;
+            using (var requestStream = req.GetRequestStream())
+            {
+                requestStream.Write(bytes, 0, bytes.Length);
+            }
 
             Stream stream = null;
             var countTry = 0;
