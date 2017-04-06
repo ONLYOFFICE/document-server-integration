@@ -595,7 +595,7 @@ app.get("/editor", function (req, res) {
                 isEdit: canEdit && mode != "review",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
-                getServerUrl: type == "embedded" ? null : "\"" + docManager.getServerUrl() + "\"",
+                getServerUrl: docManager.getServerUrl(),
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,
