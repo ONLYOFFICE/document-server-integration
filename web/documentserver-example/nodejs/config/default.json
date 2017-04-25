@@ -19,6 +19,7 @@
     "tempStorageUrl": "ResourceService.ashx",
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
+    "exampleUrl": null,
     "viewedDocs": [".ppt", ".pps", ".odp", ".pdf", ".djvu", ".epub", ".xps"],
     "editedDocs": [".docx", ".doc", ".odt", ".xlsx", ".xls", ".ods", ".csv", ".pptx", ".ppsx", ".rtf", ".txt", ".mht", ".html", ".htm"],
     "convertedDocs": [".doc", ".odt", ".xls", ".ods", ".ppt", ".pps", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],

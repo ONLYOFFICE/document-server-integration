@@ -545,7 +545,7 @@ app.get("/editor", function (req, res) {
                 var historyD = {
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName)),
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
                 };
                 if (i > 1) {
                     historyD.previous = {
@@ -595,7 +595,7 @@ app.get("/editor", function (req, res) {
                 isEdit: canEdit && mode != "review",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
-                getServerUrl: docManager.getServerUrl(),
+                backUrl: docManager.getServerUrl(),
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,

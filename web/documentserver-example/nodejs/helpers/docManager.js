@@ -148,11 +148,11 @@ docManager.getFileData = function (fileName, userAddress) {
 };
 
 docManager.getFileUri = function (fileName) {
-    return docManager.getlocalFileUri(fileName);
+    return docManager.getlocalFileUri(fileName, 0, true);
 };
 
-docManager.getlocalFileUri = function (fileName, version) {
-    const serverPath = docManager.getServerUrl();
+docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
+    const serverPath = docManager.getServerUrl(forDocumentServer);
     const storagePath = storageFolder.length ? storageFolder + "/" : "";
     const hostAddress = docManager.curUserHostAddress();
     const url = serverPath + "/" + storagePath + hostAddress + "/" + encodeURIComponent(fileName);
@@ -162,12 +162,12 @@ docManager.getlocalFileUri = function (fileName, version) {
     return url + "-history/" + version;
 };
 
-docManager.getServerUrl = function () {
-    return docManager.getProtocol() + "://" + docManager.req.get("host");
+docManager.getServerUrl = function (forDocumentServer) {
+    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host"));
 };
 
 docManager.getCallback = function (fileName) {
-    const server = docManager.getServerUrl();
+    const server = docManager.getServerUrl(true);
     const hostAddress = docManager.curUserHostAddress();
     const handler = "/track?filename=" + encodeURIComponent(fileName) + "&useraddress=" + encodeURIComponent(hostAddress);
 
