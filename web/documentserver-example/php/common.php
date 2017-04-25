@@ -232,7 +232,6 @@ function getStoredFiles() {
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
                 $result[$dat] = (object) array(
                         "name" => $fileName,
-                        "url" => FileUri($fileName),
                         "documentType" => getDocumentType($fileName)
                     );
             }

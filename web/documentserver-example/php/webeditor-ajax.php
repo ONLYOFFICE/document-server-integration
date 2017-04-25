@@ -60,6 +60,9 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
+        case "download":
+            download();
+            exit;
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
@@ -122,6 +125,21 @@ function upload() {
 
     $result["filename"] = $filename;
     return $result;
+}
+
+function download() {
+    $fileName = $_GET["filename"];
+
+    $filePath = getStoragePath($fileName);
+    if (!file_exists($filePath)) {
+        http_response_code(404);
+        return;
+    }
+    header("Content-Length: " . filesize($filePath));
+    header("Content-Type: " . mime_content_type($fileName));
+
+    header("Content-Disposition: attachment; filename=\"".basename($filePath)."\"");
+    readfile($filePath);
 }
 
 function track() {
