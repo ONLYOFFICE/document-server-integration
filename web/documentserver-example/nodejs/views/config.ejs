@@ -1,35 +1,35 @@
 ﻿"width": "100%",
 "height": "100%",
-"type": "<%= editor.type %>",
-"documentType": "<%= editor.documentType %>",
-"token": "<%= editor.token %>",
+"type": "<%- editor.type %>",
+"documentType": "<%- editor.documentType %>",
+"token": "<%- editor.token %>",
 "document": {
-    "title": "<%= file.name %>",
-    "url": "<%= file.uri %>",
-    "fileType": "<%= file.ext %>",
-    "key": "<%= editor.key %>",
+    "title": "<%- file.name %>",
+    "url": "<%- file.uri %>",
+    "fileType": "<%- file.ext %>",
+    "key": "<%- editor.key %>",
     "info": {
         "author": "Me",
-        "created": "<%= file.created %>"
+        "created": "<%- file.created %>"
     },
     "permissions": {
         "download": true,
-        "edit": "<%= editor.isEdit %>",
+        "edit": "<%- editor.isEdit %>",
         "review": true
     }
 },
 "editorConfig": {
-    "mode": "<%= editor.mode %>",
-    "lang": "<%= editor.lang %>",
+    "mode": "<%- editor.mode %>",
+    "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
     "user": {
-        "id": "<%= editor.userid %>",
-        "name": "<%= editor.name %>"
+        "id": "<%- editor.userid %>",
+        "name": "<%- editor.name %>"
     },
     "embedded": {
-        "saveUrl": "<%= file.uri %>",
-        "embedUrl": "<%= file.uri %>",
-        "shareUrl": "<%= file.uri %>",
+        "saveUrl": "<%- file.uri %>",
+        "embedUrl": "<%- file.uri %>",
+        "shareUrl": "<%- file.uri %>",
         "toolbarDocked": "top"
     },
     "customization": {
@@ -39,9 +39,9 @@
         "feedback": true,
         "forcesave": false,
         "goback": {
-            "url": "<%= editor.getServerUrl %>"
+            "url": "<%- editor.getServerUrl %>"
         }
     },
-    "fileChoiceUrl": "<%= editor.fileChoiceUrl %>",
+    "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
     "plugins": <%- editor.plugins %>
 }
