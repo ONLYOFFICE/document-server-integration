@@ -107,12 +107,25 @@
                         "onOutdatedVersion": onOutdatedVersion,
                     }
             });
+
+            fixSize();
+        };
+
+        var fixSize = function () {
+            var wrapEl = document.getElementsByClassName("form");
+            if (wrapEl.length) {
+                wrapEl[0].style.height = screen.availHeight + "px";
+                window.scrollTo(0, -1);
+                wrapEl[0].style.height = window.innerHeight + "px";
+            }
         };
 
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
+            window.addEventListener("resize", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
+            window.attachEvent("onresize", fixSize);
         }
 
     </script>
