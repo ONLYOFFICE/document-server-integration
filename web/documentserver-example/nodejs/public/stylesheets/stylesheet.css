@@ -116,6 +116,7 @@ label .checkbox {
     background-image: url("../images/file_pptx.png");
 }
 .create-sample {
+    display: inline-block;
     margin-left: 75px;
 }
 .button, .button:visited, .button:hover, .button:active {
