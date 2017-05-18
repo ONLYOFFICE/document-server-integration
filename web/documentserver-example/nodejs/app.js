@@ -344,42 +344,44 @@ app.post("/track", function (req, res) {
 
                 var path = docManager.storagePath(fileName, userAddress);
 
-                var historyPath = docManager.historyPath(fileName, userAddress);
-                if (historyPath == "") {
-                    historyPath = docManager.historyPath(fileName, userAddress, true);
-                    docManager.createDirectory(historyPath);
-                }
+                if (docManager.existsSync(path)) {
+                    var historyPath = docManager.historyPath(fileName, userAddress);
+                    if (historyPath == "") {
+                        historyPath = docManager.historyPath(fileName, userAddress, true);
+                        docManager.createDirectory(historyPath);
+                    }
 
-                var count_version = docManager.countVersion(historyPath);
-                version = count_version + 1;
-                versionPath = docManager.versionPath(fileName, userAddress, version);
-                docManager.createDirectory(versionPath);
+                    var count_version = docManager.countVersion(historyPath);
+                    version = count_version + 1;
+                    versionPath = docManager.versionPath(fileName, userAddress, version);
+                    docManager.createDirectory(versionPath);
 
-                var downloadZip = body.changesurl;
-                if (downloadZip) {
-                    var path_changes = docManager.diffPath(fileName, userAddress, version);
-                    var diffZip = syncRequest("GET", downloadZip);
-                    fileSystem.writeFileSync(path_changes, diffZip.getBody());
-                }
+                    var downloadZip = body.changesurl;
+                    if (downloadZip) {
+                        var path_changes = docManager.diffPath(fileName, userAddress, version);
+                        var diffZip = syncRequest("GET", downloadZip);
+                        fileSystem.writeFileSync(path_changes, diffZip.getBody());
+                    }
 
-                var changeshistory = body.changeshistory || JSON.stringify(body.history);
-                if (changeshistory) {
-                    var path_changes_json = docManager.changesPath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_changes_json, changeshistory);
-                }
+                    var changeshistory = body.changeshistory || JSON.stringify(body.history);
+                    if (changeshistory) {
+                        var path_changes_json = docManager.changesPath(fileName, userAddress, version);
+                        fileSystem.writeFileSync(path_changes_json, changeshistory);
+                    }
 
-                var path_key = docManager.keyPath(fileName, userAddress, version);
-                fileSystem.writeFileSync(path_key, body.key);
+                    var path_key = docManager.keyPath(fileName, userAddress, version);
+                    fileSystem.writeFileSync(path_key, body.key);
 
-                var path_prev = docManager.prevFilePath(fileName, userAddress, version);
-                fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
+                    var path_prev = docManager.prevFilePath(fileName, userAddress, version);
+                    fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(path, file.getBody());
+                    var file = syncRequest("GET", downloadUri);
+                    fileSystem.writeFileSync(path, file.getBody());
 
-                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                if (forcesavePath != "") {
-                    fileSystem.unlinkSync(forcesavePath);
+                    var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
+                    if (forcesavePath != "") {
+                        fileSystem.unlinkSync(forcesavePath);
+                    }
                 }
             } catch (ex) {
                 console.log(ex);
