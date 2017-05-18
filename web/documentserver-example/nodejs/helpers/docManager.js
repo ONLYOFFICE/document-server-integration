@@ -305,9 +305,9 @@ docManager.getKey = function (fileName) {
         key += docManager.countVersion(historyPath);
     }
 
-    /*historyPath = docManager.historyPath(fileName, userAddress, true);
-    const stat = fileSystem.statSync(historyPath);
-    key += stat.mtime.toString();*/
+    let storagePath = docManager.storagePath(fileName, userAddress);
+    const stat = fileSystem.statSync(storagePath);
+    key += stat.mtime.toString();
 
     return documentService.generateRevisionId(key);
 };
