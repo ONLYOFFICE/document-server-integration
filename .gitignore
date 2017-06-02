@@ -10,3 +10,4 @@
 /web/documentserver-example/nodejs/config/local.json
 **/.vscode/
 **/.idea
+/web/documentserver-example/java/target/
