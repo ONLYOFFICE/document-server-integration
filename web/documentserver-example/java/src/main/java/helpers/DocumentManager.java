@@ -4,6 +4,7 @@ package helpers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class DocumentManager
         {
             size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             size = 0;
         }
@@ -75,7 +76,7 @@ public class DocumentManager
             {
                 userAddress = InetAddress.getLocalHost().getHostAddress();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 userAddress = "";
             }
@@ -147,7 +148,7 @@ public class DocumentManager
                 out.flush();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -163,11 +164,13 @@ public class DocumentManager
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
             
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName);
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString());
             
             return filePath;
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -182,9 +185,13 @@ public class DocumentManager
     {
         String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         String hostAddress = CurUserHostAddress(null);
-        String query = "?type=track&fileName=" + URLEncoder.encode(fileName) + "&userAddress=" + URLEncoder.encode(hostAddress);
+        try {
+            String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
         
-        return serverPath + "/IndexServlet" + query;
+            return serverPath + "/IndexServlet" + query;
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
+        }
     }
 
     public static String GetInternalExtension(FileType fileType)

@@ -156,7 +156,7 @@ public class ServiceConverter
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
         Object[] args = {
-                            URLEncoder.encode(documentUri),
+                            URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
                             toExtension.replace(".", ""),
                             fromExtension.replace(".", ""),
                             title,
