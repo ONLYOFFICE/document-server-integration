@@ -5,15 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javafx.util.Pair;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
@@ -22,13 +17,9 @@ import entities.FileType;
 public class DocumentManager
 {
     private static HttpServletRequest request;
-    private static HttpServletResponse response;
-
-    private static final String ExternalIPCacheKey = "ExternalIPCacheKey";
 
     public static void Init(HttpServletRequest req, HttpServletResponse resp){
         request = req;
-        response = resp;
     }
 
     public static long GetMaxFileSize()
@@ -184,7 +175,7 @@ public class DocumentManager
 
     public static String GetServerUrl()
     {
-        return serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
     }
 
     public static String GetCallback(String fileName)
