@@ -239,11 +239,11 @@ public class IndexServlet extends HttpServlet {
 
         long status = (long) jsonObj.get("status");
 
+        int saved = 0;
         if(status == 2 || status == 3)//MustSave, Corrupted
         {
             String downloadUri = (String) jsonObj.get("url");
 
-            int saved = 1;
             try
             {
                 URL url = new URL(downloadUri);
@@ -270,11 +270,11 @@ public class IndexServlet extends HttpServlet {
             }
             catch (Exception ex)
             {
-                saved = 0;
+                saved = 1;
             }
         }
 
-        writer.write("{\"error\":0}");
+        writer.write("{\"error\":" + saved + "}");
     }
 
 
