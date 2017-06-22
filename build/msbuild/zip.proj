@@ -14,12 +14,12 @@
 
   <Target Name="Build">
     <ItemGroup>
-      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**;" />
+      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**" />
     </ItemGroup>
     <Zip Files="@(ZipFilesCSharp)" WorkingDirectory="$(DirCSharp)" ZipFileName="$(To).Net (C#) Example.zip" />
 
     <ItemGroup>
-      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**;$(DirMvc)packages\**;" />
+      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**" />
     </ItemGroup>
     <Zip Files="@(ZipFilesMVC)" WorkingDirectory="$(DirMvc)" ZipFileName="$(To).Net (C# MVC) Example.zip" />
 

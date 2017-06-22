@@ -4,7 +4,6 @@
 *.user
 /build/deploy
 /build/*.log
-/web/documentserver-example/csharp-mvc/packages
 /web/documentserver-example/nodejs/node_modules
 /web/documentserver-example/nodejs/public/files
 /web/documentserver-example/nodejs/config/local.json
