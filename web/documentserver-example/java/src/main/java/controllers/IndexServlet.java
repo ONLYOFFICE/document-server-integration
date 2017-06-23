@@ -206,8 +206,10 @@ public class IndexServlet extends HttpServlet {
 
         try
         {
-            Scanner scanner = new Scanner(request.getInputStream()).useDelimiter("\\A");
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
             body = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
         }
         catch (Exception ex)
         {
@@ -237,11 +239,11 @@ public class IndexServlet extends HttpServlet {
 
         long status = (long) jsonObj.get("status");
 
+        int saved = 0;
         if(status == 2 || status == 3)//MustSave, Corrupted
         {
             String downloadUri = (String) jsonObj.get("url");
 
-            int saved = 1;
             try
             {
                 URL url = new URL(downloadUri);
@@ -268,11 +270,11 @@ public class IndexServlet extends HttpServlet {
             }
             catch (Exception ex)
             {
-                saved = 0;
+                saved = 1;
             }
         }
 
-        writer.write("{\"error\":0}");
+        writer.write("{\"error\":" + saved + "}");
     }
 
 

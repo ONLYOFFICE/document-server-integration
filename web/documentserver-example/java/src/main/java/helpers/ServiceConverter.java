@@ -7,14 +7,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
-import javafx.util.Pair;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -159,7 +156,7 @@ public class ServiceConverter
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
         Object[] args = {
-                            URLEncoder.encode(documentUri),
+                            URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
                             toExtension.replace(".", ""),
                             fromExtension.replace(".", ""),
                             title,

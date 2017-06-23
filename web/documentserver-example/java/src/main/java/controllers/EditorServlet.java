@@ -42,16 +42,23 @@ public class EditorServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        String mode = request.getParameter("mode");
-        String fileExt = request.getParameter("fileExt");
-        String fileName = request.getParameter("fileName");
-        
-        DocumentManager.Init(request, response);
-        
-        if(fileExt != null)
+        String fileName = "";
+        if (request.getParameterMap().containsKey("fileName"))
+        {
+             fileName = request.getParameter("fileName");
+        }
+
+        String fileExt = null;
+        if (request.getParameterMap().containsKey("fileExt"))
+        {
+             fileExt = request.getParameter("fileExt");
+        }
+
+        if (fileExt != null)
         {
             try
             {
+                DocumentManager.Init(request, response);
                 fileName = DocumentManager.CreateDemo(fileExt);
             }
             catch (Exception ex)
@@ -60,6 +67,11 @@ public class EditorServlet extends HttpServlet {
             }
         }
 
+        String mode = "";
+        if (request.getParameterMap().containsKey("mode"))
+        {
+             mode = request.getParameter("mode");
+        }
         Boolean desktopMode = !"embedded".equals(mode);
         
         FileModel file = new FileModel();
