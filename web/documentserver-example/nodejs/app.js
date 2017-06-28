@@ -597,6 +597,7 @@ app.get("/editor", function (req, res) {
                 callbackUrl: docManager.getCallback(fileName),
                 isEdit: canEdit && mode == "edit",
                 review: mode == "edit" || mode == "review",
+                comment: mode == "edit" || mode == "comment",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
                 backUrl: docManager.getServerUrl(),

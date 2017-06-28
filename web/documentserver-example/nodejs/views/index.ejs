@@ -130,7 +130,7 @@
                     <thead>
                         <tr class="tableHeader">
                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                            <td colspan="3" class="tableHeaderCell contentCells-shift">Editors</td>
+                            <td colspan="4" class="tableHeaderCell contentCells-shift">Editors</td>
                             <td colspan="3" class="tableHeaderCell">Viewers</td>
                         </tr>
                     </thead>
@@ -153,10 +153,16 @@
                                     <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                 </td>
-                                <td class="contentCells contentCells-shift contentCells-icon">
+                                <td class="contentCells contentCells-icon">
                                     <% if (storedFiles[i].documentType == "text") { %>
                                     <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                    <% } %>
+                                </td>
+                                <td class="contentCells contentCells-shift contentCells-icon">
+                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <a href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-icon">
