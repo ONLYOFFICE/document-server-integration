@@ -13,9 +13,10 @@
         "created": "<%- file.created %>"
     },
     "permissions": {
+        "comment": <%- editor.comment %>,
         "download": true,
-        "edit": "<%- editor.isEdit %>",
-        "review": true
+        "edit": <%- editor.isEdit %>,
+        "review": <%- editor.review %>
     }
 },
 "editorConfig": {

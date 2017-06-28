@@ -3,24 +3,25 @@
  *
  * (c) Copyright Ascensio System Limited 2010-2017
  *
- * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
- * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
- * In accordance with Section 7(a) of the GNU GPL its Section 15 shall be amended to the effect that 
- * Ascensio System SIA expressly excludes the warranty of non-infringement of any third-party rights.
+ * The MIT License (MIT)
  *
- * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR
- * FITNESS FOR A PARTICULAR PURPOSE. For more details, see GNU GPL at https://www.gnu.org/copyleft/gpl.html
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * You can contact Ascensio System SIA by email at sales@onlyoffice.com
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
- * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
- *
- * Pursuant to Section 7 § 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
- * relevant author attributions when distributing the software. If the display of the logo in its graphic 
- * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
- * in every copy of the program you distribute. 
- * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
 */
 ?>
@@ -90,12 +91,12 @@ function upload() {
         return $result;
     }
 
-    if(empty($_FILES['files']['tmp_name'])) {
+    $tmp = $_FILES['files']['tmp_name'];
+
+    if (empty(tmp)) {
         $result["error"] = 'No file sent';
         return $result;
     }
-
-    $tmp = $_FILES['files']['tmp_name'];
 
     if (is_uploaded_file($tmp))
     {
@@ -113,7 +114,7 @@ function upload() {
         }
 
         $filename = GetCorrectName($_FILES['files']['name']);
-        if( !move_uploaded_file($tmp,  getStoragePath($filename)) ) {
+        if (!move_uploaded_file($tmp,  getStoragePath($filename)) ) {
             $result["error"] = 'Upload failed';
             return $result;
         }
@@ -150,14 +151,14 @@ function track() {
     $data;
     $result["error"] = 0;
 
-    if (($body_stream = file_get_contents('php://input'))===FALSE){
+    if (($body_stream = file_get_contents('php://input'))===FALSE) {
         $result["error"] = "Bad Request";
         return $result;
     }
 
     $data = json_decode($body_stream, TRUE); //json_decode - PHP 5 >= 5.2.0
 
-    if ($data === NULL){
+    if ($data === NULL) {
         $result["error"] = "Bad Response";
         return $result;
     }
@@ -166,7 +167,7 @@ function track() {
 
     $status = $_trackerStatus[$data["status"]];
 
-    switch ($status){
+    switch ($status) {
         case "MustSave":
         case "Corrupted":
 
@@ -195,7 +196,7 @@ function track() {
 
             $saved = 1;
 
-            if (($new_data = file_get_contents($downloadUri))===FALSE){
+            if (($new_data = file_get_contents($downloadUri)) === FALSE) {
                 $saved = 0;
             } else {
                 $storagePath = getStoragePath($fileName, $userAddress);
@@ -248,7 +249,7 @@ function convert() {
 
         $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
 
-        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri)))===FALSE){
+        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === FALSE) {
             $result["error"] = 'Bad Request';
             return $result;
         } else {
