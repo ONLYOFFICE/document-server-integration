@@ -2,24 +2,25 @@
  *
  * (c) Copyright Ascensio System Limited 2010-2017
  *
- * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
- * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
- * In accordance with Section 7(a) of the GNU GPL its Section 15 shall be amended to the effect that 
- * Ascensio System SIA expressly excludes the warranty of non-infringement of any third-party rights.
+ * The MIT License (MIT)
  *
- * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR
- * FITNESS FOR A PARTICULAR PURPOSE. For more details, see GNU GPL at https://www.gnu.org/copyleft/gpl.html
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * You can contact Ascensio System SIA by email at sales@onlyoffice.com
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
- * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
- *
- * Pursuant to Section 7 § 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
- * relevant author attributions when distributing the software. If the display of the logo in its graphic 
- * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
- * in every copy of the program you distribute. 
- * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
 */
 
@@ -344,42 +345,44 @@ app.post("/track", function (req, res) {
 
                 var path = docManager.storagePath(fileName, userAddress);
 
-                var historyPath = docManager.historyPath(fileName, userAddress);
-                if (historyPath == "") {
-                    historyPath = docManager.historyPath(fileName, userAddress, true);
-                    docManager.createDirectory(historyPath);
-                }
+                if (docManager.existsSync(path)) {
+                    var historyPath = docManager.historyPath(fileName, userAddress);
+                    if (historyPath == "") {
+                        historyPath = docManager.historyPath(fileName, userAddress, true);
+                        docManager.createDirectory(historyPath);
+                    }
 
-                var count_version = docManager.countVersion(historyPath);
-                version = count_version + 1;
-                versionPath = docManager.versionPath(fileName, userAddress, version);
-                docManager.createDirectory(versionPath);
+                    var count_version = docManager.countVersion(historyPath);
+                    version = count_version + 1;
+                    versionPath = docManager.versionPath(fileName, userAddress, version);
+                    docManager.createDirectory(versionPath);
 
-                var downloadZip = body.changesurl;
-                if (downloadZip) {
-                    var path_changes = docManager.diffPath(fileName, userAddress, version);
-                    var diffZip = syncRequest("GET", downloadZip);
-                    fileSystem.writeFileSync(path_changes, diffZip.getBody());
-                }
+                    var downloadZip = body.changesurl;
+                    if (downloadZip) {
+                        var path_changes = docManager.diffPath(fileName, userAddress, version);
+                        var diffZip = syncRequest("GET", downloadZip);
+                        fileSystem.writeFileSync(path_changes, diffZip.getBody());
+                    }
 
-                var changeshistory = body.changeshistory || JSON.stringify(body.history);
-                if (changeshistory) {
-                    var path_changes_json = docManager.changesPath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_changes_json, changeshistory);
-                }
+                    var changeshistory = body.changeshistory || JSON.stringify(body.history);
+                    if (changeshistory) {
+                        var path_changes_json = docManager.changesPath(fileName, userAddress, version);
+                        fileSystem.writeFileSync(path_changes_json, changeshistory);
+                    }
 
-                var path_key = docManager.keyPath(fileName, userAddress, version);
-                fileSystem.writeFileSync(path_key, body.key);
+                    var path_key = docManager.keyPath(fileName, userAddress, version);
+                    fileSystem.writeFileSync(path_key, body.key);
 
-                var path_prev = docManager.prevFilePath(fileName, userAddress, version);
-                fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
+                    var path_prev = docManager.prevFilePath(fileName, userAddress, version);
+                    fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(path, file.getBody());
+                    var file = syncRequest("GET", downloadUri);
+                    fileSystem.writeFileSync(path, file.getBody());
 
-                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                if (forcesavePath != "") {
-                    fileSystem.unlinkSync(forcesavePath);
+                    var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
+                    if (forcesavePath != "") {
+                        fileSystem.unlinkSync(forcesavePath);
+                    }
                 }
             } catch (ex) {
                 console.log(ex);
@@ -545,7 +548,7 @@ app.get("/editor", function (req, res) {
                 var historyD = {
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i) + "/prev" + fileUtility.getFileExtension(fileName)),
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
                 };
                 if (i > 1) {
                     historyD.previous = {
@@ -592,10 +595,12 @@ app.get("/editor", function (req, res) {
                 key: key,
                 token: "",
                 callbackUrl: docManager.getCallback(fileName),
-                isEdit: canEdit && mode != "review",
+                isEdit: canEdit && mode == "edit",
+                review: mode == "edit" || mode == "review",
+                comment: mode == "edit" || mode == "comment",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
-                getServerUrl: docManager.getServerUrl(),
+                backUrl: docManager.getServerUrl(),
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,

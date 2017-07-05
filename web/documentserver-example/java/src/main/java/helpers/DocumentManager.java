@@ -1,19 +1,40 @@
+/*
+ *
+ * (c) Copyright Ascensio System Limited 2010-2017
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+*/
 
 package helpers;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javafx.util.Pair;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
@@ -22,13 +43,9 @@ import entities.FileType;
 public class DocumentManager
 {
     private static HttpServletRequest request;
-    private static HttpServletResponse response;
-
-    private static final String ExternalIPCacheKey = "ExternalIPCacheKey";
 
     public static void Init(HttpServletRequest req, HttpServletResponse resp){
         request = req;
-        response = resp;
     }
 
     public static long GetMaxFileSize()
@@ -39,7 +56,7 @@ public class DocumentManager
         {
             size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             size = 0;
         }
@@ -84,7 +101,7 @@ public class DocumentManager
             {
                 userAddress = InetAddress.getLocalHost().getHostAddress();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 userAddress = "";
             }
@@ -156,7 +173,7 @@ public class DocumentManager
                 out.flush();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -172,11 +189,13 @@ public class DocumentManager
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
             
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName);
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString());
             
             return filePath;
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -184,16 +203,20 @@ public class DocumentManager
 
     public static String GetServerUrl()
     {
-        return serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
     }
 
     public static String GetCallback(String fileName)
     {
         String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         String hostAddress = CurUserHostAddress(null);
-        String query = "?type=track&fileName=" + URLEncoder.encode(fileName) + "&userAddress=" + URLEncoder.encode(hostAddress);
+        try {
+            String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
         
-        return serverPath + "/IndexServlet" + query;
+            return serverPath + "/IndexServlet" + query;
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
+        }
     }
 
     public static String GetInternalExtension(FileType fileType)

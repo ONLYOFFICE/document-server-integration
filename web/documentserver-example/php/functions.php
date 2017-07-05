@@ -3,24 +3,25 @@
  *
  * (c) Copyright Ascensio System Limited 2010-2017
  *
- * This program is freeware. You can redistribute it and/or modify it under the terms of the GNU 
- * General Public License (GPL) version 3 as published by the Free Software Foundation (https://www.gnu.org/copyleft/gpl.html). 
- * In accordance with Section 7(a) of the GNU GPL its Section 15 shall be amended to the effect that 
- * Ascensio System SIA expressly excludes the warranty of non-infringement of any third-party rights.
+ * The MIT License (MIT)
  *
- * THIS PROGRAM IS DISTRIBUTED WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR
- * FITNESS FOR A PARTICULAR PURPOSE. For more details, see GNU GPL at https://www.gnu.org/copyleft/gpl.html
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * You can contact Ascensio System SIA by email at sales@onlyoffice.com
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * The interactive user interfaces in modified source and object code versions of ONLYOFFICE must display 
- * Appropriate Legal Notices, as required under Section 5 of the GNU GPL version 3.
- *
- * Pursuant to Section 7 § 3(b) of the GNU GPL you must retain the original ONLYOFFICE logo which contains 
- * relevant author attributions when distributing the software. If the display of the logo in its graphic 
- * form is not reasonably feasible for technical reasons, you must include the words "Powered by ONLYOFFICE" 
- * in every copy of the program you distribute. 
- * Pursuant to Section 7 § 3(e) we decline to grant you any rights under trademark law for use of our trademarks.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
 */
 ?>
@@ -37,7 +38,7 @@ function GetExternalFileUri($local_uri) {
     {
         $documentRevisionId = GenerateRevisionId($local_uri);
 
-        if (($fileContents = file_get_contents(str_replace(" ","%20", $local_uri)))===FALSE){
+        if (($fileContents = file_get_contents(str_replace(" ","%20", $local_uri))) === FALSE) {
             throw new Exception("Bad Request");
         } else {
             $contentType =  mime_content_type($local_uri);
@@ -61,7 +62,7 @@ function GetExternalFileUri($local_uri) {
 
             $context  = stream_context_create($opts);
 
-            if (($response_data = file_get_contents($urlToService, FALSE, $context))===FALSE){
+            if (($response_data = file_get_contents($urlToService, FALSE, $context)) === FALSE) {
                 throw new Exception ("Could not get an answer");
             } else {
                 sendlog("GetExternalUri response_data:" . PHP_EOL . $response_data, "logs/common.log");
@@ -237,7 +238,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     {
         $countTry = $countTry + 1;
         $response_xml_data = file_get_contents($urlToConverter, FALSE, $context);
-        if ($response_xml_data !== false){ break; }
+        if ($response_xml_data !== false) { break; }
     }
 
     if ($countTry == ServiceConverterMaxTry)
@@ -246,7 +247,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     }
 
     libxml_use_internal_errors(true);
-    if (!function_exists('simplexml_load_file')){
+    if (!function_exists('simplexml_load_file')) {
          throw new Exception("Server can't read xml");
     }
     $response_data = simplexml_load_string($response_xml_data);
@@ -313,7 +314,7 @@ function GetResponseUri($x_document_response, &$response_uri) {
     $resultPercent = 0;
 
     libxml_use_internal_errors(true);
-    if (!function_exists('simplexml_load_file')){
+    if (!function_exists('simplexml_load_file')) {
          throw new Exception("Server can't read xml");
     }
     $data = simplexml_load_string($x_document_response);
