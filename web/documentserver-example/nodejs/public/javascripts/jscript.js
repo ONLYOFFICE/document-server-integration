@@ -35,6 +35,8 @@ if (typeof jQuery != "undefined") {
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
 
+    mustReload = false;
+
     if ("" != language && undefined != language)
         jq("#language").val(language);
     else
@@ -100,6 +102,7 @@ if (typeof jQuery != "undefined") {
                 }
 
                 jq("#hiddenFileName").val(response.filename);
+                mustReload = true;
 
                 jq("#step1").addClass("done").removeClass("current");
                 jq("#step2").addClass("current");
@@ -241,6 +244,9 @@ if (typeof jQuery != "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
+        if (mustReload) {
+            document.location.reload();
+        }
     });
 
     jq(document).on("click", ".delete-file", function () {
