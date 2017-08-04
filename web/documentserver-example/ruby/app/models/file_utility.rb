@@ -1,10 +1,10 @@
 class FileUtility
 
-  @@exts_document = %w(.docx .doc .odt .rtf .txt .html .htm .mht .pdf .djvu .fb2 .epub .xps)
+  @@exts_document = %w(.docx .docm .doc .odt .rtf .txt .html .htm .mht .pdf .djvu .fb2 .epub .xps)
 
-  @@exts_spreadsheet = %w(.xls .xlsx .ods .csv)
+  @@exts_spreadsheet = %w(.xls .xlsx .xlsm .ods .csv)
 
-  @@exts_presentation = %w(.pps .ppsx .ppt .pptx .odp)
+  @@exts_presentation = %w(.pps .ppsx .ppsm .ppt .pptx .pptm .odp)
 
   class << self
 

@@ -73,8 +73,8 @@ function key(k) {
 };
 
 var getDocumentType = function (ext) {
-    if (".docx.doc.odt.rtf.txt.html.htm.mht.pdf.djvu.fb2.epub.xps".indexOf(ext) != -1) return "text";
-    if (".xls.xlsx.ods.csv".indexOf(ext) != -1) return "spreadsheet";
-    if (".pps.ppsx.ppt.pptx.odp".indexOf(ext) != -1) return "presentation";
+    if (".docx.docm.doc.odt.rtf.txt.html.htm.mht.pdf.djvu.fb2.epub.xps".indexOf(ext) != -1) return "text";
+    if (".xls.xlsx.xlsm.ods.csv".indexOf(ext) != -1) return "spreadsheet";
+    if (".pps.ppsx.ppsm.ppt.pptx.pptm.odp".indexOf(ext) != -1) return "presentation";
     return null;
 };

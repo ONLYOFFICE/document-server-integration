@@ -7,7 +7,7 @@ $GLOBALS['ALONE'] = FALSE;
 $GLOBALS['MODE'] = "";
 
 $GLOBALS['DOC_SERV_VIEWD'] = array(".ppt",".pps",".odp",".pdf",".djvu",".epub",".xps");
-$GLOBALS['DOC_SERV_EDITED'] = array(".docx",".doc",".odt",".xlsx",".xls",".ods",".csv",".pptx",".ppsx",".rtf",".txt",".mht",".html",".htm");
+$GLOBALS['DOC_SERV_EDITED'] = array(".docx",".docm",".doc",".odt",".xlsx",".xlsm",".xls",".ods",".csv",".pptx",".pptm",".ppsx",".ppsm",".rtf",".txt",".mht",".html",".htm");
 $GLOBALS['DOC_SERV_CONVERT'] = array(".doc",".odt",".xls",".ods",".ppt",".pps",".odp",".rtf",".mht",".html",".htm",".epub");
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
@@ -23,14 +23,14 @@ $GLOBALS['EXAMPLE_URL'] = "";
 $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
 
 
-$GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx",
+$GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx", ".xlsm",
                                     ".ods", ".csv");
 
-$GLOBALS['ExtsPresentation'] = array(".pps", ".ppsx",
-                                    ".ppt", ".pptx",
+$GLOBALS['ExtsPresentation'] = array(".pps", ".ppsx", ".ppsm",
+                                    ".ppt", ".pptx", ".pptm",
                                     ".odp");
 
-$GLOBALS['ExtsDocument'] = array(".docx", ".doc", ".odt", ".rtf", ".txt",
+$GLOBALS['ExtsDocument'] = array(".docx", ".docm", ".doc", ".odt", ".rtf", ".txt",
                                 ".html", ".htm", ".mht", ".pdf", ".djvu",
                                 ".fb2", ".epub", ".xps");
 
