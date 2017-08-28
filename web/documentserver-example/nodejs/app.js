@@ -519,7 +519,7 @@ app.get("/editor", function (req, res) {
         var fileName = fileUtility.getFileName(req.query.fileName);
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
-        var mode = req.query.mode || "edit"; //mode: view/edit 
+        var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
                 type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
@@ -597,7 +597,7 @@ app.get("/editor", function (req, res) {
                 callbackUrl: docManager.getCallback(fileName),
                 isEdit: canEdit && mode == "edit",
                 review: mode == "edit" || mode == "review",
-                comment: mode == "edit" || mode == "comment",
+                comment: mode != "view" && mode != "embedded",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
                 backUrl: docManager.getServerUrl(),
