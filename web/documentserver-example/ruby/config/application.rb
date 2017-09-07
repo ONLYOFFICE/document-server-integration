@@ -35,8 +35,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
 
-    Rails.configuration.viewedDocs=".ppt|.pps|.odp|.pdf|.djvu|.epub|.xps"
-    Rails.configuration.editedDocs=".docx|.docm|.doc|.odt|.xlsx|.xlsm|.xls|.ods|.csv|.pptx|.pptm|.ppsx|.ppsm|.rtf|.txt|.mht|.html|.htm"
+    Rails.configuration.viewedDocs=".pdf|.djvu|.xps"
+    Rails.configuration.editedDocs=".docx|.docm|.doc|.odt|.xlsx|.xlsm|.xls|.ods|.csv|.pptx|.pptm|.ppt|.ppsx|.ppsm|.pps|.odp|.rtf|.txt|.mht|.html|.htm"
     Rails.configuration.convertDocs=".docm|.doc|.odt|.xlsm|.xls|.ods|.pptm|.ppt|.ppsm|.pps|.odp|.rtf|.mht|.html|.htm|.epub"
 
     Rails.configuration.urlStorage="https://doc.onlyoffice.com/FileUploader.ashx"
