@@ -51,14 +51,17 @@ namespace OnlineEditorsExampleMVC.Models
 
         public static readonly List<string> ExtsDocument = new List<string>
             {
-                ".docx", ".docm", ".doc", ".odt", ".rtf", ".txt",
-                ".html", ".htm", ".mht", ".pdf", ".djvu",
-                ".fb2", ".epub", ".xps"
+                ".doc", ".docx", ".docm",
+                ".dot", ".dotx", ".dotm",
+                ".odt", ".rtf", ".txt",
+                ".html", ".htm", ".mht",
+                ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
 
         public static readonly List<string> ExtsSpreadsheet = new List<string>
             {
                 ".xls", ".xlsx", ".xlsm",
+                ".xlt", ".xltx", ".xltm",
                 ".ods", ".csv"
             };
 
@@ -66,6 +69,7 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 ".pps", ".ppsx", ".ppsm",
                 ".ppt", ".pptx", ".pptm",
+                ".pot", ".potx", ".potm",
                 ".odp"
             };
     }

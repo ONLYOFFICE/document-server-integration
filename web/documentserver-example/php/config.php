@@ -6,9 +6,9 @@ $GLOBALS['ALONE'] = FALSE;
 
 $GLOBALS['MODE'] = "";
 
-$GLOBALS['DOC_SERV_VIEWD'] = array(".pdf",".djvu",".xps");
-$GLOBALS['DOC_SERV_EDITED'] = array(".docx",".docm",".doc",".odt",".xlsx",".xlsm",".xls",".ods",".csv",".pptx",".pptm",".ppt",".ppsx",".ppsm",".pps",".odp",".rtf",".txt",".mht",".html",".htm");
-$GLOBALS['DOC_SERV_CONVERT'] = array(".docm",".doc",".odt",".xlsm",".xls",".ods",".pptm",".ppt",".ppsm",".pps",".odp",".rtf",".mht",".html",".htm",".epub");
+$GLOBALS['DOC_SERV_VIEWD'] = array(".pdf", ".djvu", ".xps");
+$GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsx", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".csv", ".pptx", ".pptm", ".ppt", ".ppsx", ".ppsm", ".potx", ".potm", ".pot", ".pps", ".odp", ".rtf", ".txt", ".mht", ".html", ".htm");
+$GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub");
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
@@ -24,15 +24,19 @@ $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|el
 
 
 $GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx", ".xlsm",
+                                    ".xlt", ".xltx", ".xltm",
                                     ".ods", ".csv");
 
 $GLOBALS['ExtsPresentation'] = array(".pps", ".ppsx", ".ppsm",
-                                    ".ppt", ".pptx", ".pptm",
-                                    ".odp");
+                                     ".ppt", ".pptx", ".pptm",
+                                     ".pot", ".potx", ".potm",
+                                     ".odp");
 
-$GLOBALS['ExtsDocument'] = array(".docx", ".docm", ".doc", ".odt", ".rtf", ".txt",
-                                ".html", ".htm", ".mht", ".pdf", ".djvu",
-                                ".fb2", ".epub", ".xps");
+$GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
+                                 ".dot", ".dotx", ".dotm",
+                                 ".odt", ".rtf", ".txt",
+                                 ".html", ".htm", ".mht",
+                                 ".pdf", ".djvu", ".fb2", ".epub", ".xps");
 
 if ( !defined('ServiceConverterMaxTry') )
     define( 'ServiceConverterMaxTry', 3);
