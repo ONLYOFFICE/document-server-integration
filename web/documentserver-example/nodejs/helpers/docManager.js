@@ -244,7 +244,8 @@ docManager.getStoredFiles = function () {
             const item = {
                 time: time,
                 name: storedFiles[i],
-                documentType: fileUtility.getFileType(storedFiles[i])
+                documentType: fileUtility.getFileType(storedFiles[i]),
+                canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1
             };
 
             if (!result.length) {
