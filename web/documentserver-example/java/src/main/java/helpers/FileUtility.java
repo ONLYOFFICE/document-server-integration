@@ -56,19 +56,26 @@ public class FileUtility
 
     public static List<String> ExtsDocument = Arrays.asList
     (
-        ".docx", ".doc", ".odt", ".rtf", ".txt",
-        ".html", ".htm", ".mht", ".pdf", ".djvu",
-        ".fb2", ".epub", ".xps"
+        ".doc", ".docx", ".docm",
+        ".dot", ".dotx", ".dotm",
+        ".odt", ".rtf", ".txt",
+        ".html", ".htm", ".mht",
+        ".pdf", ".djvu", ".fb2", ".epub", ".xps"
     );
 
     public static List<String> ExtsSpreadsheet = Arrays.asList
     (
-        ".xls", ".xlsx", ".ods", ".csv"
+        ".xls", ".xlsx", ".xlsm",
+        ".xlt", ".xltx", ".xltm",
+        ".ods", ".csv"
     );
 
     public static List<String> ExtsPresentation = Arrays.asList
     (
-        ".pps", ".ppsx", ".ppt", ".pptx",".odp"
+        ".pps", ".ppsx", ".ppsm",
+        ".ppt", ".pptx", ".pptm",
+        ".pot", ".potx", ".potm",
+        ".odp"
     );
     
 
