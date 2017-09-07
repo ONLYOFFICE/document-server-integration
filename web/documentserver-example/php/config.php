@@ -7,7 +7,7 @@ $GLOBALS['ALONE'] = FALSE;
 $GLOBALS['MODE'] = "";
 
 $GLOBALS['DOC_SERV_VIEWD'] = array(".pdf", ".djvu", ".xps");
-$GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsx", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".csv", ".pptx", ".pptm", ".ppt", ".ppsx", ".ppsm", ".potx", ".potm", ".pot", ".pps", ".odp", ".rtf", ".txt", ".mht", ".html", ".htm");
+$GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".xlsx", ".csv", ".pptx", ".ppsx", ".txt");
 $GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub");
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";

@@ -21,7 +21,7 @@
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
     "viewedDocs": [".pdf", ".djvu", ".xps"],
-    "editedDocs": [".docx", ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsx", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".csv", ".pptx", ".pptm", ".ppt", ".ppsx", ".ppsm", ".potx", ".potm", ".pot", ".pps", ".odp", ".rtf", ".txt", ".mht", ".html", ".htm"],
+    "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".ppsx", ".txt"],
     "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
     "maxFileSize": 1073741824,
