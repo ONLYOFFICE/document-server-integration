@@ -550,14 +550,15 @@ app.get("/editor", function (req, res) {
                     key: keyVersion,
                     url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
                 };
-                if (i > 1) {
+
+                if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {
                     historyD.previous = {
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
-                        
                     };
                     historyD.changesUrl = docManager.getlocalFileUri(fileName, i-1) + "/diff.zip";
                 }
+
                 historyData.push(historyD);
                 
                 if (i < countVersion) {

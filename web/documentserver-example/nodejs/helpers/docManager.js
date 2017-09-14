@@ -314,7 +314,10 @@ docManager.getDate = function (date) {
 };
 
 docManager.getChanges = function (fileName) {
-    return JSON.parse(fileSystem.readFileSync(fileName));
+    if (this.existsSync(fileName)) {
+        return JSON.parse(fileSystem.readFileSync(fileName));
+    }
+    return null;
 };
 
 docManager.countVersion = function(directory) {
