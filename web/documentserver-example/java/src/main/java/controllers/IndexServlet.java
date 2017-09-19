@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Scanner;
-import javafx.util.Pair;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -149,14 +148,11 @@ public class IndexServlet extends HttpServlet {
             {
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
-                Pair<Integer, String> res = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
+                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
                 
-                int result = res.getKey();
-                String newFileUri = res.getValue();
-
-                if (result != 100)
+                if (newFileUri == "")
                 {
-                    writer.write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
+                    writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;
                 }
 

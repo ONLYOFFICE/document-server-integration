@@ -70,7 +70,7 @@ public class ServiceConverter
         }
     }
 
-    public static Pair<Integer, String> GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, Boolean isAsync) throws Exception
+    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, Boolean isAsync) throws Exception
     {
         String convertedDocumentUri = null;
         
@@ -112,7 +112,7 @@ public class ServiceConverter
             percent = percent >= 100 ? 99 : percent;
         }
 
-        return new Pair<>(percent, convertedDocumentUri);
+        return percent >= 100 ? convertedDocumentUri : "";
     }
 
     public static String GetExternalUri(InputStream fileStream, long contentLength, String contentType, String documentRevisionId) throws IOException, Exception
@@ -154,9 +154,9 @@ public class ServiceConverter
 
         connection.disconnect();
         
-        Pair <Integer, String> res = GetResponseUri(xml);
+        String res = GetResponseUri(xml);
           
-        return res.getValue();
+        return res;
     }
 
     public static String GenerateRevisionId(String expectedKey)
@@ -270,7 +270,7 @@ public class ServiceConverter
         throw new Exception(errorMessage);
     }
 
-    private static Pair<Integer, String> GetResponseUri(String xml) throws Exception
+    private static String GetResponseUri(String xml) throws Exception
     {
         Document document = ConvertStringToXmlDocument(xml);
         
@@ -309,7 +309,7 @@ public class ServiceConverter
             resultPercent = resultPercent >= 100 ? 99 : resultPercent;
         }
 
-        return new Pair<>(resultPercent, responseUri);
+        return resultPercent >= 100 ? responseUri : "";
     }
 
     private static String ConvertStreamToString(InputStream stream) throws IOException
