@@ -8,7 +8,7 @@ $GLOBALS['MODE'] = "";
 
 $GLOBALS['DOC_SERV_VIEWD'] = array(".pdf", ".djvu", ".xps");
 $GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".xlsx", ".csv", ".pptx", ".ppsx", ".txt");
-$GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".rtf", ".mht", ".html", ".htm", ".epub");
+$GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".rtf", ".mht", ".html", ".htm", ".epub");
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
@@ -25,16 +25,16 @@ $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|el
 
 $GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx", ".xlsm",
                                     ".xlt", ".xltx", ".xltm",
-                                    ".ods", ".csv");
+                                    ".ods", ".fods", ".csv");
 
 $GLOBALS['ExtsPresentation'] = array(".pps", ".ppsx", ".ppsm",
                                      ".ppt", ".pptx", ".pptm",
                                      ".pot", ".potx", ".potm",
-                                     ".odp");
+                                     ".odp", ".fodp");
 
 $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
                                  ".dot", ".dotx", ".dotm",
-                                 ".odt", ".rtf", ".txt",
+                                 ".odt", ".fodt", ".rtf", ".txt",
                                  ".html", ".htm", ".mht",
                                  ".pdf", ".djvu", ".fb2", ".epub", ".xps");
 

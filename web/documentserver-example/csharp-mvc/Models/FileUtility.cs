@@ -53,7 +53,7 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 ".doc", ".docx", ".docm",
                 ".dot", ".dotx", ".dotm",
-                ".odt", ".rtf", ".txt",
+                ".odt", ".fodt", ".rtf", ".txt",
                 ".html", ".htm", ".mht",
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
@@ -62,7 +62,7 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 ".xls", ".xlsx", ".xlsm",
                 ".xlt", ".xltx", ".xltm",
-                ".ods", ".csv"
+                ".ods", ".fods", ".csv"
             };
 
         public static readonly List<string> ExtsPresentation = new List<string>
@@ -70,7 +70,7 @@ namespace OnlineEditorsExampleMVC.Models
                 ".pps", ".ppsx", ".ppsm",
                 ".ppt", ".pptx", ".pptm",
                 ".pot", ".potx", ".potm",
-                ".odp"
+                ".odp", ".fodp"
             };
     }
 }
