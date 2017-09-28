@@ -29,10 +29,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Configuration;
-using System.Xml;
-using System.Xml.Linq;
+using System.Web.Helpers;
 
 namespace OnlineEditorsExampleMVC.Helpers
 {
@@ -108,28 +106,51 @@ namespace OnlineEditorsExampleMVC.Helpers
                                           out string convertedDocumentUri)
         {
             convertedDocumentUri = string.Empty;
-            var responceFromConvertService =
-                SendRequestToConvertService(documentUri, fromExtension, toExtension, documentRevisionId, isAsync)
-                    .Root;
 
-            var errorElement = responceFromConvertService.Element("Error");
-            if (errorElement != null)
-                ProcessConvertServiceResponceError(Convert.ToInt32(errorElement.Value));
+            fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri) : fromExtension;
 
-            var isEndConvert = Convert.ToBoolean(responceFromConvertService.Element("EndConvert").Value);
-            var percent = Convert.ToInt32(responceFromConvertService.Element("Percent").Value);
+            var title = Path.GetFileName(documentUri);
+            title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;
 
-            if (isEndConvert)
+            documentRevisionId = string.IsNullOrEmpty(documentRevisionId)
+                                     ? documentUri
+                                     : documentRevisionId;
+            documentRevisionId = GenerateRevisionId(documentRevisionId);
+
+            var request = (HttpWebRequest)WebRequest.Create(DocumentConverterUrl);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.Accept = "application/json";
+            request.Timeout = ConvertTimeout;
+
+            var bodyString = string.Format("{{\"async\": {0},\"filetype\": \"{1}\",\"key\": \"{2}\",\"outputtype\": \"{3}\",\"title\": \"{4}\",\"url\": \"{5}\"}}",
+                                           isAsync.ToString().ToLower(),
+                                           fromExtension.Trim('.'),
+                                           documentRevisionId,
+                                           toExtension.Trim('.'),
+                                           title,
+                                           documentUri);
+
+            var bytes = Encoding.UTF8.GetBytes(bodyString);
+            request.ContentLength = bytes.Length;
+            using (var requestStream = request.GetRequestStream())
             {
-                convertedDocumentUri = responceFromConvertService.Element("FileUrl").Value;
-                percent = 100;
-            }
-            else
-            {
-                percent = percent >= 100 ? 99 : percent;
+                requestStream.Write(bytes, 0, bytes.Length);
             }
 
-            return percent;
+            string dataResponse;
+            using (var response = request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            {
+                if (stream == null) throw new Exception("Response is null");
+
+                using (var reader = new StreamReader(stream))
+                {
+                    dataResponse = reader.ReadToEnd();
+                }
+            }
+
+            return GetResponseUri(dataResponse, out convertedDocumentUri);
         }
 
         /// <summary>
@@ -167,15 +188,20 @@ namespace OnlineEditorsExampleMVC.Helpers
                 request.GetRequestStream().Write(buffer, 0, readed);
             }
 
+            string dataResponse;
             using (var response = request.GetResponse())
             using (var stream = response.GetResponseStream())
             {
                 if (stream == null) throw new WebException("Could not get an answer");
-                var xDocumentResponse = XDocument.Load(new XmlTextReader(stream));
-                string externalUri;
-                GetResponseUri(xDocumentResponse, out externalUri);
-                return externalUri;
+
+                using (var reader = new StreamReader(stream))
+                {
+                    dataResponse = reader.ReadToEnd();
+                }
             }
+            string externalUri;
+            GetResponseUri(dataResponse, out externalUri);
+            return externalUri;
         }
 
         /// <summary>
@@ -195,77 +221,44 @@ namespace OnlineEditorsExampleMVC.Helpers
         #region private method
 
         /// <summary>
-        /// Request for conversion to a service
+        /// Processing document received from the editing service
         /// </summary>
-        /// <param name="documentUri">Uri for the document to convert</param>
-        /// <param name="fromExtension">Document extension</param>
-        /// <param name="toExtension">Extension to which to convert</param>
-        /// <param name="documentRevisionId">Key for caching on service</param>
-        /// <param name="isAsync">Perform conversions asynchronously</param>
-        /// <returns>Xml document request result of conversion</returns>
-        private static XDocument SendRequestToConvertService(string documentUri, string fromExtension, string toExtension, string documentRevisionId, bool isAsync)
+        /// <param name="jsonDocumentResponse">The resulting json from editing service</param>
+        /// <param name="responseUri">Uri to the converted document</param>
+        /// <returns>The percentage of completion of conversion</returns>
+        private static int GetResponseUri(string jsonDocumentResponse, out string responseUri)
         {
-            fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri) : fromExtension;
+            if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
 
-            var title = Path.GetFileName(documentUri);
-            title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;
+            var responseFromService = Json.Decode(jsonDocumentResponse);
+            if (jsonDocumentResponse == null) throw new WebException("Invalid answer format");
 
-            documentRevisionId = string.IsNullOrEmpty(documentRevisionId)
-                                     ? documentUri
-                                     : documentRevisionId;
-            documentRevisionId = GenerateRevisionId(documentRevisionId);
+            var errorElement = responseFromService.error;
+            if (errorElement != null) ProcessResponseError(Convert.ToInt32(errorElement));
 
-            var req = (HttpWebRequest)WebRequest.Create(DocumentConverterUrl);
-            req.Method = "POST";
-            req.ContentType = "text/json";
-            req.Timeout = ConvertTimeout;
+            var isEndConvert = responseFromService.endConvert;
 
-            var bodyString = string.Format("{{\"async\": {0},\"filetype\": \"{1}\",\"key\": \"{2}\",\"outputtype\": \"{3}\",\"title\": \"{4}\",\"url\": \"{5}\"}}",
-                                           isAsync.ToString().ToLower(),
-                                           fromExtension.Trim('.'),
-                                           documentRevisionId,
-                                           toExtension.Trim('.'),
-                                           title,
-                                           documentUri);
-
-            var bytes = Encoding.UTF8.GetBytes(bodyString);
-            req.ContentLength = bytes.Length;
-            using (var requestStream = req.GetRequestStream())
+            int resultPercent;
+            responseUri = string.Empty;
+            if (isEndConvert)
             {
-                requestStream.Write(bytes, 0, bytes.Length);
+                responseUri = responseFromService.fileUrl;
+                resultPercent = 100;
+            }
+            else
+            {
+                resultPercent = responseFromService.percent;
+                if (resultPercent >= 100) resultPercent = 99;
             }
 
-            Stream stream = null;
-            var countTry = 0;
-            while (countTry < MaxTry)
-            {
-                try
-                {
-                    countTry++;
-                    stream = req.GetResponse().GetResponseStream();
-                    break;
-                }
-                catch (WebException ex)
-                {
-                    if (ex.Status != WebExceptionStatus.Timeout)
-                    {
-                        throw new HttpException((int) HttpStatusCode.BadRequest, "Bad Request", ex);
-                    }
-                }
-            }
-            if (countTry == MaxTry)
-            {
-                throw new WebException("Timeout", WebExceptionStatus.Timeout);
-            }
-
-            return XDocument.Load(new XmlTextReader(stream));
+            return resultPercent;
         }
 
         /// <summary>
         /// Generate an error code table
         /// </summary>
         /// <param name="errorCode">Error code</param>
-        private static void ProcessConvertServiceResponceError(int errorCode)
+        private static void ProcessResponseError(int errorCode)
         {
             var errorMessage = string.Empty;
             const string errorMessageTemplate = "Error occurred in the ConvertService.ashx: {0}";
@@ -313,45 +306,6 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
 
             throw new Exception(errorMessage);
-        }
-
-        /// <summary>
-        /// Processing document received from the editing service
-        /// </summary>
-        /// <param name="xDocumentResponse">The resulting xml from editing service</param>
-        /// <param name="responseUri">Uri to the converted document</param>
-        /// <returns>The percentage of completion of conversion</returns>
-        private static int GetResponseUri(XDocument xDocumentResponse, out string responseUri)
-        {
-            var responceFromConvertService = xDocumentResponse.Root;
-            if (responceFromConvertService == null) throw new WebException("Invalid answer format");
-
-            var errorElement = responceFromConvertService.Element("Error");
-            if (errorElement != null) ProcessConvertServiceResponceError(Convert.ToInt32(errorElement.Value));
-
-            var endConvert = responceFromConvertService.Element("EndConvert");
-            if (endConvert == null) throw new WebException("Invalid answer format");
-            var isEndConvert = Convert.ToBoolean(endConvert.Value);
-
-            var resultPercent = 0;
-            responseUri = string.Empty;
-            if (isEndConvert)
-            {
-                var fileUrl = responceFromConvertService.Element("FileUrl");
-                if (fileUrl == null) throw new WebException("Invalid answer format");
-
-                responseUri = fileUrl.Value;
-                resultPercent = 100;
-            }
-            else
-            {
-                var percent = responceFromConvertService.Element("Percent");
-                if (percent != null)
-                    resultPercent = Convert.ToInt32(percent.Value);
-                resultPercent = resultPercent >= 100 ? 99 : resultPercent;
-            }
-
-            return resultPercent;
         }
 
         #endregion
