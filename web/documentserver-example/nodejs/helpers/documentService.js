@@ -27,7 +27,6 @@
 var path = require("path");
 var urlModule = require("url");
 var urllib = require("urllib");
-var xml2js = require("xml2js");
 var jwt = require("jsonwebtoken");
 var jwa = require("jwa");
 var fileUtility = require("./fileUtility");
@@ -77,7 +76,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 
     var uri = siteUrl + configServer.get('converterUrl');
     var headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        "Accept": "application/json"
     };
 
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
@@ -100,7 +100,8 @@ documentService.getExternalUri = function (fileStream, contentLength, contentTyp
     var headers = {
         "Content-Type": contentType == null ? "application/octet-stream" : contentType,
         "Content-Length": contentLength.toString(),
-        "charset": "utf-8"
+        "charset": "utf-8",
+        "Accept": "application/json"
     };
 
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
@@ -177,33 +178,22 @@ documentService.processConvertServiceResponceError = function (errorCode) {
     throw { message: errorMessage };
 };
 
-documentService.getResponseUri = function (xml) {
-    var json = documentService.convertXmlStringToJson(xml);
+documentService.getResponseUri = function (json) {
+    var fileResult = JSON.parse(json);
 
-    if (!json.FileResult)
-        throw { message: "FileResult node is null" };
+    if (fileResult.error)
+        documentService.processConvertServiceResponceError(parseInt(fileResult.error));
 
-    var fileResult = json.FileResult;
+    var isEndConvert = fileResult.endConvert
 
-    if (fileResult.Error)
-        documentService.processConvertServiceResponceError(parseInt(fileResult.Error[0]));
-
-    if (!fileResult.EndConvert)
-        throw { message: "EndConvert node is null" };
-
-    var isEndConvert = fileResult.EndConvert[0].toLowerCase() === "true";
-
-    if (!fileResult.Percent)
-        throw { message: "Percent node is null" };
-
-    var percent = parseInt(fileResult.Percent[0]);
+    var percent = parseInt(fileResult.percent);
     var uri = null;
 
     if (isEndConvert) {
-        if (!fileResult.FileUrl)
-            throw { message: "FileUrl node is null" };
+        if (!fileResult.fileUrl)
+            throw { message: "FileUrl is null" };
 
-        uri = fileResult.FileUrl[0];
+        uri = fileResult.fileUrl;
         percent = 100;
     } else {
         percent = percent >= 100 ? 99 : percent;
@@ -213,16 +203,6 @@ documentService.getResponseUri = function (xml) {
         key: percent,
         value: uri
     };
-};
-
-documentService.convertXmlStringToJson = function (xml) {
-    var res;
-
-    xml2js.parseString(xml, function (err, result) {
-        res = result;
-    });
-
-    return res;
 };
 
 documentService.commandRequest = function (method, documentRevisionId, callback) {
