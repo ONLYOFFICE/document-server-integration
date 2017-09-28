@@ -49,7 +49,8 @@ function GetExternalFileUri($local_uri) {
                     'method'  => 'POST',
                     'header'  => "User-Agent: " . $_SERVER['HTTP_USER_AGENT'] . "\r\n" .
                                     "Content-Type: " . $contentType . "\r\n" .
-                                    "Content-Length: " . strlen($fileContents) . "\r\n",
+                                    "Content-Length: " . strlen($fileContents) . "\r\n" .
+                                    "Accept: application/json\r\n",
                     'content' => $fileContents,
                     'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'] 
                 )
@@ -185,7 +186,7 @@ function GenerateRevisionId($expected_key) {
 * @param string $document_revision_id    Key for caching on service
 * @param bool   $is_async                Perform conversions asynchronously
 *
-* @return Xml document request result of conversion
+* @return Document request result of conversion
 */
 function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async) {
     if (empty($from_extension))
@@ -218,13 +219,13 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         )
     );
 
-    $response_xml_data;
     $countTry = 0;
 
     $opts = array('http' => array(
                 'method'  => 'POST',
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-                'header'=> "Content-type: application/json\r\n",
+                'header'=> "Content-type: application/json\r\n" . 
+                            "Accept: application/json\r\n",
                 'content' => $data
             )
         );
@@ -237,26 +238,13 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     while ($countTry < ServiceConverterMaxTry)
     {
         $countTry = $countTry + 1;
-        $response_xml_data = file_get_contents($urlToConverter, FALSE, $context);
-        if ($response_xml_data !== false) { break; }
+        $response_data = file_get_contents($urlToConverter, FALSE, $context);
+        if ($response_data !== false) { break; }
     }
 
     if ($countTry == ServiceConverterMaxTry)
     {
         throw new Exception ("Bad Request or timeout error");
-    }
-
-    libxml_use_internal_errors(true);
-    if (!function_exists('simplexml_load_file')) {
-         throw new Exception("Server can't read xml");
-    }
-    $response_data = simplexml_load_string($response_xml_data);
-    if (!$response_data) {
-        $exc = "Bad Response. Errors: ";
-        foreach(libxml_get_errors() as $error) {
-            $exc = $exc . "\t" . $error->message;
-        }
-        throw new Exception ($exc);
     }
 
     return $response_data;
@@ -304,39 +292,28 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
 /**
 * Processing document received from the editing service.
 *
-* @param string $x_document_response   The resulting xml from editing service
+* @param string $document_response     The result from editing service
 * @param string $response_uri          Uri to the converted document
 *
 * @return The percentage of completion of conversion
 */
-function GetResponseUri($x_document_response, &$response_uri) {
+function GetResponseUri($document_response, &$response_uri) {
     $response_uri = "";
     $resultPercent = 0;
 
-    libxml_use_internal_errors(true);
-    if (!function_exists('simplexml_load_file')) {
-         throw new Exception("Server can't read xml");
-    }
-    $data = simplexml_load_string($x_document_response);
-
-    if (!$data) {
-        $errs = "Invalid answer format. Errors: ";
-        foreach(libxml_get_errors() as $error) {
-           $errs = $errs . '\t' . $error->message;
-        }
-
-        throw new Exception ($errs);
+    if (!$document_response) {
+        $errs = "Invalid answer format";
     }
 
-    $errorElement = $data->Error;
-    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($data->Error);
+    $errorElement = $document_response->Error;
+    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($document_response->Error);
 
-    $endConvert = $data->EndConvert;
+    $endConvert = $document_response->EndConvert;
     if ($endConvert != NULL && $endConvert == "") throw new Exception("Invalid answer format");
 
     if ($endConvert != NULL && strtolower($endConvert) == true)
     {
-        $fileUrl = $data->FileUrl;
+        $fileUrl = $document_response->FileUrl;
         if ($fileUrl == NULL || $fileUrl == "") throw new Exception("Invalid answer format");
 
         $response_uri = $fileUrl;
@@ -344,7 +321,7 @@ function GetResponseUri($x_document_response, &$response_uri) {
     }
     else
     {
-        $percent = $data->Percent;
+        $percent = $document_response->Percent;
 
         if ($percent != NULL && $percent != "")
             $resultPercent = $percent;
