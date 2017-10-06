@@ -30,8 +30,8 @@ package helpers;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ConfigManager  {
-    
+public class ConfigManager
+{
     private static Properties properties;
     
     static
@@ -53,7 +53,8 @@ public class ConfigManager  {
         }
     }
     
-    public static String GetProperty(String name){
+    public static String GetProperty(String name)
+    {
         if(properties == null)
             return "";
         

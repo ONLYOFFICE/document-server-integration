@@ -73,9 +73,9 @@ public class ServiceConverter
     public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, Boolean isAsync) throws Exception
     {
         String convertedDocumentUri = null;
-        
+
         String xml = SendRequestToConvertService(documentUri, fromExtension, toExtension, documentRevisionId, isAsync);
-        
+
         Document document = ConvertStringToXmlDocument(xml);
 
         Element responceFromConvertService = document.getDocumentElement();
@@ -89,13 +89,13 @@ public class ServiceConverter
         NodeList endConvertNode = responceFromConvertService.getElementsByTagName("EndConvert");
         if (endConvertNode == null || endConvertNode.getLength() == 0)
             throw new Exception("EndConvert node is null");
-        
+
         Boolean isEndConvert = Boolean.parseBoolean(endConvertNode.item(0).getTextContent());
-        
+
         NodeList percentNode = responceFromConvertService.getElementsByTagName("Percent");
         if (percentNode == null || percentNode.getLength() == 0)
             throw new Exception("Percent node is null");
-        
+
         Integer percent = Integer.parseInt(percentNode.item(0).getTextContent());
 
         if (isEndConvert)
@@ -103,7 +103,7 @@ public class ServiceConverter
             NodeList fileUrlNode = responceFromConvertService.getElementsByTagName("FileUrl");
             if (fileUrlNode == null || fileUrlNode.getLength() == 0)
                 throw new Exception("FileUrl node is null");
-            
+
             convertedDocumentUri = fileUrlNode.item(0).getTextContent();
             percent = 100;
         }
@@ -118,7 +118,7 @@ public class ServiceConverter
     public static String GetExternalUri(InputStream fileStream, long contentLength, String contentType, String documentRevisionId) throws IOException, Exception
     {
         Object[] args = {"", "", "", "", documentRevisionId};
-        
+
         String urlTostorage = DocumentStorageUrl + ConvertParams.format(args);
 
         URL url = new URL(urlTostorage);
@@ -132,30 +132,30 @@ public class ServiceConverter
         connection.setRequestProperty("charset", "utf-8");
         connection.setRequestProperty("Content-Length", Long.toString(contentLength));
         connection.setUseCaches (false);
-               
-        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream())) {
+
+        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream()))
+        {
             int read;
             final byte[] bytes = new byte[1024];
-            while ((read = fileStream.read(bytes)) != -1) {
+            while ((read = fileStream.read(bytes)) != -1)
+            {
                 dataOutputStream.write(bytes, 0, read);
             }
-            
+
             dataOutputStream.flush();
         }
-        
+
         InputStream stream = connection.getInputStream();
 
         if (stream == null)
         {
             throw new Exception("Could not get an answer");
         }
-        
-        String xml = ConvertStreamToString(stream);
 
         connection.disconnect();
-        
+
         String res = GetResponseUri(xml);
-          
+
         return res;
     }
 
@@ -163,9 +163,9 @@ public class ServiceConverter
     {
         if (expectedKey.length() > 20)
             expectedKey = Integer.toString(expectedKey.hashCode());
-        
+
         String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
-        
+
         return key.substring(0, Math.min(key.length(), 20));
     }
 
@@ -175,9 +175,9 @@ public class ServiceConverter
 
         String title = FileUtility.GetFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
-        
+
         documentRevisionId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
-        
+
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
         Object[] args = {
@@ -187,7 +187,7 @@ public class ServiceConverter
                             title,
                             documentRevisionId
                         };
-        
+
         String urlToConverter = DocumentConverterUrl +  ConvertParams.format(args);
 
         if (isAsync)
@@ -196,10 +196,10 @@ public class ServiceConverter
         URL url = new URL(urlToConverter);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(ConvertTimeout);
-        
+
         InputStream stream = null;
         int countTry = 0;
-        
+
         while (countTry < MaxTry)
         {
             try
@@ -221,11 +221,11 @@ public class ServiceConverter
 
         if (stream == null)
             throw new Exception("Could not get an answer");
-               
+
         String xml = ConvertStreamToString(stream);
 
         connection.disconnect();
-        
+
         return xml;
     }
 
@@ -273,7 +273,7 @@ public class ServiceConverter
     private static String GetResponseUri(String xml) throws Exception
     {
         Document document = ConvertStringToXmlDocument(xml);
-        
+
         Element responceFromConvertService = document.getDocumentElement();
         if (responceFromConvertService == null)
             throw new Exception("Invalid answer format");
@@ -285,12 +285,12 @@ public class ServiceConverter
         NodeList endConvert = responceFromConvertService.getElementsByTagName("EndConvert");
         if (endConvert == null || endConvert.getLength() == 0)
             throw new Exception("Invalid answer format");
-        
+
         Boolean isEndConvert = Boolean.parseBoolean(endConvert.item(0).getTextContent());
 
         int resultPercent = 0;
         String responseUri = null;
-        
+
         if (isEndConvert)
         {
             NodeList fileUrl = responceFromConvertService.getElementsByTagName("FileUrl");
@@ -305,7 +305,7 @@ public class ServiceConverter
             NodeList percent = responceFromConvertService.getElementsByTagName("Percent");
             if (percent != null && percent.getLength() > 0)
                 resultPercent = Integer.parseInt(percent.item(0).getTextContent());
-            
+
             resultPercent = resultPercent >= 100 ? 99 : resultPercent;
         }
 
@@ -319,13 +319,14 @@ public class ServiceConverter
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();
 
-        while(line != null) {
+        while(line != null)
+        {
             stringBuilder.append(line);
-            line =bufferedReader.readLine();
+            line = bufferedReader.readLine();
         }
 
         String result = stringBuilder.toString();
-        
+
         return result;
     }
 
@@ -336,7 +337,7 @@ public class ServiceConverter
         InputStream inputStream = new ByteArrayInputStream(xml.getBytes("utf-8"));
         InputSource inputSource = new InputSource(inputStream);
         Document document = doccumentBuilder.parse(inputSource);
-        
+
         return document;
     }
 }

@@ -38,61 +38,62 @@ import javax.net.ssl.X509TrustManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
  
-public class GlobalServletContextListener implements ServletContextListener{
- 
-	@Override
-	public void contextDestroyed(ServletContextEvent arg0) {
-            System.out.println("ServletContextListener destroyed");
-	}
+public class GlobalServletContextListener implements ServletContextListener
+{
+    @Override
+    public void contextDestroyed(ServletContextEvent arg0)
+    {
+        System.out.println("ServletContextListener destroyed");
+    }
 
-	@Override
-	public void contextInitialized(ServletContextEvent arg0) {
-            
-            TrustManager[] trustAllCerts = new TrustManager[] {
-                new X509TrustManager() {
-                    
-                    @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers()
-                    {
-                        return null;
-                    }
-
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] certs, String authType)
-                    {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] certs, String authType)
-                    {
-                    }
-
-                }
-            };
-
-            SSLContext sc;
-
-            try
+    @Override
+    public void contextInitialized(ServletContextEvent arg0)
+    {
+        TrustManager[] trustAllCerts = new TrustManager[]
+        {
+            new X509TrustManager()
             {
-                sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            }
-            catch (NoSuchAlgorithmException | KeyManagementException ex)
-            {
-            }
-
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                
                 @Override
-                public boolean verify(String hostname, SSLSession session) {
-                  return true;
+                public java.security.cert.X509Certificate[] getAcceptedIssuers()
+                {
+                    return null;
                 }
-                
-            };
 
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType)
+                {
+                }
 
-            System.out.println("ServletContextListener started");	
-	}
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType)
+                {
+                }
+            }
+        };
+
+        SSLContext sc;
+
+        try
+        {
+            sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+        catch (NoSuchAlgorithmException | KeyManagementException ex)
+        {
+        }
+
+        HostnameVerifier allHostsValid = new HostnameVerifier()
+        {
+            @Override
+            public boolean verify(String hostname, SSLSession session)
+            {
+              return true;
+            }
+        };
+
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+        System.out.println("ServletContextListener started");
+    }
 }

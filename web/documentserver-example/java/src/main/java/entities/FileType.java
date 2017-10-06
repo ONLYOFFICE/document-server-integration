@@ -27,7 +27,8 @@
 
 package entities;
 
-public enum FileType {
+public enum FileType
+{
     Text,
     Spreadsheet,
     Presentation

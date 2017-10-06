@@ -50,10 +50,10 @@ import org.json.simple.parser.JSONParser;
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
-public class IndexServlet extends HttpServlet {
-
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+public class IndexServlet extends HttpServlet
+{
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         String action = request.getParameter("type");
 
         if(action == null)
@@ -65,7 +65,8 @@ public class IndexServlet extends HttpServlet {
         DocumentManager.Init(request, response);
         PrintWriter writer = response.getWriter();
         
-        switch (action.toLowerCase()) {
+        switch (action.toLowerCase())
+        {
             case "upload":
                 Upload(request, response, writer);
                 break;
@@ -76,11 +77,11 @@ public class IndexServlet extends HttpServlet {
                 Track(request, response, writer);
                 break;
         }
-
     }
 
 
-    private static void Upload(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void Upload(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
         response.setContentType("text/plain");
 
         try
@@ -88,20 +89,24 @@ public class IndexServlet extends HttpServlet {
             Part httpPostedFile = request.getPart("file");
 
             String fileName = "";
-            for (String content : httpPostedFile.getHeader("content-disposition").split(";")) {
-                if (content.trim().startsWith("filename")) {
+            for (String content : httpPostedFile.getHeader("content-disposition").split(";"))
+            {
+                if (content.trim().startsWith("filename"))
+                {
                     fileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
                 }
             }
 
             long curSize = httpPostedFile.getSize();
-            if (DocumentManager.GetMaxFileSize() < curSize || curSize <= 0) {
+            if (DocumentManager.GetMaxFileSize() < curSize || curSize <= 0)
+            {
                 writer.write("{ \"error\": \"File size is incorrect\"}");
                 return;
             }
 
             String curExt = FileUtility.GetFileExtension(fileName);
-            if (!DocumentManager.GetFileExts().contains(curExt)) {
+            if (!DocumentManager.GetFileExts().contains(curExt))
+            {
                 writer.write("{ \"error\": \"File type is not supported\"}");
                 return;
             }
@@ -113,10 +118,12 @@ public class IndexServlet extends HttpServlet {
 
             File file = new File(fileStoragePath);
 
-            try (FileOutputStream out = new FileOutputStream(file)) {
+            try (FileOutputStream out = new FileOutputStream(file))
+            {
                 int read;
                 final byte[] bytes = new byte[1024];
-                while ((read = fileStream.read(bytes)) != -1) {
+                while ((read = fileStream.read(bytes)) != -1)
+                {
                     out.write(bytes, 0, read);
                 }
 
@@ -162,15 +169,18 @@ public class IndexServlet extends HttpServlet {
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
                 InputStream stream = connection.getInputStream();
 
-                if (stream == null) {
+                if (stream == null)
+                {
                     throw new Exception("Stream is null");
                 }
 
                 File convertedFile = new File(DocumentManager.StoragePath(correctName, null));
-                try (FileOutputStream out = new FileOutputStream(convertedFile)) {
+                try (FileOutputStream out = new FileOutputStream(convertedFile))
+                {
                     int read;
                     final byte[] bytes = new byte[1024];
-                    while ((read = stream.read(bytes)) != -1) {
+                    while ((read = stream.read(bytes)) != -1)
+                    {
                         out.write(bytes, 0, read);
                     }
                     
@@ -195,7 +205,8 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
-    private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
         String userAddress = request.getParameter("userAddress");
         String fileName = request.getParameter("fileName");
 
@@ -248,15 +259,18 @@ public class IndexServlet extends HttpServlet {
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
                 InputStream stream = connection.getInputStream();
 
-                if (stream == null) {
+                if (stream == null)
+                {
                     throw new Exception("Stream is null");
                 }
 
                 File savedFile = new File(storagePath);
-                try (FileOutputStream out = new FileOutputStream(savedFile)) {
+                try (FileOutputStream out = new FileOutputStream(savedFile))
+                {
                     int read;
                     final byte[] bytes = new byte[1024];
-                    while ((read = stream.read(bytes)) != -1) {
+                    while ((read = stream.read(bytes)) != -1)
+                    {
                         out.write(bytes, 0, read);
                     }
                     
@@ -276,20 +290,21 @@ public class IndexServlet extends HttpServlet {
     }
 
 
-
-
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
     @Override
-    public String getServletInfo() {
-        return "Short description";
+    public String getServletInfo()
+    {
+        return "Handler";
     }
 }
