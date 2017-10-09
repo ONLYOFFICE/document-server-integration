@@ -4,32 +4,50 @@ class ServiceConverter
   @@document_converter_url = Rails.configuration.urlConverter
   @@document_storage_url = Rails.configuration.urlStorage
   @@convert_params = '?url=%s&outputtype=%s&filetype=%s&title=%s&key=%s'
-  @@max_try = 3
 
   class << self
 
     def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async)
-      converted_document_uri = nil
-      responce_from_convert_service = send_request_to_convert_service(document_uri, from_ext, to_ext, document_revision_id, is_async)
 
-      file_result = responce_from_convert_service['FileResult']
+      from_ext = from_ext == nil ? File.extname(document_uri) : from_ext
 
-      error_element = file_result['Error']
-      if error_element != nil
-        process_convert_service_responce_error(error_element.to_i)
+      title = File.basename(URI.parse(document_uri).path)
+      title = title == nil ? UUID.generate.to_s : title
+
+      document_revision_id = document_revision_id.empty? ? document_uri : document_revision_id
+      document_revision_id = generate_revision_id(document_revision_id)
+
+      url_to_converter = @@document_converter_url +
+          (@@convert_params % [URI::encode(document_uri), to_ext.delete('.'), from_ext.delete('.'), title, document_revision_id])
+
+      if is_async
+        url_to_converter += '&async=true'
       end
 
-      is_end_convert = file_result['EndConvert'].downcase == 'true'
-      percent = file_result['Percent'].to_i
+      data = nil
+      begin
 
-      if is_end_convert
-        converted_document_uri = file_result['FileUrl']
-        percent = 100
-      else
-        percent = percent >= 100 ? 99 : percent;
+        uri = URI.parse(url_to_converter)
+        http = Net::HTTP.new(uri.host, uri.port)
+
+        if url_to_converter.start_with?('https')
+          http.use_ssl = true
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        end
+
+        http.read_timeout = @@convert_timeout
+        req = Net::HTTP::Get.new(uri.request_uri)
+        req.add_field("Accept", "application/json")
+        res = http.request(req)
+        data = res.body
+      rescue TimeoutError
+        #try again
+      rescue => ex
+        raise ex.message
       end
 
-      return percent, converted_document_uri
+      json_data = JSON.parse(data)
+      return get_response_uri(json_data)
     end
 
     def get_external_uri(content, content_length, content_type, document_revision_id)
@@ -49,6 +67,7 @@ class ServiceConverter
       end
 
       req = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' => content_type , 'Content-Length' => content_length.to_s })
+      req.add_field("Accept", "application/json")
       req.body = content
       res = http.request(req)
       data = res.body
@@ -57,8 +76,8 @@ class ServiceConverter
         raise 'Could not get an answer'
       end
 
-      document_response = Hash.from_xml(data.gsub('\n', ''))
-      percent, external_uri = get_response_uri(document_response)
+      json_data = JSON.parse(data)
+      percent, external_uri = get_response_uri(json_data)
 
       external_uri
 
@@ -74,59 +93,6 @@ class ServiceConverter
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
       key[(key.length - [key.length, 20].min)..key.length]
-
-    end
-
-    def send_request_to_convert_service(document_uri, from_ext, to_ext, document_revision_id, is_async)
-
-      from_ext = from_ext == nil ? File.extname(document_uri) : from_ext
-
-      title = File.basename(URI.parse(document_uri).path)
-      title = title == nil ? UUID.generate.to_s : title
-
-      document_revision_id = document_revision_id.empty? ? document_uri : document_revision_id
-      document_revision_id = generate_revision_id(document_revision_id)
-
-      url_to_converter = @@document_converter_url +
-          (@@convert_params % [URI::encode(document_uri), to_ext.delete('.'), from_ext.delete('.'), title, document_revision_id])
-
-      if is_async
-        url_to_converter += '&async=true'
-      end
-
-      data = nil
-      count_try = 0
-
-      while count_try < @@max_try
-            begin
-              count_try += 1
-
-              uri = URI.parse(url_to_converter)
-              http = Net::HTTP.new(uri.host, uri.port)
-
-              if url_to_converter.start_with?('https')
-                http.use_ssl = true
-                http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-              end
-
-              http.read_timeout = @@convert_timeout
-              req = Net::HTTP::Get.new(uri.request_uri)
-              res = http.request(req)
-              data = res.body
-
-              break
-            rescue TimeoutError
-              #try again
-            rescue => ex
-              raise ex.message
-            end
-      end
-
-      if count_try == @@max_try && data == nil
-        raise 'timeout'
-      end
-
-      Hash.from_xml(data.gsub('\n', ''))
 
     end
 
@@ -161,30 +127,23 @@ class ServiceConverter
 
     end
 
-    def get_response_uri(document_response)
+    def get_response_uri(json_data)
 
-      file_result = document_response['FileResult']
-      if file_result == nil
-        raise 'Invalid answer format'
-      end
+      file_result = json_data
 
-      error_element = file_result['Error']
+      error_element = file_result['error']
       if error_element != nil
         process_convert_service_responce_error(error_element.to_i)
       end
 
-      end_convert_element = file_result['EndConvert']
-      if end_convert_element == nil
-        raise 'Invalid answer format'
-      end
-      is_end_convert = end_convert_element.downcase == 'true'
+      is_end_convert = file_result['endConvert']
 
       result_percent = 0
       response_uri = ''
 
       if is_end_convert
 
-        file_url_element = file_result['FileUrl']
+        file_url_element = file_result['fileUrl']
 
         if file_url_element == nil
           raise 'Invalid answer format'
@@ -195,7 +154,7 @@ class ServiceConverter
 
       else
 
-        percent_element = file_result['Percent']
+        percent_element = file_result['percent']
 
         if percent_element != nil
           result_percent = percent_element.to_i
