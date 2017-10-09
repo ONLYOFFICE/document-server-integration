@@ -31,57 +31,6 @@
 require_once( dirname(__FILE__) . '/config.php' );
 
 
-function GetExternalFileUri($local_uri) {
-    $externalUri = '';
-
-    try
-    {
-        $documentRevisionId = GenerateRevisionId($local_uri);
-
-        if (($fileContents = file_get_contents(str_replace(" ","%20", $local_uri))) === FALSE) {
-            throw new Exception("Bad Request");
-        } else {
-            $contentType =  mime_content_type($local_uri);
-
-            $urlToService = generateUrlToStorage('', '', '', '', $documentRevisionId);
-
-            $opts = array('http' => array(
-                    'method'  => 'POST',
-                    'header'  => "User-Agent: " . $_SERVER['HTTP_USER_AGENT'] . "\r\n" .
-                                    "Content-Type: " . $contentType . "\r\n" .
-                                    "Content-Length: " . strlen($fileContents) . "\r\n" .
-                                    "Accept: application/json\r\n",
-                    'content' => $fileContents,
-                    'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'] 
-                )
-            );
-
-            if (substr($urlToService, 0, strlen("https")) === "https") {
-                $opts['ssl'] = array( 'verify_peer'   => FALSE );
-            }
- 
-
-            $context  = stream_context_create($opts);
-
-            if (($response_data = file_get_contents($urlToService, FALSE, $context)) === FALSE) {
-                throw new Exception ("Could not get an answer");
-            } else {
-                sendlog("GetExternalUri response_data:" . PHP_EOL . $response_data, "logs/common.log");
-                GetResponseUri($response_data, $externalUri);
-            }
-
-            sendlog("GetExternalFileUri. externalUri = " . $externalUri, "logs/common.log");
-            return $externalUri . "";
-        }
-    }
-    catch (Exception $e)
-    {
-        sendlog("GetExternalFileUri Exception: " . $e->getMessage(), "logs/common.log");
-    }
-    return $local_uri;
-}
-
-
 function DoUpload($fileUri) {
     $_fileName = GetCorrectName($fileUri);
 
@@ -99,18 +48,6 @@ function DoUpload($fileUri) {
     }
 
     return $_fileName;
-}
-
-
-function generateUrlToStorage($document_uri, $from_extension, $to_extension, $title, $document_revision_id) {
-
-    return $GLOBALS['DOC_SERV_STORAGE_URL'] . "?" . http_build_query(
-                            array(
-                                "url" => $document_uri,
-                                "outputtype" => trim($to_extension,'.'),
-                                "filetype" => trim($from_extension, '.'),
-                                "title" => $title,
-                                "key" => $document_revision_id));
 }
 
 

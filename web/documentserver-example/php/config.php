@@ -12,7 +12,6 @@ $GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", 
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
-$GLOBALS['DOC_SERV_STORAGE_URL'] = "https://doc.onlyoffice.com/FileUploader.ashx";
 $GLOBALS['DOC_SERV_CONVERTER_URL'] = "https://doc.onlyoffice.com/ConvertService.ashx";
 $GLOBALS['DOC_SERV_API_URL'] = "https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js";
 
