@@ -2,7 +2,6 @@ class ServiceConverter
 
   @@convert_timeout = Rails.configuration.timeout
   @@document_converter_url = Rails.configuration.urlConverter
-  @@document_storage_url = Rails.configuration.urlStorage
   @@convert_params = '?url=%s&outputtype=%s&filetype=%s&title=%s&key=%s'
 
   class << self
@@ -48,39 +47,6 @@ class ServiceConverter
 
       json_data = JSON.parse(data)
       return get_response_uri(json_data)
-    end
-
-    def get_external_uri(content, content_length, content_type, document_revision_id)
-
-      url_to_storage = @@document_storage_url + (@@convert_params % ['', '', '', '', document_revision_id])
-
-      if content_type == nil
-        content_type = 'application/octet-stream'
-      end
-
-      uri = URI.parse(url_to_storage)
-      http = Net::HTTP.new(uri.host, uri.port)
-
-      if url_to_storage.start_with?('https')
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      end
-
-      req = Net::HTTP::Post.new(uri.request_uri, {'Content-Type' => content_type , 'Content-Length' => content_length.to_s })
-      req.add_field("Accept", "application/json")
-      req.body = content
-      res = http.request(req)
-      data = res.body
-
-      if data == nil
-        raise 'Could not get an answer'
-      end
-
-      json_data = JSON.parse(data)
-      percent, external_uri = get_response_uri(json_data)
-
-      external_uri
-
     end
 
     def generate_revision_id(expected_key)

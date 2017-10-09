@@ -39,7 +39,6 @@ module OnlineEditorsExampleRuby
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.ppsx|.txt"
     Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.pptm|.ppt|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.rtf|.mht|.html|.htm|.epub"
 
-    Rails.configuration.urlStorage="https://doc.onlyoffice.com/FileUploader.ashx"
     Rails.configuration.urlConverter="https://doc.onlyoffice.com/ConvertService.ashx"
     Rails.configuration.urlApi="https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js"
     Rails.configuration.urlPreloader="https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html"
