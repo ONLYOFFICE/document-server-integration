@@ -46,7 +46,6 @@ namespace ASC.Api.DocumentConverter
         static ServiceConverter()
         {
             DocumentConverterUrl = WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "";
-            DocumentStorageUrl = WebConfigurationManager.AppSettings["files.docservice.url.storage"] ?? "";
 
             Int32.TryParse(WebConfigurationManager.AppSettings["files.docservice.timeout"], out ConvertTimeout);
             ConvertTimeout = ConvertTimeout > 0 ? ConvertTimeout : 120000;
@@ -63,16 +62,6 @@ namespace ASC.Api.DocumentConverter
         /// Url to the service of conversion
         /// </summary>
         private static readonly string DocumentConverterUrl;
-
-        /// <summary>
-        /// Url to the service of storage
-        /// </summary>
-        private static readonly string DocumentStorageUrl;
-
-        /// <summary>
-        /// The parameters for the query conversion
-        /// </summary>
-        private const string ConvertParams = "?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}";
 
         #endregion
 
@@ -153,64 +142,6 @@ namespace ASC.Api.DocumentConverter
             }
 
             return GetResponseUri(dataResponse, out convertedDocumentUri);
-        }
-
-        /// <summary>
-        /// Placing the document in the storage service
-        /// </summary>
-        /// <param name="fileStream">Stream of document</param>
-        /// <param name="contentLength">Length of stream</param>
-        /// <param name="contentType">Mime type</param>
-        /// <param name="documentRevisionId">Key for caching on service, whose used in editor</param>
-        /// <returns>Uri to document in the storage</returns>
-        public static string GetExternalUri(
-            Stream fileStream,
-            long contentLength,
-            string contentType,
-            string documentRevisionId)
-        {
-            var urlDocumentService = DocumentStorageUrl + ConvertParams;
-            var urlTostorage = String.Format(urlDocumentService,
-                                             string.Empty,
-                                             string.Empty,
-                                             string.Empty,
-                                             string.Empty,
-                                             documentRevisionId);
-
-            var request = (HttpWebRequest)WebRequest.Create(urlTostorage);
-            request.Method = "POST";
-            request.ContentType = contentType;
-            request.Accept = "application/json";
-            request.ContentLength = contentLength;
-
-            const int bufferSize = 2048;
-            var buffer = new byte[bufferSize];
-            int readed;
-            while ((readed = fileStream.Read(buffer, 0, bufferSize)) > 0)
-            {
-                request.GetRequestStream().Write(buffer, 0, readed);
-            }
-
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
-            
-            string dataResponse;
-            using (var response = request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            {
-                if (stream == null) throw new WebException("Could not get an answer");
-
-                using (var reader = new StreamReader(stream))
-                {
-                    dataResponse = reader.ReadToEnd();
-                }
-            }
-            string externalUri;
-            GetResponseUri(dataResponse, out externalUri);
-            return externalUri;
         }
 
         /// <summary>
