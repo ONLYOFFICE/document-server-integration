@@ -73,11 +73,6 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// </summary>
         private const string ConvertParams = "?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}";
 
-        /// <summary>
-        /// Number of tries request conversion
-        /// </summary>
-        private const int MaxTry = 3;
-
         #endregion
 
         #region public method

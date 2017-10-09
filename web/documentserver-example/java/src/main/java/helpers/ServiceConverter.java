@@ -48,7 +48,6 @@ public class ServiceConverter
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
     private static final String DocumentStorageUrl = ConfigManager.GetProperty("files.docservice.url.storage");
     private static final MessageFormat ConvertParams = new MessageFormat("?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}");
-    private static final int MaxTry = 3;
 
     static
     {
@@ -94,27 +93,7 @@ public class ServiceConverter
         connection.setRequestProperty("Accept", "application/json");
         connection.setConnectTimeout(ConvertTimeout);
 
-        InputStream stream = null;
-        int countTry = 0;
-
-        while (countTry < MaxTry)
-        {
-            try
-            {
-                countTry++;
-                stream = connection.getInputStream();
-                break;
-            }
-            catch (Exception ex)
-            {
-                if(!(ex instanceof TimeoutException))
-                    throw new Exception("Bad Request");
-            }
-        }
-        if (countTry == MaxTry)
-        {
-            throw new Exception("Timeout");
-        }
+        InputStream stream = connection.getInputStream();
 
         if (stream == null)
             throw new Exception("Could not get an answer");

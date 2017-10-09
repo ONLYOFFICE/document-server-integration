@@ -219,8 +219,6 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         )
     );
 
-    $countTry = 0;
-
     $opts = array('http' => array(
                 'method'  => 'POST',
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
@@ -235,17 +233,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     }
  
     $context  = stream_context_create($opts);
-    while ($countTry < ServiceConverterMaxTry)
-    {
-        $countTry = $countTry + 1;
-        $response_data = file_get_contents($urlToConverter, FALSE, $context);
-        if ($response_data !== false) { break; }
-    }
-
-    if ($countTry == ServiceConverterMaxTry)
-    {
-        throw new Exception ("Bad Request or timeout error");
-    }
+    $response_data = file_get_contents($urlToConverter, FALSE, $context);
 
     return $response_data;
 }

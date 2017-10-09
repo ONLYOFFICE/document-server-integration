@@ -38,8 +38,5 @@ $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
                                  ".html", ".htm", ".mht",
                                  ".pdf", ".djvu", ".fb2", ".epub", ".xps");
 
-if ( !defined('ServiceConverterMaxTry') )
-    define( 'ServiceConverterMaxTry', 3);
-
 
 ?>
