@@ -93,39 +93,6 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         callback);
 };
 
-documentService.getExternalUri = function (fileStream, contentLength, contentType, documentRevisionId, callback) {
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId);
-
-    var urlTostorage = siteUrl + configServer.get('storageUrl') + "?key=" + documentRevisionId;
-    var headers = {
-        "Content-Type": contentType == null ? "application/octet-stream" : contentType,
-        "Content-Length": contentLength.toString(),
-        "charset": "utf-8",
-        "Accept": "application/json"
-    };
-
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        const hmac = jwa(cfgSignatureSecretAlgorithmRequest);
-        var payloadhash = hmac.sign(fileStream, cfgSignatureSecret);
-        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(urlTostorage, undefined, undefined, payloadhash);
-    }
-
-    urllib.request(urlTostorage,
-        {
-            method: "POST",
-            headers: headers,
-            data: fileStream
-        },
-        function (err, data) {
-            if (err) {
-                callback();
-                return;
-            }
-            var res = documentService.getResponseUri(data);
-            callback(res.value);
-        });
-};
-
 documentService.generateRevisionId = function (expectedKey) {
     if (expectedKey.length > 20) {
         expectedKey = expectedKey.hashCode().toString();
