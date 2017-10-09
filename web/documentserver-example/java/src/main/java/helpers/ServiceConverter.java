@@ -46,7 +46,6 @@ public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
-    private static final String DocumentStorageUrl = ConfigManager.GetProperty("files.docservice.url.storage");
     private static final MessageFormat ConvertParams = new MessageFormat("?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}");
 
     static
@@ -103,53 +102,6 @@ public class ServiceConverter
         connection.disconnect();
 
         return GetResponseUri(jsonString);
-    }
-
-    public static String GetExternalUri(InputStream fileStream, long contentLength, String contentType, String documentRevisionId) throws IOException, Exception
-    {
-        Object[] args = {"", "", "", "", documentRevisionId};
-
-        String urlTostorage = DocumentStorageUrl + ConvertParams.format(args);
-
-        URL url = new URL(urlTostorage);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-
-        connection.setDoOutput(true);
-        connection.setDoInput(true);
-        connection.setInstanceFollowRedirects(false); 
-        connection.setRequestMethod("POST"); 
-        connection.setRequestProperty("Content-Type", contentType == null ? "application/octet-stream" : contentType);
-        connection.setRequestProperty("charset", "utf-8");
-        connection.setRequestProperty("Content-Length", Long.toString(contentLength));
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setUseCaches (false);
-
-        try (DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream()))
-        {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = fileStream.read(bytes)) != -1)
-            {
-                dataOutputStream.write(bytes, 0, read);
-            }
-
-            dataOutputStream.flush();
-        }
-
-        InputStream stream = connection.getInputStream();
-
-        if (stream == null)
-        {
-            throw new Exception("Could not get an answer");
-        }
-
-        String jsonString = ConvertStreamToString(stream);
-
-        connection.disconnect();
-
-        String res = GetResponseUri(jsonString);
-
-        return res;
     }
 
     public static String GenerateRevisionId(String expectedKey)
