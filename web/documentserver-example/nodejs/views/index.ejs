@@ -158,6 +158,9 @@
                                     <% if (storedFiles[i].documentType == "text") { %>
                                     <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                    <% } else if (storedFiles[i].documentType == "spreadsheet") { %>
+                                    <a href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
