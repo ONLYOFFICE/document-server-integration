@@ -30,7 +30,7 @@ module OnlineEditorsExampleRuby
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-
+    base_url = ENV['DOC_SERVER_URL'] || 'https://doc.onlyoffice.com'
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
@@ -39,9 +39,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.ppsx|.txt"
     Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.pptm|.ppt|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.rtf|.mht|.html|.htm|.epub"
 
-    Rails.configuration.urlConverter="https://doc.onlyoffice.com/ConvertService.ashx"
-    Rails.configuration.urlApi="https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html"
-
+    Rails.configuration.urlConverter = "#{base_url}/ConvertService.ashx"
+    Rails.configuration.urlApi = "#{base_url}/web-apps/apps/api/documents/api.js"
+    Rails.configuration.urlPreloader = "#{base_url}/web-apps/apps/api/documents/cache-scripts.html"
   end
 end
