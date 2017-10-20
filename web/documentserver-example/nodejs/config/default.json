@@ -12,7 +12,7 @@
   },
   "server": {
     "port": 3000,
-    "siteUrl": "https://doc.onlyoffice.com/",
+    "siteUrl": "http://documentserver/",
     "commandUrl": "coauthoring/CommandService.ashx",
     "converterUrl": "ConvertService.ashx",
     "tempStorageUrl": "ResourceService.ashx",
