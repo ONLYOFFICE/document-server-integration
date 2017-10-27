@@ -39,7 +39,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>ONLYOFFICE Integration Edition</title>
+        <title>ONLYOFFICE Document Editors</title>
 
         <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
@@ -74,10 +74,10 @@
             </a>
         </header>
         <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
+            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Integration Edition, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
             <table class="user-block-table" cellspacing="0" cellpadding="0">
                 <tr>
@@ -231,7 +231,7 @@
             <div class="help-block">
                 <span>Want to learn the magic?</span>
                 <br />
-                Explore ONLYOFFICE Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
+                Explore ONLYOFFICE Document Editors <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
             </div>
             <br />
             <br />
