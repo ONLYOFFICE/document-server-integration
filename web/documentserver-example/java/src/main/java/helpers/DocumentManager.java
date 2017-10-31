@@ -44,7 +44,8 @@ public class DocumentManager
 {
     private static HttpServletRequest request;
 
-    public static void Init(HttpServletRequest req, HttpServletResponse resp){
+    public static void Init(HttpServletRequest req, HttpServletResponse resp)
+    {
         request = req;
     }
 
@@ -157,25 +158,20 @@ public class DocumentManager
     {
         String demoName = "sample." + fileExt;
         String fileName = GetCorrectName(demoName);
-        
-        try
+
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoName);
+
+        File file = new File(StoragePath(fileName, null));
+
+        try (FileOutputStream out = new FileOutputStream(file))
         {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoName);
-            
-            File file = new File(StoragePath(fileName, null));
-            
-            try (FileOutputStream out = new FileOutputStream(file)) {
-                int read;
-                final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1) {
-                    out.write(bytes, 0, read);
-                }
-                out.flush();
+            int read;
+            final byte[] bytes = new byte[1024];
+            while ((read = stream.read(bytes)) != -1)
+            {
+                out.write(bytes, 0, read);
             }
-        }
-        catch (Exception ex)
-        {
-            throw ex;
+            out.flush();
         }
         
         return fileName;
@@ -192,12 +188,10 @@ public class DocumentManager
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString());
             
             return filePath;
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 is unknown");
         }
-        catch (Exception ex)
+        catch (UnsupportedEncodingException e)
         {
-            throw ex;
+            throw new AssertionError("UTF-8 is unknown");
         }
     }
 
@@ -210,11 +204,14 @@ public class DocumentManager
     {
         String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         String hostAddress = CurUserHostAddress(null);
-        try {
+        try
+        {
             String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
         
             return serverPath + "/IndexServlet" + query;
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e)
+        {
             throw new AssertionError("UTF-8 is unknown");
         }
     }

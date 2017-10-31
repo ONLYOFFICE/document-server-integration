@@ -244,7 +244,8 @@ docManager.getStoredFiles = function () {
             const item = {
                 time: time,
                 name: storedFiles[i],
-                documentType: fileUtility.getFileType(storedFiles[i])
+                documentType: fileUtility.getFileType(storedFiles[i]),
+                canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1
             };
 
             if (!result.length) {
@@ -313,7 +314,10 @@ docManager.getDate = function (date) {
 };
 
 docManager.getChanges = function (fileName) {
-    return JSON.parse(fileSystem.readFileSync(fileName));
+    if (this.existsSync(fileName)) {
+        return JSON.parse(fileSystem.readFileSync(fileName));
+    }
+    return null;
 };
 
 docManager.countVersion = function(directory) {

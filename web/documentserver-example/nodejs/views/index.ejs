@@ -63,7 +63,7 @@
             <tr>
                 <td valign="middle" width="30%">
                     <select class="select-user" id="language">
-                        <option value="en" selected>English</option>
+                        <option value="en">English</option>
                         <option value="de">Deutsch</option>
                         <option value="es">Espanol</option>
                         <option value="fr">Francais</option>
@@ -145,6 +145,7 @@
                                     <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
                                         <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
                                 </td>
+                                <% if (storedFiles[i].canEdit) { %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
@@ -157,6 +158,9 @@
                                     <% if (storedFiles[i].documentType == "text") { %>
                                     <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                    <% } else if (storedFiles[i].documentType == "spreadsheet") { %>
+                                    <a href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
@@ -165,6 +169,9 @@
                                         <img src="images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                     <% } %>
                                 </td>
+                                <% } else { %>
+                                    <td class="contentCells contentCells-shift contentCells-icon" colspan="4"></td>
+                                <% } %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>

@@ -35,14 +35,13 @@ module OnlineEditorsExampleRuby
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
 
-    Rails.configuration.viewedDocs=".ppt|.pps|.odp|.fodp|.pdf|.djvu|.epub|.xps"
-    Rails.configuration.editedDocs=".docx|.doc|.odt|.fodt|.xlsx|.xls|.ods|.fods|.csv|.pptx|.ppsx|.rtf|.txt|.mht|.html|.htm"
-    Rails.configuration.convertDocs=".doc|.odt|.fodt|.xls|.ods|.fods|.ppt|.pps|.odp|.fodp|.rtf|.mht|.html|.htm|.epub"
+    Rails.configuration.viewedDocs=".pdf|.djvu|.xps"
+    Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.ppsx|.txt"
+    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.pptm|.ppt|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.rtf|.mht|.html|.htm|.epub"
 
-    Rails.configuration.urlStorage="https://doc.onlyoffice.com/FileUploader.ashx"
-    Rails.configuration.urlConverter="https://doc.onlyoffice.com/ConvertService.ashx"
-    Rails.configuration.urlApi="https://doc.onlyoffice.com/web-apps/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="https://doc.onlyoffice.com/web-apps/apps/api/documents/cache-scripts.html"
+    Rails.configuration.urlConverter="http://documentserver/ConvertService.ashx"
+    Rails.configuration.urlApi="http://documentserver/web-apps/apps/api/documents/api.js"
+    Rails.configuration.urlPreloader="http://documentserver/web-apps/apps/api/documents/cache-scripts.html"
 
   end
 end

@@ -39,8 +39,8 @@ import entities.FileModel;
 
 
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
-public class EditorServlet extends HttpServlet {
-
+public class EditorServlet extends HttpServlet
+{
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String fileName = "";
@@ -87,17 +87,20 @@ public class EditorServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
     @Override
-    public String getServletInfo() {
-        return "Short description";
+    public String getServletInfo()
+    {
+        return "Editor page";
     }
 }
