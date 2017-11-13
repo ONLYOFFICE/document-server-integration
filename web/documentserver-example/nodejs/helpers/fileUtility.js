@@ -77,11 +77,11 @@ fileUtility.fileType = {
     presentation: "presentation"
 }
 
-fileUtility.documentExts = [".docx", ".doc", ".odt", ".fodt", ".rtf", ".txt", ".html", ".htm", ".mht", ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".docm", ".dot", ".dotm", ".dotx"];
+fileUtility.documentExts = [".doc", ".docx", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".rtf", ".txt", ".html", ".htm", ".mht", ".pdf", ".djvu", ".fb2", ".epub", ".xps"];
 
-fileUtility.spreadsheetExts = [".xls", ".xlsx", ".ods", ".fods", ".csv", ".xlsm", ".xlt", ".xltm", ".xltx"];
+fileUtility.spreadsheetExts = [".xls", ".xlsx", ".xlsm", ".xlt", ".xltx", ".xltm", ".ods", ".fods", ".csv"];
 
-fileUtility.presentationExts = [".pps", ".ppsx", ".ppt", ".pptx", ".odp", ".fodp", ".pot", ".potm", ".potx", ".ppsm", ".pptm"];
+fileUtility.presentationExts = [".pps", ".ppsx", ".ppsm", ".ppt", ".pptx", ".pptm", ".pot", ".potx", ".potm", ".odp", ".fodp"];
 
 function getUrlParams(url) {
     try {

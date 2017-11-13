@@ -40,6 +40,7 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
+        <% DocumentManager.Init(request, response); %>
         <% FileModel Model = (FileModel)request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>

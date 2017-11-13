@@ -1,3 +1,5 @@
+require 'net/http'
+
 class HomeController < ApplicationController
   def index
   end
@@ -117,7 +119,7 @@ class HomeController < ApplicationController
 
     if status == 2 || status == 3 #MustSave, Corrupted
 
-      saved = 1
+      saved = 0
 
       begin
 
@@ -143,12 +145,15 @@ class HomeController < ApplicationController
         end
 
       rescue
-        saved = 0
+        saved = 1
       end
 
-      render :text => '{"error":0,"c":"saved","status":' + saved.to_s + '}'
-
+      render :text => '{"error":' + saved.to_s + '}'
+      return
     end
+
+    render :text => '{"error":0}'
+    return
 
   end
 end
