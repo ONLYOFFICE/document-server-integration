@@ -219,7 +219,7 @@ function getStoredFiles() {
         }
     }
 
-    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
 
     if (!file_exists($directory) && !is_dir($directory)) {
         return $result;
