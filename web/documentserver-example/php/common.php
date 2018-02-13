@@ -32,7 +32,11 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 
 function sendlog($msg, $logFileName) {
-    file_put_contents($logFileName, $msg . PHP_EOL, FILE_APPEND);
+    $logsFolder = "logs/";
+    if (!file_exists($logsFolder)) {
+        mkdir($logsFolder);
+    }
+    file_put_contents($logsFolder . $logFileName, $msg . PHP_EOL, FILE_APPEND);
 }
 
 function guid() {
@@ -201,7 +205,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     } 
-    sendlog("getStoragePath result: " . $directory . $fileName, "logs/common.log");
+    sendlog("getStoragePath result: " . $directory . $fileName, "common.log");
     return $directory . $fileName;
 }
 
@@ -248,7 +252,7 @@ function getVirtualPath($forDocumentServer) {
 
 
     $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
-    sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
+    sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
     return $virtPath;
 }
 

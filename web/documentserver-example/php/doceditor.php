@@ -62,7 +62,7 @@
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
         {
-            sendlog("Copy file error to ". getStoragePath($demoFilename), "logs/common.log");
+            sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             //Copy error!!!
         }
 
