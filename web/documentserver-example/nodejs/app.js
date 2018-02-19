@@ -321,6 +321,19 @@ app.delete("/file", function (req, res) {
     res.end();
 });
 
+app.get("/csv", function (req, res) {
+    var fileName = "csv.csv";
+    var csvPath = path.join(__dirname, "public", "samples", fileName);
+
+    res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
+    res.setHeader("Content-Type", mime.lookup(csvPath));
+
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
+
+    var filestream = fileSystem.createReadStream(csvPath);
+    filestream.pipe(res);
+})
+
 app.post("/track", function (req, res) {
 
     docManager.init(storageFolder, req, res);
@@ -636,7 +649,8 @@ app.get("/editor", function (req, res) {
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            mailMergeRecipientUrl: docManager.getServerUrl(true) + "/csv"
         };
 
         if (cfgSignatureEnable) {
