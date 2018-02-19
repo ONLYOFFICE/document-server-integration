@@ -147,9 +147,9 @@ function getClientIp() {
     return $ipaddress;
 }
 
-function serverPath($forDocumentServer) {
-    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != "" 
-        ? $GLOBALS['EXAMPLE_URL'] 
+function serverPath($forDocumentServer = NULL) {
+    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
+        ? $GLOBALS['EXAMPLE_URL']
         : ('http://' . $_SERVER['HTTP_HOST']);
 }
 
@@ -216,7 +216,7 @@ function getStoredFiles() {
     $result = array();
     if ($storagePath != "")
     {
-        $directory =  $directory  . DIRECTORY_SEPARATOR;
+        $directory =  $directory . DIRECTORY_SEPARATOR;
 
         if (!file_exists($directory) && !is_dir($directory)) {
             return $result;
@@ -227,13 +227,13 @@ function getStoredFiles() {
 
     if (!file_exists($directory) && !is_dir($directory)) {
         return $result;
-    } 
+    }
 
     $cdir = scandir($directory);
     $result = array();
     foreach($cdir as $key => $fileName) {
         if (!in_array($fileName,array(".", ".."))) {
-            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {   
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
                 $result[$dat] = (object) array(
                         "name" => $fileName,
