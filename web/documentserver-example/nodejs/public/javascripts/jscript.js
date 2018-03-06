@@ -70,6 +70,9 @@ if (typeof jQuery != "undefined") {
         jq('#fileupload').fileupload({
             dataType: 'json',
             add: function (e, data) {
+                if (jq("#mainProgress").is(":visible")) {
+                    return;
+                }
                 jq(".error").removeClass("error");
                 jq(".done").removeClass("done");
                 jq(".current").removeClass("current");
