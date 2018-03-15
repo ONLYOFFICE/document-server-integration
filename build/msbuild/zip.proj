@@ -4,44 +4,58 @@
   <PropertyGroup>
     <To Condition=" '$(To)' == '' ">..\deploy\</To>
     <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
+    <NameCSharp>$(To).Net (C#) Example</NameCSharp>
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
+    <NameMvc>$(To).Net (C# MVC) Example</NameMvc>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+    <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
+    <NameNodeJS>$(To)Node.js Example</NameNodeJS>
     <DirNodeJS>$(RootDir)web\documentserver-example\nodejs\</DirNodeJS>
+    <NamePHP>$(To)PHP Example</NamePHP>
     <DirPHP>$(RootDir)web\documentserver-example\php\</DirPHP>
+    <NameRuby>$(To)Ruby Example</NameRuby>
     <DirRuby>$(RootDir)web\documentserver-example\ruby\</DirRuby>
   </PropertyGroup>
 
   <Target Name="Build">
+    <RemoveDir Directories="$(To)" ContinueOnError="true" />
+
     <ItemGroup>
       <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesCSharp)" WorkingDirectory="$(DirCSharp)" ZipFileName="$(To).Net (C#) Example.zip" />
+    <Copy SourceFiles="@(ZipFilesCSharp)" DestinationFiles="@(ZipFilesCSharp->'$(NameCSharp)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameCSharp)" WorkingDirectory="$(To)" ZipFileName="$(NameCSharp).zip" />
 
     <ItemGroup>
       <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesMVC)" WorkingDirectory="$(DirMvc)" ZipFileName="$(To).Net (C# MVC) Example.zip" />
+    <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />
 
     <ItemGroup>
       <ZipFilesJava Include="$(DirJava)**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesJava)" WorkingDirectory="$(DirJava)" ZipFileName="$(To)Java Example.zip" />
+    <Copy SourceFiles="@(ZipFilesJava)" DestinationFiles="@(ZipFilesJava->'$(NameJava)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameJava)" WorkingDirectory="$(To)" ZipFileName="$(NameJava).zip" />
 
     <ItemGroup>
       <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesNodeJS)" WorkingDirectory="$(DirNodeJS)" ZipFileName="$(To)Node.js Example.zip" />
+    <Copy SourceFiles="@(ZipFilesNodeJS)" DestinationFiles="@(ZipFilesNodeJS->'$(NameNodeJS)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameNodeJS)" WorkingDirectory="$(To)" ZipFileName="$(NameNodeJS).zip" />
 
     <ItemGroup>
       <ZipFilesPHP Include="$(DirPHP)**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesPHP)" WorkingDirectory="$(DirPHP)" ZipFileName="$(To)PHP Example.zip" />
+    <Copy SourceFiles="@(ZipFilesPHP)" DestinationFiles="@(ZipFilesPHP->'$(NamePHP)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NamePHP)" WorkingDirectory="$(To)" ZipFileName="$(NamePHP).zip" />
 
     <ItemGroup>
       <ZipFilesRuby Include="$(DirRuby)**" />
     </ItemGroup>
-    <Zip Files="@(ZipFilesRuby)" WorkingDirectory="$(DirRuby)" ZipFileName="$(To)Ruby Example.zip" />
+    <Copy SourceFiles="@(ZipFilesRuby)" DestinationFiles="@(ZipFilesRuby->'$(NameRuby)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameRuby)" WorkingDirectory="$(To)" ZipFileName="$(NameRuby).zip" />
   </Target>
 
 </Project>
