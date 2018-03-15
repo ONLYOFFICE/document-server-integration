@@ -1,4 +1,5 @@
-﻿/*
+﻿"use strict";
+/*
  *
  * (c) Copyright Ascensio System Limited 2010-2017
  *
@@ -354,7 +355,7 @@ app.post("/track", function (req, res) {
 
                     var count_version = docManager.countVersion(historyPath);
                     version = count_version + 1;
-                    versionPath = docManager.versionPath(fileName, userAddress, version);
+                    var versionPath = docManager.versionPath(fileName, userAddress, version);
                     docManager.createDirectory(versionPath);
 
                     var downloadZip = body.changesurl;
