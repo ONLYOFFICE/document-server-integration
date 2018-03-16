@@ -470,6 +470,7 @@ app.post("/track", function (req, res) {
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
         var checkJwtHeaderRes = documentService.checkJwtHeader(req);
         if (checkJwtHeaderRes) {
+            var body;
             if (checkJwtHeaderRes.payload) {
                 body = checkJwtHeaderRes.payload;
             }
