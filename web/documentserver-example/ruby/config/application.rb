@@ -37,7 +37,7 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.viewedDocs=".pdf|.djvu|.xps"
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.ppsx|.txt"
-    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.pptm|.ppt|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.rtf|.mht|.html|.htm|.epub"
+    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.epub"
 
     Rails.configuration.urlConverter="https://documentserver/ConvertService.ashx"
     Rails.configuration.urlApi="https://documentserver/web-apps/apps/api/documents/api.js"

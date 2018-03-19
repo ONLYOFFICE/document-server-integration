@@ -21,7 +21,7 @@
     "exampleUrl": null,
     "viewedDocs": [".pdf", ".djvu", ".xps"],
     "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".ppsx", ".txt"],
-    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".rtf", ".mht", ".html", ".htm", ".epub"],
+    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub"],
     "storageFolder": "files",
     "maxFileSize": 1073741824,
     "mobileRegEx": "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino",
