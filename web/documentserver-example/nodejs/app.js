@@ -151,6 +151,7 @@ app.post("/upload", function (req, res) {
     const form = new formidable.IncomingForm();
     form.uploadDir = uploadDirTmp;
     form.keepExtensions = true;
+    form.maxFileSize = configServer.get("maxFileSize");
 
     form.parse(req, function (err, fields, files) {
     	if (err) {
