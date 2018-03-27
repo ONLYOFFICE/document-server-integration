@@ -24,16 +24,16 @@ $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|el
 
 $GLOBALS['ExtsSpreadsheet'] = array(".xls", ".xlsx", ".xlsm",
                                     ".xlt", ".xltx", ".xltm",
-                                    ".ods", ".fods", ".csv");
+                                    ".ods", ".fods", ".ots", ".csv");
 
 $GLOBALS['ExtsPresentation'] = array(".pps", ".ppsx", ".ppsm",
                                      ".ppt", ".pptx", ".pptm",
                                      ".pot", ".potx", ".potm",
-                                     ".odp", ".fodp");
+                                     ".odp", ".fodp", ".otp");
 
 $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
                                  ".dot", ".dotx", ".dotm",
-                                 ".odt", ".fodt", ".rtf", ".txt",
+                                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
                                  ".html", ".htm", ".mht",
                                  ".pdf", ".djvu", ".fb2", ".epub", ".xps");
 
