@@ -58,7 +58,7 @@ public class FileUtility
     (
         ".doc", ".docx", ".docm",
         ".dot", ".dotx", ".dotm",
-        ".odt", ".fodt", ".rtf", ".txt",
+        ".odt", ".fodt", ".ott", ".rtf", ".txt",
         ".html", ".htm", ".mht",
         ".pdf", ".djvu", ".fb2", ".epub", ".xps"
     );
@@ -67,7 +67,7 @@ public class FileUtility
     (
         ".xls", ".xlsx", ".xlsm",
         ".xlt", ".xltx", ".xltm",
-        ".ods", ".fods", ".csv"
+        ".ods", ".fods", ".ots", ".csv"
     );
 
     public static List<String> ExtsPresentation = Arrays.asList
@@ -75,7 +75,7 @@ public class FileUtility
         ".pps", ".ppsx", ".ppsm",
         ".ppt", ".pptx", ".pptm",
         ".pot", ".potx", ".potm",
-        ".odp", ".fodp"
+        ".odp", ".fodp", ".otp"
     );
 
 
