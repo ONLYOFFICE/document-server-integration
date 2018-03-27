@@ -44,7 +44,7 @@ namespace OnlineEditorsExample
             {
                 ".xls", ".xlsx", ".xlsm",
                 ".xlt", ".xltx", ".xltm",
-                ".ods", ".fods", ".csv"
+                ".ods", ".fods", ".ots", ".csv"
             };
 
         public static readonly List<string> ExtsPresentation = new List<string>
@@ -52,14 +52,14 @@ namespace OnlineEditorsExample
                 ".pps", ".ppsx", ".ppsm",
                 ".ppt", ".pptx", ".pptm",
                 ".pot", ".potx", ".potm",
-                ".odp", ".fodp"
+                ".odp", ".fodp", ".otp"
             };
 
         public static readonly List<string> ExtsDocument = new List<string>
             {
                 ".doc", ".docx", ".docm",
                 ".dot", ".dotx", ".dotm",
-                ".odt", ".fodt", ".rtf", ".txt",
+                ".odt", ".fodt", ".ott", ".rtf", ".txt",
                 ".html", ".htm", ".mht",
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
