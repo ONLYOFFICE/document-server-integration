@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2017
+ * (c) Copyright Ascensio System Limited 2010-2018
  *
  * The MIT License (MIT)
  *
@@ -62,7 +62,7 @@
 
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
         {
-            sendlog("Copy file error to ". getStoragePath($demoFilename), "logs/common.log");
+            sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             //Copy error!!!
         }
 

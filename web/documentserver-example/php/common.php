@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2017
+ * (c) Copyright Ascensio System Limited 2010-2018
  *
  * The MIT License (MIT)
  *
@@ -32,7 +32,11 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 
 function sendlog($msg, $logFileName) {
-    file_put_contents($logFileName, $msg . PHP_EOL, FILE_APPEND);
+    $logsFolder = "logs/";
+    if (!file_exists($logsFolder)) {
+        mkdir($logsFolder);
+    }
+    file_put_contents($logsFolder . $logFileName, $msg . PHP_EOL, FILE_APPEND);
 }
 
 function guid() {
@@ -143,9 +147,9 @@ function getClientIp() {
     return $ipaddress;
 }
 
-function serverPath($forDocumentServer) {
-    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != "" 
-        ? $GLOBALS['EXAMPLE_URL'] 
+function serverPath($forDocumentServer = NULL) {
+    return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
+        ? $GLOBALS['EXAMPLE_URL']
         : ('http://' . $_SERVER['HTTP_HOST']);
 }
 
@@ -201,7 +205,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     } 
-    sendlog("getStoragePath result: " . $directory . $fileName, "logs/common.log");
+    sendlog("getStoragePath result: " . $directory . $fileName, "common.log");
     return $directory . $fileName;
 }
 
@@ -212,24 +216,24 @@ function getStoredFiles() {
     $result = array();
     if ($storagePath != "")
     {
-        $directory =  $directory  . DIRECTORY_SEPARATOR;
+        $directory =  $directory . DIRECTORY_SEPARATOR;
 
         if (!file_exists($directory) && !is_dir($directory)) {
             return $result;
         }
     }
 
-    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
 
     if (!file_exists($directory) && !is_dir($directory)) {
         return $result;
-    } 
+    }
 
     $cdir = scandir($directory);
     $result = array();
     foreach($cdir as $key => $fileName) {
         if (!in_array($fileName,array(".", ".."))) {
-            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {   
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
                 $result[$dat] = (object) array(
                         "name" => $fileName,
@@ -248,11 +252,11 @@ function getVirtualPath($forDocumentServer) {
 
 
     $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
-    sendlog("getVirtualPath virtPath: " . $virtPath, "logs/common.log");
+    sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
     return $virtPath;
 }
 
-function FileUri($file_name, $forDocumentServer) {
+function FileUri($file_name, $forDocumentServer = NULL) {
     $uri = getVirtualPath($forDocumentServer) . $file_name;
     return $uri;
 }

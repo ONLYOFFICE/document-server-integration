@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System Limited 2010-2017
+ * (c) Copyright Ascensio System Limited 2010-2018
  *
  * The MIT License (MIT)
  *
@@ -52,7 +52,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
 
     nocache_headers();
 
-    sendlog(serialize($_GET),"logs/webedior-ajax.log");
+    sendlog(serialize($_GET), "webedior-ajax.log");
 
     $type = $_GET["type"];
 
@@ -144,8 +144,8 @@ function download() {
 }
 
 function track() {
-    sendlog("Track START", "logs/webedior-ajax.log");
-    sendlog("_GET params: " . serialize( $_GET ), "logs/webedior-ajax.log");
+    sendlog("Track START", "webedior-ajax.log");
+    sendlog("_GET params: " . serialize( $_GET ), "webedior-ajax.log");
 
     global $_trackerStatus;
     $data;
@@ -163,7 +163,7 @@ function track() {
         return $result;
     }
 
-    sendlog("InputStream data: " . serialize($data), "logs/webedior-ajax.log");
+    sendlog("InputStream data: " . serialize($data), "webedior-ajax.log");
 
     $status = $_trackerStatus[$data["status"]];
 
@@ -183,12 +183,12 @@ function track() {
                 $key = getDocEditorKey(downloadUri);
 
                 try {
-                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "logs/webedior-ajax.log");
+                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
                     $convertedUri;
                     $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
                     $downloadUri = $convertedUri;
                 } catch (Exception $e) {
-                    sendlog("Convert after save ".$e->getMessage(), "logs/webedior-ajax.log");
+                    sendlog("Convert after save ".$e->getMessage(), "webedior-ajax.log");
                     $result["error"] = "error: " . $e->getMessage();
                     return $result;
                 }
@@ -208,7 +208,7 @@ function track() {
             break;
     }
 
-    sendlog("track result: " . serialize($result), "logs/webedior-ajax.log");
+    sendlog("track result: " . serialize($result), "webedior-ajax.log");
     return $result;
 }
 
@@ -274,7 +274,7 @@ function delete() {
         unlink($filePath);
     }
     catch (Exception $e) {
-        sendlog("Deletion ".$e->getMessage(), "logs/webedior-ajax.log");
+        sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
