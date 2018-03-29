@@ -143,35 +143,6 @@
             window.attachEvent("load", сonnectEditor);
         }
 
-        function getXmlHttp() {
-            var xmlhttp;
-            try {
-                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (e) {
-                try {
-                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (ex) {
-                    xmlhttp = false;
-                }
-            }
-            if (!xmlhttp && typeof XMLHttpRequest != 'undefined') {
-                xmlhttp = new XMLHttpRequest();
-            }
-            return xmlhttp;
-        }
-
-        function SaveFileRequest(fileName, fileType, fileUri) {
-            var req = getXmlHttp();
-            var requestAddress = "webeditor.ashx"
-                + "?type=save"
-                + "&filename=" + encodeURIComponent(fileName)
-                + "&filetype=" + encodeURIComponent(fileType)
-                + "&fileuri=" + encodeURIComponent(fileUri);
-            req.open('get', requestAddress, true);
-
-            req.send(fileUri);
-        }
-
     </script>
 </head>
 <body>
