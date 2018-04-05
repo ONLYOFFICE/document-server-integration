@@ -185,7 +185,7 @@ public class DocumentManager
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
             
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
             
             return filePath;
         }
