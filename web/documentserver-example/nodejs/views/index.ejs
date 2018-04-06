@@ -164,7 +164,7 @@
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
-                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <% if (storedFiles[i].documentType == "text" || storedFiles[i].documentType == "presentation") { %>
                                     <a href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                     <% } %>
