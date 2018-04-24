@@ -257,7 +257,7 @@ function getVirtualPath($forDocumentServer) {
 }
 
 function FileUri($file_name, $forDocumentServer = NULL) {
-    $uri = getVirtualPath($forDocumentServer) . $file_name;
+    $uri = getVirtualPath($forDocumentServer) . urlencode($file_name);
     return $uri;
 }
 
