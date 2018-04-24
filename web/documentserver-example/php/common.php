@@ -150,7 +150,7 @@ function getClientIp() {
 function serverPath($forDocumentServer = NULL) {
     return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
         ? $GLOBALS['EXAMPLE_URL']
-        : ('http://' . $_SERVER['HTTP_HOST']);
+        : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
 function getCurUserHostAddress($userAddress = NULL) {
