@@ -117,7 +117,7 @@ public class DocumentManager
         String storagePath = ConfigManager.GetProperty("storage-folder");
         String hostAddress = CurUserHostAddress(userAddress);
         
-        String directory = serverPath + "\\" + storagePath + "\\";
+        String directory = serverPath + File.separator + storagePath + File.separator;
 
         File file = new File(directory);
         
@@ -126,7 +126,7 @@ public class DocumentManager
             file.mkdir();
         }
         
-        directory = directory + hostAddress + "\\";
+        directory = directory + hostAddress + File.separator;
         file = new File(directory);
 
         if (!file.exists())
