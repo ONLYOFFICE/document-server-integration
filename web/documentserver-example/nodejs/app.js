@@ -469,25 +469,32 @@ app.post("/track", function (req, res) {
 
     //checkjwt
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        var checkJwtHeaderRes = documentService.checkJwtHeader(req);
-        if (checkJwtHeaderRes) {
-            var body;
-            if (checkJwtHeaderRes.payload) {
-                body = checkJwtHeaderRes.payload;
-            }
-            if (checkJwtHeaderRes.query) {
-                if (checkJwtHeaderRes.query.useraddress) {
-                    userAddress = checkJwtHeaderRes.query.useraddress;
-                }
-                if (checkJwtHeaderRes.query.filename) {
-                    fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
-                }
-            }
-            processTrack(res, body, fileName, userAddress);
+        var body = null;
+        if (req.body.hasOwnProperty("token")) {
+            body = documentService.readToken(req.body.token);
         } else {
+            var checkJwtHeaderRes = documentService.checkJwtHeader(req);
+            if (checkJwtHeaderRes) {
+                var body;
+                if (checkJwtHeaderRes.payload) {
+                    body = checkJwtHeaderRes.payload;
+                }
+                if (checkJwtHeaderRes.query) {
+                    if (checkJwtHeaderRes.query.useraddress) {
+                        userAddress = checkJwtHeaderRes.query.useraddress;
+                    }
+                    if (checkJwtHeaderRes.query.filename) {
+                        fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
+                    }
+                }
+            }
+        }
+        if (body == null) {
             res.write("{\"error\":1}");
             res.end();
+            return;
         }
+        processTrack(res, body, fileName, userAddress);
         return;
     }
 
