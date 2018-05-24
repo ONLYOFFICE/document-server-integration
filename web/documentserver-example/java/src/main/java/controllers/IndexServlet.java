@@ -56,7 +56,7 @@ public class IndexServlet extends HttpServlet
     {
         String action = request.getParameter("type");
 
-        if(action == null)
+        if (action == null)
         {
             request.getRequestDispatcher("index.jsp").forward(request, response);
             return;
@@ -249,7 +249,7 @@ public class IndexServlet extends HttpServlet
         long status = (long) jsonObj.get("status");
 
         int saved = 0;
-        if(status == 2 || status == 3)//MustSave, Corrupted
+        if (status == 2 || status == 3)//MustSave, Corrupted
         {
             String downloadUri = (String) jsonObj.get("url");
 
