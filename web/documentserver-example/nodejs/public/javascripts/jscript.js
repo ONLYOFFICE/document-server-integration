@@ -136,7 +136,7 @@ if (typeof jQuery != "undefined") {
 
         timer = setTimeout(function () {
             var requestAddress = UrlConverter + "?filename=" + encodeURIComponent(jq("#hiddenFileName").val());
-
+            jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
                 contentType: "text/xml",
