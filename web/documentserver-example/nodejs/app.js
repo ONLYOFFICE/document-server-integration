@@ -271,7 +271,7 @@ app.get("/convert", function (req, res) {
 
             fileSystem.renameSync(path.join(correctHistoryPath, fileName + ".txt"), path.join(correctHistoryPath, correctName + ".txt"));
 
-            writeResult(correctName, null, null);
+            writeResult(correctName, result, null);
         } catch (e) {
             console.log(e);
             writeResult(null, null, "Server error");
