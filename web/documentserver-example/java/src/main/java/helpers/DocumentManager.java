@@ -181,7 +181,7 @@ public class DocumentManager
     {
         try
         {
-            String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            String serverPath = GetServerUrl();
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
             
@@ -197,12 +197,12 @@ public class DocumentManager
 
     public static String GetServerUrl()
     {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
     public static String GetCallback(String fileName)
     {
-        String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        String serverPath = GetServerUrl();
         String hostAddress = CurUserHostAddress(null);
         try
         {
