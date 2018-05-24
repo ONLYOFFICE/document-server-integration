@@ -280,7 +280,11 @@ app.get("/convert", function (req, res) {
 
     try {
         if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
-            const key = documentService.generateRevisionId(fileUri);
+            let storagePath = docManager.storagePath(fileName);
+            const stat = fileSystem.statSync(storagePath);
+            let key = fileUri + stat.mtime.getTime();
+
+            key = documentService.generateRevisionId(key);
             documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback);
         } else {
             writeResult(fileName, null, null);

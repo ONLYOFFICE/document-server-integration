@@ -46,8 +46,6 @@ var documentService = {};
 documentService.userIp = null;
 
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
-
     documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, function (err, data) {
         if (err) {
             callback();
