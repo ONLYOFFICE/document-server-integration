@@ -139,7 +139,6 @@ if (typeof jQuery != "undefined") {
             jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
-                contentType: "text/xml",
                 type: "get",
                 url: requestAddress,
                 complete: function (data) {

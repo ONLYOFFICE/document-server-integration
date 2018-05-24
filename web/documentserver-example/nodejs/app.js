@@ -231,6 +231,7 @@ app.get("/convert", function (req, res) {
         if (error != null)
             result["error"] = error;
 
+        response.setHeader("Content-Type", "application/json");
         response.write(JSON.stringify(result));
         response.end();
     };
