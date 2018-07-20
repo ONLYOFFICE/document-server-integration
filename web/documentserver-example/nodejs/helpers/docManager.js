@@ -232,7 +232,8 @@ docManager.changesUser = function (fileName, userAddress, version) {
 };
 
 docManager.getStoredFiles = function () {
-    const directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress());
+    const userAddress = docManager.curUserHostAddress();
+    const directory = path.join(docManager.dir, "public", storageFolder, userAddress);
     this.createDirectory(directory);
     const result = [];
     const storedFiles = fileSystem.readdirSync(directory);
@@ -240,13 +241,19 @@ docManager.getStoredFiles = function () {
         const stats = fileSystem.lstatSync(path.join(directory, storedFiles[i]));
 
         if (!stats.isDirectory()) {
+            let historyPath = docManager.historyPath(storedFiles[i], userAddress);
+            let version = 1;
+            if (historyPath != "") {
+                version = docManager.countVersion(historyPath);
+            }
 
             const time = stats.mtime.getTime();
             const item = {
                 time: time,
                 name: storedFiles[i],
                 documentType: fileUtility.getFileType(storedFiles[i]),
-                canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1
+                canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
+                version: version
             };
 
             if (!result.length) {
