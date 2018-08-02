@@ -157,7 +157,7 @@ public class IndexServlet extends HttpServlet
 
                 String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
 
-                if (newFileUri == "")
+                if (newFileUri.isEmpty())
                 {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;

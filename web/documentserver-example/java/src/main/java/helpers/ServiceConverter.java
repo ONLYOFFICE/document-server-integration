@@ -157,7 +157,7 @@ public class ServiceConverter
         JSONObject jsonObj = ConvertStringToJSON(jsonString);
 
         String error = (String) jsonObj.get("error");
-        if (error != null && error != "")
+        if (error != null && !error.isEmpty())
             ProcessConvertServiceResponceError(Integer.parseInt(error));
 
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");
