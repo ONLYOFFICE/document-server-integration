@@ -39,6 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
 
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACVerifier;
+import org.primeframework.jwt.Verifier;
 
 public class DocumentManager
 {
@@ -227,5 +230,29 @@ public class DocumentManager
             return ".pptx";
 
         return ".docx";
+    }
+
+    public static JWT ReadToken(String token)
+    {
+        try
+        {
+            Verifier verifier = HMACVerifier.newVerifier(GetTokenSecret());
+            return JWT.getDecoder().decode(token, verifier);
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
+    }
+
+    public static Boolean TokenEnabled()
+    {
+        String secret = GetTokenSecret();
+        return secret != null && !secret.isEmpty();
+    }
+
+    private static String GetTokenSecret()
+    {
+        return ConfigManager.GetProperty("files.docservice.secret");
     }
 }

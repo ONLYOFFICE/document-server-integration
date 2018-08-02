@@ -48,6 +48,8 @@ import helpers.FileUtility;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import org.primeframework.jwt.domain.JWT;
+
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet
@@ -246,13 +248,32 @@ public class IndexServlet extends HttpServlet
             return;
         }
 
-        long status = (long) jsonObj.get("status");
+        int status;
+        String downloadUri;
+
+        if (DocumentManager.TokenEnabled())
+        {
+            String token = (String) jsonObj.get("token");
+
+            JWT jwt = DocumentManager.ReadToken(token);
+            if (jwt == null)
+            {
+                writer.write("JWT.parse error");
+                return;
+            }
+
+            status = jwt.getInteger("status");
+            downloadUri = jwt.getString("url");
+        }
+        else
+        {
+            status = (int) jsonObj.get("status");
+            downloadUri = (String) jsonObj.get("url");
+        }
 
         int saved = 0;
         if (status == 2 || status == 3)//MustSave, Corrupted
         {
-            String downloadUri = (String) jsonObj.get("url");
-
             try
             {
                 URL url = new URL(downloadUri);
