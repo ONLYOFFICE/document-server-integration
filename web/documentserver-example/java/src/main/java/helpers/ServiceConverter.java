@@ -27,8 +27,6 @@
 package helpers;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +34,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -53,7 +50,7 @@ public class ServiceConverter
         try
         {
             int timeout = Integer.parseInt(ConfigManager.GetProperty("files.docservice.timeout"));
-            if(timeout > 0) 
+            if (timeout > 0) 
             {
                 ConvertTimeout = timeout;
             }
@@ -75,14 +72,14 @@ public class ServiceConverter
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
         Object[] args = {
-                            URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
-                            toExtension.replace(".", ""),
-                            fromExtension.replace(".", ""),
-                            title,
-                            documentRevisionId
-                        };
+                URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
+                toExtension.replace(".", ""),
+                fromExtension.replace(".", ""),
+                title,
+                documentRevisionId
+        };
 
-        String urlToConverter = DocumentConverterUrl +  ConvertParams.format(args);
+        String urlToConverter = DocumentConverterUrl + ConvertParams.format(args);
 
         if (isAsync)
             urlToConverter += "&async=true";
@@ -189,7 +186,7 @@ public class ServiceConverter
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();
 
-        while(line != null)
+        while (line != null)
         {
             stringBuilder.append(line);
             line = bufferedReader.readLine();

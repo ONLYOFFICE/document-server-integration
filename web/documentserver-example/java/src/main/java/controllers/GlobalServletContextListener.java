@@ -37,7 +37,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
- 
+
 public class GlobalServletContextListener implements ServletContextListener
 {
     @Override
@@ -88,7 +88,7 @@ public class GlobalServletContextListener implements ServletContextListener
             @Override
             public boolean verify(String hostname, SSLSession session)
             {
-              return true;
+                return true;
             }
         };
 

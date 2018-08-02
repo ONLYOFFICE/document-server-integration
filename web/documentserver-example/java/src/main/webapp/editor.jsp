@@ -26,7 +26,6 @@
 
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.Date"%>
-<%@page import="java.util.Arrays"%>
 <%@page import="entities.FileModel"%>
 <%@page import="helpers.DocumentManager"%>
 <%@page import="helpers.FileUtility"%>
@@ -44,7 +43,7 @@
         <% FileModel Model = (FileModel)request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
-        
+
         <script type="text/javascript" language="javascript">
 
         var docEditor;
@@ -66,7 +65,7 @@
         };
 
         var onRequestEditRights = function () {
-		    location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
         };
 
         var onError = function (event) {
@@ -86,7 +85,7 @@
                     height: "100%",
                     type: "${type}",
                     documentType: "<%= Model.GetDocumentType() %>",
-                    
+
                     document: {
                         title: fileName,
                         url: "<%= Model.GetFileUri() %>",
@@ -147,7 +146,7 @@
         }
 
     </script>
-        
+
     </head>
     <body>
         <div class="form">

@@ -64,7 +64,7 @@ public class IndexServlet extends HttpServlet
 
         DocumentManager.Init(request, response);
         PrintWriter writer = response.getWriter();
-        
+
         switch (action.toLowerCase())
         {
             case "upload":
@@ -156,7 +156,7 @@ public class IndexServlet extends HttpServlet
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
                 String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
-                
+
                 if (newFileUri == "")
                 {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
@@ -183,7 +183,7 @@ public class IndexServlet extends HttpServlet
                     {
                         out.write(bytes, 0, read);
                     }
-                    
+
                     out.flush();
                 }
 
@@ -231,7 +231,7 @@ public class IndexServlet extends HttpServlet
             writer.write("empty request.getInputStream");
             return;
         }
- 
+
         JSONParser parser = new JSONParser();
         JSONObject jsonObj;
 
@@ -273,7 +273,7 @@ public class IndexServlet extends HttpServlet
                     {
                         out.write(bytes, 0, read);
                     }
-                    
+
                     out.flush();
                 }
 

@@ -45,7 +45,7 @@ public class FileModel
     {
         this.FileName = fileName;
     }
-    
+
     public Boolean GetTypeDesktop()
     {
         return TypeDesktop;

@@ -52,7 +52,7 @@ public class DocumentManager
     public static long GetMaxFileSize()
     {
         long size;
-        
+
         try
         {
             size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
@@ -68,12 +68,12 @@ public class DocumentManager
     public static List<String> GetFileExts()
     {
         List<String> res = new ArrayList<>();
-        
+
         res.addAll(GetViewedExts());
         res.addAll(GetEditedExts());
         res.addAll(GetConvertExts());
 
-        return  res;
+        return res;
     }
 
     public static List<String> GetViewedExts()
@@ -116,16 +116,15 @@ public class DocumentManager
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.GetProperty("storage-folder");
         String hostAddress = CurUserHostAddress(userAddress);
-        
         String directory = serverPath + File.separator + storagePath + File.separator;
 
         File file = new File(directory);
-        
+
         if (!file.exists())
         {
             file.mkdir();
         }
-        
+
         directory = directory + hostAddress + File.separator;
         file = new File(directory);
 
@@ -173,7 +172,7 @@ public class DocumentManager
             }
             out.flush();
         }
-        
+
         return fileName;
     }
 
@@ -184,9 +183,9 @@ public class DocumentManager
             String serverPath = GetServerUrl();
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
-            
+
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            
+
             return filePath;
         }
         catch (UnsupportedEncodingException e)
@@ -207,7 +206,7 @@ public class DocumentManager
         try
         {
             String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-        
+
             return serverPath + "/IndexServlet" + query;
         }
         catch (UnsupportedEncodingException e)
@@ -218,13 +217,13 @@ public class DocumentManager
 
     public static String GetInternalExtension(FileType fileType)
     {
-        if(fileType.equals(FileType.Text))
+        if (fileType.equals(FileType.Text))
             return ".docx";
 
-        if(fileType.equals(FileType.Spreadsheet))
+        if (fileType.equals(FileType.Spreadsheet))
             return ".xlsx";
 
-        if(fileType.equals(FileType.Presentation))
+        if (fileType.equals(FileType.Presentation))
             return ".pptx";
 
         return ".docx";

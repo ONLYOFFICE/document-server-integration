@@ -46,13 +46,13 @@ public class EditorServlet extends HttpServlet
         String fileName = "";
         if (request.getParameterMap().containsKey("fileName"))
         {
-             fileName = request.getParameter("fileName");
+            fileName = request.getParameter("fileName");
         }
 
         String fileExt = null;
         if (request.getParameterMap().containsKey("fileExt"))
         {
-             fileExt = request.getParameter("fileExt");
+            fileExt = request.getParameter("fileExt");
         }
 
         if (fileExt != null)
@@ -71,14 +71,14 @@ public class EditorServlet extends HttpServlet
         String mode = "";
         if (request.getParameterMap().containsKey("mode"))
         {
-             mode = request.getParameter("mode");
+            mode = request.getParameter("mode");
         }
         Boolean desktopMode = !"embedded".equals(mode);
-        
+
         FileModel file = new FileModel();
         file.SetTypeDesktop(desktopMode);
         file.SetFileName(fileName);
-        
+
         request.setAttribute("file", file);
         request.setAttribute("mode", mode);
         request.setAttribute("type", desktopMode ? "desktop" : "embedded");

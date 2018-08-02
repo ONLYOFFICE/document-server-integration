@@ -33,12 +33,12 @@ import java.util.Properties;
 public class ConfigManager
 {
     private static Properties properties;
-    
+
     static
     {
         Init();
     }
-    
+
     private static void Init()
     {
         try
@@ -52,14 +52,16 @@ public class ConfigManager
             properties = null;
         }
     }
-    
+
     public static String GetProperty(String name)
     {
-        if(properties == null)
+        if (properties == null)
+        {
             return "";
-        
+        }
+
         String property = properties.getProperty(name);
-        
+
         return property == null ? "" : property;
     }
 }
