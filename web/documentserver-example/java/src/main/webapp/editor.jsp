@@ -65,7 +65,7 @@
         };
 
         var onRequestEditRights = function () {
-            location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
         };
 
         var onError = function (event) {
