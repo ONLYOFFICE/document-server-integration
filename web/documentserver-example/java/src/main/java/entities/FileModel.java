@@ -30,59 +30,109 @@ package entities;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
+import com.google.gson.Gson;
 
 public class FileModel
 {
-    private String FileName;
-    private Boolean TypeDesktop;
+    public String type = "desktop";
+    public String documentType;
+    public Document document;
+    public EditorConfig editorConfig;
 
-    public String GetFileName()
+    public FileModel(String fileName)
     {
-        return FileName;
+        if (fileName == null) fileName = "";
+        fileName = fileName.trim();
+
+        documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
+
+        document = new Document();
+        document.title = fileName;
+        document.url = DocumentManager.GetFileUri(fileName);
+        document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
+        String userId = DocumentManager.CurUserHostAddress(null);
+        document.key = ServiceConverter.GenerateRevisionId(userId + "/" + fileName);
+
+        editorConfig = new EditorConfig();
+        if (!DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(fileName)))
+            editorConfig.mode = "view";
+        editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
+        editorConfig.user.id = userId;
+
+        editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
     }
 
-    public void SetFileName(String fileName)
+    public void InitDesktop()
     {
-        this.FileName = fileName;
+        type = "embedded";
+        editorConfig.InitDesktop(document.url);
     }
 
-    public Boolean GetTypeDesktop()
+    public class Document
     {
-        return TypeDesktop;
+        public String title;
+        public String url;
+        public String fileType;
+        public String key;
     }
 
-    public void SetTypeDesktop(Boolean typeDesktop)
+    public class EditorConfig
     {
-        this.TypeDesktop = typeDesktop;
+        public String mode = "edit";
+        public String callbackUrl;
+        public User user;
+        public Customization customization;
+        public Embedded embedded;
+
+        public EditorConfig()
+        {
+            user = new User();
+            customization = new Customization();
+        }
+
+        public void InitDesktop(String url)
+        {
+            embedded = new Embedded();
+            embedded.saveUrl = url;
+            embedded.embedUrl = url;
+            embedded.shareUrl = url;
+            embedded.toolbarDocked = "top";
+        }
+
+        public class User
+        {
+            public String id;
+            public String name = "John Smith";
+        }
+
+        public class Customization
+        {
+            public Goback goback;
+
+            public Customization()
+            {
+                goback = new Goback();
+            }
+
+            public class Goback
+            {
+                public String url;
+            }
+        }
+
+        public class Embedded
+        {
+            public String saveUrl;
+            public String embedUrl;
+            public String shareUrl;
+            public String toolbarDocked;
+        }
     }
 
-    public String GetFileUri() throws Exception
-    {
-        return DocumentManager.GetFileUri(FileName);
-    }
 
-    public String CurUserHostAddress()
+    public static String Serialize(FileModel model)
     {
-        return DocumentManager.CurUserHostAddress(null);
-    }
-
-    public String GetDocumentType()
-    {
-        return FileUtility.GetFileType(FileName).toString().toLowerCase();
-    }
-
-    public String GetKey()
-    {
-        return ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + FileName);
-    }
-
-    public String GetCallbackUrl()
-    {
-        return DocumentManager.GetCallback(FileName);
-    }
-
-    public String GetServerUrl()
-    {
-        return DocumentManager.GetServerUrl();
+        Gson gson = new Gson();
+        return gson.toJson(model);
     }
 }

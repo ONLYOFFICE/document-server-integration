@@ -176,7 +176,7 @@ public class DocumentManager
         return fileName;
     }
 
-    public static String GetFileUri(String fileName) throws Exception
+    public static String GetFileUri(String fileName)
     {
         try
         {
@@ -190,7 +190,7 @@ public class DocumentManager
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new AssertionError("UTF-8 is unknown");
+            return "";
         }
     }
 
@@ -211,7 +211,7 @@ public class DocumentManager
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new AssertionError("UTF-8 is unknown");
+            return "";
         }
     }
 

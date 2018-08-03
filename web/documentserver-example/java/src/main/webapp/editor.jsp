@@ -24,10 +24,7 @@
  *
 *-->
 
-<%@page import="java.util.Date"%>
 <%@page import="entities.FileModel"%>
-<%@page import="helpers.DocumentManager"%>
-<%@page import="helpers.FileUtility"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
@@ -38,16 +35,13 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
-        <% DocumentManager.Init(request, response); %>
-        <% FileModel Model = (FileModel)request.getAttribute("file"); %>
+        <% FileModel Model = (FileModel) request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
 
         <script type="text/javascript" language="javascript">
 
         var docEditor;
-        var fileName = "<%= Model.GetFileName() %>";
-        var fileType = "<%= FileUtility.GetFileExtension(Model.GetFileName()).replace(".", "") %>";
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -77,51 +71,18 @@
         };
 
         var сonnectEditor = function () {
+            var config = <%= FileModel.Serialize(Model) %>;
+            config.width = "100%";
+            config.height = "100%";
+            config.events = {
+                    "onReady": onReady,
+                    "onDocumentStateChange": onDocumentStateChange,
+                    'onRequestEditRights': onRequestEditRights,
+                    "onError": onError,
+                    "onOutdatedVersion": onOutdatedVersion,
+                };
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor",
-                {
-                    width: "100%",
-                    height: "100%",
-                    type: "${type}",
-                    documentType: "<%= Model.GetDocumentType() %>",
-
-                    document: {
-                        title: fileName,
-                        url: "<%= Model.GetFileUri() %>",
-                        fileType: fileType,
-                        key: "<%= Model.GetKey() %>",
-                    },
-                    editorConfig: {
-                        mode: "<%= DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(Model.GetFileName())) && !"view".equals(request.getAttribute("mode")) ? "edit" : "view" %>",
-
-                        callbackUrl: "<%= Model.GetCallbackUrl() %>",
-
-                        user: {
-                            id: "<%= Model.CurUserHostAddress() %>",
-                            name: "John Smith",
-                        },
-
-                        embedded: {
-                            saveUrl: "<%= Model.GetFileUri() %>",
-                            embedUrl: "<%= Model.GetFileUri() %>",
-                            shareUrl: "<%= Model.GetFileUri() %>",
-                            toolbarDocked: "top",
-                        },
-
-                        customization: {
-                            goback: {
-                                url: "<%= Model.GetServerUrl() %>/IndexServlet",
-                            },
-                        },
-                    },
-                    events: {
-                        "onReady": onReady,
-                        "onDocumentStateChange": onDocumentStateChange,
-                        'onRequestEditRights': onRequestEditRights,
-                        "onError": onError,
-                        "onOutdatedVersion": onOutdatedVersion,
-                    }
-                });
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {
