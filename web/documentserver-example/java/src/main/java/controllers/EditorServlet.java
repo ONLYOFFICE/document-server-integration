@@ -66,6 +66,11 @@ public class EditorServlet extends HttpServlet
         if ("view".equals(request.getParameter("mode")))
             file.editorConfig.mode = "view";
 
+        if (DocumentManager.TokenEnabled())
+        {
+            file.BuildToken();
+        }
+
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
         request.getRequestDispatcher("editor.jsp").forward(request, response);

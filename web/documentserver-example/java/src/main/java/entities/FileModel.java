@@ -27,6 +27,8 @@
 
 package entities;
 
+import java.util.HashMap;
+import java.util.Map;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
@@ -38,6 +40,7 @@ public class FileModel
     public String documentType;
     public Document document;
     public EditorConfig editorConfig;
+    public String token;
 
     public FileModel(String fileName)
     {
@@ -66,6 +69,17 @@ public class FileModel
     {
         type = "embedded";
         editorConfig.InitDesktop(document.url);
+    }
+
+    public void BuildToken()
+    {
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("documentType", documentType);
+        map.put("document", document);
+        map.put("editorConfig", editorConfig);
+
+        token = DocumentManager.CreateToken(map);
     }
 
     public class Document

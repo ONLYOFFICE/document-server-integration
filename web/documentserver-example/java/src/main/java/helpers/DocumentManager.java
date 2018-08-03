@@ -35,12 +35,15 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
 
 import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACSigner;
 import org.primeframework.jwt.hmac.HMACVerifier;
+import org.primeframework.jwt.Signer;
 import org.primeframework.jwt.Verifier;
 
 public class DocumentManager
@@ -230,6 +233,24 @@ public class DocumentManager
             return ".pptx";
 
         return ".docx";
+    }
+
+    public static String CreateToken(Map<String, Object> payloadClaims)
+    {
+        try
+        {
+            Signer signer = HMACSigner.newSHA256Signer(GetTokenSecret());
+            JWT jwt = new JWT();
+            for (String key : payloadClaims.keySet())
+            {
+                jwt.addClaim(key, payloadClaims.get(key));
+            }
+            return JWT.getEncoder().encode(jwt, signer);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
 
     public static JWT ReadToken(String token)
