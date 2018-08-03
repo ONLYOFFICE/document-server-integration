@@ -24,7 +24,6 @@
  *
 *-->
 
-<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.Date"%>
 <%@page import="entities.FileModel"%>
 <%@page import="helpers.DocumentManager"%>
@@ -91,21 +90,9 @@
                         url: "<%= Model.GetFileUri() %>",
                         fileType: fileType,
                         key: "<%= Model.GetKey() %>",
-
-                        info: {
-                            author: "Me",
-                            created: "<%= new SimpleDateFormat("MM/dd/yyyy").format(new Date()) %>",
-                        },
-
-                        permissions: {
-                            edit: <%= Boolean.toString(DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(Model.GetFileName()))).toLowerCase() %>,
-                            download: true,
-                        }
                     },
                     editorConfig: {
                         mode: "<%= DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(Model.GetFileName())) && !"view".equals(request.getAttribute("mode")) ? "edit" : "view" %>",
-
-                        lang: "en",
 
                         callbackUrl: "<%= Model.GetCallbackUrl() %>",
 
@@ -122,8 +109,6 @@
                         },
 
                         customization: {
-                            about: true,
-                            feedback: true,
                             goback: {
                                 url: "<%= Model.GetServerUrl() %>/IndexServlet",
                             },
