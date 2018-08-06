@@ -26,6 +26,7 @@
 
 package helpers;
 
+import helpers.DocumentManager;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class ServiceConverter
         public String title;
         public String key;
         public Boolean async;
+        public String token;
     }
 
     static
@@ -107,6 +109,14 @@ public class ServiceConverter
         connection.setFixedLengthStreamingMode(bodyByte.length);
         connection.setRequestProperty("Accept", "application/json");
         connection.setConnectTimeout(ConvertTimeout);
+
+        if (DocumentManager.TokenEnabled())
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("payload", body);
+            String token = DocumentManager.CreateToken(map);
+            connection.setRequestProperty("Authorization", "Bearer " + token);
+        }
 
         connection.connect();
         try (OutputStream os = connection.getOutputStream()) {
