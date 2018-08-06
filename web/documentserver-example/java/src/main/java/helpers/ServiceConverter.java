@@ -26,14 +26,19 @@
 
 package helpers;
 
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.nio.charset.StandardCharsets;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -43,7 +48,16 @@ public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
-    private static final MessageFormat ConvertParams = new MessageFormat("?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}");
+
+    public static class ConvertBody
+    {
+        public String url;
+        public String outputtype;
+        public String filetype;
+        public String title;
+        public String key;
+        public Boolean async;
+    }
 
     static
     {
@@ -71,23 +85,33 @@ public class ServiceConverter
 
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
-        Object[] args = {
-                URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
-                toExtension.replace(".", ""),
-                fromExtension.replace(".", ""),
-                title,
-                documentRevisionId
-        };
-
-        String urlToConverter = DocumentConverterUrl + ConvertParams.format(args);
-
+        ConvertBody body = new ConvertBody();
+        body.url = documentUri;
+        body.outputtype = toExtension.replace(".", "");
+        body.filetype = fromExtension.replace(".", "");
+        body.title = title;
+        body.key = documentRevisionId;
         if (isAsync)
-            urlToConverter += "&async=true";
+            body.async = true;
 
-        URL url = new URL(urlToConverter);
+        Gson gson = new Gson();
+        String bodyString = gson.toJson(body);
+
+        byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
+
+        URL url = new URL(DocumentConverterUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        connection.setFixedLengthStreamingMode(bodyByte.length);
         connection.setRequestProperty("Accept", "application/json");
         connection.setConnectTimeout(ConvertTimeout);
+
+        connection.connect();
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(bodyByte);
+        }
 
         InputStream stream = connection.getInputStream();
 
