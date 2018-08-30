@@ -69,7 +69,7 @@
     <body>
         <form id="form1">
         <header>
-            <a href="./">
+            <a href="">
                 <img src ="css/images/logo.png" alt="ONLYOFFICE" />
             </a>
         </header>
