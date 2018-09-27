@@ -12,7 +12,7 @@
   },
   "server": {
     "port": 3000,
-    "siteUrl": "http://documentserver/",
+    "siteUrl": "https://documentserver/",
     "commandUrl": "coauthoring/CommandService.ashx",
     "converterUrl": "ConvertService.ashx",
     "tempStorageUrl": "ResourceService.ashx",

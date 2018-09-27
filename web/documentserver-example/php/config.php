@@ -12,10 +12,10 @@ $GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", 
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
-$GLOBALS['DOC_SERV_CONVERTER_URL'] = "http://documentserver/ConvertService.ashx";
-$GLOBALS['DOC_SERV_API_URL'] = "http://documentserver/web-apps/apps/api/documents/api.js";
+$GLOBALS['DOC_SERV_CONVERTER_URL'] = "https://documentserver/ConvertService.ashx";
+$GLOBALS['DOC_SERV_API_URL'] = "https://documentserver/web-apps/apps/api/documents/api.js";
 
-$GLOBALS['DOC_SERV_PRELOADER_URL'] = "http://documentserver/web-apps/apps/api/documents/cache-scripts.html";
+$GLOBALS['DOC_SERV_PRELOADER_URL'] = "https://documentserver/web-apps/apps/api/documents/cache-scripts.html";
 
 $GLOBALS['EXAMPLE_URL'] = "";
 

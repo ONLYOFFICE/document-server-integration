@@ -1,4 +1,5 @@
-﻿/*
+﻿"use strict";
+/*
  *
  * (c) Copyright Ascensio System Limited 2010-2018
  *
@@ -150,6 +151,7 @@ app.post("/upload", function (req, res) {
     const form = new formidable.IncomingForm();
     form.uploadDir = uploadDirTmp;
     form.keepExtensions = true;
+    form.maxFileSize = configServer.get("maxFileSize");
 
     form.parse(req, function (err, fields, files) {
     	if (err) {
@@ -229,6 +231,7 @@ app.get("/convert", function (req, res) {
         if (error != null)
             result["error"] = error;
 
+        response.setHeader("Content-Type", "application/json");
         response.write(JSON.stringify(result));
         response.end();
     };
@@ -268,7 +271,7 @@ app.get("/convert", function (req, res) {
 
             fileSystem.renameSync(path.join(correctHistoryPath, fileName + ".txt"), path.join(correctHistoryPath, correctName + ".txt"));
 
-            writeResult(correctName, null, null);
+            writeResult(correctName, result, null);
         } catch (e) {
             console.log(e);
             writeResult(null, null, "Server error");
@@ -277,7 +280,11 @@ app.get("/convert", function (req, res) {
 
     try {
         if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
-            const key = documentService.generateRevisionId(fileUri);
+            let storagePath = docManager.storagePath(fileName);
+            const stat = fileSystem.statSync(storagePath);
+            let key = fileUri + stat.mtime.getTime();
+
+            key = documentService.generateRevisionId(key);
             documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback);
         } else {
             writeResult(fileName, null, null);
@@ -354,7 +361,7 @@ app.post("/track", function (req, res) {
 
                     var count_version = docManager.countVersion(historyPath);
                     version = count_version + 1;
-                    versionPath = docManager.versionPath(fileName, userAddress, version);
+                    var versionPath = docManager.versionPath(fileName, userAddress, version);
                     docManager.createDirectory(versionPath);
 
                     var downloadZip = body.changesurl;
@@ -467,24 +474,32 @@ app.post("/track", function (req, res) {
 
     //checkjwt
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        var checkJwtHeaderRes = documentService.checkJwtHeader(req);
-        if (checkJwtHeaderRes) {
-            if (checkJwtHeaderRes.payload) {
-                body = checkJwtHeaderRes.payload;
-            }
-            if (checkJwtHeaderRes.query) {
-                if (checkJwtHeaderRes.query.useraddress) {
-                    userAddress = checkJwtHeaderRes.query.useraddress;
-                }
-                if (checkJwtHeaderRes.query.filename) {
-                    fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
-                }
-            }
-            processTrack(res, body, fileName, userAddress);
+        var body = null;
+        if (req.body.hasOwnProperty("token")) {
+            body = documentService.readToken(req.body.token);
         } else {
+            var checkJwtHeaderRes = documentService.checkJwtHeader(req);
+            if (checkJwtHeaderRes) {
+                var body;
+                if (checkJwtHeaderRes.payload) {
+                    body = checkJwtHeaderRes.payload;
+                }
+                if (checkJwtHeaderRes.query) {
+                    if (checkJwtHeaderRes.query.useraddress) {
+                        userAddress = checkJwtHeaderRes.query.useraddress;
+                    }
+                    if (checkJwtHeaderRes.query.filename) {
+                        fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
+                    }
+                }
+            }
+        }
+        if (body == null) {
             res.write("{\"error\":1}");
             res.end();
+            return;
         }
+        processTrack(res, body, fileName, userAddress);
         return;
     }
 
@@ -519,7 +534,7 @@ app.get("/editor", function (req, res) {
         var fileName = fileUtility.getFileName(req.query.fileName);
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
-        var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/embedded
+        var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
                 type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
@@ -598,7 +613,8 @@ app.get("/editor", function (req, res) {
                 callbackUrl: docManager.getCallback(fileName),
                 isEdit: canEdit && (mode == "edit" || mode == "filter"),
                 review: mode == "edit" || mode == "review",
-                comment: mode != "view" && mode != "embedded",
+                comment: mode != "view" && mode != "fillForms" && mode != "embedded",
+                fillForms: mode != "view" && mode != "comment" && mode != "embedded",
                 modifyFilter: mode != "filter",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",

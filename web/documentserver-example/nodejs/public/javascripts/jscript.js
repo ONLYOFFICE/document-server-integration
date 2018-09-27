@@ -70,6 +70,9 @@ if (typeof jQuery != "undefined") {
         jq('#fileupload').fileupload({
             dataType: 'json',
             add: function (e, data) {
+                if (jq("#mainProgress").is(":visible")) {
+                    return;
+                }
                 jq(".error").removeClass("error");
                 jq(".done").removeClass("done");
                 jq(".current").removeClass("current");
@@ -133,10 +136,9 @@ if (typeof jQuery != "undefined") {
 
         timer = setTimeout(function () {
             var requestAddress = UrlConverter + "?filename=" + encodeURIComponent(jq("#hiddenFileName").val());
-
+            jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
-                contentType: "text/xml",
                 type: "get",
                 url: requestAddress,
                 complete: function (data) {

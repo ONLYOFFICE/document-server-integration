@@ -117,7 +117,7 @@ public class DocumentManager
         String storagePath = ConfigManager.GetProperty("storage-folder");
         String hostAddress = CurUserHostAddress(userAddress);
         
-        String directory = serverPath + "\\" + storagePath + "\\";
+        String directory = serverPath + File.separator + storagePath + File.separator;
 
         File file = new File(directory);
         
@@ -126,7 +126,7 @@ public class DocumentManager
             file.mkdir();
         }
         
-        directory = directory + hostAddress + "\\";
+        directory = directory + hostAddress + File.separator;
         file = new File(directory);
 
         if (!file.exists())
@@ -181,11 +181,11 @@ public class DocumentManager
     {
         try
         {
-            String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            String serverPath = GetServerUrl();
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
             
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
             
             return filePath;
         }
@@ -197,12 +197,12 @@ public class DocumentManager
 
     public static String GetServerUrl()
     {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 
     public static String GetCallback(String fileName)
     {
-        String serverPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        String serverPath = GetServerUrl();
         String hostAddress = CurUserHostAddress(null);
         try
         {

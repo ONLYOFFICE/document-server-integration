@@ -46,8 +46,6 @@ var documentService = {};
 documentService.userIp = null;
 
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
-
     documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, function (err, data) {
         if (err) {
             callback();
@@ -82,6 +80,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
         headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+        params.token = documentService.getToken(params);
     }
 
     urllib.request(uri,
@@ -185,6 +184,7 @@ documentService.commandRequest = function (method, documentRevisionId, callback)
     };
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
         headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+        params.token = documentService.getToken(params);
     }
 
     urllib.request(uri,
@@ -217,5 +217,19 @@ documentService.fillJwtByUrl = function (uri, opt_dataObject, opt_iss, opt_paylo
   var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn, issuer: opt_iss};
   return jwt.sign(payload, cfgSignatureSecret, options);
 }
+
+documentService.getToken = function (data) {
+    var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+    return jwt.sign(data, cfgSignatureSecret, options);
+};
+
+documentService.readToken = function (token) {
+    try {
+        return jwt.verify(token, cfgSignatureSecret);
+    } catch (err) {
+        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+    }
+    return null;
+};
 
 module.exports = documentService;

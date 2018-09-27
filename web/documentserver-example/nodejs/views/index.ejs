@@ -130,7 +130,7 @@
                     <thead>
                         <tr class="tableHeader">
                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                            <td colspan="4" class="tableHeaderCell contentCells-shift">Editors</td>
+                            <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
                             <td colspan="3" class="tableHeaderCell">Viewers</td>
                         </tr>
                     </thead>
@@ -163,14 +163,18 @@
                                         <img src="images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                     <% } %>
                                 </td>
-                                <td class="contentCells contentCells-shift contentCells-icon">
-                                    <% if (storedFiles[i].documentType == "text" || storedFiles[i].documentType == "presentation") { %>
+                                <td class="contentCells contentCells-icon">
                                     <a href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>
+                                </td>
+                                <td class="contentCells contentCells-shift contentCells-icon">
+                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                        <img src="images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                     <% } %>
                                 </td>
                                 <% } else { %>
-                                    <td class="contentCells contentCells-shift contentCells-icon" colspan="4"></td>
+                                    <td class="contentCells contentCells-shift contentCells-icon" colspan="5"></td>
                                 <% } %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
