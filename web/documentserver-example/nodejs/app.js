@@ -532,6 +532,11 @@ app.get("/editor", function (req, res) {
 
         var userAddress = docManager.curUserHostAddress();
         var fileName = fileUtility.getFileName(req.query.fileName);
+        if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {
+            throw { 
+                "message": "File not found: " + fileName
+            };
+        }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
