@@ -48,7 +48,7 @@
                 console.log(message);
         };
 
-        var onReady = function () {
+        var onAppReady = function () {
             innerAlert("Document editor ready");
         };
 
@@ -75,7 +75,7 @@
             config.width = "100%";
             config.height = "100%";
             config.events = {
-                    "onReady": onReady,
+                    "onAppReady": onAppReady,
                     "onDocumentStateChange": onDocumentStateChange,
                     'onRequestEditRights': onRequestEditRights,
                     "onError": onError,
