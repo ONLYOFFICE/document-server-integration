@@ -1,0 +1,8 @@
+version: '3'
+services:
+  build:
+    volumes:
+      - ./target/:/java/target
+    build: .
+    tty: true
+    command: mvn -f /java package

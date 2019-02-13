@@ -55,7 +55,6 @@ files.docservice.url.preloader=https://documentserver/web-apps/apps/api/document
 ```
 Run next command in java example directory:
 ```
-docker build . -t java-example
-docker run -it -v $PWD/target:/java/target java-example
+docker-compose up
 ```
 After it, all bin files will be passed to `./target` folder
