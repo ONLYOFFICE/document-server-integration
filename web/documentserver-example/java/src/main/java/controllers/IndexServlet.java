@@ -27,6 +27,7 @@
 
 package controllers;
 
+import helpers.ConfigManager;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -54,6 +56,8 @@ import org.primeframework.jwt.domain.JWT;
 @MultipartConfig
 public class IndexServlet extends HttpServlet
 {
+    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String action = request.getParameter("type");
@@ -255,11 +259,29 @@ public class IndexServlet extends HttpServlet
         {
             String token = (String) jsonObj.get("token");
 
+            if (token == null) {
+                String header = (String) request.getHeader(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader);
+                token = header.startsWith("Bearer ") ? header.substring(7) : header;
+            }
+
             JWT jwt = DocumentManager.ReadToken(token);
             if (jwt == null)
             {
                 writer.write("JWT.parse error");
                 return;
+            }
+
+            if (jwt.getObject("payload") != null) {
+                try {
+                    @SuppressWarnings("unchecked") LinkedHashMap<String, Object> payload =
+                        (LinkedHashMap<String, Object>)jwt.getObject("payload");
+
+                    jwt.claims = payload;
+                }
+                catch (Exception ex) {
+                    writer.write("Wrong payload");
+                    return;
+                }
             }
 
             status = jwt.getInteger("status");
