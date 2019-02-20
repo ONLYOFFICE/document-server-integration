@@ -71,7 +71,7 @@
         };
 
         var сonnectEditor = function () {
-            var config = <%= FileModel.Serialize(Model) %>;
+            var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
             config.width = "100%";
             config.height = "100%";
             config.events = {
