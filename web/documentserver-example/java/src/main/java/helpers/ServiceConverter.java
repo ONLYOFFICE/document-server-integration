@@ -49,6 +49,7 @@ public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
+    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
     public static class ConvertBody
     {
@@ -96,6 +97,26 @@ public class ServiceConverter
         if (isAsync)
             body.async = true;
 
+        String headerToken = "";
+        if (DocumentManager.TokenEnabled())
+        {
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("url", body.url);
+            map.put("outputtype", body.outputtype);
+            map.put("filetype", body.filetype);
+            map.put("title", body.title);
+            map.put("key", body.key);
+            if (isAsync)
+                map.put("async", body.async);
+
+            String token = DocumentManager.CreateToken(map);
+            body.token = token;
+
+            Map<String, Object> payloadMap = new HashMap<String, Object>();
+            payloadMap.put("payload", map);
+            headerToken = DocumentManager.CreateToken(payloadMap);
+        }
+
         Gson gson = new Gson();
         String bodyString = gson.toJson(body);
 
@@ -112,10 +133,7 @@ public class ServiceConverter
 
         if (DocumentManager.TokenEnabled())
         {
-            Map<String, Object> map = new HashMap<>();
-            map.put("payload", body);
-            String token = DocumentManager.CreateToken(map);
-            connection.setRequestProperty("Authorization", "Bearer " + token);
+            connection.setRequestProperty(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
         }
 
         connection.connect();
