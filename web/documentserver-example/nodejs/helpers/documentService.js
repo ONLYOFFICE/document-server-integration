@@ -93,13 +93,14 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 };
 
 documentService.generateRevisionId = function (expectedKey) {
-    if (expectedKey.length > 20) {
+    let maxKeyLength = 128;
+    if (expectedKey.length > maxKeyLength) {
         expectedKey = expectedKey.hashCode().toString();
     }
 
     var key = expectedKey.replace(new RegExp("[^0-9-.a-zA-Z_=]", "g"), "_");
 
-    return key.substring(0, Math.min(key.length, 20));
+    return key.substring(0, Math.min(key.length, maxKeyLength));
 };
 
 documentService.processConvertServiceResponceError = function (errorCode) {
