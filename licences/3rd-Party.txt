@@ -20,3 +20,8 @@ License:        MIT, GPL
 4. jQuery UI - jQuery  UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library. Whether you're  building highly interactive web applications or you just need to add a date picker to a form control, jQuery UI is the perfect choice.  (http://jqueryui.com/)
 
 License:        MIT
+
+
+5. Prime JWT - Prime JWT is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson.
+
+License:        Apache-2.0

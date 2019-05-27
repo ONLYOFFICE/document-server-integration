@@ -1,6 +1,6 @@
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -26,17 +26,20 @@
 
 package helpers;
 
+import helpers.DocumentManager;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
+import java.nio.charset.StandardCharsets;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -46,14 +49,25 @@ public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
-    private static final MessageFormat ConvertParams = new MessageFormat("?url={0}&outputtype={1}&filetype={2}&title={3}&key={4}");
+    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
+    public static class ConvertBody
+    {
+        public String url;
+        public String outputtype;
+        public String filetype;
+        public String title;
+        public String key;
+        public Boolean async;
+        public String token;
+    }
 
     static
     {
         try
         {
             int timeout = Integer.parseInt(ConfigManager.GetProperty("files.docservice.timeout"));
-            if(timeout > 0) 
+            if (timeout > 0) 
             {
                 ConvertTimeout = timeout;
             }
@@ -74,23 +88,58 @@ public class ServiceConverter
 
         documentRevisionId = GenerateRevisionId(documentRevisionId);
 
-        Object[] args = {
-                            URLEncoder.encode(documentUri, java.nio.charset.StandardCharsets.UTF_8.toString()),
-                            toExtension.replace(".", ""),
-                            fromExtension.replace(".", ""),
-                            title,
-                            documentRevisionId
-                        };
-
-        String urlToConverter = DocumentConverterUrl +  ConvertParams.format(args);
-
+        ConvertBody body = new ConvertBody();
+        body.url = documentUri;
+        body.outputtype = toExtension.replace(".", "");
+        body.filetype = fromExtension.replace(".", "");
+        body.title = title;
+        body.key = documentRevisionId;
         if (isAsync)
-            urlToConverter += "&async=true";
+            body.async = true;
 
-        URL url = new URL(urlToConverter);
+        String headerToken = "";
+        if (DocumentManager.TokenEnabled())
+        {
+            HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("url", body.url);
+            map.put("outputtype", body.outputtype);
+            map.put("filetype", body.filetype);
+            map.put("title", body.title);
+            map.put("key", body.key);
+            if (isAsync)
+                map.put("async", body.async);
+
+            String token = DocumentManager.CreateToken(map);
+            body.token = token;
+
+            Map<String, Object> payloadMap = new HashMap<String, Object>();
+            payloadMap.put("payload", map);
+            headerToken = DocumentManager.CreateToken(payloadMap);
+        }
+
+        Gson gson = new Gson();
+        String bodyString = gson.toJson(body);
+
+        byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
+
+        URL url = new URL(DocumentConverterUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        connection.setFixedLengthStreamingMode(bodyByte.length);
         connection.setRequestProperty("Accept", "application/json");
         connection.setConnectTimeout(ConvertTimeout);
+
+        if (DocumentManager.TokenEnabled())
+        {
+            connection.setRequestProperty(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+        }
+
+        connection.connect();
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(bodyByte);
+        }
 
         InputStream stream = connection.getInputStream();
 
@@ -159,9 +208,9 @@ public class ServiceConverter
     {
         JSONObject jsonObj = ConvertStringToJSON(jsonString);
 
-        String error = (String) jsonObj.get("error");
-        if (error != null && error != "")
-            ProcessConvertServiceResponceError(Integer.parseInt(error));
+        Object error = jsonObj.get("error");
+        if (error != null)
+            ProcessConvertServiceResponceError(Math.toIntExact((long)error));
 
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");
 
@@ -189,7 +238,7 @@ public class ServiceConverter
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();
 
-        while(line != null)
+        while (line != null)
         {
             stringBuilder.append(line);
             line = bufferedReader.readLine();

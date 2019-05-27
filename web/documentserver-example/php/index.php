@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -69,7 +69,7 @@
     <body>
         <form id="form1">
         <header>
-            <a href="/">
+            <a href="">
                 <img src ="css/images/logo.png" alt="ONLYOFFICE" />
             </a>
         </header>

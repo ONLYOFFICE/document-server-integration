@@ -1,0 +1,7 @@
+version: '3'
+services:
+  build:
+    image: maven:3.6
+    volumes:
+      - .:/java
+    command: mvn -f /java package

@@ -1,6 +1,6 @@
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -35,10 +35,16 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
 
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACSigner;
+import org.primeframework.jwt.hmac.HMACVerifier;
+import org.primeframework.jwt.Signer;
+import org.primeframework.jwt.Verifier;
 
 public class DocumentManager
 {
@@ -52,7 +58,7 @@ public class DocumentManager
     public static long GetMaxFileSize()
     {
         long size;
-        
+
         try
         {
             size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
@@ -68,12 +74,12 @@ public class DocumentManager
     public static List<String> GetFileExts()
     {
         List<String> res = new ArrayList<>();
-        
+
         res.addAll(GetViewedExts());
         res.addAll(GetEditedExts());
         res.addAll(GetConvertExts());
 
-        return  res;
+        return res;
     }
 
     public static List<String> GetViewedExts()
@@ -116,16 +122,15 @@ public class DocumentManager
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.GetProperty("storage-folder");
         String hostAddress = CurUserHostAddress(userAddress);
-        
         String directory = serverPath + File.separator + storagePath + File.separator;
 
         File file = new File(directory);
-        
+
         if (!file.exists())
         {
             file.mkdir();
         }
-        
+
         directory = directory + hostAddress + File.separator;
         file = new File(directory);
 
@@ -173,25 +178,25 @@ public class DocumentManager
             }
             out.flush();
         }
-        
+
         return fileName;
     }
 
-    public static String GetFileUri(String fileName) throws Exception
+    public static String GetFileUri(String fileName)
     {
         try
         {
             String serverPath = GetServerUrl();
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
-            
+
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            
+
             return filePath;
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new AssertionError("UTF-8 is unknown");
+            return "";
         }
     }
 
@@ -207,26 +212,68 @@ public class DocumentManager
         try
         {
             String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-        
+
             return serverPath + "/IndexServlet" + query;
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new AssertionError("UTF-8 is unknown");
+            return "";
         }
     }
 
     public static String GetInternalExtension(FileType fileType)
     {
-        if(fileType.equals(FileType.Text))
+        if (fileType.equals(FileType.Text))
             return ".docx";
 
-        if(fileType.equals(FileType.Spreadsheet))
+        if (fileType.equals(FileType.Spreadsheet))
             return ".xlsx";
 
-        if(fileType.equals(FileType.Presentation))
+        if (fileType.equals(FileType.Presentation))
             return ".pptx";
 
         return ".docx";
+    }
+
+    public static String CreateToken(Map<String, Object> payloadClaims)
+    {
+        try
+        {
+            Signer signer = HMACSigner.newSHA256Signer(GetTokenSecret());
+            JWT jwt = new JWT();
+            for (String key : payloadClaims.keySet())
+            {
+                jwt.addClaim(key, payloadClaims.get(key));
+            }
+            return JWT.getEncoder().encode(jwt, signer);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
+    }
+
+    public static JWT ReadToken(String token)
+    {
+        try
+        {
+            Verifier verifier = HMACVerifier.newVerifier(GetTokenSecret());
+            return JWT.getDecoder().decode(token, verifier);
+        }
+        catch (Exception exception)
+        {
+            return null;
+        }
+    }
+
+    public static Boolean TokenEnabled()
+    {
+        String secret = GetTokenSecret();
+        return secret != null && !secret.isEmpty();
+    }
+
+    private static String GetTokenSecret()
+    {
+        return ConfigManager.GetProperty("files.docservice.secret");
     }
 }

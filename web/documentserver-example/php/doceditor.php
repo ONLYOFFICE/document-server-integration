@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -128,7 +128,7 @@
                 console.log(message);
         };
 
-        var onReady = function () {
+        var onAppReady = function () {
             innerAlert("Document editor ready");
         };
 
@@ -213,7 +213,7 @@
                         },
                     },
                     events: {
-                        'onReady': onReady,
+                        'onAppReady': onAppReady,
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         'onError': onError,

@@ -51,11 +51,10 @@ files.docservice.url.converter=https://documentserver/ConvertService.ashx
 files.docservice.url.tempstorage=https://documentserver/ResourceService.ashx
 files.docservice.url.api=https://documentserver/web-apps/apps/api/documents/api.js
 files.docservice.url.preloader=https://documentserver/web-apps/apps/api/documents/cache-scripts.html
-
 ```
+
 Run next command in java example directory:
 ```
-docker build . -t java-example
-docker run -it -v $PWD/target:/java/target java-example
+docker-compose up
 ```
 After it, all bin files will be passed to `./target` folder

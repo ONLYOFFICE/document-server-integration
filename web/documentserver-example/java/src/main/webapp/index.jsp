@@ -1,6 +1,6 @@
 <!--*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -42,7 +42,7 @@
     <body>
 
         <div class="top-panel"></div>
-        
+
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
@@ -52,7 +52,7 @@
             <div class="file-upload button gray">
                 <span>Choose file</span>
                 <form class="fileupload" action="server/php/" method="POST" enctype="multipart/form-data">
-                    
+
                 </form>
                 <input type="file" id="fileupload" name="file" data-url="IndexServlet?type=upload" />
             </div>
@@ -100,12 +100,12 @@
                 Please, <a href="mailto:sales@onlyoffice.com">submit your request</a> and we'll help you shortly.
             </div>
         </div>
-        
+
         <div id="hint">
             <div class="corner"></div>
             If you check this option the file will be saved both in the original and converted into Office Open XML format for faster viewing and editing. In other case the document will be overwritten by its copy in Office Open XML format.
         </div>
-        
+
         <div id="mainProgress">
             <div id="uploadSteps">
                 <span id="step1" class="step">1. Loading the file</span>
@@ -135,7 +135,7 @@
             <div id="beginEdit" class="button disable">Edit</div>
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
-        
+
         <span id="loadScripts" data-docs="<%= ConfigManager.GetProperty("files.docservice.url.preloader") %>"></span>
 
         <div class="bottom-panel">
@@ -149,13 +149,13 @@
         <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
         <script type="text/javascript" src="scripts/jquery.dropdownToggle.js"></script>
         <script type="text/javascript" src="scripts/jscript.js"></script>
-        
+
         <script language="javascript" type="text/javascript">
             var ConverExtList = "<%= String.join(",", DocumentManager.GetConvertExts()) %>";
             var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
         </script>
-        
+
     </body>
 </html>

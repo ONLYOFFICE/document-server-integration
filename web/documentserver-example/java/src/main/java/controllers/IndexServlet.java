@@ -1,6 +1,6 @@
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -27,6 +27,7 @@
 
 package controllers;
 
+import helpers.ConfigManager;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -48,10 +50,14 @@ import helpers.FileUtility;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import org.primeframework.jwt.domain.JWT;
+
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet
 {
+    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String action = request.getParameter("type");
@@ -64,7 +70,7 @@ public class IndexServlet extends HttpServlet
 
         DocumentManager.Init(request, response);
         PrintWriter writer = response.getWriter();
-        
+
         switch (action.toLowerCase())
         {
             case "upload":
@@ -156,8 +162,8 @@ public class IndexServlet extends HttpServlet
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
                 String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
-                
-                if (newFileUri == "")
+
+                if (newFileUri.isEmpty())
                 {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;
@@ -183,7 +189,7 @@ public class IndexServlet extends HttpServlet
                     {
                         out.write(bytes, 0, read);
                     }
-                    
+
                     out.flush();
                 }
 
@@ -231,7 +237,7 @@ public class IndexServlet extends HttpServlet
             writer.write("empty request.getInputStream");
             return;
         }
- 
+
         JSONParser parser = new JSONParser();
         JSONObject jsonObj;
 
@@ -246,13 +252,50 @@ public class IndexServlet extends HttpServlet
             return;
         }
 
-        long status = (long) jsonObj.get("status");
+        int status;
+        String downloadUri;
+
+        if (DocumentManager.TokenEnabled())
+        {
+            String token = (String) jsonObj.get("token");
+
+            if (token == null) {
+                String header = (String) request.getHeader(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader);
+                token = header.startsWith("Bearer ") ? header.substring(7) : header;
+            }
+
+            JWT jwt = DocumentManager.ReadToken(token);
+            if (jwt == null)
+            {
+                writer.write("JWT.parse error");
+                return;
+            }
+
+            if (jwt.getObject("payload") != null) {
+                try {
+                    @SuppressWarnings("unchecked") LinkedHashMap<String, Object> payload =
+                        (LinkedHashMap<String, Object>)jwt.getObject("payload");
+
+                    jwt.claims = payload;
+                }
+                catch (Exception ex) {
+                    writer.write("Wrong payload");
+                    return;
+                }
+            }
+
+            status = jwt.getInteger("status");
+            downloadUri = jwt.getString("url");
+        }
+        else
+        {
+            status = (int) jsonObj.get("status");
+            downloadUri = (String) jsonObj.get("url");
+        }
 
         int saved = 0;
         if (status == 2 || status == 3)//MustSave, Corrupted
         {
-            String downloadUri = (String) jsonObj.get("url");
-
             try
             {
                 URL url = new URL(downloadUri);
@@ -273,7 +316,7 @@ public class IndexServlet extends HttpServlet
                     {
                         out.write(bytes, 0, read);
                     }
-                    
+
                     out.flush();
                 }
 

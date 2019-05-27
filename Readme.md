@@ -17,11 +17,11 @@ More information on how to use these examples can be found here: [http://api.onl
 
 ## Project Information
 
-Official website: [http://www.onlyoffice.org](http://onlyoffice.org "http://www.onlyoffice.org")
+Official website: [https://www.onlyoffice.com](https://www.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubIntegrationEx)
 
 Code repository: [https://github.com/ONLYOFFICE/document-server-integration](https://github.com/ONLYOFFICE/document-server-integration "https://github.com/ONLYOFFICE/document-server-integration")
 
-SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.onlyoffice.com")
+ONLYOFFICE for developers: [https://www.onlyoffice.com/developer-edition.aspx](https://www.onlyoffice.com/developer-edition.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubIntegrationEx)
 
 ## User Feedback and Support
 

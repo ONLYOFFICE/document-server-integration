@@ -1,7 +1,7 @@
 ﻿"use strict";
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -132,7 +132,7 @@ app.get("/download", function(req, res) {
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
     res.setHeader("Content-Type", mime.lookup(path));
 
-    res.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
     var filestream = fileSystem.createReadStream(path);
     filestream.pipe(res);
@@ -532,6 +532,11 @@ app.get("/editor", function (req, res) {
 
         var userAddress = docManager.curUserHostAddress();
         var fileName = fileUtility.getFileName(req.query.fileName);
+        if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {
+            throw { 
+                "message": "File not found: " + fileName
+            };
+        }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded

@@ -53,7 +53,7 @@
                 console.log(message);
         };
 
-        var onReady = function () {
+        var onAppReady = function () {
             innerAlert("Document editor ready");
         };
 
@@ -128,7 +128,7 @@
                         },
                     },
                     events: {
-                        'onReady': onReady,
+                        'onAppReady': onAppReady,
                         'onDocumentStateChange': onDocumentStateChange,
                         'onRequestEditRights': onRequestEditRights,
                         'onError': onError,

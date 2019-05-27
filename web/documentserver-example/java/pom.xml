@@ -13,7 +13,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -25,6 +25,16 @@
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.inversoft</groupId>
+            <artifactId>prime-jwt</artifactId>
+            <version>1.3.1</version>
         </dependency>
     </dependencies>
 

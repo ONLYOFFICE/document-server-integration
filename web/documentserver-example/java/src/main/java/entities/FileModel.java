@@ -1,6 +1,6 @@
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -27,62 +27,126 @@
 
 package entities;
 
+import java.util.HashMap;
+import java.util.Map;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
+import com.google.gson.Gson;
 
 public class FileModel
 {
-    private String FileName;
-    private Boolean TypeDesktop;
+    public String type = "desktop";
+    public String documentType;
+    public Document document;
+    public EditorConfig editorConfig;
+    public String token;
 
-    public String GetFileName()
+    public FileModel(String fileName)
     {
-        return FileName;
+        if (fileName == null) fileName = "";
+        fileName = fileName.trim();
+
+        documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
+
+        document = new Document();
+        document.title = fileName;
+        document.url = DocumentManager.GetFileUri(fileName);
+        document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
+        String userId = DocumentManager.CurUserHostAddress(null);
+        document.key = ServiceConverter.GenerateRevisionId(userId + "/" + fileName);
+
+        editorConfig = new EditorConfig();
+        if (!DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(fileName)))
+            editorConfig.mode = "view";
+        editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
+        editorConfig.user.id = userId;
+
+        editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
     }
 
-    public void SetFileName(String fileName)
+    public void InitDesktop()
     {
-        this.FileName = fileName;
-    }
-    
-    public Boolean GetTypeDesktop()
-    {
-        return TypeDesktop;
+        type = "embedded";
+        editorConfig.InitDesktop(document.url);
     }
 
-    public void SetTypeDesktop(Boolean typeDesktop)
+    public void BuildToken()
     {
-        this.TypeDesktop = typeDesktop;
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("documentType", documentType);
+        map.put("document", document);
+        map.put("editorConfig", editorConfig);
+
+        token = DocumentManager.CreateToken(map);
     }
 
-    public String GetFileUri() throws Exception
+    public class Document
     {
-        return DocumentManager.GetFileUri(FileName);
+        public String title;
+        public String url;
+        public String fileType;
+        public String key;
     }
 
-    public String CurUserHostAddress()
+    public class EditorConfig
     {
-        return DocumentManager.CurUserHostAddress(null);
+        public String mode = "edit";
+        public String callbackUrl;
+        public User user;
+        public Customization customization;
+        public Embedded embedded;
+
+        public EditorConfig()
+        {
+            user = new User();
+            customization = new Customization();
+        }
+
+        public void InitDesktop(String url)
+        {
+            embedded = new Embedded();
+            embedded.saveUrl = url;
+            embedded.embedUrl = url;
+            embedded.shareUrl = url;
+            embedded.toolbarDocked = "top";
+        }
+
+        public class User
+        {
+            public String id;
+            public String name = "John Smith";
+        }
+
+        public class Customization
+        {
+            public Goback goback;
+
+            public Customization()
+            {
+                goback = new Goback();
+            }
+
+            public class Goback
+            {
+                public String url;
+            }
+        }
+
+        public class Embedded
+        {
+            public String saveUrl;
+            public String embedUrl;
+            public String shareUrl;
+            public String toolbarDocked;
+        }
     }
 
-    public String GetDocumentType()
-    {
-        return FileUtility.GetFileType(FileName).toString().toLowerCase();
-    }
 
-    public String GetKey()
+    public static String Serialize(FileModel model)
     {
-        return ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + FileName);
-    }
-
-    public String GetCallbackUrl()
-    {
-        return DocumentManager.GetCallback(FileName);
-    }
-
-    public String GetServerUrl()
-    {
-        return DocumentManager.GetServerUrl();
+        Gson gson = new Gson();
+        return gson.toJson(model);
     }
 }

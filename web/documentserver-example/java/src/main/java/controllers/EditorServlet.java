@@ -1,6 +1,6 @@
 /*
  *
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2019
  *
  * The MIT License (MIT)
  *
@@ -43,23 +43,15 @@ public class EditorServlet extends HttpServlet
 {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        String fileName = "";
-        if (request.getParameterMap().containsKey("fileName"))
-        {
-             fileName = request.getParameter("fileName");
-        }
+        DocumentManager.Init(request, response);
 
-        String fileExt = null;
-        if (request.getParameterMap().containsKey("fileExt"))
-        {
-             fileExt = request.getParameter("fileExt");
-        }
+        String fileName = request.getParameter("fileName");
+        String fileExt = request.getParameter("fileExt");
 
         if (fileExt != null)
         {
             try
             {
-                DocumentManager.Init(request, response);
                 fileName = DocumentManager.CreateDemo(fileExt);
             }
             catch (Exception ex)
@@ -68,20 +60,18 @@ public class EditorServlet extends HttpServlet
             }
         }
 
-        String mode = "";
-        if (request.getParameterMap().containsKey("mode"))
+        FileModel file = new FileModel(fileName);
+        if ("embedded".equals(request.getParameter("mode")))
+            file.InitDesktop();
+        if ("view".equals(request.getParameter("mode")))
+            file.editorConfig.mode = "view";
+
+        if (DocumentManager.TokenEnabled())
         {
-             mode = request.getParameter("mode");
+            file.BuildToken();
         }
-        Boolean desktopMode = !"embedded".equals(mode);
-        
-        FileModel file = new FileModel();
-        file.SetTypeDesktop(desktopMode);
-        file.SetFileName(fileName);
-        
+
         request.setAttribute("file", file);
-        request.setAttribute("mode", mode);
-        request.setAttribute("type", desktopMode ? "desktop" : "embedded");
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
