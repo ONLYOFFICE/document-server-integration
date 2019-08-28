@@ -25,6 +25,12 @@
 */
 
 using OnlineEditorsExampleMVC.Helpers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace OnlineEditorsExampleMVC.Models
 {
@@ -55,6 +61,68 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 return DocManagerHelper.GetCallback(FileName);
             }
+        }
+
+        public string GetDocConfig(HttpRequest request, UrlHelper url)
+        {
+            var ext = Path.GetExtension(FileName);
+            var config = new Dictionary<string, object>()
+            {
+                { "type", request["mode"] != "embedded" ? "desktop" : "embedded" },
+                { "documentType", DocumentType },
+                { "document", new Dictionary<string, object>()
+                {
+                    { "title", FileName },
+                    { "url", FileUri },
+                    { "fileType", ext.Trim('.') },
+                    { "key", Key },
+                    { "info", new Dictionary<string,object>()
+                    {
+                        { "author", "Me" },
+                        { "created", DateTime.Now.ToShortDateString() }
+                    } },
+                    { "permissions", new Dictionary<string, object>
+                    {
+                        { "edit", DocManagerHelper.EditedExts.Contains(Path.GetExtension(FileName)) },
+                        { "download", true }
+                    } }
+                } },
+                { "editorConfig", new Dictionary<string, object>()
+                {
+                    { "mode", DocManagerHelper.EditedExts.Contains(Path.GetExtension(FileName)) && request["mode"] != "view" ? "edit" : "view" },
+                    { "lang", "en" },
+                    { "callbackUrl", CallbackUrl },
+                    { "user", new Dictionary<string, object>()
+                    {
+                        { "id", DocManagerHelper.CurUserHostAddress() },
+                        { "name", "John Smith" }
+                    } },
+                    { "embedded", new Dictionary<string, object>()
+                    {
+                        { "saveUrl", FileUri },
+                        { "embedUrl", FileUri },
+                        { "shareUrl", FileUri },
+                        { "toolbarDocked", "top" }
+                    } },
+                    { "customization", new Dictionary<string, object>()
+                    {
+                        { "about", true },
+                        { "feedback", true },
+                        { "goback", new Dictionary<string, object>()
+                        {
+                            { "url", url.Action("Index", "Home") }
+                        } }
+                    } }
+                } }
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(config);
+                config.Add("token", token);
+            }
+
+            return new JavaScriptSerializer().Serialize(config);
         }
     }
 }
