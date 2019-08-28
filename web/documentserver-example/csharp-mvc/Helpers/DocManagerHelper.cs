@@ -97,6 +97,17 @@ namespace OnlineEditorsExampleMVC.Helpers
             return name;
         }
 
+        public static List<string> GetStoredFiles()
+        {
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            if (!Directory.Exists(directory)) return new List<string>();
+
+            var directoryInfo = new DirectoryInfo(directory);
+
+            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Select(fileInfo => fileInfo.Name).ToList();
+            return storedFiles;
+        }
+
         public static string CreateDemo(string fileExt)
         {
             var demoName = "sample." + fileExt;

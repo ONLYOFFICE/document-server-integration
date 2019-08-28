@@ -281,7 +281,65 @@ label .checkbox {
     line-height: 26px;
 }
 
+.stored-list {
+    border-top: 1px solid #D1D1D1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 
+    .stored-list li {
+        border-bottom: 1px solid #D1D1D1;
+        line-height: 28px;
+        padding: 0 8px;
+    }
+
+.stored-edit {
+    background-color: transparent;
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    line-height: 16px;
+    max-width: 450px;
+    margin-bottom: -6px;
+    overflow: hidden;
+    padding: 4px 0 1px 34px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+    .stored-edit.text {
+        background-image: url("images/icon_docx.png");
+    }
+
+    .stored-edit.spreadsheet {
+        background-image: url("images/icon_xlsx.png");
+    }
+
+    .stored-edit.presentation {
+        background-image: url("images/icon_pptx.png");
+    }
+
+    .stored-edit span {
+        font-size: 12px;
+        line-height: 12px;
+    }
+
+    .stored-edit:hover span {
+        text-decoration: underline;
+    }
+
+.stored-download {
+    color: #787878;
+    float: right;
+    text-decoration: none;
+}
+
+    .stored-download:hover {
+        color: #787878;
+        text-decoration: underline;
+    }
 
 
 .blockTitle {

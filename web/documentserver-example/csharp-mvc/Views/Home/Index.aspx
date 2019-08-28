@@ -28,6 +28,7 @@
 
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
+<%@ Import Namespace="OnlineEditorsExampleMVC.Models" %>
 
 <!DOCTYPE html>
 
@@ -70,6 +71,27 @@
             <li><a class="try-editor spreadsheet" href="<%= Url.Action("sample", "Home", new { fileExt = "xlsx" }) %>" target="_blank">Create<br />Sample Spreadsheet</a></li>
             <li><a class="try-editor presentation" href="<%= Url.Action("sample", "Home", new { fileExt = "pptx" }) %>" target="_blank">Create<br />Sample Presentation</a></li>
         </ul>
+
+        <% var storedFiles = DocManagerHelper.GetStoredFiles();
+            if (storedFiles.Any())
+            { %>
+        <div class="help-block">
+            <span>Your documents</span>
+            <br />
+            <br />
+            <ul class="stored-list">
+                <% foreach (var storedFile in storedFiles)
+                    { %>
+                <li class="clearFix">
+                    <a class="stored-edit <%= FileUtility.GetFileType(storedFile).ToString().ToLower() %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile }) %>" target="_blank">
+                        <span title="<%= storedFile %>"><%= storedFile %></span>
+                    </a>
+                    <a class="stored-download" href="<%= Url.Content(DocManagerHelper.CurUserHostAddress() + "/" + storedFile) %>">Download</a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+        <% } %>
 
         <br />
         <br />
