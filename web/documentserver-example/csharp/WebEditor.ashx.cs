@@ -24,14 +24,15 @@
  *
 */
 
+using ASC.Api.DocumentConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
-using ASC.Api.DocumentConverter;
 
 namespace OnlineEditorsExample
 {
@@ -112,6 +113,24 @@ namespace OnlineEditorsExample
             var jss = new JavaScriptSerializer();
             if (string.IsNullOrEmpty(body)) return;
             var fileData = jss.Deserialize<Dictionary<string, object>>(body);
+
+            if (JwtManager.Enabled)
+            {
+                if (fileData.ContainsKey("token"))
+                {
+                    fileData = jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(fileData["token"].ToString()));
+                }
+                else if (context.Request.Headers.AllKeys.Contains("Authorization", StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get("Authorization").Substring("Bearer ".Length);
+                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(headerToken))["payload"];
+                }
+                else
+                {
+                    throw new Exception("Expected JWT");
+                }
+            }
+
             var status = (TrackerStatus) (int) fileData["status"];
 
             switch (status)

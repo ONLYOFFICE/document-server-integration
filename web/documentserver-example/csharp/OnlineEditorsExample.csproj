@@ -72,6 +72,7 @@
       <DependentUpon>DocEditor.aspx</DependentUpon>
     </Compile>
     <Compile Include="DocumentConverter.cs" />
+    <Compile Include="JwtManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
