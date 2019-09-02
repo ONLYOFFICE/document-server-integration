@@ -24,7 +24,6 @@
  *
 */
 
-using ASC.Api.DocumentConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +31,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using System.Web.UI;
+using ASC.Api.DocumentConverter;
 
 namespace OnlineEditorsExample
 {
@@ -46,7 +46,12 @@ namespace OnlineEditorsExample
 
         protected string Key
         {
-            get { return ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null) + "/" + Path.GetFileName(FileUri) + "/" + File.GetLastWriteTime(_Default.StoragePath(FileName, null)).GetHashCode()); }
+            get
+            {
+                return ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                                                           + "/" + Path.GetFileName(FileUri)
+                                                           + "/" + File.GetLastWriteTime(_Default.StoragePath(FileName, null)).GetHashCode());
+            }
         }
 
         protected string DocServiceApiUri
@@ -92,55 +97,71 @@ namespace OnlineEditorsExample
             }
 
             var ext = Path.GetExtension(FileName);
-            var config = new Dictionary<string, object>()
-            {
-                { "type", Request["action"] != "embedded" ? "desktop" : "embedded" },
-                { "documentType", _Default.DocumentType(FileName) },
-                { "document", new Dictionary<string, object>()
+            var config = new Dictionary<string, object>
                 {
-                    { "title", FileName },
-                    { "url", FileUri },
-                    { "fileType", ext.Trim('.') },
-                    { "key", Key },
-                    { "info", new Dictionary<string,object>()
+                    { "type", Request["action"] != "embedded" ? "desktop" : "embedded" },
+                    { "documentType", _Default.DocumentType(FileName) },
                     {
-                        { "author", "Me" },
-                        { "created", DateTime.Now.ToShortDateString() }
-                    } },
-                    { "permissions", new Dictionary<string, object>
+                        "document", new Dictionary<string, object>
+                            {
+                                { "title", FileName },
+                                { "url", FileUri },
+                                { "fileType", ext.Trim('.') },
+                                { "key", Key },
+                                {
+                                    "info", new Dictionary<string, object>
+                                        {
+                                            { "author", "Me" },
+                                            { "created", DateTime.Now.ToShortDateString() }
+                                        }
+                                },
+                                {
+                                    "permissions", new Dictionary<string, object>
+                                        {
+                                            { "edit", _Default.EditedExts.Contains(ext) },
+                                            { "download", true }
+                                        }
+                                }
+                            }
+                    },
                     {
-                        { "edit", _Default.EditedExts.Contains(ext) },
-                        { "download", true }
-                    } }
-                } },
-                { "editorConfig", new Dictionary<string, object>()
-                {
-                    { "mode", _Default.EditMode && _Default.EditedExts.Contains(ext) && Request["action"] != "view" ? "edit" : "view" },
-                    { "lang", "en" },
-                    { "callbackUrl", CallbackUrl },
-                    { "user", new Dictionary<string, object>()
-                    {
-                        { "id", _Default.CurUserHostAddress(null) },
-                        { "name", "John Smith" }
-                    } },
-                    { "embedded", new Dictionary<string, object>()
-                    {
-                        { "saveUrl", FileUri },
-                        { "embedUrl", FileUri },
-                        { "shareUrl", FileUri },
-                        { "toolbarDocked", "top" }
-                    } },
-                    { "customization", new Dictionary<string, object>()
-                    {
-                        { "about", true },
-                        { "feedback", true },
-                        { "goback", new Dictionary<string, object>()
-                        {
-                            { "url", _Default.Host + "default.aspx" }
-                        } }
-                    } }
-                } }
-            };
+                        "editorConfig", new Dictionary<string, object>
+                            {
+                                { "mode", _Default.EditMode && _Default.EditedExts.Contains(ext) && Request["action"] != "view" ? "edit" : "view" },
+                                { "lang", "en" },
+                                { "callbackUrl", CallbackUrl },
+                                {
+                                    "user", new Dictionary<string, object>
+                                        {
+                                            { "id", _Default.CurUserHostAddress(null) },
+                                            { "name", "John Smith" }
+                                        }
+                                },
+                                {
+                                    "embedded", new Dictionary<string, object>
+                                        {
+                                            { "saveUrl", FileUri },
+                                            { "embedUrl", FileUri },
+                                            { "shareUrl", FileUri },
+                                            { "toolbarDocked", "top" }
+                                        }
+                                },
+                                {
+                                    "customization", new Dictionary<string, object>
+                                        {
+                                            { "about", true },
+                                            { "feedback", true },
+                                            {
+                                                "goback", new Dictionary<string, object>
+                                                    {
+                                                        { "url", _Default.Host + "default.aspx" }
+                                                    }
+                                            }
+                                        }
+                                }
+                            }
+                    }
+                };
 
             if (JwtManager.Enabled)
             {

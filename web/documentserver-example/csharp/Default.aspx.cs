@@ -31,7 +31,6 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Configuration;
 using System.Web.UI;
 using ASC.Api.DocumentConverter;
@@ -102,12 +101,10 @@ namespace OnlineEditorsExample
         }
 
         private static bool? _ismono;
+
         public static bool IsMono
         {
-            get
-            {
-                return _ismono.HasValue ? _ismono.Value : (_ismono = (bool?)(Type.GetType("Mono.Runtime") != null)).Value;
-            }
+            get { return _ismono.HasValue ? _ismono.Value : (_ismono = (bool?)(Type.GetType("Mono.Runtime") != null)).Value; }
         }
 
         private static long MaxFileSize
