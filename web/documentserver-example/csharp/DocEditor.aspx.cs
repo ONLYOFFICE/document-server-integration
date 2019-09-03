@@ -97,6 +97,7 @@ namespace OnlineEditorsExample
             }
 
             var ext = Path.GetExtension(FileName);
+
             var config = new Dictionary<string, object>
                 {
                     { "type", Request["action"] != "embedded" ? "desktop" : "embedded" },
@@ -128,13 +129,13 @@ namespace OnlineEditorsExample
                         "editorConfig", new Dictionary<string, object>
                             {
                                 { "mode", _Default.EditMode && _Default.EditedExts.Contains(ext) && Request["action"] != "view" ? "edit" : "view" },
-                                { "lang", "en" },
+                                { "lang", Request.Cookies["ulang"]?.Value ?? "en" },
                                 { "callbackUrl", CallbackUrl },
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", _Default.CurUserHostAddress(null) },
-                                            { "name", "John Smith" }
+                                            { "id", Request.Cookies["uid"]?.Value ?? "uid-1" },
+                                            { "name", Request.Cookies["uname"]?.Value ?? "John Smith" }
                                         }
                                 },
                                 {
