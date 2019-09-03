@@ -92,7 +92,7 @@ namespace OnlineEditorsExample
             var type = Request["type"];
             if (!string.IsNullOrEmpty(type))
             {
-                Try(type);
+                Try(type, Request["sample"]);
                 Response.Redirect("doceditor.aspx?fileID=" + HttpUtility.UrlEncode(FileName));
             }
 
@@ -172,7 +172,7 @@ namespace OnlineEditorsExample
             DocConfig = new JavaScriptSerializer().Serialize(config);
         }
 
-        private static void Try(string type)
+        private static void Try(string type, string sample)
         {
             string ext;
             switch (type)
@@ -189,7 +189,7 @@ namespace OnlineEditorsExample
                 default:
                     return;
             }
-            var demoName = "demo" + ext;
+            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "demo") + ext;
             FileName = _Default.GetCorrectName(demoName);
 
             File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, _Default.StoragePath(FileName, null));
