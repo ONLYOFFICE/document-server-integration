@@ -129,17 +129,89 @@
                 <span>Your documents</span>
                 <br />
                 <br />
-                <ul class="stored-list">
-                    <% foreach (var storedFile in storedFiles)
-                       { %>
-                    <li class="clearFix">
-                        <a class="stored-edit <%= DocumentType(storedFile) %>" href="doceditor.aspx?fileID=<%= HttpUtility.UrlEncode(storedFile) %>" target="_blank">
-                            <span title="<%= storedFile %>"><%= storedFile %></span>
-                        </a>
-                        <a class="stored-download" href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">Download</a>
-                    </li>
-                    <% } %>
-                </ul>
+                <div class="stored-list">
+                    <table width="100%" cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr class="tableHeader">
+                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
+                                <td colspan="3" class="tableHeaderCell">Viewers</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% foreach (var storedFile in storedFiles)
+                               { %>
+                                <%
+                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile);
+                                    var docType = DocumentType(storedFile);
+                                %>
+                                <tr class="tableRow" title="<%= storedFile %>">
+                                    <td class="contentCells">
+                                        <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
+                                            <span title="<%= storedFile %>"><%= storedFile %></span>
+                                        </a>
+                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">
+                                            <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
+                                        </a>
+                                        <a class="delete-file" data-filename="<%= storedFile %>">
+                                            <img class="icon-delete" src="app_themes/images/delete-24.png" alt="Delete" title="Delete" />
+                                        </a>
+                                    </td>
+
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
+                                            <img src="app_themes/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=edit" %>" target="_blank">
+                                            <img src="app_themes/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <% if (docType == "text") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                                <img src="app_themes/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                            </a>
+                                        <% } else if (docType == "spreadsheet") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                                <img src="app_themes/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                            <img src="app_themes/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-shift contentCells-icon">
+                                        <% if (docType == "text") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                <img src="app_themes/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                            </a>
+                                        <% } %>
+                                    </td>
+
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
+                                            <img src="app_themes/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=view" %>" target="_blank">
+                                            <img src="app_themes/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=embedded&editorsMode=embedded" %>" target="_blank">
+                                            <img src="app_themes/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <% } %>
 
@@ -212,10 +284,7 @@
             <br />
             <div id="beginEmbedded" class="button disable">Embedded view</div>
             <div id="beginView" class="button disable">View</div>
-            <% if (EditMode)
-               { %>
             <div id="beginEdit" class="button disable">Edit</div>
-            <% } %>
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
 

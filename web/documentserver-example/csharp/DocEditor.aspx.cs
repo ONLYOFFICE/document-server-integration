@@ -98,9 +98,14 @@ namespace OnlineEditorsExample
 
             var ext = Path.GetExtension(FileName);
 
+            var editorsMode = Request["editorsMode"] ?? "edit";
+
+            var canEdit = _Default.EditedExts.Contains(ext);
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";
+
             var config = new Dictionary<string, object>
                 {
-                    { "type", Request["action"] != "embedded" ? "desktop" : "embedded" },
+                    { "type", Request["editorsType"] ?? "desktop" },
                     { "documentType", _Default.DocumentType(FileName) },
                     {
                         "document", new Dictionary<string, object>
@@ -119,8 +124,12 @@ namespace OnlineEditorsExample
                                 {
                                     "permissions", new Dictionary<string, object>
                                         {
-                                            { "edit", _Default.EditedExts.Contains(ext) },
-                                            { "download", true }
+                                            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" },
+                                            { "download", true },
+                                            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "filter") },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" },
+                                            { "modifyFilter", editorsMode != "filter" },
+                                            { "review", editorsMode == "edit" || editorsMode == "review" }
                                         }
                                 }
                             }
@@ -128,7 +137,7 @@ namespace OnlineEditorsExample
                     {
                         "editorConfig", new Dictionary<string, object>
                             {
-                                { "mode", _Default.EditMode && _Default.EditedExts.Contains(ext) && Request["action"] != "view" ? "edit" : "view" },
+                                { "mode", mode },
                                 { "lang", Request.Cookies["ulang"]?.Value ?? "en" },
                                 { "callbackUrl", CallbackUrl },
                                 {

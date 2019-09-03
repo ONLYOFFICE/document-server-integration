@@ -137,11 +137,6 @@ namespace OnlineEditorsExample
             get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
-        public static bool EditMode
-        {
-            get { return (WebConfigurationManager.AppSettings["mode"] ?? "") != "view"; }
-        }
-
         private static string _fileName;
 
         public static string CurUserHostAddress(string userAddress)
