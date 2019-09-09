@@ -94,13 +94,13 @@ namespace OnlineEditorsExampleMVC.Models
                         "editorConfig", new Dictionary<string, object>
                             {
                                 { "mode", DocManagerHelper.EditedExts.Contains(Path.GetExtension(FileName)) && request["mode"] != "view" ? "edit" : "view" },
-                                { "lang", "en" },
+                                { "lang", request.Cookies["ulang"]?.Value ?? "en" },
                                 { "callbackUrl", CallbackUrl },
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", DocManagerHelper.CurUserHostAddress() },
-                                            { "name", "John Smith" }
+                                            { "id", request.Cookies["uid"]?.Value ?? "uid-1" },
+                                            { "name", request.Cookies["uname"]?.Value ?? "John Smith" }
                                         }
                                 },
                                 {
