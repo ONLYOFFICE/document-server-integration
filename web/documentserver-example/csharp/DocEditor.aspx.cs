@@ -25,6 +25,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -60,6 +61,8 @@ namespace OnlineEditorsExample
         }
 
         protected string DocConfig { get; private set; }
+        protected string History { get; private set; }
+        protected string HistoryData { get; private set; }
 
         public static string CallbackUrl
         {
@@ -82,7 +85,7 @@ namespace OnlineEditorsExample
             var externalUrl = Request["fileUrl"];
             if (!string.IsNullOrEmpty(externalUrl))
             {
-                FileName = _Default.DoUpload(externalUrl);
+                FileName = _Default.DoUpload(externalUrl, Request);
             }
             else
             {
@@ -92,7 +95,7 @@ namespace OnlineEditorsExample
             var type = Request["type"];
             if (!string.IsNullOrEmpty(type))
             {
-                Try(type, Request["sample"]);
+                Try(type, Request["sample"], Request);
                 Response.Redirect("doceditor.aspx?fileID=" + HttpUtility.UrlEncode(FileName));
             }
 
@@ -179,10 +182,102 @@ namespace OnlineEditorsExample
                 config.Add("token", token);
             }
 
-            DocConfig = new JavaScriptSerializer().Serialize(config);
+            var jss = new JavaScriptSerializer();
+
+            DocConfig = jss.Serialize(config);
+
+            try
+            {
+                GetHistory(out var hist, out var histData);
+                if (hist != null && histData != null)
+                {
+                    History = jss.Serialize(hist);
+                    HistoryData = jss.Serialize(histData);
+                }
+            }
+            catch { }
         }
 
-        private static void Try(string type, string sample)
+        private void GetHistory(out Dictionary<string, object> history, out Dictionary<string, object> historyData)
+        {
+            var jss = new JavaScriptSerializer();
+            var histDir = _Default.HistoryDir(_Default.StoragePath(FileName, null));
+
+            history = null;
+            historyData = null;
+
+            if (_Default.GetFileVersion(histDir) > 0)
+            {
+                var currentVersion = _Default.GetFileVersion(histDir);
+                var hist = new List<Dictionary<string, object>>();
+                var histData = new Dictionary<string, object>();
+
+                for (var i = 0; i <= currentVersion; i++)
+                {
+                    var obj = new Dictionary<string, object>();
+                    var dataObj = new Dictionary<string, object>();
+                    var verDir = _Default.VersionDir(histDir, i + 1);
+
+                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
+
+                    obj.Add("key", key);
+                    obj.Add("version", i);
+
+                    if (i == 0)
+                    {
+                        var infoPath = Path.Combine(histDir, "createdInfo.json");
+
+                        if (File.Exists(infoPath)) {
+                            var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
+                            obj.Add("created", info["created"]);
+                            obj.Add("user", new Dictionary<string, object>() {
+                                { "id", info["id"] },
+                                { "name", info["name"] },
+                            });
+                        }
+                    }
+
+                    dataObj.Add("key", key);
+                    dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));
+                    dataObj.Add("version", i);
+                    if (i > 0)
+                    {
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i), "changes.json")));
+                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+
+                        obj.Add("changes", changes["changes"]);
+                        obj.Add("serverVersion", changes["serverVersion"]);
+                        obj.Add("created", change["created"]);
+                        obj.Add("user", change["user"]);
+
+                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        dataObj.Add("previous", new Dictionary<string, object>() {
+                            { "key", prev["key"] },
+                            { "url", prev["url"] },
+                        });
+                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i), "diff.zip")));
+                    }
+
+                    hist.Add(obj);
+                    histData.Add(i.ToString(), dataObj);
+                }
+
+                history = new Dictionary<string, object>()
+                {
+                    { "currentVersion", currentVersion },
+                    { "history", hist }
+                };
+                historyData = histData;
+            }
+        }
+
+        private string MakePublicUrl(string fullPath)
+        {
+            var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
+            return _Default.Host + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+        }
+
+        private static void Try(string type, string sample, HttpRequest request)
         {
             string ext;
             switch (type)
@@ -202,7 +297,16 @@ namespace OnlineEditorsExample
             var demoName = (string.IsNullOrEmpty(sample) ? "new" : "demo") + ext;
             FileName = _Default.GetCorrectName(demoName);
 
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, _Default.StoragePath(FileName, null));
+            var filePath = _Default.StoragePath(FileName, null);
+            File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, filePath);
+
+            var histDir = _Default.HistoryDir(filePath);
+            Directory.CreateDirectory(histDir);
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                { "created", DateTime.Now.ToString() },
+                { "id", request.Cookies["uid"]?.Value ?? "uid-1" },
+                { "name", request.Cookies["uname"]?.Value ?? "John Smith" }
+            }));
         }
     }
 }
