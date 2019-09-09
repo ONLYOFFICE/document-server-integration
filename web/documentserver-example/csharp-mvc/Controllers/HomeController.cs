@@ -37,13 +37,12 @@ namespace OnlineEditorsExampleMVC.Controllers
             return View();
         }
 
-        public ActionResult Editor(string fileName, string mode)
+        public ActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
-            mode = mode ?? string.Empty;
-
             var file = new FileModel
             {
-                TypeDesktop = mode != "embedded",
+                Mode = editorsMode,
+                Type = editorsType,
                 FileName = fileName
             };
 

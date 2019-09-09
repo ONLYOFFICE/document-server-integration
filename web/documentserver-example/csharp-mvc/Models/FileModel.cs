@@ -36,7 +36,8 @@ namespace OnlineEditorsExampleMVC.Models
 {
     public class FileModel
     {
-        public bool TypeDesktop { get; set; }
+        public string Mode { get; set; }
+        public string Type { get; set; }
 
         public string FileUri
         {
@@ -63,9 +64,14 @@ namespace OnlineEditorsExampleMVC.Models
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
             var ext = Path.GetExtension(FileName);
+            var editorsMode = Mode ?? "edit";
+
+            var canEdit = DocManagerHelper.EditedExts.Contains(ext);
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";
+
             var config = new Dictionary<string, object>
                 {
-                    { "type", request["mode"] != "embedded" ? "desktop" : "embedded" },
+                    { "type", Type ?? "desktop" },
                     { "documentType", DocumentType },
                     {
                         "document", new Dictionary<string, object>
@@ -84,8 +90,12 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "permissions", new Dictionary<string, object>
                                         {
-                                            { "edit", DocManagerHelper.EditedExts.Contains(Path.GetExtension(FileName)) },
-                                            { "download", true }
+                                            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" },
+                                            { "download", true },
+                                            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "filter") },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" },
+                                            { "modifyFilter", editorsMode != "filter" },
+                                            { "review", editorsMode == "edit" || editorsMode == "review" }
                                         }
                                 }
                             }
@@ -93,7 +103,7 @@ namespace OnlineEditorsExampleMVC.Models
                     {
                         "editorConfig", new Dictionary<string, object>
                             {
-                                { "mode", DocManagerHelper.EditedExts.Contains(Path.GetExtension(FileName)) && request["mode"] != "view" ? "edit" : "view" },
+                                { "mode", mode },
                                 { "lang", request.Cookies["ulang"]?.Value ?? "en" },
                                 { "callbackUrl", CallbackUrl },
                                 {

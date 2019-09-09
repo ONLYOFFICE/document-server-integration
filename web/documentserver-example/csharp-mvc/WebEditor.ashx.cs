@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using OnlineEditorsExampleMVC.Helpers;
@@ -53,6 +54,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "track":
                     Track(context);
+                    break;
+                case "remove":
+                    Remove(context);
                     break;
             }
         }
@@ -244,6 +248,25 @@ namespace OnlineEditorsExampleMVC
                     break;
             }
             context.Response.Write("{\"error\":0}");
+        }
+
+        private static void Remove(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            try
+            {
+                var fileName = context.Request["fileName"];
+                var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + DocManagerHelper.CurUserHostAddress(null) + "\\";
+                var path = Path.Combine(directory, fileName);
+
+                File.Delete(path);
+
+                context.Response.Write("{ \"success\": true }");
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
         }
 
         public bool IsReusable
