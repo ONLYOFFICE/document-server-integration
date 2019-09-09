@@ -106,9 +106,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             return storedFiles;
         }
 
-        public static string CreateDemo(string fileExt)
+        public static string CreateDemo(string fileExt, bool withContent)
         {
-            var demoName = "sample." + fileExt;
+            var demoName = (withContent ? "sample." : "new.") + fileExt;
 
             var fileName = GetCorrectName(demoName);
 

@@ -152,6 +152,7 @@
     <Content Include="Content\images\done.png" />
     <Content Include="Content\images\file_docx.png" />
     <Content Include="Content\images\file_pptx.png" />
+    <Content Include="Content\images\file_upload.png" />
     <Content Include="Content\images\file_xlsx.png" />
     <Content Include="Content\images\loader16.gif" />
     <Content Include="Content\images\logo.png" />

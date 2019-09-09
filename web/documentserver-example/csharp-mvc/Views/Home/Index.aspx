@@ -53,24 +53,32 @@
         <br />
         <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
 
-        <div class="file-upload button gray">
-            <span>Choose file</span>
-            <input type="file" id="fileupload" name="files[]" data-url="<%= Url.Content("~/webeditor.ashx?type=upload") %>" />
+        <div class="help-block">
+            <span class="try-descr">Upload your file or create new file</span>
+            <br />
+            <br />
+            <div class="clearFix">
+                <div class="upload-panel clearFix">
+                    <a class="file-upload">
+                        Upload
+                        <br />
+                        File
+                        <input type="file" id="fileupload" name="files[]" data-url="<%= Url.Content("~/webeditor.ashx?type=upload") %>" />
+                    </a>
+                </div>
+                <div class="create-panel">
+                    <ul class="try-editor-list clearFix" data-link="<%= Url.Action("sample", "Home") %>">
+                        <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
+                        <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
+                        <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+                    </ul>
+                    <label class="create-sample">
+                        <input id="createSample" class="checkbox" type="checkbox" />
+                        Create a file filled with sample content
+                    </label>
+                </div>
+            </div>
         </div>
-        <label class="save-original">
-            <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-        </label>
-        <span class="question"></span>
-        <br />
-        <br />
-        <br />
-        <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
-
-        <ul class="try-editor-list">
-            <li><a class="try-editor document" href="<%= Url.Action("sample", "Home", new { fileExt = "docx" }) %>" target="_blank">Create<br />Sample Document</a></li>
-            <li><a class="try-editor spreadsheet" href="<%= Url.Action("sample", "Home", new { fileExt = "xlsx" }) %>" target="_blank">Create<br />Sample Spreadsheet</a></li>
-            <li><a class="try-editor presentation" href="<%= Url.Action("sample", "Home", new { fileExt = "pptx" }) %>" target="_blank">Create<br />Sample Presentation</a></li>
-        </ul>
 
         <% var storedFiles = DocManagerHelper.GetStoredFiles();
             if (storedFiles.Any())

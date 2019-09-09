@@ -50,9 +50,9 @@ namespace OnlineEditorsExampleMVC.Controllers
             return View("Editor", file);
         }
 
-        public ActionResult Sample(string fileExt)
+        public ActionResult Sample(string fileExt, bool? sample)
         {
-            var fileName = DocManagerHelper.CreateDemo(fileExt);
+            var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);
             Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             return null;
         }
