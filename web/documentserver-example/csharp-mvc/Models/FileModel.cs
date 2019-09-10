@@ -54,7 +54,7 @@ namespace OnlineEditorsExampleMVC.Models
 
         public string Key
         {
-            get { return ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + FileName); }
+            get { return ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + FileName + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(FileName, null)).GetHashCode()); }
         }
 
         public string CallbackUrl
