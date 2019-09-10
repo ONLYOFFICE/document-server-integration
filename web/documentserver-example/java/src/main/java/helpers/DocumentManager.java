@@ -159,9 +159,9 @@ public class DocumentManager
         return name;
     }
 
-    public static String CreateDemo(String fileExt) throws Exception
+    public static String CreateDemo(String fileExt, Boolean sample) throws Exception
     {
-        String demoName = "sample." + fileExt;
+        String demoName = (sample ? "sample." : "new.") + fileExt;
         String fileName = GetCorrectName(demoName);
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoName);

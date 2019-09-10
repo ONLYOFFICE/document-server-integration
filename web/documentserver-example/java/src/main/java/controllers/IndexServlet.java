@@ -289,7 +289,7 @@ public class IndexServlet extends HttpServlet
         }
         else
         {
-            status = (int) jsonObj.get("status");
+            status = Math.toIntExact((long) jsonObj.get("status"));
             downloadUri = (String) jsonObj.get("url");
         }
 

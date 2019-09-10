@@ -91,11 +91,6 @@ if (typeof jQuery !== "undefined") {
             return;
         }
 
-        if (jq("#checkOriginalFormat").is(":checked")) {
-            loadScripts();
-            return;
-        }
-
         timer = setTimeout(function () {
             var requestAddress = UrlConverter
                 + "&filename=" + encodeURIComponent(jq("#hiddenFileName").val());
@@ -192,6 +187,17 @@ if (typeof jQuery !== "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
+    });
+
+    jq(document).on("click", ".try-editor", function (e) {
+        var url = "EditorServlet?fileExt=" + e.target.attributes["data-type"].value;
+        if (jq("#createSample").is(":checked")) {
+            url += "&sample=true";
+        }
+        var w = window.open(url, "_blank");
+        w.onload = function () {
+            window.location.reload();
+        }
     });
 
     jq.dropdownToggle({

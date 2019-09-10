@@ -47,41 +47,35 @@
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
-            <div class="file-upload button gray">
-                <span>Choose file</span>
-                <form class="fileupload" action="server/php/" method="POST" enctype="multipart/form-data">
-
-                </form>
-                <input type="file" id="fileupload" name="file" data-url="IndexServlet?type=upload" />
+            <div class="help-block">
+                <span class="try-descr">Upload your file or create new file</span>
+                <br />
+                <br />
+                <div class="clearFix">
+                    <div class="upload-panel clearFix">
+                        <a class="file-upload">
+                            Upload
+                            <br />
+                            File
+                            <input type="file" id="fileupload" name="file" data-url="IndexServlet?type=upload" />
+                        </a>
+                    </div>
+                    <div class="create-panel">
+                        <ul class="try-editor-list clearFix">
+                            <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
+                            <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
+                            <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+                        </ul>
+                        <label class="create-sample">
+                            <input id="createSample" class="checkbox" type="checkbox" />
+                            Create a file filled with sample content
+                        </label>
+                    </div>
+                </div>
             </div>
-            <label class="save-original">
-                <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-            </label>
-            <span class="question"></span>
-            <br />
-            <br />
-            <br />
-            <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
 
-            <ul class="try-editor-list">
-                <li>
-                    <a href="EditorServlet?fileExt=docx" class="try-editor document" target="_blank">
-                        Create<br />Sample Document
-                    </a>
-                </li>
-                <li>
-                    <a href="EditorServlet?fileExt=xlsx" class="try-editor spreadsheet" target="_blank">
-                        Create<br />Sample Spreadsheet
-                    </a>
-                </li>
-                <li>
-                    <a href="EditorServlet?fileExt=pptx" class="try-editor presentation" target="_blank">
-                        Create<br />Sample Presentation
-                    </a>
-                </li>
-            </ul>
 
             <br />
             <br />
