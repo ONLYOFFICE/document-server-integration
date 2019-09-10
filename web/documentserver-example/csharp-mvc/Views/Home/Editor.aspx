@@ -94,6 +94,23 @@
             }
         };
 
+        <% string hist, histData; %>
+        <% Model.GetHistory(out hist, out histData); %>
+        <% if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData))
+        { %>
+        config.events['onRequestHistory'] = function () {
+            docEditor.refreshHistory(<%= hist %>);
+        };
+        config.events['onRequestHistoryData'] = function (event) {
+            var ver = event.data;
+            var histData = <%= histData %>;
+            docEditor.setHistoryData(histData[ver]);
+        };
+        config.events['onRequestHistoryClose '] = function () {
+            document.location.reload();
+        };
+        <% } %>
+
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", Object.assign(config, <%= Model.GetDocConfig(Request, Url) %>));
         };

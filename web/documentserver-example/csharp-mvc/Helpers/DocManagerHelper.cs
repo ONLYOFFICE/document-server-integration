@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
+using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Models;
 
 namespace OnlineEditorsExampleMVC.Helpers
@@ -82,6 +83,32 @@ namespace OnlineEditorsExampleMVC.Helpers
             return directory + fileName;
         }
 
+        public static string HistoryDir(string storagePath)
+        {
+            return storagePath += "-hist";
+        }
+
+        public static string VersionDir(string histPath, int version)
+        {
+            return Path.Combine(histPath, version.ToString());
+        }
+
+        public static string VersionDir(string fileName, string userAddress, int version)
+        {
+            return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+        }
+
+        public static int GetFileVersion(string historyPath)
+        {
+            if (!Directory.Exists(historyPath)) return 0;
+            return Directory.EnumerateDirectories(historyPath).Count();
+        }
+
+        public static int GetFileVersion(string fileName, string userAddress)
+        {
+            return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
+        }
+
         public static string GetCorrectName(string fileName)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
@@ -117,6 +144,17 @@ namespace OnlineEditorsExampleMVC.Helpers
             return fileName;
         }
 
+        public static void CreateMeta(string fileName, string uid, string uname)
+        {
+            var histDir = HistoryDir(StoragePath(fileName, null));
+            Directory.CreateDirectory(histDir);
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                { "created", DateTime.Now.ToString() },
+                { "id", string.IsNullOrEmpty(uid) ? "uid-1" : uid },
+                { "name", string.IsNullOrEmpty(uname) ? "John Smith" : uname }
+            }));
+        }
+
         public static string GetFileUri(string fileName)
         {
             var uri = new UriBuilder(HttpContext.Current.Request.Url)
@@ -126,6 +164,18 @@ namespace OnlineEditorsExampleMVC.Helpers
                            + fileName,
                     Query = ""
                 };
+
+            return uri.ToString();
+        }
+
+        public static string GetPathUri(string path)
+        {
+            var uri = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath + "/"
+                           + path,
+                Query = ""
+            };
 
             return uri.ToString();
         }

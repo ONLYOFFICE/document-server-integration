@@ -25,6 +25,7 @@
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -146,6 +147,80 @@ namespace OnlineEditorsExampleMVC.Models
             }
 
             return new JavaScriptSerializer().Serialize(config);
+        }
+
+        public void GetHistory(out string history, out string historyData)
+        {
+            var jss = new JavaScriptSerializer();
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
+
+            history = null;
+            historyData = null;
+
+            if (DocManagerHelper.GetFileVersion(histDir) > 0)
+            {
+                var currentVersion = DocManagerHelper.GetFileVersion(histDir);
+                var hist = new List<Dictionary<string, object>>();
+                var histData = new Dictionary<string, object>();
+
+                for (var i = 0; i <= currentVersion; i++)
+                {
+                    var obj = new Dictionary<string, object>();
+                    var dataObj = new Dictionary<string, object>();
+                    var verDir = DocManagerHelper.VersionDir(histDir, i + 1);
+
+                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
+
+                    obj.Add("key", key);
+                    obj.Add("version", i);
+
+                    if (i == 0)
+                    {
+                        var infoPath = Path.Combine(histDir, "createdInfo.json");
+
+                        if (File.Exists(infoPath))
+                        {
+                            var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
+                            obj.Add("created", info["created"]);
+                            obj.Add("user", new Dictionary<string, object>() {
+                                { "id", info["id"] },
+                                { "name", info["name"] },
+                            });
+                        }
+                    }
+
+                    dataObj.Add("key", key);
+                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
+                    dataObj.Add("version", i);
+                    if (i > 0)
+                    {
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "changes.json")));
+                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+
+                        obj.Add("changes", changes["changes"]);
+                        obj.Add("serverVersion", changes["serverVersion"]);
+                        obj.Add("created", change["created"]);
+                        obj.Add("user", change["user"]);
+
+                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        dataObj.Add("previous", new Dictionary<string, object>() {
+                            { "key", prev["key"] },
+                            { "url", prev["url"] },
+                        });
+                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
+                    }
+
+                    hist.Add(obj);
+                    histData.Add(i.ToString(), dataObj);
+                }
+
+                history = jss.Serialize(new Dictionary<string, object>()
+                {
+                    { "currentVersion", currentVersion },
+                    { "history", hist }
+                });
+                historyData = jss.Serialize(histData);
+            }
         }
     }
 }
