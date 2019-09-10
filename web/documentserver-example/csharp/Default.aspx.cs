@@ -344,8 +344,19 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                File.Delete(StoragePath(_fileName, null));
+                var storagePath = StoragePath(_fileName, null);
+                var histDir = HistoryDir(storagePath);
+                File.Delete(storagePath);
+                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+
                 _fileName = fileName;
+                histDir = HistoryDir(StoragePath(_fileName, null));
+                Directory.CreateDirectory(histDir);
+                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                    { "created", DateTime.Now.ToString() },
+                    { "id", context.Request.Cookies["uid"]?.Value ?? "uid-1" },
+                    { "name", context.Request.Cookies["uname"]?.Value ?? "John Smith" }
+                }));
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";
