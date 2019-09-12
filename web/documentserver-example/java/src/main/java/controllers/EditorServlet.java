@@ -70,10 +70,7 @@ public class EditorServlet extends HttpServlet
         CookieManager cm = new CookieManager(request);
 
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"));
-        if ("embedded".equals(request.getParameter("mode")))
-            file.InitDesktop();
-        if ("view".equals(request.getParameter("mode")))
-            file.editorConfig.mode = "view";
+        file.changeType(request.getParameter("mode"), request.getParameter("type"));
 
         if (DocumentManager.TokenEnabled())
         {

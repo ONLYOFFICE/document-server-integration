@@ -24,9 +24,9 @@
  *
 */
 
-
 package entities;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import helpers.DocumentManager;
@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 public class FileModel
 {
     public String type = "desktop";
+    public String mode = "edit";
     public String documentType;
     public Document document;
     public EditorConfig editorConfig;
@@ -53,11 +54,9 @@ public class FileModel
         document.title = fileName;
         document.url = DocumentManager.GetFileUri(fileName);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
-        document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName);
+        document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
 
         editorConfig = new EditorConfig();
-        if (!DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(fileName)))
-            editorConfig.mode = "view";
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
         if (lang != null) editorConfig.lang = lang;
 
@@ -65,11 +64,26 @@ public class FileModel
         if (uname != null) editorConfig.user.name = uname;
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
+
+        changeType(mode, type);
+    }
+
+    public void changeType(String _mode, String _type)
+    {
+        if (_mode != null) mode = _mode;
+        if (_type != null) type = _type;
+
+        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(document.title));
+
+        editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
+
+        document.permissions = new Permissions(mode, type, canEdit);
+
+        if (type.equals("embedded")) InitDesktop();
     }
 
     public void InitDesktop()
     {
-        type = "embedded";
         editorConfig.InitDesktop(document.url);
     }
 
@@ -90,6 +104,27 @@ public class FileModel
         public String url;
         public String fileType;
         public String key;
+        public Permissions permissions;
+    }
+
+    public class Permissions
+    {
+        public Boolean comment;
+        public Boolean download;
+        public Boolean edit;
+        public Boolean fillForms;
+        public Boolean modifyFilter;
+        public Boolean review;
+
+        public Permissions(String mode, String type, Boolean canEdit)
+        {
+            comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded");
+            download = true;
+            edit = canEdit && (mode.equals("edit") || mode.equals("filter"));
+            fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded");
+            modifyFilter = !mode.equals("filter");
+            review = mode.equals("edit") || mode.equals("review");
+        }
     }
 
     public class EditorConfig

@@ -230,6 +230,21 @@ if (typeof jQuery !== "undefined") {
         }
     });
 
+    jq(document).on("click", ".delete-file", function () {
+        var requestAddress = "IndexServlet"
+            + "?type=remove"
+            + "&filename=" + encodeURIComponent(jq(this).attr("data-filename"));
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
+    });
+
     jq.dropdownToggle({
         switcherSelector: ".question",
         dropdownID: "hint"

@@ -25,9 +25,11 @@
 *-->
 
 <%@page import="helpers.DocumentManager"%>
+<%@page import="helpers.FileUtility"%>
 <%@page import="helpers.ConfigManager"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.io.File"%>
+<%@page import="java.net.URLEncoder"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
@@ -124,16 +126,96 @@
             </div>
 
             <% DocumentManager.Init(request, response); %>
-            <% File[] files = DocumentManager.GetStoredFiles(null);
-                if (files.length > 0) {
-                    for (Integer i = 0; i < files.length; i++)
-                    { %>
-                        <div>
-                            <%= files[i].getName() %>
-                        <div>
-                    <% }
-                }
-            %>
+            <% File[] files = DocumentManager.GetStoredFiles(null); %>
+            <% if (files.length > 0) { %>
+
+                <div class="help-block">
+                    <span>Your documents</span>
+                    <br />
+                    <br />
+
+                    <div class="stored-list">
+                        <table width="100%" cellspacing="0" cellpadding="0">
+                            <thead>
+                                <tr class="tableHeader">
+                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                    <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="3" class="tableHeaderCell">Viewers</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (Integer i = 0; i < files.length; i++) { %>
+                                    <% String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase(); %>
+                                    <tr class="tableRow" title="<%= files[i].getName() %>">
+                                        <td class="contentCells">
+                                            <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
+                                                <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
+                                            </a>
+                                            <a href="<%= DocumentManager.GetFileUri(files[i].getName()) %>">
+                                                <img class="icon-download" src="css/img/download-24.png" alt="Download" title="Download" />
+                                            </a>
+                                            <a class="delete-file" data-filename="<%= files[i].getName() %>">
+                                                <img class="icon-delete" src="css/img/delete-24.png" alt="Delete" title="Delete" />
+                                            </a>
+                                        </td>
+
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
+                                                <img src="css/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
+                                                <img src="css/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                    <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                </a>
+                                            <% } else if (docType.equals("spreadsheet")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                    <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                </a>
+                                            <% } %>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
+                                                <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-shift contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                    <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                </a>
+                                            <% } %>
+                                        </td>
+
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
+                                                <img src="css/img/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=view" target="_blank">
+                                                <img src="css/img/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=embedded&mode=embedded" target="_blank">
+                                                <img src="css/img/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <% } %>
 
             <br />
             <br />

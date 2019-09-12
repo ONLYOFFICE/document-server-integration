@@ -82,6 +82,9 @@ public class IndexServlet extends HttpServlet
             case "track":
                 Track(request, response, writer);
                 break;
+            case "remove":
+                Remove(request, response, writer);
+                break;
         }
     }
 
@@ -332,6 +335,25 @@ public class IndexServlet extends HttpServlet
         writer.write("{\"error\":" + saved + "}");
     }
 
+    private static void Remove(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        try
+        {
+            String fileName = request.getParameter("filename");
+            String path = DocumentManager.StoragePath(fileName, null);
+
+            File f = new File(path);
+            if (f.exists()) {
+                f.delete();
+            }
+
+            writer.write("{ \"success\": true }");
+        }
+        catch (Exception e)
+        {
+            writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
