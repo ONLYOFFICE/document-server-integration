@@ -42,7 +42,7 @@ public class FileModel
     public EditorConfig editorConfig;
     public String token;
 
-    public FileModel(String fileName)
+    public FileModel(String fileName, String lang, String uid, String uname)
     {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();
@@ -53,14 +53,16 @@ public class FileModel
         document.title = fileName;
         document.url = DocumentManager.GetFileUri(fileName);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
-        String userId = DocumentManager.CurUserHostAddress(null);
-        document.key = ServiceConverter.GenerateRevisionId(userId + "/" + fileName);
+        document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName);
 
         editorConfig = new EditorConfig();
         if (!DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(fileName)))
             editorConfig.mode = "view";
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
-        editorConfig.user.id = userId;
+        if (lang != null) editorConfig.lang = lang;
+
+        if (uid != null) editorConfig.user.id = uid;
+        if (uname != null) editorConfig.user.name = uname;
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
     }
@@ -94,6 +96,7 @@ public class FileModel
     {
         public String mode = "edit";
         public String callbackUrl;
+        public String lang = "en";
         public User user;
         public Customization customization;
         public Embedded embedded;
@@ -115,7 +118,7 @@ public class FileModel
 
         public class User
         {
-            public String id;
+            public String id = "uid-1";
             public String name = "John Smith";
         }
 

@@ -27,6 +27,7 @@
 package controllers;
 
 import helpers.ConfigManager;
+import helpers.CookieManager;
 import helpers.DocumentManager;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -66,7 +67,9 @@ public class EditorServlet extends HttpServlet
             }
         }
 
-        FileModel file = new FileModel(fileName);
+        CookieManager cm = new CookieManager(request);
+
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"));
         if ("embedded".equals(request.getParameter("mode")))
             file.InitDesktop();
         if ("view".equals(request.getParameter("mode")))
