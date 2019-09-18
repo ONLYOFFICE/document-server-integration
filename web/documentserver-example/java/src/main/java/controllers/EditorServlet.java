@@ -53,11 +53,13 @@ public class EditorServlet extends HttpServlet
 
         Boolean sampleData = (sample == null || sample.isEmpty()) ? false : sample.toLowerCase().equals("true");
 
+        CookieManager cm = new CookieManager(request);
+
         if (fileExt != null)
         {
             try
             {
-                fileName = DocumentManager.CreateDemo(fileExt, sampleData);
+                fileName = DocumentManager.CreateDemo(fileExt, sampleData, cm.getCookie("uid"), cm.getCookie("uname"));
                 response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
                 return;
             }
@@ -66,8 +68,6 @@ public class EditorServlet extends HttpServlet
                 response.getWriter().write("Error: " + ex.getMessage());    
             }
         }
-
-        CookieManager cm = new CookieManager(request);
 
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"));
         file.changeType(request.getParameter("mode"), request.getParameter("type"));

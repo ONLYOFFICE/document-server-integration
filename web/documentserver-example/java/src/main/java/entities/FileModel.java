@@ -27,12 +27,21 @@
 package entities;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
 import com.google.gson.Gson;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class FileModel
 {
@@ -96,6 +105,93 @@ public class FileModel
         map.put("editorConfig", editorConfig);
 
         token = DocumentManager.CreateToken(map);
+    }
+
+    public String[] GetHistory()
+    {
+        JSONParser parser = new JSONParser();
+        String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));
+        if (DocumentManager.GetFileVersion(histDir) > 0) {
+            Integer curVer = DocumentManager.GetFileVersion(histDir);
+
+            Set<Object> hist = new HashSet<Object>();
+            Map<String, Object> histData = new HashMap<String, Object>();
+
+            for (Integer i = 0; i <= curVer; i++) {
+                Map<String, Object> obj = new HashMap<String, Object>();
+                Map<String, Object> dataObj = new HashMap<String, Object>();
+                String verDir = DocumentManager.VersionDir(histDir, i + 1);
+
+                try {
+                    String key = null;
+
+                    key = i == curVer ? document.key : readFileToEnd(new File(verDir + File.separator + "key.txt"));
+
+                    obj.put("key", key);
+                    obj.put("version", i);
+
+                    if (i == 0) {
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));
+                        JSONObject json = (JSONObject) parser.parse(createdInfo);
+
+                        obj.put("created", json.get("created"));
+                        Map<String, Object> user = new HashMap<String, Object>();
+                        user.put("id", json.get("id"));
+                        user.put("name", json.get("name"));
+                        obj.put("user", user);
+                    }
+
+                    dataObj.put("key", key);
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("version", i);
+
+                    if (i > 0) {
+                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i) + File.separator + "changes.json")));
+                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
+
+                        obj.put("changes", changes.get("changes"));
+                        obj.put("serverVersion", changes.get("serverVersion"));
+                        obj.put("created", change.get("created"));
+                        obj.put("user", change.get("user"));
+
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 1));
+                        Map<String, Object> prevInfo = new HashMap<String, Object>();
+                        prevInfo.put("key", prev.get("key"));
+                        prevInfo.put("url", prev.get("url"));
+                        dataObj.put("previous", prevInfo);
+                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i) + File.separator + "diff.zip"));
+                    }
+
+                    hist.add(obj);
+                    histData.put(Integer.toString(i), dataObj);
+
+                } catch (Exception ex) { }
+            }
+
+            Map<String, Object> histObj = new HashMap<String, Object>();
+            histObj.put("currentVersion", curVer);
+            histObj.put("history", hist);
+
+            Gson gson = new Gson();
+            return new String[] { gson.toJson(histObj), gson.toJson(histData) };
+        }
+        return new String[] { "", "" };
+    }
+
+    private String readFileToEnd(File file) {
+        String output = "";
+        try {
+            try(FileInputStream is = new FileInputStream(file))
+            {
+                Scanner scanner = new Scanner(is);
+                scanner.useDelimiter("\\A");
+                while (scanner.hasNext()) {
+                    output += scanner.next();
+                }
+                scanner.close();
+            }
+        } catch (Exception e) { }
+        return output;
     }
 
     public class Document
