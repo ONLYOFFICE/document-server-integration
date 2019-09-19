@@ -91,21 +91,34 @@
                     </td>
                     <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
                 </tr>
-                <!--<tr>
+                <tr>
                     <td valign="middle" width="30%">
                         <select class="select-user" id="language">
-                            <option value="en" selected>English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="es">Espanol</option>
-                            <option value="fr">Francais</option>
-                            <option value="it">Italiano</option>
+                            <option value="en">English</option>
+                            <option value="bg">Bulgarian</option>
+                            <option value="zh">Chinese</option>
+                            <option value="cs">Czech</option>
+                            <option value="nl">Dutch</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="hu">Hungarian</option>
+                            <option value="it">Italian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="lv">Latvian</option>
+                            <option value="pl">Polish</option>
                             <option value="pt">Portuguese</option>
-                            <option value="ru">Русский</option>
+                            <option value="ru">Russian</option>
+                            <option value="sk">Slovak</option>
                             <option value="sl">Slovenian</option>
+                            <option value="es">Spanish</option>
+                            <option value="tr">Turkish</option>
+                            <option value="uk">Ukrainian</option>
+                            <option value="vi">Vietnamese</option>
                         </select>
                     </td>
-                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE&trade; editors interface.</td>
-                </tr>-->
+                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE editors interface.</td>
+                </tr>
             </table>
             <br />
         <br />

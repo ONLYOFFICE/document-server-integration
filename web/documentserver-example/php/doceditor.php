@@ -98,7 +98,7 @@
         ],
         "editorConfig" => [
             "mode" => $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view",
-            "lang" => "en",
+            "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),
             "user" => [
                 "id" => $uid,
