@@ -115,6 +115,7 @@ function upload() {
             $result["error"] = 'Upload failed';
             return $result;
         }
+        createMeta($filename);
 
     } else {
         $result["error"] = 'Upload failed';
@@ -182,7 +183,24 @@ function track() {
                 $saved = 0;
             } else {
                 $storagePath = getStoragePath($fileName, $userAddress);
+                $histDir = getHistoryDir($storagePath);
+                $verDir = getVersionDir($histDir, getFileVersion($histDir) + 1);
+
                 file_put_contents($storagePath, $new_data, LOCK_EX);
+
+                mkdir($verDir);
+                if ($changesData = file_get_contents($data["changesurl"])) {
+                    file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
+                }
+
+                $histData = $data["changeshistory"];
+                if (empty($histData)) {
+                    $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
+                }
+                if (!empty($histData)) {
+                    file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);
+                }
+                file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);
             }
 
             $result["c"] = "saved";
@@ -236,9 +254,12 @@ function convert() {
             return $result;
         } else {
             file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);
+            createMeta($newFileName);
         }
 
-        unlink(getStoragePath($fileName));
+        $stPath = getStoragePath($fileName);
+        unlink($stPath);
+        delTree(getHistoryDir($stPath));
 
         $fileName = $newFileName;
     }
@@ -254,12 +275,23 @@ function delete() {
         $filePath = getStoragePath($fileName);
 
         unlink($filePath);
+        delTree(getHistoryDir($filePath));
     }
     catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
+}
+
+function delTree($dir) {
+    if (!file_exists($dir) || !is_dir($directory)) return;
+
+    $files = array_diff(scandir($dir), array('.','..'));
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir);
 }
 
 ?>

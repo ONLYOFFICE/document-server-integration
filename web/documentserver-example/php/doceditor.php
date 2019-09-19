@@ -55,6 +55,8 @@
 
     $fileuri = FileUri($filename, true);
     $fileuriUser = FileUri($filename);
+    $docKey = getDocEditorKey($filename);
+    $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     function tryGetDefaultByType($createExt) {
         $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
@@ -66,6 +68,8 @@
             //Copy error!!!
         }
 
+        createMeta($demoFilename, $_GET["user"]);
+
         return $demoFilename;
     }
 
@@ -75,6 +79,75 @@
                     . "?type=track"
                     . "&fileName=" . urlencode($fileName)
                     . "&userAddress=" . getClientIp();
+    }
+
+    function getHistory($filename, $filetype, $docKey, $fileuri) {
+        $histDir = getHistoryDir(getStoragePath($filename));
+
+        if (getFileVersion($histDir) > 0) {
+            $curVer = getFileVersion($histDir);
+
+            $hist = [];
+            $histData = [];
+
+            for ($i = 0; $i <= $curVer; $i++) {
+                $obj = [];
+                $dataObj = [];
+                $verDir = getVersionDir($histDir, $i + 1);
+
+                $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
+                $obj["key"] = $key;
+                $obj["version"] = $i;
+
+                if ($i == 0) {
+                    $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
+                    $json = json_decode($createdInfo, true);
+
+                    $obj["created"] = $json["created"];
+                    $obj["user"] = [
+                        "id" => $json["uid"],
+                        "name" => $json["name"]
+                    ];
+                }
+
+                $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
+                $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+                $dataObj["key"] = $key;
+                $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
+                $dataObj["version"] = $i;
+
+                if ($i > 0) {
+                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "changes.json"), true);
+                    $change = $changes["changes"][0];
+
+                    $obj["changes"] = $changes["changes"];
+                    $obj["serverVersion"] = $changes["serverVersion"];
+                    $obj["created"] = $change["created"];
+                    $obj["user"] = $change["user"];
+
+                    $prev = $histData[$i -1];
+                    $dataObj["previous"] = [
+                        "key" => $prev["key"],
+                        "url" => $prev["url"]
+                    ];
+                    $changesUrl = getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "diff.zip";
+                    $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
+
+                    $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
+                }
+
+                array_push($hist, $obj);
+                $histData[$i] = $dataObj;
+            }
+
+            $out = [];
+            array_push($out, [
+                    "currentVersion" => $curVer,
+                    "history" => $hist
+                ],
+                $histData);
+            return $out;
+        }
     }
 
 ?>
@@ -121,7 +194,7 @@
 
         var docEditor;
         var fileName = "<?php echo $filename ?>";
-        var fileType = "<?php echo strtolower(pathinfo($filename, PATHINFO_EXTENSION)) ?>";
+        var fileType = "<?php echo $filetype ?>";
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -164,62 +237,82 @@
                 type = new RegExp("<?php echo $GLOBALS['MOBILE_REGEX'] ?>", "i").test(window.navigator.userAgent) ? "mobile" : "desktop";
             }
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor",
-                {
-                    width: "100%",
-                    height: "100%",
+            var config = {
+                width: "100%",
+                height: "100%",
 
-                    type: type,
-                    documentType: "<?php echo getDocumentType($filename) ?>",
-                    document: {
-                        title: fileName,
-                        url: "<?php echo $fileuri ?>",
-                        fileType: fileType,
-                        key: "<?php echo getDocEditorKey($filename) ?>",
+                type: type,
+                documentType: "<?php echo getDocumentType($filename) ?>",
+                document: {
+                    title: fileName,
+                    url: "<?php echo $fileuri ?>",
+                    fileType: fileType,
+                    key: "<?php echo $docKey ?>",
 
-                        info: {
-                            author: "Me",
-                            created: "<?php echo date('d.m.y') ?>",
-                        },
-
-                        permissions: {
-                            download: true,
-                            edit: <?php echo (in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? "true" : "false") ?>,
-                            review: true
-                        }
+                    info: {
+                        author: "Me",
+                        created: "<?php echo date('d.m.y') ?>",
                     },
-                    editorConfig: {
-                        mode: '<?php echo $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view"  ?>',
 
-                        lang: "en",
-
-                        callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
-
-                        user: user,
-
-                        embedded: {
-                            saveUrl: "<?php echo $fileuriUser ?>",
-                            embedUrl: "<?php echo $fileuriUser ?>",
-                            shareUrl: "<?php echo $fileuriUser ?>",
-                            toolbarDocked: "top",
-                        },
-
-                        customization: {
-                            about: true,
-                            feedback: true,
-                            goback: {
-                                url: "<?php echo serverPath() ?>",
-                            },
-                        },
-                    },
-                    events: {
-                        'onAppReady': onAppReady,
-                        'onDocumentStateChange': onDocumentStateChange,
-                        'onRequestEditRights': onRequestEditRights,
-                        'onError': onError,
-                        'onOutdatedVersion': onOutdatedVersion,
+                    permissions: {
+                        download: true,
+                        edit: <?php echo (in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? "true" : "false") ?>,
+                        review: true
                     }
-                });
+                },
+                editorConfig: {
+                    mode: '<?php echo $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view"  ?>',
+
+                    lang: "en",
+
+                    callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
+
+                    user: user,
+
+                    embedded: {
+                        saveUrl: "<?php echo $fileuriUser ?>",
+                        embedUrl: "<?php echo $fileuriUser ?>",
+                        shareUrl: "<?php echo $fileuriUser ?>",
+                        toolbarDocked: "top",
+                    },
+
+                    customization: {
+                        about: true,
+                        feedback: true,
+                        goback: {
+                            url: "<?php echo serverPath() ?>",
+                        },
+                    },
+                },
+                events: {
+                    'onAppReady': onAppReady,
+                    'onDocumentStateChange': onDocumentStateChange,
+                    'onRequestEditRights': onRequestEditRights,
+                    'onError': onError,
+                    'onOutdatedVersion': onOutdatedVersion,
+                }
+            };
+
+            <?php
+                $out = getHistory($filename, $filetype, $docKey, $fileuri);
+                $history = $out[0];
+                $historyData = $out[1];
+            ?>
+            <?php if ($history != null && $historyData != null): ?>
+            config.events['onRequestHistory'] = function () {
+                docEditor.refreshHistory(<?php echo json_encode($history) ?>);
+            };
+            config.events['onRequestHistoryData'] = function (event) {
+                var ver = event.data;
+                var histData = <?php echo json_encode($historyData) ?>;
+                docEditor.setHistoryData(histData[ver]);
+            };
+            config.events['onRequestHistoryClose'] = function () {
+                document.location.reload();
+            };
+            <?php endif; ?>
+
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {
