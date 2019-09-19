@@ -34,6 +34,7 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/ajax.php' );
 require_once( dirname(__FILE__) . '/common.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
+require_once( dirname(__FILE__) . '/jwtmanager.php' );
 
 $_trackerStatus = array(
     0 => 'NotFound',
@@ -147,6 +148,31 @@ function track() {
     }
 
     sendlog("InputStream data: " . serialize($data), "webedior-ajax.log");
+
+    if (isJwtEnabled()) {
+        sendlog("jwt enabled, checking tokens", "webedior-ajax.log");
+
+        $inHeader = false;
+        $token = "";
+        if (!empty($data["token"])) {
+            $token = jwtDecode($data["token"]);
+        } elseif (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $token = jwtDecode(substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Bearer ")));
+            $inHeader = true;
+        } else {
+            sendlog("jwt token wasn't found in body or headers", "webedior-ajax.log");
+            $result["error"] = "Expected JWT";
+            return $result;
+        }
+        if (empty($token)) {
+            sendlog("token was found but signature is invalid", "webedior-ajax.log");
+            $result["error"] = "Invalid JWT signature";
+            return $result;
+        }
+
+        $data = json_decode($token, true);
+        if ($inHeader) $data = $data["payload"];
+    }
 
     $status = $_trackerStatus[$data["status"]];
 

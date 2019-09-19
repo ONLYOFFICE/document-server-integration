@@ -30,6 +30,7 @@
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
+    require_once( dirname(__FILE__) . '/jwtmanager.php' );
 
     $filename;
 
@@ -57,6 +58,71 @@
     $fileuriUser = FileUri($filename);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+    $editorsType = $_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""));
+    if (empty($editorsType)) {
+        $editorsType = "desktop";
+    }
+
+    $uid = empty($_GET["user"]) ? "0" : $_GET["user"];
+    $uname = "";
+    switch ($uid) {
+        case 0:
+            $uname = "Jonn Smith";
+            break;
+        case 1:
+            $uname = "Mark Pottato";
+            break;
+        case 2:
+            $uname = "Hamish Mitchell";
+            break;
+    }
+
+    $config = [
+        "type" => $editorsType,
+        "documentType" => getDocumentType($filename),
+        "document" => [
+            "title" => $filename,
+            "url" => $fileuri,
+            "fileType" => $filetype,
+            "key" => $docKey,
+            "info" => [
+                "author" => "Me",
+                "created" => date('d.m.y')
+            ],
+            "permissions" => [
+                "download" => true,
+                "edit" => in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? true : false,
+                "review" => true
+            ]
+        ],
+        "editorConfig" => [
+            "mode" => $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view",
+            "lang" => "en",
+            "callbackUrl" => getCallbackUrl($filename),
+            "user" => [
+                "id" => $uid,
+                "name" => $uname
+            ],
+            "embedded" => [
+                "saveUrl" => $fileuriUser,
+                "embedUrl" => $fileuriUser,
+                "shareUrl" => $fileuriUser,
+                "toolbarDocked" => "top",
+            ],
+            "customization" => [
+                "about" => true,
+                "feedback" => true,
+                "goback" => [
+                    "url" => serverPath(),
+                ]
+            ]
+        ]
+    ];
+
+    if (isJwtEnabled()) {
+        $config["token"] = jwtEncode($config);
+    }
 
     function tryGetDefaultByType($createExt) {
         $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
@@ -231,59 +297,10 @@
                 }
             ?>
 
-            var user = [{id:"0","name":"Jonn Smith"}, {id:"1","name":"Mark Pottato"}, {id:"2","name":"Hamish Mitchell"}]["<?php echo $_GET["user"] ?>" || 0];
-            var type = "<?php echo ($_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""))) ?>";
-            if (type == "") {
-                type = new RegExp("<?php echo $GLOBALS['MOBILE_REGEX'] ?>", "i").test(window.navigator.userAgent) ? "mobile" : "desktop";
-            }
-
             var config = {
                 width: "100%",
                 height: "100%",
 
-                type: type,
-                documentType: "<?php echo getDocumentType($filename) ?>",
-                document: {
-                    title: fileName,
-                    url: "<?php echo $fileuri ?>",
-                    fileType: fileType,
-                    key: "<?php echo $docKey ?>",
-
-                    info: {
-                        author: "Me",
-                        created: "<?php echo date('d.m.y') ?>",
-                    },
-
-                    permissions: {
-                        download: true,
-                        edit: <?php echo (in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? "true" : "false") ?>,
-                        review: true
-                    }
-                },
-                editorConfig: {
-                    mode: '<?php echo $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view"  ?>',
-
-                    lang: "en",
-
-                    callbackUrl: "<?php echo getCallbackUrl($filename) ?>",
-
-                    user: user,
-
-                    embedded: {
-                        saveUrl: "<?php echo $fileuriUser ?>",
-                        embedUrl: "<?php echo $fileuriUser ?>",
-                        shareUrl: "<?php echo $fileuriUser ?>",
-                        toolbarDocked: "top",
-                    },
-
-                    customization: {
-                        about: true,
-                        feedback: true,
-                        goback: {
-                            url: "<?php echo serverPath() ?>",
-                        },
-                    },
-                },
                 events: {
                     'onAppReady': onAppReady,
                     'onDocumentStateChange': onDocumentStateChange,
@@ -312,7 +329,7 @@
             };
             <?php endif; ?>
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            docEditor = new DocsAPI.DocEditor("iframeEditor", Object.assign(config, <?php echo json_encode($config) ?>));
         };
 
         if (window.addEventListener) {

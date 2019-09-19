@@ -17,6 +17,8 @@ $GLOBALS['DOC_SERV_API_URL'] = "https://documentserver/web-apps/apps/api/documen
 
 $GLOBALS['DOC_SERV_PRELOADER_URL'] = "https://documentserver/web-apps/apps/api/documents/cache-scripts.html";
 
+$GLOBALS['DOC_SERV_JWT_SECRET'] = "";
+
 $GLOBALS['EXAMPLE_URL'] = "";
 
 $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
