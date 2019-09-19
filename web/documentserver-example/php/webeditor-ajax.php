@@ -285,7 +285,7 @@ function delete() {
 }
 
 function delTree($dir) {
-    if (!file_exists($dir) || !is_dir($directory)) return;
+    if (!file_exists($dir) || !is_dir($dir)) return;
 
     $files = array_diff(scandir($dir), array('.','..'));
     foreach ($files as $file) {

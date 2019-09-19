@@ -135,7 +135,7 @@ if (typeof jQuery != "undefined") {
 
                     jq("#hiddenFileName").val(response.filename);
 
-                    if (response.step && response.step < 100) {
+                    if (response.step < 100) {
                         checkConvert(response.fileUri);
                     } else {
                         loadScripts();
