@@ -624,7 +624,7 @@ app.get("/editor", function (req, res) {
                 modifyContentControl: mode != "blockcontent",
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
-                backUrl: docManager.getServerUrl(),
+                backUrl: docManager.getServerUrl() + "/",
                 curUserHostAddress: docManager.curUserHostAddress(),
                 lang: lang,
                 userid: userid,
