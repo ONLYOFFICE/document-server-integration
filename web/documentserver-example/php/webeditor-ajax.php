@@ -212,9 +212,11 @@ function track() {
                 $histDir = getHistoryDir($storagePath);
                 $verDir = getVersionDir($histDir, getFileVersion($histDir) + 1);
 
+                mkdir($verDir);
+
+                copy($storagePath, $verDir . DIRECTORY_SEPARATOR . "prev" . $downloadExt);
                 file_put_contents($storagePath, $new_data, LOCK_EX);
 
-                mkdir($verDir);
                 if ($changesData = file_get_contents($data["changesurl"])) {
                     file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
                 }
