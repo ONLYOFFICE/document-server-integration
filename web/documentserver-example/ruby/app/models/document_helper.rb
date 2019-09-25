@@ -75,8 +75,8 @@ class DocumentHelper
       name
     end
 
-    def create_demo(file_ext)
-      demo_name = 'sample.' + file_ext
+    def create_demo(file_ext, sample)
+      demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name demo_name
       src = Rails.root.join('public', 'samples', demo_name)
       dest = storage_path file_name, nil

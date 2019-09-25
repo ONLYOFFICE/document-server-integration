@@ -16,7 +16,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    file_name = DocumentHelper.create_demo(params[:fileExt])
+    file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample])
     redirect_to :controller => 'home', :action => 'editor', :fileName => file_name
 
   end
