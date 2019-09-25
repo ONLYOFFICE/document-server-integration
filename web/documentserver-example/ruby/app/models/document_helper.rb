@@ -75,6 +75,24 @@ class DocumentHelper
       name
     end
 
+    def get_stored_files(user_address)
+      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+
+      arr = [];
+
+      if Dir.exist?(directory)
+        Dir.foreach(directory) {|e|
+          next if e.eql?(".")
+          next if e.eql?("..")
+          next if File.directory?(e)
+
+          arr.push(e)
+        }
+      end
+
+      return arr
+    end
+
     def create_demo(file_ext, sample)
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name demo_name

@@ -1,18 +1,19 @@
 class FileModel
 
-  attr_accessor :file_name, :mode, :user_ip, :lang, :uid, :uname
+  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :uid, :uname
 
   def initialize(attributes = {})
     @file_name = attributes[:file_name]
     @mode = attributes[:mode]
+    @type = attributes[:type]
     @user_ip = attributes[:user_ip]
     @lang = attributes[:lang]
     @user_id = attributes[:uid]
     @user_name = attributes[:uname]
   end
 
-  def desktop_type
-    @mode != 'embedded'
+  def type
+    @type ? @type : "desktop"
   end
 
   def file_ext
@@ -41,8 +42,12 @@ class FileModel
   end
 
   def get_config
+    editorsmode = @mode ? @mode : "edit"
+    canEdit = DocumentHelper.edited_exts.include?(file_ext)
+    mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
+
     config = {
-      :type => desktop_type ? "desktop" : "embedded",
+      :type => type(),
       :documentType => document_type,
       :document => {
         :title => @file_name,
@@ -54,12 +59,16 @@ class FileModel
           :created => Time.now.to_s,
         },
         :permissions => {
-          :edit => DocumentHelper.edited_exts.include?(file_ext),
-          :download => true
+          :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded"),
+          :download => true,
+          :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("filter")),
+          :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded"),
+          :modifyFilter => !editorsmode.eql?("filter"),
+          :review => editorsmode.eql?("edit") || editorsmode.eql?("review")
         }
       },
       :editorConfig => {
-        :mode => (DocumentHelper.edited_exts.include? file_ext) && @mode != "view" ? "edit" : "view",
+        :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,
         :user => {

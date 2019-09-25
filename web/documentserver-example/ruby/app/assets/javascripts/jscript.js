@@ -175,7 +175,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId;
+        var url = UrlEditor + "?editorsMode=view&fileName=" + fileId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -183,7 +183,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=embedded&fileName=" + fileId;
+        var url = UrlEditor + "?editorsMode=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -206,6 +206,20 @@ if (typeof jQuery != "undefined") {
         w.onload = function () {
             window.location.reload();
         }
+    });
+
+    jq(document).on("click", ".delete-file", function () {
+        var requestAddress = "remove?filename="
+            + encodeURIComponent(jq(this).attr("data-filename"));
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
     });
 
     jq.dropdownToggle({

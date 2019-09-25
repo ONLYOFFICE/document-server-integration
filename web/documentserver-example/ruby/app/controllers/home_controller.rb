@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:mode], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname])
+    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname])
 
   end
 
@@ -179,5 +179,25 @@ class HomeController < ApplicationController
     render :text => '{"error":0}'
     return
 
+  end
+
+  def remove
+    file_name = params[:filename]
+    if !file_name
+      render :text => '{"success":false}'
+      return
+    end
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+    storage_path = DocumentHelper.storage_path(file_name, nil)
+
+    if !File.exist?(storage_path)
+      render :text => '{"success":true}'
+      return
+    end
+
+    File.delete(storage_path)
+    render :text => '{"success":true}'
+    return
   end
 end
