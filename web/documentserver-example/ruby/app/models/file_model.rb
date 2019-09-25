@@ -30,7 +30,8 @@ class FileModel
 
   def key
     uri = DocumentHelper.cur_user_host_address(nil) + '/' + @file_name
-    ServiceConverter.generate_revision_id(uri)
+    stat = File.mtime(DocumentHelper.storage_path(@file_name, nil))
+    return ServiceConverter.generate_revision_id("#{uri}.#{stat.to_s}")
   end
 
   def callback_url
