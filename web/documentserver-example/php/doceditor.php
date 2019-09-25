@@ -59,11 +59,6 @@
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $editorsType = $_GET["type"] == "mobile" ? "mobile" : ($_GET["type"] == "embedded" ? "embedded" : ($_GET["type"] == "desktop" ? "desktop" : ""));
-    if (empty($editorsType)) {
-        $editorsType = "desktop";
-    }
-
     $uid = empty($_GET["user"]) ? "0" : $_GET["user"];
     $uname = "";
     switch ($uid) {
@@ -78,8 +73,12 @@
             break;
     }
 
+    $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
+    $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
+    $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";
+
     $config = [
-        "type" => $editorsType,
+        "type" => empty($_GET["type"]) ? "desktop" : $_GET["type"],
         "documentType" => getDocumentType($filename),
         "document" => [
             "title" => $filename,
@@ -91,13 +90,16 @@
                 "created" => date('d.m.y')
             ],
             "permissions" => [
+                "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded",
                 "download" => true,
-                "edit" => in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "review" ? true : false,
-                "review" => true
+                "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "filter"),
+                "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded",
+                "modifyFilter" => $editorsMode != "filter",
+                "review" => $editorsMode == "edit" || $editorsMode == "review"
             ]
         ],
         "editorConfig" => [
-            "mode" => $GLOBALS['MODE'] != 'view' && in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']) && $_GET["action"] != "view" ? "edit" : "view",
+            "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),
             "user" => [

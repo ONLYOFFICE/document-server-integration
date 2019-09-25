@@ -177,7 +177,7 @@
                             <thead>
                                 <tr class="tableHeader">
                                     <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="3" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
                                     <td colspan="3" class="tableHeaderCell">Viewers</td>
                                 </tr>
                             </thead>
@@ -197,22 +197,40 @@
                                     echo '   <img class="icon-delete" src="css/images/delete-24.png" alt="Delete" title="Delete" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
+
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=desktop" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=mobile" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=mobile" target="_blank">';
                                     echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
                                     echo '  </a>';
-                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo ' <td class="contentCells contentCells-icon">';
                                     if ($storeFile->documentType == "text") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
                                     echo '  </a>';
+                                    } else if ($storeFile->documentType == "spreadsheet") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=filter&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
+                                    echo '  </a>';
                                     }
                                     echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=comment&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    if ($storeFile->documentType == "text") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                    echo '  </a>';
+                                    }
+                                    echo ' </td>';
+
                                     echo ' <td class="contentCells contentCells-icon">';
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>';
@@ -224,7 +242,7 @@
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=embedded" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=embedded&type=embedded" target="_blank">';
                                     echo '   <img src="css/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
