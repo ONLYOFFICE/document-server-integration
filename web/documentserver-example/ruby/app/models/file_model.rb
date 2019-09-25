@@ -74,6 +74,11 @@ class FileModel
         },
       }
     }
+
+    if JwtHelper.is_enabled
+      config["token"] = JwtHelper.encode(config)
+    end
+
     return config
   end
 

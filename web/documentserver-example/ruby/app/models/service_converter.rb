@@ -39,6 +39,12 @@ class ServiceConverter
         req = Net::HTTP::Post.new(uri.request_uri)
         req.add_field("Accept", "application/json")
         req.add_field("Content-Type", "application/json")
+
+        if JwtHelper.is_enabled
+          payload["token"] = JwtHelper.encode(payload)
+          req.add_field("Authorization", "Bearer #{JwtHelper.encode({ :payload => payload })}")
+        end
+
         req.body = payload.to_json
         res = http.request(req)
         data = res.body

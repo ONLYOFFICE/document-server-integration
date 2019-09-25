@@ -115,6 +115,30 @@ class HomeController < ApplicationController
     end
 
     file_data = JSON.parse(body)
+
+    if JwtHelper.is_enabled
+      inHeader = false
+      token = nil
+      if file_data["token"]
+        token = JwtHelper.decode(file_data["token"])
+      elsif request.headers["Authorization"]
+        hdr = request.headers["Authorization"]
+        hdr.slice!(0, "Bearer ".length)
+        token = JwtHelper.decode(hdr)
+        inHeader = true
+      else
+        raise "Expected JWT"
+      end
+      if !token
+        raise "Invalid JWT signature"
+      end
+
+      file_data = JSON.parse(token)
+      if inHeader
+        file_data = file_data["payload"]
+      end
+    end
+
     status = file_data['status'].to_i
 
     if status == 2 || status == 3 #MustSave, Corrupted
