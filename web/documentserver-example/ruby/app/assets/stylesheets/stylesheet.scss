@@ -324,4 +324,22 @@ label .checkbox {
     visibility: hidden;
 }
 
+/*Icon table*/
+.select-user {
+    margin-left: 15px;
+}
+
+.user-block-table {
+    height: 100%;
+    width: 100%;
+}
+
+    .user-block-table td {
+        background-color: #F4F4F4;
+        border-bottom: 1px solid white;
+        padding: 12px 0;
+    }
+
+#user, #language {
+    width: 130px;
 }

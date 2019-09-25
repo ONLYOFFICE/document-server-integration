@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:mode], :user_ip => request.remote_ip)
+    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:mode], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname])
 
   end
 

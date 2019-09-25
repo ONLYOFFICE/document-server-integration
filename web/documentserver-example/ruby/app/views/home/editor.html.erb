@@ -8,8 +8,6 @@
 <script type="text/javascript" language="javascript">
 
     var docEditor;
-    var fileName = "<%= @file.file_name %>";
-    var fileType = "<%= @file.file_ext.delete('.') %>";
 
     var innerAlert = function (message) {
         if (console && console.log)
@@ -40,63 +38,18 @@
 
     var сonnectEditor = function () {
 
-        docEditor = new DocsAPI.DocEditor("iframeEditor",
-                {
-                    width: "100%",
-                    height: "100%",
+        var config = <%= raw @file.get_config.to_json %>;
 
-                    type: "<%= @file.desktop_type  ? 'desktop' : 'embedded' %>",
-                    documentType: "<%= @file.document_type %>",
-                    document: {
-                        title: fileName,
-                        url: "<%= @file.file_uri %>",
-                        fileType: fileType,
-                        key: "<%= @file.key %>",
+        config.width = "100%";
+        config.height = "100%";
+        config.events = {
+            'onAppReady': onAppReady,
+            'onDocumentStateChange': onDocumentStateChange,
+            'onError': onError,
+            'onOutdatedVersion': onOutdatedVersion
+        };
 
-                        info: {
-                            author: "Me",
-                            created: "<%= Time.now.to_s %>",
-                        },
-
-                        permissions: {
-                            edit: "<%= (DocumentHelper.edited_exts.include? @file.file_ext).to_s %>" == "true",
-                            download: true,
-                        },
-                    },
-                    editorConfig: {
-                        mode: "<%= (DocumentHelper.edited_exts.include? @file.file_ext) && @file.mode != 'view' ? 'edit' : 'view' %>",
-
-                        lang: "en",
-
-                        callbackUrl: "<%= raw @file.callback_url %>",
-
-                        user: {
-                            id: "<%= @file.cur_user_host_address %>",
-                            name: "John Smith",
-                        },
-
-                        embedded: {
-                            saveUrl: "<%= @file.file_uri %>",
-                            embedUrl: "<%= @file.file_uri %>",
-                            shareUrl: "<%= @file.file_uri %>",
-                            toolbarDocked: "top",
-                        },
-
-                        customization: {
-                            about: true,
-                            feedback: true,
-                            goback: {
-                                url: "<%= root_path %>",
-                            },
-                        },
-                    },
-                    events: {
-                        'onAppReady': onAppReady,
-                        'onDocumentStateChange': onDocumentStateChange,
-                        'onError': onError,
-                        'onOutdatedVersion': onOutdatedVersion,
-                    },
-                });
+        docEditor = new DocsAPI.DocEditor("iframeEditor", config);
     };
 
     if (window.addEventListener) {
