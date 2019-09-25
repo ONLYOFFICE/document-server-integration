@@ -92,4 +92,86 @@ class FileModel
     return config
   end
 
+  def get_history
+    file_name = @file_name
+    file_ext = File.extname(file_name)
+    doc_key = key()
+    doc_uri = file_uri()
+
+    hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil))
+    cur_ver = DocumentHelper.get_file_version(hist_dir)
+
+    if (cur_ver > 0)
+      hist = []
+      histData = {}
+
+      for i in 0..cur_ver
+        obj = {}
+        dataObj = {}
+        ver_dir = DocumentHelper.version_dir(hist_dir, i + 1)
+
+        cur_key = doc_key
+        if (i != cur_ver)
+          File.open(File.join(ver_dir, "key.txt"), 'r') do |file|
+            cur_key = file.read()
+          end
+        end
+        obj["key"] = cur_key
+        obj["version"] = i
+
+        if (i == 0)
+          File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
+            cr_info = JSON.parse(file.read())
+
+            obj["created"] = cr_info["created"]
+            obj["user"] = {
+              :id => cr_info["created"],
+              :name => cr_info["name"]
+            }
+          end
+        end
+
+        dataObj["key"] = cur_key
+        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
+        dataObj["version"] = i
+
+        if (i > 0)
+          changes = nil
+          File.open(File.join(DocumentHelper.version_dir(hist_dir, i), "changes.json"), 'r') do |file|
+            changes = JSON.parse(file.read())
+          end
+
+          change = changes["changes"][0]
+
+          obj["changes"] = changes["changes"]
+          obj["serverVersion"] = changes["serverVersion"]
+          obj["created"] = change["created"]
+          obj["user"] = change["user"]
+
+          prev = histData[(i-1).to_s]
+          dataObj["previous"] = {
+            :key => prev["key"],
+            :url => prev["url"]
+          }
+
+          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "diff.zip"))
+        end
+
+        hist.push(obj)
+        histData[i.to_s] = dataObj
+      end
+
+      return {
+        :hist => {
+          :currentVersion => cur_ver,
+          :history => hist
+        },
+        :histData => histData
+      }
+    end
+
+    return nil
+
+  end
+
 end
