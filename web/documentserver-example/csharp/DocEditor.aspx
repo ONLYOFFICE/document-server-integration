@@ -73,17 +73,17 @@
             location.reload(true);
         };
 
-        var config = {
-            width: "100%",
-            height: "100%",
+        var config = <%= DocConfig %>;
 
-            events: {
-                'onAppReady': onAppReady,
-                'onDocumentStateChange': onDocumentStateChange,
-                'onRequestEditRights': onRequestEditRights,
-                'onError': onError,
-                'onOutdatedVersion': onOutdatedVersion,
-            }
+        config.width = "100%";
+        config.height = "100%";
+
+        config.events = {
+            'onAppReady': onAppReady,
+            'onDocumentStateChange': onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
+            'onError': onError,
+            'onOutdatedVersion': onOutdatedVersion,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
@@ -102,7 +102,7 @@
         <% } %>
 
         var сonnectEditor = function () {
-            docEditor = new DocsAPI.DocEditor("iframeEditor", Object.assign(config, <%= DocConfig %>));
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {

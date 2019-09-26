@@ -299,17 +299,17 @@
                 }
             ?>
 
-            var config = {
-                width: "100%",
-                height: "100%",
+            var config = <?php echo json_encode($config) ?>;
 
-                events: {
-                    'onAppReady': onAppReady,
-                    'onDocumentStateChange': onDocumentStateChange,
-                    'onRequestEditRights': onRequestEditRights,
-                    'onError': onError,
-                    'onOutdatedVersion': onOutdatedVersion,
-                }
+            config.width = "100%";
+            config.height = "100%";
+
+            config.events = {
+                'onAppReady': onAppReady,
+                'onDocumentStateChange': onDocumentStateChange,
+                'onRequestEditRights': onRequestEditRights,
+                'onError': onError,
+                'onOutdatedVersion': onOutdatedVersion,
             };
 
             <?php
@@ -331,7 +331,7 @@
             };
             <?php endif; ?>
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor", Object.assign(config, <?php echo json_encode($config) ?>));
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {

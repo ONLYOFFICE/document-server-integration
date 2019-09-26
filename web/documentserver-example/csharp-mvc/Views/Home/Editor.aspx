@@ -81,17 +81,17 @@
             location.reload(true);
         };
 
-        var config = {
-            width: "100%",
-            height: "100%",
+        var config = <%= Model.GetDocConfig(Request, Url) %>;
 
-            events: {
-                'onAppReady': onAppReady,
-                'onDocumentStateChange': onDocumentStateChange,
-                'onRequestEditRights': onRequestEditRights,
-                'onError': onError,
-                'onOutdatedVersion': onOutdatedVersion,
-            }
+        config.width = "100%";
+        config.height = "100%";
+
+        config.events = {
+            'onAppReady': onAppReady,
+            'onDocumentStateChange': onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
+            'onError': onError,
+            'onOutdatedVersion': onOutdatedVersion,
         };
 
         <% string hist, histData; %>
@@ -112,7 +112,7 @@
         <% } %>
 
         var сonnectEditor = function () {
-            docEditor = new DocsAPI.DocEditor("iframeEditor", Object.assign(config, <%= Model.GetDocConfig(Request, Url) %>));
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {
