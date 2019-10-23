@@ -272,14 +272,21 @@ public class IndexServlet extends HttpServlet
             String token = (String) jsonObj.get("token");
 
             if (token == null) {
-                String header = (String) request.getHeader(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader);
-                token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                if (header != null && !header.isEmpty()) {
+                    token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                }
+            }
+
+            if (token == null || token.isEmpty()) {
+                writer.write("{\"error\":1,\"message\":\"JWT expected\"}");
+                return;
             }
 
             JWT jwt = DocumentManager.ReadToken(token);
             if (jwt == null)
             {
-                writer.write("JWT.parse error");
+                writer.write("{\"error\":1,\"message\":\"JWT validation failed\"}");
                 return;
             }
 
@@ -291,7 +298,7 @@ public class IndexServlet extends HttpServlet
                     jwt.claims = payload;
                 }
                 catch (Exception ex) {
-                    writer.write("Wrong payload");
+                    writer.write("{\"error\":1,\"message\":\"Wrong payload\"}");
                     return;
                 }
             }
