@@ -40,8 +40,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.epub"
 
     Rails.configuration.urlConverter="https://documentserver/ConvertService.ashx"
-    Rails.configuration.urlApi="https://documentserver/web-apps-pro/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="https://documentserver/web-apps-pro/apps/api/documents/cache-scripts.html"
+    Rails.configuration.urlApi="https://documentserver/web-apps/apps/api/documents/api.js"
+    Rails.configuration.urlPreloader="https://documentserver/web-apps/apps/api/documents/cache-scripts.html"
 
     Rails.configuration.jwtSecret = ""
 
