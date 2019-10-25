@@ -15,5 +15,11 @@ Including another URLconf
 """
 from django.urls import path
 
+from src.views import index, actions
+
 urlpatterns = [
+    path('', index.default),
+    path('upload', actions.upload),
+    path('convert', actions.convert),
+    path('create', actions.createNew)
 ]
