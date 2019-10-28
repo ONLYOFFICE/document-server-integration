@@ -106,6 +106,7 @@ label .checkbox {
     padding-top: 100px;
     text-align: center;
     text-decoration: none;
+    cursor: pointer;
 }
 .try-editor.document {
     background-image: url("../images/file_docx.png");

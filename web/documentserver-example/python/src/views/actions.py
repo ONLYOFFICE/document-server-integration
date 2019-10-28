@@ -1,8 +1,10 @@
 import config
 import json
 
-from django.http import HttpResponse
-from src.utils import docManager, fileUtils, serviceConverter
+from datetime import datetime
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from src.utils import docManager, fileUtils, serviceConverter, users
 
 
 def upload(request):
@@ -70,9 +72,105 @@ def createNew(request):
 
         filename = docManager.createSample(fileType, sample, request)
 
-        #redirect to edit
+        return HttpResponseRedirect(f'edit?filename={filename}')
 
     except Exception as e:
         response.setdefault('error', e.args[0])
 
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+def edit(request):
+    filename = request.GET['filename']
+
+    ext = fileUtils.getFileExt(filename)
+
+    fileUri = docManager.getFileUri(filename, request)
+    docKey = docManager.generateFileKey(filename, request)
+    fileType = fileUtils.getFileType(filename)
+    user = users.getUserFromReq(request)
+
+    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
+    canEdit = docManager.isCanEdit(ext)
+    mode = 'edit' if canEdit & (edMode != 'view') else 'view'
+
+    edType = request.GET.get('type') if request.GET.get('type') else 'desktop'
+    lang = request.GET.get('ulang') if request.GET.get('ulang') else 'en'
+
+    edConfig = {
+        'type': edType,
+        'documentType': fileType,
+        'document': {
+            'title': filename,
+            'url': fileUri,
+            'fileType': ext[1:],
+            'key': docKey,
+            'info': {
+                'author': 'Me',
+                'created': datetime.today().strftime('%d.%m.%Y')
+            },
+            'permissions': {
+                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded'),
+                'download': True,
+                'edit': canEdit & ((edMode == 'edit') | (edMode == 'filter')),
+                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded'),
+                'modifyFilter': edMode != 'filter',
+                'review': (edMode == 'edit') | (edMode == 'review')
+            }
+        },
+        'editorConfig': {
+            'mode': mode,
+            'lang': lang,
+            'callbackUrl': docManager.getCallbackUrl(filename, request),
+            'user': {
+                'id': user['uid'],
+                'name': user['uname']
+            },
+            'embedded': {
+                'saveUrl': fileUri,
+                'embedUrl': fileUri,
+                'shareUrl': fileUri,
+                'toolbarDocked': 'top'
+            },
+            'customization': {
+                'about': True,
+                'feedback': True,
+                'goback': {
+                    'url': request.META['HTTP_REFERER']
+                }
+            }
+        }
+    }
+
+    #jwt
+
+    context = {
+        'cfg': json.dumps(edConfig),
+        'fileType': fileType,
+        'apiUrl': config.DOC_SERV_API_URL
+    }
+    return render(request, 'editor.html', context)
+
+def track(request):
+    filename = request.GET['filename']
+    usAddr = request.GET['userAddress']
+
+    response = {}
+
+    try:
+        body = json.loads(request.body)
+
+        #jwt
+
+        status = body['status']
+        download = body.get('url')
+
+        if (status == 2) | (status == 3): # mustsave, corrupted
+            path = docManager.getStoragePath(filename, usAddr)
+            docManager.saveFileFromUri(download, path)
+
+    except Exception as e:
+        response.setdefault('error', 1)
+        response.setdefault('message', e.args[0])
+
+    response.setdefault('error', 0)
     return HttpResponse(json.dumps(response), content_type='application/json')

@@ -69,8 +69,17 @@ def getFileUri(filename, req):
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
-def getStoragePath(filename, req):
+def getCallbackUrl(filename, req):
+    host = req.META['HTTP_REFERER']
     curAdr = req.META['REMOTE_ADDR']
+    return f'{host}track?filename={filename}&userAddress={curAdr}'
+
+def getStoragePath(filename, req):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
     directory = os.path.join(config.STORAGE_PATH, curAdr)
 
     if not os.path.exists(directory):

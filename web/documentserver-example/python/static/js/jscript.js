@@ -187,6 +187,32 @@ if (typeof jQuery !== "undefined") {
         });
     };
 
+    jq(document).on("click", "#beginEdit:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?mode=edit&filename=" + fileId;
+        window.open(url, "_blank");
+        jq("#hiddenFileName").val("");
+        jq.unblockUI();
+    });
+
+    jq(document).on("click", "#beginView:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?mode=view&filename=" + fileId;
+        window.open(url, "_blank");
+        jq("#hiddenFileName").val("");
+        jq.unblockUI();
+    });
+
+    jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?mode=embedded&filename=" + fileId;
+
+        jq("#mainProgress").addClass("embedded");
+        jq("#beginEmbedded").addClass("disable");
+
+        jq("#embeddedView").attr("src", url);
+    });
+
     jq(document).on("click", "#cancelEdit, .dialog-close", function () {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
