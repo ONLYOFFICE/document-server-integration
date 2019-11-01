@@ -174,3 +174,12 @@ def track(request):
 
     response.setdefault('error', 0)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
+def remove(request):
+    filename = request.GET['filename']
+
+    response = {}
+
+    docManager.removeFile(filename, request)
+    response.setdefault('success', True)
+    return HttpResponse(json.dumps(response), content_type='application/json')

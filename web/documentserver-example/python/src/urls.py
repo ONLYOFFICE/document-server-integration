@@ -23,5 +23,6 @@ urlpatterns = [
     path('convert', actions.convert),
     path('create', actions.createNew),
     path('edit', actions.edit),
-    path('track', actions.track)
+    path('track', actions.track),
+    path('remove', actions.remove)
 ]

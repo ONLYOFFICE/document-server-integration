@@ -17,6 +17,8 @@ DOC_SERV_CONVERTER_URL = 'https://documentserver/ConvertService.ashx'
 DOC_SERV_API_URL = 'https://documentserver/web-apps-pro/apps/api/documents/api.js'
 DOC_SERV_PRELOADER_URL = 'https://documentserver/web-apps-pro/apps/api/documents/cache-scripts.html'
 
+EXAMPLE_DOMAIN = 'https://exampleserver/'
+
 DOC_SERV_JWT_SECRET = ''
 
 

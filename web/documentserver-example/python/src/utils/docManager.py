@@ -65,16 +65,16 @@ def getCorrectName(filename, req):
     return name
 
 def getFileUri(filename, req):
-    host = req.META['HTTP_REFERER'].rstrip('/')
+    host = config.EXAMPLE_DOMAIN.rstrip('/')
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
 def getCallbackUrl(filename, req):
-    host = req.META['HTTP_REFERER']
+    host = config.EXAMPLE_DOMAIN
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}track?filename={filename}&userAddress={curAdr}'
 
-def getStoragePath(filename, req):
+def getRootFolder(req):
     if isinstance(req, str):
         curAdr = req
     else:
@@ -85,7 +85,23 @@ def getStoragePath(filename, req):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+    return directory
+
+def getStoragePath(filename, req):
+    directory = getRootFolder(req)
+
     return os.path.join(directory, filename)
+
+
+def getStoredFiles(req):
+    directory = getRootFolder(req)
+
+    files = os.listdir(directory)
+    fileInfos = []
+    for f in files:
+        fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
+
+    return fileInfos
 
 def createFile(stream, path, meta = False):
     bufSize = 8196

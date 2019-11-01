@@ -419,6 +419,9 @@ footer {
     -moz-user-select: none;
     -webkit-user-select: none;
 }
+.contentCells > a {
+    text-decoration: none;
+}
 .contentCells-shift {
     padding-right: 30px;
 }

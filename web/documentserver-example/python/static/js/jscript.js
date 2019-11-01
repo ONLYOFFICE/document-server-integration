@@ -229,4 +229,18 @@ if (typeof jQuery !== "undefined") {
             window.location.reload();
         }
     });
+
+    jq(document).on("click", ".delete-file", function () {
+        var requestAddress = "remove"
+            + "?filename=" + encodeURIComponent(jq(this).attr("data-filename"));
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
+    });
 }

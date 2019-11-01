@@ -12,6 +12,7 @@ def default(request):
         'languages': docManager.LANGUAGES,
         'preloadurl': config.DOC_SERV_PRELOADER_URL,
         'editExt': json.dumps(config.DOC_SERV_EDITED),
-        'convExt': json.dumps(config.DOC_SERV_CONVERT)
+        'convExt': json.dumps(config.DOC_SERV_CONVERT),
+        'files': docManager.getStoredFiles(request)
     }
     return render(request, 'index.html', context)
