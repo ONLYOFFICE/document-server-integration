@@ -2,7 +2,7 @@ import json
 import requests
 import config
 
-from . import fileUtils
+from . import fileUtils, jwtManager
 
 def getConverterUri(docUri, fromExt, toExt, docKey, isAsync):
     if not fromExt:
@@ -18,12 +18,17 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync):
         'key': docKey
     }
 
+    headers={'accept': 'application/json'}
+
     if (isAsync):
         payload.setdefault('async', True)
 
-    # jwt
+    if jwtManager.isEnabled():
+        headerToken = jwtManager.encode({'payload': payload})
+        payload['token'] = jwtManager.encode(payload)
+        headers['Authorization'] = f'Bearer {headerToken}'
 
-    response = requests.post(config.DOC_SERV_CONVERTER_URL, json=payload, headers={'accept': 'application/json'})
+    response = requests.post(config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers )
     json = response.json()
 
     return getResponseUri(json)

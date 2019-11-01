@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from src.utils import docManager, fileUtils, serviceConverter, users
+from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager
 
 
 def upload(request):
@@ -135,13 +135,14 @@ def edit(request):
                 'about': True,
                 'feedback': True,
                 'goback': {
-                    'url': request.META['HTTP_REFERER']
+                    'url': config.EXAMPLE_DOMAIN
                 }
             }
         }
     }
 
-    #jwt
+    if jwtManager.isEnabled():
+        edConfig['token'] = jwtManager.encode(edConfig)
 
     context = {
         'cfg': json.dumps(edConfig),
@@ -159,7 +160,20 @@ def track(request):
     try:
         body = json.loads(request.body)
 
-        #jwt
+        if jwtManager.isEnabled():
+            token = body.get('token')
+
+            if (not token):
+                token = request.headers.get('Authorization')
+                if token:
+                    token = token[len('Bearer '):]
+
+            if (not token):
+                raise Exception('Expected JWT')
+
+            body = jwtManager.decode(token)
+            if (body.get('payload')):
+                body = body['payload']
 
         status = body['status']
         download = body.get('url')
@@ -173,7 +187,7 @@ def track(request):
         response.setdefault('message', e.args[0])
 
     response.setdefault('error', 0)
-    return HttpResponse(json.dumps(response), content_type='application/json')
+    return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
 
 def remove(request):
     filename = request.GET['filename']
