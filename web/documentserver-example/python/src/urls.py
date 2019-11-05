@@ -16,6 +16,7 @@ Including another URLconf
 from django.urls import path
 
 from src.views import index, actions
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', index.default),
@@ -26,3 +27,5 @@ urlpatterns = [
     path('track', actions.track),
     path('remove', actions.remove)
 ]
+
+urlpatterns += staticfiles_urlpatterns()

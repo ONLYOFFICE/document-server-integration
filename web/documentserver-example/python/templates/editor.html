@@ -90,6 +90,22 @@
                 'onOutdatedVersion': onOutdatedVersion,
             };
 
+            {% if history and historyData %}
+
+                config.events['onRequestHistory'] = function () {
+                    docEditor.refreshHistory({{ history | safe }});
+                };
+                config.events['onRequestHistoryData'] = function (event) {
+                    var ver = event.data;
+                    var histData = {{ historyData | safe }};
+                    docEditor.setHistoryData(histData[ver]);
+                };
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+
+            {% endif %}
+
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
 
             fixSize();

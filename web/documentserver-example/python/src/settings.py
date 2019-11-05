@@ -36,10 +36,10 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
+    'src.utils.historyManager.CorsHeaderMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

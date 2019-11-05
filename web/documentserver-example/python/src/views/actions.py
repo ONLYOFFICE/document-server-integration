@@ -1,10 +1,11 @@
 import config
 import json
+import os
 
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager
+from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager
 
 
 def upload(request):
@@ -23,7 +24,7 @@ def upload(request):
         name = docManager.getCorrectName(fileInfo.name, request)
         path = docManager.getStoragePath(name, request)
 
-        docManager.createFile(fileInfo.file, path, True)
+        docManager.createFile(fileInfo.file, path, request, True)
 
         response.setdefault('filename', name)
 
@@ -53,7 +54,7 @@ def convert(request):
             else:
                 correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + newExt, request)
                 path = docManager.getStoragePath(correctName, request)
-                docManager.saveFileFromUri(newUri, path, True)
+                docManager.saveFileFromUri(newUri, path, request, True)
                 docManager.removeFile(filename, request)
         else:
             response.setdefault('filename', filename)
@@ -96,6 +97,21 @@ def edit(request):
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'
     lang = request.GET.get('ulang') if request.GET.get('ulang') else 'en'
 
+    storagePath = docManager.getStoragePath(filename, request)
+    meta = historyManager.getMeta(storagePath)
+    infObj = None
+
+    if (meta):
+        infObj = {
+            'author': meta['uname'],
+            'created': meta['created']
+        }
+    else:
+        infObj = {
+            'author': 'Me',
+            'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
+        }
+
     edConfig = {
         'type': edType,
         'documentType': fileType,
@@ -104,10 +120,7 @@ def edit(request):
             'url': fileUri,
             'fileType': ext[1:],
             'key': docKey,
-            'info': {
-                'author': 'Me',
-                'created': datetime.today().strftime('%d.%m.%Y')
-            },
+            'info': infObj,
             'permissions': {
                 'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded'),
                 'download': True,
@@ -144,8 +157,12 @@ def edit(request):
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
 
+    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
+
     context = {
         'cfg': json.dumps(edConfig),
+        'history': json.dumps(hist['history']) if 'history' in hist else None,
+        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
         'apiUrl': config.DOC_SERV_API_URL
     }
@@ -180,7 +197,22 @@ def track(request):
 
         if (status == 2) | (status == 3): # mustsave, corrupted
             path = docManager.getStoragePath(filename, usAddr)
+            histDir = historyManager.getHistoryDir(path)
+            versionDir = historyManager.getNextVersionDir(histDir)
+            changesUri = body.get('changesurl')
+
+            os.rename(path, historyManager.getPrevFilePath(versionDir, fileUtils.getFileExt(filename)))
             docManager.saveFileFromUri(download, path)
+            docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir))
+
+            hist = None
+            hist = body.get('changeshistory')
+            if (not hist) & ('history' in body):
+                hist = json.dumps(body.get('history'))
+            if hist:
+                historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist)
+
+            historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))
 
     except Exception as e:
         response.setdefault('error', 1)
@@ -195,5 +227,6 @@ def remove(request):
     response = {}
 
     docManager.removeFile(filename, request)
+
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')

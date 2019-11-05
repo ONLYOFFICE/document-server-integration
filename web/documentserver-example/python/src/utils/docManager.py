@@ -1,11 +1,12 @@
 import config
 import os
+import shutil
 import io
 import re
 import requests
 
 from src import settings
-from . import fileUtils
+from . import fileUtils, historyManager
 
 LANGUAGES = {
     'en': 'English',
@@ -92,18 +93,19 @@ def getStoragePath(filename, req):
 
     return os.path.join(directory, filename)
 
-
 def getStoredFiles(req):
     directory = getRootFolder(req)
 
     files = os.listdir(directory)
+
     fileInfos = []
     for f in files:
-        fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
+        if os.path.isfile(os.path.join(directory, f)):
+            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
 
     return fileInfos
 
-def createFile(stream, path, meta = False):
+def createFile(stream, path, req = None, meta = False):
     bufSize = 8196
     with io.open(path, 'wb') as out:
         read = stream.read(bufSize)
@@ -112,12 +114,13 @@ def createFile(stream, path, meta = False):
             out.write(read)
             read = stream.read(bufSize)
 
-    #createmeta
+    if meta:
+        historyManager.createMeta(path, req)
     return
 
-def saveFileFromUri(uri, path, meta = False):
+def saveFileFromUri(uri, path, req = None, meta = False):
     resp = requests.get(uri, stream=True)
-    createFile(resp.raw, path, meta)
+    createFile(resp.raw, path, req, meta)
     return
 
 def createSample(fileType, sample, req):
@@ -132,14 +135,16 @@ def createSample(fileType, sample, req):
     path = getStoragePath(filename, req)
 
     with io.open(os.path.join('samples', f'{sampleName}{ext}'), 'rb') as stream:
-        createFile(stream, path, True)
+        createFile(stream, path, req, True)
     return filename
 
 def removeFile(filename, req):
     path = getStoragePath(filename, req)
     if os.path.exists(path):
         os.remove(path)
-    #if history path exists
+    histDir = historyManager.getHistoryDir(path)
+    if os.path.exists(histDir):
+        shutil.rmtree(histDir)
 
 def generateFileKey(filename, req):
     path = getStoragePath(filename, req)
