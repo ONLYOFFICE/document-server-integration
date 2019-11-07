@@ -139,7 +139,7 @@
                     <thead>
                         <tr class="tableHeader">
                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                            <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
+                            <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
                             <td colspan="3" class="tableHeaderCell">Viewers</td>
                         </tr>
                     </thead>
@@ -189,10 +189,17 @@
                                         <img src="content/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
                                     </a>
                                 </td>
-                                <td class="contentCells contentCells-shift contentCells-icon">
+                                <td class="contentCells contentCells-icon">
                                     <% if (docType == "text") { %>
                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
                                             <img src="content/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                        </a>
+                                    <% } %>
+                                </td>
+                                <td class="contentCells contentCells-shift contentCells-icon">
+                                    <% if (docType == "text") { %>
+                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
+                                            <img src="content/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>
                                     <% } %>
                                 </td>

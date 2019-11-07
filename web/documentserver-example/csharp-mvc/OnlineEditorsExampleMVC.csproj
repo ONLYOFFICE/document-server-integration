@@ -147,6 +147,7 @@
   <ItemGroup>
     <Content Include="Content\editor.css" />
     <Content Include="Content\images\alert.png" />
+    <Content Include="Content\images\block-content-24.png" />
     <Content Include="Content\images\close.png" />
     <Content Include="Content\images\comment-24.png" />
     <Content Include="Content\images\corner.png" />
