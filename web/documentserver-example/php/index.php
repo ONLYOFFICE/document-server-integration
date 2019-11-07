@@ -177,7 +177,7 @@
                             <thead>
                                 <tr class="tableHeader">
                                     <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
                                     <td colspan="3" class="tableHeaderCell">Viewers</td>
                                 </tr>
                             </thead>
@@ -223,10 +223,17 @@
                                     echo '   <img src="css/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo ' <td class="contentCells contentCells-icon">';
                                     if ($storeFile->documentType == "text") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                    echo '  </a>';
+                                    }
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    if ($storeFile->documentType == "text") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=blockcontent&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                     echo '  </a>';
                                     }
                                     echo ' </td>';
