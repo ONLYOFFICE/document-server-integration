@@ -52,6 +52,7 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\images\block-content-24.png" />
     <Content Include="App_Themes\images\comment-24.png" />
     <Content Include="App_Themes\images\delete-24.png" />
     <Content Include="App_Themes\images\desktop-24.png" />

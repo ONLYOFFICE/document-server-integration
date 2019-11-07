@@ -127,11 +127,12 @@ namespace OnlineEditorsExample
                                 {
                                     "permissions", new Dictionary<string, object>
                                         {
-                                            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" },
+                                            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent"},
                                             { "download", true },
-                                            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "filter") },
-                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" },
+                                            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "filter") || editorsMode == "blockcontent" },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
+                                            { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", editorsMode == "edit" || editorsMode == "review" }
                                         }
                                 }
