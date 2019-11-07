@@ -210,15 +210,17 @@ public class FileModel
         public Boolean edit;
         public Boolean fillForms;
         public Boolean modifyFilter;
+        public Boolean modifyContentControl;
         public Boolean review;
 
         public Permissions(String mode, String type, Boolean canEdit)
         {
-            comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded");
+            comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
             download = true;
-            edit = canEdit && (mode.equals("edit") || mode.equals("filter"));
-            fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded");
+            edit = canEdit && (mode.equals("edit") || mode.equals("filter") || mode.equals("blockcontent"));
+            fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
+            modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
         }
     }

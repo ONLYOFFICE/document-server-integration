@@ -139,7 +139,7 @@
                             <thead>
                                 <tr class="tableHeader">
                                     <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="5" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
                                     <td colspan="3" class="tableHeaderCell">Viewers</td>
                                 </tr>
                             </thead>
@@ -185,10 +185,17 @@
                                                 <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
                                             </a>
                                         </td>
-                                        <td class="contentCells contentCells-shift contentCells-icon">
+                                        <td class="contentCells contentCells-icon">
                                             <% if (docType.equals("text")) { %>
                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
                                                     <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                </a>
+                                            <% } %>
+                                        </td>
+                                        <td class="contentCells contentCells-shift contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                    <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                 </a>
                                             <% } %>
                                         </td>
