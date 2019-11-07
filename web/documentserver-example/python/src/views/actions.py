@@ -122,11 +122,12 @@ def edit(request):
             'key': docKey,
             'info': infObj,
             'permissions': {
-                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded'),
+                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'download': True,
-                'edit': canEdit & ((edMode == 'edit') | (edMode == 'filter')),
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded'),
+                'edit': canEdit & ((edMode == 'edit') | (edMode == 'filter') | (edMode == "blockcontent")),
+                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
+                'modifyContentControl': edMode != "blockcontent",
                 'review': (edMode == 'edit') | (edMode == 'review')
             }
         },
