@@ -60,11 +60,12 @@ class FileModel
           :created => Time.now.to_s,
         },
         :permissions => {
-          :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded"),
+          :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :download => true,
-          :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("filter")),
-          :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded"),
+          :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("filter") || editorsmode.eql?("blockcontent")),
+          :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
+          :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => editorsmode.eql?("edit") || editorsmode.eql?("review")
         }
       },
