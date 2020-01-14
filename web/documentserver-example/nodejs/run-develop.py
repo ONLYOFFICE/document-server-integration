@@ -14,6 +14,6 @@ def run_integration_example():
   base.print_info('run integration example')
   base.run_nodejs(['bin/www'])
 
-base.set_env('NODE_ENV', 'development-windows')
+base.set_env('NODE_ENV', 'development-' + base.host_platform())
 
 run_integration_example()
