@@ -5,8 +5,9 @@
 /build/deploy
 /build/*.log
 /web/documentserver-example/nodejs/node_modules
-/web/documentserver-example/nodejs/public/files
+/web/documentserver-example/nodejs/files
 /web/documentserver-example/nodejs/config/local.json
+/web/documentserver-example/nodejs/example
 **/.vscode/
 **/.idea
 /web/documentserver-example/java/target/
