@@ -35,6 +35,7 @@ const syncRequest = require("sync-request");
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
+const storageFolder = configServer.get("storageFolder");
 const mime = require("mime");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
@@ -99,7 +100,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get("/", function (req, res) {
     try {
 
-        docManager.init(__dirname, req, res);
+        docManager.init(storageFolder, req, res);
 
         res.render("index", {
             preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
@@ -119,7 +120,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/download", function(req, res) {
-    docManager.init(__dirname, req, res);
+    docManager.init(storageFolder, req, res);
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = docManager.curUserHostAddress();
@@ -140,11 +141,11 @@ app.get("/download", function(req, res) {
 
 app.post("/upload", function (req, res) {
 
-    docManager.init(__dirname, req, res);
+    docManager.init(storageFolder, req, res);
     docManager.storagePath(""); //mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();
-    const uploadDir = path.join("./public", configServer.get('storageFolder'), userIp);
+    const uploadDir = path.join(storageFolder, userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');
     docManager.createDirectory(uploadDirTmp);
 
@@ -297,7 +298,7 @@ app.get("/convert", function (req, res) {
 
 app.delete("/file", function (req, res) {
     try {
-    	docManager.init(__dirname, req, res);
+    	docManager.init(storageFolder, req, res);
         let fileName = req.query.filename;
         if (fileName) {
 			fileName = fileUtility.getFileName(fileName);
@@ -322,7 +323,7 @@ app.delete("/file", function (req, res) {
 
 app.post("/track", function (req, res) {
 
-    docManager.init(__dirname, req, res);
+    docManager.init(storageFolder, req, res);
 
     var userAddress = req.query.useraddress;
     var fileName = fileUtility.getFileName(req.query.filename);
@@ -513,7 +514,7 @@ app.post("/track", function (req, res) {
 app.get("/editor", function (req, res) {
     try {
 
-        docManager.init(__dirname, req, res);
+        docManager.init(storageFolder, req, res);
 
         var fileExt = req.query.fileExt;
         var history = [];

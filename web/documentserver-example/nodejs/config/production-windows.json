@@ -4,8 +4,8 @@
     "maxFileSize": 104857600,
     "static":[
       {
-        "name": "/public",
-        "path": "public",
+        "name": "/files",
+        "path": "./files",
         "options": {"maxAge": "7d"}
       }
     ]

@@ -32,7 +32,6 @@ const documentService = require("./documentService");
 const cacheManager = require("./cacheManager");
 const guidManager = require("./guidManager");
 const configServer = require('config').get('server');
-const storageFolder = configServer.get('storageFolder');
 const os = require("os");
 
 let docManager = {};
@@ -60,8 +59,6 @@ docManager.init = function (dir, req, res) {
     docManager.dir = dir;
     docManager.req = req;
     docManager.res = res;
-
-    this.createDirectory(path.join(docManager.dir, "public", storageFolder));
 };
 
 docManager.getLang = function () {
@@ -113,7 +110,7 @@ docManager.getCorrectName = function (fileName, userAddress) {
 docManager.createDemo = function (demoName, userid, username) {
     const fileName = docManager.getCorrectName(demoName);
 
-    docManager.copyFile(path.join(docManager.dir, "public", "samples", demoName), docManager.storagePath(fileName));
+    docManager.copyFile(path.join(__dirname, "..","public", "samples", demoName), docManager.storagePath(fileName));
 
     docManager.saveFileData(fileName, userid, username);
 
@@ -149,9 +146,8 @@ docManager.getFileUri = function (fileName) {
 
 docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
     const serverPath = docManager.getServerUrl(forDocumentServer);
-    const storagePath = storageFolder.length ? storageFolder + "/" : "";
     const hostAddress = docManager.curUserHostAddress();
-    const url = serverPath + "/" + storagePath + hostAddress + "/" + encodeURIComponent(fileName);
+    const url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);
     if (!version) {
         return url;
     }
@@ -172,13 +168,13 @@ docManager.getCallback = function (fileName) {
 
 docManager.storagePath = function (fileName, userAddress) {
     fileName = fileUtility.getFileName(fileName);
-    const directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    const directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
     this.createDirectory(directory);
     return path.join(directory, fileName);
 };
 
 docManager.forcesavePath = function (fileName, userAddress, create) {
-    let directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    let directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
     if (!this.existsSync(directory)) {
         return "";
     }
@@ -195,7 +191,7 @@ docManager.forcesavePath = function (fileName, userAddress, create) {
 };
 
 docManager.historyPath = function (fileName, userAddress, create) {
-    let directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress(userAddress));
+    let directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
     if (!this.existsSync(directory)) {
         return "";
     }
@@ -232,7 +228,7 @@ docManager.changesUser = function (fileName, userAddress, version) {
 };
 
 docManager.getStoredFiles = function () {
-    const directory = path.join(docManager.dir, "public", storageFolder, docManager.curUserHostAddress());
+    const directory = path.join(docManager.dir, docManager.curUserHostAddress());
     this.createDirectory(directory);
     const result = [];
     const storedFiles = fileSystem.readdirSync(directory);
