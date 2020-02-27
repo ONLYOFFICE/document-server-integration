@@ -48,6 +48,8 @@ if (typeof jQuery != "undefined") {
                 checkConvert();
             }
         });
+
+        initSelectors();
     });
     
     var timer = null;
@@ -65,11 +67,6 @@ if (typeof jQuery != "undefined") {
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         if (ConvertExtList.indexOf(posExt) == -1) {
-            loadScripts();
-            return;
-        }
-
-        if (jq("#checkOriginalFormat").is(":checked")) {
             loadScripts();
             return;
         }
@@ -140,6 +137,34 @@ if (typeof jQuery != "undefined") {
         }
     };
 
+    var initSelectors = function () {
+        var userSel = jq("#user");
+        var langSel = jq("#language");
+
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : null;
+        }
+        function setCookie(name, value) {
+            document.cookie = name + "=" + value + "; expires=" + new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(); //week
+        }
+
+        var userId = getCookie("uid");
+        if (userId) userSel.val(userId);
+        var langId = getCookie("ulang");
+        if (langId) langSel.val(langId);
+
+        userSel.on("change", function () {
+            setCookie("uid", userSel.val());
+            setCookie("uname", userSel.find("option:selected").text())
+        });
+        langSel.on("change", function () {
+            setCookie("ulang", langSel.val());
+        });
+    };
+
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
         var url = UrlEditor + "?fileName=" + fileId;
@@ -150,7 +175,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId;
+        var url = UrlEditor + "?editorsMode=view&fileName=" + fileId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -158,7 +183,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=embedded&fileName=" + fileId;
+        var url = UrlEditor + "?editorsMode=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -170,6 +195,31 @@ if (typeof jQuery != "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
+    });
+
+    jq(document).on("click", ".try-editor", function (e) {
+        var url = "sample?fileExt=" + e.target.attributes["data-type"].value;
+        if (jq("#createSample").is(":checked")) {
+            url += "&sample=true";
+        }
+        var w = window.open(url, "_blank");
+        w.onload = function () {
+            window.location.reload();
+        }
+    });
+
+    jq(document).on("click", ".delete-file", function () {
+        var requestAddress = "remove?filename="
+            + encodeURIComponent(jq(this).attr("data-filename"));
+
+        jq.ajax({
+            async: true,
+            contentType: "text/xml",
+            url: requestAddress,
+            complete: function (data) {
+                document.location.reload();
+            }
+        });
     });
 
     jq.dropdownToggle({

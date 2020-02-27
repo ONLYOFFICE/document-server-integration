@@ -91,21 +91,34 @@
                     </td>
                     <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
                 </tr>
-                <!--<tr>
+                <tr>
                     <td valign="middle" width="30%">
                         <select class="select-user" id="language">
-                            <option value="en" selected>English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="es">Espanol</option>
-                            <option value="fr">Francais</option>
-                            <option value="it">Italiano</option>
+                            <option value="en">English</option>
+                            <option value="bg">Bulgarian</option>
+                            <option value="zh">Chinese</option>
+                            <option value="cs">Czech</option>
+                            <option value="nl">Dutch</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="hu">Hungarian</option>
+                            <option value="it">Italian</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="lv">Latvian</option>
+                            <option value="pl">Polish</option>
                             <option value="pt">Portuguese</option>
-                            <option value="ru">Русский</option>
+                            <option value="ru">Russian</option>
+                            <option value="sk">Slovak</option>
                             <option value="sl">Slovenian</option>
+                            <option value="es">Spanish</option>
+                            <option value="tr">Turkish</option>
+                            <option value="uk">Ukrainian</option>
+                            <option value="vi">Vietnamese</option>
                         </select>
                     </td>
-                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE&trade; editors interface.</td>
-                </tr>-->
+                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE editors interface.</td>
+                </tr>
             </table>
             <br />
         <br />
@@ -164,7 +177,7 @@
                             <thead>
                                 <tr class="tableHeader">
                                     <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="3" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
                                     <td colspan="3" class="tableHeaderCell">Viewers</td>
                                 </tr>
                             </thead>
@@ -184,22 +197,47 @@
                                     echo '   <img class="icon-delete" src="css/images/delete-24.png" alt="Delete" title="Delete" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
+
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=desktop" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=mobile" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=mobile" target="_blank">';
                                     echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
                                     echo '  </a>';
-                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    echo ' <td class="contentCells contentCells-icon">';
                                     if ($storeFile->documentType == "text") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
                                     echo '  </a>';
+                                    } else if ($storeFile->documentType == "spreadsheet") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=filter&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
+                                    echo '  </a>';
                                     }
                                     echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=comment&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
+                                    echo '  </a>';
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-icon">';
+                                    if ($storeFile->documentType == "text") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                    echo '  </a>';
+                                    }
+                                    echo ' </td>';
+                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
+                                    if ($storeFile->documentType == "text") {
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=blockcontent&type=desktop" target="_blank">';
+                                    echo '   <img src="css/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
+                                    echo '  </a>';
+                                    }
+                                    echo ' </td>';
+
                                     echo ' <td class="contentCells contentCells-icon">';
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>';
@@ -211,7 +249,7 @@
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&type=embedded" target="_blank">';
+                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=embedded&type=embedded" target="_blank">';
                                     echo '   <img src="css/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" /></a>';
                                     echo '  </a>';
                                     echo ' </td>';

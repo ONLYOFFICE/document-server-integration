@@ -25,8 +25,11 @@
 *-->
 
 <%@page import="helpers.DocumentManager"%>
+<%@page import="helpers.FileUtility"%>
 <%@page import="helpers.ConfigManager"%>
 <%@page import="java.util.Calendar"%>
+<%@page import="java.io.File"%>
+<%@page import="java.net.URLEncoder"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
@@ -47,41 +50,179 @@
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
-            <div class="file-upload button gray">
-                <span>Choose file</span>
-                <form class="fileupload" action="server/php/" method="POST" enctype="multipart/form-data">
+            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td width="30%" valign="middle">
+                            <span class="select-user">Username:</span>
+                            <select class="select-user" id="user">
+                                <option value="uid-1">Jonn Smith</option>
+                                <option value="uid-2">Mark Pottato</option>
+                                <option value="uid-3">Hamish Mitchell</option>
+                            </select>
+                        </td>
+                        <td width="70%" valign="middle">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
+                    </tr>
+                    <tr>
+                        <td width="30%" valign="middle">
+                            <select class="select-user" id="language">
+                                <option value="en">English</option>
+                                <option value="bg">Bulgarian</option>
+                                <option value="zh">Chinese</option>
+                                <option value="cs">Czech</option>
+                                <option value="nl">Dutch</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="hu">Hungarian</option>
+                                <option value="it">Italian</option>
+                                <option value="ja">Japanese</option>
+                                <option value="ko">Korean</option>
+                                <option value="lv">Latvian</option>
+                                <option value="pl">Polish</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="ru">Russian</option>
+                                <option value="sk">Slovak</option>
+                                <option value="sl">Slovenian</option>
+                                <option value="es">Spanish</option>
+                                <option value="tr">Turkish</option>
+                                <option value="uk">Ukrainian</option>
+                                <option value="vi">Vietnamese</option>
+                            </select>
+                        </td>
+                        <td width="70%" valign="middle">Choose the language for ONLYOFFICE™ editors interface.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <br />
 
-                </form>
-                <input type="file" id="fileupload" name="file" data-url="IndexServlet?type=upload" />
+            <div class="help-block">
+                <span class="try-descr">Upload your file or create new file</span>
+                <br />
+                <br />
+                <div class="clearFix">
+                    <div class="upload-panel clearFix">
+                        <a class="file-upload">
+                            Upload
+                            <br />
+                            File
+                            <input type="file" id="fileupload" name="file" data-url="IndexServlet?type=upload" />
+                        </a>
+                    </div>
+                    <div class="create-panel">
+                        <ul class="try-editor-list clearFix">
+                            <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
+                            <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
+                            <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+                        </ul>
+                        <label class="create-sample">
+                            <input id="createSample" class="checkbox" type="checkbox" />
+                            Create a file filled with sample content
+                        </label>
+                    </div>
+                </div>
             </div>
-            <label class="save-original">
-                <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-            </label>
-            <span class="question"></span>
-            <br />
-            <br />
-            <br />
-            <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
 
-            <ul class="try-editor-list">
-                <li>
-                    <a href="EditorServlet?fileExt=docx" class="try-editor document" target="_blank">
-                        Create<br />Sample Document
-                    </a>
-                </li>
-                <li>
-                    <a href="EditorServlet?fileExt=xlsx" class="try-editor spreadsheet" target="_blank">
-                        Create<br />Sample Spreadsheet
-                    </a>
-                </li>
-                <li>
-                    <a href="EditorServlet?fileExt=pptx" class="try-editor presentation" target="_blank">
-                        Create<br />Sample Presentation
-                    </a>
-                </li>
-            </ul>
+            <% DocumentManager.Init(request, response); %>
+            <% File[] files = DocumentManager.GetStoredFiles(null); %>
+            <% if (files.length > 0) { %>
+
+                <div class="help-block">
+                    <span>Your documents</span>
+                    <br />
+                    <br />
+
+                    <div class="stored-list">
+                        <table width="100%" cellspacing="0" cellpadding="0">
+                            <thead>
+                                <tr class="tableHeader">
+                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                    <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
+                                    <td colspan="3" class="tableHeaderCell">Viewers</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (Integer i = 0; i < files.length; i++) { %>
+                                    <% String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase(); %>
+                                    <tr class="tableRow" title="<%= files[i].getName() %>">
+                                        <td class="contentCells">
+                                            <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
+                                                <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
+                                            </a>
+                                            <a href="<%= DocumentManager.GetFileUri(files[i].getName()) %>">
+                                                <img class="icon-download" src="css/img/download-24.png" alt="Download" title="Download" />
+                                            </a>
+                                            <a class="delete-file" data-filename="<%= files[i].getName() %>">
+                                                <img class="icon-delete" src="css/img/delete-24.png" alt="Delete" title="Delete" />
+                                            </a>
+                                        </td>
+
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
+                                                <img src="css/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
+                                                <img src="css/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                    <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                </a>
+                                            <% } else if (docType.equals("spreadsheet")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                    <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                </a>
+                                            <% } %>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
+                                                <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                    <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                </a>
+                                            <% } %>
+                                        </td>
+                                        <td class="contentCells contentCells-shift contentCells-icon">
+                                            <% if (docType.equals("text")) { %>
+                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                    <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                </a>
+                                            <% } %>
+                                        </td>
+
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
+                                                <img src="css/img/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=view" target="_blank">
+                                                <img src="css/img/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                            </a>
+                                        </td>
+                                        <td class="contentCells contentCells-icon">
+                                            <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=embedded&mode=embedded" target="_blank">
+                                                <img src="css/img/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <% } %>
 
             <br />
             <br />

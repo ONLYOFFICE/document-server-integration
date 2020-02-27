@@ -24,14 +24,15 @@
  *
 */
 
+using ASC.Api.DocumentConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
-using ASC.Api.DocumentConverter;
 
 namespace OnlineEditorsExample
 {
@@ -51,6 +52,9 @@ namespace OnlineEditorsExample
                     break;
                 case "track":
                     Track(context);
+                    break;
+                case "remove":
+                    Remove(context);
                     break;
             }
         }
@@ -112,6 +116,24 @@ namespace OnlineEditorsExample
             var jss = new JavaScriptSerializer();
             if (string.IsNullOrEmpty(body)) return;
             var fileData = jss.Deserialize<Dictionary<string, object>>(body);
+
+            if (JwtManager.Enabled)
+            {
+                if (fileData.ContainsKey("token"))
+                {
+                    fileData = jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(fileData["token"].ToString()));
+                }
+                else if (context.Request.Headers.AllKeys.Contains("Authorization", StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get("Authorization").Substring("Bearer ".Length);
+                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(headerToken))["payload"];
+                }
+                else
+                {
+                    throw new Exception("Expected JWT");
+                }
+            }
+
             var status = (TrackerStatus) (int) fileData["status"];
 
             switch (status)
@@ -138,8 +160,6 @@ namespace OnlineEditorsExample
                         }
                     }
 
-                    var req = (HttpWebRequest) WebRequest.Create(downloadUri);
-
                     // hack. http://ubuntuforums.org/showthread.php?t=1841740
                     if (_Default.IsMono)
                     {
@@ -149,22 +169,29 @@ namespace OnlineEditorsExample
                     var saved = 1;
                     try
                     {
-                        using (var stream = req.GetResponse().GetResponseStream())
-                        {
-                            if (stream == null) throw new Exception("stream is null");
-                            const int bufferSize = 4096;
+                        var storagePath = _Default.StoragePath(fileName, userAddress);
+                        var histDir = _Default.HistoryDir(storagePath);
+                        var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir) + 1);
 
-                            var storagePath = _Default.StoragePath(fileName, userAddress);
-                            using (var fs = File.Open(storagePath, FileMode.Create))
-                            {
-                                var buffer = new byte[bufferSize];
-                                int readed;
-                                while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                                {
-                                    fs.Write(buffer, 0, readed);
-                                }
-                            }
+                        if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
+
+                        File.Copy(storagePath, Path.Combine(versionDir, "prev" + curExt));
+
+                        DownloadToFile(downloadUri, _Default.StoragePath(fileName, userAddress));
+                        DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));
+
+                        var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
+                        if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+                        {
+                            hist = jss.Serialize(fileData["history"]);
                         }
+
+                        if (!string.IsNullOrEmpty(hist))
+                        {
+                            File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);
+                        }
+
+                        File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);
                     }
                     catch (Exception)
                     {
@@ -174,6 +201,49 @@ namespace OnlineEditorsExample
                     break;
             }
             context.Response.Write("{\"error\":0}");
+        }
+
+        private static void Remove(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            try
+            {
+                var fileName = context.Request["fileName"];
+                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress));
+                var histDir = _Default.HistoryDir(path);
+
+                if (File.Exists(path)) File.Delete(path);
+                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+
+                context.Response.Write("{ \"success\": true }");
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void DownloadToFile(string url, string path)
+        {
+            if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");
+
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            using (var stream = req.GetResponse().GetResponseStream())
+            {
+                if (stream == null) throw new Exception("stream is null");
+                const int bufferSize = 4096;
+
+                using (var fs = File.Open(path, FileMode.Create))
+                {
+                    var buffer = new byte[bufferSize];
+                    int readed;
+                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                    {
+                        fs.Write(buffer, 0, readed);
+                    }
+                }
+            }
         }
 
         public bool IsReusable

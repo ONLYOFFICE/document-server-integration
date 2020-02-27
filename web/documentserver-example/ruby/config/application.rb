@@ -28,9 +28,6 @@ module OnlineEditorsExampleRuby
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
-
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
@@ -42,6 +39,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.urlConverter="https://documentserver/ConvertService.ashx"
     Rails.configuration.urlApi="https://documentserver/web-apps/apps/api/documents/api.js"
     Rails.configuration.urlPreloader="https://documentserver/web-apps/apps/api/documents/cache-scripts.html"
+
+    Rails.configuration.jwtSecret = ""
 
   end
 end

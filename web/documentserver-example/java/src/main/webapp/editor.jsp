@@ -70,18 +70,38 @@
             location.reload(true);
         };
 
-        var сonnectEditor = function () {
-            var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
-            config.width = "100%";
-            config.height = "100%";
-            config.events = {
-                    "onAppReady": onAppReady,
-                    "onDocumentStateChange": onDocumentStateChange,
-                    'onRequestEditRights': onRequestEditRights,
-                    "onError": onError,
-                    "onOutdatedVersion": onOutdatedVersion,
-                };
+        var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        config.width = "100%";
+        config.height = "100%";
+        config.events = {
+            "onAppReady": onAppReady,
+            "onDocumentStateChange": onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
+            "onError": onError,
+            "onOutdatedVersion": onOutdatedVersion,
+        };
 
+        <%
+            String[] histArray = Model.GetHistory();
+            String history = histArray[0];
+            String historyData = histArray[1];
+        %>
+
+        <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
+            config.events['onRequestHistory'] = function () {
+                docEditor.refreshHistory(<%= history %>);
+            };
+            config.events['onRequestHistoryData'] = function (event) {
+                var ver = event.data;
+                var histData = <%= historyData %>;
+                docEditor.setHistoryData(histData[ver]);
+            };
+            config.events['onRequestHistoryClose'] = function () {
+                document.location.reload();
+            };
+        <% } %>
+
+        var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 

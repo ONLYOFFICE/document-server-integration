@@ -24,12 +24,14 @@
  *
 */
 
-
 package controllers;
 
 import helpers.ConfigManager;
+import helpers.CookieManager;
 import helpers.DocumentManager;
 import java.io.IOException;
+import java.net.URLEncoder;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,12 +49,19 @@ public class EditorServlet extends HttpServlet
 
         String fileName = request.getParameter("fileName");
         String fileExt = request.getParameter("fileExt");
+        String sample = request.getParameter("sample");
+
+        Boolean sampleData = (sample == null || sample.isEmpty()) ? false : sample.toLowerCase().equals("true");
+
+        CookieManager cm = new CookieManager(request);
 
         if (fileExt != null)
         {
             try
             {
-                fileName = DocumentManager.CreateDemo(fileExt);
+                fileName = DocumentManager.CreateDemo(fileExt, sampleData, cm.getCookie("uid"), cm.getCookie("uname"));
+                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
+                return;
             }
             catch (Exception ex)
             {
@@ -60,11 +69,8 @@ public class EditorServlet extends HttpServlet
             }
         }
 
-        FileModel file = new FileModel(fileName);
-        if ("embedded".equals(request.getParameter("mode")))
-            file.InitDesktop();
-        if ("view".equals(request.getParameter("mode")))
-            file.editorConfig.mode = "view";
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"));
+        file.changeType(request.getParameter("mode"), request.getParameter("type"));
 
         if (DocumentManager.TokenEnabled())
         {

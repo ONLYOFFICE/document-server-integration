@@ -209,6 +209,33 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . $fileName;
 }
 
+function getHistoryDir($storagePath) {
+    $directory = $storagePath . "-hist";
+    if (!file_exists($directory) && !is_dir($directory)) {
+        mkdir($directory);
+    }
+    return $directory;
+}
+
+function getVersionDir($histDir, $version) {
+    return $histDir . DIRECTORY_SEPARATOR . $version;
+}
+
+function getFileVersion($histDir) {
+    if (!file_exists($histDir) || !is_dir($histDir)) return 0;
+
+    $cdir = scandir($histDir);
+    $ver = 0;
+    foreach($cdir as $key => $fileName) {
+        if (!in_array($fileName,array(".", ".."))) {
+            if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
+                $ver++;
+            }
+        }
+    }
+    return $ver;
+}
+
 function getStoredFiles() {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
@@ -254,6 +281,33 @@ function getVirtualPath($forDocumentServer) {
     $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
     sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
     return $virtPath;
+}
+
+function createMeta($fileName, $uid = "0") {
+    $histDir = getHistoryDir(getStoragePath($fileName));
+
+    if (empty($uid)) $uid = "0";
+
+    $name = "";
+    switch ($uid) {
+        case 0:
+            $name = "Jonn Smith";
+            break;
+        case 1:
+            $name = "Mark Pottato";
+            break;
+        case 2:
+            $name = "Hamish Mitchell";
+            break;
+    }
+
+    $json = [
+        "created" => date("Y-m-d H:i:s"),
+        "uid" => $uid,
+        "name" => $name,
+    ];
+
+    file_put_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json", json_encode($json, JSON_PRETTY_PRINT));
 }
 
 function FileUri($file_name, $forDocumentServer = NULL) {

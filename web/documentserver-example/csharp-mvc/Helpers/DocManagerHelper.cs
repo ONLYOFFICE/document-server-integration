@@ -28,11 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Configuration;
+using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Models;
 
 namespace OnlineEditorsExampleMVC.Helpers
@@ -84,6 +83,32 @@ namespace OnlineEditorsExampleMVC.Helpers
             return directory + fileName;
         }
 
+        public static string HistoryDir(string storagePath)
+        {
+            return storagePath += "-hist";
+        }
+
+        public static string VersionDir(string histPath, int version)
+        {
+            return Path.Combine(histPath, version.ToString());
+        }
+
+        public static string VersionDir(string fileName, string userAddress, int version)
+        {
+            return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+        }
+
+        public static int GetFileVersion(string historyPath)
+        {
+            if (!Directory.Exists(historyPath)) return 0;
+            return Directory.EnumerateDirectories(historyPath).Count();
+        }
+
+        public static int GetFileVersion(string fileName, string userAddress)
+        {
+            return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
+        }
+
         public static string GetCorrectName(string fileName)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
@@ -97,15 +122,37 @@ namespace OnlineEditorsExampleMVC.Helpers
             return name;
         }
 
-        public static string CreateDemo(string fileExt)
+        public static List<string> GetStoredFiles()
         {
-            var demoName = "sample." + fileExt;
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            if (!Directory.Exists(directory)) return new List<string>();
+
+            var directoryInfo = new DirectoryInfo(directory);
+
+            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Select(fileInfo => fileInfo.Name).ToList();
+            return storedFiles;
+        }
+
+        public static string CreateDemo(string fileExt, bool withContent)
+        {
+            var demoName = (withContent ? "sample." : "new.") + fileExt;
 
             var fileName = GetCorrectName(demoName);
 
             File.Copy(HttpRuntime.AppDomainAppPath + "app_data\\" + demoName, StoragePath(fileName));
 
             return fileName;
+        }
+
+        public static void CreateMeta(string fileName, string uid, string uname)
+        {
+            var histDir = HistoryDir(StoragePath(fileName, null));
+            Directory.CreateDirectory(histDir);
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                { "created", DateTime.Now.ToString() },
+                { "id", string.IsNullOrEmpty(uid) ? "uid-1" : uid },
+                { "name", string.IsNullOrEmpty(uname) ? "John Smith" : uname }
+            }));
         }
 
         public static string GetFileUri(string fileName)
@@ -117,6 +164,18 @@ namespace OnlineEditorsExampleMVC.Helpers
                            + fileName,
                     Query = ""
                 };
+
+            return uri.ToString();
+        }
+
+        public static string GetPathUri(string path)
+        {
+            var uri = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath + "/"
+                           + path,
+                Query = ""
+            };
 
             return uri.ToString();
         }

@@ -27,13 +27,17 @@
 package helpers;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +47,7 @@ import entities.FileType;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACSigner;
 import org.primeframework.jwt.hmac.HMACVerifier;
+import org.json.simple.JSONObject;
 import org.primeframework.jwt.Signer;
 import org.primeframework.jwt.Verifier;
 
@@ -117,29 +122,63 @@ public class DocumentManager
         return userAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
     }
 
-    public static String StoragePath(String fileName, String userAddress)
+    public static String FilesRootPath(String userAddress)
     {
+        String hostAddress = CurUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.GetProperty("storage-folder");
-        String hostAddress = CurUserHostAddress(userAddress);
-        String directory = serverPath + File.separator + storagePath + File.separator;
+        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
 
         File file = new File(directory);
 
         if (!file.exists())
         {
-            file.mkdir();
+            file.mkdirs();
         }
 
-        directory = directory + hostAddress + File.separator;
-        file = new File(directory);
+        return directory;
+    }
 
-        if (!file.exists())
-        {
-            file.mkdir();
-        }
-
+    public static String StoragePath(String fileName, String userAddress)
+    {
+        String directory = FilesRootPath(userAddress);
         return directory + fileName;
+    }
+
+    public static String HistoryDir(String storagePath)
+    {
+        return storagePath += "-hist";
+    }
+
+    public static String VersionDir(String histPath, Integer version)
+    {
+        return histPath + File.separator + Integer.toString(version);
+    }
+
+    public static String VersionDir(String fileName, String userAddress, Integer version)
+    {
+        return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+    }
+
+    public static Integer GetFileVersion(String historyPath)
+    {
+        File dir = new File(historyPath);
+
+        if (!dir.exists()) return 0;
+
+        File[] dirs = dir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+
+        return dirs.length;
+    }
+
+    public static int GetFileVersion(String fileName, String userAddress)
+    {
+        return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
     }
 
     public static String GetCorrectName(String fileName)
@@ -159,9 +198,40 @@ public class DocumentManager
         return name;
     }
 
-    public static String CreateDemo(String fileExt) throws Exception
+    public static void CreateMeta(String fileName, String uid, String uname) throws Exception
     {
-        String demoName = "sample." + fileExt;
+        String histDir = HistoryDir(StoragePath(fileName, null));
+
+        File dir = new File(histDir);
+        dir.mkdir();
+
+        JSONObject json = new JSONObject();
+        json.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        json.put("id", (uid == null || uid.isEmpty()) ? "uid-1" : uid);
+        json.put("name", (uname == null || uname.isEmpty()) ? "John Smith" : uname);
+
+        File meta = new File(histDir + File.separator + "createdInfo.json");
+        try (FileWriter writer = new FileWriter(meta)) {
+            json.writeJSONString(writer);
+        }
+    }
+
+    public static File[] GetStoredFiles(String userAddress)
+    {
+        String directory = FilesRootPath(userAddress);
+
+        File file = new File(directory);
+        return file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isFile();
+            }
+        });
+    }
+
+    public static String CreateDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception
+    {
+        String demoName = (sample ? "sample." : "new.") + fileExt;
         String fileName = GetCorrectName(demoName);
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoName);
@@ -178,6 +248,8 @@ public class DocumentManager
             }
             out.flush();
         }
+
+        CreateMeta(fileName, uid, uname);
 
         return fileName;
     }
@@ -199,6 +271,18 @@ public class DocumentManager
             return "";
         }
     }
+
+    public static String GetPathUri(String path)
+    {
+        String serverPath = GetServerUrl();
+        String storagePath = ConfigManager.GetProperty("storage-folder");
+        String hostAddress = CurUserHostAddress(null);
+
+        String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + path.replace(File.separator, "/").substring(FilesRootPath(null).length()).replace(" ", "%20");
+
+        return filePath;
+    }
+
 
     public static String GetServerUrl()
     {

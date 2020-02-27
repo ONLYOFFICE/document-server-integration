@@ -16,7 +16,7 @@
   "dependencies": {
     "body-parser": "^1.16.1",
     "config": "^1.21.0",
-    "debug": "~2.2.0",
+    "debug": "~2.6.9",
     "ejs": "~2.5.1",
     "express": "^4.14.1",
     "formidable": "^1.1.1",
