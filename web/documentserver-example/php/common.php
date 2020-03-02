@@ -291,7 +291,7 @@ function createMeta($fileName, $uid = "0") {
     $name = "";
     switch ($uid) {
         case 0:
-            $name = "Jonn Smith";
+            $name = "John Smith";
             break;
         case 1:
             $name = "Mark Pottato";

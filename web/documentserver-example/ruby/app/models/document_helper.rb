@@ -130,7 +130,7 @@ class DocumentHelper
       json = {
         :created => Time.now.to_s,
         :uid => uid ? uid : "uid-0",
-        :uname => uname ? uname : "Jonn Smith"
+        :uname => uname ? uname : "John Smith"
       }
 
       File.open(File.join(hist_dir, "createdInfo.json"), 'wb') do |file|

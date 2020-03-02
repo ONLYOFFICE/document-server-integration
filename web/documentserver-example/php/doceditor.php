@@ -63,7 +63,7 @@
     $uname = "";
     switch ($uid) {
         case 0:
-            $uname = "Jonn Smith";
+            $uname = "John Smith";
             break;
         case 1:
             $uname = "Mark Pottato";

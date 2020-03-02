@@ -84,7 +84,7 @@
                     <td valign="middle" width="30%">
                         <span class="select-user">Username:</span>
                         <select class="select-user" id="user">
-                            <option value="0">Jonn Smith</option>
+                            <option value="0">John Smith</option>
                             <option value="1">Mark Pottato</option>
                             <option value="2">Hamish Mitchell</option>
                         </select>
