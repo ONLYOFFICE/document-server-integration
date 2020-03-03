@@ -16,6 +16,8 @@
     <DirPHP>$(RootDir)web\documentserver-example\php\</DirPHP>
     <NameRuby>$(To)Ruby Example</NameRuby>
     <DirRuby>$(RootDir)web\documentserver-example\ruby\</DirRuby>
+    <NamePython>$(To)Python Example</NamePython>
+    <DirPython>$(RootDir)web\documentserver-example\python\</DirPython>
   </PropertyGroup>
 
   <Target Name="Build">
@@ -56,6 +58,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesRuby)" DestinationFiles="@(ZipFilesRuby->'$(NameRuby)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameRuby)" WorkingDirectory="$(To)" ZipFileName="$(NameRuby).zip" />
+
+    <ItemGroup>
+      <ZipFilesPython Include="$(DirPython)**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ZipFilesPython)" DestinationFiles="@(ZipFilesPython->'$(NamePython)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NamePython)" WorkingDirectory="$(To)" ZipFileName="$(NamePython).zip" />
   </Target>
 
 </Project>
