@@ -217,6 +217,7 @@ if (typeof jQuery !== "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", ".try-editor", function (e) {
