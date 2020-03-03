@@ -95,7 +95,7 @@ namespace OnlineEditorsExampleMVC
 
                 var savedFileName = DocManagerHelper.StoragePath(fileName);
                 httpPostedFile.SaveAs(savedFileName);
-                DocManagerHelper.CreateMeta(fileName, context.Request.Cookies["uid"]?.Value, context.Request.Cookies["uname"]?.Value);
+                DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
 
                 context.Response.Write("{ \"filename\": \"" + fileName + "\"}");
             }
@@ -151,7 +151,7 @@ namespace OnlineEditorsExampleMVC
 
                     Remove(fileName);
                     fileName = correctName;
-                    DocManagerHelper.CreateMeta(fileName, context.Request.Cookies["uid"]?.Value, context.Request.Cookies["uname"]?.Value);
+                    DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
                 }
 
                 context.Response.Write("{ \"filename\" : \"" + fileName + "\"}");
