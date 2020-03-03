@@ -97,8 +97,10 @@ def getStoredFiles(req):
     directory = getRootFolder(req)
 
     files = os.listdir(directory)
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
 
     fileInfos = []
+
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
             fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
