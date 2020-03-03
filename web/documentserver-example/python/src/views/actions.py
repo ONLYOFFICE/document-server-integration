@@ -95,7 +95,7 @@ def edit(request):
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'
 
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'
-    lang = request.GET.get('ulang') if request.GET.get('ulang') else 'en'
+    lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
 
     storagePath = docManager.getStoragePath(filename, request)
     meta = historyManager.getMeta(storagePath)
