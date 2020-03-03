@@ -82,6 +82,7 @@ def convert(request):
                 path = docManager.getStoragePath(correctName, request)
                 docManager.saveFileFromUri(newUri, path, request, True)
                 docManager.removeFile(filename, request)
+                response.setdefault('filename', correctName)
         else:
             response.setdefault('filename', filename)
 
