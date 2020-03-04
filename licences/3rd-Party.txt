@@ -25,3 +25,18 @@ License:        MIT
 5. Prime JWT - Prime JWT is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson.
 
 License:        Apache-2.0
+
+
+6. requests - Requests is an elegant and simple HTTP library for Python
+
+License:        Apache License, version 2.0
+
+
+7. pyjwt - JSON Web Token implementation in Python
+
+License:        MIT
+
+
+8. django - Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design
+
+License:        BSD
