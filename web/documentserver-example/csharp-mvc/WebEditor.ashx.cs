@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using OnlineEditorsExampleMVC.Helpers;
@@ -52,6 +54,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "track":
                     Track(context);
+                    break;
+                case "remove":
+                    Remove(context);
                     break;
             }
         }
@@ -90,6 +95,7 @@ namespace OnlineEditorsExampleMVC
 
                 var savedFileName = DocManagerHelper.StoragePath(fileName);
                 httpPostedFile.SaveAs(savedFileName);
+                DocManagerHelper.CreateMeta(fileName, context.Request.Cookies["uid"]?.Value, context.Request.Cookies["uname"]?.Value);
 
                 context.Response.Write("{ \"filename\": \"" + fileName + "\"}");
             }
@@ -143,8 +149,9 @@ namespace OnlineEditorsExampleMVC
                         }
                     }
 
-                    File.Delete(DocManagerHelper.StoragePath(fileName));
+                    Remove(fileName);
                     fileName = correctName;
+                    DocManagerHelper.CreateMeta(fileName, context.Request.Cookies["uid"]?.Value, context.Request.Cookies["uname"]?.Value);
                 }
 
                 context.Response.Write("{ \"filename\" : \"" + fileName + "\"}");
@@ -169,8 +176,6 @@ namespace OnlineEditorsExampleMVC
             var userAddress = context.Request["userAddress"];
             var fileName = context.Request["fileName"];
 
-            var storagePath = DocManagerHelper.StoragePath(fileName, userAddress);
-
             string body;
             try
             {
@@ -188,6 +193,24 @@ namespace OnlineEditorsExampleMVC
             var jss = new JavaScriptSerializer();
             if (string.IsNullOrEmpty(body)) return;
             var fileData = jss.Deserialize<Dictionary<string, object>>(body);
+
+            if (JwtManager.Enabled)
+            {
+                if (fileData.ContainsKey("token"))
+                {
+                    fileData = jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(fileData["token"].ToString()));
+                }
+                else if (context.Request.Headers.AllKeys.Contains("Authorization", StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get("Authorization").Substring("Bearer ".Length);
+                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(headerToken))["payload"];
+                }
+                else
+                {
+                    throw new Exception("Expected JWT");
+                }
+            }
+
             var status = (TrackerStatus) (int) fileData["status"];
 
             switch (status)
@@ -196,26 +219,32 @@ namespace OnlineEditorsExampleMVC
                 case TrackerStatus.Corrupted:
                     var downloadUri = (string) fileData["url"];
 
-                    var req = (HttpWebRequest) WebRequest.Create(downloadUri);
-
                     var saved = 1;
                     try
                     {
-                        using (var stream = req.GetResponse().GetResponseStream())
-                        {
-                            if (stream == null) throw new Exception("stream is null");
-                            const int bufferSize = 4096;
+                        var storagePath = DocManagerHelper.StoragePath(fileName, userAddress);
+                        var histDir = DocManagerHelper.HistoryDir(storagePath);
+                        var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir) + 1);
 
-                            using (var fs = File.Open(storagePath, FileMode.Create))
-                            {
-                                var buffer = new byte[bufferSize];
-                                int readed;
-                                while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                                {
-                                    fs.Write(buffer, 0, readed);
-                                }
-                            }
+                        if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
+
+                        File.Copy(storagePath, Path.Combine(versionDir, "prev" + Path.GetExtension(fileName)));
+
+                        DownloadToFile(downloadUri, DocManagerHelper.StoragePath(fileName, userAddress));
+                        DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));
+
+                        var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
+                        if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+                        {
+                            hist = jss.Serialize(fileData["history"]);
                         }
+
+                        if (!string.IsNullOrEmpty(hist))
+                        {
+                            File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);
+                        }
+
+                        File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);
                     }
                     catch (Exception)
                     {
@@ -225,6 +254,54 @@ namespace OnlineEditorsExampleMVC
                     break;
             }
             context.Response.Write("{\"error\":0}");
+        }
+
+        private static void Remove(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            try
+            {
+                var fileName = context.Request["fileName"];
+                Remove(fileName);
+
+                context.Response.Write("{ \"success\": true }");
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Remove(string fileName)
+        {
+            var path = DocManagerHelper.StoragePath(fileName, null);
+            var histDir = DocManagerHelper.HistoryDir(path);
+
+            if (File.Exists(path)) File.Delete(path);
+            if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+        }
+
+        private static void DownloadToFile(string url, string path)
+        {
+            if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");
+
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            using (var stream = req.GetResponse().GetResponseStream())
+            {
+                if (stream == null) throw new Exception("stream is null");
+                const int bufferSize = 4096;
+
+                using (var fs = File.Open(path, FileMode.Create))
+                {
+                    var buffer = new byte[bufferSize];
+                    int readed;
+                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                    {
+                        fs.Write(buffer, 0, readed);
+                    }
+                }
+            }
         }
 
         public bool IsReusable

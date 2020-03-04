@@ -2,7 +2,6 @@ class ServiceConverter
 
   @@convert_timeout = Rails.configuration.timeout
   @@document_converter_url = Rails.configuration.urlConverter
-  @@convert_params = '?url=%s&outputtype=%s&filetype=%s&title=%s&key=%s'
 
   class << self
 
@@ -16,27 +15,37 @@ class ServiceConverter
       document_revision_id = document_revision_id.empty? ? document_uri : document_revision_id
       document_revision_id = generate_revision_id(document_revision_id)
 
-      url_to_converter = @@document_converter_url +
-          (@@convert_params % [URI::encode(document_uri), to_ext.delete('.'), from_ext.delete('.'), title, document_revision_id])
-
-      if is_async
-        url_to_converter += '&async=true'
-      end
+      payload = {
+        :async => is_async ? true : false,
+        :url => document_uri,
+        :outputtype => to_ext.delete('.'),
+        :filetype => from_ext.delete('.'),
+        :title => title,
+        :key => document_revision_id
+      }
 
       data = nil
       begin
 
-        uri = URI.parse(url_to_converter)
+        uri = URI.parse(@@document_converter_url)
         http = Net::HTTP.new(uri.host, uri.port)
 
-        if url_to_converter.start_with?('https')
+        if @@document_converter_url.start_with?('https')
           http.use_ssl = true
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
 
         http.read_timeout = @@convert_timeout
-        req = Net::HTTP::Get.new(uri.request_uri)
+        req = Net::HTTP::Post.new(uri.request_uri)
         req.add_field("Accept", "application/json")
+        req.add_field("Content-Type", "application/json")
+
+        if JwtHelper.is_enabled
+          payload["token"] = JwtHelper.encode(payload)
+          req.add_field("Authorization", "Bearer #{JwtHelper.encode({ :payload => payload })}")
+        end
+
+        req.body = payload.to_json
         res = http.request(req)
         data = res.body
       rescue TimeoutError

@@ -80,6 +80,8 @@ if (typeof jQuery != "undefined") {
                 checkConvert();
             }
         });
+
+        initSelectors();
     });
 
     var timer = null;
@@ -135,7 +137,7 @@ if (typeof jQuery != "undefined") {
 
                     jq("#hiddenFileName").val(response.filename);
 
-                    if (response.step && response.step < 100) {
+                    if (response.step < 100) {
                         checkConvert(response.fileUri);
                     } else {
                         loadScripts();
@@ -177,6 +179,27 @@ if (typeof jQuery != "undefined") {
         if (EditedExtList.indexOf(posExt) != -1) {
             jq("#beginEdit").removeClass("disable");
         }
+    };
+
+    var initSelectors = function () {
+        var langSel = jq("#language");
+
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : null;
+        }
+        function setCookie(name, value) {
+            document.cookie = name + "=" + value + "; expires=" + new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(); //week
+        }
+
+        var langId = getCookie("ulang");
+        if (langId) langSel.val(langId);
+
+        langSel.on("change", function () {
+            setCookie("ulang", langSel.val());
+        });
     };
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {

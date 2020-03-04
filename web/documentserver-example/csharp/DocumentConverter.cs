@@ -24,14 +24,16 @@
  *
 */
 
+using OnlineEditorsExample;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Configuration;
 using System.Web.Helpers;
-using OnlineEditorsExample;
+using System.Web.Script.Serialization;
 
 namespace ASC.Api.DocumentConverter
 {
@@ -108,15 +110,30 @@ namespace ASC.Api.DocumentConverter
             request.Accept = "application/json";
             request.Timeout = ConvertTimeout;
 
-            var bodyString = string.Format("{{\"async\": {0},\"filetype\": \"{1}\",\"key\": \"{2}\",\"outputtype\": \"{3}\",\"title\": \"{4}\",\"url\": \"{5}\"}}",
-                                           isAsync.ToString().ToLower(),
-                                           fromExtension.Trim('.'),
-                                           documentRevisionId,
-                                           toExtension.Trim('.'),
-                                           title,
-                                           documentUri);
+            var body = new Dictionary<string, object>() {
+                { "async", isAsync },
+                { "filetype", fromExtension.Trim('.') },
+                { "key", documentRevisionId },
+                { "outputtype", toExtension.Trim('.') },
+                { "title", title },
+                { "url", documentUri }
+            };
 
-            var bytes = Encoding.UTF8.GetBytes(bodyString);
+            if (JwtManager.Enabled)
+            {
+                var payload = new Dictionary<string, object>
+                    {
+                        { "payload", body }
+                    };
+
+                var payloadToken =  JwtManager.Encode(payload);
+                var bodyToken = JwtManager.Encode(body);
+                request.Headers.Add("Authorization", "Bearer " + payloadToken);
+
+                body.Add("token", bodyToken);
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
             request.ContentLength = bytes.Length;
             using (var requestStream = request.GetRequestStream())
             {

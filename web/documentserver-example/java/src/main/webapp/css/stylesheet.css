@@ -112,13 +112,14 @@ label .checkbox {
 
 .try-editor-list {
     list-style: none;
-    margin: 0;
+    margin: 0 0 16px;
     padding: 0;
 }
 .try-editor-list li {
     float: left;
-    margin: 25px;
-    width: 150px;
+    margin: 0 15px;
+    width: 100px;
+    cursor: pointer;
 }
 .try-editor {
     background-color: transparent;
@@ -140,6 +141,11 @@ label .checkbox {
 }
 .try-editor.presentation {
     background-image: url("img/file_pptx.png");
+}
+
+.create-sample {
+    display: inline-block;
+    margin-left: 75px;
 }
 
 .button, .button:visited, .button:hover, .button:active {
@@ -184,26 +190,45 @@ label .checkbox {
     border: 1px solid #E9EAEA;
 }
 
+.upload-panel {
+    border-right: 1px solid #D1D1D1;
+    float: left;
+    margin-right: 25px;
+}
+
 .file-upload {
+    background: url("img/file_upload.png") no-repeat center 0 transparent;
     cursor: pointer;
-    margin-bottom: 8px;
-    padding: 0 !important;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    height: 45px;
+    margin: 0 40px 16px;
     overflow: hidden;
+    padding-top: 100px;
     position: relative;
+    text-align: center;
+    width: 100px;
 }
-.file-upload span {
-    line-height: 21px;
-    margin: 2px 12px;
+
+    .file-upload input {
+        cursor: pointer;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translate(555px, 60px) scale(8);
+    }
+
+.create-panel {
+    float: left;
 }
-.file-upload input {
-    cursor: pointer;
-    font-size: 23px;
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translate(-300px, 0) scale(4);
+
+.upload-panel,
+.create-panel {
+    padding: 10px 0;
 }
+
 
 #mainProgress {
     color: #979b9f;
@@ -280,8 +305,53 @@ label .checkbox {
     line-height: 26px;
 }
 
+.stored-edit {
+    background-color: transparent;
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    line-height: 16px;
+    max-width: 450px;
+    margin-bottom: -6px;
+    overflow: hidden;
+    padding: 4px 0 1px 34px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+    .stored-edit.text {
+        background-image: url("img/icon_docx.png");
+    }
+
+    .stored-edit.spreadsheet {
+        background-image: url("img/icon_xlsx.png");
+    }
+
+    .stored-edit.presentation {
+        background-image: url("img/icon_pptx.png");
+    }
+
+    .stored-edit span {
+        font-size: 12px;
+        line-height: 12px;
+    }
+
+    .stored-edit:hover span {
+        text-decoration: underline;
+    }
+
+.stored-download {
+    color: #787878;
+    float: right;
+    text-decoration: none;
+}
 
 
+    .stored-download:hover {
+        color: #787878;
+        text-decoration: underline;
+    }
 
 .blockTitle {
     background-color: #E2E2E2 !important;
@@ -311,4 +381,120 @@ label .checkbox {
     -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     -webkit-box-shadow:0 2px 4px rgba(0, 0, 0, 0.5);
     padding: 0 !important;
+}
+.clearFix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+/*Icon table*/
+.select-user {
+    margin-left: 15px;
+}
+
+.user-block-table {
+    height: 100%;
+    width: 100%;
+}
+
+    .user-block-table td {
+        background-color: #F4F4F4;
+        border-bottom: 1px solid white;
+        padding: 12px 0;
+    }
+
+#tableRow {
+    vertical-align: top;
+}
+
+.tableRow {
+    background: transparent;
+    -moz-transition: all 0.2s ease-in-out;
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+    .tableRow:hover {
+        background-color: #ebebeb;
+    }
+
+.tableHeader {
+    background: transparent;
+    color: #333;
+    cursor: default;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    height: 40px;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+.tableHeaderCell {
+    padding: 2px 1px 2px 5px;
+    text-align: center;
+}
+
+.tableHeaderCellFileName {
+    text-align: left;
+}
+
+.contentCells {
+    padding: 4px 1px 4px 5px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    -khtml-user-select: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+    .contentCells a {
+        text-decoration: none;
+    }
+
+.contentCells-shift {
+    padding-right: 30px;
+}
+
+.contentCells-icon {
+    width: 6%;
+}
+
+.contentCellsSmall {
+    padding: 5px 1px 5px 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    border-bottom: 1px solid #e5e5e5;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.primaryRow {
+    background-color: #e9e9e9;
+}
+
+.secondaryRow {
+    background-color: #F9F9F9;
+}
+
+#user, #language {
+    width: 130px;
+}
+
+.icon-download {
+    margin-bottom: -5px;
+}
+
+.icon-delete {
+    cursor: pointer;
+    margin-bottom: -6px;
 }

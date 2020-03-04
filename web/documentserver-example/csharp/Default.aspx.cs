@@ -31,8 +31,8 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Configuration;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using ASC.Api.DocumentConverter;
 
@@ -102,12 +102,10 @@ namespace OnlineEditorsExample
         }
 
         private static bool? _ismono;
+
         public static bool IsMono
         {
-            get
-            {
-                return _ismono.HasValue ? _ismono.Value : (_ismono = (bool?)(Type.GetType("Mono.Runtime") != null)).Value;
-            }
+            get { return _ismono.HasValue ? _ismono.Value : (_ismono = (bool?)(Type.GetType("Mono.Runtime") != null)).Value; }
         }
 
         private static long MaxFileSize
@@ -140,11 +138,6 @@ namespace OnlineEditorsExample
             get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
-        public static bool EditMode
-        {
-            get { return (WebConfigurationManager.AppSettings["mode"] ?? "") != "view"; }
-        }
-
         private static string _fileName;
 
         public static string CurUserHostAddress(string userAddress)
@@ -160,6 +153,32 @@ namespace OnlineEditorsExample
                 Directory.CreateDirectory(directory);
             }
             return directory + fileName;
+        }
+
+        public static string HistoryDir(string storagePath)
+        {
+            return storagePath += "-hist";
+        }
+
+        public static string VersionDir(string histPath, int version)
+        {
+            return Path.Combine(histPath, version.ToString());
+        }
+
+        public static string VersionDir(string fileName, string userAddress, int version)
+        {
+            return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+        }
+
+        public static int GetFileVersion(string historyPath)
+        {
+            if (!Directory.Exists(historyPath)) return 0;
+            return Directory.EnumerateDirectories(historyPath).Count();
+        }
+
+        public static int GetFileVersion(string fileName, string userAddress)
+        {
+            return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
         }
 
         public static string FileUri(string fileName)
@@ -218,10 +237,18 @@ namespace OnlineEditorsExample
             var savedFileName = StoragePath(_fileName, null);
             httpPostedFile.SaveAs(savedFileName);
 
+            var histDir = HistoryDir(savedFileName);
+            Directory.CreateDirectory(histDir);
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                { "created", DateTime.Now.ToString() },
+                { "id", context.Request.Cookies["uid"]?.Value ?? "uid-1" },
+                { "name", context.Request.Cookies["uname"]?.Value ?? "John Smith" }
+            }));
+
             return _fileName;
         }
 
-        public static string DoUpload(string fileUri)
+        public static string DoUpload(string fileUri, HttpRequest request)
         {
             _fileName = GetCorrectName(Path.GetFileName(fileUri));
 
@@ -256,6 +283,14 @@ namespace OnlineEditorsExample
                         }
                     }
                 }
+
+                var histDir = HistoryDir(StoragePath(_fileName, null));
+                Directory.CreateDirectory(histDir);
+                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                    { "created", DateTime.Now.ToString() },
+                    { "id", request.Cookies["uid"]?.Value ?? "uid-1" },
+                    { "name", request.Cookies["uname"]?.Value ?? "John Smith" }
+                }));
             }
             catch (Exception)
             {
@@ -309,8 +344,19 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                File.Delete(StoragePath(_fileName, null));
+                var storagePath = StoragePath(_fileName, null);
+                var histDir = HistoryDir(storagePath);
+                File.Delete(storagePath);
+                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+
                 _fileName = fileName;
+                histDir = HistoryDir(StoragePath(_fileName, null));
+                Directory.CreateDirectory(histDir);
+                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                    { "created", DateTime.Now.ToString() },
+                    { "id", context.Request.Cookies["uid"]?.Value ?? "uid-1" },
+                    { "name", context.Request.Cookies["uname"]?.Value ?? "John Smith" }
+                }));
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";

@@ -43,5 +43,7 @@ module OnlineEditorsExampleRuby
     Rails.configuration.urlApi="https://documentserver/web-apps/apps/api/documents/api.js"
     Rails.configuration.urlPreloader="https://documentserver/web-apps/apps/api/documents/cache-scripts.html"
 
+    Rails.configuration.jwtSecret = ""
+
   end
 end

@@ -29,6 +29,7 @@
 <?php
 
 require_once( dirname(__FILE__) . '/config.php' );
+require_once( dirname(__FILE__) . '/jwtmanager.php' );
 
 
 function DoUpload($fileUri) {
@@ -145,22 +146,29 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'];
 
-    $data = json_encode(
-        array(
-            "async" => $is_async,
-            "url" => $document_uri,
-            "outputtype" => trim($to_extension,'.'),
-            "filetype" => trim($from_extension, '.'),
-            "title" => $title,
-            "key" => $document_revision_id
-        )
-    );
+    $arr = [
+        "async" => $is_async,
+        "url" => $document_uri,
+        "outputtype" => trim($to_extension,'.'),
+        "filetype" => trim($from_extension, '.'),
+        "title" => $title,
+        "key" => $document_revision_id
+    ];
+
+    $headerToken = "";
+    if (isJwtEnabled()) {
+        $headerToken = jwtEncode([ "payload" => $arr ]);
+        $arr["token"] = jwtEncode($arr);
+    }
+
+    $data = json_encode($arr);
 
     $opts = array('http' => array(
                 'method'  => 'POST',
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
                 'header'=> "Content-type: application/json\r\n" . 
-                            "Accept: application/json\r\n",
+                            "Accept: application/json\r\n" .
+                            (empty($headerToken) ? "" : "Authorization: $headerToken\r\n"),
                 'content' => $data
             )
         );
@@ -195,16 +203,17 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri) {
     $converted_document_uri = "";
     $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async);
+    $json = json_decode($responceFromConvertService, true);
 
-    $errorElement = $responceFromConvertService->Error;
+    $errorElement = $json["error"];
     if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($errorElement);
 
-    $isEndConvert = $responceFromConvertService->EndConvert;
-    $percent = $responceFromConvertService->Percent . "";
+    $isEndConvert = $json["endConvert"];
+    $percent = $json["percent"];
 
-    if ($isEndConvert != NULL && strtolower($isEndConvert) == "true")
+    if ($isEndConvert != NULL && $isEndConvert == true)
     {
-        $converted_document_uri = $responceFromConvertService->FileUrl;
+        $converted_document_uri = $json["fileUrl"];
         $percent = 100;
     }
     else if ($percent >= 100)

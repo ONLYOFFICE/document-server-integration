@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "bin": "bin/www",
   "description": "OnlineEditorsExampleNodeJS",
   "author": {
     "name": "ONLYOFFICE",
@@ -16,7 +17,7 @@
   "dependencies": {
     "body-parser": "^1.16.1",
     "config": "^1.21.0",
-    "debug": "~2.2.0",
+    "debug": "~2.6.9",
     "ejs": "~2.5.1",
     "express": "^4.14.1",
     "formidable": "^1.1.1",
@@ -32,5 +33,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ONLYOFFICE/document-server-integration.git"
+  },
+  "pkg": {
+    "assets": [
+      "public/**/*",
+      "views/*"
+    ]
   }
 }

@@ -61,6 +61,37 @@ class DocumentHelper
       directory.join(file_name).to_s
     end
 
+    def history_dir(storage_path)
+      directory = "#{storage_path}-hist"
+
+      unless File.directory?(directory)
+        FileUtils.mkdir_p(directory)
+      end
+
+      return directory
+    end
+
+    def version_dir(hist_dir, ver)
+      return File.join(hist_dir, ver.to_s)
+    end
+
+    def get_file_version(hist_dir)
+      if !Dir.exist?(hist_dir)
+        return 0
+      end
+
+      ver = 0
+      Dir.foreach(hist_dir) {|e|
+        next if e.eql?(".")
+        next if e.eql?("..")
+        if File.directory?(File.join(hist_dir, e))
+          ver += 1
+        end
+      }
+
+      return ver
+    end
+
     def get_correct_name(file_name)
       ext = File.extname(file_name)
       base_name = File.basename(file_name, ext)
@@ -75,19 +106,59 @@ class DocumentHelper
       name
     end
 
-    def create_demo(file_ext)
-      demo_name = 'sample.' + file_ext
+    def get_stored_files(user_address)
+      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+
+      arr = [];
+
+      if Dir.exist?(directory)
+        Dir.foreach(directory) {|e|
+          next if e.eql?(".")
+          next if e.eql?("..")
+          next if File.directory?(File.join(directory, e))
+
+          arr.push(e)
+        }
+      end
+
+      return arr
+    end
+
+    def create_meta(file_name, uid, uname)
+      hist_dir = history_dir(storage_path(file_name, nil))
+
+      json = {
+        :created => Time.now.to_s,
+        :uid => uid ? uid : "uid-0",
+        :uname => uname ? uname : "Jonn Smith"
+      }
+
+      File.open(File.join(hist_dir, "createdInfo.json"), 'wb') do |file|
+        file.write(json.to_json)
+      end
+    end
+
+    def create_demo(file_ext, sample, uid, uname)
+      demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name demo_name
       src = Rails.root.join('public', 'samples', demo_name)
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
 
+      create_meta(file_name, uid, uname)
+
       file_name
     end
 
     def get_file_uri(file_name)
       uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
+
+      return uri
+    end
+
+    def get_path_uri(path)
+      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
 
       return uri
     end

@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:mode], :user_ip => request.remote_ip)
+    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname])
 
   end
 
@@ -16,7 +16,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    file_name = DocumentHelper.create_demo(params[:fileExt])
+    file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], cookies[:uid], cookies[:uname])
     redirect_to :controller => 'home', :action => 'editor', :fileName => file_name
 
   end
@@ -45,6 +45,8 @@ class HomeController < ApplicationController
       File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
         file.write(http_posted_file.read)
       end
+
+      DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
 
       render :text =>  '{ "filename": "' + file_name + '"}'
     rescue => ex
@@ -93,6 +95,8 @@ class HomeController < ApplicationController
         end
 
         file_name = correct_name
+
+        DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
       end
 
       render :text => '{ "filename" : "' + file_name + '"}'
@@ -115,6 +119,30 @@ class HomeController < ApplicationController
     end
 
     file_data = JSON.parse(body)
+
+    if JwtHelper.is_enabled
+      inHeader = false
+      token = nil
+      if file_data["token"]
+        token = JwtHelper.decode(file_data["token"])
+      elsif request.headers["Authorization"]
+        hdr = request.headers["Authorization"]
+        hdr.slice!(0, "Bearer ".length)
+        token = JwtHelper.decode(hdr)
+        inHeader = true
+      else
+        raise "Expected JWT"
+      end
+      if !token
+        raise "Invalid JWT signature"
+      end
+
+      file_data = JSON.parse(token)
+      if inHeader
+        file_data = file_data["payload"]
+      end
+    end
+
     status = file_data['status'].to_i
 
     if status == 2 || status == 3 #MustSave, Corrupted
@@ -123,28 +151,55 @@ class HomeController < ApplicationController
 
       begin
 
-        download_uri = file_data['url']
-        uri = URI.parse(download_uri)
-        http = Net::HTTP.new(uri.host, uri.port)
+        def save_from_uri(path, uristr)
+          uri = URI.parse(uristr)
+          http = Net::HTTP.new(uri.host, uri.port)
 
-        if download_uri.start_with?('https')
-          http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          if uristr.start_with?('https')
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          end
+
+          req = Net::HTTP::Get.new(uri)
+          res = http.request(req)
+          data = res.body
+
+          if data == nil
+            raise 'stream is null'
+          end
+
+          File.open(path, 'wb') do |file|
+            file.write(data)
+          end
         end
 
-        req = Net::HTTP::Get.new(uri.request_uri)
-        res = http.request(req)
-        data = res.body
+        hist_dir = DocumentHelper.history_dir(storage_path)
+        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir) + 1)
 
-        if data == nil
-          raise 'stream is null'
+        FileUtils.mkdir_p(ver_dir)
+
+        FileUtils.move(storage_path, File.join(ver_dir, "prev#{File.extname(file_name)}"))
+        save_from_uri(storage_path, file_data['url'])
+
+        if (file_data["changesurl"])
+          save_from_uri(File.join(ver_dir, "diff.zip"), file_data["changesurl"])
         end
 
-        File.open(storage_path, 'wb') do |file|
-          file.write(data)
+        hist_data = file_data["changeshistory"]
+        if (!hist_data)
+          hist_data = file_data["history"].to_json
+        end
+        if (hist_data)
+          File.open(File.join(ver_dir, "changes.json"), 'wb') do |file|
+            file.write(hist_data)
+          end
         end
 
-      rescue
+        File.open(File.join(ver_dir, "key.txt"), 'wb') do |file|
+          file.write(file_data["key"])
+        end
+
+      rescue StandardError => msg
         saved = 1
       end
 
@@ -155,5 +210,28 @@ class HomeController < ApplicationController
     render :text => '{"error":0}'
     return
 
+  end
+
+  def remove
+    file_name = params[:filename]
+    if !file_name
+      render :text => '{"success":false}'
+      return
+    end
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+    storage_path = DocumentHelper.storage_path(file_name, nil)
+    hist_dir = DocumentHelper.history_dir(storage_path)
+
+    if File.exist?(storage_path)
+      File.delete(storage_path)
+    end
+
+    if Dir.exist?(hist_dir)
+      FileUtils.remove_entry_secure(hist_dir)
+    end
+
+    render :text => '{"success":true}'
+    return
   end
 end

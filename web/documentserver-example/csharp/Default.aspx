@@ -46,25 +46,81 @@
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
             <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Choose file" button and selecting the necessary files on your PC.</span>
+            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
 
-            <div class="file-upload button gray">
-                <span>Choose file</span>
-                <input type="file" id="fileupload" name="files[]" data-url="webeditor.ashx?type=upload" />
+            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td width="30%" valign="middle">
+                            <span class="select-user">Username:</span>
+                            <select class="select-user" id="user">
+                                <option value="uid-1">Jonn Smith</option>
+                                <option value="uid-2">Mark Pottato</option>
+                                <option value="uid-3">Hamish Mitchell</option>
+                            </select>
+                        </td>
+                        <td width="70%" valign="middle">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
+                    </tr>
+                    <tr>
+                        <td width="30%" valign="middle">
+                            <select class="select-user" id="language">
+                                <option value="en">English</option>
+                                <option value="bg">Bulgarian</option>
+                                <option value="zh">Chinese</option>
+                                <option value="cs">Czech</option>
+                                <option value="nl">Dutch</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="hu">Hungarian</option>
+                                <option value="it">Italian</option>
+                                <option value="ja">Japanese</option>
+                                <option value="ko">Korean</option>
+                                <option value="lv">Latvian</option>
+                                <option value="pl">Polish</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="ru">Russian</option>
+                                <option value="sk">Slovak</option>
+                                <option value="sl">Slovenian</option>
+                                <option value="es">Spanish</option>
+                                <option value="tr">Turkish</option>
+                                <option value="uk">Ukrainian</option>
+                                <option value="vi">Vietnamese</option>
+                            </select>
+                        </td>
+                        <td width="70%" valign="middle">Choose the language for ONLYOFFICE™ editors interface.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <br />
+
+            <div class="help-block">
+                <span class="try-descr">Upload your file or create new file</span>
+                <br />
+                <br />
+                <div class="clearFix">
+                    <div class="upload-panel clearFix">
+                        <a class="file-upload">
+                            Upload
+                            <br />
+                            File
+                            <input type="file" id="fileupload" name="files[]" data-url="webeditor.ashx?type=upload" />
+                        </a>
+                    </div>
+                    <div class="create-panel">
+                        <ul class="try-editor-list clearFix">
+                            <li><a class="try-editor document" data-type="document">Create<br />Document</a></li>
+                            <li><a class="try-editor spreadsheet" data-type="spreadsheet">Create<br />Spreadsheet</a></li>
+                            <li><a class="try-editor presentation" data-type="presentation">Create<br />Presentation</a></li>
+                        </ul>
+                        <label class="create-sample">
+                            <input id="createSample" class="checkbox" type="checkbox" />
+                            Create a file filled with sample content
+                        </label>
+                    </div>
+                </div>
             </div>
-            <label class="save-original">
-                <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Save document in original format
-            </label>
-            <span class="question"></span>
-            <br />
-            <br />
-            <br />
-            <span class="try-descr">You are also enabled to view and edit documents pre-uploaded to the portal.</span>
-            <ul class="try-editor-list">
-                <li><a class="try-editor document" href="doceditor.aspx?type=document" target="_blank">Create<br />Sample Document</a></li>
-                <li><a class="try-editor spreadsheet" href="doceditor.aspx?type=spreadsheet" target="_blank">Create<br />Sample Spreadsheet</a></li>
-                <li><a class="try-editor presentation" href="doceditor.aspx?type=presentation" target="_blank">Create<br />Sample Presentation</a></li>
-            </ul>
+
 
             <% var storedFiles = GetStoredFiles();
                if (storedFiles.Any())
@@ -73,17 +129,96 @@
                 <span>Your documents</span>
                 <br />
                 <br />
-                <ul class="stored-list">
-                    <% foreach (var storedFile in storedFiles)
-                       { %>
-                    <li class="clearFix">
-                        <a class="stored-edit <%= DocumentType(storedFile) %>" href="doceditor.aspx?fileID=<%= HttpUtility.UrlEncode(storedFile) %>" target="_blank">
-                            <span title="<%= storedFile %>"><%= storedFile %></span>
-                        </a>
-                        <a class="stored-download" href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">Download</a>
-                    </li>
-                    <% } %>
-                </ul>
+                <div class="stored-list">
+                    <table width="100%" cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr class="tableHeader">
+                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
+                                <td colspan="3" class="tableHeaderCell">Viewers</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% foreach (var storedFile in storedFiles)
+                               { %>
+                                <%
+                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile);
+                                    var docType = DocumentType(storedFile);
+                                %>
+                                <tr class="tableRow" title="<%= storedFile %>">
+                                    <td class="contentCells">
+                                        <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
+                                            <span title="<%= storedFile %>"><%= storedFile %></span>
+                                        </a>
+                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">
+                                            <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
+                                        </a>
+                                        <a class="delete-file" data-filename="<%= storedFile %>">
+                                            <img class="icon-delete" src="app_themes/images/delete-24.png" alt="Delete" title="Delete" />
+                                        </a>
+                                    </td>
+
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
+                                            <img src="app_themes/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=edit" %>" target="_blank">
+                                            <img src="app_themes/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <% if (docType == "text") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                                <img src="app_themes/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                            </a>
+                                        <% } else if (docType == "spreadsheet") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                                <img src="app_themes/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                            <img src="app_themes/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <% if (docType == "text") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                <img src="app_themes/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                    <td class="contentCells contentCells-icon contentCells-shift">
+                                        <% if (docType == "text") { %>
+                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
+                                                <img src="app_themes/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                            </a>
+                                        <% } %>
+                                    </td>
+
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
+                                            <img src="app_themes/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=view" %>" target="_blank">
+                                            <img src="app_themes/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                        </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= editUrl + "&editorsType=embedded&editorsMode=embedded" %>" target="_blank">
+                                            <img src="app_themes/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <% } %>
 
@@ -156,10 +291,7 @@
             <br />
             <div id="beginEmbedded" class="button disable">Embedded view</div>
             <div id="beginView" class="button disable">View</div>
-            <% if (EditMode)
-               { %>
             <div id="beginEdit" class="button disable">Edit</div>
-            <% } %>
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
 

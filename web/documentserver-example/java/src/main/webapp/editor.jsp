@@ -31,6 +31,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <title>ONLYOFFICE</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
@@ -70,18 +73,38 @@
             location.reload(true);
         };
 
-        var сonnectEditor = function () {
-            var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
-            config.width = "100%";
-            config.height = "100%";
-            config.events = {
-                    "onAppReady": onAppReady,
-                    "onDocumentStateChange": onDocumentStateChange,
-                    'onRequestEditRights': onRequestEditRights,
-                    "onError": onError,
-                    "onOutdatedVersion": onOutdatedVersion,
-                };
+        var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        config.width = "100%";
+        config.height = "100%";
+        config.events = {
+            "onAppReady": onAppReady,
+            "onDocumentStateChange": onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
+            "onError": onError,
+            "onOutdatedVersion": onOutdatedVersion,
+        };
 
+        <%
+            String[] histArray = Model.GetHistory();
+            String history = histArray[0];
+            String historyData = histArray[1];
+        %>
+
+        <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
+            config.events['onRequestHistory'] = function () {
+                docEditor.refreshHistory(<%= history %>);
+            };
+            config.events['onRequestHistoryData'] = function (event) {
+                var ver = event.data;
+                var histData = <%= historyData %>;
+                docEditor.setHistoryData(histData[ver]);
+            };
+            config.events['onRequestHistoryClose'] = function () {
+                document.location.reload();
+            };
+        <% } %>
+
+        var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 

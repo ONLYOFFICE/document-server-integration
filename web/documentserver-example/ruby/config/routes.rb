@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   match '/index',    to: 'home#index',    via: 'get'
   match '/editor',    to: 'home#editor',    via: 'get'
   match '/sample',    to: 'home#sample',    via: 'get'
+  match '/remove',    to: 'home#remove',    via: 'get'
 
   match '/upload',    to: 'home#upload',    via: 'post'
   match '/convert',    to: 'home#convert',    via: 'get'

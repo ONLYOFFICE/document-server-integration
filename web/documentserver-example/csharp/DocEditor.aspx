@@ -8,6 +8,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
@@ -45,8 +48,6 @@
     <script type="text/javascript" language="javascript">
 
         var docEditor;
-        var fileName = "<%= FileName %>";
-        var fileType = "<%= Path.GetExtension(FileName).Trim('.') %>";
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -75,66 +76,36 @@
             location.reload(true);
         };
 
+        var config = <%= DocConfig %>;
+
+        config.width = "100%";
+        config.height = "100%";
+
+        config.events = {
+            'onAppReady': onAppReady,
+            'onDocumentStateChange': onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
+            'onError': onError,
+            'onOutdatedVersion': onOutdatedVersion,
+        };
+
+        <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
+        { %>
+        config.events['onRequestHistory'] = function () {
+            docEditor.refreshHistory(<%= History %>);
+        };
+        config.events['onRequestHistoryData'] = function (event) {
+            var ver = event.data;
+            var histData = <%= HistoryData %>;
+            docEditor.setHistoryData(histData[ver]);
+        };
+        config.events['onRequestHistoryClose '] = function () {
+            document.location.reload();
+        };
+        <% } %>
+
         var сonnectEditor = function () {
-
-            docEditor = new DocsAPI.DocEditor("iframeEditor",
-                {
-                    width: "100%",
-                    height: "100%",
-
-                    type: '<%= Request["action"] != "embedded" ? "desktop" : "embedded" %>',
-                    documentType: "<%=_Default.DocumentType(FileName) %>",
-                    document: {
-                        title: fileName,
-                        url: "<%= FileUri %>",
-                        fileType: fileType,
-                        key: "<%= Key %>",
-
-                        info: {
-                            author: "Me",
-                            created: "<%= DateTime.Now.ToShortDateString() %>",
-                        },
-
-                        permissions: {
-                            edit: "<%= _Default.EditedExts.Contains(Path.GetExtension(FileName)) %>" == "True",
-                            download: true,
-                        }
-                    },
-                    editorConfig: {
-                        mode: '<%= _Default.EditMode && _Default.EditedExts.Contains(Path.GetExtension(FileName)) && Request["action"] != "view" ? "edit" : "view" %>',
-
-                        lang: "en",
-
-                        callbackUrl: "<%= CallbackUrl %>",
-
-                        user: {
-                            id: "<%= _Default.CurUserHostAddress(null) %>",
-                            name: "John Smith",
-                        },
-
-                        embedded: {
-                            saveUrl: "<%= FileUri %>",
-                            embedUrl: "<%= FileUri %>",
-                            shareUrl: "<%= FileUri %>",
-                            toolbarDocked: "top",
-                        },
-
-                        customization: {
-                            about: true,
-                            feedback: true,
-                            goback: {
-                                url: "<%= _Default.Host %>default.aspx",
-                            },
-                        },
-                    },
-                    events: {
-                        'onAppReady': onAppReady,
-                        'onDocumentStateChange': onDocumentStateChange,
-                        'onRequestEditRights': onRequestEditRights,
-                        'onError': onError,
-                        'onOutdatedVersion': onOutdatedVersion,
-                    }
-                });
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
         if (window.addEventListener) {
