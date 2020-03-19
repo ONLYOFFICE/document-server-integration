@@ -522,6 +522,7 @@ app.get("/editor", function (req, res) {
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
         var name = req.query.name ? req.query.name : "John Smith";
+        var actionData = req.query.action ? req.query.action : "null";
 
         if (fileExt != null) {
             var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, name);
@@ -631,7 +632,8 @@ app.get("/editor", function (req, res) {
                 userid: userid,
                 name: name,
                 fileChoiceUrl: fileChoiceUrl,
-                plugins: JSON.stringify(plugins)
+                plugins: JSON.stringify(plugins),
+                actionData: actionData
             },
             history: history,
             historyData: historyData

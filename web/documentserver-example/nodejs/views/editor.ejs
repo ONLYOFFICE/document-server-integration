@@ -96,6 +96,13 @@
             location.reload(true);
         };
 
+        var onMakeActionLink = function (event) {
+            var actionData = event.data;
+            var linkParam = JSON.stringify(actionData);
+            var link = location.href + "&action=" + encodeURIComponent(linkParam);
+            docEditor.setActionLink(link);
+        };
+
         var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", {<% include config %>,
@@ -108,6 +115,7 @@
                         "onRequestHistoryData": onRequestHistoryData,
                         "onRequestHistoryClose": onRequestHistoryClose,
                         "onOutdatedVersion": onOutdatedVersion,
+                        "onMakeActionLink": onMakeActionLink,
                     }
             });
 
