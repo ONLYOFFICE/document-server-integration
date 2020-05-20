@@ -73,6 +73,13 @@
             location.reload(true);
         };
 
+        var onMakeActionLink = function (event) {
+            var actionData = event.data;
+            var linkParam = JSON.stringify(actionData);
+            var link = location.href + "&actionLink=" + encodeURIComponent(linkParam);
+            docEditor.setActionLink(link);
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -82,6 +89,7 @@
             'onRequestEditRights': onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
+            "onMakeActionLink": onMakeActionLink,
         };
 
         <%

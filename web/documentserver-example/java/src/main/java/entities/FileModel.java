@@ -38,6 +38,7 @@ import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -52,7 +53,7 @@ public class FileModel
     public EditorConfig editorConfig;
     public String token;
 
-    public FileModel(String fileName, String lang, String uid, String uname)
+    public FileModel(String fileName, String lang, String uid, String uname, String actionData)
     {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();
@@ -65,7 +66,7 @@ public class FileModel
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
 
-        editorConfig = new EditorConfig();
+        editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
         if (lang != null) editorConfig.lang = lang;
 
@@ -227,6 +228,7 @@ public class FileModel
 
     public class EditorConfig
     {
+        public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
         public String lang = "en";
@@ -234,8 +236,12 @@ public class FileModel
         public Customization customization;
         public Embedded embedded;
 
-        public EditorConfig()
+        public EditorConfig(String actionData)
         {
+            if (actionData != null) {
+                Gson gson = new Gson();
+                actionLink = gson.fromJson(actionData, new TypeToken<HashMap<String, Object>>() { }.getType());
+            }
             user = new User();
             customization = new Customization();
         }
