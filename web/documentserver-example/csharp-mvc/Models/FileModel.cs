@@ -64,11 +64,16 @@ namespace OnlineEditorsExampleMVC.Models
 
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
+            var jss = new JavaScriptSerializer();
+
             var ext = Path.GetExtension(FileName);
             var editorsMode = Mode ?? "edit";
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
+
+            var actionLink = request.GetOrDefault("actionLink", null);
+            var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
             var config = new Dictionary<string, object>
                 {
@@ -105,6 +110,7 @@ namespace OnlineEditorsExampleMVC.Models
                     {
                         "editorConfig", new Dictionary<string, object>
                             {
+                                { "actionLink", actionData },
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },
@@ -147,7 +153,7 @@ namespace OnlineEditorsExampleMVC.Models
                 config.Add("token", token);
             }
 
-            return new JavaScriptSerializer().Serialize(config);
+            return jss.Serialize(config);
         }
 
         public void GetHistory(out string history, out string historyData)
