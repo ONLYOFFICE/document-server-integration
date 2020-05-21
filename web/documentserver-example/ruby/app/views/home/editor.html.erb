@@ -38,6 +38,13 @@
         location.reload(true);
     };
 
+    var onMakeActionLink = function (event) {
+        var actionData = event.data;
+        var linkParam = JSON.stringify(actionData);
+        var link = location.href + "&actionLink=" + encodeURIComponent(linkParam);
+        docEditor.setActionLink(link);
+    };
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -48,7 +55,8 @@
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
             'onError': onError,
-            'onOutdatedVersion': onOutdatedVersion
+            'onOutdatedVersion': onOutdatedVersion,
+            'onMakeActionLink': onMakeActionLink,
         };
 
         <%
