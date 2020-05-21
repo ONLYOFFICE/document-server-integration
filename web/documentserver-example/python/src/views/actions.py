@@ -128,6 +128,9 @@ def edit(request):
     meta = historyManager.getMeta(storagePath)
     infObj = None
 
+    actionData = request.GET.get('actionLink')
+    actionLink = json.loads(actionData) if actionData else None
+
     if (meta):
         infObj = {
             'author': meta['uname'],
@@ -159,6 +162,7 @@ def edit(request):
             }
         },
         'editorConfig': {
+            'actionLink': actionLink,
             'mode': mode,
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),

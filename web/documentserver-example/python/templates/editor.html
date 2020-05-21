@@ -77,6 +77,13 @@
             location.reload(true);
         };
 
+        var onMakeActionLink = function (event) {
+            var actionData = event.data;
+            var linkParam = JSON.stringify(actionData);
+            var link = location.href + "&actionLink=" + encodeURIComponent(linkParam);
+            docEditor.setActionLink(link);
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -88,6 +95,7 @@
                 'onRequestEditRights': onRequestEditRights,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
+                'onMakeActionLink': onMakeActionLink,
             };
 
             {% if history and historyData %}
