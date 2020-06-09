@@ -92,6 +92,7 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Utils.cs" />
     <Compile Include="WebEditor.ashx.cs">
       <DependentUpon>WebEditor.ashx</DependentUpon>
     </Compile>

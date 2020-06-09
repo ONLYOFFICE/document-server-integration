@@ -1,7 +1,7 @@
 ﻿"use strict";
 /*
  *
- * (c) Copyright Ascensio System SIA 2019
+ * (c) Copyright Ascensio System SIA 2020
  *
  * The MIT License (MIT)
  *
@@ -202,7 +202,7 @@ app.post("/upload", function (req, res) {
                 res.write("{ \"filename\": \"" + file.name + "\"}");
 
                 const userid = req.query.userid ? req.query.userid : "uid-1";
-                const name = req.query.name ? req.query.name : "Jonn Smith";
+                const name = req.query.name ? req.query.name : "John Smith";
 
                 docManager.saveFileData(file.name, userid, name);
             }
@@ -521,7 +521,7 @@ app.get("/editor", function (req, res) {
         var historyData = [];
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
-        var name = req.query.name ? req.query.name : "Jonn Smith";
+        var name = req.query.name ? req.query.name : "John Smith";
 
         if (fileExt != null) {
             var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, name);

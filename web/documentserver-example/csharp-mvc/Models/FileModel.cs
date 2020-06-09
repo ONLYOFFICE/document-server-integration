@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System SIA 2019
+ * (c) Copyright Ascensio System SIA 2020
  *
  * The MIT License (MIT)
  *
@@ -106,13 +106,13 @@ namespace OnlineEditorsExampleMVC.Models
                         "editorConfig", new Dictionary<string, object>
                             {
                                 { "mode", mode },
-                                { "lang", request.Cookies["ulang"]?.Value ?? "en" },
+                                { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", request.Cookies["uid"]?.Value ?? "uid-1" },
-                                            { "name", request.Cookies["uname"]?.Value ?? "John Smith" }
+                                            { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
+                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
                                         }
                                 },
                                 {

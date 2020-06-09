@@ -1,6 +1,6 @@
 ﻿/*
  *
- * (c) Copyright Ascensio System SIA 2019
+ * (c) Copyright Ascensio System SIA 2020
  *
  * The MIT License (MIT)
  *
@@ -241,8 +241,8 @@ namespace OnlineEditorsExample
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString() },
-                { "id", context.Request.Cookies["uid"]?.Value ?? "uid-1" },
-                { "name", context.Request.Cookies["uname"]?.Value ?? "John Smith" }
+                { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
+                { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
             }));
 
             return _fileName;
@@ -288,8 +288,8 @@ namespace OnlineEditorsExample
                 Directory.CreateDirectory(histDir);
                 File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                     { "created", DateTime.Now.ToString() },
-                    { "id", request.Cookies["uid"]?.Value ?? "uid-1" },
-                    { "name", request.Cookies["uname"]?.Value ?? "John Smith" }
+                    { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
+                    { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
                 }));
             }
             catch (Exception)
@@ -354,8 +354,8 @@ namespace OnlineEditorsExample
                 Directory.CreateDirectory(histDir);
                 File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                     { "created", DateTime.Now.ToString() },
-                    { "id", context.Request.Cookies["uid"]?.Value ?? "uid-1" },
-                    { "name", context.Request.Cookies["uname"]?.Value ?? "John Smith" }
+                    { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
+                    { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
                 }));
             }
 

@@ -1,6 +1,6 @@
 ﻿<!--*
  *
- * (c) Copyright Ascensio System SIA 2019
+ * (c) Copyright Ascensio System SIA 2020
  *
  * The MIT License (MIT)
  *
@@ -59,7 +59,7 @@
                     <td width="30%" valign="middle">
                         <span class="select-user">Username:</span>
                         <select class="select-user" id="user">
-                            <option value="uid-1">Jonn Smith</option>
+                            <option value="uid-1">John Smith</option>
                             <option value="uid-2">Mark Pottato</option>
                             <option value="uid-3">Hamish Mitchell</option>
                         </select>

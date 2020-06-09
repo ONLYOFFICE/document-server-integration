@@ -1,0 +1,277 @@
+<!--*
+ *
+ * (c) Copyright Ascensio System SIA 2020
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+*-->
+
+{% load static %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    <title>ONLYOFFICE Document Editors</title>
+    <link href="{% static "images/favicon.ico" %}" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/stylesheet.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/jquery-ui.css" %}" />
+</head>
+<body>
+    <header>
+        <a href="">
+            <img src="{% static "images/logo.png" %}" alt="ONLYOFFICE" />
+        </a>
+    </header>
+    <div class="main-panel">
+        <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+        <br />
+        <br />
+        <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
+        <table class="user-block-table" cellspacing="0" cellpadding="0">
+            <tr>
+                <td valign="middle" width="30%">
+                    <span class="select-user">Username:</span>
+                    <select class="select-user" id="user">
+                        {% for user in users %}
+                            <option value="{{ user.uid }}">{{ user.uname }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
+            </tr>
+            <tr>
+                <td valign="middle" width="30%">
+                    <select class="select-user" id="language">
+                        {% for key, val in languages.items %}
+                            <option value="{{ key }}">{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td valign="middle" width="70%">Choose the language for ONLYOFFICE editors interface.</td>
+            </tr>
+        </table>
+        <br />
+        <br />
+
+        <div class="help-block">
+            <span>Upload your file or create new file</span>
+            <br />
+            <br />
+            <div class="clearFix">
+                <div class="upload-panel clearFix">
+                    <a class="file-upload">Upload
+                        <br />
+                        File
+                        <input type="file" id="fileupload" name="uploadedFile" data-url="upload" />
+                    </a>
+                </div>
+                <div class="create-panel clearFix">
+                    <ul class="try-editor-list clearFix">
+                        <li>
+                            <a class="try-editor document reload-page" target="_blank" data-type="text">Create
+                                <br />
+                                Document</a>
+                        </li>
+                        <li>
+                            <a class="try-editor spreadsheet reload-page" target="_blank" data-type="spreadsheet">Create
+                                <br />
+                                Spreadsheet</a>
+                        </li>
+                        <li>
+                            <a class="try-editor presentation reload-page" target="_blank" data-type="presentation">Create
+                                <br />
+                                Presentation</a>
+                        </li>
+                    </ul>
+                    <label class="create-sample">
+                        <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+
+        {% if files %}
+            <div class="help-block">
+                <span>Your documents</span>
+                <br />
+                <br />
+
+                <div class="stored-list">
+                    <table width="100%" cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr class="tableHeader">
+                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
+                                <td colspan="3" class="tableHeaderCell">Viewers</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for file in files %}
+                            <tr class="tableRow" title="{{ file.title }}">
+                                <td class="contentCells">
+                                    <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
+                                        <span title="{{ file.title }}">{{ file.title }}</span>
+                                    </a>
+                                    <a href="{{ file.url }}">
+                                        <img class="icon-download" src="{% static "images/download-24.png" %}" alt="Download" title="Download" />
+                                    </a>
+                                    <a class="delete-file" data-filename="{{ file.title }}">
+                                        <img class="icon-delete" src="{% static "images/delete-24.png" %}" alt="Delete" title="Delete" />
+                                    </a>
+                                </td>
+
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=edit" target="_blank">
+                                        <img src="{% static "images/desktop-24.png" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                    </a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=mobile&mode=edit" target="_blank">
+                                        <img src="{% static "images/mobile-24.png" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                    </a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    {% if file.type == 'text' %}
+                                        <a href="edit?filename={{ file.title }}&type=desktop&mode=review" target="_blank">
+                                            <img src="{% static "images/review-24.png" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                        </a>
+                                    {% elif file.type == 'spreadsheet' %}
+                                        <a href="edit?filename={{ file.title }}&type=desktop&mode=filter" target="_blank">
+                                            <img src="{% static "images/filter-24.png" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=comment" target="_blank">
+                                        <img src="{% static "images/comment-24.png" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                    </a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    {% if file.type == 'text' %}
+                                        <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                            <img src="{% static "images/fill-forms-24.png" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="contentCells contentCells-shift contentCells-icon">
+                                    {% if file.type == 'text' %}
+                                        <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
+                                            <img src="{% static "images/block-content-24.png" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                        </a>
+                                    {% endif %}
+                                </td>
+
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=view" target="_blank">
+                                        <img src="{% static "images/desktop-24.png" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                    </a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=mobile&mode=view" target="_blank">
+                                        <img src="{% static "images/mobile-24.png" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                    </a>
+                                </td>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="edit?filename={{ file.title }}&type=embedded&mode=embedded" target="_blank">
+                                        <img src="{% static "images/embeded-24.png" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        <br />
+        <br />
+        <br />
+        <div class="help-block">
+            <span>Want to learn the magic?</span>
+            <br />
+            Explore ONLYOFFICE Document Editors <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="help-block">
+            <span>Any questions?</span>
+            <br />
+            Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
+        </div>
+    </div>
+
+    <div id="mainProgress">
+        <div id="uploadSteps">
+            <span id="step1" class="step">1. Loading the file</span>
+            <span class="step-descr">The file loading process will take some time depending on the file size, presence or absence of additional elements in it (macros, etc.) and the connection speed.</span>
+            <br />
+            <span id="step2" class="step">2. File conversion</span>
+            <span class="step-descr">The file is being converted into Office Open XML format for the document faster viewing and editing.</span>
+            <br />
+            <span id="step3" class="step">3. Loading editor scripts</span>
+            <span class="step-descr">The scripts for the editor are loaded only once and are will be cached on your computer in future. It might take some time depending on the connection speed.</span>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            <br />
+            <br />
+            <span class="progress-descr">Please note, that the speed of all operations greatly depends on the server and the client locations. In case they differ or are located in differernt countries/continents, there might be lack of speed and greater wait time. The best results are achieved when the server and client computers are located in one and the same place (city).</span>
+            <br />
+            <br />
+            <div class="error-message">
+                <span></span>
+                <br />
+                Please select another file and try again. If you have questions please <a href="mailto:sales@onlyoffice.com">contact us.</a>
+            </div>
+        </div>
+        <br />
+        <div id="beginEmbedded" class="button disable">Embedded view</div>
+        <div id="beginView" class="button disable">View</div>
+        <div id="beginEdit" class="button disable">Edit</div>
+        <div id="cancelEdit" class="button gray">Cancel</div>
+    </div>
+
+    <span id="loadScripts" data-docs="{{ preloadurl }}"></span>
+
+    <footer>&copy; Ascensio Systems SIA 2020. All rights reserved.</footer>
+
+    <script type="text/javascript" src="{% static "js/jquery-1.8.2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery-ui.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.blockUI.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.iframe-transport.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.fileupload.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jscript.js" %}"></script>
+
+    <script type="text/javascript">
+        var ConverExtList = {{ convExt | safe }};
+        var EditedExtList = {{ editExt | safe }};
+        var UrlConverter = "convert";
+        var UrlEditor = "edit";
+    </script>
+</body>
+</html>

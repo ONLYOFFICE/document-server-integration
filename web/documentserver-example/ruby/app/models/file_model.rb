@@ -75,7 +75,7 @@ class FileModel
         :callbackUrl => callback_url,
         :user => {
           :id => @user_id ? @user_id : "uid-0",
-          :name => @user_name ? @user_name : "Jonn Smith"
+          :name => @user_name ? @user_name : "John Smith"
         },
         :embedded => {
           :saveUrl => file_uri,

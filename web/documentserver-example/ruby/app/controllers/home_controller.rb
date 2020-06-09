@@ -48,9 +48,9 @@ class HomeController < ApplicationController
 
       DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
 
-      render :text =>  '{ "filename": "' + file_name + '"}'
+      render plain: '{ "filename": "' + file_name + '"}'
     rescue => ex
-      render :text =>  '{ "error": "' + ex.message + '"}'
+      render plain: '{ "error": "' + ex.message + '"}'
     end
 
   end
@@ -68,7 +68,7 @@ class HomeController < ApplicationController
         percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true)
 
         if percent != 100
-          render :text => '{ "step" : "' + percent.to_s + '", "filename" : "' + file_name + '"}'
+          render plain: '{ "step" : "' + percent.to_s + '", "filename" : "' + file_name + '"}'
           return
         end
 
@@ -99,9 +99,9 @@ class HomeController < ApplicationController
         DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
       end
 
-      render :text => '{ "filename" : "' + file_name + '"}'
+      render plain: '{ "filename" : "' + file_name + '"}'
     rescue => ex
-      render :text => '{ "error": "' + ex.message + '"}'
+      render plain: '{ "error": "' + ex.message + '"}'
     end
 
   end
@@ -203,11 +203,11 @@ class HomeController < ApplicationController
         saved = 1
       end
 
-      render :text => '{"error":' + saved.to_s + '}'
+      render plain: '{"error":' + saved.to_s + '}'
       return
     end
 
-    render :text => '{"error":0}'
+    render plain: '{"error":0}'
     return
 
   end
@@ -215,7 +215,7 @@ class HomeController < ApplicationController
   def remove
     file_name = params[:filename]
     if !file_name
-      render :text => '{"success":false}'
+      render plain: '{"success":false}'
       return
     end
 
@@ -231,7 +231,7 @@ class HomeController < ApplicationController
       FileUtils.remove_entry_secure(hist_dir)
     end
 
-    render :text => '{"success":true}'
+    render plain: '{"success":true}'
     return
   end
 end

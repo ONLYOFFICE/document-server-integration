@@ -137,6 +137,7 @@
     <Compile Include="Helpers\DocManagerHelper.cs" />
     <Compile Include="Helpers\DocumentConverter.cs" />
     <Compile Include="Helpers\JwtManager.cs" />
+    <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileModel.cs" />
     <Compile Include="Models\FileUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
