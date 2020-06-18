@@ -96,11 +96,26 @@
             location.reload(true);
         };
 
+        var replaceActionLink = function(href, linkParam) {
+            var link;
+            var actionIndex = href.indexOf("&action=");
+            if (actionIndex != -1) {
+                var endIndex = href.indexOf("&", actionIndex + "&action=".length);
+                if (endIndex != -1) {
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&action=" + encodeURIComponent(linkParam);
+                } else {
+                    link = href.substring(0, actionIndex) + "&action=" + encodeURIComponent(linkParam);
+                }
+            } else {
+                link = href + "&action=" + encodeURIComponent(linkParam);
+            }
+            return link;
+        }
+
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
-            var link = location.href + "&action=" + encodeURIComponent(linkParam);
-            docEditor.setActionLink(link);
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
         var connectEditor = function () {
