@@ -106,6 +106,11 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var jss = new JavaScriptSerializer();
+
+            var actionLink = Request.GetOrDefault("actionLink", null);
+            var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
+
             var config = new Dictionary<string, object>
                 {
                     { "type", Request.GetOrDefault("editorsType", "desktop") },
@@ -141,6 +146,7 @@ namespace OnlineEditorsExample
                     {
                         "editorConfig", new Dictionary<string, object>
                             {
+                                { "actionLink", actionData },
                                 { "mode", mode },
                                 { "lang", Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },
@@ -182,8 +188,6 @@ namespace OnlineEditorsExample
                 var token = JwtManager.Encode(config);
                 config.Add("token", token);
             }
-
-            var jss = new JavaScriptSerializer();
 
             DocConfig = jss.Serialize(config);
 

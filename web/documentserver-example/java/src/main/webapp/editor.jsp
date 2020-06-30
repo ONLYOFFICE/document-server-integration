@@ -73,6 +73,28 @@
             location.reload(true);
         };
 
+        var replaceActionLink = function(href, linkParam) {
+            var link;
+            var actionIndex = href.indexOf("&actionLink=");
+            if (actionIndex != -1) {
+                var endIndex = href.indexOf("&", actionIndex + "&actionLink=".length);
+                if (endIndex != -1) {
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                } else {
+                    link = href.substring(0, actionIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                }
+            } else {
+                link = href + "&actionLink=" + encodeURIComponent(linkParam);
+            }
+            return link;
+        }
+
+        var onMakeActionLink = function (event) {
+            var actionData = event.data;
+            var linkParam = JSON.stringify(actionData);
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -82,6 +104,7 @@
             'onRequestEditRights': onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
+            "onMakeActionLink": onMakeActionLink,
         };
 
         <%

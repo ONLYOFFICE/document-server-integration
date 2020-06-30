@@ -1,6 +1,6 @@
 class FileModel
 
-  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :uid, :uname
+  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :uid, :uname, :action_data
 
   def initialize(attributes = {})
     @file_name = attributes[:file_name]
@@ -10,6 +10,7 @@ class FileModel
     @lang = attributes[:lang]
     @user_id = attributes[:uid]
     @user_name = attributes[:uname]
+    @action_data = attributes[:action_data]
   end
 
   def type
@@ -70,6 +71,7 @@ class FileModel
         }
       },
       :editorConfig => {
+        :actionLink => @action_data ? JSON.parse(@action_data) : nil,
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,

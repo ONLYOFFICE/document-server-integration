@@ -100,6 +100,7 @@
             ]
         ],
         "editorConfig" => [
+            "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),
@@ -295,6 +296,28 @@
             location.reload(true);
         };
 
+        var replaceActionLink = function(href, linkParam) {
+            var link;
+            var actionIndex = href.indexOf("&actionLink=");
+            if (actionIndex != -1) {
+                var endIndex = href.indexOf("&", actionIndex + "&actionLink=".length);
+                if (endIndex != -1) {
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                } else {
+                    link = href.substring(0, actionIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                }
+            } else {
+                link = href + "&actionLink=" + encodeURIComponent(linkParam);
+            }
+            return link;
+        }
+
+        var onMakeActionLink = function (event) {
+            var actionData = event.data;
+            var linkParam = JSON.stringify(actionData);
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -314,6 +337,7 @@
                 'onRequestEditRights': onRequestEditRights,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
+                'onMakeActionLink': onMakeActionLink,
             };
 
             <?php
