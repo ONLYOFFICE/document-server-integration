@@ -15,6 +15,34 @@ You should change `http://documentserver` to your server address in these files:
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
 
+## API methods for test examples
+
+The methods described below are available for all of the test examples.
+
+### POST `/upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /upload                                                      |
+| **Method**             | POST                                                         |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "Uploaded file not found"}` <br /> Or <br /> `{ "error": "File size is incorrect"}` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload` |
+
+
+### DELETE `/file`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file or all files                     
+| **URL**            | /file                                                        |
+| **Method**         | DELETE                                                       |
+| ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{"success":true}` |
+| **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/file?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/file`<br /> |
+
 ## Project Information
 
 Official website: [https://www.onlyoffice.com](https://www.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubIntegrationEx)
