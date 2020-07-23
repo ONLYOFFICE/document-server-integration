@@ -1,5 +1,5 @@
 
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](https://opensource.org/licenses/MIT) ![Release](https://img.shields.io/badge/Release-v4.1.2-blue.svg?style=flat)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](https://opensource.org/licenses/MIT) ![Release](https://img.shields.io/badge/Release-v6.0.0-blue.svg?style=flat)
 
 ## Document Server integration example
 
