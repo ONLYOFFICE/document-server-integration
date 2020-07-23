@@ -15,7 +15,7 @@ You should change `http://documentserver` to your server address in these files:
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
 
-## API methods for text examples
+## API methods for test examples
 
 The methods described below are available for all of the test examples.
 
