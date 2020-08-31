@@ -1,4 +1,4 @@
-DocumentServerIntegration uses code from the following 3rd party projects.
+Document Server integration example uses code from the following 3rd party projects.
 
 
 1. Ionic.Zip.dll - The Zip, implementation for .NET. (http://dotnetzip.codeplex.com/)

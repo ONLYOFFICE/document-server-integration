@@ -69,8 +69,8 @@
     <Content Include="App_Themes\images\icon_xlsx.png" />
     <Content Include="App_Themes\images\mobile-24.png" />
     <Content Include="App_Themes\images\review-24.png" />
-    <Content Include="LICENSE.txt" />
-    <Content Include="licenses\MIT-LICENSE.txt" />
+    <Content Include="LICENSE" />
+    <Content Include="licenses\jquery.license" />
     <Content Include="ReadMe.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
