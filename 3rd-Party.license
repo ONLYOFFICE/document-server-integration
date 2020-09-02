@@ -1,0 +1,263 @@
+Document Server integration example uses code from the following 3rd party projects.
+
+
+web/documentserver-example/csharp
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+
+web/documentserver-example/csharp-mvc
+
+Entity Framework - Entity Framework is an object-relational mapper that enables .NET developers to work with relational data using domain-specific objects. (https://docs.microsoft.com/en-us/ef/ef6/resources/licenses/ef5/enu)
+License:        MICROSOFT SOFTWARE SUPPLEMENTAL TERMS, MICROSOFT SOFTWARE LICENSE TERMS
+License File:   EntityFramework.license
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+Microsoft.Web.Infrastructure - This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time. (https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm)
+License:        MS-EULA License
+License File:   Microsoft.Web.Infrastructure.license
+
+Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://licenses.nuget.org/MIT)
+License:        MIT
+License File:   Newtonsoft.Json.license
+
+WebGrease     - Web Grease is a suite of tools for optimizing javascript, css files and images. (https://www.microsoft.com/web/webpi/eula/aspnetcomponent_rtw_ENU.htm)
+License:        MICROSOFT .NET LIBRARY LICENSE
+License File:   WebGrease.license
+
+
+web/documentserver-example/java
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+Prime JWT     - is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson. (https://github.com/ws-apps/prime-jwt/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   prime-jwt.license
+
+
+web/documentserver-example/nodejs
+
+body-parser   - Node.js body parsing middleware. (https://github.com/expressjs/body-parser/blob/master/LICENSE)
+License:        MIT
+License File:   body-parser.license
+
+config        - Node-config organizes hierarchical configurations for your app deployments. (https://github.com/lorenwest/node-config/blob/master/LICENSE)
+License:        MIT
+License File:   config.license
+
+debug         - A tiny JavaScript debugging utility modelled after Node.js core's debugging technique. (https://github.com/visionmedia/debug/blob/master/LICENSE)
+License:        MIT
+License File:   debug.license
+
+ejs           - Embedded JavaScript templates (https://github.com/mde/ejs/blob/main/LICENSE)
+License:        Apache 2.0
+License File:   ejs.license
+
+express       - Fast, unopinionated, minimalist web framework for node. (https://github.com/mde/ejs/blob/main/LICENSE)
+License:        MIT
+License File:   express.license
+
+formidable    - A Node.js module for parsing form data, especially file uploads. (https://github.com/node-formidable/formidable/blob/master/LICENSE)
+License:        MIT
+License File:   formidable.license
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+jsonwebtoken  - An implementation of JSON Web Tokens. (https://github.com/auth0/node-jsonwebtoken/blob/master/LICENSE)
+License:        MIT
+License File:   jsonwebtoken.license
+
+jwa           - A JSON Web Algorithms implementation focusing (exclusively, at this point) on the algorithms necessary for JSON Web Signatures. (https://github.com/auth0/node-jwa/blob/master/LICENSE)
+License:        MIT
+License File:   jwa.license
+
+log4js        - This is a conversion of the log4js framework to work with node. (https://github.com/log4js-node/log4js-node/blob/master/LICENSE)
+License:        MIT
+License File:   log4js.license
+
+mime          - A comprehensive, compact MIME type module. (https://github.com/broofa/mime/blob/master/LICENSE)
+License:        MIT
+License File:   mime.license
+
+serve-favicon - Node.js middleware for serving a favicon. (https://github.com/expressjs/serve-favicon/blob/master/LICENSE)
+License:        MIT
+License File:   serve-favicon.license
+
+sync-request  - Make synchronous web requests with cross-platform support. (https://github.com/ForbesLindesay/sync-request/blob/master/LICENSE)
+License:        MIT
+License File:   sync-request.license
+
+urllib        - Request HTTP URLs in a complex world — basic and digest authentication, redirections, cookies, timeout and more. (https://github.com/node-modules/urllib/blob/master/LICENSE)
+License:        MIT
+License File:   urllib.license
+
+
+web/documentserver-example/php
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+
+web/documentserver-example/ruby
+
+byebug        - Byebug is a Ruby debugger. (https://github.com/deivid-rodriguez/byebug/blob/master/LICENSE)
+License:        BSD-2-Clause
+License File:   byebug.license
+
+coffee-rails  - CoffeeScript adapter for the Rails asset pipeline. (https://github.com/rails/coffee-rails/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   coffee-rails.license
+
+jbuilder      - Create JSON structures via a Builder-style DSL (https://github.com/rails/jbuilder/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   jbuilder.license
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+jquery-rails  - This gem provides jQuery and the jQuery-ujs driver for your Rails 4+ application. (https://github.com/rails/jquery-rails/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   jquery-rails.license
+
+rails         - Rails is a web-application framework that includes everything needed to create database-backed web applications according to the Model-View-Controller (MVC) pattern. (https://github.com/rails/rails/blob/v6.0.3.2/MIT-LICENSE)
+License:        MIT
+License File:   rails.license
+
+sass-rails    - This gem provides official integration for Ruby on Rails projects with the Sass stylesheet language. (https://github.com/rails/sass-rails/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   sass-rails.license
+
+sdoc          - rdoc generator html with javascript search index. (https://github.com/zzak/sdoc/blob/master/LICENSE)
+License:        MIT
+License File:   sdoc.license
+
+sqlite3       - This module allows Ruby programs to interface with the SQLite3 database engine (www.sqlite.org). (https://github.com/sparklemotion/sqlite3-ruby/blob/master/LICENSE)
+License:        BSD-3-Clause
+License File:   sqlite3.license
+
+turbolinks    - Rails engine for Turbolinks 5 support (https://github.com/turbolinks/turbolinks-rails/blob/master/LICENSE)
+License:        MIT
+License File:   turbolinks.license
+
+tzinfo-data   - TZInfo::Data contains data from the IANA Time Zone database packaged as Ruby modules for use with TZInfo. (https://github.com/tzinfo/tzinfo-data/blob/master/LICENSE)
+License:        MIT
+License File:   tzinfo-data.license
+
+uglifier      - Uglifier minifies JavaScript files by wrapping UglifyJS to be accessible in Ruby (https://github.com/lautis/uglifier/blob/master/LICENSE.txt)
+License:        MIT
+License File:   uglifier.license
+
+uuid          - UUID generator for producing universally unique identifiers based on RFC 4122 (https://github.com/assaf/uuid/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   uuid.license
+
+web-console   - A debugging tool for your Ruby on Rails applications. (https://github.com/rails/web-console/blob/master/MIT-LICENSE)
+License:        MIT
+License File:   web-console.license
