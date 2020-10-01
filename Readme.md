@@ -33,7 +33,7 @@ The methods described below are available for all of the test examples.
 
 |                    |                                                              |
 | ------------------ | ------------------------------------------------------------ |
-| **Summary**        | Delete one file or all files                     
+| **Summary**        | Delete one file or all files                                 |
 | **URL**            | /file                                                        |
 | **Method**         | DELETE                                                       |
 | ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
