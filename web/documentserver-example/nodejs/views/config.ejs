@@ -28,8 +28,9 @@
     "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
     "user": {
+        "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",
-        "name": "<%- editor.name %>"
+        "name": "<%- editor.name %>",
     },
     "embedded": {
         "saveUrl": "<%- file.uri %>",
@@ -45,7 +46,8 @@
         "forcesave": false,
         "goback": {
             "url": "<%- editor.backUrl %>"
-        }
+        },
+        "reviewPermissions": <%- editor.reviewPermissions %>
     },
     "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
     "plugins": <%- editor.plugins %>
