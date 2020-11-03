@@ -369,4 +369,31 @@ docManager.cleanFolderRecursive = function (folder, me) {
     }
 };
 
+docManager.getFilesInFolderInfo = function (){
+    const directory = fileSystem.readdirSync(docManager.dir); 
+    var responseArray = [];
+    directory.forEach((file)=>{
+        var filePathInDirectory = path.join(docManager.dir, file);
+        if (fileSystem.lstatSync(filePathInDirectory).isDirectory()) { 
+            //don't know how to get the folder you want
+            var workingDir = fileSystem.readdirSync(filePathInDirectory);
+            workingDir.forEach((curFile)=>{
+                var curFilePath = path.join(filePathInDirectory, curFile);
+                if (fileSystem.lstatSync(curFilePath).isFile()) {
+                    var fileObj = {
+                        fileStatus: Number(configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(curFilePath)) != -1),    //not sure which is right
+                        id: this.getKey(curFile),
+                        contentLength: `${(fileSystem.lstatSync(curFilePath).size/1024).toFixed(2)} KB`,
+                        pureContentLength: fileSystem.lstatSync(curFilePath).size, 
+                        title: curFile,
+                        updated: fileSystem.lstatSync(curFilePath).mtime
+                    };
+                    responseArray.push(fileObj);
+                }
+            })
+        }
+    })
+    return responseArray;
+};
+
 module.exports = docManager;

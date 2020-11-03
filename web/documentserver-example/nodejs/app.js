@@ -651,6 +651,22 @@ app.get("/editor", function (req, res) {
     }
 });
 
+app.get("/files", function(req, res){
+    try {
+        docManager.init(storageFolder, req, res); 
+        var filesInFolderInfo = docManager.getFilesInFolderInfo();
+        var responseObj = {
+            count: filesInFolderInfo.length,
+            response: filesInFolderInfo
+        };
+        res.write(JSON.stringify(responseObj));
+    } catch (ex){
+        console.log(ex);
+        res.write("Server error");
+    }
+    res.end();
+})
+
 app.use(function (req, res, next) {
     const err = new Error("Not Found");
     err.status = 404;
