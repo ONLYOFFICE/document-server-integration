@@ -370,7 +370,26 @@ docManager.cleanFolderRecursive = function (folder, me) {
 };
 
 docManager.getFilesInFolderInfo = function (){
-    const directory = fileSystem.readdirSync(docManager.dir); 
+    //new logic
+    const userAddress = docManager.curUserHostAddress();
+    const directory = path.join(docManager.dir, userAddress);
+    const filesInFolder = this.getStoredFiles();
+    var responseArray = [];
+    filesInFolder.forEach((file)=>{
+        const stats = fileSystem.lstatSync(path.join(directory, file.name));
+        const fileObject = {
+            version: file.version,
+            fileStatus: Number(!file.canEdit), //0, if the file can be edited, and 1 if not
+            id: this.getKey(file.name),
+            contentLength: `${(stats.size/1024).toFixed(2)} KB`,
+            pureContentLength: stats.size, 
+            title: file.name,
+            updated: stats.mtime
+        };
+        responseArray.push(fileObject);
+    });
+    //old logic
+    /*const directory = fileSystem.readdirSync(docManager.dir); 
     var responseArray = [];
     directory.forEach((file)=>{
         var filePathInDirectory = path.join(docManager.dir, file);
@@ -381,6 +400,7 @@ docManager.getFilesInFolderInfo = function (){
                 var curFilePath = path.join(filePathInDirectory, curFile);
                 if (fileSystem.lstatSync(curFilePath).isFile()) {
                     var fileObj = {
+                        version: null,
                         fileStatus: Number(configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(curFilePath)) != -1),    //not sure which is right
                         id: this.getKey(curFile),
                         contentLength: `${(fileSystem.lstatSync(curFilePath).size/1024).toFixed(2)} KB`,
@@ -392,8 +412,8 @@ docManager.getFilesInFolderInfo = function (){
                 }
             })
         }
-    })
-    return responseArray;
+    })*/
+    return responseArray;   
 };
 
 module.exports = docManager;

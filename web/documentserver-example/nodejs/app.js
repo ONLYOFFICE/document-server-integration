@@ -654,8 +654,8 @@ app.get("/editor", function (req, res) {
 app.get("/files", function(req, res){
     try {
         docManager.init(storageFolder, req, res); 
-        var filesInFolderInfo = docManager.getFilesInFolderInfo();
-        var responseObj = {
+        const filesInFolderInfo = docManager.getFilesInFolderInfo();
+        const responseObj = {
             count: filesInFolderInfo.length,
             response: filesInFolderInfo
         };
