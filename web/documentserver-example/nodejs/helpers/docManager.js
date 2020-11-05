@@ -369,16 +369,15 @@ docManager.cleanFolderRecursive = function (folder, me) {
     }
 };
 
-docManager.getFilesInFolderInfo = function (){
+docManager.getFilesInfo = function (){
     const userAddress = docManager.curUserHostAddress();
     const directory = path.join(docManager.dir, userAddress);
-    const filesInFolder = this.getStoredFiles();
+    const filesInDirectory = this.getStoredFiles();
     var responseArray = [];
-    filesInFolder.forEach((file)=>{
+    filesInDirectory.forEach((file)=>{
         const stats = fileSystem.lstatSync(path.join(directory, file.name));
         const fileObject = {
             version: file.version,
-            //fileStatus: Number(!file.canEdit), //0, if the file can be edited, and 1 if not
             id: this.getKey(file.name),
             contentLength: `${(stats.size/1024).toFixed(2)} KB`,
             pureContentLength: stats.size, 
