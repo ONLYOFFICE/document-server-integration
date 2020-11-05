@@ -369,12 +369,14 @@ docManager.cleanFolderRecursive = function (folder, me) {
     }
 };
 
-docManager.getFilesInfo = function (){
+docManager.getFilesInfo = function (fileId) {
     const userAddress = docManager.curUserHostAddress();
     const directory = path.join(docManager.dir, userAddress);
     const filesInDirectory = this.getStoredFiles();
-    var responseArray = [];
-    filesInDirectory.forEach((file)=>{
+    let responseArray = [];
+    let responseObject;
+    for (let currentFile = 0; currentFile<filesInDirectory.length; currentFile++) {
+        const file = filesInDirectory[currentFile];
         const stats = fileSystem.lstatSync(path.join(directory, file.name));
         const fileObject = {
             version: file.version,
@@ -384,9 +386,19 @@ docManager.getFilesInfo = function (){
             title: file.name,
             updated: stats.mtime
         };
-        responseArray.push(fileObject);
-    });
-    return responseArray;   
+        if (fileId !== undefined) {
+            if (this.getKey(file.name)==fileId) {
+                responseObject = fileObject; 
+                break;
+            } 
+        } 
+        else responseArray.push(fileObject);
+    };
+    if (fileId !== undefined) {
+        if (responseObject !== undefined) return responseObject;
+        else return "File not found";
+    } 
+    else return responseArray;   
 };
 
 module.exports = docManager;

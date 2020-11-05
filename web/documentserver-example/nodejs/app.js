@@ -298,7 +298,20 @@ app.get("/files", function(req, res){
         res.write("Server error");
     }
     res.end();
-})
+});
+
+app.get("/files/file/:fileId", function(req, res) {
+    try {
+        docManager.init(storageFolder, req, res);
+        const fileId = req.params.fileId;
+        const fileInfoById = docManager.getFilesInfo(fileId);
+        res.write(JSON.stringify(fileInfoById));
+    } catch (ex){
+        console.log(ex);
+        res.write("Server error");
+    }
+    res.end();
+});
 
 app.delete("/file", function (req, res) {
     try {
