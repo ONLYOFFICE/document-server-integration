@@ -298,7 +298,7 @@ app.get("/files", function(req, res){
         res.write("Server error");
     }
     res.end();
-})
+});
 
 app.delete("/file", function (req, res) {
     try {

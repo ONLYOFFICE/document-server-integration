@@ -369,12 +369,12 @@ docManager.cleanFolderRecursive = function (folder, me) {
     }
 };
 
-docManager.getFilesInfo = function (){
+docManager.getFilesInfo = function () {
     const userAddress = docManager.curUserHostAddress();
     const directory = path.join(docManager.dir, userAddress);
     const filesInDirectory = this.getStoredFiles();
     var responseArray = [];
-    filesInDirectory.forEach((file)=>{
+    filesInDirectory.forEach((file) => {
         const stats = fileSystem.lstatSync(path.join(directory, file.name));
         const fileObject = {
             version: file.version,
@@ -386,7 +386,7 @@ docManager.getFilesInfo = function (){
         };
         responseArray.push(fileObject);
     });
-    return responseArray;   
+    return responseArray;
 };
 
 module.exports = docManager;
