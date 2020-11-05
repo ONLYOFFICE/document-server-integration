@@ -370,7 +370,6 @@ docManager.cleanFolderRecursive = function (folder, me) {
 };
 
 docManager.getFilesInFolderInfo = function (){
-    //new logic
     const userAddress = docManager.curUserHostAddress();
     const directory = path.join(docManager.dir, userAddress);
     const filesInFolder = this.getStoredFiles();
@@ -379,7 +378,7 @@ docManager.getFilesInFolderInfo = function (){
         const stats = fileSystem.lstatSync(path.join(directory, file.name));
         const fileObject = {
             version: file.version,
-            fileStatus: Number(!file.canEdit), //0, if the file can be edited, and 1 if not
+            //fileStatus: Number(!file.canEdit), //0, if the file can be edited, and 1 if not
             id: this.getKey(file.name),
             contentLength: `${(stats.size/1024).toFixed(2)} KB`,
             pureContentLength: stats.size, 
@@ -388,31 +387,6 @@ docManager.getFilesInFolderInfo = function (){
         };
         responseArray.push(fileObject);
     });
-    //old logic
-    /*const directory = fileSystem.readdirSync(docManager.dir); 
-    var responseArray = [];
-    directory.forEach((file)=>{
-        var filePathInDirectory = path.join(docManager.dir, file);
-        if (fileSystem.lstatSync(filePathInDirectory).isDirectory()) { 
-            //don't know how to get the folder you want
-            var workingDir = fileSystem.readdirSync(filePathInDirectory);
-            workingDir.forEach((curFile)=>{
-                var curFilePath = path.join(filePathInDirectory, curFile);
-                if (fileSystem.lstatSync(curFilePath).isFile()) {
-                    var fileObj = {
-                        version: null,
-                        fileStatus: Number(configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(curFilePath)) != -1),    //not sure which is right
-                        id: this.getKey(curFile),
-                        contentLength: `${(fileSystem.lstatSync(curFilePath).size/1024).toFixed(2)} KB`,
-                        pureContentLength: fileSystem.lstatSync(curFilePath).size, 
-                        title: curFile,
-                        updated: fileSystem.lstatSync(curFilePath).mtime
-                    };
-                    responseArray.push(fileObj);
-                }
-            })
-        }
-    })*/
     return responseArray;   
 };
 
