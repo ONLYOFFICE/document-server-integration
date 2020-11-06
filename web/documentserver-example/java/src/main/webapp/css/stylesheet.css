@@ -44,7 +44,7 @@ a, a:hover, a:visited {
 
 
 .top-panel {
-    background: url("img/logo.png") no-repeat 30px center #3D4A6B;
+    background: url("img/logo.svg") no-repeat 30px center #3D4A6B;
     height: 80px;
     width: 100%;
 }
