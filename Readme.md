@@ -40,6 +40,17 @@ The methods described below are available for all of the test examples.
 | **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{"success":true}` |
 | **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/file?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/file`<br /> |
 
+
+### GET `/files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{"version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/files/`						|
+
 ## Project Information
 
 Official website: [https://www.onlyoffice.com](https://www.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubIntegrationEx)
