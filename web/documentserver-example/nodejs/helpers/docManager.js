@@ -386,7 +386,7 @@ docManager.getFilesInfo = function () {
         };
         responseArray.push(fileObject);
     });
-    return responseArray;   
+    return responseArray;
 };
 
 module.exports = docManager;
