@@ -373,7 +373,14 @@ public class IndexServlet extends HttpServlet
 
     private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        ArrayList<Map<String, String>> files = DocumentManager.GetFilesInfo();
+        ArrayList<Map<String, String>> files = null;
+
+        if (request.getParameter("id") == null){
+            files = DocumentManager.GetFilesInfo();
+        }else {
+            String idFile = request.getParameter("id");
+            files = DocumentManager.GetFilesInfo(idFile);
+        }
 
         try {
             for (Map<String, String> map : files){
