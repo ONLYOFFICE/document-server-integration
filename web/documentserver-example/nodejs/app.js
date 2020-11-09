@@ -288,6 +288,18 @@ app.get("/convert", function (req, res) {
     }
 });
 
+app.get("/files", function(req, res) {
+    try {
+        docManager.init(storageFolder, req, res); 
+        const filesInDirectoryInfo = docManager.getFilesInfo();
+        res.write(JSON.stringify(filesInDirectoryInfo));
+    } catch (ex) {
+        console.log(ex);
+        res.write("Server error");
+    }
+    res.end();
+});
+
 app.delete("/file", function (req, res) {
     try {
     	docManager.init(storageFolder, req, res);
