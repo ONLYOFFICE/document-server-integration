@@ -30,13 +30,13 @@ import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 import javax.servlet.ServletException;
@@ -85,6 +85,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "remove":
                 Remove(request, response, writer);
+                break;
+            case "csv":
+                CSV(request, response, writer);
                 break;
         }
     }
@@ -220,6 +223,45 @@ public class IndexServlet extends HttpServlet
             writer.write("{ \"error\": \"" + ex.getMessage() + "\"}");
         }
     }
+
+
+    private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "csv.csv";
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        String fileType = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+            fileType = Files.probeContentType(filePath);
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+
+        File file = new File(String.valueOf(filePath));
+
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        response.setHeader("Content-Type", fileType);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + fileName);
+
+        BufferedInputStream inputStream = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            inputStream = new BufferedInputStream(fileInputStream);
+            int readBytes = 0;
+            while ((readBytes = inputStream.read()) != -1)
+                writer.write(readBytes);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {

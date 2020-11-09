@@ -79,6 +79,7 @@ public class EditorServlet extends HttpServlet
 
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("mailMergeRecipientUrl", DocumentManager.GetServerUrl() + "/IndexServlet?type=csv");
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

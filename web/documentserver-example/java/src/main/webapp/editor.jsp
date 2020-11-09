@@ -95,6 +95,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients({
+                "fileType": "csv",
+                "url": "${mailMergeRecipientUrl}"
+            });
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -105,6 +112,7 @@
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <%
