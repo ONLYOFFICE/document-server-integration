@@ -288,7 +288,7 @@ app.get("/convert", function (req, res) {
     }
 });
 
-app.get("/files", function(req, res){
+app.get("/files", function(req, res) {
     try {
         docManager.init(storageFolder, req, res); 
         const filesInDirectoryInfo = docManager.getFilesInfo();
