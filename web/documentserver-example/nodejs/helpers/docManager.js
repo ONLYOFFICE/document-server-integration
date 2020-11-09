@@ -375,7 +375,7 @@ docManager.getFilesInfo = function (fileId) {
     const filesInDirectory = this.getStoredFiles();
     let responseArray = [];
     let responseObject;
-    for (let currentFile = 0; currentFile<filesInDirectory.length; currentFile++) {
+    for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile++) {
         const file = filesInDirectory[currentFile];
         const stats = fileSystem.lstatSync(path.join(directory, file.name));
         const fileObject = {
@@ -387,18 +387,18 @@ docManager.getFilesInfo = function (fileId) {
             updated: stats.mtime
         };
         if (fileId !== undefined) {
-            if (this.getKey(file.name)==fileId) {
+            if (this.getKey(file.name) == fileId) {
                 responseObject = fileObject; 
                 break;
-            } 
-        } 
+            }
+        }
         else responseArray.push(fileObject);
     };
     if (fileId !== undefined) {
         if (responseObject !== undefined) return responseObject;
         else return "File not found";
-    } 
-    else return responseArray;   
+    }
+    else return responseArray;
 };
 
 module.exports = docManager;
