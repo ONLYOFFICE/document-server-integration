@@ -24,14 +24,12 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
@@ -262,6 +260,23 @@ public class DocumentManager
         {
             return "";
         }
+    }
+
+    public static ArrayList GetFilesInfo(){
+        ArrayList<Map<String, String>> files = new ArrayList<>();
+
+        for(File file : GetStoredFiles(null)){
+            Map<String, String> map = new HashMap<>();
+            map.put("version", String.valueOf(DocumentManager.GetFileVersion(file.getName(), null)+1));
+            map.put("id", ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(DocumentManager.StoragePath(file.getName(), null)).lastModified())));
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("pureContentLength", String.valueOf(file.length()));
+            map.put("title", file.getName());
+            map.put("updated", String.valueOf(new Date(file.lastModified())));
+            files.add(map);
+        }
+
+        return files;
     }
 
     public static String GetPathUri(String path)

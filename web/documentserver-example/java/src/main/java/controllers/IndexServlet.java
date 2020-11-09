@@ -29,8 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -77,6 +76,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "remove":
                 Remove(request, response, writer);
+                break;
+            case "files":
+                Files(request, response, writer);
                 break;
         }
     }
@@ -362,6 +364,21 @@ public class IndexServlet extends HttpServlet
             delete(hist);
 
             writer.write("{ \"success\": true }");
+        }
+        catch (Exception e)
+        {
+            writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        ArrayList<Map<String, String>> files = DocumentManager.GetFilesInfo();
+
+        try {
+            for (Map<String, String> map : files){
+                writer.write(JSONObject.toJSONString(map));
+            }
         }
         catch (Exception e)
         {
