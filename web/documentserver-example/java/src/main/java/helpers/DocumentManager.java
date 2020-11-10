@@ -263,20 +263,20 @@ public class DocumentManager
     }
 
     public static ArrayList<Map<String, String>> GetFilesInfo(){
-    ArrayList<Map<String, String>> files = new ArrayList<>();
+        ArrayList<Map<String, String>> files = new ArrayList<>();
 
-    for(File file : GetStoredFiles(null)){
-        Map<String, String> map = new HashMap<>();
-        map.put("version", String.valueOf(DocumentManager.GetFileVersion(file.getName(), null)+1));
-        map.put("id", ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(DocumentManager.StoragePath(file.getName(), null)).lastModified())));
-        map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
-        map.put("pureContentLength", String.valueOf(file.length()));
-        map.put("title", file.getName());
-        map.put("updated", String.valueOf(new Date(file.lastModified())));
-        files.add(map);
-    }
+        for(File file : GetStoredFiles(null)){
+            Map<String, String> map = new HashMap<>();
+            map.put("version", String.valueOf(GetFileVersion(file.getName(), null)+1));
+            map.put("id", ServiceConverter.GenerateRevisionId(CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(StoragePath(file.getName(), null)).lastModified())));
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("pureContentLength", String.valueOf(file.length()));
+            map.put("title", file.getName());
+            map.put("updated", String.valueOf(new Date(file.lastModified())));
+            files.add(map);
+        }
 
-    return files;
+        return files;
     }
 
     public static ArrayList<Map<String, String>> GetFilesInfo(String idFile){
