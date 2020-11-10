@@ -11,7 +11,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -29,7 +28,6 @@
     * limitations under the License.
     *
     -->
-
     <title>ONLYOFFICE</title>
 
     <link href="<%: Url.Content("~/favicon.ico") %>" rel="shortcut icon" type="image/x-icon" />

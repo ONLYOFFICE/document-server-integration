@@ -12,7 +12,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -30,7 +29,6 @@
     * limitations under the License.
     *
     -->
-
    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
     <title><%= Model.FileName + " - ONLYOFFICE" %></title>
     
