@@ -13,7 +13,6 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -31,7 +30,6 @@
     * limitations under the License.
     *
     -->
-
     <style>
         html {
             height: 100%;

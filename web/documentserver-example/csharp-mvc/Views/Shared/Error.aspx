@@ -3,7 +3,6 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -21,7 +20,6 @@
     * limitations under the License.
     *
     -->
-
     <title>Error</title>
 </head>
 <body>

@@ -10,7 +10,6 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>ONLYOFFICE</title>
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -28,7 +27,6 @@
     * limitations under the License.
     *
     -->
-
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
