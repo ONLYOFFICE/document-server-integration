@@ -20,11 +20,7 @@ package entities;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
@@ -107,13 +103,13 @@ public class FileModel
         if (DocumentManager.GetFileVersion(histDir) > 0) {
             Integer curVer = DocumentManager.GetFileVersion(histDir);
 
-            Set<Object> hist = new HashSet<Object>();
+            List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<String, Object>();
 
-            for (Integer i = 0; i <= curVer; i++) {
+            for (Integer i = 1; i <= curVer; i++) {
                 Map<String, Object> obj = new HashMap<String, Object>();
                 Map<String, Object> dataObj = new HashMap<String, Object>();
-                String verDir = DocumentManager.VersionDir(histDir, i + 1);
+                String verDir = DocumentManager.VersionDir(histDir, i);
 
                 try {
                     String key = null;
@@ -123,7 +119,7 @@ public class FileModel
                     obj.put("key", key);
                     obj.put("version", i);
 
-                    if (i == 0) {
+                    if (i == 1) {
                         String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));
                         JSONObject json = (JSONObject) parser.parse(createdInfo);
 
@@ -138,8 +134,8 @@ public class FileModel
                     dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
-                    if (i > 0) {
-                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i) + File.separator + "changes.json")));
+                    if (i > 1) {
+                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i-1) + File.separator + "changes.json")));
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         obj.put("changes", changes.get("changes"));
@@ -147,16 +143,16 @@ public class FileModel
                         obj.put("created", change.get("created"));
                         obj.put("user", change.get("user"));
 
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 1));
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
                         prevInfo.put("key", prev.get("key"));
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i) + File.separator + "diff.zip"));
+                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i-1) + File.separator + "diff.zip"));
                     }
 
                     hist.add(obj);
-                    histData.put(Integer.toString(i), dataObj);
+                    histData.put(Integer.toString(i-1), dataObj);
 
                 } catch (Exception ex) { }
             }
