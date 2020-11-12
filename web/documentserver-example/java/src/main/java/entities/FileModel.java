@@ -20,11 +20,7 @@ package entities;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
@@ -61,11 +57,13 @@ public class FileModel
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
         if (lang != null) editorConfig.lang = lang;
-
+        
         if (uid != null) editorConfig.user.id = uid;
         if (uname != null) editorConfig.user.name = uname;
+        editorConfig.user.group = editorConfig.user.id.equals("uid-1") ? null : editorConfig.user.id;
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
+        editorConfig.customization.reviewPermissions = editorConfig.user.group != null ? editorConfig.customization.GetReviewPermissions() : null;
 
         changeType(mode, type);
     }
@@ -251,11 +249,13 @@ public class FileModel
         {
             public String id = "uid-1";
             public String name = "John Smith";
+            public String group;
         }
 
         public class Customization
         {
             public Goback goback;
+            public Map<String, List<String>> reviewPermissions;
 
             public Customization()
             {
@@ -265,6 +265,15 @@ public class FileModel
             public class Goback
             {
                 public String url;
+            }
+
+            public Map<String, List<String>> GetReviewPermissions(){
+                Map<String, List<String>> reviewPermissions = new HashMap<>();
+
+                reviewPermissions.put("uid-2", Arrays.asList("uid-2", ""));
+                reviewPermissions.put("uid-3", Arrays.asList("uid-2"));
+
+                return reviewPermissions;
             }
         }
 
