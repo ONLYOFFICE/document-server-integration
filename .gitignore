@@ -11,3 +11,4 @@
 **/.vscode/
 **/.idea
 /web/documentserver-example/java/target/
+/web/documentserver-example/csharp/packages
