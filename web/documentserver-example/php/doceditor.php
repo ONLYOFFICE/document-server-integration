@@ -62,6 +62,8 @@
             $uname = "Hamish Mitchell";
             break;
     }
+    $ugroup = $uid == "0" ? null : $uid;
+    $reviewPermissions = $ugroup ? array("1"=>["1", ""],  "2"=>["1"]) : null;
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
@@ -96,7 +98,8 @@
             "callbackUrl" => getCallbackUrl($filename),
             "user" => [
                 "id" => $uid,
-                "name" => $uname
+                "name" => $uname,
+                "group" => $ugroup
             ],
             "embedded" => [
                 "saveUrl" => $fileuriUser,
@@ -109,7 +112,8 @@
                 "feedback" => true,
                 "goback" => [
                     "url" => serverPath(),
-                ]
+                ],
+                "reviewPermissions" => $reviewPermissions
             ]
         ]
     ];
