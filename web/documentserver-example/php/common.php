@@ -214,7 +214,7 @@ function getFileVersion($histDir) {
     if (!file_exists($histDir) || !is_dir($histDir)) return 0;
 
     $cdir = scandir($histDir);
-    $ver = 0;
+    $ver = 1;
     foreach($cdir as $key => $fileName) {
         if (!in_array($fileName,array(".", ".."))) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
