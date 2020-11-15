@@ -304,6 +304,23 @@ function FileUri($file_name, $forDocumentServer = NULL) {
     return $uri;
 }
 
+function getFileInfo(){
+    $storedFiles = getStoredFiles();
+    $result = array();
+
+    foreach ($storedFiles as $key => $value){
+        $result[$key] = (object) array(
+            "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
+            "id" => getDocEditorKey($value->name),
+            "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
+            "pureContentLength" => filesize(getStoragePath($value->name)),
+            "title" => $value->name,
+            "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
+        );
+    }
+    return $result;
+}
+
 function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
