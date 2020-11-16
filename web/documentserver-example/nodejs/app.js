@@ -292,6 +292,7 @@ app.get("/files", function(req, res) {
     try {
         docManager.init(storageFolder, req, res); 
         const filesInDirectoryInfo = docManager.getFilesInfo();
+        res.setHeader("Content-Type", "application/json")
         res.write(JSON.stringify(filesInDirectoryInfo));
     } catch (ex) {
         console.log(ex);

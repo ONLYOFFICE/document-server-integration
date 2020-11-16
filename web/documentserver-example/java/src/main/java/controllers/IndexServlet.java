@@ -383,6 +383,7 @@ public class IndexServlet extends HttpServlet
         }
 
         try {
+            response.setContentType("application/json");
             for (Map<String, String> map : files){
                 writer.write(JSONObject.toJSONString(map));
             }
