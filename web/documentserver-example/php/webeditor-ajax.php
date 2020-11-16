@@ -307,7 +307,11 @@ function delete() {
 
 function files() {
     try {
-        $result = getFileInfo();
+        @header( "Content-Type", "application/json" );
+
+        $idFile = $_GET["id"];
+        $result = getFileInfo($idFile);
+
         return $result;
     }
     catch (Exception $e) {

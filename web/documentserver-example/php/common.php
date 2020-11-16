@@ -304,9 +304,10 @@ function FileUri($file_name, $forDocumentServer = NULL) {
     return $uri;
 }
 
-function getFileInfo(){
+function getFileInfo($idFile){
     $storedFiles = getStoredFiles();
     $result = array();
+    $resultID = array();
 
     foreach ($storedFiles as $key => $value){
         $result[$key] = (object) array(
@@ -317,8 +318,20 @@ function getFileInfo(){
             "title" => $value->name,
             "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
         );
+        if ($idFile != null){
+            if ($idFile == getDocEditorKey($value->name)){
+                $resultID[count($resultID)] = $result[$key];
+            }
+        }
     }
-    return $result;
+
+    if ($idFile != null){
+        if (count($resultID) != 0) return $resultID;
+        else return "File not found";
+    }
+    else {
+        return $result;
+    }
 }
 
 function getFileExts() {
