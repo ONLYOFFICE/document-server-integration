@@ -318,6 +318,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients({
+                "fileType": "csv",
+                "url": "<?php echo serverPath() . DIRECTORY_SEPARATOR . 'webeditor-ajax.php?type=csv';?>"
+            });
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -338,6 +345,7 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
             };
 
             <?php
