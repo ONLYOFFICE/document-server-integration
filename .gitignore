@@ -9,5 +9,8 @@
 /web/documentserver-example/nodejs/config/local.json
 /web/documentserver-example/nodejs/example
 **/.vscode/
+**/.vs/
 **/.idea
 /web/documentserver-example/java/target/
+/web/documentserver-example/csharp/packages
+/web/documentserver-example/csharp-mvc/packages
