@@ -27,9 +27,11 @@
 import config
 import json
 import os
+import urllib.parse
+import magic
 
 from datetime import datetime
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager
 
@@ -262,3 +264,11 @@ def remove(request):
 
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
+def csv(request):
+    filePath = os.path.join('samples', "csv.csv")
+    response = FileResponse(open(filePath, 'rb'), True)
+    response['Content-Length'] =  os.path.getsize(filePath)
+    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
+    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    return response
