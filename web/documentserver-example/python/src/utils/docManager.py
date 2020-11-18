@@ -186,8 +186,10 @@ def generateFileKey(filename, req):
     return replaced[:20]
 
 def getFilesInfo(req):
-    result = []
+    idFile = req.GET.get('id') if req.GET.get('id') else None
 
+    result = []
+    resultID = []
     for f in getStoredFiles(req):
         stats = os.stat(os.path.join(getRootFolder(req), f.get("title")))
         result.append(
@@ -198,6 +200,12 @@ def getFilesInfo(req):
                 "title" :  f.get("title"),
                 "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
         })
-  
-    return result
+        if idFile :
+            if idFile == generateFileKey(f.get("title"), req) :
+                resultID.append(result[-1]) 
     
+    if idFile :
+        if len(resultID) > 0 : return resultID
+        else : return "File not found"     
+    else :
+        return result
