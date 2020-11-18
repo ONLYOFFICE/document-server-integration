@@ -198,7 +198,8 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
-        'apiUrl': config.DOC_SERV_API_URL
+        'apiUrl': config.DOC_SERV_API_URL,
+        'mailMergeRecipientUrl': config.EXAMPLE_DOMAIN + "csv"
     }
     return render(request, 'editor.html', context)
 
