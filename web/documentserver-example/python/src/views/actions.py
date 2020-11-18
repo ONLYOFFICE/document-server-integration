@@ -262,3 +262,11 @@ def remove(request):
 
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
+def files(request):
+    try:
+        response = docManager.getFilesInfo(request)
+    except Exception as e:
+        response = {}
+        response.setdefault('error', e.args[0])
+    return HttpResponse(json.dumps(response), content_type='application/json')
