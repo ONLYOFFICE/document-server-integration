@@ -111,7 +111,7 @@
 
         var connectEditor = function () {
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor", {<% include config %>,
+            docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
                     events: {
                         "onAppReady": onAppReady,
                         "onDocumentStateChange": onDocumentStateChange,
