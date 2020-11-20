@@ -102,15 +102,21 @@ def getCorrectName(filename, req):
 
     return name
 
+def getServerUrl (forDocumentServer, req):
+    if (forDocumentServer and config.EXAMPLE_DOMAIN is not None):
+        return  config.EXAMPLE_DOMAIN 
+    else:
+        return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
+
 def getFileUri(filename, req):
-    host = config.EXAMPLE_DOMAIN.rstrip('/')
+    host = getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
 def getCallbackUrl(filename, req):
-    host = config.EXAMPLE_DOMAIN
+    host = getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}track?filename={filename}&userAddress={curAdr}'
+    return f'{host}/track?filename={filename}&userAddress={curAdr}'
 
 def getRootFolder(req):
     if isinstance(req, str):

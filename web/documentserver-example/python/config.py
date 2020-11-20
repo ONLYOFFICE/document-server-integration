@@ -15,11 +15,13 @@ DOC_SERV_CONVERT = [
 
 DOC_SERV_TIMEOUT = 120000
 
-DOC_SERV_CONVERTER_URL = 'https://documentserver/ConvertService.ashx'
-DOC_SERV_API_URL = 'https://documentserver/web-apps/apps/api/documents/api.js'
-DOC_SERV_PRELOADER_URL = 'https://documentserver/web-apps/apps/api/documents/cache-scripts.html'
+DOC_SERV_SITE_URL = 'https://documentserver/'
 
-EXAMPLE_DOMAIN = 'https://exampleserver/'
+DOC_SERV_CONVERTER_URL = 'ConvertService.ashx'
+DOC_SERV_API_URL = 'web-apps/apps/api/documents/api.js'
+DOC_SERV_PRELOADER_URL = 'web-apps/apps/api/documents/cache-scripts.html'
+
+EXAMPLE_DOMAIN = None
 
 DOC_SERV_JWT_SECRET = ''
 
@@ -45,11 +47,7 @@ EXT_DOCUMENT = [
     ".pdf", ".djvu", ".fb2", ".epub", ".xps"
 ]
 
-
 if os.environ.get("EXAMPLE_DOMAIN"):
     EXAMPLE_DOMAIN = os.environ.get("EXAMPLE_DOMAIN")
 if os.environ.get("DOC_SERV"):
-    base = os.environ.get("DOC_SERV").rstrip('/')
-    DOC_SERV_CONVERTER_URL = base + '/ConvertService.ashx'
-    DOC_SERV_API_URL = base + '/web-apps/apps/api/documents/api.js'
-    DOC_SERV_PRELOADER_URL = base + '/web-apps/apps/api/documents/cache-scripts.html'
+    DOC_SERV_SITE_URL = os.environ.get("DOC_SERV")

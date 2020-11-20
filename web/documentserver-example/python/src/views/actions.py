@@ -180,7 +180,7 @@ def edit(request):
                 'about': True,
                 'feedback': True,
                 'goback': {
-                    'url': config.EXAMPLE_DOMAIN
+                    'url': docManager.getServerUrl(False, request)
                 }
             }
         }
@@ -196,7 +196,7 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
-        'apiUrl': config.DOC_SERV_API_URL
+        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL
     }
     return render(request, 'editor.html', context)
 
