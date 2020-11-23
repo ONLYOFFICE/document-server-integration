@@ -133,7 +133,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $document_revision_id = GenerateRevisionId($document_revision_id);
 
-    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'];
+    $urlToConverter = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_CONVERTER_URL'];
 
     $arr = [
         "async" => $is_async,

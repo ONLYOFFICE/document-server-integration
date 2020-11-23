@@ -314,7 +314,7 @@
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
 
-        <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
+        <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
         <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
 
         <script type="text/javascript" src="js/jscript.js"></script>

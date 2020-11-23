@@ -251,7 +251,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_API_URL"] ?>"></script>
+    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>"></script>
 
     <script type="text/javascript">
 
