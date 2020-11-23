@@ -64,7 +64,7 @@ def convert(request):
 
     try:
         filename = request.GET['filename']
-        fileUri = docManager.getFileUri(filename, request)
+        fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
         newExt = docManager.getInternalExtension(fileType)
@@ -112,7 +112,8 @@ def edit(request):
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, request)
+    fileUri = docManager.getFileUri(filename, True, request)
+    fileUriUser = docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
@@ -171,9 +172,9 @@ def edit(request):
                 'name': user['uname']
             },
             'embedded': {
-                'saveUrl': fileUri,
-                'embedUrl': fileUri,
-                'shareUrl': fileUri,
+                'saveUrl': fileUriUser,
+                'embedUrl': fileUriUser,
+                'shareUrl': fileUriUser,
                 'toolbarDocked': 'top'
             },
             'customization': {

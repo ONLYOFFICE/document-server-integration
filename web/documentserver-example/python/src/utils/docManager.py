@@ -108,8 +108,8 @@ def getServerUrl (forDocumentServer, req):
     else:
         return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
-def getFileUri(filename, req):
-    host = getServerUrl(True, req)
+def getFileUri(filename, forDocumentServer, req):
+    host = getServerUrl(forDocumentServer, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
@@ -146,7 +146,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
+            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req) })
 
     return fileInfos
 
@@ -193,7 +193,7 @@ def removeFile(filename, req):
 
 def generateFileKey(filename, req):
     path = getStoragePath(filename, req)
-    uri = getFileUri(filename, req)
+    uri = getFileUri(filename, False, req)
     stat = os.stat(path)
 
     h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
