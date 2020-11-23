@@ -152,7 +152,7 @@
                                             <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                 <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
                                             </a>
-                                            <a href="<%= DocumentManager.GetFileUri(files[i].getName()) %>">
+                                            <a href="<%= DocumentManager.GetFileUri(files[i].getName(), false) %>">
                                                 <img class="icon-download" src="css/img/download-24.png" alt="Download" title="Download" />
                                             </a>
                                             <a class="delete-file" data-filename="<%= files[i].getName() %>">
