@@ -70,7 +70,7 @@ public class EditorServlet extends HttpServlet
         }
 
         request.setAttribute("file", file);
-        request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.api"));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

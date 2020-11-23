@@ -40,7 +40,7 @@ import org.json.simple.parser.ParseException;
 public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
-    private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
+    private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.converter");
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
     public static class ConvertBody
