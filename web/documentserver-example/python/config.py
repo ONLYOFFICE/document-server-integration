@@ -24,7 +24,7 @@ DOC_SERV_PRELOADER_URL = 'web-apps/apps/api/documents/cache-scripts.html'
 EXAMPLE_DOMAIN = None
 
 DOC_SERV_JWT_SECRET = ''
-
+DOC_SERV_JWT_HEADER = 'Authorization'
 
 EXT_SPREADSHEET = [
     ".xls", ".xlsx", ".xlsm",

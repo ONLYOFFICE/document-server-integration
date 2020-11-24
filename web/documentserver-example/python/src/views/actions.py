@@ -214,7 +214,8 @@ def track(request):
             token = body.get('token')
 
             if (not token):
-                token = request.headers.get('Authorization')
+                jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+                token = request.headers.get(jwtHeader)
                 if token:
                     token = token[len('Bearer '):]
 
