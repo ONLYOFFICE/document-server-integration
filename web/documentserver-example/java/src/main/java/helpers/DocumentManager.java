@@ -277,7 +277,7 @@ public class DocumentManager
 
 
     public static String GetServerUrl(Boolean forDocumentServer) {
-        if (forDocumentServer && ConfigManager.GetProperty("files.docservice.url.example") != "") {
+        if (forDocumentServer && !ConfigManager.GetProperty("files.docservice.url.example").equals("")) {
             return ConfigManager.GetProperty("files.docservice.url.example");
         } else {
             return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
