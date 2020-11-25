@@ -155,6 +155,11 @@ public class FileModel
                         dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i) + File.separator + "diff.zip"));
                     }
 
+                    if (DocumentManager.TokenEnabled())
+                    {
+                        dataObj.put("token", DocumentManager.CreateToken(dataObj));
+                    }
+
                     hist.add(obj);
                     histData.put(Integer.toString(i), dataObj);
 
