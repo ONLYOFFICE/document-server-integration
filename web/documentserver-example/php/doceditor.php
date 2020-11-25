@@ -124,8 +124,14 @@
         ]
     ];
 
+    $dataMailMergeRecipients = [
+        "fileType" =>"csv",
+        "url" => serverPath() . DIRECTORY_SEPARATOR . "webeditor-ajax.php?type=csv"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
     }
 
     function tryGetDefaultByType($createExt) {
@@ -319,10 +325,7 @@
         };
 
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients({
-                "fileType": "csv",
-                "url": "<?php echo serverPath() . DIRECTORY_SEPARATOR . 'webeditor-ajax.php?type=csv';?>"
-            });
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
         };
 
         var сonnectEditor = function () {
