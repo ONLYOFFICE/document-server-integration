@@ -196,6 +196,10 @@
                     $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
                 }
 
+                if (isJwtEnabled()) {
+                    $dataObj["token"] = jwtEncode($dataObj);
+                }
+
                 array_push($hist, $obj);
                 $histData[$i] = $dataObj;
             }
