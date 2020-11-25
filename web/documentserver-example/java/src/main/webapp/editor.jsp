@@ -96,10 +96,7 @@
         };
 
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients({
-                "fileType": "csv",
-                "url": "${mailMergeRecipientUrl}"
-            });
+            docEditor.setMailMergeRecipients(${dataMailMergeRecipients});
         };
 
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
