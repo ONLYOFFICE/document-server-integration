@@ -650,7 +650,10 @@ app.get("/editor", function (req, res) {
             },
             history: history,
             historyData: historyData,
-            mailMergeRecipientUrl: docManager.getServerUrl(true) + "/csv"
+            dataMailMergeRecipients: {
+                fileType: "csv",
+                url: docManager.getServerUrl(true) + "/csv"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -659,6 +662,7 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

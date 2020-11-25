@@ -119,10 +119,7 @@
         };
 
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients({
-                "fileType": "csv",
-                "url": "<%- mailMergeRecipientUrl %>"
-            });
+            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);
         };
 
         var connectEditor = function () {
