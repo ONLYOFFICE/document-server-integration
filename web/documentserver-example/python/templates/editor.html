@@ -100,10 +100,9 @@
         };
 
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients({
-                "fileType": "csv",
-                "url": "{{ mailMergeRecipientUrl }}"
-            });
+            docEditor.setMailMergeRecipients(
+                {{ dataMailMergeRecipients | safe }}
+            );
         };
 
         var connectEditor = function () {

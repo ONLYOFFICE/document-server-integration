@@ -188,8 +188,14 @@ def edit(request):
         }
     }
 
+    dataMailMergeRecipients = {
+        'fileType': 'csv',
+        'url': config.EXAMPLE_DOMAIN + 'csv'
+    }
+
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
@@ -199,7 +205,7 @@ def edit(request):
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
         'apiUrl': config.DOC_SERV_API_URL,
-        'mailMergeRecipientUrl': config.EXAMPLE_DOMAIN + "csv"
+        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients)
     }
     return render(request, 'editor.html', context)
 
