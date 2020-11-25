@@ -145,6 +145,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     ];
 
     $headerToken = "";
+    $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+
     if (isJwtEnabled()) {
         $headerToken = jwtEncode([ "payload" => $arr ]);
         $arr["token"] = jwtEncode($arr);
@@ -157,7 +159,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
                 'header'=> "Content-type: application/json\r\n" . 
                             "Accept: application/json\r\n" .
-                            (empty($headerToken) ? "" : "Authorization: $headerToken\r\n"),
+                            (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
                 'content' => $data
             )
         );

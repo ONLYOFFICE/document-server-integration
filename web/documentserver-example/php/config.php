@@ -18,6 +18,7 @@ $GLOBALS['DOC_SERV_API_URL'] = "web-apps/apps/api/documents/api.js";
 $GLOBALS['DOC_SERV_PRELOADER_URL'] = "web-apps/apps/api/documents/cache-scripts.html";
 
 $GLOBALS['DOC_SERV_JWT_SECRET'] = "";
+$GLOBALS['DOC_SERV_JWT_HEADER'] = "Authorization";
 
 $GLOBALS['EXAMPLE_URL'] = "";
 
