@@ -18,11 +18,14 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -64,13 +67,19 @@ public class EditorServlet extends HttpServlet
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"), request.getParameter("actionLink"));
         file.changeType(request.getParameter("mode"), request.getParameter("type"));
 
+        Map<String, Object> dataInsertImage = new HashMap<>();
+        dataInsertImage.put("fileType", "png");
+        dataInsertImage.put("url", DocumentManager.GetServerUrl() + "/css/img/logo.png");
+
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
         }
 
+        Gson gson = new Gson();
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
