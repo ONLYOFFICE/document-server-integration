@@ -29,61 +29,53 @@
 </head>
 <body>
     <header>
-        <a href="">
-            <img src="css/logo.png" alt="ONLYOFFICE">
+        <a href="https://www.onlyoffice.com/" target="_blank">
+            <img src="css/logo.svg" alt="ONLYOFFICE">
         </a>
     </header>
-    <div class="main-panel">
-        <span class="portal-name">ONLYOFFICE Integration Edition – Welcome!</span>
-        <br>
-        <br>
-        <span class="portal-descr">Congratulations! Your Document Server has successfully started. Now you can integrate ONLYOFFICE collaborative online document editing into your Web Application and use this Integration Edition to open, edit and save your own documents with the most popular file formats, such as .DOCX, .XLSX, .PPTX, etc. Our editors are fully implemented in HTML5!</span>
-        <ul class="features-list">
-            <li>Open, Edit and Save existing documents for in-browser editing using ONLYOFFICE Server documents.</li>
-            <li>Collaborative co-editing functions – chat, comments and other multi-user features.</li>
-            <li>Use of Auto-save function.</li>
-            <li>All editing operations are processed on this virtual machine. Your documents stay under your complete control.</li>
-        </ul>
-        <br>
-        <div class="help-block">
-            <span>Want to learn the magic?</span>
-            <br>
-            Explore ONLYOFFICE Integration Edition <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
-        </div>
-        <br>
-        <div class="help-block">
-            <span>Still not sure where to start?</span>
-            <br>
-            Give a try to our test example which will allow you to upload your own local Office files from your computer for testing. It can be easily run with the following commands:
-
-            <pre>sudo docker exec $(sudo docker ps -q) sudo supervisorctl start onlyoffice-documentserver:example</pre>
-
-            Add the example to the autostart:
-            <pre>sudo docker exec $(sudo docker ps -q) sudo sed 's,autostart=false,autostart=true,' -i /etc/supervisor/conf.d/onlyoffice-documentserver-example.conf</pre>
-
-            Once started the example will be available <a href="/example">here</a>.
-            <br>
-            Please note, that the example is used for demonstration purposes only and it can be accessed by anyone. Once you finish examining it, we recommend that you disable this example for security reasons.
-        </div>
-        <br>
-        <div class="help-block">
-            <span>Have license?</span>
-            <br>
-            If you bought Document Server and received the license.lic file, you can place it to your installation to obtain the software full version. In case you are a Debian based Linux distributive user, the license file is placed to the following folder: 
-            <pre>/var/www/onlyoffice/Data/license.lic</pre>
-            In case you are using the docker container, the license.lic file can be placed to any folder (e.g. /opt/onlyoffice/Data/license.lic), but you will need to mount this folder when the container starts:
-            <pre>docker run -itd -p 80:80 \
--v /opt/onlyoffice/Data:/var/www/onlyoffice/Data \
-onlyoffice4enterprise/documentserver-ee</pre>
-        </div>
-        <br>
-        <div class="help-block">
-            <span>Any questions?</span>
-            <br>
-            Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
+    <div class="gray-block">
+        <div class="content-block">
+            <h1 class="orange-text">ONLYOFFICE Docs installed</h1>
+            <h6>Congrats! You are using free Community Edition with 20 simultaneous connections (recommended for up to 20 users).</h6>
+            <h2>ONLYOFFICE Docs editions</h2>
+            <p>Need more simultaneous connections, clustering, and tech support? Check other editions.</p>
+            <div class="links-block">
+                <a href="https://www.onlyoffice.com/for-enterprises.aspx" target="_blank">Enterprise Edition</a>|
+                <a href="https://www.onlyoffice.com/developer-edition.aspx" target="_blank">Developer Edition</a>|
+                <a href="https://www.onlyoffice.com/compare-editions.aspx" target="_blank">Compare editions</a>
+            </div>
+            <p class="p-small">
+                If you have questions about the editions, contact <a href="mailto:sales@onlyoffice.com">sales@onlyoffice.com</a>.
+            </p>
+            <h2>Integration options</h2>
+            <p>Integrate ONLYOFFICE Docs into your sync&share app to enable editing and co-editing office docs.</p>
+            <div class="links-block">
+                <a href="https://www.onlyoffice.com/collaboration-platform.aspx" target="_blank">ONLYOFFICE Groups</a>|
+                <a href="https://www.onlyoffice.com/all-connectors.aspx" target="_blank">Connectors for existing syn&share apps</a>|
+                <a href="https://api.onlyoffice.com/editors/basic" target="_blank">Integration API for developers</a>
+            </div>
         </div>
     </div>
-
-    <footer>© Ascensio Systems SIA 2020. All rights reserved.</footer>
+    <div>
+        <div class="content-block">
+            <h1>Testing before integration</h1>
+            <p>Use the integrated test example, a simple doc management system, to check if the editors are running correctly and examine their functionality.</p>
+            <h3>Start test example:</h3>
+            <pre>`sudo docker exec 264c865ff35b sudo supervisorctl start ds:example`</pre>
+            <h3>Add it to the autostart:</h3>
+            <pre>`sudo docker exec 264c865ff35b sudo sed 's,autostart=false,autostart=true,' -i /etc/supervisor/conf.d/ds-example.conf`</pre>
+            <p>Once started the example will be available <a href="/example" target="_blank">here</a>.</p>
+        </div>
+    </div>
+    <div class="black-block">
+        <div class="content-block">
+            <h1>Getting help</h1>
+            <p>To get help with ONLYOFFICE Docs Community Edition, please create issues on 
+                <a href="https://github.com/ONLYOFFICE/" target="_blank">GitHub</a> or consider 
+               <a href="https://www.onlyoffice.com/support.aspx" target="_blank">premium support</a>.
+            </p>
+            <footer>© Ascensio Systems SIA 2020. All rights reserved.</footer>
+        </div>
+    </div>
 </body>
 </html>
