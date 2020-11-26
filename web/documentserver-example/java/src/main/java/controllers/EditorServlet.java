@@ -74,6 +74,7 @@ public class EditorServlet extends HttpServlet
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
+            dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));
         }
 
         Gson gson = new Gson();
