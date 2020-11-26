@@ -99,6 +99,10 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile({{ dataCompareFile | safe }});
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -111,6 +115,7 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onRequestCompareFile': onRequestCompareFile,
             };
 
             {% if history and historyData %}
