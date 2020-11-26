@@ -114,6 +114,11 @@
         ]
     ];
 
+    $dataInsertImage = [
+        "fileType" => "png",
+        "url" => serverPath() . "/css/images/logo.png"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
     }
@@ -308,6 +313,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+            })
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -328,6 +340,7 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onRequestInsertImage': onRequestInsertImage,
             };
 
             <?php
