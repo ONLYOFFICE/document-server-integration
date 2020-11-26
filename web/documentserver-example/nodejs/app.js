@@ -653,7 +653,11 @@ app.get("/editor", function (req, res) {
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            }
         };
 
         if (cfgSignatureEnable) {
