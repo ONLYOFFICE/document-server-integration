@@ -193,6 +193,7 @@ def edit(request):
 
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
