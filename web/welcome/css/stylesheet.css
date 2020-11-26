@@ -52,7 +52,7 @@ a:hover {
 }
 
 .black-block .content-block {
-    background-image: url(../css/isa2_help.svg), url(../css/isa2_github.svg);
+    background-image: url(../css/footer_help.svg), url(../css/footer_github.svg);
     background-position: 0 64px, 100% 48px;
     background-repeat: no-repeat;
     box-sizing: border-box;
