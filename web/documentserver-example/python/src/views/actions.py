@@ -193,6 +193,7 @@ def edit(request):
 
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
