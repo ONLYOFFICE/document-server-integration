@@ -121,6 +121,7 @@
 
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataInsertImage["token"] = jwtEncode($dataInsertImage);
     }
 
     function tryGetDefaultByType($createExt) {
