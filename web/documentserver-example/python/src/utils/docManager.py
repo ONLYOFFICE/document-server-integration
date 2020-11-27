@@ -128,7 +128,7 @@ def getRootFolder(req):
 def getStoragePath(filename, req):
     directory = getRootFolder(req)
 
-    return os.path.join(directory, filename)
+    return os.path.join(directory, fileUtils.getFileName(filename))
 
 def getStoredFiles(req):
     directory = getRootFolder(req)
