@@ -317,7 +317,7 @@ function delTree($dir) {
 }
 
 function download(){
-    $fileName = $_GET["name"];
+    $fileName = basename($_GET["name"]);
     $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
     if (file_exists($file)) {
         if (ob_get_level()) {
