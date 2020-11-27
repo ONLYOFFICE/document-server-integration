@@ -121,6 +121,7 @@
 
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataCompareFile["token"] = jwtEncode($dataCompareFile);
     }
 
     function tryGetDefaultByType($createExt) {
