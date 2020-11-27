@@ -74,6 +74,7 @@ public class EditorServlet extends HttpServlet
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
+            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));
         }
 
         Gson gson = new Gson();
