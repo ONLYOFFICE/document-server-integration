@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileModel;
+import helpers.FileUtility;
 
 
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
@@ -39,7 +40,7 @@ public class EditorServlet extends HttpServlet
     {
         DocumentManager.Init(request, response);
 
-        String fileName = request.getParameter("fileName");
+        String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
         String fileExt = request.getParameter("fileExt");
         String sample = request.getParameter("sample");
 
