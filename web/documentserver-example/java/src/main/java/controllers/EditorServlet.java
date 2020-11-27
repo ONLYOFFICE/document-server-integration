@@ -18,11 +18,14 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -64,13 +67,19 @@ public class EditorServlet extends HttpServlet
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"), request.getParameter("actionLink"));
         file.changeType(request.getParameter("mode"), request.getParameter("type"));
 
+        Map<String, Object> dataCompareFile = new HashMap<>();
+        dataCompareFile.put("fileType", "docx");
+        dataCompareFile.put("url", DocumentManager.GetServerUrl() + "/IndexServlet?type=download&name=sample.docx");
+
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
         }
 
+        Gson gson = new Gson();
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
