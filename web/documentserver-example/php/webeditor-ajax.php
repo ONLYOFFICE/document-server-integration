@@ -64,6 +64,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = delete();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "download":
+            $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -310,6 +314,28 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
+}
+
+function download(){
+    $fileName = $_GET["name"];
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
+    if (file_exists($file)) {
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        @header('Content-Length: ' . filesize($file));
+        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
+        @header('Content-Type: ' . mime_content_type($file));
+
+
+        if ($fd = fopen($file, 'rb')) {
+            while (!feof($fd)) {
+                print fread($fd, 1024);
+            }
+            fclose($fd);
+        }
+        exit;
+    }
 }
 
 ?>
