@@ -1,6 +1,3 @@
-
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](https://opensource.org/licenses/MIT) ![Release](https://img.shields.io/badge/Release-v4.1.2-blue.svg?style=flat)
-
 ## Document Server integration example
 
 These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby.
@@ -14,6 +11,56 @@ You should change `http://documentserver` to your server address in these files:
 * Ruby - `web/documentserver-example/ruby/config/application.rb`
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
+
+## API methods for test examples
+
+The methods described below are available for all of the test examples.
+
+### POST `/upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /upload                                                      |
+| **Method**             | POST                                                         |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "Uploaded file not found" }` <br /> Or <br /> `{ "error": "File size is incorrect" }` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload` |
+
+
+### DELETE `/file`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file or all files                                 |
+| **URL**            | /file                                                        |
+| **Method**         | DELETE                                                       |
+| ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/file?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/file`<br /> |
+
+
+### GET `/files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/files/`                        |
+
+
+### GET `/files/file/{fileId}`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about a file by file id                      |
+| **URL**            | /files/file/{fileId}                                         |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br />**Content on success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}]`<br />**Content on error:**<br /> `"File not found"` |
+| **Sample**         | `curl -X GET http://localhost/files/{fileId}`                |
 
 ## Project Information
 

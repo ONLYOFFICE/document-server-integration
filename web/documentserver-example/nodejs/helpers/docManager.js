@@ -1,29 +1,21 @@
 "use strict";
-/*
+/**
  *
  * (c) Copyright Ascensio System SIA 2020
  *
- * The MIT License (MIT)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-*/
+ */
 
 const path = require("path");
 const fileSystem = require("fs");
@@ -375,6 +367,38 @@ docManager.cleanFolderRecursive = function (folder, me) {
             fileSystem.rmdirSync(folder);
         }
     }
+};
+
+docManager.getFilesInfo = function (fileId) {
+    const userAddress = docManager.curUserHostAddress();
+    const directory = path.join(docManager.dir, userAddress);
+    const filesInDirectory = this.getStoredFiles();
+    let responseArray = [];
+    let responseObject;
+    for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile++) {
+        const file = filesInDirectory[currentFile];
+        const stats = fileSystem.lstatSync(path.join(directory, file.name));
+        const fileObject = {
+            version: file.version,
+            id: this.getKey(file.name),
+            contentLength: `${(stats.size/1024).toFixed(2)} KB`,
+            pureContentLength: stats.size, 
+            title: file.name,
+            updated: stats.mtime
+        };
+        if (fileId !== undefined) {
+            if (this.getKey(file.name) == fileId) {
+                responseObject = fileObject; 
+                break;
+            }
+        }
+        else responseArray.push(fileObject);
+    };
+    if (fileId !== undefined) {
+        if (responseObject !== undefined) return responseObject;
+        else return "File not found";
+    }
+    else return responseArray;
 };
 
 module.exports = docManager;

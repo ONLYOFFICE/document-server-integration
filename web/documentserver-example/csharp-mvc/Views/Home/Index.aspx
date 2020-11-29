@@ -1,30 +1,4 @@
-﻿<!--*
- *
- * (c) Copyright Ascensio System SIA 2020
- *
- * The MIT License (MIT)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-*-->
-
-<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
+﻿<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
@@ -37,6 +11,23 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
+    <!--
+    *
+    * (c) Copyright Ascensio System SIA 2020
+    *
+    * Licensed under the Apache License, Version 2.0 (the "License");
+    * you may not use this file except in compliance with the License.
+    * You may obtain a copy of the License at
+    *
+    *     http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+    *
+    -->
     <title>ONLYOFFICE</title>
 
     <link href="<%: Url.Content("~/favicon.ico") %>" rel="shortcut icon" type="image/x-icon" />
@@ -70,22 +61,32 @@
                     <td width="30%" valign="middle">
                         <select class="select-user" id="language">
                             <option value="en">English</option>
+                            <option value="be">Belarusian</option>
                             <option value="bg">Bulgarian</option>
+                            <option value="ca">Catalan</option>
                             <option value="zh">Chinese</option>
                             <option value="cs">Czech</option>
+                            <option value="da">Danish</option>
                             <option value="nl">Dutch</option>
+                            <option value="fi">Finnish</option>
                             <option value="fr">French</option>
                             <option value="de">German</option>
+                            <option value="el">Greek</option>
                             <option value="hu">Hungarian</option>
+                            <option value="id">Indonesian</option>
                             <option value="it">Italian</option>
                             <option value="ja">Japanese</option>
                             <option value="ko">Korean</option>
                             <option value="lv">Latvian</option>
+                            <option value="lo">Lao</option>
+                            <option value="nb">Norwegian</option>
                             <option value="pl">Polish</option>
                             <option value="pt">Portuguese</option>
+                            <option value="ro">Romanian</option>
                             <option value="ru">Russian</option>
                             <option value="sk">Slovak</option>
                             <option value="sl">Slovenian</option>
+                            <option value="sv">Swedish</option>
                             <option value="es">Spanish</option>
                             <option value="tr">Turkish</option>
                             <option value="uk">Ukrainian</option>

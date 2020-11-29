@@ -21,7 +21,7 @@
     "exampleUrl": null,
     "viewedDocs": [".pdf", ".djvu", ".xps"],
     "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".txt"],
-    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub"],
+    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub", ".fb2"],
     "storageFolder": "./files",
     "storagePath": "/files",
     "maxFileSize": 1073741824,
