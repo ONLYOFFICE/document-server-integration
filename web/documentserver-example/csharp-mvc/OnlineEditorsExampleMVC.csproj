@@ -172,7 +172,7 @@
     <Content Include="Content\stylesheet.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="LICENSE.txt" />
+    <Content Include="LICENSE" />
     <Content Include="ReadMe.txt" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-ui.js" />
@@ -191,6 +191,7 @@
     <Content Include="licenses\EntityFramework.license" />
     <Content Include="licenses\Microsoft.Web.Infrastructure.license" />
     <Content Include="licenses\Newtonsoft.Json.license" />
+    <Content Include="licenses\jquery.license" />
     <Content Include="licenses\WebGrease.license" />
     <Content Include="web.appsettings.config" />
     <Content Include="WebEditor.ashx" />

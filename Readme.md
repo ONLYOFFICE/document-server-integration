@@ -1,6 +1,3 @@
-
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](https://opensource.org/licenses/MIT) ![Release](https://img.shields.io/badge/Release-v6.0.0-blue.svg?style=flat)
-
 ## Document Server integration example
 
 These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby.
@@ -36,7 +33,7 @@ The methods described below are available for all of the test examples.
 
 |                    |                                                              |
 | ------------------ | ------------------------------------------------------------ |
-| **Summary**        | Delete one file or all files                     
+| **Summary**        | Delete one file or all files                                 |
 | **URL**            | /file                                                        |
 | **Method**         | DELETE                                                       |
 | ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
