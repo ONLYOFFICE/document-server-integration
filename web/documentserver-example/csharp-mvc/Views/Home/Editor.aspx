@@ -74,6 +74,12 @@
             location.reload(true);
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            <% string dataMailMergeRecipients; %>
+            <% Model.GetMailMergeConfig(out dataMailMergeRecipients,Url); %>
+            docEditor.setMailMergeRecipients(JSON.stringify(<%= dataMailMergeRecipients%>));
+        };
+
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -108,6 +114,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <% string hist, histData; %>

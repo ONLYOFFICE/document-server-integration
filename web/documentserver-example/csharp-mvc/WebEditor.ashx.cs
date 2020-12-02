@@ -22,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
-using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using OnlineEditorsExampleMVC.Helpers;
@@ -49,6 +48,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "remove":
                     Remove(context);
+                    break;
+                case "csv":
+                    GetCsv(context);
                     break;
             }
         }
@@ -294,6 +296,28 @@ namespace OnlineEditorsExampleMVC
                     }
                 }
             }
+        }
+        private static void GetCsv(HttpContext context)
+        {
+            var filename = "csv.csv";
+            var csvPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "App_Data"), filename);
+            var fileinf = new FileInfo(filename);
+            context.Response.AddHeader("Content-Length", BytesToString(fileinf.Length));
+            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
+            var tmp = HttpUtility.UrlEncode(filename);
+            tmp = tmp.Replace("+", "%20");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
+            context.Response.TransmitFile(filename);
+        }
+        public static String BytesToString(long byteCount)
+        {
+            string[] suf = { "Byt", "KB", "MB", "GB", "TB", "PB", "EB" }; //
+            if (byteCount == 0)
+                return "0" + suf[0];
+            long bytes = Math.Abs(byteCount);
+            int place = System.Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
 
         public bool IsReusable

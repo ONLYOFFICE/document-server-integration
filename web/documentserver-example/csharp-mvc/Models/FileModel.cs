@@ -148,6 +148,22 @@ namespace OnlineEditorsExampleMVC.Models
             return jss.Serialize(config);
         }
 
+        public void GetMailMergeConfig(out string dataMailMergeRecipients, UrlHelper url)
+        {
+            dataMailMergeRecipients = null;
+            var jss = new JavaScriptSerializer();
+            var mailMergeConfig = new Dictionary<string, object>
+            {
+                { "fileType", "csv" },
+                { "url", url.Content("~/webeditor.ashx?type=csv")}
+            };
+            if (JwtManager.Enabled)
+            {
+                var mailmergeToken = JwtManager.Encode(mailMergeConfig);
+                mailMergeConfig.Add("token", mailmergeToken);
+            }
+            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+        }
         public void GetHistory(out string history, out string historyData)
         {
             var jss = new JavaScriptSerializer();
