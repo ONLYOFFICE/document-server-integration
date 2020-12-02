@@ -107,6 +107,10 @@
             }
             return link;
         }
+        var onRequestMailMergeRecipients = function (event) {
+
+            docEditor.setMailMergeRecipients(JSON.stringify(<%= dataMailMergeRecipients%>));
+        };
 
         var onMakeActionLink = function (event) {
             var actionData = event.data;
@@ -126,6 +130,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))

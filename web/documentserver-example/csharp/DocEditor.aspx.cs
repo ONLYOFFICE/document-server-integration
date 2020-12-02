@@ -55,6 +55,7 @@ namespace OnlineEditorsExample
         protected string DocConfig { get; private set; }
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
+        protected string dataMailMergeRecipients { get; private set; }
 
         public static string CallbackUrl
         {
@@ -185,9 +186,20 @@ namespace OnlineEditorsExample
 
             try
             {
+                var mailMergeConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "csv" },
+                    { "url", _Default.Host + "~webeditor.ashx?type=csv"}
+                };
+                if (JwtManager.Enabled)
+                {
+                    var mailmergeToken = JwtManager.Encode(mailMergeConfig);
+                    mailMergeConfig.Add("token", mailmergeToken);
+                }
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
                 GetHistory(out hist, out histData);
+                dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
                 if (hist != null && histData != null)
                 {
                     History = jss.Serialize(hist);
