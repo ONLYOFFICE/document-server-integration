@@ -108,8 +108,7 @@
             return link;
         }
         var onRequestMailMergeRecipients = function (event) {
-
-            docEditor.setMailMergeRecipients(JSON.stringify(<%= dataMailMergeRecipients%>));
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
         };
 
         var onMakeActionLink = function (event) {

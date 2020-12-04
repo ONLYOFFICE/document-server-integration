@@ -243,24 +243,14 @@ namespace OnlineEditorsExample
         private static void GetCsv(HttpContext context)
         {
             var filename = "csv.csv";
-            var csvPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "App_Data"), filename);
-            var fileinf = new FileInfo(filename);
-            context.Response.AddHeader("Content-Length", BytesToString(fileinf.Length));
+            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + filename;
+            FileInfo fileinf = new FileInfo(csvPath);
+            context.Response.AddHeader("Content-Length", "" + fileinf.Length);
             context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
-            var tmp = HttpUtility.UrlEncode(filename);
+            var tmp = HttpUtility.UrlEncode(csvPath);
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            context.Response.TransmitFile(filename);
-        }
-        public static String BytesToString(long byteCount)
-        {
-            string[] suf = { "Byt", "KB", "MB", "GB", "TB", "PB", "EB" }; //
-            if (byteCount == 0)
-                return "0" + suf[0];
-            long bytes = Math.Abs(byteCount);
-            int place = System.Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return (Math.Sign(byteCount) * num).ToString() + suf[place];
+            context.Response.TransmitFile(csvPath);
         }
         public bool IsReusable
         {

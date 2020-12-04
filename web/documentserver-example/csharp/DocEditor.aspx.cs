@@ -186,10 +186,16 @@ namespace OnlineEditorsExample
 
             try
             {
+                var mailmergeUrl = _Default.Host;
+                mailmergeUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                mailmergeUrl.Query = "type=csv";               
                 var mailMergeConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", _Default.Host + "~webeditor.ashx?type=csv"}
+                    { "url", mailmergeUrl.ToString()}
                 };
                 if (JwtManager.Enabled)
                 {
