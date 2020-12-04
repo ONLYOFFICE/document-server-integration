@@ -55,7 +55,7 @@ namespace OnlineEditorsExample
         protected string DocConfig { get; private set; }
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
-
+        protected string InsertImageConfig { get; private set; }
         public static string CallbackUrl
         {
             get
@@ -185,8 +185,27 @@ namespace OnlineEditorsExample
 
             try
             {
+                var InsertImageUrl = _Default.Host;
+                InsertImageUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                     + "App_Themes\\images\\logo.png";
+                var logoConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "png"},
+                    { "url", InsertImageUrl.ToString()}
+                };
+                if (JwtManager.Enabled)
+                {
+                    var insImageToken = JwtManager.Encode(logoConfig);
+                    logoConfig.Add("token", insImageToken);
+                }
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
+                var tmp = jss.Serialize(logoConfig);
+                tmp = tmp.Replace("{", "");
+                tmp = tmp.Replace("}", "");
+                InsertImageConfig = tmp;
                 GetHistory(out hist, out histData);
                 if (hist != null && histData != null)
                 {

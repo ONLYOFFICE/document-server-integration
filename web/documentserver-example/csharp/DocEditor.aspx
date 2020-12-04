@@ -108,6 +108,13 @@
             return link;
         }
 
+        var onRequestInsertImage = function (event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= InsertImageConfig%>
+            })
+        };
+
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
@@ -126,6 +133,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            'onRequestInsertImage': onRequestInsertImage,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
