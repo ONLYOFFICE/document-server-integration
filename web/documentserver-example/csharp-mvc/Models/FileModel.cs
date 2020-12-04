@@ -147,7 +147,31 @@ namespace OnlineEditorsExampleMVC.Models
 
             return jss.Serialize(config);
         }
-
+        public void GetLogoConfig(out string logoUrl)
+        {
+            var jss = new JavaScriptSerializer();
+            var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                     + "Content\\images\\logo.png"
+            };
+            var logoConfig = new Dictionary<string, object>
+            {
+                { "fileType", "png"},
+                { "url", mailMergeUrl.ToString()} 
+            };
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(logoConfig);
+                logoConfig.Add("token", token);
+            }
+            var tmp = jss.Serialize(logoConfig);
+            tmp = tmp.Replace("{", "");
+            tmp = tmp.Replace("}", "");
+            logoUrl = tmp;
+        }
         public void GetHistory(out string history, out string historyData)
         {
             var jss = new JavaScriptSerializer();

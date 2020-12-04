@@ -74,6 +74,14 @@
             location.reload(true);
         };
 
+        var onRequestInsertImage = function (event) {
+            <% string logoUrl;%>
+            <% Model.GetLogoConfig(out logoUrl); %>
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= logoUrl%>
+            })
+        };
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -108,6 +116,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onRequestInsertImage": onRequestInsertImage,
         };
 
         <% string hist, histData; %>
