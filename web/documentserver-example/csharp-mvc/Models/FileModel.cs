@@ -148,14 +148,21 @@ namespace OnlineEditorsExampleMVC.Models
             return jss.Serialize(config);
         }
 
-        public void GetMailMergeConfig(out string dataMailMergeRecipients, UrlHelper url)
+        public void GetMailMergeConfig(out string dataMailMergeRecipients)
         {
-            dataMailMergeRecipients = null;
             var jss = new JavaScriptSerializer();
+            var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=csv"
+            };
             var mailMergeConfig = new Dictionary<string, object>
             {
                 { "fileType", "csv" },
-                { "url", url.Content("~/webeditor.ashx?type=csv")}
+                { "url", mailMergeUrl.ToString()}
             };
             if (JwtManager.Enabled)
             {

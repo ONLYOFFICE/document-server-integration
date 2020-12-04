@@ -76,8 +76,8 @@
 
         var onRequestMailMergeRecipients = function (event) {
             <% string dataMailMergeRecipients; %>
-            <% Model.GetMailMergeConfig(out dataMailMergeRecipients,Url); %>
-            docEditor.setMailMergeRecipients(JSON.stringify(<%= dataMailMergeRecipients%>));
+            <% Model.GetMailMergeConfig(out dataMailMergeRecipients); %>
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
         };
 
         var replaceActionLink = function(href, linkParam) {
