@@ -389,7 +389,7 @@ public class IndexServlet extends HttpServlet
 
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Type", fileType);
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + fileName);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + file.getName());
 
         BufferedInputStream inputStream = null;
         try {
