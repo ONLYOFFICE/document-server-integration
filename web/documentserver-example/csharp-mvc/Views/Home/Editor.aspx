@@ -74,6 +74,12 @@
             location.reload(true);
         };
 
+        var onRequestCompareFile = function () {
+            <% string compareFileData; %>
+            <% Model.GetCompareFileData(out compareFileData); %>
+            docEditor.setRevisedFile(<%=compareFileData%>);
+        };
+
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -108,6 +114,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onRequestCompareFile": onRequestCompareFile,
         };
 
         <% string hist, histData; %>
