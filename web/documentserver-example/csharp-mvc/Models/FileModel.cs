@@ -208,7 +208,11 @@ namespace OnlineEditorsExampleMVC.Models
                         });
                         dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
                     }
-
+                    if(JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);
                     histData.Add(i.ToString(), dataObj);
                 }
