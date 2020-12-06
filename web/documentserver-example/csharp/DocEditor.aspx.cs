@@ -256,7 +256,11 @@ namespace OnlineEditorsExample
                         });
                         dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i), "diff.zip")));
                     }
-
+                    if (JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);
                     histData.Add(i.ToString(), dataObj);
                 }
