@@ -203,11 +203,11 @@ documentService.checkJwtHeader = function (req) {
   return decoded;
 }
 
-documentService.fillJwtByUrl = function (uri, opt_dataObject, opt_iss, opt_payloadhash) {
+documentService.fillJwtByUrl = function (uri, opt_dataObject) {
   var parseObject = urlModule.parse(uri, true);
-  var payload = {query: parseObject.query, payload: opt_dataObject, payloadhash: opt_payloadhash};
+  var payload = {query: parseObject.query, payload: opt_dataObject};
 
-  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn, issuer: opt_iss};
+  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
   return jwt.sign(payload, cfgSignatureSecret, options);
 }
 
