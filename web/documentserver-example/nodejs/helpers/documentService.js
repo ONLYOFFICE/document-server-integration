@@ -75,7 +75,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         params.token = documentService.getToken(params);
     }
 
-    urllib.request(uri,
+    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(urlModule.parse(uri),
         {
             method: "POST",
             headers: headers,
@@ -180,7 +181,8 @@ documentService.commandRequest = function (method, documentRevisionId, callback)
         params.token = documentService.getToken(params);
     }
 
-    urllib.request(uri,
+    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(urlModule.parse(uri),
         {
             method: "POST",
             headers: headers,
