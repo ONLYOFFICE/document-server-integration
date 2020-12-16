@@ -54,8 +54,10 @@
         };
 
         var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
             var title = document.title.replace(/^\☆/g, "");
-            document.title = (event.data.favorite ? "☆" : "") + title;
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
         };
 
         var onRequestEditRights = function () {
