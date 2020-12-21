@@ -1,0 +1,4 @@
+[submodule "web/documentserver-example/nodejs/public/assets"]
+	path = web/documentserver-example/nodejs/public/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
