@@ -343,7 +343,7 @@ app.get("/csv", function (req, res) {
     var csvPath = path.join(__dirname, "public", "samples", fileName);
 
     res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
-    res.setHeader("Content-Type", mime.lookup(csvPath));
+    res.setHeader("Content-Type", mime.getType(csvPath));
 
     res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
