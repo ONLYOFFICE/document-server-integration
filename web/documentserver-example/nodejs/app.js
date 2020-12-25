@@ -123,7 +123,7 @@ app.get("/download", function(req, res) {
     }
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
-    res.setHeader("Content-Type", mime.lookup(path));
+    res.setHeader("Content-Type", mime.getType(path));
 
     res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
