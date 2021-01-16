@@ -224,9 +224,10 @@ public class DocumentManager
     public static String CreateDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception
     {
         String demoName = (sample ? "sample." : "new.") + fileExt;
+        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;
         String fileName = GetCorrectName(demoName);
 
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoName);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);
 
         File file = new File(StoragePath(fileName, null));
 

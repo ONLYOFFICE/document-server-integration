@@ -2,3 +2,7 @@
 	path = web/documentserver-example/nodejs/public/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/java/src/main/resources/assets"]
+	path = web/documentserver-example/java/src/main/resources/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
