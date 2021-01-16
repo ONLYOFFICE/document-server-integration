@@ -10,3 +10,7 @@
 	path = web/documentserver-example/php/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/python/assets"]
+	path = web/documentserver-example/python/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
