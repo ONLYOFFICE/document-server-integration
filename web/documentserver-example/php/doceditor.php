@@ -119,10 +119,11 @@
     }
 
     function tryGetDefaultByType($createExt) {
-        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
+        $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
+        $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
+        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
         {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             //Copy error!!!
