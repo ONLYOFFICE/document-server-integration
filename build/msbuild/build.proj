@@ -1,7 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <UsingTask AssemblyFile="App_Data\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.Zip" />
-
   <PropertyGroup>
     <To Condition=" '$(To)' == '' ">..\deploy\</To>
 
@@ -11,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectToBuild Include="$(DirCSharp)OnlineEditorsExample.csproj"/>
-    <ProjectToBuild Include="$(DirMvc)OnlineEditorsExampleMVC.csproj"/>
+    <ProjectToBuild Include="$(DirCSharp)OnlineEditorsExample.sln"/>
+    <ProjectToBuild Include="$(DirMvc)OnlineEditorsExampleMVC.sln"/>
   </ItemGroup>
 
   <Target Name="Build">

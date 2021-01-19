@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -24,7 +23,6 @@
     * limitations under the License.
     *
     -->
-
     <title>ONLYOFFICE</title>
     <link rel="icon"
         href="images/<%- editor.documentType %>.ico"
@@ -113,7 +111,7 @@
 
         var connectEditor = function () {
 
-            docEditor = new DocsAPI.DocEditor("iframeEditor", {<% include config %>,
+            docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
                     events: {
                         "onAppReady": onAppReady,
                         "onDocumentStateChange": onDocumentStateChange,

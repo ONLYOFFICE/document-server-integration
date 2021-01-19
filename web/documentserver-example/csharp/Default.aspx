@@ -10,7 +10,6 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>ONLYOFFICE</title>
-
     <!--
     *
     * (c) Copyright Ascensio System SIA 2020
@@ -28,7 +27,6 @@
     * limitations under the License.
     *
     -->
-
     <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
@@ -83,22 +81,32 @@
                         <td width="30%" valign="middle">
                             <select class="select-user" id="language">
                                 <option value="en">English</option>
+                                <option value="be">Belarusian</option>
                                 <option value="bg">Bulgarian</option>
+                                <option value="ca">Catalan</option>
                                 <option value="zh">Chinese</option>
                                 <option value="cs">Czech</option>
+                                <option value="da">Danish</option>
                                 <option value="nl">Dutch</option>
+                                <option value="fi">Finnish</option>
                                 <option value="fr">French</option>
                                 <option value="de">German</option>
+                                <option value="el">Greek</option>
                                 <option value="hu">Hungarian</option>
+                                <option value="id">Indonesian</option>
                                 <option value="it">Italian</option>
                                 <option value="ja">Japanese</option>
                                 <option value="ko">Korean</option>
                                 <option value="lv">Latvian</option>
+                                <option value="lo">Lao</option>
+                                <option value="nb">Norwegian</option>
                                 <option value="pl">Polish</option>
                                 <option value="pt">Portuguese</option>
+                                <option value="ro">Romanian</option>
                                 <option value="ru">Russian</option>
                                 <option value="sk">Slovak</option>
                                 <option value="sl">Slovenian</option>
+                                <option value="sv">Swedish</option>
                                 <option value="es">Spanish</option>
                                 <option value="tr">Turkish</option>
                                 <option value="uk">Ukrainian</option>
