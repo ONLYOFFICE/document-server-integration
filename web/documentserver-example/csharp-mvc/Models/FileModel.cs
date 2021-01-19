@@ -64,6 +64,14 @@ namespace OnlineEditorsExampleMVC.Models
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var userId = request.Cookies.GetOrDefault("uid", "uid-1");
+            var userGroup = userId.Equals("uid-1") ? null : userId;
+            var rereviewPermissions = userGroup != null ? new Dictionary<string, object>
+                {
+                    { "uid-2" , new List<string>() { "uid-2", "" } },
+                    { "uid-3" , new List<string>() { "uid-2" } }
+                } : null;
+
             var actionLink = request.GetOrDefault("actionLink", null);
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
@@ -109,8 +117,9 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", userId },
+                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") },
+                                            { "group", userGroup }
                                         }
                                 },
                                 {
@@ -132,7 +141,8 @@ namespace OnlineEditorsExampleMVC.Models
                                                     {
                                                         { "url", url.Action("Index", "Home") }
                                                     }
-                                            }
+                                            },
+                                            { "reviewPermissions", rereviewPermissions }
                                         }
                                 }
                             }
