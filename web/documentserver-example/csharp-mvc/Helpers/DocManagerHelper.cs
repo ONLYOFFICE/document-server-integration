@@ -114,14 +114,15 @@ namespace OnlineEditorsExampleMVC.Helpers
             return name;
         }
 
-        public static List<string> GetStoredFiles()
+        public static List<FileInfo> GetStoredFiles()
         {
             var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
-            if (!Directory.Exists(directory)) return new List<string>();
+            if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
 
-            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Select(fileInfo => fileInfo.Name).ToList();
+            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+
             return storedFiles;
         }
 
@@ -200,6 +201,25 @@ namespace OnlineEditorsExampleMVC.Helpers
                 default:
                     return ".docx";
             }
+        }
+
+        public static List<Dictionary<string, string>> GetFilesInfo()
+        {
+            var files = new List<Dictionary<string, string>>();
+
+            foreach (var file in GetStoredFiles())
+            {
+                var dictionary = new Dictionary<string, string>();
+                dictionary.Add("version", GetFileVersion(file.Name, null).ToString());
+                dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file.Name + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(file.Name, null)).GetHashCode()));
+                dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
+                dictionary.Add("pureContentLength", file.Length.ToString());
+                dictionary.Add("title", file.Name);
+                dictionary.Add("updated", file.LastWriteTime.ToString());
+                files.Add(dictionary);
+            }
+
+            return files;
         }
     }
 }
