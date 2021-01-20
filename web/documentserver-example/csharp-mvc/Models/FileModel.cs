@@ -162,18 +162,18 @@ namespace OnlineEditorsExampleMVC.Models
                 var hist = new List<Dictionary<string, object>>();
                 var histData = new Dictionary<string, object>();
 
-                for (var i = 0; i <= currentVersion; i++)
+                for (var i = 1; i <= currentVersion; i++)
                 {
                     var obj = new Dictionary<string, object>();
                     var dataObj = new Dictionary<string, object>();
-                    var verDir = DocManagerHelper.VersionDir(histDir, i + 1);
+                    var verDir = DocManagerHelper.VersionDir(histDir, i);
 
                     var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
 
                     obj.Add("key", key);
                     obj.Add("version", i);
 
-                    if (i == 0)
+                    if (i == 1)
                     {
                         var infoPath = Path.Combine(histDir, "createdInfo.json");
 
@@ -191,9 +191,9 @@ namespace OnlineEditorsExampleMVC.Models
                     dataObj.Add("key", key);
                     dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
                     dataObj.Add("version", i);
-                    if (i > 0)
+                    if (i > 1)
                     {
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "changes.json")));
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
                         var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
 
                         obj.Add("changes", changes["changes"]);
@@ -201,16 +201,16 @@ namespace OnlineEditorsExampleMVC.Models
                         obj.Add("created", change["created"]);
                         obj.Add("user", change["user"]);
 
-                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];
                         dataObj.Add("previous", new Dictionary<string, object>() {
                             { "key", prev["key"] },
                             { "url", prev["url"] },
                         });
-                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
+                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
                     }
 
                     hist.Add(obj);
-                    histData.Add(i.ToString(), dataObj);
+                    histData.Add((i - 1).ToString(), dataObj);
                 }
 
                 history = jss.Serialize(new Dictionary<string, object>()

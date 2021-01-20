@@ -216,7 +216,7 @@ namespace OnlineEditorsExampleMVC
                     {
                         var storagePath = DocManagerHelper.StoragePath(fileName, userAddress);
                         var histDir = DocManagerHelper.HistoryDir(storagePath);
-                        var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir) + 1);
+                        var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));
 
                         if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
 

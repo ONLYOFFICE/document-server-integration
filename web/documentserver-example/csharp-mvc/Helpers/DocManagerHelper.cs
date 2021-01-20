@@ -93,7 +93,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static int GetFileVersion(string historyPath)
         {
             if (!Directory.Exists(historyPath)) return 0;
-            return Directory.EnumerateDirectories(historyPath).Count();
+            return Directory.EnumerateDirectories(historyPath).Count() + 1;
         }
 
         public static int GetFileVersion(string fileName, string userAddress)
@@ -141,7 +141,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             var histDir = HistoryDir(StoragePath(fileName, null));
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString() },
+                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", string.IsNullOrEmpty(uid) ? "uid-1" : uid },
                 { "name", string.IsNullOrEmpty(uname) ? "John Smith" : uname }
             }));
