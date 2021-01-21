@@ -281,7 +281,7 @@
         <div id="cancelEdit" class="button gray">Cancel</div>
     </div>
 
-    <span id="loadScripts" data-docs="<%= WebConfigurationManager.AppSettings["files.docservice.url.preloader"] %>"></span>
+    <span id="loadScripts" data-docs="<%= WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"] %>"></span>
 
     <div class="bottom-panel">&copy; Ascensio System SIA <%= DateTime.Now.Year.ToString() %>. All rights reserved.</div>
 

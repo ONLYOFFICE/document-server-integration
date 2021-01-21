@@ -41,7 +41,7 @@
         </div>
     </div>
     
-    <%: Scripts.Render(new []{ WebConfigurationManager.AppSettings["files.docservice.url.api"] }) %>
+    <%: Scripts.Render(new []{ WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.api"] }) %>
 
     <script type="text/javascript" language="javascript">
 

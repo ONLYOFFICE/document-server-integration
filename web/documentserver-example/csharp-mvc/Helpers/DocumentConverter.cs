@@ -38,7 +38,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// </summary>
         static ServiceConverter()
         {
-            DocumentConverterUrl = WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "";
+            DocumentConverterUrl = (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? "") + (WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "");
 
             Int32.TryParse(WebConfigurationManager.AppSettings["files.docservice.timeout"], out ConvertTimeout);
             ConvertTimeout = ConvertTimeout > 0 ? ConvertTimeout : 120000;
