@@ -34,7 +34,12 @@ namespace OnlineEditorsExampleMVC.Models
 
         public string FileUri
         {
-            get { return DocManagerHelper.GetFileUri(FileName); }
+            get { return DocManagerHelper.GetFileUri(FileName, true); }
+        }
+
+        public string FileUriUser
+        {
+            get { return DocManagerHelper.GetFileUri(FileName, false); }
         }
 
         public string FileName { get; set; }
@@ -116,9 +121,9 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUri },
-                                            { "embedUrl", FileUri },
-                                            { "shareUrl", FileUri },
+                                            { "saveUrl", FileUriUser },
+                                            { "embedUrl", FileUriUser },
+                                            { "shareUrl", FileUriUser },
                                             { "toolbarDocked", "top" }
                                         }
                                 },
