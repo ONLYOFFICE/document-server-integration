@@ -48,6 +48,9 @@ namespace OnlineEditorsExample
                 case "remove":
                     Remove(context);
                     break;
+                case "files":
+                    Files(context);
+                    break;
             }
         }
 
@@ -208,6 +211,21 @@ namespace OnlineEditorsExample
                 if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
 
                 context.Response.Write("{ \"success\": true }");
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Files(HttpContext context)
+        {
+            context.Response.ContentType = "application/json";
+            try
+            {
+                var files = _Default.GetFilesInfo();
+                var jss = new JavaScriptSerializer();
+                context.Response.Write(jss.Serialize(files));
             }
             catch (Exception e)
             {

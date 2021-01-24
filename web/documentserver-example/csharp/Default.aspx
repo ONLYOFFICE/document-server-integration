@@ -168,18 +168,18 @@
                             <% foreach (var storedFile in storedFiles)
                                { %>
                                 <%
-                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile);
-                                    var docType = DocumentType(storedFile);
+                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                    var docType = DocumentType(storedFile.Name);
                                 %>
-                                <tr class="tableRow" title="<%= storedFile %>">
+                                <tr class="tableRow" title="<%= storedFile.Name %>">
                                     <td class="contentCells">
                                         <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
-                                            <span title="<%= storedFile %>"><%= storedFile %></span>
+                                            <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
                                         </a>
-                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">
+                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile.Name %>">
                                             <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
                                         </a>
-                                        <a class="delete-file" data-filename="<%= storedFile %>">
+                                        <a class="delete-file" data-filename="<%= storedFile.Name %>">
                                             <img class="icon-delete" src="app_themes/images/delete-24.png" alt="Delete" title="Delete" />
                                         </a>
                                     </td>
