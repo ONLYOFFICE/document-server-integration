@@ -180,7 +180,12 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
             else
             {
-                return HttpContext.Current.Request.Url.ToString();
+                var uri = new UriBuilder(HttpContext.Current.Request.Url) { Query = "" };
+                var requestHost = HttpContext.Current.Request.Headers["Host"];
+                if (!string.IsNullOrEmpty(requestHost))
+                    uri = new UriBuilder(uri.Scheme + "://" + requestHost);
+
+                return uri.ToString();
             }
         }
 
