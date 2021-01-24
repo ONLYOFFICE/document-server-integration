@@ -49,7 +49,7 @@ namespace OnlineEditorsExample
 
         protected string DocServiceApiUri
         {
-            get { return WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty; }
+            get { return (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty) + (WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty); }
         }
 
         protected string DocConfig { get; private set; }

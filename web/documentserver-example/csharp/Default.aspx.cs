@@ -191,7 +191,7 @@ namespace OnlineEditorsExample
             return string.Empty;
         }
 
-        protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
+        protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
 
 
         protected void Page_Load(object sender, EventArgs e)
