@@ -121,7 +121,8 @@ namespace ASC.Api.DocumentConverter
 
                 var payloadToken =  JwtManager.Encode(payload);
                 var bodyToken = JwtManager.Encode(body);
-                request.Headers.Add("Authorization", "Bearer " + payloadToken);
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                request.Headers.Add(JWTheader, "Bearer " + payloadToken);
 
                 body.Add("token", bodyToken);
             }
