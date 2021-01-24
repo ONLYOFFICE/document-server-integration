@@ -163,7 +163,7 @@ namespace OnlineEditorsExample
                     {
                         var storagePath = _Default.StoragePath(fileName, userAddress);
                         var histDir = _Default.HistoryDir(storagePath);
-                        var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir) + 1);
+                        var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));
 
                         if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
 
