@@ -378,7 +378,7 @@ namespace OnlineEditorsExample
             return storedFiles;
         }
 
-        public static List<Dictionary<string, string>> GetFilesInfo()
+        public static List<Dictionary<string, string>> GetFilesInfo(string idFile = null)
         {
             var files = new List<Dictionary<string, string>>();
 
@@ -391,7 +391,18 @@ namespace OnlineEditorsExample
                 dictionary.Add("pureContentLength", file.Length.ToString());
                 dictionary.Add("title", file.Name);
                 dictionary.Add("updated", file.LastWriteTime.ToString());
-                files.Add(dictionary);
+                if (idFile != null)
+                {
+                    if (idFile.Equals(dictionary["id"]))
+                    {
+                        files.Add(dictionary);
+                        break;
+                    }
+                }
+                else
+                {
+                    files.Add(dictionary);
+                }
             }
 
             return files;

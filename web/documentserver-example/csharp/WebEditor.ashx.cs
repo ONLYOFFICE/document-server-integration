@@ -220,10 +220,21 @@ namespace OnlineEditorsExample
 
         private static void Files(HttpContext context)
         {
-            context.Response.ContentType = "application/json";
+            List<Dictionary<string, string>> files = null;
+
             try
             {
-                var files = _Default.GetFilesInfo();
+                var idFile = context.Request["id"];
+                if (idFile == null)
+                {
+                    files = _Default.GetFilesInfo();
+                }
+                else
+                {
+                    files = _Default.GetFilesInfo(idFile);
+                }
+
+                context.Response.ContentType = "application/json";
                 var jss = new JavaScriptSerializer();
                 context.Response.Write(jss.Serialize(files));
             }
