@@ -119,7 +119,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 var payloadToken = JwtManager.Encode(payload);
                 var bodyToken = JwtManager.Encode(body);
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.url.header"];
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);
 
                 body.Add("token", bodyToken);
