@@ -98,6 +98,14 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
+            var userGroup = userId.Equals("uid-1") ? null : userId;
+            var rereviewPermissions = userGroup != null ? new Dictionary<string, object>
+                {
+                    { "uid-2" , new List<string>() { "uid-2", "" } },
+                    { "uid-3" , new List<string>() { "uid-2" } }
+                } : null;
+
             var jss = new JavaScriptSerializer();
 
             var actionLink = Request.GetOrDefault("actionLink", null);
@@ -145,8 +153,9 @@ namespace OnlineEditorsExample
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", Request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", Request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", userId },
+                                            { "name", Request.Cookies.GetOrDefault("uname", "John Smith") },
+                                            { "group", userGroup }
                                         }
                                 },
                                 {
@@ -168,7 +177,8 @@ namespace OnlineEditorsExample
                                                     {
                                                         { "url", _Default.Host + "default.aspx" }
                                                     }
-                                            }
+                                            },
+                                            { "reviewPermissions", rereviewPermissions }
                                         }
                                 }
                             }
