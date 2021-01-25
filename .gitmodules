@@ -18,3 +18,7 @@
 	path = web/documentserver-example/csharp-mvc/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/csharp/assets"]
+	path = web/documentserver-example/csharp/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
