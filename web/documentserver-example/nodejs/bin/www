@@ -1,5 +1,4 @@
-﻿#!/usr/bin/env node
-var debug = require("debug")("OnlineEditorsExampleNodeJS");
+﻿var debug = require("debug")("OnlineEditorsExampleNodeJS");
 var app = require("../app");
 var config = require('config');
 
