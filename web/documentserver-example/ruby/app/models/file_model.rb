@@ -193,4 +193,12 @@ class FileModel
 
   end
 
+  def get_insert_image 
+    insert_image = {
+      :fileType => "png",
+      :url => DocumentHelper.get_server_url + "/assets/logo.png"
+    }
+    return insert_image.to_json.tr("{", "").tr("}","")
+  end
+
 end
