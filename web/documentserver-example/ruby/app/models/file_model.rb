@@ -75,6 +75,7 @@ class FileModel
         :info => {
           :author => "Me",
           :created => Time.now.to_s,
+          :favorite => @user_id ? @user_id.eql?("uid-2") : nil
         },
         :permissions => {
           :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
