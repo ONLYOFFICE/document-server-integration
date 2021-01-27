@@ -627,7 +627,8 @@ app.get("/editor", function (req, res) {
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
                 version: countVersion,
-                created: new Date().toDateString()
+                created: new Date().toDateString(),
+                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
             },
             editor: {
                 type: type,

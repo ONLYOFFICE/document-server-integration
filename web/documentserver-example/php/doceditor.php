@@ -77,7 +77,8 @@
             "key" => $docKey,
             "info" => [
                 "author" => "Me",
-                "created" => date('d.m.y')
+                "created" => date('d.m.y'),
+                "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
             "permissions" => [
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
@@ -308,6 +309,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -328,6 +336,7 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onMetaChange': onMetaChange,
             };
 
             <?php

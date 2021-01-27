@@ -76,6 +76,13 @@
         docEditor.setActionLink(replaceActionLink(location.href, linkParam));
     };
 
+    var onMetaChange = function (event) {
+        var favorite = !!event.data.favorite;
+        var title = document.title.replace(/^\☆/g, "");
+        document.title = (favorite ? "☆" : "") + title;
+        docEditor.setFavorite(favorite);
+    };
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -88,6 +95,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            'onMetaChange': onMetaChange
         };
 
         <%
