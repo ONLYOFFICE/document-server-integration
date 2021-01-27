@@ -116,6 +116,7 @@ def edit(request):
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
+    userGroup = None if user['uid'] == 'uid-1' else user['uid']
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)
@@ -168,7 +169,8 @@ def edit(request):
             'callbackUrl': docManager.getCallbackUrl(filename, request),
             'user': {
                 'id': user['uid'],
-                'name': user['uname']
+                'name': user['uname'],
+                'group': userGroup
             },
             'embedded': {
                 'saveUrl': fileUri,
@@ -181,7 +183,8 @@ def edit(request):
                 'feedback': True,
                 'goback': {
                     'url': config.EXAMPLE_DOMAIN
-                }
+                },
+                'reviewPermissions': {'uid-2': ['uid-2', ''], 'uid-3': ['uid-2']} if userGroup else None
             }
         }
     }
