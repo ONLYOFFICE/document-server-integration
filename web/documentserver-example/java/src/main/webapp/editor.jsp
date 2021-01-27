@@ -86,6 +86,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
         var onRequestInsertImage = function(event) {
             docEditor.insertImage({
                 "c": event.data.c,
@@ -103,6 +110,7 @@
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
         };
 

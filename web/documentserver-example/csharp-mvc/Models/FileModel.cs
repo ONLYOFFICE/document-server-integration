@@ -64,6 +64,12 @@ namespace OnlineEditorsExampleMVC.Models
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            object favorite = null;
+            if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
+            {
+                favorite = request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
+            }
+
             var actionLink = request.GetOrDefault("actionLink", null);
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
@@ -82,7 +88,8 @@ namespace OnlineEditorsExampleMVC.Models
                                     "info", new Dictionary<string, object>
                                         {
                                             { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() }
+                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "favorite", favorite}
                                         }
                                 },
                                 {

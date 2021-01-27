@@ -53,6 +53,13 @@
             document.title = title + (event.data ? "*" : "");
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
         var onRequestEditRights = function () {
             location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
         };
@@ -129,6 +136,7 @@
                         "onRequestHistoryClose": onRequestHistoryClose,
                         "onOutdatedVersion": onOutdatedVersion,
                         "onMakeActionLink": onMakeActionLink,
+                        "onMetaChange": onMetaChange
                         "onRequestInsertImage": onRequestInsertImage,
                     }
             });

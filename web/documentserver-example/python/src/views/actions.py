@@ -141,7 +141,7 @@ def edit(request):
             'author': 'Me',
             'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-
+    infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None
     edConfig = {
         'type': edType,
         'documentType': fileType,
