@@ -207,12 +207,15 @@ namespace OnlineEditorsExample
                     var insImageToken = JwtManager.Encode(logoConfig);
                     logoConfig.Add("token", insImageToken);
                 }
-                Dictionary<string, object> hist;
-                Dictionary<string, object> histData;
+
                 var tmp = jss.Serialize(logoConfig);
                 tmp = tmp.Replace("{", "");
                 tmp = tmp.Replace("}", "");
                 InsertImageConfig = tmp;
+
+                Dictionary<string, object> hist;
+                Dictionary<string, object> histData;
+  
                 GetHistory(out hist, out histData);
                 if (hist != null && histData != null)
                 {
