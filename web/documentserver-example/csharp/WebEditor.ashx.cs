@@ -48,6 +48,9 @@ namespace OnlineEditorsExample
                 case "remove":
                     Remove(context);
                     break;
+                case "download":
+                    Download(context);
+                    break;
             }
         }
 
@@ -237,7 +240,18 @@ namespace OnlineEditorsExample
                 }
             }
         }
-
+        private static void Download(HttpContext context)
+        {
+            var filename = context.Request["filename"];
+            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + filename;
+            FileInfo fileinf = new FileInfo(csvPath);
+            context.Response.AddHeader("Content-Length", "" + fileinf.Length);
+            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
+            var tmp = HttpUtility.UrlEncode(csvPath);
+            tmp = tmp.Replace("+", "%20");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
+            context.Response.TransmitFile(csvPath);
+        }
         public bool IsReusable
         {
             get { return false; }

@@ -82,6 +82,13 @@
                 <%= logoUrl%>
             })
         };
+
+        var onRequestCompareFile = function () {
+            <% string compareFileData; %>
+            <% Model.GetCompareFileData(out compareFileData); %>
+            docEditor.setRevisedFile(<%=compareFileData%>);
+        };
+
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -125,6 +132,7 @@
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
         };
 
         <% string hist, histData; %>

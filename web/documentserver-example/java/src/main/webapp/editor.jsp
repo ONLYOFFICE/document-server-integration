@@ -100,6 +100,10 @@
             })
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(${dataCompareFile});
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -112,6 +116,7 @@
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
         };
 
         <%

@@ -113,6 +113,10 @@
             })
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile({{ dataCompareFile | safe }});
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -127,6 +131,7 @@
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
+                'onRequestCompareFile': onRequestCompareFile,
             };
 
             {% if history and historyData %}

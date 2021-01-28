@@ -115,6 +115,10 @@
             })
         };
 
+        var onRequestCompareFile = function () {
+            docEditor.setRevisedFile(<%= compareFileData%>);
+        };
+
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
@@ -142,6 +146,7 @@
             'onMakeActionLink': onMakeActionLink,
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
+            'onRequestCompareFile': onRequestCompareFile,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))

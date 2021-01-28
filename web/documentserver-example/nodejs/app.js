@@ -659,6 +659,11 @@ app.get("/editor", function (req, res) {
                 fileType: "png",
                 url: docManager.getServerUrl(true) + "/images/logo.png"
             }
+            historyData: historyData,
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -668,6 +673,7 @@ app.get("/editor", function (req, res) {
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

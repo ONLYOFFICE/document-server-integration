@@ -71,16 +71,22 @@ public class EditorServlet extends HttpServlet
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", DocumentManager.GetServerUrl() + "/css/img/logo.png");
 
+        Map<String, Object> dataCompareFile = new HashMap<>();
+        dataCompareFile.put("fileType", "docx");
+        dataCompareFile.put("url", DocumentManager.GetServerUrl() + "/IndexServlet?type=download&name=sample.docx");
+
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
             dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));
+            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));
         }
 
         Gson gson = new Gson();
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
+        request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
