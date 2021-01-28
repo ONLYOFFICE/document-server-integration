@@ -74,21 +74,6 @@
             location.reload(true);
         };
 
-        var onRequestInsertImage = function (event) {
-            <% string logoUrl;%>
-            <% Model.GetLogoConfig(out logoUrl); %>
-            docEditor.insertImage({
-                "c": event.data.c,
-                <%= logoUrl%>
-            })
-        };
-
-        var onRequestCompareFile = function () {
-            <% string compareFileData; %>
-            <% Model.GetCompareFileData(out compareFileData); %>
-            docEditor.setRevisedFile(<%=compareFileData%>);
-        };
-
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -116,6 +101,21 @@
             var title = document.title.replace(/^\☆/g, "");
             document.title = (favorite ? "☆" : "") + title;
             docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function (event) {
+            <% string logoUrl;%>
+            <% Model.GetLogoConfig(out logoUrl); %>
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= logoUrl%>
+            })
+        };
+
+        var onRequestCompareFile = function () {
+            <% string compareFileData; %>
+            <% Model.GetCompareFileData(out compareFileData); %>
+            docEditor.setRevisedFile(<%=compareFileData%>);
         };
 
         var config = <%= Model.GetDocConfig(Request, Url) %>;
