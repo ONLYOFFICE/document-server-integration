@@ -450,15 +450,29 @@ app.post("/track", function (req, res) {
 
             try {
 
-                var path = docManager.storagePath(fileName, userAddress);
+                var isSubmitForm = body.forcesavetype === 3; //SubmitForm
 
-                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                if (forcesavePath == "") {
-                    forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
+                if (isSubmitForm) {
+
+                    //new file
+                    fileName = docManager.getCorrectName(fileName, userAddress);
+                    var forcesavePath = docManager.storagePath(fileName, userAddress);
+
+                } else {
+
+                    forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
+                    if (forcesavePath == "") {
+                        forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
+                    }
+
                 }
 
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(forcesavePath, file.getBody());
+
+                if (isSubmitForm) {
+                    docManager.saveFileData(fileName, "", "", userAddress);
+                }
             } catch (ex) {
                 console.log(ex);
             }
@@ -579,6 +593,7 @@ app.get("/editor", function (req, res) {
             }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;
+        var submitForm = canEdit && (mode == "edit" || mode == "fillForms");
 
         var countVersion = 1;
 
@@ -665,6 +680,7 @@ app.get("/editor", function (req, res) {
                 userid: userid,
                 name: name,
                 fileChoiceUrl: fileChoiceUrl,
+                submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData
             },
