@@ -116,6 +116,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
+            })
+        };
+
         var onRequestCompareFile = function() {
             docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);
         };
@@ -134,6 +141,7 @@
                         "onOutdatedVersion": onOutdatedVersion,
                         "onMakeActionLink": onMakeActionLink,
                         "onMetaChange": onMetaChange,
+                        "onRequestInsertImage": onRequestInsertImage,
                         "onRequestCompareFile": onRequestCompareFile,
                     }
             });

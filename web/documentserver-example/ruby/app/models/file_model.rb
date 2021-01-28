@@ -194,6 +194,19 @@ class FileModel
 
   end
 
+  def get_insert_image 
+    insert_image = {
+      :fileType => "png",
+      :url => DocumentHelper.get_server_url + "/assets/logo.png"
+    }
+
+    if JwtHelper.is_enabled
+      insert_image["token"] = JwtHelper.encode(insert_image)
+    end
+
+    return insert_image.to_json.tr("{", "").tr("}","")
+  end
+
   def get_compare_file
     compare_file = {
       :fileType => "docx",

@@ -655,6 +655,10 @@ app.get("/editor", function (req, res) {
             },
             history: history,
             historyData: historyData,
+            dataInsertImage: {
+                fileType: "png",
+                url: docManager.getServerUrl(true) + "/images/logo.png"
+            },
             dataCompareFile: {
                 fileType: "docx",
                 url: docManager.getServerUrl(true) + "/samples/sample.docx"
@@ -667,6 +671,7 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);

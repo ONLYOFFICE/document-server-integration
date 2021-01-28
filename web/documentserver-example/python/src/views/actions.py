@@ -186,6 +186,11 @@ def edit(request):
         }
     }
 
+    dataInsertImage = {
+        'fileType': 'png',
+        'url': config.EXAMPLE_DOMAIN + 'static/images/logo.png'
+    }
+
     dataCompareFile = {
         'fileType': 'docx',
         'url': config.EXAMPLE_DOMAIN + 'static/sample.docx'
@@ -193,6 +198,7 @@ def edit(request):
 
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
@@ -202,6 +208,7 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
+        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
         'dataCompareFile': dataCompareFile,
         'apiUrl': config.DOC_SERV_API_URL
     }

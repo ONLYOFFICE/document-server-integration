@@ -93,6 +93,13 @@
             docEditor.setFavorite(favorite);
         };
 
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                ${dataInsertImage}
+            })
+        };
+
         var onRequestCompareFile = function() {
             docEditor.setRevisedFile(${dataCompareFile});
         };
@@ -108,6 +115,7 @@
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
         };
 

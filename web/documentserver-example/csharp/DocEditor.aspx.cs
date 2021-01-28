@@ -55,6 +55,7 @@ namespace OnlineEditorsExample
         protected string DocConfig { get; private set; }
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
+        protected string InsertImageConfig { get; private set; }
         protected string compareFileData { get; private set; }
         public static string CallbackUrl
         {
@@ -192,25 +193,15 @@ namespace OnlineEditorsExample
 
             try
             {
-                var compareFileUrl = _Default.Host;
-                compareFileUrl.Path =
-                    HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx";
-                compareFileUrl.Query = "type=download" + "&fileName=" + HttpUtility.UrlEncode("demo.docx");
-                var dataCompareFile = new Dictionary<string, object>
-                {
-                    { "fileType", "docx" },
-                    { "url", compareFileUrl.ToString() }
-                };
-                if (JwtManager.Enabled)
-                {
-                    var compareFileToken = JwtManager.Encode(dataCompareFile);
-                    dataCompareFile.Add("token", compareFileToken);
-                }
-                compareFileData = jss.Serialize(dataCompareFile);
+                Dictionary<string, object> logoConfig = GetLogoConfig();
+                InsertImageConfig = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
+
+                Dictionary<string, object> compareFile = GetCompareFile();
+                compareFileData = jss.Serialize(compareFile);
+
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
+  
                 GetHistory(out hist, out histData);
                 if (hist != null && histData != null)
                 {
@@ -292,6 +283,51 @@ namespace OnlineEditorsExample
                 };
                 historyData = histData;
             }
+        }
+
+        private Dictionary<string, object> GetLogoConfig()
+        {
+            var InsertImageUrl = _Default.Host;
+            InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "App_Themes\\images\\logo.png";
+
+            Dictionary<string, object> logoConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "png"},
+                    { "url", InsertImageUrl.ToString()}
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var insImageToken = JwtManager.Encode(logoConfig);
+                logoConfig.Add("token", insImageToken);
+            }
+
+            return logoConfig;
+        }
+
+        private Dictionary<string, object> GetCompareFile()
+        {
+            var compareFileUrl = _Default.Host;
+            compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+
+            Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
+                {
+                    { "fileType", "docx" },
+                    { "url", compareFileUrl.ToString() }
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var compareFileToken = JwtManager.Encode(dataCompareFile);
+                dataCompareFile.Add("token", compareFileToken);
+            }
+
+            return dataCompareFile;
         }
 
         private string MakePublicUrl(string fullPath)

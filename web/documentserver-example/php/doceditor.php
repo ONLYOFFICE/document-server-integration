@@ -115,6 +115,11 @@
         ]
     ];
 
+    $dataInsertImage = [
+        "fileType" => "png",
+        "url" => serverPath() . "/css/images/logo.png"
+    ];
+
     $dataCompareFile = [
         "fileType" => "docx",
         "url" => serverPath() . "/webeditor-ajax.php?type=download&name=demo.docx"
@@ -122,6 +127,7 @@
 
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataInsertImage["token"] = jwtEncode($dataInsertImage);
         $dataCompareFile["token"] = jwtEncode($dataCompareFile);
     }
 
@@ -322,6 +328,13 @@
             docEditor.setFavorite(favorite);
         };
 
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+            })
+        };
+
         var onRequestCompareFile = function() {
             docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
         };
@@ -348,6 +361,7 @@
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
+                'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
             };
 
