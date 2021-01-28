@@ -654,7 +654,11 @@ app.get("/editor", function (req, res) {
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -663,6 +667,7 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

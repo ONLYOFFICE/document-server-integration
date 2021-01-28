@@ -185,6 +185,10 @@ class DocumentHelper
 
     end
 
+    def get_server_url
+      @@base_url
+    end
+
     def get_internal_extension(file_type)
 
       case file_type

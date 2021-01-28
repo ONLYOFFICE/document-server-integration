@@ -106,6 +106,10 @@
             docEditor.setFavorite(favorite);
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile({{ dataCompareFile | safe }});
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -119,6 +123,7 @@
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
+                'onRequestCompareFile': onRequestCompareFile,
             };
 
             {% if history and historyData %}

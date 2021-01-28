@@ -83,6 +83,10 @@
         docEditor.setFavorite(favorite);
     };
 
+    var onRequestCompareFile = function() {
+        docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);
+    }; 
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -95,7 +99,8 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
-            'onMetaChange': onMetaChange
+            'onMetaChange': onMetaChange,
+            'onRequestCompareFile': onRequestCompareFile,
         };
 
         <%

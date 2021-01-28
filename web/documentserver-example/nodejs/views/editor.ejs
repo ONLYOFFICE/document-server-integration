@@ -116,6 +116,10 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);
+        };
+
         var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
@@ -129,7 +133,8 @@
                         "onRequestHistoryClose": onRequestHistoryClose,
                         "onOutdatedVersion": onOutdatedVersion,
                         "onMakeActionLink": onMakeActionLink,
-                        "onMetaChange": onMetaChange
+                        "onMetaChange": onMetaChange,
+                        "onRequestCompareFile": onRequestCompareFile,
                     }
             });
 

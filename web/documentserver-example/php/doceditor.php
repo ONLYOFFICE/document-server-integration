@@ -115,8 +115,14 @@
         ]
     ];
 
+    $dataCompareFile = [
+        "fileType" => "docx",
+        "url" => serverPath() . "/webeditor-ajax.php?type=download&name=demo.docx"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataCompareFile["token"] = jwtEncode($dataCompareFile);
     }
 
     function tryGetDefaultByType($createExt) {
@@ -316,6 +322,11 @@
             docEditor.setFavorite(favorite);
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
+        };
+
+
         var сonnectEditor = function () {
 
             <?php
@@ -337,6 +348,7 @@
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
+                'onRequestCompareFile': onRequestCompareFile,
             };
 
             <?php

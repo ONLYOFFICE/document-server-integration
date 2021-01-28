@@ -186,8 +186,14 @@ def edit(request):
         }
     }
 
+    dataCompareFile = {
+        'fileType': 'docx',
+        'url': config.EXAMPLE_DOMAIN + 'static/sample.docx'
+    }
+
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
@@ -196,6 +202,7 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
+        'dataCompareFile': dataCompareFile,
         'apiUrl': config.DOC_SERV_API_URL
     }
     return render(request, 'editor.html', context)

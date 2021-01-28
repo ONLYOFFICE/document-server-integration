@@ -93,6 +93,10 @@
             docEditor.setFavorite(favorite);
         };
 
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(${dataCompareFile});
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -104,6 +108,7 @@
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
+            "onRequestCompareFile": onRequestCompareFile,
         };
 
         <%

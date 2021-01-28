@@ -55,7 +55,7 @@ namespace OnlineEditorsExample
         protected string DocConfig { get; private set; }
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
-
+        protected string compareFileData { get; private set; }
         public static string CallbackUrl
         {
             get
@@ -192,6 +192,23 @@ namespace OnlineEditorsExample
 
             try
             {
+                var compareFileUrl = _Default.Host;
+                compareFileUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                compareFileUrl.Query = "type=download" + "&fileName=" + HttpUtility.UrlEncode("demo.docx");
+                var dataCompareFile = new Dictionary<string, object>
+                {
+                    { "fileType", "docx" },
+                    { "url", compareFileUrl.ToString() }
+                };
+                if (JwtManager.Enabled)
+                {
+                    var compareFileToken = JwtManager.Encode(dataCompareFile);
+                    dataCompareFile.Add("token", compareFileToken);
+                }
+                compareFileData = jss.Serialize(dataCompareFile);
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
                 GetHistory(out hist, out histData);
