@@ -288,8 +288,7 @@ namespace OnlineEditorsExample
         private Dictionary<string, object> GetLogoConfig()
         {
             var InsertImageUrl = _Default.Host;
-            InsertImageUrl.Path =
-                HttpRuntime.AppDomainAppVirtualPath
+            InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "App_Themes\\images\\logo.png";
 
@@ -311,11 +310,10 @@ namespace OnlineEditorsExample
         private Dictionary<string, object> GetCompareFile()
         {
             var compareFileUrl = _Default.Host;
-            compareFileUrl.Path =
-                HttpRuntime.AppDomainAppVirtualPath
+            compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
-            compareFileUrl.Query = "type=download" + "&fileName=" + HttpUtility.UrlEncode("demo.docx");
+            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
 
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
