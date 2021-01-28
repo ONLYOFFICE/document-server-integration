@@ -199,6 +199,11 @@ class FileModel
       :fileType => "png",
       :url => DocumentHelper.get_server_url + "/assets/logo.png"
     }
+
+    if JwtHelper.is_enabled
+      insert_image["token"] = JwtHelper.encode(insert_image)
+    end
+
     return insert_image.to_json.tr("{", "").tr("}","")
   end
 
