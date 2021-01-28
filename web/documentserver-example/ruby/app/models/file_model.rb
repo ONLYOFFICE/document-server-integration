@@ -193,4 +193,17 @@ class FileModel
 
   end
 
+  def get_compare_file
+    compare_file = {
+      :fileType => "docx",
+      :url => DocumentHelper.get_server_url + "/samples/sample.docx"
+    }
+
+    if JwtHelper.is_enabled
+      compare_file["token"] = JwtHelper.encode(compare_file)
+    end
+    
+    return compare_file
+  end
+
 end
