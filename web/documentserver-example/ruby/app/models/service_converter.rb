@@ -17,7 +17,7 @@
 class ServiceConverter
 
   @@convert_timeout = Rails.configuration.timeout
-  @@document_converter_url = Rails.configuration.urlConverter
+  @@document_converter_url = Rails.configuration.urlSite + Rails.configuration.urlConverter
 
   class << self
 
