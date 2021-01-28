@@ -108,17 +108,6 @@
             return link;
         }
 
-        var onRequestInsertImage = function (event) {
-            docEditor.insertImage({
-                "c": event.data.c,
-                <%= InsertImageConfig%>
-            })
-        };
-
-        var onRequestCompareFile = function () {
-            docEditor.setRevisedFile(<%= compareFileData%>);
-        };
-
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
@@ -130,6 +119,17 @@
             var title = document.title.replace(/^\☆/g, "");
             document.title = (favorite ? "☆" : "") + title;
             docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function (event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= InsertImageConfig%>
+            })
+        };
+
+        var onRequestCompareFile = function () {
+            docEditor.setRevisedFile(<%= compareFileData%>);
         };
 
         var config = <%= DocConfig %>;

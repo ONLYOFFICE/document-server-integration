@@ -193,44 +193,12 @@ namespace OnlineEditorsExample
 
             try
             {
-                var InsertImageUrl = _Default.Host;
-                InsertImageUrl.Path =
-                    HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                     + "App_Themes\\images\\logo.png";
-                var logoConfig = new Dictionary<string, object>
-                {
-                    { "fileType", "png"},
-                    { "url", InsertImageUrl.ToString()}
-                };
-                if (JwtManager.Enabled)
-                {
-                    var insImageToken = JwtManager.Encode(logoConfig);
-                    logoConfig.Add("token", insImageToken);
-                }
+                Dictionary<string, object> logoConfig = GetLogoConfig();
+                InsertImageConfig = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
 
-                var tmp = jss.Serialize(logoConfig);
-                tmp = tmp.Replace("{", "");
-                tmp = tmp.Replace("}", "");
-                InsertImageConfig = tmp;
+                Dictionary<string, object> compareFile = GetCompareFile();
+                compareFileData = jss.Serialize(compareFile);
 
-                var compareFileUrl = _Default.Host;
-                compareFileUrl.Path =
-                    HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx";
-                compareFileUrl.Query = "type=download" + "&fileName=" + HttpUtility.UrlEncode("demo.docx");
-                var dataCompareFile = new Dictionary<string, object>
-                {
-                    { "fileType", "docx" },
-                    { "url", compareFileUrl.ToString() }
-                };
-                if (JwtManager.Enabled)
-                {
-                    var compareFileToken = JwtManager.Encode(dataCompareFile);
-                    dataCompareFile.Add("token", compareFileToken);
-                }
-                compareFileData = jss.Serialize(dataCompareFile);
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
   
@@ -315,6 +283,53 @@ namespace OnlineEditorsExample
                 };
                 historyData = histData;
             }
+        }
+
+        private Dictionary<string, object> GetLogoConfig()
+        {
+            var InsertImageUrl = _Default.Host;
+            InsertImageUrl.Path =
+                HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "App_Themes\\images\\logo.png";
+
+            Dictionary<string, object> logoConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "png"},
+                    { "url", InsertImageUrl.ToString()}
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var insImageToken = JwtManager.Encode(logoConfig);
+                logoConfig.Add("token", insImageToken);
+            }
+
+            return logoConfig;
+        }
+
+        private Dictionary<string, object> GetCompareFile()
+        {
+            var compareFileUrl = _Default.Host;
+            compareFileUrl.Path =
+                HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            compareFileUrl.Query = "type=download" + "&fileName=" + HttpUtility.UrlEncode("demo.docx");
+
+            Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
+                {
+                    { "fileType", "docx" },
+                    { "url", compareFileUrl.ToString() }
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var compareFileToken = JwtManager.Encode(dataCompareFile);
+                dataCompareFile.Add("token", compareFileToken);
+            }
+
+            return dataCompareFile;
         }
 
         private string MakePublicUrl(string fullPath)
