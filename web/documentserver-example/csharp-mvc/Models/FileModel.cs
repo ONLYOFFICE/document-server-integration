@@ -232,53 +232,54 @@ namespace OnlineEditorsExampleMVC.Models
         public void GetCompareFileData(out string compareConfig)
         {
             var jss = new JavaScriptSerializer();
+
             var compareFileUrl = new UriBuilder(HttpContext.Current.Request.Url)
             {
-                Path =
-                    HttpRuntime.AppDomainAppVirtualPath
+                Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
-                Query =
-                    "type=download"
-                    + "&fileName=" + HttpUtility.UrlEncode("sample.docx")
+                Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
+
             var dataCompareFile = new Dictionary<string, object>
             {
                 { "fileType", "docx" },
                 { "url", compareFileUrl.ToString() }
             };
+
             if (JwtManager.Enabled)
             {
                 var compareFileToken = JwtManager.Encode(dataCompareFile);
                 dataCompareFile.Add("token", compareFileToken);
             }
+
             compareConfig = jss.Serialize(dataCompareFile);
         }
 
         public void GetLogoConfig(out string logoUrl)
         {
             var jss = new JavaScriptSerializer();
+
             var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
             {
-                Path =
-                    HttpRuntime.AppDomainAppVirtualPath
+                Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                     + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.png"
             };
+
             var logoConfig = new Dictionary<string, object>
             {
                 { "fileType", "png"},
                 { "url", mailMergeUrl.ToString()}
             };
+
             if (JwtManager.Enabled)
             {
                 var token = JwtManager.Encode(logoConfig);
                 logoConfig.Add("token", token);
             }
-            var tmp = jss.Serialize(logoConfig);
-            tmp = tmp.Replace("{", "");
-            tmp = tmp.Replace("}", "");
-            logoUrl = tmp;
+
+            logoUrl = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
         }
     }
 }
