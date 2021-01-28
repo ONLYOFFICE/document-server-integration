@@ -658,8 +658,7 @@ app.get("/editor", function (req, res) {
             dataInsertImage: {
                 fileType: "png",
                 url: docManager.getServerUrl(true) + "/images/logo.png"
-            }
-            historyData: historyData,
+            },
             dataCompareFile: {
                 fileType: "docx",
                 url: docManager.getServerUrl(true) + "/samples/sample.docx"
