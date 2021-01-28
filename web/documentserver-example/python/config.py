@@ -10,7 +10,7 @@ DOC_SERV_CONVERT = [
     ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm",
     ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt",
     ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot",
-    ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub"
+    ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub", ".fb2"
 ]
 
 DOC_SERV_TIMEOUT = 120000

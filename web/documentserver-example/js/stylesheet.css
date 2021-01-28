@@ -41,9 +41,12 @@ div {
 
 
 .top-panel {
-    background: url("logo.png") no-repeat 30px center #3D4A6B;
+    background: #3D4A6B;
     height: 80px;
     width: 100%;
+}
+.top-panel img{
+    margin: 12px 0 0 16px;
 }
 .main-panel {
     margin: 105px auto 0;

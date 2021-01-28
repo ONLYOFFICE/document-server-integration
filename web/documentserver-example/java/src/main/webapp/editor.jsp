@@ -86,6 +86,13 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
         var onRequestCompareFile = function() {
             docEditor.setRevisedFile(${dataCompareFile});
         };
@@ -100,6 +107,7 @@
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
             "onRequestCompareFile": onRequestCompareFile,
         };
 

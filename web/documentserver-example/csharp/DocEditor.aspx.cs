@@ -100,6 +100,12 @@ namespace OnlineEditorsExample
 
             var jss = new JavaScriptSerializer();
 
+            object favorite = null;
+            if (!string.IsNullOrEmpty(Request.Cookies.GetOrDefault("uid", null)))
+            {
+                favorite = Request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
+            }
+
             var actionLink = Request.GetOrDefault("actionLink", null);
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
@@ -118,7 +124,8 @@ namespace OnlineEditorsExample
                                     "info", new Dictionary<string, object>
                                         {
                                             { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() }
+                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "favorite", favorite }
                                         }
                                 },
                                 {
