@@ -38,7 +38,11 @@ class FileModel
   end
 
   def file_uri
-    DocumentHelper.get_file_uri(@file_name)
+    DocumentHelper.get_file_uri(@file_name, true)
+  end
+
+  def file_uri_user
+    DocumentHelper.get_file_uri(@file_name, false)
   end
 
   def document_type
@@ -96,9 +100,9 @@ class FileModel
           :name => @user_name ? @user_name : "John Smith"
         },
         :embedded => {
-          :saveUrl => file_uri,
-          :embedUrl => file_uri,
-          :shareUrl => file_uri,
+          :saveUrl => file_uri_user,
+          :embedUrl => file_uri_user,
+          :shareUrl => file_uri_user,
           :toolbarDocked => "top"
         },
       }

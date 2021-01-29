@@ -75,7 +75,7 @@ class HomeController < ApplicationController
 
     begin
       file_name = params[:filename]
-      file_uri = DocumentHelper.get_file_uri(file_name)
+      file_uri = DocumentHelper.get_file_uri(file_name, true)
       extension = File.extname(file_name)
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
 
