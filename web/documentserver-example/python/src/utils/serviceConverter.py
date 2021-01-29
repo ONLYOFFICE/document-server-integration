@@ -50,11 +50,12 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync):
         payload.setdefault('async', True)
 
     if jwtManager.isEnabled():
+        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
         headerToken = jwtManager.encode({'payload': payload})
         payload['token'] = jwtManager.encode(payload)
-        headers['Authorization'] = f'Bearer {headerToken}'
+        headers[jwtHeader] = f'Bearer {headerToken}'
 
-    response = requests.post(config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers )
+    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers )
     json = response.json()
 
     return getResponseUri(json)

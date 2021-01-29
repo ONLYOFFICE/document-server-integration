@@ -34,7 +34,12 @@ namespace OnlineEditorsExample
 
         public static string FileUri
         {
-            get { return _Default.FileUri(FileName); }
+            get { return _Default.FileUri(FileName, true); }
+        }
+
+        public static string FileUriUser
+        {
+            get { return _Default.FileUri(FileName, false); }
         }
 
         protected string Key
@@ -49,7 +54,7 @@ namespace OnlineEditorsExample
 
         protected string DocServiceApiUri
         {
-            get { return WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty; }
+            get { return (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty) + (WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty); }
         }
 
         protected string DocConfig { get; private set; }
@@ -61,7 +66,7 @@ namespace OnlineEditorsExample
         {
             get
             {
-                var callbackUrl = _Default.Host;
+                var callbackUrl = new UriBuilder(_Default.GetServerUrl(true));
                 callbackUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
@@ -160,9 +165,9 @@ namespace OnlineEditorsExample
                                 {
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUri },
-                                            { "embedUrl", FileUri },
-                                            { "shareUrl", FileUri },
+                                            { "saveUrl", FileUriUser },
+                                            { "embedUrl", FileUriUser },
+                                            { "shareUrl", FileUriUser },
                                             { "toolbarDocked", "top" }
                                         }
                                 },
@@ -174,7 +179,7 @@ namespace OnlineEditorsExample
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
-                                                        { "url", _Default.Host + "default.aspx" }
+                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }
                                                     }
                                             }
                                         }
@@ -287,7 +292,7 @@ namespace OnlineEditorsExample
 
         private Dictionary<string, object> GetLogoConfig()
         {
-            var InsertImageUrl = _Default.Host;
+            var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
             InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "App_Themes\\images\\logo.png";
@@ -309,7 +314,7 @@ namespace OnlineEditorsExample
 
         private Dictionary<string, object> GetCompareFile()
         {
-            var compareFileUrl = _Default.Host;
+            var compareFileUrl = new UriBuilder(_Default.GetServerUrl(true));
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
@@ -333,7 +338,7 @@ namespace OnlineEditorsExample
         private string MakePublicUrl(string fullPath)
         {
             var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
-            return _Default.Host + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+            return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
         }
 
         private static void Try(string type, string sample, HttpRequest request)

@@ -558,6 +558,7 @@ app.get("/editor", function (req, res) {
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
+        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
@@ -626,6 +627,7 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
+                uriUser: urlUser,
                 version: countVersion,
                 created: new Date().toDateString(),
                 favorite: req.query.userid ? req.query.userid === "uid-2" : "null"

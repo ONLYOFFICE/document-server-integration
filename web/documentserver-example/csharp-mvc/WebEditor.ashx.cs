@@ -106,7 +106,7 @@ namespace OnlineEditorsExampleMVC
             try
             {
                 var fileName = context.Request["filename"];
-                var fileUri = DocManagerHelper.GetFileUri(fileName);
+                var fileUri = DocManagerHelper.GetFileUri(fileName, true);
 
                 var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
@@ -191,18 +191,31 @@ namespace OnlineEditorsExampleMVC
 
             if (JwtManager.Enabled)
             {
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                string token = null;
+
                 if (fileData.ContainsKey("token"))
                 {
-                    fileData = jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(fileData["token"].ToString()));
+                    token = JwtManager.Decode(fileData["token"].ToString());
                 }
-                else if (context.Request.Headers.AllKeys.Contains("Authorization", StringComparer.InvariantCultureIgnoreCase))
+                else if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                 {
-                    var headerToken = context.Request.Headers.Get("Authorization").Substring("Bearer ".Length);
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(headerToken))["payload"];
+                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                    token = JwtManager.Decode(headerToken);
                 }
                 else
                 {
-                    throw new Exception("Expected JWT");
+                    context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
+                }
+
+                if (token != null && !token.Equals(""))
+                {
+                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
+                }
+                else
+                {
+                    context.Response.Write("{\"error\":1,\"message\":\"JWT validation failed\"}");
                 }
             }
 

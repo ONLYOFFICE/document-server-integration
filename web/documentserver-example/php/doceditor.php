@@ -117,12 +117,12 @@
 
     $dataInsertImage = [
         "fileType" => "png",
-        "url" => serverPath() . "/css/images/logo.png"
+        "url" => serverPath(true) . "/css/images/logo.png"
     ];
 
     $dataCompareFile = [
         "fileType" => "docx",
-        "url" => serverPath() . "/webeditor-ajax.php?type=download&name=demo.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=demo.docx"
     ];
 
     if (isJwtEnabled()) {
@@ -264,7 +264,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_API_URL"] ?>"></script>
+    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>"></script>
 
     <script type="text/javascript">
 

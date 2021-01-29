@@ -154,7 +154,7 @@ public class IndexServlet extends HttpServlet
         try
         {
             String fileName = request.getParameter("filename");
-            String fileUri = DocumentManager.GetFileUri(fileName);
+            String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
             String internalFileExt = DocumentManager.GetInternalExtension(fileType);

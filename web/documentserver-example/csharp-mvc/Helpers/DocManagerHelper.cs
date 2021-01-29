@@ -147,9 +147,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             }));
         }
 
-        public static string GetFileUri(string fileName)
+        public static string GetFileUri(string fileName, Boolean forDocumentServer)
         {
-            var uri = new UriBuilder(HttpContext.Current.Request.Url)
+            var uri = new UriBuilder(GetServerUrl(forDocumentServer))
                 {
                     Path = HttpRuntime.AppDomainAppVirtualPath + "/"
                            + CurUserHostAddress() + "/"
@@ -162,7 +162,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
         public static string GetPathUri(string path)
         {
-            var uri = new UriBuilder(HttpContext.Current.Request.Url)
+            var uri = new UriBuilder(GetServerUrl(true))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath + "/"
                            + path,
@@ -172,9 +172,26 @@ namespace OnlineEditorsExampleMVC.Helpers
             return uri.ToString();
         }
 
+        public static string GetServerUrl(Boolean forDocumentServer)
+        {
+            if (forDocumentServer && !WebConfigurationManager.AppSettings["files.docservice.url.example"].Equals(""))
+            {
+                return WebConfigurationManager.AppSettings["files.docservice.url.example"];
+            }
+            else
+            {
+                var uri = new UriBuilder(HttpContext.Current.Request.Url) { Query = "" };
+                var requestHost = HttpContext.Current.Request.Headers["Host"];
+                if (!string.IsNullOrEmpty(requestHost))
+                    uri = new UriBuilder(uri.Scheme + "://" + requestHost);
+
+                return uri.ToString();
+            }
+        }
+
         public static string GetCallback(string fileName)
         {
-            var callbackUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            var callbackUrl = new UriBuilder(GetServerUrl(true))
             {
                 Path =
                     HttpRuntime.AppDomainAppVirtualPath

@@ -38,7 +38,11 @@ class FileModel
   end
 
   def file_uri
-    DocumentHelper.get_file_uri(@file_name)
+    DocumentHelper.get_file_uri(@file_name, true)
+  end
+
+  def file_uri_user
+    DocumentHelper.get_file_uri(@file_name, false)
   end
 
   def document_type
@@ -97,9 +101,9 @@ class FileModel
           :name => @user_name ? @user_name : "John Smith"
         },
         :embedded => {
-          :saveUrl => file_uri,
-          :embedUrl => file_uri,
-          :shareUrl => file_uri,
+          :saveUrl => file_uri_user,
+          :embedUrl => file_uri_user,
+          :shareUrl => file_uri_user,
           :toolbarDocked => "top"
         },
       }
@@ -197,7 +201,7 @@ class FileModel
   def get_insert_image 
     insert_image = {
       :fileType => "png",
-      :url => DocumentHelper.get_server_url + "/assets/logo.png"
+      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png"
     }
 
     if JwtHelper.is_enabled
@@ -210,7 +214,7 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",
-      :url => DocumentHelper.get_server_url + "/samples/sample.docx"
+      :url => DocumentHelper.get_server_url(true) + "/samples/sample.docx"
     }
 
     if JwtHelper.is_enabled

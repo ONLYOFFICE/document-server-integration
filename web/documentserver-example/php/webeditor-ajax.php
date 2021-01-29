@@ -148,10 +148,12 @@ function track() {
 
         $inHeader = false;
         $token = "";
+        $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+
         if (!empty($data["token"])) {
             $token = jwtDecode($data["token"]);
-        } elseif (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
-            $token = jwtDecode(substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Bearer ")));
+        } elseif (!empty(apache_request_headers()[$jwtHeader])) {
+            $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
             $inHeader = true;
         } else {
             sendlog("jwt token wasn't found in body or headers", "webedior-ajax.log");
