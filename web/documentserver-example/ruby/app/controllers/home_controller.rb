@@ -139,10 +139,11 @@ class HomeController < ApplicationController
     if JwtHelper.is_enabled
       inHeader = false
       token = nil
+      jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
       if file_data["token"]
         token = JwtHelper.decode(file_data["token"])
-      elsif request.headers["Authorization"]
-        hdr = request.headers["Authorization"]
+      elsif request.headers[jwtHeader]
+        hdr = request.headers[jwtHeader]
         hdr.slice!(0, "Bearer ".length)
         token = JwtHelper.decode(hdr)
         inHeader = true
