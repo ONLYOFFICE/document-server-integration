@@ -125,7 +125,7 @@ public class ServiceConverter
 
         if (DocumentManager.TokenEnabled())
         {
-            connection.setRequestProperty(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+            connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
         }
 
         connection.connect();
