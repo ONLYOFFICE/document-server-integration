@@ -35,7 +35,11 @@
     </head>
     <body>
 
-        <div class="top-panel"></div>
+        <div class="top-panel">
+           <a href="">
+                <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
+           </a>
+        </div>
 
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE Document Editors</span>

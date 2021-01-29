@@ -142,7 +142,7 @@ def edit(request):
             'author': 'Me',
             'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-
+    infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None
     edConfig = {
         'type': edType,
         'documentType': fileType,
@@ -187,8 +187,20 @@ def edit(request):
         }
     }
 
+    dataInsertImage = {
+        'fileType': 'png',
+        'url': config.EXAMPLE_DOMAIN + 'static/images/logo.png'
+    }
+
+    dataCompareFile = {
+        'fileType': 'docx',
+        'url': config.EXAMPLE_DOMAIN + 'static/sample.docx'
+    }
+
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
+        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
@@ -198,6 +210,9 @@ def edit(request):
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
         'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL
+        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
+        'dataCompareFile': dataCompareFile,
+        'apiUrl': config.DOC_SERV_API_URL
     }
     return render(request, 'editor.html', context)
 

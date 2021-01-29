@@ -76,6 +76,24 @@
         docEditor.setActionLink(replaceActionLink(location.href, linkParam));
     };
 
+    var onMetaChange = function (event) {
+        var favorite = !!event.data.favorite;
+        var title = document.title.replace(/^\☆/g, "");
+        document.title = (favorite ? "☆" : "") + title;
+        docEditor.setFavorite(favorite);
+    };
+
+    var onRequestInsertImage = function(event) {
+        docEditor.insertImage({
+            "c": event.data.c,
+            <%= raw @file.get_insert_image %>
+        })
+    };
+
+    var onRequestCompareFile = function() {
+        docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);
+    }; 
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -88,6 +106,9 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            'onMetaChange': onMetaChange,
+            'onRequestInsertImage': onRequestInsertImage,
+            'onRequestCompareFile': onRequestCompareFile,
         };
 
         <%

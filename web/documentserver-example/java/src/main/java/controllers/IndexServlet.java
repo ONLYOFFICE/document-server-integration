@@ -22,13 +22,13 @@ import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 import javax.servlet.ServletException;
@@ -77,6 +77,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "remove":
                 Remove(request, response, writer);
+                break;
+            case "download":
+                Download(request, response, writer);
                 break;
         }
     }
@@ -366,6 +369,43 @@ public class IndexServlet extends HttpServlet
         catch (Exception e)
         {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = request.getParameter("name");
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        String fileType = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+            fileType = Files.probeContentType(filePath);
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+
+        File file = new File(String.valueOf(filePath));
+
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        response.setHeader("Content-Type", fileType);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + file.getName());
+
+        BufferedInputStream inputStream = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            inputStream = new BufferedInputStream(fileInputStream);
+            int readBytes = 0;
+            while ((readBytes = inputStream.read()) != -1)
+                writer.write(readBytes);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

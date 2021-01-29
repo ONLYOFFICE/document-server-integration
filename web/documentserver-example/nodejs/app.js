@@ -123,7 +123,7 @@ app.get("/download", function(req, res) {
     }
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
-    res.setHeader("Content-Type", mime.lookup(path));
+    res.setHeader("Content-Type", mime.getType(path));
 
     res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
@@ -629,7 +629,8 @@ app.get("/editor", function (req, res) {
                 uri: url,
                 uriUser: urlUser,
                 version: countVersion,
-                created: new Date().toDateString()
+                created: new Date().toDateString(),
+                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
             },
             editor: {
                 type: type,
@@ -655,7 +656,15 @@ app.get("/editor", function (req, res) {
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            dataInsertImage: {
+                fileType: "png",
+                url: docManager.getServerUrl(true) + "/images/logo.png"
+            },
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -664,6 +673,8 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

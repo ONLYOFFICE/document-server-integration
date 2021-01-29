@@ -53,6 +53,13 @@
             document.title = title + (event.data ? "*" : "");
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
         var onRequestEditRights = function () {
             location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
         };
@@ -109,6 +116,17 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
+            })
+        };
+
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);
+        };
+
         var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
@@ -122,6 +140,9 @@
                         "onRequestHistoryClose": onRequestHistoryClose,
                         "onOutdatedVersion": onOutdatedVersion,
                         "onMakeActionLink": onMakeActionLink,
+                        "onMetaChange": onMetaChange,
+                        "onRequestInsertImage": onRequestInsertImage,
+                        "onRequestCompareFile": onRequestCompareFile,
                     }
             });
 

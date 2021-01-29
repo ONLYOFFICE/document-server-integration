@@ -69,6 +69,12 @@ namespace OnlineEditorsExampleMVC.Models
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            object favorite = null;
+            if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
+            {
+                favorite = request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
+            }
+
             var actionLink = request.GetOrDefault("actionLink", null);
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
@@ -87,7 +93,8 @@ namespace OnlineEditorsExampleMVC.Models
                                     "info", new Dictionary<string, object>
                                         {
                                             { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() }
+                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "favorite", favorite}
                                         }
                                 },
                                 {
@@ -225,6 +232,59 @@ namespace OnlineEditorsExampleMVC.Models
                 });
                 historyData = jss.Serialize(histData);
             }
+        }
+
+        public void GetCompareFileData(out string compareConfig)
+        {
+            var jss = new JavaScriptSerializer();
+
+            var compareFileUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx")
+            };
+
+            var dataCompareFile = new Dictionary<string, object>
+            {
+                { "fileType", "docx" },
+                { "url", compareFileUrl.ToString() }
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var compareFileToken = JwtManager.Encode(dataCompareFile);
+                dataCompareFile.Add("token", compareFileToken);
+            }
+
+            compareConfig = jss.Serialize(dataCompareFile);
+        }
+
+        public void GetLogoConfig(out string logoUrl)
+        {
+            var jss = new JavaScriptSerializer();
+
+            var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Content\\images\\logo.png"
+            };
+
+            var logoConfig = new Dictionary<string, object>
+            {
+                { "fileType", "png"},
+                { "url", mailMergeUrl.ToString()}
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(logoConfig);
+                logoConfig.Add("token", token);
+            }
+
+            logoUrl = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
         }
     }
 }

@@ -79,6 +79,7 @@ class FileModel
         :info => {
           :author => "Me",
           :created => Time.now.to_s,
+          :favorite => @user_id ? @user_id.eql?("uid-2") : nil
         },
         :permissions => {
           :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
@@ -195,6 +196,32 @@ class FileModel
 
     return nil
 
+  end
+
+  def get_insert_image 
+    insert_image = {
+      :fileType => "png",
+      :url => DocumentHelper.get_server_url + "/assets/logo.png"
+    }
+
+    if JwtHelper.is_enabled
+      insert_image["token"] = JwtHelper.encode(insert_image)
+    end
+
+    return insert_image.to_json.tr("{", "").tr("}","")
+  end
+
+  def get_compare_file
+    compare_file = {
+      :fileType => "docx",
+      :url => DocumentHelper.get_server_url + "/samples/sample.docx"
+    }
+
+    if JwtHelper.is_enabled
+      compare_file["token"] = JwtHelper.encode(compare_file)
+    end
+    
+    return compare_file
   end
 
 end

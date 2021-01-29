@@ -60,7 +60,7 @@
         <form id="form1">
         <header>
             <a href="">
-                <img src ="css/images/logo.png" alt="ONLYOFFICE" />
+                <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </header>
         <div class="main-panel">

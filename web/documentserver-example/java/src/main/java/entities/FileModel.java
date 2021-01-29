@@ -58,6 +58,8 @@ public class FileModel
         document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
+        document.info = new Info();
+        document.info.favorite = uid != null && !uid.isEmpty() ? uid.equals("uid-2") : null;
 
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
@@ -195,6 +197,7 @@ public class FileModel
         public String urlUser;
         public String fileType;
         public String key;
+        public Info info;
         public Permissions permissions;
     }
 
@@ -218,6 +221,11 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
         }
+    }
+
+    public class Info
+    {
+        Boolean favorite;
     }
 
     public class EditorConfig

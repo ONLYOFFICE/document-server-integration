@@ -77,7 +77,8 @@
             "key" => $docKey,
             "info" => [
                 "author" => "Me",
-                "created" => date('d.m.y')
+                "created" => date('d.m.y'),
+                "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
             "permissions" => [
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
@@ -114,8 +115,20 @@
         ]
     ];
 
+    $dataInsertImage = [
+        "fileType" => "png",
+        "url" => serverPath() . "/css/images/logo.png"
+    ];
+
+    $dataCompareFile = [
+        "fileType" => "docx",
+        "url" => serverPath() . "/webeditor-ajax.php?type=download&name=demo.docx"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataInsertImage["token"] = jwtEncode($dataInsertImage);
+        $dataCompareFile["token"] = jwtEncode($dataCompareFile);
     }
 
     function tryGetDefaultByType($createExt) {
@@ -308,6 +321,25 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+            })
+        };
+
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
+        };
+
+
         var сonnectEditor = function () {
 
             <?php
@@ -328,6 +360,9 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onMetaChange': onMetaChange,
+                'onRequestInsertImage': onRequestInsertImage,
+                'onRequestCompareFile': onRequestCompareFile,
             };
 
             <?php
