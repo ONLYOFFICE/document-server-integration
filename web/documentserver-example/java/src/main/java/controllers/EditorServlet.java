@@ -69,11 +69,11 @@ public class EditorServlet extends HttpServlet
 
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", DocumentManager.GetServerUrl() + "/css/img/logo.png");
+        dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
 
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", DocumentManager.GetServerUrl() + "/IndexServlet?type=download&name=sample.docx");
+        dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=download&name=sample.docx");
 
         if (DocumentManager.TokenEnabled())
         {
