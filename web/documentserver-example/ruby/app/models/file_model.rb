@@ -201,7 +201,7 @@ class FileModel
   def get_insert_image 
     insert_image = {
       :fileType => "png",
-      :url => DocumentHelper.get_server_url + "/assets/logo.png"
+      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png"
     }
 
     if JwtHelper.is_enabled
@@ -214,7 +214,7 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",
-      :url => DocumentHelper.get_server_url + "/samples/sample.docx"
+      :url => DocumentHelper.get_server_url(true) + "/samples/sample.docx"
     }
 
     if JwtHelper.is_enabled
