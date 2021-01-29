@@ -238,7 +238,7 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var jss = new JavaScriptSerializer();
 
-            var compareFileUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
@@ -265,7 +265,7 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var jss = new JavaScriptSerializer();
 
-            var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
+            var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
