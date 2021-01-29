@@ -292,7 +292,7 @@ namespace OnlineEditorsExample
 
         private Dictionary<string, object> GetLogoConfig()
         {
-            var InsertImageUrl = _Default.Host;
+            var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
             InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "App_Themes\\images\\logo.png";
@@ -314,7 +314,7 @@ namespace OnlineEditorsExample
 
         private Dictionary<string, object> GetCompareFile()
         {
-            var compareFileUrl = _Default.Host;
+            var compareFileUrl = new UriBuilder(_Default.GetServerUrl(true));
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
