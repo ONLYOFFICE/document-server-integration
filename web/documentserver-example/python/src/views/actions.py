@@ -189,12 +189,12 @@ def edit(request):
 
     dataInsertImage = {
         'fileType': 'png',
-        'url': config.EXAMPLE_DOMAIN + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
     }
 
     dataCompareFile = {
         'fileType': 'docx',
-        'url': config.EXAMPLE_DOMAIN + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
     }
 
     if jwtManager.isEnabled():
@@ -209,10 +209,9 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
-        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL
+        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
         'dataCompareFile': dataCompareFile,
-        'apiUrl': config.DOC_SERV_API_URL
     }
     return render(request, 'editor.html', context)
 
