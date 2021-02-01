@@ -201,7 +201,7 @@ def edit(request):
 
     dataMailMergeRecipients = {
         'fileType': 'csv',
-        'url': config.EXAMPLE_DOMAIN + 'csv'
+        'url': docManager.getServerUrl(True, request) + 'csv'
     }
 
     if jwtManager.isEnabled():
