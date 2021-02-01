@@ -1,12 +1,9 @@
-FROM node as example
+FROM node:buster as example
 LABEL maintainer Ascensio System SIA <support@onlyoffice.com>
-
-ARG COMPANY_NAME=onlyoffice
 
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
-    COMPANY_NAME=$COMPANY_NAME \
     NODE_ENV=production-linux \
     NODE_CONFIG_DIR=/etc/onlyoffice/documentserver-example/
 
@@ -24,10 +21,6 @@ RUN groupadd --system --gid 1001 ds && \
     mv config/* /etc/onlyoffice/documentserver-example/ && \
     npm install
 
-RUN ls -l /var/www/onlyoffice/documentserver-example/ && \
-    ls -l /var/lib/onlyoffice/documentserver-example/files/ && \
-    ls -l /etc/onlyoffice/documentserver-example/ 
 USER ds
 
 ENTRYPOINT /var/www/onlyoffice/documentserver-example/docker-entrypoint.sh npm start
-#ENTRYPOINT [ "docker-entrypoint.sh" ]
