@@ -187,10 +187,6 @@ class DocumentHelper
       end 
     end
 
-    def get_server_url
-      @@base_url
-    end
-
     def get_callback(file_name)
 
       get_server_url(true) + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)

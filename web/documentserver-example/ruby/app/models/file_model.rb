@@ -227,7 +227,7 @@ class FileModel
   def dataMailMergeRecipients
     dataMailMergeRecipients = {
       :fileType => "csv",
-      :url => DocumentHelper.get_server_url + "/csv"
+      :url => DocumentHelper.get_server_url(true) + "/csv"
     }
 
     if JwtHelper.is_enabled
