@@ -230,6 +230,10 @@ class FileModel
       :url => DocumentHelper.get_server_url + "/csv"
     }
 
+    if JwtHelper.is_enabled
+      dataMailMergeRecipients["token"] = JwtHelper.encode(dataMailMergeRecipients)
+    end
+
     return dataMailMergeRecipients
   end
 
