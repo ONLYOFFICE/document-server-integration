@@ -77,7 +77,7 @@ public class EditorServlet extends HttpServlet
 
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl() + "/IndexServlet?type=csv");
+        dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
 
         if (DocumentManager.TokenEnabled())
         {
