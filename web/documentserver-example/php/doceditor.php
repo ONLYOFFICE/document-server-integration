@@ -127,7 +127,7 @@
 
     $dataMailMergeRecipients = [
         "fileType" =>"csv",
-        "url" => serverPath() . DIRECTORY_SEPARATOR . "webeditor-ajax.php?type=csv"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
 
     if (isJwtEnabled()) {
@@ -344,7 +344,6 @@
         var onRequestCompareFile = function() {
             docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
         };
-
 
         var onRequestMailMergeRecipients = function (event) {
             docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
