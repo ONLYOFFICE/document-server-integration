@@ -219,45 +219,6 @@ public class IndexServlet extends HttpServlet
         }
     }
 
-
-    private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
-    {
-        String fileName = "csv.csv";
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        Path filePath = null;
-        String fileType = null;
-        try {
-            filePath = Paths.get(fileUrl.toURI());
-            fileType = Files.probeContentType(filePath);
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
-        }
-
-        File file = new File(String.valueOf(filePath));
-
-        response.setHeader("Content-Length", String.valueOf(file.length()));
-        response.setHeader("Content-Type", fileType);
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + fileName);
-
-        BufferedInputStream inputStream = null;
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            inputStream = new BufferedInputStream(fileInputStream);
-            int readBytes = 0;
-            while ((readBytes = inputStream.read()) != -1)
-                writer.write(readBytes);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
     private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String userAddress = request.getParameter("userAddress");
@@ -414,9 +375,28 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "csv.csv";
+        download(fileName, response, writer);
+    }
+
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String fileName = request.getParameter("name");
+        download(fileName, response, writer);
+    }
+
+    private static void delete(File f) throws Exception {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles())
+            delete(c);
+        }
+        if (!f.delete())
+            throw new Exception("Failed to delete file: " + f);
+    }
+
+    private static void download(String fileName, HttpServletResponse response, PrintWriter writer) {
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
         String fileType = null;
@@ -449,15 +429,6 @@ public class IndexServlet extends HttpServlet
                 e.printStackTrace();
             }
         }
-    }
-
-    private static void delete(File f) throws Exception {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles())
-            delete(c);
-        }
-        if (!f.delete())
-            throw new Exception("Failed to delete file: " + f);
     }
 
     private static void downloadToFile(String url, File file) throws Exception {
