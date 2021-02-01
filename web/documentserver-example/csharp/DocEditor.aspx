@@ -107,9 +107,6 @@
             }
             return link;
         }
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
-        };
 
         var onMakeActionLink = function (event) {
             var actionData = event.data;
@@ -133,6 +130,10 @@
 
         var onRequestCompareFile = function () {
             docEditor.setRevisedFile(<%= compareFileData%>);
+        };
+
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
         };
 
         var config = <%= DocConfig %>;

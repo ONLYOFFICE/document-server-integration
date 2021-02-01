@@ -206,28 +206,14 @@ namespace OnlineEditorsExample
                 Dictionary<string, object> compareFile = GetCompareFile();
                 compareFileData = jss.Serialize(compareFile);
 
-                var mailmergeUrl = _Default.Host;
-                mailmergeUrl.Path =
-                    HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx";
-                mailmergeUrl.Query = "type=csv";               
-                var mailMergeConfig = new Dictionary<string, object>
-                {
-                    { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString()}
-                };
-                if (JwtManager.Enabled)
-                {
-                    var mailmergeToken = JwtManager.Encode(mailMergeConfig);
-                    mailMergeConfig.Add("token", mailmergeToken);
-                }
+                Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
+                dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+
 
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
   
                 GetHistory(out hist, out histData);
-                dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
                 if (hist != null && histData != null)
                 {
                     History = jss.Serialize(hist);
@@ -353,6 +339,30 @@ namespace OnlineEditorsExample
             }
 
             return dataCompareFile;
+        }
+
+        private Dictionary<string, object> GetMailMergeConfig()
+        {
+            var mailmergeUrl = new UriBuilder(_Default.GetServerUrl(true));
+            mailmergeUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+            mailmergeUrl.Query = "type=csv";
+
+            Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "csv" },
+                    { "url", mailmergeUrl.ToString() }
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var mailmergeToken = JwtManager.Encode(mailMergeConfig);
+                mailMergeConfig.Add("token", mailmergeToken);
+            }
+
+            return mailMergeConfig;
         }
 
         private string MakePublicUrl(string fullPath)
