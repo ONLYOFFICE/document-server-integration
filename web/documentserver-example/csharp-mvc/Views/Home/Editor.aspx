@@ -74,12 +74,6 @@
             location.reload(true);
         };
 
-        var onRequestMailMergeRecipients = function (event) {
-            <% string dataMailMergeRecipients; %>
-            <% Model.GetMailMergeConfig(out dataMailMergeRecipients); %>
-            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
-        };
-
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -122,6 +116,12 @@
             <% string compareFileData; %>
             <% Model.GetCompareFileData(out compareFileData); %>
             docEditor.setRevisedFile(<%=compareFileData%>);
+        };
+
+        var onRequestMailMergeRecipients = function (event) {
+            <% string dataMailMergeRecipients; %>
+            <% Model.GetMailMergeConfig(out dataMailMergeRecipients); %>
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
         };
 
         var config = <%= Model.GetDocConfig(Request, Url) %>;

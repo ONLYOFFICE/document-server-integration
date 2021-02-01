@@ -160,29 +160,6 @@ namespace OnlineEditorsExampleMVC.Models
             return jss.Serialize(config);
         }
 
-        public void GetMailMergeConfig(out string dataMailMergeRecipients)
-        {
-            var jss = new JavaScriptSerializer();
-            var mailMergeUrl = new UriBuilder(HttpContext.Current.Request.Url)
-            {
-                Path =
-                    HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx",
-                Query = "type=csv"
-            };
-            var mailMergeConfig = new Dictionary<string, object>
-            {
-                { "fileType", "csv" },
-                { "url", mailMergeUrl.ToString()}
-            };
-            if (JwtManager.Enabled)
-            {
-                var mailmergeToken = JwtManager.Encode(mailMergeConfig);
-                mailMergeConfig.Add("token", mailmergeToken);
-            }
-            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
-        }
         public void GetHistory(out string history, out string historyData)
         {
             var jss = new JavaScriptSerializer();
@@ -308,6 +285,34 @@ namespace OnlineEditorsExampleMVC.Models
             }
 
             logoUrl = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
+        }
+
+        public void GetMailMergeConfig(out string dataMailMergeRecipients)
+        {
+            var jss = new JavaScriptSerializer();
+
+            var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=csv"
+            };
+
+            var mailMergeConfig = new Dictionary<string, object>
+            {
+                { "fileType", "csv" },
+                { "url", mailMergeUrl.ToString()}
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var mailmergeToken = JwtManager.Encode(mailMergeConfig);
+                mailMergeConfig.Add("token", mailmergeToken);
+            }
+
+            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
         }
     }
 }
