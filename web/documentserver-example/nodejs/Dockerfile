@@ -1,4 +1,4 @@
-FROM node:buster as example
+FROM node:buster
 LABEL maintainer Ascensio System SIA <support@onlyoffice.com>
 
 ENV LANG=en_US.UTF-8 \
@@ -20,6 +20,8 @@ RUN groupadd --system --gid 1001 ds && \
     chown -R ds:ds /etc/onlyoffice/ && \
     mv config/* /etc/onlyoffice/documentserver-example/ && \
     npm install
+
+EXPOSE 3000
 
 USER ds
 
