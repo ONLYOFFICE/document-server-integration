@@ -312,16 +312,26 @@ function delete() {
     }
 }
 
-function csv(){
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . "csv.csv";
+function download() {
+    $fileName = basename($_GET["name"]);
+    downloadFile($fileName);
+}
+
+function csv() {
+    $fileName = "csv.csv";
+    downloadFile($fileName);
+}
+
+function downloadFile($fileName) {
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
     if (file_exists($file)) {
         if (ob_get_level()) {
             ob_end_clean();
         }
+
         @header('Content-Length: ' . filesize($file));
         @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
         @header('Content-Type: ' . mime_content_type($file));
-
 
         if ($fd = fopen($file, 'rb')) {
             while (!feof($fd)) {
@@ -341,28 +351,6 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
-}
-
-function download(){
-    $fileName = basename($_GET["name"]);
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
-    if (file_exists($file)) {
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
-        @header('Content-Length: ' . filesize($file));
-        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
-        @header('Content-Type: ' . mime_content_type($file));
-
-
-        if ($fd = fopen($file, 'rb')) {
-            while (!feof($fd)) {
-                print fread($fd, 1024);
-            }
-            fclose($fd);
-        }
-        exit;
-    }
 }
 
 ?>
