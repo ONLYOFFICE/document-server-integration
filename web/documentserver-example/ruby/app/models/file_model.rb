@@ -193,4 +193,13 @@ class FileModel
 
   end
 
+  def dataMailMergeRecipients
+    dataMailMergeRecipients = {
+      :fileType => "csv",
+      :url => DocumentHelper.get_server_url + "/csv"
+    }
+
+    return dataMailMergeRecipients
+  end
+
 end

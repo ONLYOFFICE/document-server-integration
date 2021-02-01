@@ -76,6 +76,10 @@
         docEditor.setActionLink(replaceActionLink(location.href, linkParam));
     };
 
+    var onRequestMailMergeRecipients = function (event) {
+        docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);
+    };
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -88,6 +92,7 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
         };
 
         <%
