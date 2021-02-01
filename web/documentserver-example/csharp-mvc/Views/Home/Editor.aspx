@@ -41,7 +41,7 @@
         </div>
     </div>
     
-    <%: Scripts.Render(new []{ WebConfigurationManager.AppSettings["files.docservice.url.api"] }) %>
+    <%: Scripts.Render(new []{ WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.api"] }) %>
 
     <script type="text/javascript" language="javascript">
 
@@ -102,6 +102,28 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function (event) {
+            <% string logoUrl;%>
+            <% Model.GetLogoConfig(out logoUrl); %>
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= logoUrl%>
+            })
+        };
+
+        var onRequestCompareFile = function () {
+            <% string compareFileData; %>
+            <% Model.GetCompareFileData(out compareFileData); %>
+            docEditor.setRevisedFile(<%=compareFileData%>);
+        };
+
         var config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -114,6 +136,9 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 

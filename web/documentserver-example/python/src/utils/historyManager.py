@@ -32,6 +32,7 @@ import config
 from . import users, fileUtils
 from datetime import datetime
 from src import settings
+from src.utils import docManager
     
 def getHistoryDir(storagePath):
     return f'{storagePath}-hist'
@@ -103,12 +104,12 @@ def readFile(path):
         return stream.read()
 
 def getPrevUri(filename, ver, ext, req):
-    host = config.EXAMPLE_DOMAIN.rstrip('/')
+    host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/prev{ext}'
 
 def getZipUri(filename, ver, req):
-    host = config.EXAMPLE_DOMAIN.rstrip('/')
+    host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
 

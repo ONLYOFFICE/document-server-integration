@@ -246,11 +246,11 @@ public class DocumentManager
         return fileName;
     }
 
-    public static String GetFileUri(String fileName)
+    public static String GetFileUri(String fileName, Boolean forDocumentServer)
     {
         try
         {
-            String serverPath = GetServerUrl();
+            String serverPath = GetServerUrl(forDocumentServer);
             String storagePath = ConfigManager.GetProperty("storage-folder");
             String hostAddress = CurUserHostAddress(null);
 
@@ -266,7 +266,7 @@ public class DocumentManager
 
     public static String GetPathUri(String path)
     {
-        String serverPath = GetServerUrl();
+        String serverPath = GetServerUrl(true);
         String storagePath = ConfigManager.GetProperty("storage-folder");
         String hostAddress = CurUserHostAddress(null);
 
@@ -276,14 +276,17 @@ public class DocumentManager
     }
 
 
-    public static String GetServerUrl()
-    {
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    public static String GetServerUrl(Boolean forDocumentServer) {
+        if (forDocumentServer && !ConfigManager.GetProperty("files.docservice.url.example").equals("")) {
+            return ConfigManager.GetProperty("files.docservice.url.example");
+        } else {
+            return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        }
     }
 
     public static String GetCallback(String fileName)
     {
-        String serverPath = GetServerUrl();
+        String serverPath = GetServerUrl(true);
         String hostAddress = CurUserHostAddress(null);
         try
         {

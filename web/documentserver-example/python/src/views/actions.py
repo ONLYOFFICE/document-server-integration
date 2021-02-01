@@ -66,7 +66,7 @@ def convert(request):
 
     try:
         filename = request.GET['filename']
-        fileUri = docManager.getFileUri(filename, request)
+        fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
         newExt = docManager.getInternalExtension(fileType)
@@ -114,7 +114,8 @@ def edit(request):
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, request)
+    fileUri = docManager.getFileUri(filename, True, request)
+    fileUriUser = docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
@@ -143,7 +144,7 @@ def edit(request):
             'author': 'Me',
             'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-
+    infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None
     edConfig = {
         'type': edType,
         'documentType': fileType,
@@ -173,19 +174,29 @@ def edit(request):
                 'name': user['uname']
             },
             'embedded': {
-                'saveUrl': fileUri,
-                'embedUrl': fileUri,
-                'shareUrl': fileUri,
+                'saveUrl': fileUriUser,
+                'embedUrl': fileUriUser,
+                'shareUrl': fileUriUser,
                 'toolbarDocked': 'top'
             },
             'customization': {
                 'about': True,
                 'feedback': True,
                 'goback': {
-                    'url': config.EXAMPLE_DOMAIN
+                    'url': docManager.getServerUrl(False, request)
                 }
             }
         }
+    }
+
+    dataInsertImage = {
+        'fileType': 'png',
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
+    }
+
+    dataCompareFile = {
+        'fileType': 'docx',
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
     }
 
     dataMailMergeRecipients = {
@@ -195,6 +206,8 @@ def edit(request):
 
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
+        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
         dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
@@ -204,7 +217,9 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
-        'apiUrl': config.DOC_SERV_API_URL,
+        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,
+        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
+        'dataCompareFile': dataCompareFile,
         'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients)
     }
     return render(request, 'editor.html', context)
@@ -222,7 +237,8 @@ def track(request):
             token = body.get('token')
 
             if (not token):
-                token = request.headers.get('Authorization')
+                jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+                token = request.headers.get(jwtHeader)
                 if token:
                     token = token[len('Bearer '):]
 

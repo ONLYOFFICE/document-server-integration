@@ -167,16 +167,24 @@ class DocumentHelper
       file_name
     end
 
-    def get_file_uri(file_name)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
+    def get_file_uri(file_name, for_document_server)
+      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
 
       return uri
     end
 
     def get_path_uri(path)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
+      uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
 
       return uri
+    end
+    
+    def get_server_url(for_document_server)
+      if for_document_server && !Rails.configuration.urlExample.empty?
+        return Rails.configuration.urlExample
+      else
+        return @@base_url
+      end 
     end
 
     def get_server_url
@@ -185,7 +193,7 @@ class DocumentHelper
 
     def get_callback(file_name)
 
-      @@base_url + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 

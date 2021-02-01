@@ -64,6 +64,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = delete();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "download":
+            $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         case "csv":
             $response_array = csv();
             $response_array['status'] = 'success';
@@ -148,10 +152,12 @@ function track() {
 
         $inHeader = false;
         $token = "";
+        $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+
         if (!empty($data["token"])) {
             $token = jwtDecode($data["token"]);
-        } elseif (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
-            $token = jwtDecode(substr($_SERVER['HTTP_AUTHORIZATION'], strlen("Bearer ")));
+        } elseif (!empty(apache_request_headers()[$jwtHeader])) {
+            $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
             $inHeader = true;
         } else {
             sendlog("jwt token wasn't found in body or headers", "webedior-ajax.log");
@@ -335,6 +341,28 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
+}
+
+function download(){
+    $fileName = basename($_GET["name"]);
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
+    if (file_exists($file)) {
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        @header('Content-Length: ' . filesize($file));
+        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
+        @header('Content-Type: ' . mime_content_type($file));
+
+
+        if ($fd = fopen($file, 'rb')) {
+            while (!feof($fd)) {
+                print fread($fd, 1024);
+            }
+            fclose($fd);
+        }
+        exit;
+    }
 }
 
 ?>

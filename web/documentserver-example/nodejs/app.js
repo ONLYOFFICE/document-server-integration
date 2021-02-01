@@ -571,6 +571,7 @@ app.get("/editor", function (req, res) {
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
+        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
@@ -639,8 +640,10 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
+                uriUser: urlUser,
                 version: countVersion,
-                created: new Date().toDateString()
+                created: new Date().toDateString(),
+                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
             },
             editor: {
                 type: type,
@@ -667,6 +670,14 @@ app.get("/editor", function (req, res) {
             },
             history: history,
             historyData: historyData,
+            dataInsertImage: {
+                fileType: "png",
+                url: docManager.getServerUrl(true) + "/images/logo.png"
+            },
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            },
             dataMailMergeRecipients: {
                 fileType: "csv",
                 url: docManager.getServerUrl(true) + "/csv"
@@ -679,6 +690,8 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);

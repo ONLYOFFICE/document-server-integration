@@ -54,9 +54,12 @@ public class FileModel
 
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetFileUri(fileName);
+        document.url = DocumentManager.GetFileUri(fileName, true);
+        document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
+        document.info = new Info();
+        document.info.favorite = uid != null && !uid.isEmpty() ? uid.equals("uid-2") : null;
 
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
@@ -65,7 +68,7 @@ public class FileModel
         if (uid != null) editorConfig.user.id = uid;
         if (uname != null) editorConfig.user.name = uname;
 
-        editorConfig.customization.goback.url = DocumentManager.GetServerUrl() + "/IndexServlet";
+        editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
         changeType(mode, type);
     }
@@ -86,7 +89,7 @@ public class FileModel
 
     public void InitDesktop()
     {
-        editorConfig.InitDesktop(document.url);
+        editorConfig.InitDesktop(document.urlUser);
     }
 
     public void BuildToken()
@@ -191,8 +194,10 @@ public class FileModel
     {
         public String title;
         public String url;
+        public String urlUser;
         public String fileType;
         public String key;
+        public Info info;
         public Permissions permissions;
     }
 
@@ -216,6 +221,11 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
         }
+    }
+
+    public class Info
+    {
+        Boolean favorite;
     }
 
     public class EditorConfig
