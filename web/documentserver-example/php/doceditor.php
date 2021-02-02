@@ -169,16 +169,16 @@
             $hist = [];
             $histData = [];
 
-            for ($i = 0; $i <= $curVer; $i++) {
+            for ($i = 1; $i <= $curVer; $i++) {
                 $obj = [];
                 $dataObj = [];
-                $verDir = getVersionDir($histDir, $i + 1);
+                $verDir = getVersionDir($histDir, $i);
 
                 $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
                 $obj["key"] = $key;
                 $obj["version"] = $i;
 
-                if ($i == 0) {
+                if ($i == 1) {
                     $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
                     $json = json_decode($createdInfo, true);
 
@@ -195,8 +195,8 @@
                 $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
                 $dataObj["version"] = $i;
 
-                if ($i > 0) {
-                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "changes.json"), true);
+                if ($i > 1) {
+                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);
                     $change = $changes["changes"][0];
 
                     $obj["changes"] = $changes["changes"];
@@ -204,12 +204,12 @@
                     $obj["created"] = $change["created"];
                     $obj["user"] = $change["user"];
 
-                    $prev = $histData[$i -1];
+                    $prev = $histData[$i - 2];
                     $dataObj["previous"] = [
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesUrl = getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "diff.zip";
+                    $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
                     $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
                     $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
@@ -220,7 +220,7 @@
                 }
 
                 array_push($hist, $obj);
-                $histData[$i] = $dataObj;
+                $histData[$i - 1] = $dataObj;
             }
 
             $out = [];
@@ -391,7 +391,7 @@
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver]);
+                docEditor.setHistoryData(histData[ver - 1]);
             };
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();

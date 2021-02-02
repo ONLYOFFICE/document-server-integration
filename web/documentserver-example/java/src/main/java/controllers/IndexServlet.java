@@ -320,7 +320,7 @@ public class IndexServlet extends HttpServlet
             try
             {
                 String histDir = DocumentManager.HistoryDir(storagePath);
-                String versionDir = DocumentManager.VersionDir(histDir, DocumentManager.GetFileVersion(histDir) + 1);
+                String versionDir = DocumentManager.VersionDir(histDir, DocumentManager.GetFileVersion(histDir));
                 File ver = new File(versionDir);
                 File toSave = new File(storagePath);
 

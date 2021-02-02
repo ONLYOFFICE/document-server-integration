@@ -210,7 +210,7 @@ function track() {
             } else {
                 $storagePath = getStoragePath($fileName, $userAddress);
                 $histDir = getHistoryDir($storagePath);
-                $verDir = getVersionDir($histDir, getFileVersion($histDir) + 1);
+                $verDir = getVersionDir($histDir, getFileVersion($histDir));
 
                 mkdir($verDir);
 

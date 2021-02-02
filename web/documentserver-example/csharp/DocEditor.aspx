@@ -162,7 +162,7 @@
         config.events['onRequestHistoryData'] = function (event) {
             var ver = event.data;
             var histData = <%= HistoryData %>;
-            docEditor.setHistoryData(histData[ver]);
+            docEditor.setHistoryData(histData[ver - 1]);
         };
         config.events['onRequestHistoryClose '] = function () {
             document.location.reload();

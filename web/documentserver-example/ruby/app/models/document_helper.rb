@@ -96,7 +96,7 @@ class DocumentHelper
         return 0
       end
 
-      ver = 0
+      ver = 1
       Dir.foreach(hist_dir) {|e|
         next if e.eql?(".")
         next if e.eql?("..")
@@ -144,7 +144,7 @@ class DocumentHelper
       hist_dir = history_dir(storage_path(file_name, nil))
 
       json = {
-        :created => Time.now.to_s,
+        :created => Time.now.to_formatted_s(:db),
         :uid => uid ? uid : "uid-0",
         :uname => uname ? uname : "John Smith"
       }

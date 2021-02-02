@@ -153,7 +153,7 @@ namespace OnlineEditorsExample
         public static int GetFileVersion(string historyPath)
         {
             if (!Directory.Exists(historyPath)) return 0;
-            return Directory.EnumerateDirectories(historyPath).Count();
+            return Directory.EnumerateDirectories(historyPath).Count() + 1;
         }
 
         public static int GetFileVersion(string fileName, string userAddress)
@@ -237,7 +237,7 @@ namespace OnlineEditorsExample
             var histDir = HistoryDir(savedFileName);
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString() },
+                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
                 { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
             }));
@@ -284,7 +284,7 @@ namespace OnlineEditorsExample
                 var histDir = HistoryDir(StoragePath(_fileName, null));
                 Directory.CreateDirectory(histDir);
                 File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                    { "created", DateTime.Now.ToString() },
+                    { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                     { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
                     { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
                 }));
