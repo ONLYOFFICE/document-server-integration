@@ -190,7 +190,7 @@ class HomeController < ApplicationController
         end
 
         hist_dir = DocumentHelper.history_dir(storage_path)
-        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir) + 1)
+        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir))
 
         FileUtils.mkdir_p(ver_dir)
 
