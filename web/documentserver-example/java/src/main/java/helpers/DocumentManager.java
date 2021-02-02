@@ -165,7 +165,7 @@ public class DocumentManager
             }
         });
 
-        return dirs.length+1;
+        return dirs.length + 1;
     }
 
     public static int GetFileVersion(String fileName, String userAddress)

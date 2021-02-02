@@ -135,7 +135,7 @@ public class FileModel
                     dataObj.put("version", i);
 
                     if (i > 1) {
-                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i-1) + File.separator + "changes.json")));
+                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "changes.json")));
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         obj.put("changes", changes.get("changes"));
@@ -148,11 +148,11 @@ public class FileModel
                         prevInfo.put("key", prev.get("key"));
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i-1) + File.separator + "diff.zip"));
+                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
                     }
 
                     hist.add(obj);
-                    histData.put(Integer.toString(i-1), dataObj);
+                    histData.put(Integer.toString(i - 1), dataObj);
 
                 } catch (Exception ex) { }
             }
