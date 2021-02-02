@@ -14,7 +14,11 @@
  limitations under the License.
 %>
 
-<div class="top-panel"></div>
+<div class="top-panel">
+  <a href="">
+    <img src ="assets/logo.svg" alt="ONLYOFFICE" />
+  </a>
+</div>
 <div class="main-panel">
   <span class="portal-name">ONLYOFFICE Document Editors</span>
   <br />
@@ -132,7 +136,7 @@
                     <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                         <span title="<%= d %>"><%= d %></span>
                     </a>
-                    <a href="<%= DocumentHelper.get_file_uri(d) %>">
+                    <a href="<%= DocumentHelper.get_file_uri(d, false) %>">
                         <img class="icon-download" src="assets/download-24.png" alt="Download" title="Download" />
                     </a>
                     <a class="delete-file" data-filename="<%= d %>">
@@ -259,7 +263,7 @@
   <div id="cancelEdit" class="button gray">Cancel</div>
 </div>
 
-<span id="loadScripts" data-docs="<%= Rails.configuration.urlPreloader %>"></span>
+<span id="loadScripts" data-docs="<%= Rails.configuration.urlSite + Rails.configuration.urlPreloader %>"></span>
 
 <div class="bottom-panel">&copy; Ascensio System SIA <%= Time.now.year %>. All rights reserved.</div>
 

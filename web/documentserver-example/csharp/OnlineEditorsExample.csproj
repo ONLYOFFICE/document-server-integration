@@ -152,6 +152,7 @@
     <Content Include="App_Data\new.xlsx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\csv.csv" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

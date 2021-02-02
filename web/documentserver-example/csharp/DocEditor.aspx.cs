@@ -34,7 +34,12 @@ namespace OnlineEditorsExample
 
         public static string FileUri
         {
-            get { return _Default.FileUri(FileName); }
+            get { return _Default.FileUri(FileName, true); }
+        }
+
+        public static string FileUriUser
+        {
+            get { return _Default.FileUri(FileName, false); }
         }
 
         protected string Key
@@ -49,18 +54,21 @@ namespace OnlineEditorsExample
 
         protected string DocServiceApiUri
         {
-            get { return WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty; }
+            get { return (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty) + (WebConfigurationManager.AppSettings["files.docservice.url.api"] ?? string.Empty); }
         }
 
         protected string DocConfig { get; private set; }
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
+        protected string InsertImageConfig { get; private set; }
+        protected string compareFileData { get; private set; }
+        protected string dataMailMergeRecipients { get; private set; }
 
         public static string CallbackUrl
         {
             get
             {
-                var callbackUrl = _Default.Host;
+                var callbackUrl = new UriBuilder(_Default.GetServerUrl(true));
                 callbackUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
@@ -108,6 +116,12 @@ namespace OnlineEditorsExample
 
             var jss = new JavaScriptSerializer();
 
+            object favorite = null;
+            if (!string.IsNullOrEmpty(Request.Cookies.GetOrDefault("uid", null)))
+            {
+                favorite = Request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
+            }
+
             var actionLink = Request.GetOrDefault("actionLink", null);
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);
 
@@ -126,7 +140,8 @@ namespace OnlineEditorsExample
                                     "info", new Dictionary<string, object>
                                         {
                                             { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() }
+                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "favorite", favorite }
                                         }
                                 },
                                 {
@@ -161,9 +176,9 @@ namespace OnlineEditorsExample
                                 {
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUri },
-                                            { "embedUrl", FileUri },
-                                            { "shareUrl", FileUri },
+                                            { "saveUrl", FileUriUser },
+                                            { "embedUrl", FileUriUser },
+                                            { "shareUrl", FileUriUser },
                                             { "toolbarDocked", "top" }
                                         }
                                 },
@@ -175,7 +190,7 @@ namespace OnlineEditorsExample
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
-                                                        { "url", _Default.Host + "default.aspx" }
+                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }
                                                     }
                                             },
                                             { "reviewPermissions", rereviewPermissions }
@@ -195,8 +210,19 @@ namespace OnlineEditorsExample
 
             try
             {
+                Dictionary<string, object> logoConfig = GetLogoConfig();
+                InsertImageConfig = jss.Serialize(logoConfig).Replace("{", "").Replace("}", "");
+
+                Dictionary<string, object> compareFile = GetCompareFile();
+                compareFileData = jss.Serialize(compareFile);
+
+                Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
+                dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+
+
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
+  
                 GetHistory(out hist, out histData);
                 if (hist != null && histData != null)
                 {
@@ -221,18 +247,18 @@ namespace OnlineEditorsExample
                 var hist = new List<Dictionary<string, object>>();
                 var histData = new Dictionary<string, object>();
 
-                for (var i = 0; i <= currentVersion; i++)
+                for (var i = 1; i <= currentVersion; i++)
                 {
                     var obj = new Dictionary<string, object>();
                     var dataObj = new Dictionary<string, object>();
-                    var verDir = _Default.VersionDir(histDir, i + 1);
+                    var verDir = _Default.VersionDir(histDir, i);
 
                     var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
 
                     obj.Add("key", key);
                     obj.Add("version", i);
 
-                    if (i == 0)
+                    if (i == 1)
                     {
                         var infoPath = Path.Combine(histDir, "createdInfo.json");
 
@@ -249,9 +275,9 @@ namespace OnlineEditorsExample
                     dataObj.Add("key", key);
                     dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));
                     dataObj.Add("version", i);
-                    if (i > 0)
+                    if (i > 1)
                     {
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i), "changes.json")));
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
                         var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
 
                         obj.Add("changes", changes["changes"]);
@@ -259,16 +285,20 @@ namespace OnlineEditorsExample
                         obj.Add("created", change["created"]);
                         obj.Add("user", change["user"]);
 
-                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];
                         dataObj.Add("previous", new Dictionary<string, object>() {
                             { "key", prev["key"] },
                             { "url", prev["url"] },
                         });
-                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i), "diff.zip")));
+                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
                     }
-
+                    if (JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);
-                    histData.Add(i.ToString(), dataObj);
+                    histData.Add((i - 1).ToString(), dataObj);
                 }
 
                 history = new Dictionary<string, object>()
@@ -280,10 +310,79 @@ namespace OnlineEditorsExample
             }
         }
 
+        private Dictionary<string, object> GetLogoConfig()
+        {
+            var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
+            InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "App_Themes\\images\\logo.png";
+
+            Dictionary<string, object> logoConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "png"},
+                    { "url", InsertImageUrl.ToString()}
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var insImageToken = JwtManager.Encode(logoConfig);
+                logoConfig.Add("token", insImageToken);
+            }
+
+            return logoConfig;
+        }
+
+        private Dictionary<string, object> GetCompareFile()
+        {
+            var compareFileUrl = new UriBuilder(_Default.GetServerUrl(true));
+            compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+
+            Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
+                {
+                    { "fileType", "docx" },
+                    { "url", compareFileUrl.ToString() }
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var compareFileToken = JwtManager.Encode(dataCompareFile);
+                dataCompareFile.Add("token", compareFileToken);
+            }
+
+            return dataCompareFile;
+        }
+
+        private Dictionary<string, object> GetMailMergeConfig()
+        {
+            var mailmergeUrl = new UriBuilder(_Default.GetServerUrl(true));
+            mailmergeUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+            mailmergeUrl.Query = "type=csv";
+
+            Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
+                {
+                    { "fileType", "csv" },
+                    { "url", mailmergeUrl.ToString() }
+                };
+
+            if (JwtManager.Enabled)
+            {
+                var mailmergeToken = JwtManager.Encode(mailMergeConfig);
+                mailMergeConfig.Add("token", mailmergeToken);
+            }
+
+            return mailMergeConfig;
+        }
+
         private string MakePublicUrl(string fullPath)
         {
             var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
-            return _Default.Host + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+            return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
         }
 
         private static void Try(string type, string sample, HttpRequest request)
@@ -312,7 +411,7 @@ namespace OnlineEditorsExample
             var histDir = _Default.HistoryDir(filePath);
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString() },
+                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
                 { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
             }));
