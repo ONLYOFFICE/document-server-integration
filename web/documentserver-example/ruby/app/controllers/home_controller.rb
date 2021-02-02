@@ -252,7 +252,8 @@ class HomeController < ApplicationController
   end
 
   def files
-    filesInfo = DocumentHelper.get_files_info
+    file_id = params[:fileId]
+    filesInfo = DocumentHelper.get_files_info(file_id)
     render json: filesInfo
   end
 end

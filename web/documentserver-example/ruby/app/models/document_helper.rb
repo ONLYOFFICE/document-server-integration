@@ -201,7 +201,7 @@ class DocumentHelper
       ext
     end
 
-    def get_files_info
+    def get_files_info(file_id)
       result = [];
 
       for fileName in get_stored_files(nil)
@@ -217,7 +217,14 @@ class DocumentHelper
           "updated" => File.mtime(directory) 
         }
 
-        result.push(info)
+        if file_id == nil
+          result.push(info)
+        else
+          if file_id.eql?(info["id"])
+            result.push(info)
+            break
+          end
+        end
       end
 
       return result
