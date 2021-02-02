@@ -132,6 +132,10 @@
             docEditor.setRevisedFile(<%= compareFileData%>);
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
+        };
+
         var config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -147,6 +151,7 @@
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))

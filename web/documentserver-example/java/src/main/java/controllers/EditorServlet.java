@@ -75,11 +75,16 @@ public class EditorServlet extends HttpServlet
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=download&name=sample.docx");
 
+        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
+        dataMailMergeRecipients.put("fileType", "csv");
+        dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
+
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
             dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));
             dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));
+            dataMailMergeRecipients.put("token", DocumentManager.CreateToken(dataMailMergeRecipients));
         }
 
         Gson gson = new Gson();
@@ -87,6 +92,7 @@ public class EditorServlet extends HttpServlet
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.api"));
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
+        request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

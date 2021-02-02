@@ -15,6 +15,7 @@
 #
 
 require 'net/http'
+require 'mimemagic'
 
 class HomeController < ApplicationController
   def index
@@ -250,5 +251,16 @@ class HomeController < ApplicationController
 
     render plain: '{"success":true}'
     return
+  end
+
+  def csv
+    file_name = "csv.csv"
+    csvPath = Rails.root.join('public', 'samples', file_name)
+
+    response.headers['Content-Length'] = File.size(csvPath).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
+    send_file csvPath, :x_sendfile => true
   end
 end

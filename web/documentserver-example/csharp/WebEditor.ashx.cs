@@ -52,6 +52,9 @@ namespace OnlineEditorsExample
                 case "download":
                     Download(context);
                     break;
+                case "csv":
+                    GetCsv(context);
+                    break;
             }
         }
 
@@ -232,6 +235,30 @@ namespace OnlineEditorsExample
             }
         }
 
+        private static void Download(HttpContext context)
+        {
+            var fileName = context.Request["filename"];
+            download(fileName, context);
+        }
+
+        private static void GetCsv(HttpContext context)
+        {
+            var fileName = "csv.csv";
+            download(fileName, context);
+        }
+
+        private static void download(string fileName, HttpContext context)
+        {
+            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + fileName;
+            FileInfo fileinf = new FileInfo(csvPath);
+            context.Response.AddHeader("Content-Length", "" + fileinf.Length);
+            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
+            var tmp = HttpUtility.UrlEncode(csvPath);
+            tmp = tmp.Replace("+", "%20");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
+            context.Response.TransmitFile(csvPath);
+        }
+
         private static void DownloadToFile(string url, string path)
         {
             if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");
@@ -254,18 +281,7 @@ namespace OnlineEditorsExample
                 }
             }
         }
-        private static void Download(HttpContext context)
-        {
-            var filename = context.Request["filename"];
-            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + filename;
-            FileInfo fileinf = new FileInfo(csvPath);
-            context.Response.AddHeader("Content-Length", "" + fileinf.Length);
-            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
-            var tmp = HttpUtility.UrlEncode(csvPath);
-            tmp = tmp.Replace("+", "%20");
-            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            context.Response.TransmitFile(csvPath);
-        }
+
         public bool IsReusable
         {
             get { return false; }

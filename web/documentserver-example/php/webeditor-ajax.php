@@ -68,6 +68,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = download();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "csv":
+            $response_array = csv();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -308,27 +312,26 @@ function delete() {
     }
 }
 
-function delTree($dir) {
-    if (!file_exists($dir) || !is_dir($dir)) return;
-
-    $files = array_diff(scandir($dir), array('.','..'));
-    foreach ($files as $file) {
-        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
-    }
-    return rmdir($dir);
+function download() {
+    $fileName = basename($_GET["name"]);
+    downloadFile($fileName);
 }
 
-function download(){
-    $fileName = basename($_GET["name"]);
+function csv() {
+    $fileName = "csv.csv";
+    downloadFile($fileName);
+}
+
+function downloadFile($fileName) {
     $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
     if (file_exists($file)) {
         if (ob_get_level()) {
             ob_end_clean();
         }
+
         @header('Content-Length: ' . filesize($file));
         @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
         @header('Content-Type: ' . mime_content_type($file));
-
 
         if ($fd = fopen($file, 'rb')) {
             while (!feof($fd)) {
@@ -338,6 +341,16 @@ function download(){
         }
         exit;
     }
+}
+
+function delTree($dir) {
+    if (!file_exists($dir) || !is_dir($dir)) return;
+
+    $files = array_diff(scandir($dir), array('.','..'));
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir);
 }
 
 ?>

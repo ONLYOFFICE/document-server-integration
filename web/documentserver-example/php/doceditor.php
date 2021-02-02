@@ -125,10 +125,16 @@
         "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=demo.docx"
     ];
 
+    $dataMailMergeRecipients = [
+        "fileType" =>"csv",
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
         $dataInsertImage["token"] = jwtEncode($dataInsertImage);
         $dataCompareFile["token"] = jwtEncode($dataCompareFile);
+        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
     }
 
     function tryGetDefaultByType($createExt) {
@@ -339,6 +345,9 @@
             docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
+        };
 
         var сonnectEditor = function () {
 
@@ -363,6 +372,7 @@
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
+                'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
             };
 
             <?php

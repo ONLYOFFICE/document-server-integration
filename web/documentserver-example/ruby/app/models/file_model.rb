@@ -224,4 +224,17 @@ class FileModel
     return compare_file
   end
 
+  def dataMailMergeRecipients
+    dataMailMergeRecipients = {
+      :fileType => "csv",
+      :url => DocumentHelper.get_server_url(true) + "/csv"
+    }
+
+    if JwtHelper.is_enabled
+      dataMailMergeRecipients["token"] = JwtHelper.encode(dataMailMergeRecipients)
+    end
+
+    return dataMailMergeRecipients
+  end
+
 end

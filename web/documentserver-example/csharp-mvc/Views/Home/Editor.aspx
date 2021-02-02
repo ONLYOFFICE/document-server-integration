@@ -118,6 +118,12 @@
             docEditor.setRevisedFile(<%=compareFileData%>);
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            <% string dataMailMergeRecipients; %>
+            <% Model.GetMailMergeConfig(out dataMailMergeRecipients); %>
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
+        };
+
         var config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -133,6 +139,7 @@
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <% string hist, histData; %>

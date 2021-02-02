@@ -27,9 +27,11 @@
 import config
 import json
 import os
+import urllib.parse
+import magic
 
 from datetime import datetime
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager
 
@@ -197,10 +199,16 @@ def edit(request):
         'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
     }
 
+    dataMailMergeRecipients = {
+        'fileType': 'csv',
+        'url': docManager.getServerUrl(True, request) + 'csv'
+    }
+
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
         dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
+        dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
@@ -212,6 +220,7 @@ def edit(request):
         'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
         'dataCompareFile': dataCompareFile,
+        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients)
     }
     return render(request, 'editor.html', context)
 
@@ -278,3 +287,11 @@ def remove(request):
 
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
+def csv(request):
+    filePath = os.path.join('samples', "csv.csv")
+    response = FileResponse(open(filePath, 'rb'), True)
+    response['Content-Length'] =  os.path.getsize(filePath)
+    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
+    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    return response

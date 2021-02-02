@@ -117,6 +117,12 @@
             docEditor.setRevisedFile({{ dataCompareFile | safe }});
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(
+                {{ dataMailMergeRecipients | safe }}
+            );
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -132,6 +138,7 @@
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
+                "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
             };
 
             {% if history and historyData %}

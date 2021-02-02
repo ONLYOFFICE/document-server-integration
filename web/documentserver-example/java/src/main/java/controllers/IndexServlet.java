@@ -81,6 +81,9 @@ public class IndexServlet extends HttpServlet
             case "download":
                 Download(request, response, writer);
                 break;
+            case "csv":
+                CSV(request, response, writer);
+                break;
         }
     }
 
@@ -372,9 +375,28 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "csv.csv";
+        download(fileName, response, writer);
+    }
+
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String fileName = request.getParameter("name");
+        download(fileName, response, writer);
+    }
+
+    private static void delete(File f) throws Exception {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles())
+            delete(c);
+        }
+        if (!f.delete())
+            throw new Exception("Failed to delete file: " + f);
+    }
+
+    private static void download(String fileName, HttpServletResponse response, PrintWriter writer) {
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
         String fileType = null;
@@ -407,15 +429,6 @@ public class IndexServlet extends HttpServlet
                 e.printStackTrace();
             }
         }
-    }
-
-    private static void delete(File f) throws Exception {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles())
-            delete(c);
-        }
-        if (!f.delete())
-            throw new Exception("Failed to delete file: " + f);
     }
 
     private static void downloadToFile(String url, File file) throws Exception {

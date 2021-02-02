@@ -127,6 +127,10 @@
             docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);
         };
 
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);
+        };
+
         var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
@@ -143,6 +147,7 @@
                         "onMetaChange": onMetaChange,
                         "onRequestInsertImage": onRequestInsertImage,
                         "onRequestCompareFile": onRequestCompareFile,
+                        "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
                     }
             });
 

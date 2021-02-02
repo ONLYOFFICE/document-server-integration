@@ -94,6 +94,10 @@
         docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);
     }; 
 
+    var onRequestMailMergeRecipients = function (event) {
+        docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);
+    };
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -109,6 +113,7 @@
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
+            'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
         };
 
         <%

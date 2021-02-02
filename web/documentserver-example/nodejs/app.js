@@ -338,6 +338,19 @@ app.delete("/file", function (req, res) {
     res.end();
 });
 
+app.get("/csv", function (req, res) {
+    var fileName = "csv.csv";
+    var csvPath = path.join(__dirname, "public", "samples", fileName);
+
+    res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
+    res.setHeader("Content-Type", mime.getType(csvPath));
+
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
+
+    var filestream = fileSystem.createReadStream(csvPath);
+    filestream.pipe(res);
+})
+
 app.post("/track", function (req, res) {
 
     docManager.init(storageFolder, req, res);
@@ -664,6 +677,10 @@ app.get("/editor", function (req, res) {
             dataCompareFile: {
                 fileType: "docx",
                 url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            },
+            dataMailMergeRecipients: {
+                fileType: "csv",
+                url: docManager.getServerUrl(true) + "/csv"
             }
         };
 
@@ -675,6 +692,7 @@ app.get("/editor", function (req, res) {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });
