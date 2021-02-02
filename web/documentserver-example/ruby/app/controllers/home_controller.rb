@@ -250,4 +250,9 @@ class HomeController < ApplicationController
     render plain: '{"success":true}'
     return
   end
+
+  def files
+    filesInfo = DocumentHelper.get_files_info
+    render json: filesInfo
+  end
 end

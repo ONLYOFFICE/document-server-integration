@@ -201,6 +201,28 @@ class DocumentHelper
       ext
     end
 
+    def get_files_info
+      result = [];
+
+      for fileName in get_stored_files(nil)
+        directory = storage_path(fileName, nil)
+        uri = cur_user_host_address(nil) + '/' + fileName
+
+        info = {
+          "version" => get_file_version(history_dir(directory)),
+          "id" => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory).to_s}"),
+          "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
+          "pureContentLength" => File.size(directory),
+          "title" => fileName,
+          "updated" => File.mtime(directory) 
+        }
+
+        result.push(info)
+      end
+
+      return result
+    end
+
   end
 
 end
