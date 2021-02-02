@@ -123,7 +123,7 @@ app.get("/download", function(req, res) {
     }
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
-    res.setHeader("Content-Type", mime.lookup(path));
+    res.setHeader("Content-Type", mime.getType(path));
 
     res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
@@ -337,6 +337,19 @@ app.delete("/file", function (req, res) {
     }
     res.end();
 });
+
+app.get("/csv", function (req, res) {
+    var fileName = "csv.csv";
+    var csvPath = path.join(__dirname, "public", "samples", fileName);
+
+    res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
+    res.setHeader("Content-Type", mime.getType(csvPath));
+
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
+
+    var filestream = fileSystem.createReadStream(csvPath);
+    filestream.pipe(res);
+})
 
 app.post("/track", function (req, res) {
 
@@ -558,6 +571,7 @@ app.get("/editor", function (req, res) {
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
+        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
@@ -626,8 +640,10 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
+                uriUser: urlUser,
                 version: countVersion,
-                created: new Date().toDateString()
+                created: new Date().toDateString(),
+                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
             },
             editor: {
                 type: type,
@@ -653,7 +669,19 @@ app.get("/editor", function (req, res) {
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            dataInsertImage: {
+                fileType: "png",
+                url: docManager.getServerUrl(true) + "/images/logo.png"
+            },
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+            },
+            dataMailMergeRecipients: {
+                fileType: "csv",
+                url: docManager.getServerUrl(true) + "/csv"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -662,6 +690,9 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

@@ -15,6 +15,7 @@
 #
 
 require 'net/http'
+require 'mimemagic'
 
 class HomeController < ApplicationController
   def index
@@ -75,7 +76,7 @@ class HomeController < ApplicationController
 
     begin
       file_name = params[:filename]
-      file_uri = DocumentHelper.get_file_uri(file_name)
+      file_uri = DocumentHelper.get_file_uri(file_name, true)
       extension = File.extname(file_name)
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
 
@@ -139,10 +140,11 @@ class HomeController < ApplicationController
     if JwtHelper.is_enabled
       inHeader = false
       token = nil
+      jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
       if file_data["token"]
         token = JwtHelper.decode(file_data["token"])
-      elsif request.headers["Authorization"]
-        hdr = request.headers["Authorization"]
+      elsif request.headers[jwtHeader]
+        hdr = request.headers[jwtHeader]
         hdr.slice!(0, "Bearer ".length)
         token = JwtHelper.decode(hdr)
         inHeader = true
@@ -249,5 +251,16 @@ class HomeController < ApplicationController
 
     render plain: '{"success":true}'
     return
+  end
+
+  def csv
+    file_name = "csv.csv"
+    csvPath = Rails.root.join('public', 'samples', file_name)
+
+    response.headers['Content-Length'] = File.size(csvPath).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
+    send_file csvPath, :x_sendfile => true
   end
 end

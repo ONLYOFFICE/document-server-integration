@@ -18,11 +18,14 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -64,13 +67,32 @@ public class EditorServlet extends HttpServlet
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"), request.getParameter("actionLink"));
         file.changeType(request.getParameter("mode"), request.getParameter("type"));
 
+        Map<String, Object> dataInsertImage = new HashMap<>();
+        dataInsertImage.put("fileType", "png");
+        dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
+
+        Map<String, Object> dataCompareFile = new HashMap<>();
+        dataCompareFile.put("fileType", "docx");
+        dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=download&name=sample.docx");
+
+        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
+        dataMailMergeRecipients.put("fileType", "csv");
+        dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
+
         if (DocumentManager.TokenEnabled())
         {
             file.BuildToken();
+            dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));
+            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));
+            dataMailMergeRecipients.put("token", DocumentManager.CreateToken(dataMailMergeRecipients));
         }
 
+        Gson gson = new Gson();
         request.setAttribute("file", file);
-        request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
+        request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
+        request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

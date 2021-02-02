@@ -14,13 +14,10 @@ Edit the **settings.properties** configuration file. Specify the name of your lo
 nano src/main/resources/settings.properties
 ```
 
-Edit the following lines:
+Edit the following line:
 
 ```
-files.docservice.url.converter=https://documentserver/ConvertService.ashx
-files.docservice.url.tempstorage=https://documentserver/ResourceService.ashx
-files.docservice.url.api=https://documentserver/web-apps/apps/api/documents/api.js
-files.docservice.url.preloader=https://documentserver/web-apps/apps/api/documents/cache-scripts.html
+files.docservice.url.site=https://documentserver/
 ```
 
 Install Maven:
@@ -44,13 +41,10 @@ Edit the **settings.properties** configuration file. Specify the name of your lo
 nano src/main/resources/settings.properties
 ```
 
-Edit the following lines. You need to change `documentserver` to your documentserver:
+Edit the following line. You need to change `documentserver` to your documentserver:
 
 ```
-files.docservice.url.converter=https://documentserver/ConvertService.ashx
-files.docservice.url.tempstorage=https://documentserver/ResourceService.ashx
-files.docservice.url.api=https://documentserver/web-apps/apps/api/documents/api.js
-files.docservice.url.preloader=https://documentserver/web-apps/apps/api/documents/cache-scripts.html
+files.docservice.url.site=https://documentserver/
 ```
 
 Run next command in java example directory:
