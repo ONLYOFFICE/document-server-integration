@@ -33,6 +33,7 @@ from . import users, fileUtils
 from datetime import datetime
 from src import settings
 from src.utils import docManager
+from src.utils import jwtManager
     
 def getHistoryDir(storagePath):
     return f'{storagePath}-hist'
@@ -171,6 +172,9 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                     }
                     dataObj['previous'] = prevInfo
                     dataObj['changesUrl'] = getZipUri(filename, i, req)
+
+                if jwtManager.isEnabled():
+                    dataObj['token'] = jwtManager.encode(dataObj) 
 
                 hist.append(obj)
                 histData[str(i)] = dataObj
