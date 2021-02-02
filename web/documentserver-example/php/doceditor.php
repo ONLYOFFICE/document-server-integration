@@ -177,7 +177,7 @@
                 $dataObj["version"] = $i;
 
                 if ($i > 1) {
-                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i-1) . DIRECTORY_SEPARATOR . "changes.json"), true);
+                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);
                     $change = $changes["changes"][0];
 
                     $obj["changes"] = $changes["changes"];
@@ -185,19 +185,19 @@
                     $obj["created"] = $change["created"];
                     $obj["user"] = $change["user"];
 
-                    $prev = $histData[$i-2];
+                    $prev = $histData[$i - 2];
                     $dataObj["previous"] = [
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesUrl = getVersionDir($histDir, $i-1) . DIRECTORY_SEPARATOR . "diff.zip";
+                    $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
                     $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
                     $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
                 }
 
                 array_push($hist, $obj);
-                $histData[$i-1] = $dataObj;
+                $histData[$i - 1] = $dataObj;
             }
 
             $out = [];
@@ -342,7 +342,7 @@
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver-1]);
+                docEditor.setHistoryData(histData[ver - 1]);
             };
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
