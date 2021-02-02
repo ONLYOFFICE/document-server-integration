@@ -176,6 +176,10 @@ class FileModel
           dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "diff.zip"))
         end
 
+        if JwtHelper.is_enabled
+          dataObj["token"] = JwtHelper.encode(dataObj)
+        end
+
         hist.push(obj)
         histData[i.to_s] = dataObj
       end
