@@ -22,9 +22,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
-using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using System.Web.Services;
+using System.Web.Configuration;
 using OnlineEditorsExampleMVC.Helpers;
 using OnlineEditorsExampleMVC.Models;
 
@@ -49,6 +49,12 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "remove":
                     Remove(context);
+                    break;
+                case "download":
+                    Download(context);
+                    break;
+                case "csv":
+                    GetCsv(context);
                     break;
                 case "files":
                     Files(context);
@@ -106,7 +112,7 @@ namespace OnlineEditorsExampleMVC
             try
             {
                 var fileName = context.Request["filename"];
-                var fileUri = DocManagerHelper.GetFileUri(fileName);
+                var fileUri = DocManagerHelper.GetFileUri(fileName, true);
 
                 var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
@@ -191,18 +197,31 @@ namespace OnlineEditorsExampleMVC
 
             if (JwtManager.Enabled)
             {
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                string token = null;
+
                 if (fileData.ContainsKey("token"))
                 {
-                    fileData = jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(fileData["token"].ToString()));
+                    token = JwtManager.Decode(fileData["token"].ToString());
                 }
-                else if (context.Request.Headers.AllKeys.Contains("Authorization", StringComparer.InvariantCultureIgnoreCase))
+                else if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                 {
-                    var headerToken = context.Request.Headers.Get("Authorization").Substring("Bearer ".Length);
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(JwtManager.Decode(headerToken))["payload"];
+                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                    token = JwtManager.Decode(headerToken);
                 }
                 else
                 {
-                    throw new Exception("Expected JWT");
+                    context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
+                }
+
+                if (token != null && !token.Equals(""))
+                {
+                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
+                }
+                else
+                {
+                    context.Response.Write("{\"error\":1,\"message\":\"JWT validation failed\"}");
                 }
             }
 
@@ -219,7 +238,7 @@ namespace OnlineEditorsExampleMVC
                     {
                         var storagePath = DocManagerHelper.StoragePath(fileName, userAddress);
                         var histDir = DocManagerHelper.HistoryDir(storagePath);
-                        var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir) + 1);
+                        var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));
 
                         if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
 
@@ -300,6 +319,30 @@ namespace OnlineEditorsExampleMVC
             {
                 context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
             }
+        }
+
+        private static void Download(HttpContext context)
+        {
+            var fileName = context.Request["filename"];
+            download(fileName, context);
+        }
+
+        private static void GetCsv(HttpContext context)
+        {
+            var fileName = "csv.csv";
+            download(fileName, context);
+        }
+
+        private static void download(string fileName, HttpContext context)
+        {
+            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + fileName;
+            var fileinf = new FileInfo(csvPath);
+            context.Response.AddHeader("Content-Length", fileinf.Length.ToString());
+            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
+            var tmp = HttpUtility.UrlEncode(csvPath);
+            tmp = tmp.Replace("+", "%20");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
+            context.Response.TransmitFile(csvPath);
         }
 
         private static void DownloadToFile(string url, string path)

@@ -57,7 +57,11 @@
 <body>
     <form id="form1" runat="server">
 
-        <div class="top-panel"></div>
+        <div class="top-panel">
+            <a href="">
+                <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
+            </a>
+        </div>
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
