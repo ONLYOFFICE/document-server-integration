@@ -230,12 +230,16 @@ class DocumentHelper
         else
           if file_id.eql?(info["id"])
             result.push(info)
-            break
+            return result
           end
         end
       end
 
-      return result
+      if file_id != nil
+        return "\"File not found\""
+      else
+        return result
+      end
     end
 
   end
