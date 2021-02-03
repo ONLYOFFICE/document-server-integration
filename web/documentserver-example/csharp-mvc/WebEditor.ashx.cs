@@ -297,23 +297,31 @@ namespace OnlineEditorsExampleMVC
 
         private static void Files(HttpContext context)
         {
-            List<Dictionary<string, string>> files = null;
+            List<Dictionary<string, object>> files = null;
 
             try
             {
-                var idFile = context.Request["id"];
-                if (idFile == null)
+                var jss = new JavaScriptSerializer();
+                context.Response.ContentType = "application/json";
+
+                if (context.Request["fileId"] == null)
                 {
                     files = DocManagerHelper.GetFilesInfo();
+                    context.Response.Write(jss.Serialize(files));
                 }
                 else
                 {
-                    files = DocManagerHelper.GetFilesInfo(idFile);
+                    var fileId = context.Request["fileId"];
+                    files = DocManagerHelper.GetFilesInfo(fileId);
+                    if (files.Count == 0)
+                    {
+                        context.Response.Write("\"File not found\"");
+                    }
+                    else
+                    {
+                        context.Response.Write(jss.Serialize(files));
+                    }
                 }
-
-                context.Response.ContentType = "application/json";
-                var jss = new JavaScriptSerializer();
-                context.Response.Write(jss.Serialize(files));
             }
             catch (Exception e)
             {
