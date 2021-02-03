@@ -202,7 +202,7 @@ def generateFileKey(filename, req):
     return replaced[:20]
 
 def getFilesInfo(req):
-    idFile = req.GET.get('id') if req.GET.get('id') else None
+    fileId = req.GET.get('fileId') if req.GET.get('fileId') else None
 
     result = []
     resultID = []
@@ -216,11 +216,11 @@ def getFilesInfo(req):
                 "title" :  f.get("title"),
                 "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
         })
-        if idFile :
-            if idFile == generateFileKey(f.get("title"), req) :
+        if fileId :
+            if fileId == generateFileKey(f.get("title"), req) :
                 resultID.append(result[-1]) 
-    
-    if idFile :
+
+    if fileId :
         if len(resultID) > 0 : return resultID
         else : return "File not found"     
     else :
