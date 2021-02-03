@@ -292,7 +292,7 @@ app.get("/files", function(req, res) {
     try {
         docManager.init(storageFolder, req, res); 
         const filesInDirectoryInfo = docManager.getFilesInfo();
-        res.setHeader("Content-Type", "application/json")
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(filesInDirectoryInfo));
     } catch (ex) {
         console.log(ex);
@@ -306,6 +306,7 @@ app.get("/files/file/:fileId", function(req, res) {
         docManager.init(storageFolder, req, res);
         const fileId = req.params.fileId;
         const fileInfoById = docManager.getFilesInfo(fileId);
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(fileInfoById));
     } catch (ex) {
         console.log(ex);
