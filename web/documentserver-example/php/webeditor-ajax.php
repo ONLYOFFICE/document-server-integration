@@ -319,8 +319,8 @@ function files() {
     try {
         @header( "Content-Type", "application/json" );
 
-        $idFile = $_GET["id"];
-        $result = getFileInfo($idFile);
+        $fileId = $_GET["fileId"];
+        $result = getFileInfo($fileId);
 
         return $result;
     }
