@@ -18,6 +18,7 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
@@ -379,19 +380,23 @@ public class IndexServlet extends HttpServlet
 
     private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        ArrayList<Map<String, String>> files = null;
-
-        if (request.getParameter("id") == null){
-            files = DocumentManager.GetFilesInfo();
-        }else {
-            String idFile = request.getParameter("id");
-            files = DocumentManager.GetFilesInfo(idFile);
-        }
+        ArrayList<Map<String, Object>> files = null;
 
         try {
+            Gson gson = new Gson();
             response.setContentType("application/json");
-            for (Map<String, String> map : files){
-                writer.write(JSONObject.toJSONString(map));
+
+            if (request.getParameter("fileId") == null) {
+                files = DocumentManager.GetFilesInfo();
+                writer.write(gson.toJson(files));
+            }else {
+                String fileId = request.getParameter("fileId");
+                files = DocumentManager.GetFilesInfo(fileId);
+                if(files.isEmpty()) {
+                    writer.write("\"File not found\"");
+                }else {
+                    writer.write(gson.toJson(files));
+                }
             }
         }
         catch (Exception e)
