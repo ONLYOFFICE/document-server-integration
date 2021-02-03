@@ -383,22 +383,22 @@ namespace OnlineEditorsExample
             return storedFiles;
         }
 
-        public static List<Dictionary<string, string>> GetFilesInfo(string idFile = null)
+        public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
         {
-            var files = new List<Dictionary<string, string>>();
+            var files = new List<Dictionary<string, object>>();
 
             foreach (var file in GetStoredFiles())
             {
-                var dictionary = new Dictionary<string, string>();
-                dictionary.Add("version", GetFileVersion(file.Name, null).ToString());
+                var dictionary = new Dictionary<string, object>();
+                dictionary.Add("version", GetFileVersion(file.Name, null));
                 dictionary.Add("id", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null) + "/" + file.Name + "/" + File.GetLastWriteTime(_Default.StoragePath(file.Name, null)).GetHashCode()));
                 dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
-                dictionary.Add("pureContentLength", file.Length.ToString());
+                dictionary.Add("pureContentLength", file.Length);
                 dictionary.Add("title", file.Name);
                 dictionary.Add("updated", file.LastWriteTime.ToString());
-                if (idFile != null)
+                if (fileId != null)
                 {
-                    if (idFile.Equals(dictionary["id"]))
+                    if (fileId.Equals(dictionary["id"]))
                     {
                         files.Add(dictionary);
                         break;
