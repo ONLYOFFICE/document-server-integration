@@ -328,7 +328,7 @@ namespace OnlineEditorsExample
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
-            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx");
 
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {

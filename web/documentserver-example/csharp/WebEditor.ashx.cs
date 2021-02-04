@@ -274,19 +274,19 @@ namespace OnlineEditorsExample
 
         private static void Download(HttpContext context)
         {
-            var fileName = context.Request["filename"];
+            var fileName = "sample/" + context.Request["filename"];
             download(fileName, context);
         }
 
         private static void GetCsv(HttpContext context)
         {
-            var fileName = "csv.csv";
+            var fileName = "sample/" + "csv.csv";
             download(fileName, context);
         }
 
         private static void download(string fileName, HttpContext context)
         {
-            var csvPath = HttpRuntime.AppDomainAppPath + "app_data/" + fileName;
+            var csvPath = HttpRuntime.AppDomainAppPath + "assets/" + fileName;
             FileInfo fileinf = new FileInfo(csvPath);
             context.Response.AddHeader("Content-Length", "" + fileinf.Length);
             context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
