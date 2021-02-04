@@ -18,6 +18,7 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
@@ -26,11 +27,10 @@ import helpers.ServiceConverter;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -83,6 +83,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "csv":
                 CSV(request, response, writer);
+                break;
+            case "files":
+                Files(request, response, writer);
                 break;
         }
     }
@@ -368,6 +371,33 @@ public class IndexServlet extends HttpServlet
             delete(hist);
 
             writer.write("{ \"success\": true }");
+        }
+        catch (Exception e)
+        {
+            writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        ArrayList<Map<String, Object>> files = null;
+
+        try {
+            Gson gson = new Gson();
+            response.setContentType("application/json");
+
+            if (request.getParameter("fileId") == null) {
+                files = DocumentManager.GetFilesInfo();
+                writer.write(gson.toJson(files));
+            }else {
+                String fileId = request.getParameter("fileId");
+                files = DocumentManager.GetFilesInfo(fileId);
+                if(files.isEmpty()) {
+                    writer.write("\"File not found\"");
+                }else {
+                    writer.write(gson.toJson(files));
+                }
+            }
         }
         catch (Exception e)
         {

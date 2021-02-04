@@ -56,6 +56,9 @@ namespace OnlineEditorsExampleMVC
                 case "csv":
                     GetCsv(context);
                     break;
+                case "files":
+                    Files(context);
+                    break;
             }
         }
 
@@ -290,6 +293,40 @@ namespace OnlineEditorsExampleMVC
 
             if (File.Exists(path)) File.Delete(path);
             if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+        }
+
+        private static void Files(HttpContext context)
+        {
+            List<Dictionary<string, object>> files = null;
+
+            try
+            {
+                var jss = new JavaScriptSerializer();
+                context.Response.ContentType = "application/json";
+
+                if (context.Request["fileId"] == null)
+                {
+                    files = DocManagerHelper.GetFilesInfo();
+                    context.Response.Write(jss.Serialize(files));
+                }
+                else
+                {
+                    var fileId = context.Request["fileId"];
+                    files = DocManagerHelper.GetFilesInfo(fileId);
+                    if (files.Count == 0)
+                    {
+                        context.Response.Write("\"File not found\"");
+                    }
+                    else
+                    {
+                        context.Response.Write(jss.Serialize(files));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
         }
 
         private static void Download(HttpContext context)

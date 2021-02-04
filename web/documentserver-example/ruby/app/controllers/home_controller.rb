@@ -253,6 +253,12 @@ class HomeController < ApplicationController
     return
   end
 
+  def files
+    file_id = params[:fileId]
+    filesInfo = DocumentHelper.get_files_info(file_id)
+    render json: filesInfo
+  end
+
   def csv
     file_name = "csv.csv"
     csvPath = Rails.root.join('public', 'samples', file_name)

@@ -37,7 +37,8 @@ urlpatterns = [
     path('edit', actions.edit),
     path('track', actions.track),
     path('remove', actions.remove),
-    path('csv', actions.csv)
+    path('csv', actions.csv),
+    path('files', actions.files)
 ]
 
 urlpatterns += staticfiles_urlpatterns()

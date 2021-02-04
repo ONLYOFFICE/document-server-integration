@@ -55,6 +55,9 @@ namespace OnlineEditorsExample
                 case "csv":
                     GetCsv(context);
                     break;
+                case "files":
+                    Files(context);
+                    break;
             }
         }
 
@@ -228,6 +231,40 @@ namespace OnlineEditorsExample
                 if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
 
                 context.Response.Write("{ \"success\": true }");
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Files(HttpContext context)
+        {
+            List<Dictionary<string, object>> files = null;
+
+            try
+            {
+                context.Response.ContentType = "application/json";
+                var jss = new JavaScriptSerializer();
+
+                if (context.Request["fileId"] == null)
+                {
+                    files = _Default.GetFilesInfo();
+                    context.Response.Write(jss.Serialize(files));
+                }
+                else
+                {
+                    var fileId = context.Request["fileId"];
+                    files = _Default.GetFilesInfo(fileId);
+                    if (files.Count == 0)
+                    {
+                        context.Response.Write("\"File not found\"");
+                    }
+                    else
+                    {
+                        context.Response.Write(jss.Serialize(files));
+                    }
+                }
             }
             catch (Exception e)
             {

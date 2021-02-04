@@ -152,75 +152,75 @@
                         <% foreach (var storedFile in storedFiles)
                             { %>
                             <%
-                                var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile);
-                                var docType = FileUtility.GetFileType(storedFile).ToString().ToLower();
+                                var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
                             %>
-                            <tr class="tableRow" title="<%= storedFile %>">
+                            <tr class="tableRow" title="<%= storedFile.Name %>">
                                 <td class="contentCells">
-                                    <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile }) %>" target="_blank">
-                                        <span title="<%= storedFile %>"><%= storedFile %></span>
+                                    <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
+                                        <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
                                     </a>
                                     <a href="<%= Url.Content(DocManagerHelper.CurUserHostAddress() + "/" + storedFile) %>">
                                         <img class="icon-download" src="content/images/download-24.png" alt="Download" title="Download" />
                                     </a>
-                                    <a class="delete-file" data-filename="<%= storedFile %>">
+                                    <a class="delete-file" data-filename="<%= storedFile.Name %>">
                                         <img class="icon-delete" src="content/images/delete-24.png" alt="Delete" title="Delete" />
                                     </a>
                                 </td>
 
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "edit" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit" }) %>" target="_blank">
                                         <img src="content/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "mobile", editorsMode = "edit" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit" }) %>" target="_blank">
                                         <img src="content/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <% if (docType == "text") { %>
-                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
+                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
                                             <img src="content/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
                                         </a>
                                     <% } else if (docType == "spreadsheet") { %>
-                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
+                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
                                             <img src="content/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                         </a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "comment" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment" }) %>" target="_blank">
                                         <img src="content/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
                                     <% if (docType == "text") { %>
-                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
                                             <img src="content/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                         </a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
                                     <% if (docType == "text") { %>
-                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
+                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
                                             <img src="content/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>
                                     <% } %>
                                 </td>
 
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "desktop", editorsMode = "view" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view" }) %>" target="_blank">
                                         <img src="content/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "mobile", editorsMode = "view" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view" }) %>" target="_blank">
                                         <img src="content/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile, editorsType = "embedded", editorsMode = "embedded" }) %>" target="_blank">
+                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded" }) %>" target="_blank">
                                         <img src="content/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
                                     </a>
                                 </td>

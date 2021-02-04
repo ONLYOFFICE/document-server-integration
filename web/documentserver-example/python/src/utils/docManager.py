@@ -31,6 +31,7 @@ import shutil
 import io
 import re
 import requests
+import time
 
 from src import settings
 from . import fileUtils, historyManager
@@ -199,3 +200,28 @@ def generateFileKey(filename, req):
     h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20]
+
+def getFilesInfo(req):
+    fileId = req.GET.get('fileId') if req.GET.get('fileId') else None
+
+    result = []
+    resultID = []
+    for f in getStoredFiles(req):
+        stats = os.stat(os.path.join(getRootFolder(req), f.get("title")))
+        result.append(
+            {   "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+                "id" :  generateFileKey(f.get("title"), req),   
+                "contentLength" : "%.2f KB" % (stats.st_size/1024),
+                "pureContentLength" : stats.st_size,
+                "title" :  f.get("title"),
+                "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
+        })
+        if fileId :
+            if fileId == generateFileKey(f.get("title"), req) :
+                resultID.append(result[-1]) 
+
+    if fileId :
+        if len(resultID) > 0 : return resultID
+        else : return "File not found"     
+    else :
+        return result
