@@ -129,10 +129,11 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string CreateDemo(string fileExt, bool withContent)
         {
             var demoName = (withContent ? "sample." : "new.") + fileExt;
+            var demoPath = "assets\\" + (withContent ? "sample\\" : "new\\");
 
             var fileName = GetCorrectName(demoName);
 
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data\\" + demoName, StoragePath(fileName));
+            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName)); 
 
             return fileName;
         }

@@ -99,10 +99,11 @@ docManager.getCorrectName = function (fileName, userAddress) {
     return name;
 };
 
-docManager.createDemo = function (demoName, userid, username) {
+docManager.createDemo = function (isSample, fileExt, userid, username) {
+    const demoName = (isSample ? "sample" : "new") + "." + fileExt;
     const fileName = docManager.getCorrectName(demoName);
 
-    docManager.copyFile(path.join(__dirname, "..","public", "samples", demoName), docManager.storagePath(fileName));
+    docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));
 
     docManager.saveFileData(fileName, userid, username);
 

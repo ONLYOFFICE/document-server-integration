@@ -258,7 +258,7 @@
             <div class="help-block">
                 <span>Want to learn how it works?</span>
 
-                <% var examples = new DirectoryInfo(HttpRuntime.AppDomainAppPath + "App_Data")
+                <% var examples = new DirectoryInfo(HttpRuntime.AppDomainAppPath + "assets")
                        .GetFiles("*.zip", SearchOption.TopDirectoryOnly)
                        .Select(fileInfo => fileInfo.Name).ToList();
                    if (examples.Any())

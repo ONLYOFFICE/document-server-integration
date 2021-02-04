@@ -180,7 +180,7 @@ def createSample(fileType, sample, req):
     filename = getCorrectName(f'{sampleName}{ext}', req)
     path = getStoragePath(filename, req)
 
-    with io.open(os.path.join('samples', f'{sampleName}{ext}'), 'rb') as stream:
+    with io.open(os.path.join('assets', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream:
         createFile(stream, path, req, True)
     return filename
 

@@ -98,4 +98,4 @@ USE_TZ = True
 mimetypes.add_type("text/javascript", ".js", True)
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ( os.path.join('static'), os.path.join(config.STORAGE_PATH),  os.path.join('samples'))
+STATICFILES_DIRS = ( os.path.join('static'), os.path.join(config.STORAGE_PATH),  os.path.join('assets/sample'))

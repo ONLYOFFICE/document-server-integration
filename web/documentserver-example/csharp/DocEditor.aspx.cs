@@ -328,7 +328,7 @@ namespace OnlineEditorsExample
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
-            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx");
 
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
@@ -392,11 +392,13 @@ namespace OnlineEditorsExample
                 default:
                     return;
             }
-            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "demo") + ext;
+            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;
+            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");
+
             FileName = _Default.GetCorrectName(demoName);
 
             var filePath = _Default.StoragePath(FileName, null);
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, filePath);
+            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);
 
             var histDir = _Default.HistoryDir(filePath);
             Directory.CreateDirectory(histDir);
