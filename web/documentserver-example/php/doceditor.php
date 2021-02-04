@@ -77,7 +77,7 @@
             "key" => $docKey,
             "info" => [
                 "owner" => "Me",
-                "created" => date('d.m.y'),
+                "uploaded" => date('d.m.y'),
                 "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
             "permissions" => [

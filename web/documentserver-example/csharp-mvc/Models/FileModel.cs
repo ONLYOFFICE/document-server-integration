@@ -93,7 +93,7 @@ namespace OnlineEditorsExampleMVC.Models
                                     "info", new Dictionary<string, object>
                                         {
                                             { "owner", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "uploaded", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite}
                                         }
                                 },
