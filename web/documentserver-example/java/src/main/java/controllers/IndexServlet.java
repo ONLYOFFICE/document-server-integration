@@ -407,13 +407,13 @@ public class IndexServlet extends HttpServlet
 
     private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = "csv.csv";
+        String fileName = "assets/sample/csv.csv";
         download(fileName, response, writer);
     }
 
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = request.getParameter("name");
+        String fileName = "assets/sample/" + request.getParameter("name");
         download(fileName, response, writer);
     }
 
