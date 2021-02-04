@@ -554,11 +554,18 @@ app.get("/editor", function (req, res) {
         var name = req.query.name ? req.query.name : "John Smith";
         var actionData = req.query.action ? req.query.action : "null";
 
-        var userGroup = userid == "uid-1" ? null : userid;
-        var reviewPermissions = userGroup ? {
-            "uid-2":["uid-2", ""], //own and without group
-            "uid-3":["uid-2"], // other only
-        } : null;
+        var userGroup = null;
+        var reviewGroup = null;
+        if (userid == "uid-2")
+        {
+            userGroup = "group-2";
+            // own and without group
+            reviewGroup = ["group-2", ""];
+        } else if (userid == "uid-3") {
+            userGroup = "group-3";
+            // other group only
+            reviewGroup = ["group-2"];
+        }
 
         if (fileExt != null) {
             var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, name);
@@ -671,7 +678,7 @@ app.get("/editor", function (req, res) {
                 userid: userid,
                 name: name,
                 userGroup: userGroup,
-                reviewPermissions: JSON.stringify(reviewPermissions),
+                reviewGroup: JSON.stringify(reviewGroup),
                 fileChoiceUrl: fileChoiceUrl,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData

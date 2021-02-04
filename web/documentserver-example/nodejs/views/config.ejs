@@ -20,7 +20,8 @@
         "fillForms": <%- editor.fillForms %>,
         "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
-        "review": <%- editor.review %>
+        "review": <%- editor.review %>,
+        "reviewGroup": <%- editor.reviewGroup %>
     }
 },
 "editorConfig": {
@@ -31,7 +32,7 @@
     "user": {
         "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",
-        "name": "<%- editor.name %>",
+        "name": "<%- editor.name %>"
     },
     "embedded": {
         "saveUrl": "<%- file.uriUser %>",
@@ -47,8 +48,7 @@
         "forcesave": false,
         "goback": {
             "url": "<%- editor.backUrl %>"
-        },
-        "reviewPermissions": <%- editor.reviewPermissions %>
+        }
     },
     "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
     "plugins": <%- editor.plugins %>
