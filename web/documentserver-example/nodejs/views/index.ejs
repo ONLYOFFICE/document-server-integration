@@ -108,17 +108,17 @@
                 <div class="create-panel clearFix">
                     <ul class="try-editor-list clearFix">
                         <li>
-                            <a class="try-editor document reload-page" target="_blank" href="editor?fileExt=docx<%= params %>">Create
+                            <a class="try-editor word reload-page" target="_blank" href="editor?fileExt=docx<%= params %>">Create
                                 <br />
                                 Document</a>
                         </li>
                         <li>
-                            <a class="try-editor spreadsheet reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>">Create
+                            <a class="try-editor cell reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>">Create
                                 <br />
                                 Spreadsheet</a>
                         </li>
                         <li>
-                            <a class="try-editor presentation reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>">Create
+                            <a class="try-editor slide reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>">Create
                                 <br />
                                 Presentation</a>
                         </li>
@@ -169,10 +169,10 @@
                                         <img src="images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <% if (storedFiles[i].documentType == "word") { %>
                                     <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>
-                                    <% } else if (storedFiles[i].documentType == "spreadsheet") { %>
+                                    <% } else if (storedFiles[i].documentType == "cell") { %>
                                     <a href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                     <% } %>
@@ -182,13 +182,13 @@
                                         <img src="images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <% if (storedFiles[i].documentType == "word") { %>
                                     <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
-                                    <% if (storedFiles[i].documentType == "text") { %>
+                                    <% if (storedFiles[i].documentType == "word") { %>
                                     <a href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                         <img src="images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>
                                     <% } %>
