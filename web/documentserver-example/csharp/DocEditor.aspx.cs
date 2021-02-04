@@ -131,7 +131,7 @@ namespace OnlineEditorsExample
                                 {
                                     "info", new Dictionary<string, object>
                                         {
-                                            { "author", "Me" },
+                                            { "owner", "Me" },
                                             { "created", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite }
                                         }

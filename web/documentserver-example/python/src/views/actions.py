@@ -136,12 +136,12 @@ def edit(request):
 
     if (meta):
         infObj = {
-            'author': meta['uname'],
+            'owner': meta['uname'],
             'created': meta['created']
         }
     else:
         infObj = {
-            'author': 'Me',
+            'owner': 'Me',
             'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
     infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None

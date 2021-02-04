@@ -77,7 +77,7 @@ class FileModel
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
-          :author => "Me",
+          :owner => "Me",
           :created => Time.now.to_s,
           :favorite => @user_id ? @user_id.eql?("uid-2") : nil
         },
