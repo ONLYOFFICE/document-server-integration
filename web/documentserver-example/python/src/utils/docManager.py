@@ -31,6 +31,7 @@ import shutil
 import io
 import re
 import requests
+import time
 
 from src import settings
 from . import fileUtils, historyManager
@@ -102,15 +103,21 @@ def getCorrectName(filename, req):
 
     return name
 
-def getFileUri(filename, req):
-    host = config.EXAMPLE_DOMAIN.rstrip('/')
+def getServerUrl (forDocumentServer, req):
+    if (forDocumentServer and config.EXAMPLE_DOMAIN is not None):
+        return  config.EXAMPLE_DOMAIN 
+    else:
+        return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
+
+def getFileUri(filename, forDocumentServer, req):
+    host = getServerUrl(forDocumentServer, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
 def getCallbackUrl(filename, req):
-    host = config.EXAMPLE_DOMAIN
+    host = getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}track?filename={filename}&userAddress={curAdr}'
+    return f'{host}/track?filename={filename}&userAddress={curAdr}'
 
 def getRootFolder(req):
     if isinstance(req, str):
@@ -140,7 +147,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, req) })
+            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req) })
 
     return fileInfos
 
@@ -187,9 +194,34 @@ def removeFile(filename, req):
 
 def generateFileKey(filename, req):
     path = getStoragePath(filename, req)
-    uri = getFileUri(filename, req)
+    uri = getFileUri(filename, False, req)
     stat = os.stat(path)
 
     h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20]
+
+def getFilesInfo(req):
+    fileId = req.GET.get('fileId') if req.GET.get('fileId') else None
+
+    result = []
+    resultID = []
+    for f in getStoredFiles(req):
+        stats = os.stat(os.path.join(getRootFolder(req), f.get("title")))
+        result.append(
+            {   "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+                "id" :  generateFileKey(f.get("title"), req),   
+                "contentLength" : "%.2f KB" % (stats.st_size/1024),
+                "pureContentLength" : stats.st_size,
+                "title" :  f.get("title"),
+                "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
+        })
+        if fileId :
+            if fileId == generateFileKey(f.get("title"), req) :
+                resultID.append(result[-1]) 
+
+    if fileId :
+        if len(resultID) > 0 : return resultID
+        else : return "File not found"     
+    else :
+        return result

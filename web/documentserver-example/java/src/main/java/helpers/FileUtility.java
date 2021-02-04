@@ -75,7 +75,7 @@ public class FileUtility
         if (url == null) return null;
 
         //for external file url
-        String tempstorage = ConfigManager.GetProperty("files.docservice.url.tempstorage");
+        String tempstorage = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.tempstorage");
         if (!tempstorage.isEmpty() && url.startsWith(tempstorage))
         {
             Map<String, String> params = GetUrlParams(url);

@@ -96,7 +96,7 @@ class DocumentHelper
         return 0
       end
 
-      ver = 0
+      ver = 1
       Dir.foreach(hist_dir) {|e|
         next if e.eql?(".")
         next if e.eql?("..")
@@ -144,7 +144,7 @@ class DocumentHelper
       hist_dir = history_dir(storage_path(file_name, nil))
 
       json = {
-        :created => Time.now.to_s,
+        :created => Time.now.to_formatted_s(:db),
         :uid => uid ? uid : "uid-0",
         :uname => uname ? uname : "John Smith"
       }
@@ -167,21 +167,29 @@ class DocumentHelper
       file_name
     end
 
-    def get_file_uri(file_name)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
+    def get_file_uri(file_name, for_document_server)
+      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
 
       return uri
     end
 
     def get_path_uri(path)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
+      uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
 
       return uri
+    end
+    
+    def get_server_url(for_document_server)
+      if for_document_server && !Rails.configuration.urlExample.empty?
+        return Rails.configuration.urlExample
+      else
+        return @@base_url
+      end 
     end
 
     def get_callback(file_name)
 
-      @@base_url + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 
@@ -199,6 +207,39 @@ class DocumentHelper
       end
 
       ext
+    end
+
+    def get_files_info(file_id)
+      result = [];
+
+      for fileName in get_stored_files(nil)
+        directory = storage_path(fileName, nil)
+        uri = cur_user_host_address(nil) + '/' + fileName
+
+        info = {
+          "version" => get_file_version(history_dir(directory)),
+          "id" => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory).to_s}"),
+          "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
+          "pureContentLength" => File.size(directory),
+          "title" => fileName,
+          "updated" => File.mtime(directory) 
+        }
+
+        if file_id == nil
+          result.push(info)
+        else
+          if file_id.eql?(info["id"])
+            result.push(info)
+            return result
+          end
+        end
+      end
+
+      if file_id != nil
+        return "\"File not found\""
+      else
+        return result
+      end
     end
 
   end

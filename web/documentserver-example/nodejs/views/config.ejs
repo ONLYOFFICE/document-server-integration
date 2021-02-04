@@ -10,7 +10,8 @@
     "key": "<%- editor.key %>",
     "info": {
         "author": "Me",
-        "created": "<%- file.created %>"
+        "created": "<%- file.created %>",
+        "favorite": <%- file.favorite %>
     },
     "permissions": {
         "comment": <%- editor.comment %>,
@@ -32,9 +33,9 @@
         "name": "<%- editor.name %>"
     },
     "embedded": {
-        "saveUrl": "<%- file.uri %>",
-        "embedUrl": "<%- file.uri %>",
-        "shareUrl": "<%- file.uri %>",
+        "saveUrl": "<%- file.uriUser %>",
+        "embedUrl": "<%- file.uriUser %>",
+        "shareUrl": "<%- file.uriUser %>",
         "toolbarDocked": "top"
     },
     "customization": {
