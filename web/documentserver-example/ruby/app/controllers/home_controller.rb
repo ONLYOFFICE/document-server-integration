@@ -261,7 +261,7 @@ class HomeController < ApplicationController
 
   def csv
     file_name = "csv.csv"
-    csvPath = Rails.root.join('public', 'samples', file_name)
+    csvPath = Rails.root.join('public', 'assets', 'sample', file_name)
 
     response.headers['Content-Length'] = File.size(csvPath).to_s
     response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type

@@ -218,7 +218,7 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",
-      :url => DocumentHelper.get_server_url(true) + "/samples/sample.docx"
+      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"
     }
 
     if JwtHelper.is_enabled
