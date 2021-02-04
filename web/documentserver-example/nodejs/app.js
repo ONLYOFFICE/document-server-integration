@@ -342,7 +342,7 @@ app.delete("/file", function (req, res) {
 
 app.get("/csv", function (req, res) {
     var fileName = "csv.csv";
-    var csvPath = path.join(__dirname, "public", "samples", fileName);
+    var csvPath = path.join(__dirname, "public", "assets",  "sample", fileName);
 
     res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
     res.setHeader("Content-Type", mime.getType(csvPath));
@@ -678,7 +678,7 @@ app.get("/editor", function (req, res) {
             },
             dataCompareFile: {
                 fileType: "docx",
-                url: docManager.getServerUrl(true) + "/samples/sample.docx"
+                url: docManager.getServerUrl(true) + "/assets/sample/sample.docx"
             },
             dataMailMergeRecipients: {
                 fileType: "csv",
