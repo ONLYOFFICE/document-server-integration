@@ -122,7 +122,7 @@
 
     $dataCompareFile = [
         "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=demo.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=sample.docx"
     ];
 
     $dataMailMergeRecipients = [

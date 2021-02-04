@@ -332,17 +332,17 @@ function files() {
 }
 
 function download() {
-    $fileName = basename($_GET["name"]);
+    $fileName = "sample" . DIRECTORY_SEPARATOR . basename($_GET["name"]);
     downloadFile($fileName);
 }
 
 function csv() {
-    $fileName = "csv.csv";
+    $fileName = "sample" . DIRECTORY_SEPARATOR . "csv.csv";
     downloadFile($fileName);
 }
 
 function downloadFile($fileName) {
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $fileName;
+    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . $fileName;
     if (file_exists($file)) {
         if (ob_get_level()) {
             ob_end_clean();
