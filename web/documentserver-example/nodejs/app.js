@@ -553,7 +553,7 @@ app.get("/editor", function (req, res) {
         var historyData = [];
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
-        var name = req.query.name ? req.query.name : "John Smith";
+        var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
         var actionData = req.query.action ? req.query.action : "null";
 
         if (fileExt != null) {
