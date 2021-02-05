@@ -84,9 +84,9 @@ def isSupportedExt(ext):
 
 def getInternalExtension(fileType):
     mapping = {
-        'text': '.docx',
-        'spreadsheet': '.xlsx',
-        'presentation': '.pptx'
+        'word': '.docx',
+        'cell': '.xlsx',
+        'slide': '.pptx'
     }
 
     return mapping.get(fileType, '.docx')
