@@ -413,7 +413,7 @@ public class IndexServlet extends HttpServlet
 
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = "assets/sample/" + request.getParameter("name");
+        String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
         download(fileName, response, writer);
     }
 
