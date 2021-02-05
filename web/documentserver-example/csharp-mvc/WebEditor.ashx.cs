@@ -111,7 +111,7 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = context.Request["filename"];
+                var fileName = Path.GetFileName(context.Request["filename"]);
                 var fileUri = DocManagerHelper.GetFileUri(fileName, true);
 
                 var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
@@ -175,7 +175,7 @@ namespace OnlineEditorsExampleMVC
         private static void Track(HttpContext context)
         {
             var userAddress = context.Request["userAddress"];
-            var fileName = context.Request["fileName"];
+            var fileName = Path.GetFileName(context.Request["fileName"]);
 
             string body;
             try
@@ -275,7 +275,7 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = context.Request["fileName"];
+                var fileName = Path.GetFileName(context.Request["fileName"]);
                 Remove(fileName);
 
                 context.Response.Write("{ \"success\": true }");
@@ -331,7 +331,7 @@ namespace OnlineEditorsExampleMVC
 
         private static void Download(HttpContext context)
         {
-            var fileName = "sample/" + context.Request["filename"];
+            var fileName = "sample/" + Path.GetFileName(context.Request["filename"]);
             download(fileName, context);
         }
 
@@ -347,7 +347,7 @@ namespace OnlineEditorsExampleMVC
             var fileinf = new FileInfo(csvPath);
             context.Response.AddHeader("Content-Length", fileinf.Length.ToString());
             context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
-            var tmp = HttpUtility.UrlEncode(csvPath);
+            var tmp = HttpUtility.UrlEncode(Path.GetFileName(csvPath));
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
             context.Response.TransmitFile(csvPath);

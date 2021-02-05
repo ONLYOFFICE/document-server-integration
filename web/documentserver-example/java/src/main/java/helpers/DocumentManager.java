@@ -132,7 +132,7 @@ public class DocumentManager
     public static String StoragePath(String fileName, String userAddress)
     {
         String directory = FilesRootPath(userAddress);
-        return directory + fileName;
+        return directory + FileUtility.GetFileName(fileName);
     }
 
     public static String HistoryDir(String storagePath)

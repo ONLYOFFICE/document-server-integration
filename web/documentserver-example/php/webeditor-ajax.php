@@ -184,7 +184,7 @@ function track() {
         case "Corrupted":
 
             $userAddress = $_GET["userAddress"];
-            $fileName = $_GET["fileName"];
+            $fileName = basename($_GET["fileName"]);
 
             $downloadUri = $data["url"];
 
@@ -244,7 +244,7 @@ function track() {
 }
 
 function convert() {
-    $fileName = $_GET["filename"];
+    $fileName = basename($_GET["filename"]);
     $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
@@ -301,7 +301,7 @@ function convert() {
 
 function delete() {
     try {
-        $fileName = $_GET["fileName"];
+        $fileName = basename($_GET["fileName"]);
 
         $filePath = getStoragePath($fileName);
 

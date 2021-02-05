@@ -194,8 +194,8 @@ function getStoragePath($fileName, $userAddress = NULL) {
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     } 
-    sendlog("getStoragePath result: " . $directory . $fileName, "common.log");
-    return $directory . $fileName;
+    sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
+    return $directory . basename($fileName);
 }
 
 function getHistoryDir($storagePath) {

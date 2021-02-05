@@ -132,7 +132,7 @@ namespace OnlineEditorsExample
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + fileName;
+            return directory + Path.GetFileName(fileName);
         }
 
         public static string HistoryDir(string storagePath)
@@ -298,7 +298,7 @@ namespace OnlineEditorsExample
 
         public static string DoConvert(HttpContext context)
         {
-            _fileName = context.Request["filename"];
+            _fileName = Path.GetFileName(context.Request["filename"]);
 
             var extension = (Path.GetExtension(_fileName) ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');

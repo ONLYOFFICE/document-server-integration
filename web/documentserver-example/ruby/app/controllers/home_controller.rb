@@ -25,7 +25,7 @@ class HomeController < ApplicationController
 
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    @file = FileModel.new(:file_name => params[:fileName], :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname], :action_data => params[:actionLink])
+    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname], :action_data => params[:actionLink])
 
   end
 
@@ -75,7 +75,7 @@ class HomeController < ApplicationController
   def convert
 
     begin
-      file_name = params[:filename]
+      file_name = File.basename(params[:filename])
       file_uri = DocumentHelper.get_file_uri(file_name, true)
       extension = File.extname(file_name)
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
@@ -126,7 +126,7 @@ class HomeController < ApplicationController
   def track
 
     user_address = params[:userAddress]
-    file_name = params[:fileName]
+    file_name = File.basename(params[:fileName])
 
     storage_path = DocumentHelper.storage_path(file_name, user_address)
     body = request.body.read
@@ -231,7 +231,7 @@ class HomeController < ApplicationController
   end
 
   def remove
-    file_name = params[:filename]
+    file_name = File.basename(params[:filename])
     if !file_name
       render plain: '{"success":false}'
       return

@@ -72,7 +72,7 @@ public class FileUtility
 
     public static String GetFileName(String url)
     {
-        if (url == null) return null;
+        if (url == null) return "";
 
         //for external file url
         String tempstorage = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.tempstorage");

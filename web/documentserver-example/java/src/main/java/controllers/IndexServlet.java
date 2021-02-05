@@ -159,7 +159,7 @@ public class IndexServlet extends HttpServlet
 
         try
         {
-            String fileName = request.getParameter("filename");
+            String fileName = FileUtility.GetFileName(request.getParameter("filename"));
             String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
@@ -225,7 +225,7 @@ public class IndexServlet extends HttpServlet
     private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String userAddress = request.getParameter("userAddress");
-        String fileName = request.getParameter("fileName");
+        String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
 
         String storagePath = DocumentManager.StoragePath(fileName, userAddress);
         String body = "";
@@ -361,7 +361,7 @@ public class IndexServlet extends HttpServlet
     {
         try
         {
-            String fileName = request.getParameter("filename");
+            String fileName = FileUtility.GetFileName(request.getParameter("filename"));
             String path = DocumentManager.StoragePath(fileName, null);
 
             File f = new File(path);
@@ -413,7 +413,7 @@ public class IndexServlet extends HttpServlet
 
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = "assets/sample/" + request.getParameter("name");
+        String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
         download(fileName, response, writer);
     }
 

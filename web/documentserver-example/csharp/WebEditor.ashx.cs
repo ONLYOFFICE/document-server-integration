@@ -99,7 +99,7 @@ namespace OnlineEditorsExample
         private static void Track(HttpContext context)
         {
             var userAddress = context.Request["userAddress"];
-            var fileName = context.Request["fileName"];
+            var fileName = Path.GetFileName(context.Request["fileName"]);
 
             string body;
             try
@@ -223,7 +223,7 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = context.Request["fileName"];
+                var fileName = Path.GetFileName(context.Request["fileName"]);
                 var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress));
                 var histDir = _Default.HistoryDir(path);
 
@@ -274,7 +274,7 @@ namespace OnlineEditorsExample
 
         private static void Download(HttpContext context)
         {
-            var fileName = "sample/" + context.Request["filename"];
+            var fileName = "sample/" + Path.GetFileName(context.Request["filename"]);
             download(fileName, context);
         }
 
@@ -290,7 +290,7 @@ namespace OnlineEditorsExample
             FileInfo fileinf = new FileInfo(csvPath);
             context.Response.AddHeader("Content-Length", "" + fileinf.Length);
             context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
-            var tmp = HttpUtility.UrlEncode(csvPath);
+            var tmp = HttpUtility.UrlEncode(Path.GetFileName(csvPath));
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
             context.Response.TransmitFile(csvPath);

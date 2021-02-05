@@ -89,7 +89,7 @@ namespace OnlineEditorsExample
             }
             else
             {
-                FileName = Request["fileID"];
+                FileName = Path.GetFileName(Request["fileID"]);
             }
 
             var type = Request["type"];

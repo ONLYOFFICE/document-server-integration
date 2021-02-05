@@ -72,7 +72,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + fileName;
+            return directory + Path.GetFileName(fileName);
         }
 
         public static string HistoryDir(string storagePath)

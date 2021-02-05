@@ -65,7 +65,7 @@ def convert(request):
     response = {}
 
     try:
-        filename = request.GET['filename']
+        filename = fileUtils.getFileName(request.GET['filename'])
         fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
@@ -110,7 +110,7 @@ def createNew(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 def edit(request):
-    filename = request.GET['filename']
+    filename = fileUtils.getFileName(request.GET['filename'])
 
     ext = fileUtils.getFileExt(filename)
 
@@ -225,7 +225,7 @@ def edit(request):
     return render(request, 'editor.html', context)
 
 def track(request):
-    filename = request.GET['filename']
+    filename = fileUtils.getFileName(request.GET['filename'])
     usAddr = request.GET['userAddress']
 
     response = {}
@@ -279,7 +279,7 @@ def track(request):
     return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
 
 def remove(request):
-    filename = request.GET['filename']
+    filename = fileUtils.getFileName(request.GET['filename'])
 
     response = {}
 
