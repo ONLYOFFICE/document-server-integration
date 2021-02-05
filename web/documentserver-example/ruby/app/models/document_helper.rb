@@ -74,7 +74,7 @@ class DocumentHelper
         FileUtils.mkdir_p(directory)
       end
 
-      directory.join(file_name).to_s
+      directory.join(File.basename(file_name)).to_s
     end
 
     def history_dir(storage_path)
