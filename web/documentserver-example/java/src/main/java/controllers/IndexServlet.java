@@ -18,19 +18,19 @@
 
 package controllers;
 
+import com.google.gson.Gson;
 import helpers.ConfigManager;
 import helpers.CookieManager;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
+import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -77,6 +77,15 @@ public class IndexServlet extends HttpServlet
                 break;
             case "remove":
                 Remove(request, response, writer);
+                break;
+            case "download":
+                Download(request, response, writer);
+                break;
+            case "csv":
+                CSV(request, response, writer);
+                break;
+            case "files":
+                Files(request, response, writer);
                 break;
         }
     }
@@ -151,7 +160,7 @@ public class IndexServlet extends HttpServlet
         try
         {
             String fileName = FileUtility.GetFileName(request.getParameter("filename"));
-            String fileUri = DocumentManager.GetFileUri(fileName);
+            String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
             String internalFileExt = DocumentManager.GetInternalExtension(fileType);
@@ -314,7 +323,7 @@ public class IndexServlet extends HttpServlet
             try
             {
                 String histDir = DocumentManager.HistoryDir(storagePath);
-                String versionDir = DocumentManager.VersionDir(histDir, DocumentManager.GetFileVersion(histDir) + 1);
+                String versionDir = DocumentManager.VersionDir(histDir, DocumentManager.GetFileVersion(histDir));
                 File ver = new File(versionDir);
                 File toSave = new File(storagePath);
 
@@ -369,6 +378,45 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        ArrayList<Map<String, Object>> files = null;
+
+        try {
+            Gson gson = new Gson();
+            response.setContentType("application/json");
+
+            if (request.getParameter("fileId") == null) {
+                files = DocumentManager.GetFilesInfo();
+                writer.write(gson.toJson(files));
+            }else {
+                String fileId = request.getParameter("fileId");
+                files = DocumentManager.GetFilesInfo(fileId);
+                if(files.isEmpty()) {
+                    writer.write("\"File not found\"");
+                }else {
+                    writer.write(gson.toJson(files));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "assets/sample/csv.csv";
+        download(fileName, response, writer);
+    }
+
+    private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "assets/sample/" + request.getParameter("name");
+        download(fileName, response, writer);
+    }
+
     private static void delete(File f) throws Exception {
         if (f.isDirectory()) {
             for (File c : f.listFiles())
@@ -376,6 +424,41 @@ public class IndexServlet extends HttpServlet
         }
         if (!f.delete())
             throw new Exception("Failed to delete file: " + f);
+    }
+
+    private static void download(String fileName, HttpServletResponse response, PrintWriter writer) {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        String fileType = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+            fileType = Files.probeContentType(filePath);
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+
+        File file = new File(String.valueOf(filePath));
+
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        response.setHeader("Content-Type", fileType);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + file.getName());
+
+        BufferedInputStream inputStream = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            inputStream = new BufferedInputStream(fileInputStream);
+            int readBytes = 0;
+            while ((readBytes = inputStream.read()) != -1)
+                writer.write(readBytes);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void downloadToFile(String url, File file) throws Exception {

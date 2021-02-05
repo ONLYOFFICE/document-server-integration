@@ -214,7 +214,7 @@ function getFileVersion($histDir) {
     if (!file_exists($histDir) || !is_dir($histDir)) return 0;
 
     $cdir = scandir($histDir);
-    $ver = 0;
+    $ver = 1;
     foreach($cdir as $key => $fileName) {
         if (!in_array($fileName,array(".", ".."))) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
@@ -302,6 +302,36 @@ function createMeta($fileName, $uid = "0") {
 function FileUri($file_name, $forDocumentServer = NULL) {
     $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);
     return $uri;
+}
+
+function getFileInfo($fileId){
+    $storedFiles = getStoredFiles();
+    $result = array();
+    $resultID = array();
+
+    foreach ($storedFiles as $key => $value){
+        $result[$key] = (object) array(
+            "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
+            "id" => getDocEditorKey($value->name),
+            "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
+            "pureContentLength" => filesize(getStoragePath($value->name)),
+            "title" => $value->name,
+            "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
+        );
+        if ($fileId != null){
+            if ($fileId == getDocEditorKey($value->name)){
+                $resultID[count($resultID)] = $result[$key];
+            }
+        }
+    }
+
+    if ($fileId != null){
+        if (count($resultID) != 0) return $resultID;
+        else return "File not found";
+    }
+    else {
+        return $result;
+    }
 }
 
 function getFileExts() {

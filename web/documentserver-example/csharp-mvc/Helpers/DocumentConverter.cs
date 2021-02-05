@@ -38,7 +38,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// </summary>
         static ServiceConverter()
         {
-            DocumentConverterUrl = WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "";
+            DocumentConverterUrl = (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? "") + (WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "");
 
             Int32.TryParse(WebConfigurationManager.AppSettings["files.docservice.timeout"], out ConvertTimeout);
             ConvertTimeout = ConvertTimeout > 0 ? ConvertTimeout : 120000;
@@ -119,7 +119,8 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 var payloadToken = JwtManager.Encode(payload);
                 var bodyToken = JwtManager.Encode(body);
-                request.Headers.Add("Authorization", "Bearer " + payloadToken);
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                request.Headers.Add(JWTheader, "Bearer " + payloadToken);
 
                 body.Add("token", bodyToken);
             }
