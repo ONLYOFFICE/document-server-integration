@@ -189,11 +189,11 @@ namespace OnlineEditorsExample
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (FileType.ExtsDocument.Contains(ext)) return "text";
-            if (FileType.ExtsSpreadsheet.Contains(ext)) return "spreadsheet";
-            if (FileType.ExtsPresentation.Contains(ext)) return "presentation";
+            if (FileType.ExtsDocument.Contains(ext)) return "word";
+            if (FileType.ExtsSpreadsheet.Contains(ext)) return "cell";
+            if (FileType.ExtsPresentation.Contains(ext)) return "slide";
 
-            return string.Empty;
+            return "word";
         }
 
         protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"];

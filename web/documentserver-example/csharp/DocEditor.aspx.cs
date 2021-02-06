@@ -380,13 +380,13 @@ namespace OnlineEditorsExample
             string ext;
             switch (type)
             {
-                case "document":
+                case "word":
                     ext = ".docx";
                     break;
-                case "spreadsheet":
+                case "cell":
                     ext = ".xlsx";
                     break;
-                case "presentation":
+                case "slide":
                     ext = ".pptx";
                     break;
                 default:
