@@ -142,17 +142,17 @@
                     <div class="create-panel clearFix">
                         <ul class="try-editor-list clearFix">
                             <li>
-                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor word reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Document</a>
                             </li>
                             <li>
-                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor cell reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Spreadsheet</a>
                             </li>
                             <li>
-                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Presentation</a>
                             </li>
@@ -208,11 +208,11 @@
                                     echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
                                     echo '  </a>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
                                     echo '  </a>';
-                                    } else if ($storeFile->documentType == "spreadsheet") {
+                                    } else if ($storeFile->documentType == "cell") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=filter&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                     echo '  </a>';
@@ -224,14 +224,14 @@
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
                                     echo '  </a>';
                                     }
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-shift contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=blockcontent&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                     echo '  </a>';

@@ -166,10 +166,10 @@ function getInternalExtension($filename) {
 function getDocumentType($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "text";
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "spreadsheet";
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "presentation";
-    return "";
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "word";
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "cell";
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "slide";
+    return "word";
 }
 
 function getScheme() {
