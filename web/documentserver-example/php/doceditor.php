@@ -57,13 +57,15 @@
             break;
         case 1:
             $uname = "Mark Pottato";
+            $ugroup = "group-2";
+            $reviewGroup = ["group-2", ""];
             break;
         case 2:
             $uname = "Hamish Mitchell";
+            $ugroup = "group-3";
+            $reviewGroup = ["group-2"];
             break;
     }
-    $ugroup = $uid == "0" ? null : $uid;
-    $reviewPermissions = $ugroup ? array("1"=>["1", ""],  "2"=>["1"]) : null;
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
@@ -89,7 +91,8 @@
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
-                "review" => $editorsMode == "edit" || $editorsMode == "review"
+                "review" => $editorsMode == "edit" || $editorsMode == "review",
+                "reviewGroup" => $reviewGroup
             ]
         ],
         "editorConfig" => [
@@ -113,8 +116,7 @@
                 "feedback" => true,
                 "goback" => [
                     "url" => serverPath(),
-                ],
-                "reviewPermissions" => $reviewPermissions
+                ]
             ]
         ]
     ];
