@@ -63,10 +63,10 @@ public class FileModel
         
         if (uid != null) editorConfig.user.id = uid;
         if (uname != null) editorConfig.user.name = uname;
-        editorConfig.user.group = editorConfig.user.id.equals("uid-1") ? null : editorConfig.user.id;
+        if (editorConfig.user.id.equals("uid-2")) editorConfig.user.group = "group-2";
+        if (editorConfig.user.id.equals("uid-3")) editorConfig.user.group = "group-3";
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
-        editorConfig.customization.reviewPermissions = editorConfig.user.group != null ? editorConfig.customization.GetReviewPermissions() : null;
 
         changeType(mode, type);
     }
@@ -213,6 +213,7 @@ public class FileModel
         public Boolean modifyFilter;
         public Boolean modifyContentControl;
         public Boolean review;
+        public List<String> reviewGroup;
 
         public Permissions(String mode, String type, Boolean canEdit)
         {
@@ -223,6 +224,16 @@ public class FileModel
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
+            reviewGroup = editorConfig.user.group != null ? GetReviewGroup(editorConfig.user.group) : null;
+        }
+
+        private List<String> GetReviewGroup(String group){
+            Map<String, List<String>> reviewGroups = new HashMap<>();
+
+            reviewGroups.put("group-2", Arrays.asList("group-2", ""));
+            reviewGroups.put("group-3", Arrays.asList("group-2"));
+
+            return reviewGroups.get(group);
         }
     }
 
@@ -264,14 +275,12 @@ public class FileModel
         {
             public String id = "uid-1";
             public String name = "John Smith";
-            public String group;
+            public String group = null;
         }
 
         public class Customization
         {
             public Goback goback;
-            public Map<String, List<String>> reviewPermissions;
-
             public Customization()
             {
                 goback = new Goback();
@@ -280,15 +289,6 @@ public class FileModel
             public class Goback
             {
                 public String url;
-            }
-
-            public Map<String, List<String>> GetReviewPermissions(){
-                Map<String, List<String>> reviewPermissions = new HashMap<>();
-
-                reviewPermissions.put("uid-2", Arrays.asList("uid-2", ""));
-                reviewPermissions.put("uid-3", Arrays.asList("uid-2"));
-
-                return reviewPermissions;
             }
         }
 
