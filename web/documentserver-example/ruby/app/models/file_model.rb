@@ -68,7 +68,16 @@ class FileModel
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
     userId = @user_id ? @user_id : "uid-1"
-    userGroup = userId.eql?("uid-1") ? nil : userId
+    userGroup = nil;
+    reviewGroup = nil;
+    if (userId == "uid-2")
+        userGroup = "group-2";
+        reviewGroup = ["group-2", ""];
+    end 
+    if (userId == "uid-3") 
+        userGroup = "group-3";
+        reviewGroup = ["group-2"];
+    end
 
     config = {
       :type => type(),
@@ -90,7 +99,8 @@ class FileModel
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
-          :review => editorsmode.eql?("edit") || editorsmode.eql?("review")
+          :review => editorsmode.eql?("edit") || editorsmode.eql?("review"),
+          :reviewGroup => reviewGroup
         }
       },
       :editorConfig => {
@@ -108,9 +118,6 @@ class FileModel
           :embedUrl => file_uri_user,
           :shareUrl => file_uri_user,
           :toolbarDocked => "top"
-        },
-        :customization => {
-          :reviewPermissions => userGroup ? {"uid-2" => ["uid-2", ""], "uid-3" => ["uid-2"]} : nil
         }
       }
     }
