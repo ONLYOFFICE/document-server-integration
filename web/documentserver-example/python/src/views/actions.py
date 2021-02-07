@@ -119,7 +119,14 @@ def edit(request):
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
-    userGroup = None if user['uid'] == 'uid-1' else user['uid']
+    userGroup = None
+    reviewGroup = None
+    if (user['uid'] == 'uid-2'):
+        userGroup = 'group-2'
+        reviewGroup = ['group-2', '']
+    if (user['uid'] == 'uid-3'):
+        userGroup = 'group-3'
+        reviewGroup = ['group-2']
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)
@@ -162,7 +169,8 @@ def edit(request):
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
-                'review': (edMode == 'edit') | (edMode == 'review')
+                'review': (edMode == 'edit') | (edMode == 'review'),
+                'reviewGroup': reviewGroup
             }
         },
         'editorConfig': {
@@ -186,8 +194,7 @@ def edit(request):
                 'feedback': True,
                 'goback': {
                     'url': docManager.getServerUrl(False, request)
-                },
-                'reviewPermissions': {'uid-2': ['uid-2', ''], 'uid-3': ['uid-2']} if userGroup else None
+                }
             }
         }
     }
