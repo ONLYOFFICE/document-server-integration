@@ -70,12 +70,19 @@ namespace OnlineEditorsExampleMVC.Models
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
             var userId = request.Cookies.GetOrDefault("uid", "uid-1");
-            var userGroup = userId.Equals("uid-1") ? null : userId;
-            var rereviewPermissions = userGroup != null ? new Dictionary<string, object>
-                {
-                    { "uid-2" , new List<string>() { "uid-2", "" } },
-                    { "uid-3" , new List<string>() { "uid-2" } }
-                } : null;
+
+            string userGroup = null;
+            List<string> reviewGroup = null;
+            if (userId.Equals("uid-2"))
+            {
+                userGroup = "group-2";
+                reviewGroup = new List<string>() { "group-2", "" };
+            }
+            if (userId.Equals("uid-3"))
+            {
+                userGroup = "group-3";
+                reviewGroup = new List<string>() { "group-2" };
+            }
 
             object favorite = null;
             if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
@@ -114,7 +121,8 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
-                                            { "review", editorsMode == "edit" || editorsMode == "review" }
+                                            { "review", editorsMode == "edit" || editorsMode == "review" },
+                                            { "reviewGroup", reviewGroup }
                                         }
                                 }
                             }
@@ -153,8 +161,7 @@ namespace OnlineEditorsExampleMVC.Models
                                                     {
                                                         { "url", url.Action("Index", "Home") }
                                                     }
-                                            },
-                                            { "reviewPermissions", rereviewPermissions }
+                                            }
                                         }
                                 }
                             }
