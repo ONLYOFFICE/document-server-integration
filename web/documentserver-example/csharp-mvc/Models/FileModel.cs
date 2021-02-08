@@ -69,6 +69,9 @@ namespace OnlineEditorsExampleMVC.Models
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var uid = request.Cookies.GetOrDefault("uid", "uid-1");
+            var uname = uid.Equals("uid-0") ? null : request.Cookies.GetOrDefault("uname", "John Smith");
+
             object favorite = null;
             if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
             {
@@ -121,8 +124,8 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", uid },
+                                            { "name", uname }
                                         }
                                 },
                                 {
