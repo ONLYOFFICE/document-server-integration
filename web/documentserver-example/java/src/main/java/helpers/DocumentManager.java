@@ -331,13 +331,13 @@ public class DocumentManager
 
     public static String GetInternalExtension(FileType fileType)
     {
-        if (fileType.equals(FileType.Text))
+        if (fileType.equals(FileType.Word))
             return ".docx";
 
-        if (fileType.equals(FileType.Spreadsheet))
+        if (fileType.equals(FileType.Cell))
             return ".xlsx";
 
-        if (fileType.equals(FileType.Presentation))
+        if (fileType.equals(FileType.Slide))
             return ".pptx";
 
         return ".docx";

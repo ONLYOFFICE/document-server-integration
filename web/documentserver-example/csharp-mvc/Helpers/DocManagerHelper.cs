@@ -210,11 +210,11 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             switch (fileType)
             {
-                case FileUtility.FileType.Text:
+                case FileUtility.FileType.Word:
                     return ".docx";
-                case FileUtility.FileType.Spreadsheet:
+                case FileUtility.FileType.Cell:
                     return ".xlsx";
-                case FileUtility.FileType.Presentation:
+                case FileUtility.FileType.Slide:
                     return ".pptx";
                 default:
                     return ".docx";

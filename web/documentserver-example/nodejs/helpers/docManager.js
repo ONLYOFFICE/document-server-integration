@@ -277,13 +277,13 @@ docManager.copyFile = function (exist, target) {
 };
 
 docManager.getInternalExtension = function (fileType) {
-    if (fileType == fileUtility.fileType.text)
+    if (fileType == fileUtility.fileType.word)
         return ".docx";
 
-    if (fileType == fileUtility.fileType.spreadsheet)
+    if (fileType == fileUtility.fileType.cell)
         return ".xlsx";
 
-    if (fileType == fileUtility.fileType.presentation)
+    if (fileType == fileUtility.fileType.slide)
         return ".pptx";
 
     return ".docx";

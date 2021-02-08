@@ -120,9 +120,9 @@
                 </div>
                 <div class="create-panel">
                     <ul class="try-editor-list clearFix" data-link="<%= Url.Action("sample", "Home") %>">
-                        <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
-                        <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
-                        <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+                        <li><a class="try-editor word" data-type="docx">Create<br />Document</a></li>
+                        <li><a class="try-editor cell" data-type="xlsx">Create<br />Spreadsheet</a></li>
+                        <li><a class="try-editor slide" data-type="pptx">Create<br />Presentation</a></li>
                     </ul>
                     <label class="create-sample">
                         <input id="createSample" class="checkbox" type="checkbox" />
@@ -179,11 +179,11 @@
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <% if (docType == "text") { %>
+                                    <% if (docType == "word") { %>
                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
                                             <img src="content/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
                                         </a>
-                                    <% } else if (docType == "spreadsheet") { %>
+                                    <% } else if (docType == "cell") { %>
                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
                                             <img src="content/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                         </a>
@@ -195,14 +195,14 @@
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    <% if (docType == "text") { %>
+                                    <% if (docType == "word") { %>
                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
                                             <img src="content/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                         </a>
                                     <% } %>
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
-                                    <% if (docType == "text") { %>
+                                    <% if (docType == "word") { %>
                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
                                             <img src="content/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>

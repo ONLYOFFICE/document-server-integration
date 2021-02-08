@@ -56,17 +56,17 @@ fileUtility.getFileExtension = function (url, withoutDot) {
 fileUtility.getFileType = function (url) {
     var ext = fileUtility.getFileExtension(url);
 
-    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.text;
-    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.spreadsheet;
-    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.presentation;
+    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;
+    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;
+    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;
 
-    return fileUtility.fileType.text;
+    return fileUtility.fileType.word;
 }
 
 fileUtility.fileType = {
-    text: "text",
-    spreadsheet: "spreadsheet",
-    presentation: "presentation"
+    word: "word",
+    cell: "cell",
+    slide: "slide"
 }
 
 fileUtility.documentExts = [".doc", ".docx", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".ott", ".rtf", ".txt", ".html", ".htm", ".mht", ".pdf", ".djvu", ".fb2", ".epub", ".xps"];

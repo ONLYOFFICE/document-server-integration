@@ -197,11 +197,11 @@ class DocumentHelper
     def get_internal_extension(file_type)
 
       case file_type
-        when 'text'
+        when 'word'
           ext = '.docx'
-        when 'spreadsheet'
+        when 'cell'
           ext = '.xlsx'
-        when 'presentation'
+        when 'slide'
           ext = '.pptx'
         else
           ext = '.docx'

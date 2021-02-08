@@ -118,9 +118,9 @@
                     </div>
                     <div class="create-panel">
                         <ul class="try-editor-list clearFix">
-                            <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
-                            <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
-                            <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+                            <li><a class="try-editor word" data-type="docx">Create<br />Document</a></li>
+                            <li><a class="try-editor cell" data-type="xlsx">Create<br />Spreadsheet</a></li>
+                            <li><a class="try-editor slide" data-type="pptx">Create<br />Presentation</a></li>
                         </ul>
                         <label class="create-sample">
                             <input id="createSample" class="checkbox" type="checkbox" />
@@ -175,11 +175,11 @@
                                             </a>
                                         </td>
                                         <td class="contentCells contentCells-icon">
-                                            <% if (docType.equals("text")) { %>
+                                            <% if (docType.equals("word")) { %>
                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
                                                     <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
                                                 </a>
-                                            <% } else if (docType.equals("spreadsheet")) { %>
+                                            <% } else if (docType.equals("cell")) { %>
                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
                                                     <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                 </a>
@@ -191,14 +191,14 @@
                                             </a>
                                         </td>
                                         <td class="contentCells contentCells-icon">
-                                            <% if (docType.equals("text")) { %>
+                                            <% if (docType.equals("word")) { %>
                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
                                                     <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                 </a>
                                             <% } %>
                                         </td>
                                         <td class="contentCells contentCells-shift contentCells-icon">
-                                            <% if (docType.equals("text")) { %>
+                                            <% if (docType.equals("word")) { %>
                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
                                                     <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                 </a>

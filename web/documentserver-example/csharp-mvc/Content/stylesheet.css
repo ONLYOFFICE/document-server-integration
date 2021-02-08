@@ -128,13 +128,13 @@ label .checkbox {
     text-align: center;
     text-decoration: none;
 }
-.try-editor.document {
+.try-editor.word {
     background-image: url("images/file_docx.png");
 }
-.try-editor.spreadsheet {
+.try-editor.cell {
     background-image: url("images/file_xlsx.png");
 }
-.try-editor.presentation {
+.try-editor.slide {
     background-image: url("images/file_pptx.png");
 }
 
@@ -327,26 +327,26 @@ label .checkbox {
     white-space: nowrap;
 }
 
-    .stored-edit.text {
-        background-image: url("images/icon_docx.png");
-    }
+.stored-edit.word {
+    background-image: url("images/icon_docx.png");
+}
 
-    .stored-edit.spreadsheet {
-        background-image: url("images/icon_xlsx.png");
-    }
+.stored-edit.cell {
+    background-image: url("images/icon_xlsx.png");
+}
 
-    .stored-edit.presentation {
-        background-image: url("images/icon_pptx.png");
-    }
+.stored-edit.slide {
+    background-image: url("images/icon_pptx.png");
+}
 
-    .stored-edit span {
-        font-size: 12px;
-        line-height: 12px;
-    }
+.stored-edit span {
+    font-size: 12px;
+    line-height: 12px;
+}
 
-    .stored-edit:hover span {
-        text-decoration: underline;
-    }
+.stored-edit:hover span {
+    text-decoration: underline;
+}
 
 
 .blockTitle {

@@ -34,15 +34,15 @@ public class FileUtility
         String ext = GetFileExtension(fileName).toLowerCase();
 
         if (ExtsDocument.contains(ext))
-            return FileType.Text;
+            return FileType.Word;
 
         if (ExtsSpreadsheet.contains(ext))
-            return FileType.Spreadsheet;
+            return FileType.Cell;
 
         if (ExtsPresentation.contains(ext))
-            return FileType.Presentation;
+            return FileType.Slide;
 
-        return FileType.Text;
+        return FileType.Word;
     }
 
     public static List<String> ExtsDocument = Arrays.asList
