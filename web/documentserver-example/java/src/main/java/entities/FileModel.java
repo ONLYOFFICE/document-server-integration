@@ -62,7 +62,7 @@ public class FileModel
         if (lang != null) editorConfig.lang = lang;
 
         if (uid != null) editorConfig.user.id = uid;
-        if (uname != null) editorConfig.user.name = uname;
+        if (uname != null) editorConfig.user.name = uid.equals("uid-0") ? null : uname;
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
