@@ -135,6 +135,39 @@ namespace OnlineEditorsExample
             return directory + Path.GetFileName(fileName);
         }
 
+        public static string ForcesavePath(string fileName, string userAddress, Boolean create)
+        {
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            if (!Directory.Exists(directory))
+            {
+                return "";
+            }
+
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\";
+            if (!Directory.Exists(directory))
+            {
+                if (create)
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            directory = directory + Path.GetFileName(fileName);
+            if (!File.Exists(directory))
+            {
+                if (!create)
+                {
+                    return "";
+                }
+            }
+
+            return directory;
+        }
+
         public static string HistoryDir(string storagePath)
         {
             return storagePath += "-hist";

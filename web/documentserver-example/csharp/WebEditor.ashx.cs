@@ -16,16 +16,13 @@
  *
  */
 
-using ASC.Api.DocumentConverter;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
-using System.Web.Configuration;
+using System.Diagnostics;
 
 namespace OnlineEditorsExample
 {
@@ -94,126 +91,68 @@ namespace OnlineEditorsExample
             MustSave = 2,
             Corrupted = 3,
             Closed = 4,
+            MustForceSave = 6,
+            CorruptedForceSave = 7
         }
 
         private static void Track(HttpContext context)
         {
+            var fileData = TrackManager.readBody(context);
+
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
-
-            string body;
-            try
-            {
-                using (var receiveStream = context.Request.InputStream)
-                using (var readStream = new StreamReader(receiveStream))
-                {
-                    body = readStream.ReadToEnd();
-                }
-            }
-            catch (Exception e)
-            {
-                throw new HttpException((int) HttpStatusCode.BadRequest, e.Message);
-            }
-
-            var jss = new JavaScriptSerializer();
-            if (string.IsNullOrEmpty(body)) return;
-            var fileData = jss.Deserialize<Dictionary<string, object>>(body);
-
-            if (JwtManager.Enabled)
-            {
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
-  
-                string token = null;
-
-                if (fileData.ContainsKey("token"))
-                {
-                    token = JwtManager.Decode(fileData["token"].ToString());
-                }
-                else if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
-                {
-                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
-                    token = JwtManager.Decode(headerToken);
-                }
-                else
-                {
-                    context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
-                }
-
-                if (token != null && !token.Equals(""))
-                {
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
-                }
-                else
-                {
-                    context.Response.Write("{\"error\":1,\"message\":\"JWT validation failed\"}");
-                }
-            }
-
             var status = (TrackerStatus) (int) fileData["status"];
-
+            var saved = 1;
             switch (status)
             {
-                case TrackerStatus.MustSave:
-                case TrackerStatus.Corrupted:
-                    var downloadUri = (string) fileData["url"];
-
-                    var curExt = Path.GetExtension(fileName);
-                    var downloadExt = Path.GetExtension(downloadUri) ?? "";
-                    if (!downloadExt.Equals(curExt, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var key = ServiceConverter.GenerateRevisionId(downloadUri);
-
-                        try
-                        {
-                            string newFileUri;
-                            ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, key, false, out newFileUri);
-                            downloadUri = newFileUri;
-                        }
-                        catch (Exception ex)
-                        {
-                            fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
-                        }
-                    }
-
-                    // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                    if (_Default.IsMono)
-                    {
-                        ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                    }
-
-                    var saved = 1;
+                case TrackerStatus.Editing:
                     try
                     {
-                        var storagePath = _Default.StoragePath(fileName, userAddress);
-                        var histDir = _Default.HistoryDir(storagePath);
-                        var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));
-
-                        if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);
-
-                        File.Copy(storagePath, Path.Combine(versionDir, "prev" + curExt));
-
-                        DownloadToFile(downloadUri, _Default.StoragePath(fileName, userAddress));
-                        DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));
-
-                        var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
-                        if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+                        var jss = new JavaScriptSerializer();
+                        var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
+                        var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
+                        if (action != null && action["type"].ToString().Equals("0"))
                         {
-                            hist = jss.Serialize(fileData["history"]);
-                        }
+                            var user = action["userid"].ToString();
+                            var users = jss.Deserialize<List<object>>(jss.Serialize(fileData["users"]));
+                            if (!users.Contains(user))
+                            {
+                                TrackManager.commandRequest("forcesave", fileData["key"].ToString());
+                            }
 
-                        if (!string.IsNullOrEmpty(hist))
-                        {
-                            File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Print(e.StackTrace);
+                    }
+                    break;
 
-                        File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);
+                case TrackerStatus.MustSave:
+                case TrackerStatus.Corrupted:
+                    try
+                    {
+                        saved = TrackManager.processSave(fileData, fileName, userAddress);
+                    }
+                    catch (Exception e)
+                    {
+                        saved = 1;
+                    }
+                    context.Response.Write("{\"error\":" + saved + "}");
+                    return;
+
+                case TrackerStatus.MustForceSave:
+                case TrackerStatus.CorruptedForceSave:
+                    try
+                    {
+                        saved = TrackManager.processForceSave(fileData, fileName, userAddress);
                     }
                     catch (Exception)
                     {
-                        saved = 0;
+                        saved = 1;
                     }
-
-                    break;
+                    context.Response.Write("{\"error\":" + saved + "}");
+                    return;
             }
             context.Response.Write("{\"error\":0}");
         }
@@ -294,29 +233,6 @@ namespace OnlineEditorsExample
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
             context.Response.TransmitFile(csvPath);
-        }
-
-        private static void DownloadToFile(string url, string path)
-        {
-            if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");
-
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            using (var stream = req.GetResponse().GetResponseStream())
-            {
-                if (stream == null) throw new Exception("stream is null");
-                const int bufferSize = 4096;
-
-                using (var fs = File.Open(path, FileMode.Create))
-                {
-                    var buffer = new byte[bufferSize];
-                    int readed;
-                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fs.Write(buffer, 0, readed);
-                    }
-                }
-            }
         }
 
         public bool IsReusable
