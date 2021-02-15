@@ -137,6 +137,29 @@ def getStoragePath(filename, req):
 
     return os.path.join(directory, fileUtils.getFileName(filename))
 
+def getForcesavePath(filename, req, create):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
+    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    if not os.path.exists(directory):
+        return ""
+ 
+    directory = os.path.join(directory, f'{filename}-hist')
+    if (not os.path.exists(directory)):
+        if create:
+            os.makedirs(directory)
+        else:
+            return ""
+
+    directory = os.path.join(directory, filename)
+    if (not os.path.exists(directory) and not create):
+        return ""
+
+    return directory
+
 def getStoredFiles(req):
     directory = getRootFolder(req)
 
@@ -152,21 +175,26 @@ def getStoredFiles(req):
     return fileInfos
 
 def createFile(stream, path, req = None, meta = False):
-    bufSize = 8196
+    bufSize = 8192
     with io.open(path, 'wb') as out:
         read = stream.read(bufSize)
-
         while len(read) > 0:
             out.write(read)
             read = stream.read(bufSize)
-
     if meta:
         historyManager.createMeta(path, req)
     return
 
+def createFileResponse(response, path, req, meta):
+    response.raise_for_status()
+    with open(path, 'wb') as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+    return
+
 def saveFileFromUri(uri, path, req = None, meta = False):
     resp = requests.get(uri, stream=True)
-    createFile(resp.raw, path, req, meta)
+    createFileResponse(resp, path, req, meta)
     return
 
 def createSample(fileType, sample, req):
@@ -200,6 +228,13 @@ def generateFileKey(filename, req):
     h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20]
+
+def generateRevisionId(expectedKey):
+    if (len(expectedKey) > 20):
+        expectedKey = str(hash(expectedKey))
+
+    key = re.sub(r'[^0-9-.a-zA-Z_=]', '_', expectedKey)
+    return key[:20]
 
 def getFilesInfo(req):
     fileId = req.GET.get('fileId') if req.GET.get('fileId') else None

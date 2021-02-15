@@ -33,7 +33,7 @@ import magic
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
-from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager
+from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
 
 def upload(request):
@@ -182,6 +182,7 @@ def edit(request):
             'customization': {
                 'about': True,
                 'feedback': True,
+                'forcesave': False,
                 'goback': {
                     'url': docManager.getServerUrl(False, request)
                 }
@@ -225,51 +226,25 @@ def edit(request):
     return render(request, 'editor.html', context)
 
 def track(request):
-    filename = fileUtils.getFileName(request.GET['filename'])
-    usAddr = request.GET['userAddress']
-
     response = {}
 
     try:
-        body = json.loads(request.body)
-
-        if jwtManager.isEnabled():
-            token = body.get('token')
-
-            if (not token):
-                jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-                token = request.headers.get(jwtHeader)
-                if token:
-                    token = token[len('Bearer '):]
-
-            if (not token):
-                raise Exception('Expected JWT')
-
-            body = jwtManager.decode(token)
-            if (body.get('payload')):
-                body = body['payload']
-
+        body = trackManager.readBody(request)
         status = body['status']
-        download = body.get('url')
+
+        if (status == 1): # Editing
+            if (body['actions'] and body['actions'][0]['type'] == 0):# finished edit
+                user = body['actions'][0]['userid']
+                if (not user in body['users']):
+                    trackManager.commandRequest('forcesave', body['key'])
+
+        filename = fileUtils.getFileName(request.GET['filename'])
+        usAddr = request.GET['userAddress']
 
         if (status == 2) | (status == 3): # mustsave, corrupted
-            path = docManager.getStoragePath(filename, usAddr)
-            histDir = historyManager.getHistoryDir(path)
-            versionDir = historyManager.getNextVersionDir(histDir)
-            changesUri = body.get('changesurl')
-
-            os.rename(path, historyManager.getPrevFilePath(versionDir, fileUtils.getFileExt(filename)))
-            docManager.saveFileFromUri(download, path)
-            docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir))
-
-            hist = None
-            hist = body.get('changeshistory')
-            if (not hist) & ('history' in body):
-                hist = json.dumps(body.get('history'))
-            if hist:
-                historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist)
-
-            historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))
+            trackManager.processSave(body, filename, usAddr, request)
+        if (status == 6) | (status == 7): # mustforcesave, corruptedforcesave
+            trackManager.processForceSave(body, filename, usAddr, request)
 
     except Exception as e:
         response.setdefault('error', 1)
