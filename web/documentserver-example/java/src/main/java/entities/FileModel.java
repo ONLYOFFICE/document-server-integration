@@ -267,9 +267,11 @@ public class FileModel
         public class Customization
         {
             public Goback goback;
+            public Boolean forcesave;
 
             public Customization()
             {
+                forcesave = false;
                 goback = new Goback();
             }
 
