@@ -77,6 +77,32 @@ class DocumentHelper
       directory.join(File.basename(file_name)).to_s
     end
 
+    def forcesave_path(file_name, user_address, create)
+      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+
+      unless File.directory?(directory)
+        return ""
+      end
+
+      directory = directory.join("#{File.basename(file_name)}-hist")
+      unless File.directory?(directory)
+        if create
+          FileUtils.mkdir_p(directory)
+        else
+          return ""
+        end
+      end
+
+      directory = directory.join(File.basename(file_name))
+      unless File.file?(directory)
+        if !create
+          return ""
+        end
+      end
+
+      return directory.to_s
+    end
+
     def history_dir(storage_path)
       directory = "#{storage_path}-hist"
 

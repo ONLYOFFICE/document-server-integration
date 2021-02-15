@@ -106,6 +106,9 @@ class FileModel
           :shareUrl => file_uri_user,
           :toolbarDocked => "top"
         },
+        :customization => {
+          :forcesave => false
+        }
       }
     }
 
@@ -144,14 +147,16 @@ class FileModel
         obj["version"] = i
 
         if (i == 1)
-          File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
-            cr_info = JSON.parse(file.read())
+          if File.file?(File.join(hist_dir, "createdInfo.json"))
+            File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
+              cr_info = JSON.parse(file.read())
 
-            obj["created"] = cr_info["created"]
-            obj["user"] = {
-              :id => cr_info["created"],
-              :name => cr_info["name"]
-            }
+              obj["created"] = cr_info["created"]
+              obj["user"] = {
+                :id => cr_info["created"],
+                :name => cr_info["name"]
+              }
+            end
           end
         end
 

@@ -124,110 +124,40 @@ class HomeController < ApplicationController
   end
 
   def track
-
-    user_address = params[:userAddress]
-    file_name = File.basename(params[:fileName])
-
-    storage_path = DocumentHelper.storage_path(file_name, user_address)
-    body = request.body.read
-
-    if body == nil || body.empty?
+    file_data = TrackHelper.read_body(request)
+    if file_data == nil || file_data.empty?
+      render plain: '{"error":1}'
       return
-    end
-
-    file_data = JSON.parse(body)
-
-    if JwtHelper.is_enabled
-      inHeader = false
-      token = nil
-      jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
-      if file_data["token"]
-        token = JwtHelper.decode(file_data["token"])
-      elsif request.headers[jwtHeader]
-        hdr = request.headers[jwtHeader]
-        hdr.slice!(0, "Bearer ".length)
-        token = JwtHelper.decode(hdr)
-        inHeader = true
-      else
-        raise "Expected JWT"
-      end
-      if !token
-        raise "Invalid JWT signature"
-      end
-
-      file_data = JSON.parse(token)
-      if inHeader
-        file_data = file_data["payload"]
-      end
     end
 
     status = file_data['status'].to_i
 
-    if status == 2 || status == 3 #MustSave, Corrupted
+    user_address = params[:userAddress]
+    file_name = File.basename(params[:fileName])
 
-      saved = 0
-
-      begin
-
-        def save_from_uri(path, uristr)
-          uri = URI.parse(uristr)
-          http = Net::HTTP.new(uri.host, uri.port)
-
-          if uristr.start_with?('https')
-            http.use_ssl = true
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          end
-
-          req = Net::HTTP::Get.new(uri)
-          res = http.request(req)
-          data = res.body
-
-          if data == nil
-            raise 'stream is null'
-          end
-
-          File.open(path, 'wb') do |file|
-            file.write(data)
-          end
-        end
-
-        hist_dir = DocumentHelper.history_dir(storage_path)
-        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir))
-
-        FileUtils.mkdir_p(ver_dir)
-
-        FileUtils.move(storage_path, File.join(ver_dir, "prev#{File.extname(file_name)}"))
-        save_from_uri(storage_path, file_data['url'])
-
-        if (file_data["changesurl"])
-          save_from_uri(File.join(ver_dir, "diff.zip"), file_data["changesurl"])
-        end
-
-        hist_data = file_data["changeshistory"]
-        if (!hist_data)
-          hist_data = file_data["history"].to_json
-        end
-        if (hist_data)
-          File.open(File.join(ver_dir, "changes.json"), 'wb') do |file|
-            file.write(hist_data)
-          end
-        end
-
-        File.open(File.join(ver_dir, "key.txt"), 'wb') do |file|
-          file.write(file_data["key"])
-        end
-
-      rescue StandardError => msg
-        saved = 1
+    if status == 1 #Editing
+      if file_data['actions'][0]['type'] == 0 #Finished edit
+        user = file_data['actions'][0]['userid']
+         if !file_data['users'].index(user)
+          json_data = TrackHelper.command_request("forcesave", file_data['key'])
+         end
       end
+    end
 
+    if status == 2 || status == 3 #MustSave, Corrupted
+      saved = TrackHelper.process_save(file_data, file_name, user_address)
+      render plain: '{"error":' + saved.to_s + '}'
+      return
+    end
+
+    if status == 6 || status == 7 # MustForceave, CorruptedForcesave
+      saved = TrackHelper.process_force_save(file_data, file_name, user_address)
       render plain: '{"error":' + saved.to_s + '}'
       return
     end
 
     render plain: '{"error":0}'
     return
-
   end
 
   def remove
