@@ -105,6 +105,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\TrackManager.cs" />
     <Compile Include="Helpers\DocManagerHelper.cs" />
     <Compile Include="Helpers\DocumentConverter.cs" />
     <Compile Include="Helpers\JwtManager.cs" />
