@@ -108,6 +108,7 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
+                "forcesave" => false,
                 "goback" => [
                     "url" => serverPath(),
                 ]

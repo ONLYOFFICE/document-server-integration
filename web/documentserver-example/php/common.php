@@ -198,6 +198,23 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . basename($fileName);
 }
 
+function getForcesavePath($fileName, $userAddress, $create) {
+    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+
+    if (!is_dir($directory)) return "";
+
+    $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
+    if (!$create && !is_dir($directory))  return "";
+
+    mkdir($directory);
+
+    $directory = $directory . $fileName;
+    if (!$create && !file_exists($directory)) return "";
+
+    return $directory;
+}
+
 function getHistoryDir($storagePath) {
     $directory = $storagePath . "-hist";
     if (!file_exists($directory) && !is_dir($directory)) {
