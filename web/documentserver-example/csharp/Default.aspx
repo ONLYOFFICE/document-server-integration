@@ -180,7 +180,7 @@
                                         <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                                             <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
                                         </a>
-                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile.Name %>">
+                                        <a href="webeditor.ashx?type=download&filename=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                             <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
                                         </a>
                                         <a class="delete-file" data-filename="<%= storedFile.Name %>">
