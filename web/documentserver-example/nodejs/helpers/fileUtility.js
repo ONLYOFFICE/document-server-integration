@@ -16,24 +16,14 @@
  *
  */
 
-var configServer = require('config').get('server');
-var siteUrl = configServer.get('siteUrl');
-var tempStorageUrl = siteUrl + configServer.get('tempStorageUrl');
-
 var fileUtility = {};
 
 fileUtility.getFileName = function (url, withoutExtension) {
     if (!url) return "";
 
-    var filename;
-
-    if (tempStorageUrl && url.indexOf(tempStorageUrl) == 0) {
-        var params = getUrlParams(url);
-        filename = params == null ? null : params["filename"];
-    } else {
-        var parts = url.toLowerCase().split("/");
-        fileName = parts.pop();
-    }
+    var parts = url.toLowerCase().split("/");
+    var fileName = parts.pop();
+    fileName = fileName.split("?")[0];
 
     if (withoutExtension) {
         var ext = fileUtility.getFileExtension(fileName);
