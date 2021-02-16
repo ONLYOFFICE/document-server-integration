@@ -273,8 +273,18 @@ def files(request):
 
 def csv(request):
     filePath = os.path.join('assets', 'sample', "csv.csv")
-    response = FileResponse(open(filePath, 'rb'), True)
-    response['Content-Length'] =  os.path.getsize(filePath)
-    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
-    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    response = docManager.download(filePath)
     return response
+
+def download(request):
+    try:
+        fileName = fileUtils.getFileName(request.GET['filename'])
+        filePath = docManager.getForcesavePath(fileName, request, False)
+        if (filePath == ""):
+            filePath = docManager.getStoragePath(fileName, request)
+        response = docManager.download(filePath)
+        return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json')

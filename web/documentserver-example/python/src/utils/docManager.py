@@ -32,7 +32,10 @@ import io
 import re
 import requests
 import time
+import urllib.parse
+import magic
 
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src import settings
 from . import fileUtils, historyManager
 
@@ -260,3 +263,10 @@ def getFilesInfo(req):
         else : return "File not found"     
     else :
         return result
+
+def download(filePath):
+    response = FileResponse(open(filePath, 'rb'), True)
+    response['Content-Length'] =  os.path.getsize(filePath)
+    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
+    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    return response

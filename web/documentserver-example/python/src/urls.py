@@ -32,6 +32,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('', index.default),
     path('upload', actions.upload),
+    path('download', actions.download),
     path('convert', actions.convert),
     path('create', actions.createNew),
     path('edit', actions.edit),
