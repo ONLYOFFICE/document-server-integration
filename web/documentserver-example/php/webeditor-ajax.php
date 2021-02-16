@@ -54,6 +54,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
+        case "download":
+            $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
@@ -66,8 +70,8 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = delete();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
-        case "download":
-            $response_array = download();
+        case "assets":
+            $response_array = assets();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
         case "csv":
@@ -259,28 +263,44 @@ function files() {
     }
 }
 
-function download() {
-    $fileName = "sample" . DIRECTORY_SEPARATOR . basename($_GET["name"]);
-    downloadFile($fileName);
+function assets() {
+    $fileName = basename($_GET["name"]);
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    downloadFile($filePath);
 }
 
 function csv() {
-    $fileName = "sample" . DIRECTORY_SEPARATOR . "csv.csv";
-    downloadFile($fileName);
+    $fileName =  "csv.csv";
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    downloadFile($filePath);
 }
 
-function downloadFile($fileName) {
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . $fileName;
-    if (file_exists($file)) {
+function download() {
+    try {
+        $fileName = basename($_GET["name"]);
+        $filePath = getForcesavePath($fileName, null, false);
+        if ($filePath == "") {
+            $filePath = getStoragePath($fileName, null);
+        }
+        downloadFile($filePath);
+    } catch (Exception $e) {
+        sendlog("Download ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: File not found";
+        return $result;
+    }
+}
+
+function downloadFile($filePath) {
+    if (file_exists($filePath)) {
         if (ob_get_level()) {
             ob_end_clean();
         }
 
-        @header('Content-Length: ' . filesize($file));
-        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
-        @header('Content-Type: ' . mime_content_type($file));
+        @header('Content-Length: ' . filesize($filePath));
+        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($filePath)));
+        @header('Content-Type: ' . mime_content_type($filePath));
 
-        if ($fd = fopen($file, 'rb')) {
+        if ($fd = fopen($filePath, 'rb')) {
             while (!feof($fd)) {
                 print fread($fd, 1024);
             }
