@@ -64,6 +64,8 @@ public class IndexServlet extends HttpServlet
             case "upload":
                 Upload(request, response, writer);
                 break;
+            case "download":
+                Download(request, response, writer);
             case "convert":
                 Convert(request, response, writer);
                 break;
@@ -73,8 +75,8 @@ public class IndexServlet extends HttpServlet
             case "remove":
                 Remove(request, response, writer);
                 break;
-            case "download":
-                Download(request, response, writer);
+            case "assets":
+                Assets(request, response, writer);
                 break;
             case "csv":
                 CSV(request, response, writer);
@@ -324,13 +326,41 @@ public class IndexServlet extends HttpServlet
     private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String fileName = "assets/sample/csv.csv";
-        download(fileName, response, writer);
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        download(filePath.toString(), response, writer);
+    }
+
+    private static void Assets(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        download(filePath.toString(), response, writer);
     }
 
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
-        download(fileName, response, writer);
+        try {
+            String fileName = FileUtility.GetFileName(request.getParameter("name"));
+            String filePath = DocumentManager.ForcesavePath(fileName, null, false);
+            if (filePath.equals("")) {
+                filePath = DocumentManager.StoragePath(fileName, null);
+            }
+            download(filePath, response, writer);
+        } catch (Exception e) {
+            writer.write("{ \"error\": \"File not found\"}");
+        }
     }
 
     private static void delete(File f) throws Exception {
@@ -342,18 +372,15 @@ public class IndexServlet extends HttpServlet
             throw new Exception("Failed to delete file: " + f);
     }
 
-    private static void download(String fileName, HttpServletResponse response, PrintWriter writer) {
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        Path filePath = null;
+    private static void download(String filePath, HttpServletResponse response, PrintWriter writer) {
         String fileType = null;
         try {
-            filePath = Paths.get(fileUrl.toURI());
-            fileType = Files.probeContentType(filePath);
-        } catch (URISyntaxException | IOException e) {
+            fileType = Files.probeContentType(Paths.get(filePath));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        File file = new File(String.valueOf(filePath));
+        File file = new File(filePath);
 
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Type", fileType);

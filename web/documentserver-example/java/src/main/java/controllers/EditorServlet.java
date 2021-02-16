@@ -74,7 +74,7 @@ public class EditorServlet extends HttpServlet
 
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=download&name=sample.docx");
+        dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
 
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
