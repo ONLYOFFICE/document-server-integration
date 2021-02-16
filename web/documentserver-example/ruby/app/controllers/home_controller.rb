@@ -199,4 +199,22 @@ class HomeController < ApplicationController
 
     send_file csvPath, :x_sendfile => true
   end
+
+  def download
+    begin
+      file_name = File.basename(params[:filename])
+      file_path = DocumentHelper.forcesave_path(file_name, nil, false)
+      if file_path.eql?("")
+        file_path = DocumentHelper.storage_path(file_name, nil)
+      end
+
+      response.headers['Content-Length'] = File.size(file_path).to_s
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).type
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
+      send_file file_path, :x_sendfile => true
+    rescue => ex
+      render plain: '{ "error": "File not found"}'
+    end
+  end
 end
