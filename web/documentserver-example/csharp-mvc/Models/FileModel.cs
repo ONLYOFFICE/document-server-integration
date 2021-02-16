@@ -248,7 +248,7 @@ namespace OnlineEditorsExampleMVC.Models
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
-                Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx")
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
             var dataCompareFile = new Dictionary<string, object>

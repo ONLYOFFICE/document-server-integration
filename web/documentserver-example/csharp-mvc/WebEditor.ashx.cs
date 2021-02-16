@@ -42,6 +42,9 @@ namespace OnlineEditorsExampleMVC
                 case "upload":
                     Upload(context);
                     break;
+                case "download":
+                    Download(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -51,8 +54,8 @@ namespace OnlineEditorsExampleMVC
                 case "remove":
                     Remove(context);
                     break;
-                case "download":
-                    Download(context);
+                case "assets":
+                    Assets(context);
                     break;
                 case "csv":
                     GetCsv(context);
@@ -297,28 +300,48 @@ namespace OnlineEditorsExampleMVC
             }
         }
 
-        private static void Download(HttpContext context)
+        private static void Assets(HttpContext context)
         {
-            var fileName = "sample/" + Path.GetFileName(context.Request["filename"]);
-            download(fileName, context);
+            var fileName = Path.GetFileName(context.Request["filename"]);
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            download(filePath, context);
         }
 
         private static void GetCsv(HttpContext context)
         {
-            var fileName = "sample/" + "csv.csv";
-            download(fileName, context);
+            var fileName = "csv.csv";
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            download(filePath, context);
         }
 
-        private static void download(string fileName, HttpContext context)
+        private static void Download(HttpContext context)
         {
-            var csvPath = HttpRuntime.AppDomainAppPath + "assets/" + fileName;
-            var fileinf = new FileInfo(csvPath);
+            try
+            {
+                var fileName = Path.GetFileName(context.Request["filename"]);
+
+                var filePath = DocManagerHelper.ForcesavePath(fileName, null, false);
+                if (filePath.Equals(""))
+                {
+                    filePath = DocManagerHelper.StoragePath(fileName, null);
+                }
+                download(filePath, context);
+            }
+            catch (Exception)
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+            }
+        }
+
+        private static void download(string filePath, HttpContext context)
+        {
+            var fileinf = new FileInfo(filePath);
             context.Response.AddHeader("Content-Length", fileinf.Length.ToString());
-            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(csvPath));
-            var tmp = HttpUtility.UrlEncode(Path.GetFileName(csvPath));
+            context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(filePath));
+            var tmp = HttpUtility.UrlEncode(Path.GetFileName(filePath));
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            context.Response.TransmitFile(csvPath);
+            context.Response.TransmitFile(filePath);
         }
 
         public bool IsReusable

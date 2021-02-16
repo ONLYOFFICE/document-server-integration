@@ -160,7 +160,7 @@
                                     <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
                                         <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
                                     </a>
-                                    <a href="<%= Url.Content(DocManagerHelper.CurUserHostAddress() + "/" + storedFile) %>">
+                                    <a href="webeditor.ashx?type=download&filename=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                         <img class="icon-download" src="content/images/download-24.png" alt="Download" title="Download" />
                                     </a>
                                     <a class="delete-file" data-filename="<%= storedFile.Name %>">
