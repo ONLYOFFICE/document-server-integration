@@ -120,13 +120,13 @@ def edit(request):
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
     userGroup = None
-    reviewGroup = None
+    reviewGroups = None
     if (user['uid'] == 'uid-2'):
         userGroup = 'group-2'
-        reviewGroup = ['group-2', '']
+        reviewGroups = ['group-2', '']
     if (user['uid'] == 'uid-3'):
         userGroup = 'group-3'
-        reviewGroup = ['group-2']
+        reviewGroups = ['group-2']
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)
@@ -170,7 +170,7 @@ def edit(request):
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': (edMode == 'edit') | (edMode == 'review'),
-                'reviewGroup': reviewGroup
+                'reviewGroups': reviewGroups
             }
         },
         'editorConfig': {

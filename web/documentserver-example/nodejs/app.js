@@ -555,16 +555,16 @@ app.get("/editor", function (req, res) {
         var actionData = req.query.action ? req.query.action : "null";
 
         var userGroup = null;
-        var reviewGroup = null;
+        var reviewGroups = null;
         if (userid == "uid-2")
         {
             userGroup = "group-2";
             // own and without group
-            reviewGroup = ["group-2", ""];
+            reviewGroups = ["group-2", ""];
         } else if (userid == "uid-3") {
             userGroup = "group-3";
             // other group only
-            reviewGroup = ["group-2"];
+            reviewGroups = ["group-2"];
         }
 
         if (fileExt != null) {
@@ -678,7 +678,7 @@ app.get("/editor", function (req, res) {
                 userid: userid,
                 name: name,
                 userGroup: userGroup,
-                reviewGroup: JSON.stringify(reviewGroup),
+                reviewGroups: JSON.stringify(reviewGroups),
                 fileChoiceUrl: fileChoiceUrl,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData

@@ -213,7 +213,7 @@ public class FileModel
         public Boolean modifyFilter;
         public Boolean modifyContentControl;
         public Boolean review;
-        public List<String> reviewGroup;
+        public List<String> reviewGroups;
 
         public Permissions(String mode, String type, Boolean canEdit)
         {
@@ -224,10 +224,10 @@ public class FileModel
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
-            reviewGroup = editorConfig.user.group != null ? GetReviewGroup(editorConfig.user.group) : null;
+            reviewGroups = editorConfig.user.group != null ? GetReviewGroups(editorConfig.user.group) : null;
         }
 
-        private List<String> GetReviewGroup(String group){
+        private List<String> GetReviewGroups(String group){
             Map<String, List<String>> reviewGroups = new HashMap<>();
 
             reviewGroups.put("group-2", Arrays.asList("group-2", ""));

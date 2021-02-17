@@ -69,14 +69,14 @@ class FileModel
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
     userId = @user_id ? @user_id : "uid-1"
     userGroup = nil;
-    reviewGroup = nil;
+    reviewGroups = nil;
     if (userId == "uid-2")
         userGroup = "group-2";
-        reviewGroup = ["group-2", ""];
+        reviewGroups = ["group-2", ""];
     end 
     if (userId == "uid-3") 
         userGroup = "group-3";
-        reviewGroup = ["group-2"];
+        reviewGroups = ["group-2"];
     end
 
     config = {
@@ -100,7 +100,7 @@ class FileModel
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => editorsmode.eql?("edit") || editorsmode.eql?("review"),
-          :reviewGroup => reviewGroup
+          :reviewGroups => reviewGroups
         }
       },
       :editorConfig => {

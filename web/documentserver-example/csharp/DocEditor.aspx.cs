@@ -109,16 +109,16 @@ namespace OnlineEditorsExample
             var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
 
             string userGroup = null;
-            List<string> reviewGroup = null;
+            List<string> reviewGroups = null;
             if (userId.Equals("uid-2"))
             {
                 userGroup = "group-2";
-                reviewGroup = new List<string>() { "group-2", "" };
+                reviewGroups = new List<string>() { "group-2", "" };
             }
             if (userId.Equals("uid-3"))
             {
                 userGroup = "group-3";
-                reviewGroup = new List<string>() { "group-2" };
+                reviewGroups = new List<string>() { "group-2" };
             }
 
             var jss = new JavaScriptSerializer();
@@ -161,7 +161,7 @@ namespace OnlineEditorsExample
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", editorsMode == "edit" || editorsMode == "review" },
-                                            { "reviewGroup", reviewGroup }
+                                            { "reviewGroups", reviewGroups }
                                         }
                                 }
                             }

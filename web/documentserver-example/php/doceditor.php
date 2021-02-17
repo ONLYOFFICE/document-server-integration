@@ -58,12 +58,12 @@
         case 1:
             $uname = "Mark Pottato";
             $ugroup = "group-2";
-            $reviewGroup = ["group-2", ""];
+            $reviewGroups = ["group-2", ""];
             break;
         case 2:
             $uname = "Hamish Mitchell";
             $ugroup = "group-3";
-            $reviewGroup = ["group-2"];
+            $reviewGroups = ["group-2"];
             break;
     }
 
@@ -92,7 +92,7 @@
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $editorsMode == "edit" || $editorsMode == "review",
-                "reviewGroup" => $reviewGroup
+                "reviewGroups" => $reviewGroups
             ]
         ],
         "editorConfig" => [

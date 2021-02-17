@@ -72,16 +72,16 @@ namespace OnlineEditorsExampleMVC.Models
             var userId = request.Cookies.GetOrDefault("uid", "uid-1");
 
             string userGroup = null;
-            List<string> reviewGroup = null;
+            List<string> reviewGroups = null;
             if (userId.Equals("uid-2"))
             {
                 userGroup = "group-2";
-                reviewGroup = new List<string>() { "group-2", "" };
+                reviewGroups = new List<string>() { "group-2", "" };
             }
             if (userId.Equals("uid-3"))
             {
                 userGroup = "group-3";
-                reviewGroup = new List<string>() { "group-2" };
+                reviewGroups = new List<string>() { "group-2" };
             }
 
             object favorite = null;
@@ -122,7 +122,7 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", editorsMode == "edit" || editorsMode == "review" },
-                                            { "reviewGroup", reviewGroup }
+                                            { "reviewGroups", reviewGroups }
                                         }
                                 }
                             }
