@@ -63,6 +63,7 @@ namespace OnlineEditorsExample
         protected string InsertImageConfig { get; private set; }
         protected string compareFileData { get; private set; }
         protected string dataMailMergeRecipients { get; private set; }
+        protected string documentType { get { return _Default.DocumentType(FileName); } }
 
         public static string CallbackUrl
         {
@@ -120,7 +121,7 @@ namespace OnlineEditorsExample
             var config = new Dictionary<string, object>
                 {
                     { "type", Request.GetOrDefault("editorsType", "desktop") },
-                    { "documentType", _Default.DocumentType(FileName) },
+                    { "documentType", documentType },
                     {
                         "document", new Dictionary<string, object>
                             {
