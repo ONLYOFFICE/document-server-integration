@@ -136,7 +136,7 @@
                     <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                         <span title="<%= d %>"><%= d %></span>
                     </a>
-                    <a href="<%= DocumentHelper.get_file_uri(d, false) %>">
+                    <a href="<%= "download?filename=#{URI::encode(d)}" %>">
                         <img class="icon-download" src="assets/download-24.png" alt="Download" title="Download" />
                     </a>
                     <a class="delete-file" data-filename="<%= d %>">

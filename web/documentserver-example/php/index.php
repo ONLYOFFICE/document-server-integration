@@ -190,7 +190,7 @@
                                     echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
                                     echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
                                     echo '  </a>';
-                                    echo '  <a href="'.FileUri($storeFile->name).'">';
+                                    echo '  <a href="webeditor-ajax.php?type=download&name='.urlencode($storeFile->name).'">';
                                     echo '   <img class="icon-download" src="css/images/download-24.png" alt="Download" title="Download" /></a>';
                                     echo '  </a>';
                                     echo '  <a class="delete-file" data="'.$storeFile->name.'">';

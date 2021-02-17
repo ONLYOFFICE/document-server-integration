@@ -137,7 +137,7 @@
                                     <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
                                         <span title="{{ file.title }}">{{ file.title }}</span>
                                     </a>
-                                    <a href="{{ file.url }}">
+                                    <a href="download?filename={{ file.title }}">
                                         <img class="icon-download" src="{% static "images/download-24.png" %}" alt="Download" title="Download" />
                                     </a>
                                     <a class="delete-file" data-filename="{{ file.title }}">

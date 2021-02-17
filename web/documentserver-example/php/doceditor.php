@@ -108,6 +108,7 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
+                "forcesave" => false,
                 "goback" => [
                     "url" => serverPath(),
                 ]
@@ -122,7 +123,7 @@
 
     $dataCompareFile = [
         "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=sample.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
     ];
 
     $dataMailMergeRecipients = [

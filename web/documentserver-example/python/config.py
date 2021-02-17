@@ -20,6 +20,7 @@ DOC_SERV_SITE_URL = 'https://documentserver/'
 DOC_SERV_CONVERTER_URL = 'ConvertService.ashx'
 DOC_SERV_API_URL = 'web-apps/apps/api/documents/api.js'
 DOC_SERV_PRELOADER_URL = 'web-apps/apps/api/documents/cache-scripts.html'
+DOC_SERV_COMMAND_URL='coauthoring/CommandService.ashx'
 
 EXAMPLE_DOMAIN = None
 

@@ -135,6 +135,32 @@ public class DocumentManager
         return directory + FileUtility.GetFileName(fileName);
     }
 
+    public static String ForcesavePath(String fileName, String userAddress, Boolean create)
+    {
+        String hostAddress = CurUserHostAddress(userAddress);
+        String serverPath = request.getSession().getServletContext().getRealPath("");
+        String storagePath = ConfigManager.GetProperty("storage-folder");
+
+        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+
+        File file = new File(directory);
+        if (!file.exists()) return "";
+
+        directory = directory + fileName + "-hist" + File.separator;
+        file = new File(directory);
+        if (!create && !file.exists()) return "";
+
+        file.mkdirs();
+
+        directory = directory + fileName;
+        file = new File(directory);
+        if (!create && !file.exists()) {
+            return "";
+        }
+
+        return directory;
+    }
+
     public static String HistoryDir(String storagePath)
     {
         return storagePath += "-hist";

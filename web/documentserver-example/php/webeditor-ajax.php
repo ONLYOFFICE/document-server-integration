@@ -25,15 +25,17 @@ require_once( dirname(__FILE__) . '/ajax.php' );
 require_once( dirname(__FILE__) . '/common.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 require_once( dirname(__FILE__) . '/jwtmanager.php' );
+require_once( dirname(__FILE__) . '/trackmanager.php' );
 
 $_trackerStatus = array(
     0 => 'NotFound',
     1 => 'Editing',
     2 => 'MustSave',
     3 => 'Corrupted',
-    4 => 'Closed'
+    4 => 'Closed',
+    6 => 'MustForceSave',
+    7 => 'CorruptedForceSave'
 );
-
 
 if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exists
     $response_array;
@@ -52,6 +54,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
+        case "download":
+            $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
@@ -64,8 +70,8 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) { //Checks if type value exis
             $response_array = delete();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
-        case "download":
-            $response_array = download();
+        case "assets":
+            $response_array = assets();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
         case "csv":
@@ -130,116 +136,42 @@ function upload() {
 
 function track() {
     sendlog("Track START", "webedior-ajax.log");
-    sendlog("_GET params: " . serialize( $_GET ), "webedior-ajax.log");
+    sendlog("   _GET params: " . serialize( $_GET ), "webedior-ajax.log");
 
-    global $_trackerStatus;
-    $data;
     $result["error"] = 0;
 
-    if (($body_stream = file_get_contents('php://input'))===FALSE) {
-        $result["error"] = "Bad Request";
-        return $result;
+    $data = readBody();
+    if ($data["error"]){
+        return $data;
     }
 
-    $data = json_decode($body_stream, TRUE); //json_decode - PHP 5 >= 5.2.0
-
-    if ($data === NULL) {
-        $result["error"] = "Bad Response";
-        return $result;
-    }
-
-    sendlog("InputStream data: " . serialize($data), "webedior-ajax.log");
-
-    if (isJwtEnabled()) {
-        sendlog("jwt enabled, checking tokens", "webedior-ajax.log");
-
-        $inHeader = false;
-        $token = "";
-        $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
-
-        if (!empty($data["token"])) {
-            $token = jwtDecode($data["token"]);
-        } elseif (!empty(apache_request_headers()[$jwtHeader])) {
-            $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
-            $inHeader = true;
-        } else {
-            sendlog("jwt token wasn't found in body or headers", "webedior-ajax.log");
-            $result["error"] = "Expected JWT";
-            return $result;
-        }
-        if (empty($token)) {
-            sendlog("token was found but signature is invalid", "webedior-ajax.log");
-            $result["error"] = "Invalid JWT signature";
-            return $result;
-        }
-
-        $data = json_decode($token, true);
-        if ($inHeader) $data = $data["payload"];
-    }
-
+    global $_trackerStatus;
     $status = $_trackerStatus[$data["status"]];
 
+    $userAddress = $_GET["userAddress"];
+    $fileName = basename($_GET["fileName"]);
+
     switch ($status) {
+        case "Editing":
+            if ($data["actions"] && $data["actions"][0]["type"] == 0) {
+                $user = $data["actions"][0]["userid"];
+                if (array_search($user, $data["users"]) === FALSE) {
+                    $commandRequest = commandRequest("forcesave", $data["key"]);
+                    sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
+                }
+            }
+            break;
         case "MustSave":
         case "Corrupted":
-
-            $userAddress = $_GET["userAddress"];
-            $fileName = basename($_GET["fileName"]);
-
-            $downloadUri = $data["url"];
-
-            $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
-            $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));
-
-            if ($downloadExt != $curExt) {
-                $key = getDocEditorKey(downloadUri);
-
-                try {
-                    sendlog("Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
-                    $convertedUri;
-                    $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
-                    $downloadUri = $convertedUri;
-                } catch (Exception $e) {
-                    sendlog("Convert after save ".$e->getMessage(), "webedior-ajax.log");
-                    $result["error"] = "error: " . $e->getMessage();
-                    return $result;
-                }
-            }
-
-            $saved = 1;
-
-            if (($new_data = file_get_contents($downloadUri)) === FALSE) {
-                $saved = 0;
-            } else {
-                $storagePath = getStoragePath($fileName, $userAddress);
-                $histDir = getHistoryDir($storagePath);
-                $verDir = getVersionDir($histDir, getFileVersion($histDir));
-
-                mkdir($verDir);
-
-                copy($storagePath, $verDir . DIRECTORY_SEPARATOR . "prev" . $downloadExt);
-                file_put_contents($storagePath, $new_data, LOCK_EX);
-
-                if ($changesData = file_get_contents($data["changesurl"])) {
-                    file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);
-                }
-
-                $histData = $data["changeshistory"];
-                if (empty($histData)) {
-                    $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
-                }
-                if (!empty($histData)) {
-                    file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);
-                }
-                file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);
-            }
-
-            $result["c"] = "saved";
-            $result["status"] = $saved;
+            $result = processSave($data, $fileName, $userAddress);
+            break;
+        case "MustForceSave":
+        case "CorruptedForceSave":
+            $result = processForceSave($data, $fileName, $userAddress);
             break;
     }
 
-    sendlog("track result: " . serialize($result), "webedior-ajax.log");
+    sendlog("Track RESULT: " . serialize($result), "webedior-ajax.log");
     return $result;
 }
 
@@ -331,28 +263,44 @@ function files() {
     }
 }
 
-function download() {
-    $fileName = "sample" . DIRECTORY_SEPARATOR . basename($_GET["name"]);
-    downloadFile($fileName);
+function assets() {
+    $fileName = basename($_GET["name"]);
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    downloadFile($filePath);
 }
 
 function csv() {
-    $fileName = "sample" . DIRECTORY_SEPARATOR . "csv.csv";
-    downloadFile($fileName);
+    $fileName =  "csv.csv";
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    downloadFile($filePath);
 }
 
-function downloadFile($fileName) {
-    $file = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . $fileName;
-    if (file_exists($file)) {
+function download() {
+    try {
+        $fileName = basename($_GET["name"]);
+        $filePath = getForcesavePath($fileName, null, false);
+        if ($filePath == "") {
+            $filePath = getStoragePath($fileName, null);
+        }
+        downloadFile($filePath);
+    } catch (Exception $e) {
+        sendlog("Download ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: File not found";
+        return $result;
+    }
+}
+
+function downloadFile($filePath) {
+    if (file_exists($filePath)) {
         if (ob_get_level()) {
             ob_end_clean();
         }
 
-        @header('Content-Length: ' . filesize($file));
-        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($file)));
-        @header('Content-Type: ' . mime_content_type($file));
+        @header('Content-Length: ' . filesize($filePath));
+        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($filePath)));
+        @header('Content-Type: ' . mime_content_type($filePath));
 
-        if ($fd = fopen($file, 'rb')) {
+        if ($fd = fopen($filePath, 'rb')) {
             while (!feof($fd)) {
                 print fread($fd, 1024);
             }
