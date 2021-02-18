@@ -107,8 +107,20 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
-            var uid = Request.Cookies.GetOrDefault("uid", "uid-1");
-            var uname = uid.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
+            var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
+            var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
+            string userGroup = null;
+            List<string> reviewGroups = null;
+            if (userId.Equals("uid-2"))
+            {
+                userGroup = "group-2";
+                reviewGroups = new List<string>() { "group-2", "" };
+            }
+            if (userId.Equals("uid-3"))
+            {
+                userGroup = "group-3";
+                reviewGroups = new List<string>() { "group-2" };
+            }
 
             var jss = new JavaScriptSerializer();
 
@@ -149,7 +161,8 @@ namespace OnlineEditorsExample
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
-                                            { "review", editorsMode == "edit" || editorsMode == "review" }
+                                            { "review", editorsMode == "edit" || editorsMode == "review" },
+                                            { "reviewGroups", reviewGroups }
                                         }
                                 }
                             }
@@ -164,8 +177,9 @@ namespace OnlineEditorsExample
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", uid },
-                                            { "name",  uname }
+                                            { "id", userId },
+                                            { "name",  uname },
+                                            { "group", userGroup }
                                         }
                                 },
                                 {

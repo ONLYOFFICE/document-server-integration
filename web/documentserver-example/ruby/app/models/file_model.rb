@@ -67,8 +67,18 @@ class FileModel
     editorsmode = @mode ? @mode : "edit"
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
-    user_id = @user_id ? @user_id : "uid-1"
-    user_name = (user_id.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
+    userId = @user_id ? @user_id : "uid-1"
+    user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
+    userGroup = nil
+    reviewGroups = nil
+    if (userId == "uid-2")
+        userGroup = "group-2"
+        reviewGroups = ["group-2", ""]
+    end 
+    if (userId == "uid-3") 
+        userGroup = "group-3"
+        reviewGroups = ["group-2"]
+    end
 
     config = {
       :type => type(),
@@ -90,7 +100,8 @@ class FileModel
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
-          :review => editorsmode.eql?("edit") || editorsmode.eql?("review")
+          :review => editorsmode.eql?("edit") || editorsmode.eql?("review"),
+          :reviewGroups => reviewGroups
         }
       },
       :editorConfig => {
@@ -99,8 +110,9 @@ class FileModel
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,
         :user => {
-          :id => user_id,
-          :name => user_name
+          :id => userId,
+          :name => user_name,
+          :group => userGroup
         },
         :embedded => {
           :saveUrl => file_uri_user,

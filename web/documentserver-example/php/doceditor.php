@@ -57,9 +57,13 @@
             break;
         case 1:
             $uname = "Mark Pottato";
+            $ugroup = "group-2";
+            $reviewGroups = ["group-2", ""];
             break;
         case 2:
             $uname = "Hamish Mitchell";
+            $ugroup = "group-3";
+            $reviewGroups = ["group-2"];
             break;
         case 3:
             $uname = null;
@@ -90,7 +94,8 @@
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
-                "review" => $editorsMode == "edit" || $editorsMode == "review"
+                "review" => $editorsMode == "edit" || $editorsMode == "review",
+                "reviewGroups" => $reviewGroups
             ]
         ],
         "editorConfig" => [
@@ -100,7 +105,8 @@
             "callbackUrl" => getCallbackUrl($filename),
             "user" => [
                 "id" => $uid,
-                "name" => $uname
+                "name" => $uname,
+                "group" => $ugroup
             ],
             "embedded" => [
                 "saveUrl" => $fileuriUser,

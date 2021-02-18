@@ -585,6 +585,19 @@ app.get("/editor", function (req, res) {
         var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
         var actionData = req.query.action ? req.query.action : "null";
 
+        var userGroup = null;
+        var reviewGroups = null;
+        if (userid == "uid-2")
+        {
+            userGroup = "group-2";
+            // own and without group
+            reviewGroups = ["group-2", ""];
+        } else if (userid == "uid-3") {
+            userGroup = "group-3";
+            // other group only
+            reviewGroups = ["group-2"];
+        }
+
         if (fileExt != null) {
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);
 
@@ -695,6 +708,8 @@ app.get("/editor", function (req, res) {
                 lang: lang,
                 userid: userid,
                 name: name,
+                userGroup: userGroup,
+                reviewGroups: JSON.stringify(reviewGroups),
                 fileChoiceUrl: fileChoiceUrl,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData

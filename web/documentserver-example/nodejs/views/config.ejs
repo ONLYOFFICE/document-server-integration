@@ -20,7 +20,8 @@
         "fillForms": <%- editor.fillForms %>,
         "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
-        "review": <%- editor.review %>
+        "review": <%- editor.review %>,
+        "reviewGroups": <%- editor.reviewGroups %>
     }
 },
 "editorConfig": {
@@ -29,6 +30,7 @@
     "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
     "user": {
+        "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",
         "name": "<%- editor.name %>"
     },

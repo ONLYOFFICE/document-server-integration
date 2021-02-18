@@ -63,6 +63,8 @@ public class FileModel
 
         if (uid != null) editorConfig.user.id = uid;
         if (uname != null) editorConfig.user.name = uid.equals("uid-0") ? null : uname;
+        if (editorConfig.user.id.equals("uid-2")) editorConfig.user.group = "group-2";
+        if (editorConfig.user.id.equals("uid-3")) editorConfig.user.group = "group-3";
 
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
@@ -211,6 +213,7 @@ public class FileModel
         public Boolean modifyFilter;
         public Boolean modifyContentControl;
         public Boolean review;
+        public List<String> reviewGroups;
 
         public Permissions(String mode, String type, Boolean canEdit)
         {
@@ -221,6 +224,16 @@ public class FileModel
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
             review = mode.equals("edit") || mode.equals("review");
+            reviewGroups = editorConfig.user.group != null ? GetReviewGroups(editorConfig.user.group) : null;
+        }
+
+        private List<String> GetReviewGroups(String group){
+            Map<String, List<String>> reviewGroups = new HashMap<>();
+
+            reviewGroups.put("group-2", Arrays.asList("group-2", ""));
+            reviewGroups.put("group-3", Arrays.asList("group-2"));
+
+            return reviewGroups.get(group);
         }
     }
 
@@ -262,6 +275,7 @@ public class FileModel
         {
             public String id = "uid-1";
             public String name = "John Smith";
+            public String group = null;
         }
 
         public class Customization
