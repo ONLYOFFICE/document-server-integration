@@ -34,6 +34,7 @@
             <option value="uid-1">John Smith</option>
             <option value="uid-2">Mark Pottato</option>
             <option value="uid-3">Hamish Mitchell</option>
+            <option value="uid-0">anonymous</option>
           </select>
         </td>
         <td width="70%" valign="middle">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
@@ -96,9 +97,9 @@
       </div>
       <div class="create-panel">
           <ul class="try-editor-list clearFix">
-              <li><a class="try-editor document" data-type="docx">Create<br />Document</a></li>
-              <li><a class="try-editor spreadsheet" data-type="xlsx">Create<br />Spreadsheet</a></li>
-              <li><a class="try-editor presentation" data-type="pptx">Create<br />Presentation</a></li>
+              <li><a class="try-editor word" data-type="docx">Create<br />Document</a></li>
+              <li><a class="try-editor cell" data-type="xlsx">Create<br />Spreadsheet</a></li>
+              <li><a class="try-editor slide" data-type="pptx">Create<br />Presentation</a></li>
           </ul>
           <label class="create-sample">
               <input id="createSample" class="checkbox" type="checkbox" />
@@ -136,7 +137,7 @@
                     <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                         <span title="<%= d %>"><%= d %></span>
                     </a>
-                    <a href="<%= DocumentHelper.get_file_uri(d, false) %>">
+                    <a href="<%= "download?filename=#{URI::encode(d)}" %>">
                         <img class="icon-download" src="assets/download-24.png" alt="Download" title="Download" />
                     </a>
                     <a class="delete-file" data-filename="<%= d %>">
@@ -155,11 +156,11 @@
                     </a>
                 </td>
                 <td class="contentCells contentCells-icon">
-                    <% if docType.eql?("text") %>
+                    <% if docType.eql?("word") %>
                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
                             <img src="assets/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
                         </a>
-                    <% elsif docType.eql?("spreadsheet") %>
+                    <% elsif docType.eql?("cell") %>
                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
                             <img src="assets/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                         </a>
@@ -171,14 +172,14 @@
                     </a>
                 </td>
                 <td class="contentCells contentCells-icon">
-                    <% if docType.eql?("text") %>
+                    <% if docType.eql?("word") %>
                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
                             <img src="assets/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                         </a>
                     <% end %>
                 </td>
                 <td class="contentCells contentCells-shift contentCells-icon">
-                    <% if docType.eql?("text") %>
+                    <% if docType.eql?("word") %>
                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                             <img src="assets/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                         </a>

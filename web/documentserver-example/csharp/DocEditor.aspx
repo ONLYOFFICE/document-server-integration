@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="<%= "app_themes/images/" + documentType + ".ico" %>" type="image/x-icon" />
     <title>ONLYOFFICE</title>
     <!--
     *
@@ -162,7 +162,7 @@
         config.events['onRequestHistoryData'] = function (event) {
             var ver = event.data;
             var histData = <%= HistoryData %>;
-            docEditor.setHistoryData(histData[ver]);
+            docEditor.setHistoryData(histData[ver - 1]);
         };
         config.events['onRequestHistoryClose '] = function () {
             document.location.reload();

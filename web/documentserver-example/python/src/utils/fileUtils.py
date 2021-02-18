@@ -43,10 +43,10 @@ def getFileExt(str):
 def getFileType(str):
     ext = getFileExt(str)
     if ext in config.EXT_DOCUMENT:
-        return 'text'
+        return 'word'
     if ext in config.EXT_SPREADSHEET:
-        return 'spreadsheet'
+        return 'cell'
     if ext in config.EXT_PRESENTATION:
-        return 'presentation'
+        return 'slide'
 
-    return 'text'
+    return 'word'

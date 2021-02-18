@@ -102,6 +102,7 @@ GEM
     nokogiri (1.10.10-x64-mingw32)
       mini_portile2 (~> 2.4.0)
     rack (2.2.3)
+    rack-cors (1.1.1)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (6.0.3.3)
@@ -186,6 +187,7 @@ DEPENDENCIES
   coffee-rails (~> 5.0.0)
   jbuilder (~> 2.9.1)
   jquery-rails
+  rack-cors
   rails (= 6.0.3.3)
   sass-rails (~> 6.0)
   sdoc (~> 0.4.0)

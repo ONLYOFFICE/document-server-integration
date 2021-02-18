@@ -128,13 +128,13 @@ label .checkbox {
     text-align: center;
     text-decoration: none;
 }
-.try-editor.document {
+.try-editor.word {
     background-image: url("img/file_docx.png");
 }
-.try-editor.spreadsheet {
+.try-editor.cell {
     background-image: url("img/file_xlsx.png");
 }
-.try-editor.presentation {
+.try-editor.slide {
     background-image: url("img/file_pptx.png");
 }
 
@@ -315,15 +315,15 @@ label .checkbox {
     white-space: nowrap;
 }
 
-    .stored-edit.text {
+    .stored-edit.word {
         background-image: url("img/icon_docx.png");
     }
 
-    .stored-edit.spreadsheet {
+    .stored-edit.cell {
         background-image: url("img/icon_xlsx.png");
     }
 
-    .stored-edit.presentation {
+    .stored-edit.slide {
         background-image: url("img/icon_pptx.png");
     }
 

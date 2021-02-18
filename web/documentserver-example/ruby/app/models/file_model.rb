@@ -67,6 +67,18 @@ class FileModel
     editorsmode = @mode ? @mode : "edit"
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
+    userId = @user_id ? @user_id : "uid-1"
+    user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
+    userGroup = nil
+    reviewGroups = nil
+    if (userId == "uid-2")
+        userGroup = "group-2"
+        reviewGroups = ["group-2", ""]
+    end 
+    if (userId == "uid-3") 
+        userGroup = "group-3"
+        reviewGroups = ["group-2"]
+    end
 
     config = {
       :type => type(),
@@ -77,8 +89,8 @@ class FileModel
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
-          :author => "Me",
-          :created => Time.now.to_s,
+          :owner => "Me",
+          :uploaded => Time.now.to_s,
           :favorite => @user_id ? @user_id.eql?("uid-2") : nil
         },
         :permissions => {
@@ -88,7 +100,8 @@ class FileModel
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
-          :review => editorsmode.eql?("edit") || editorsmode.eql?("review")
+          :review => editorsmode.eql?("edit") || editorsmode.eql?("review"),
+          :reviewGroups => reviewGroups
         }
       },
       :editorConfig => {
@@ -97,8 +110,9 @@ class FileModel
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,
         :user => {
-          :id => @user_id ? @user_id : "uid-0",
-          :name => @user_name ? @user_name : "John Smith"
+          :id => userId,
+          :name => user_name,
+          :group => userGroup
         },
         :embedded => {
           :saveUrl => file_uri_user,
@@ -106,6 +120,9 @@ class FileModel
           :shareUrl => file_uri_user,
           :toolbarDocked => "top"
         },
+        :customization => {
+          :forcesave => false
+        }
       }
     }
 
@@ -129,10 +146,10 @@ class FileModel
       hist = []
       histData = {}
 
-      for i in 0..cur_ver
+      for i in 1..cur_ver
         obj = {}
         dataObj = {}
-        ver_dir = DocumentHelper.version_dir(hist_dir, i + 1)
+        ver_dir = DocumentHelper.version_dir(hist_dir, i)
 
         cur_key = doc_key
         if (i != cur_ver)
@@ -143,15 +160,17 @@ class FileModel
         obj["key"] = cur_key
         obj["version"] = i
 
-        if (i == 0)
-          File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
-            cr_info = JSON.parse(file.read())
+        if (i == 1)
+          if File.file?(File.join(hist_dir, "createdInfo.json"))
+            File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
+              cr_info = JSON.parse(file.read())
 
-            obj["created"] = cr_info["created"]
-            obj["user"] = {
-              :id => cr_info["created"],
-              :name => cr_info["name"]
-            }
+              obj["created"] = cr_info["created"]
+              obj["user"] = {
+                :id => cr_info["created"],
+                :name => cr_info["name"]
+              }
+            end
           end
         end
 
@@ -159,9 +178,9 @@ class FileModel
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
         dataObj["version"] = i
 
-        if (i > 0)
+        if (i > 1)
           changes = nil
-          File.open(File.join(DocumentHelper.version_dir(hist_dir, i), "changes.json"), 'r') do |file|
+          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|
             changes = JSON.parse(file.read())
           end
 
@@ -172,17 +191,21 @@ class FileModel
           obj["created"] = change["created"]
           obj["user"] = change["user"]
 
-          prev = histData[(i-1).to_s]
+          prev = histData[(i - 2).to_s]
           dataObj["previous"] = {
             :key => prev["key"],
             :url => prev["url"]
           }
 
-          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "diff.zip"))
+          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+        end
+
+        if JwtHelper.is_enabled
+          dataObj["token"] = JwtHelper.encode(dataObj)
         end
 
         hist.push(obj)
-        histData[i.to_s] = dataObj
+        histData[(i - 1).to_s] = dataObj
       end
 
       return {
@@ -214,7 +237,7 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",
-      :url => DocumentHelper.get_server_url(true) + "/samples/sample.docx"
+      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"
     }
 
     if JwtHelper.is_enabled

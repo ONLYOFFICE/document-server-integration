@@ -168,7 +168,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         $opts['ssl'] = array( 'verify_peer'   => FALSE );
     }
  
-    $context  = stream_context_create($opts);
+    $context = stream_context_create($opts);
     $response_data = file_get_contents($urlToConverter, FALSE, $context);
 
     return $response_data;

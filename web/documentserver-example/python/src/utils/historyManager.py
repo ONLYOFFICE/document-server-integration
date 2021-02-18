@@ -33,6 +33,7 @@ from . import users, fileUtils
 from datetime import datetime
 from src import settings
 from src.utils import docManager
+from src.utils import jwtManager
     
 def getHistoryDir(storagePath):
     return f'{storagePath}-hist'
@@ -44,7 +45,7 @@ def getFileVersion(histDir):
     if not os.path.exists(histDir):
         return 0
 
-    cnt = 0
+    cnt = 1
 
     for f in os.listdir(histDir):
         if not os.path.isfile(os.path.join(histDir, f)):
@@ -54,7 +55,7 @@ def getFileVersion(histDir):
 
 def getNextVersionDir(histDir):
     v = getFileVersion(histDir)
-    path = getVersionDir(histDir, v + 1)
+    path = getVersionDir(histDir, v)
 
     if not os.path.exists(path):
         os.makedirs(path)
@@ -85,7 +86,7 @@ def createMeta(storagePath, req):
     user = users.getUserFromReq(req)
 
     obj = {
-        'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S'),
+        'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
         'uid': user['uid'],
         'uname': user['uname']
     }
@@ -129,12 +130,12 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
     if version > 0:
         hist = []
         histData = {}
-
-        for i in range(version + 1):
+        
+        for i in range(1, version + 1):
             obj = {}
             dataObj = {}
-            prevVerDir = getVersionDir(histDir, i)
-            verDir = getVersionDir(histDir, i + 1)
+            prevVerDir = getVersionDir(histDir, i - 1)
+            verDir = getVersionDir(histDir, i)
 
             try:
                 key = docKey if i == version else readFile(getKeyPath(verDir))
@@ -144,7 +145,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                 dataObj['key'] = key
                 dataObj['version'] = i
 
-                if i == 0:
+                if i == 1:
                     meta = getMeta(storagePath)
                     if meta:
                         obj['created'] = meta['created']
@@ -153,9 +154,9 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                             'name': meta['uname']
                         }
                     
-                dataObj['url'] = docUrl if i == version else getPrevUri(filename, i + 1, fileUtils.getFileExt(filename), req)
+                dataObj['url'] = docUrl if i == version else getPrevUri(filename, i, fileUtils.getFileExt(filename), req)
 
-                if i > 0:
+                if i > 1:
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))
                     change = changes['changes'][0]
                     
@@ -164,16 +165,19 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                     obj['created'] = change['created']
                     obj['user'] = change['user']
 
-                    prev = histData[str(i - 1)]
+                    prev = histData[str(i - 2)]
                     prevInfo = {
                         'key': prev['key'],
                         'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo
-                    dataObj['changesUrl'] = getZipUri(filename, i, req)
+                    dataObj['changesUrl'] = getZipUri(filename, i - 1, req)
+
+                if jwtManager.isEnabled():
+                    dataObj['token'] = jwtManager.encode(dataObj) 
 
                 hist.append(obj)
-                histData[str(i)] = dataObj
+                histData[str(i - 1)] = dataObj
             except Exception:
                 return {}
         

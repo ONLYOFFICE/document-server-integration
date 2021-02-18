@@ -18,19 +18,16 @@
 
 package controllers;
 
-import helpers.ConfigManager;
-import helpers.CookieManager;
-import helpers.DocumentManager;
-import helpers.ServiceConverter;
+import com.google.gson.Gson;
+import helpers.*;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import entities.FileType;
-import helpers.FileUtility;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -49,8 +46,6 @@ import org.primeframework.jwt.domain.JWT;
 @MultipartConfig
 public class IndexServlet extends HttpServlet
 {
-    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String action = request.getParameter("type");
@@ -69,6 +64,8 @@ public class IndexServlet extends HttpServlet
             case "upload":
                 Upload(request, response, writer);
                 break;
+            case "download":
+                Download(request, response, writer);
             case "convert":
                 Convert(request, response, writer);
                 break;
@@ -78,11 +75,14 @@ public class IndexServlet extends HttpServlet
             case "remove":
                 Remove(request, response, writer);
                 break;
-            case "download":
-                Download(request, response, writer);
+            case "assets":
+                Assets(request, response, writer);
                 break;
             case "csv":
                 CSV(request, response, writer);
+                break;
+            case "files":
+                Files(request, response, writer);
                 break;
         }
     }
@@ -156,7 +156,7 @@ public class IndexServlet extends HttpServlet
 
         try
         {
-            String fileName = request.getParameter("filename");
+            String fileName = FileUtility.GetFileName(request.getParameter("filename"));
             String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
@@ -221,132 +221,53 @@ public class IndexServlet extends HttpServlet
 
     private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String userAddress = request.getParameter("userAddress");
-        String fileName = request.getParameter("fileName");
+        JSONObject body = null;
 
-        String storagePath = DocumentManager.StoragePath(fileName, userAddress);
-        String body = "";
-
-        try
-        {
-            Scanner scanner = new Scanner(request.getInputStream());
-            scanner.useDelimiter("\\A");
-            body = scanner.hasNext() ? scanner.next() : "";
-            scanner.close();
-        }
-        catch (Exception ex)
-        {
-            writer.write("get request.getInputStream error:" + ex.getMessage());
+        try {
+            body = TrackManager.readBody(request, writer);
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
 
-        if (body.isEmpty())
-        {
-            writer.write("empty request.getInputStream");
-            return;
-        }
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObj;
-
-        try
-        {
-            Object obj = parser.parse(body);
-            jsonObj = (JSONObject) obj;
-        }
-        catch (Exception ex)
-        {
-            writer.write("JSONParser.parse error:" + ex.getMessage());
-            return;
-        }
-
-        int status;
-        String downloadUri;
-        String changesUri;
-        String key;
-
-        if (DocumentManager.TokenEnabled())
-        {
-            String token = (String) jsonObj.get("token");
-
-            if (token == null) {
-                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
-                if (header != null && !header.isEmpty()) {
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;
-                }
-            }
-
-            if (token == null || token.isEmpty()) {
-                writer.write("{\"error\":1,\"message\":\"JWT expected\"}");
-                return;
-            }
-
-            JWT jwt = DocumentManager.ReadToken(token);
-            if (jwt == null)
-            {
-                writer.write("{\"error\":1,\"message\":\"JWT validation failed\"}");
-                return;
-            }
-
-            if (jwt.getObject("payload") != null) {
-                try {
-                    @SuppressWarnings("unchecked") LinkedHashMap<String, Object> payload =
-                        (LinkedHashMap<String, Object>)jwt.getObject("payload");
-
-                    jwt.claims = payload;
-                }
-                catch (Exception ex) {
-                    writer.write("{\"error\":1,\"message\":\"Wrong payload\"}");
-                    return;
-                }
-            }
-
-            status = jwt.getInteger("status");
-            downloadUri = jwt.getString("url");
-            changesUri = jwt.getString("changesurl");
-            key = jwt.getString("key");
-        }
-        else
-        {
-            status = Math.toIntExact((long) jsonObj.get("status"));
-            downloadUri = (String) jsonObj.get("url");
-            changesUri = (String) jsonObj.get("changesurl");
-            key = (String) jsonObj.get("key");
-        }
-
+        int status = Math.toIntExact((long) body.get("status"));
         int saved = 0;
-        if (status == 2 || status == 3)//MustSave, Corrupted
-        {
-            try
-            {
-                String histDir = DocumentManager.HistoryDir(storagePath);
-                String versionDir = DocumentManager.VersionDir(histDir, DocumentManager.GetFileVersion(histDir) + 1);
-                File ver = new File(versionDir);
-                File toSave = new File(storagePath);
 
-                if (!ver.exists()) ver.mkdirs();
-
-                toSave.renameTo(new File(versionDir + File.separator + "prev" + FileUtility.GetFileExtension(fileName)));
-
-                downloadToFile(downloadUri, toSave);
-                downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));
-
-                String history = (String) jsonObj.get("changeshistory");
-                if (history == null && jsonObj.containsKey("history")) {
-                    history = ((JSONObject) jsonObj.get("history")).toJSONString();
+        if (status == 1) { //Editing
+            JSONArray actions = (JSONArray) body.get("actions");
+            JSONArray users = (JSONArray) body.get("users");
+            JSONObject action = (JSONObject) actions.get(0);
+            if (actions != null && action.get("type").toString().equals("0")) { //finished edit
+                String user = (String) action.get("userid");
+                if (users.indexOf(user) == -1) {
+                    String key = (String) body.get("key");
+                    try {
+                        TrackManager.commandRequest("forcesave", key);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                if (history != null && !history.isEmpty()) {
-                    FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));
-                    fw.write(history);
-                    fw.close();
-                }
-
-                FileWriter fw = new FileWriter(new File(versionDir + File.separator + "key.txt"));
-                fw.write(key);
-                fw.close();
             }
-            catch (Exception ex)
-            {
+        }
+
+        String userAddress = request.getParameter("userAddress");
+        String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
+
+        if (status == 2 || status == 3) { //MustSave, Corrupted
+            try {
+                TrackManager.processSave(body, fileName, userAddress);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                saved = 1;
+            }
+
+        }
+
+        if (status == 6 || status == 7) { //MustForceSave, CorruptedForceSave
+            try {
+                TrackManager.processForceSave(body, fileName, userAddress);
+            } catch (Exception ex) {
+                ex.printStackTrace();
                 saved = 1;
             }
         }
@@ -358,7 +279,7 @@ public class IndexServlet extends HttpServlet
     {
         try
         {
-            String fileName = request.getParameter("filename");
+            String fileName = FileUtility.GetFileName(request.getParameter("filename"));
             String path = DocumentManager.StoragePath(fileName, null);
 
             File f = new File(path);
@@ -375,16 +296,71 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        ArrayList<Map<String, Object>> files = null;
+
+        try {
+            Gson gson = new Gson();
+            response.setContentType("application/json");
+
+            if (request.getParameter("fileId") == null) {
+                files = DocumentManager.GetFilesInfo();
+                writer.write(gson.toJson(files));
+            }else {
+                String fileId = request.getParameter("fileId");
+                files = DocumentManager.GetFilesInfo(fileId);
+                if(files.isEmpty()) {
+                    writer.write("\"File not found\"");
+                }else {
+                    writer.write(gson.toJson(files));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
+
     private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = "csv.csv";
-        download(fileName, response, writer);
+        String fileName = "assets/sample/csv.csv";
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        download(filePath.toString(), response, writer);
+    }
+
+    private static void Assets(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        Path filePath = null;
+        try {
+            filePath = Paths.get(fileUrl.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        download(filePath.toString(), response, writer);
     }
 
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
-        String fileName = request.getParameter("name");
-        download(fileName, response, writer);
+        try {
+            String fileName = FileUtility.GetFileName(request.getParameter("name"));
+            String filePath = DocumentManager.ForcesavePath(fileName, null, false);
+            if (filePath.equals("")) {
+                filePath = DocumentManager.StoragePath(fileName, null);
+            }
+            download(filePath, response, writer);
+        } catch (Exception e) {
+            writer.write("{ \"error\": \"File not found\"}");
+        }
     }
 
     private static void delete(File f) throws Exception {
@@ -396,18 +372,15 @@ public class IndexServlet extends HttpServlet
             throw new Exception("Failed to delete file: " + f);
     }
 
-    private static void download(String fileName, HttpServletResponse response, PrintWriter writer) {
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        Path filePath = null;
+    private static void download(String filePath, HttpServletResponse response, PrintWriter writer) {
         String fileType = null;
         try {
-            filePath = Paths.get(fileUrl.toURI());
-            fileType = Files.probeContentType(filePath);
-        } catch (URISyntaxException | IOException e) {
+            fileType = Files.probeContentType(Paths.get(filePath));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        File file = new File(String.valueOf(filePath));
+        File file = new File(filePath);
 
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Type", fileType);
@@ -429,34 +402,6 @@ public class IndexServlet extends HttpServlet
                 e.printStackTrace();
             }
         }
-    }
-
-    private static void downloadToFile(String url, File file) throws Exception {
-        if (url == null || url.isEmpty()) throw new Exception("argument url");
-        if (file == null) throw new Exception("argument path");
-
-        URL uri = new URL(url);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        InputStream stream = connection.getInputStream();
-
-        if (stream == null)
-        {
-            throw new Exception("Stream is null");
-        }
-
-        try (FileOutputStream out = new FileOutputStream(file))
-        {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);
-            }
-
-            out.flush();
-        }
-
-        connection.disconnect();
     }
 
     @Override

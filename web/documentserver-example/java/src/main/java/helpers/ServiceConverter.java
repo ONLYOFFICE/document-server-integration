@@ -223,7 +223,7 @@ public class ServiceConverter
         return resultPercent >= 100l ? responseUri : "";
     }
 
-    private static String ConvertStreamToString(InputStream stream) throws IOException
+    public static String ConvertStreamToString(InputStream stream) throws IOException
     {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);
         StringBuilder stringBuilder = new StringBuilder();
@@ -241,7 +241,7 @@ public class ServiceConverter
         return result;
     }
 
-    private static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
+    public static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
     {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);

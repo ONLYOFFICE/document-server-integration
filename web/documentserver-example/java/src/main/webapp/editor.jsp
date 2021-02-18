@@ -1,6 +1,8 @@
 <%@page import="entities.FileModel"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<% FileModel Model = (FileModel) request.getAttribute("file"); %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,10 +28,8 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
-
-        <% FileModel Model = (FileModel) request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
 
@@ -137,7 +137,7 @@
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <%= historyData %>;
-                docEditor.setHistoryData(histData[ver]);
+                docEditor.setHistoryData(histData[ver - 1]);
             };
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();

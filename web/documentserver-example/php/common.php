@@ -166,10 +166,10 @@ function getInternalExtension($filename) {
 function getDocumentType($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "text";
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "spreadsheet";
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "presentation";
-    return "";
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "word";
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "cell";
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "slide";
+    return "word";
 }
 
 function getScheme() {
@@ -194,8 +194,25 @@ function getStoragePath($fileName, $userAddress = NULL) {
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     } 
-    sendlog("getStoragePath result: " . $directory . $fileName, "common.log");
-    return $directory . $fileName;
+    sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
+    return $directory . basename($fileName);
+}
+
+function getForcesavePath($fileName, $userAddress, $create) {
+    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+
+    if (!is_dir($directory)) return "";
+
+    $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
+    if (!$create && !is_dir($directory))  return "";
+
+    mkdir($directory);
+
+    $directory = $directory . $fileName;
+    if (!$create && !file_exists($directory)) return "";
+
+    return $directory;
 }
 
 function getHistoryDir($storagePath) {
@@ -214,7 +231,7 @@ function getFileVersion($histDir) {
     if (!file_exists($histDir) || !is_dir($histDir)) return 0;
 
     $cdir = scandir($histDir);
-    $ver = 0;
+    $ver = 1;
     foreach($cdir as $key => $fileName) {
         if (!in_array($fileName,array(".", ".."))) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
@@ -288,6 +305,9 @@ function createMeta($fileName, $uid = "0") {
         case 2:
             $name = "Hamish Mitchell";
             break;
+        case 3:
+            $name = null;
+            break;
     }
 
     $json = [
@@ -302,6 +322,36 @@ function createMeta($fileName, $uid = "0") {
 function FileUri($file_name, $forDocumentServer = NULL) {
     $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);
     return $uri;
+}
+
+function getFileInfo($fileId){
+    $storedFiles = getStoredFiles();
+    $result = array();
+    $resultID = array();
+
+    foreach ($storedFiles as $key => $value){
+        $result[$key] = (object) array(
+            "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
+            "id" => getDocEditorKey($value->name),
+            "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
+            "pureContentLength" => filesize(getStoragePath($value->name)),
+            "title" => $value->name,
+            "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
+        );
+        if ($fileId != null){
+            if ($fileId == getDocEditorKey($value->name)){
+                $resultID[count($resultID)] = $result[$key];
+            }
+        }
+    }
+
+    if ($fileId != null){
+        if (count($resultID) != 0) return $resultID;
+        else return "File not found";
+    }
+    else {
+        return $result;
+    }
 }
 
 function getFileExts() {

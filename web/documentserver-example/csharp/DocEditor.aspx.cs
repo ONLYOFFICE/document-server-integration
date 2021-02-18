@@ -63,6 +63,7 @@ namespace OnlineEditorsExample
         protected string InsertImageConfig { get; private set; }
         protected string compareFileData { get; private set; }
         protected string dataMailMergeRecipients { get; private set; }
+        protected string documentType { get { return _Default.DocumentType(FileName); } }
 
         public static string CallbackUrl
         {
@@ -89,7 +90,7 @@ namespace OnlineEditorsExample
             }
             else
             {
-                FileName = Request["fileID"];
+                FileName = Path.GetFileName(Request["fileID"]);
             }
 
             var type = Request["type"];
@@ -106,6 +107,21 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
+            var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
+            string userGroup = null;
+            List<string> reviewGroups = null;
+            if (userId.Equals("uid-2"))
+            {
+                userGroup = "group-2";
+                reviewGroups = new List<string>() { "group-2", "" };
+            }
+            if (userId.Equals("uid-3"))
+            {
+                userGroup = "group-3";
+                reviewGroups = new List<string>() { "group-2" };
+            }
+
             var jss = new JavaScriptSerializer();
 
             object favorite = null;
@@ -120,7 +136,7 @@ namespace OnlineEditorsExample
             var config = new Dictionary<string, object>
                 {
                     { "type", Request.GetOrDefault("editorsType", "desktop") },
-                    { "documentType", _Default.DocumentType(FileName) },
+                    { "documentType", documentType },
                     {
                         "document", new Dictionary<string, object>
                             {
@@ -131,8 +147,8 @@ namespace OnlineEditorsExample
                                 {
                                     "info", new Dictionary<string, object>
                                         {
-                                            { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "owner", "Me" },
+                                            { "uploaded", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite }
                                         }
                                 },
@@ -145,7 +161,8 @@ namespace OnlineEditorsExample
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
-                                            { "review", editorsMode == "edit" || editorsMode == "review" }
+                                            { "review", editorsMode == "edit" || editorsMode == "review" },
+                                            { "reviewGroups", reviewGroups }
                                         }
                                 }
                             }
@@ -160,8 +177,9 @@ namespace OnlineEditorsExample
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", Request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", Request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", userId },
+                                            { "name",  uname },
+                                            { "group", userGroup }
                                         }
                                 },
                                 {
@@ -178,6 +196,7 @@ namespace OnlineEditorsExample
                                         {
                                             { "about", true },
                                             { "feedback", true },
+                                            { "forcesave", false },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
@@ -237,18 +256,18 @@ namespace OnlineEditorsExample
                 var hist = new List<Dictionary<string, object>>();
                 var histData = new Dictionary<string, object>();
 
-                for (var i = 0; i <= currentVersion; i++)
+                for (var i = 1; i <= currentVersion; i++)
                 {
                     var obj = new Dictionary<string, object>();
                     var dataObj = new Dictionary<string, object>();
-                    var verDir = _Default.VersionDir(histDir, i + 1);
+                    var verDir = _Default.VersionDir(histDir, i);
 
                     var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
 
                     obj.Add("key", key);
                     obj.Add("version", i);
 
-                    if (i == 0)
+                    if (i == 1)
                     {
                         var infoPath = Path.Combine(histDir, "createdInfo.json");
 
@@ -265,9 +284,9 @@ namespace OnlineEditorsExample
                     dataObj.Add("key", key);
                     dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));
                     dataObj.Add("version", i);
-                    if (i > 0)
+                    if (i > 1)
                     {
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i), "changes.json")));
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
                         var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
 
                         obj.Add("changes", changes["changes"]);
@@ -275,16 +294,20 @@ namespace OnlineEditorsExample
                         obj.Add("created", change["created"]);
                         obj.Add("user", change["user"]);
 
-                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];
                         dataObj.Add("previous", new Dictionary<string, object>() {
                             { "key", prev["key"] },
                             { "url", prev["url"] },
                         });
-                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i), "diff.zip")));
+                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
                     }
-
+                    if (JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);
-                    histData.Add(i.ToString(), dataObj);
+                    histData.Add((i - 1).ToString(), dataObj);
                 }
 
                 history = new Dictionary<string, object>()
@@ -324,7 +347,7 @@ namespace OnlineEditorsExample
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
-            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+            compareFileUrl.Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx");
 
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
@@ -376,28 +399,30 @@ namespace OnlineEditorsExample
             string ext;
             switch (type)
             {
-                case "document":
+                case "word":
                     ext = ".docx";
                     break;
-                case "spreadsheet":
+                case "cell":
                     ext = ".xlsx";
                     break;
-                case "presentation":
+                case "slide":
                     ext = ".pptx";
                     break;
                 default:
                     return;
             }
-            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "demo") + ext;
+            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;
+            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");
+
             FileName = _Default.GetCorrectName(demoName);
 
             var filePath = _Default.StoragePath(FileName, null);
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, filePath);
+            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);
 
             var histDir = _Default.HistoryDir(filePath);
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString() },
+                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
                 { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
             }));

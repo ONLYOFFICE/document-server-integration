@@ -29,7 +29,7 @@
     * limitations under the License.
     *
     -->
-   <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="<%= "content/images/" + Model.DocumentType + ".ico" %>" type="image/x-icon" />
     <title><%= Model.FileName + " - ONLYOFFICE" %></title>
     
     <%: Styles.Render("~/Content/editor") %>
@@ -152,7 +152,7 @@
         config.events['onRequestHistoryData'] = function (event) {
             var ver = event.data;
             var histData = <%= histData %>;
-            docEditor.setHistoryData(histData[ver]);
+            docEditor.setHistoryData(histData[ver - 1]);
         };
         config.events['onRequestHistoryClose '] = function () {
             document.location.reload();

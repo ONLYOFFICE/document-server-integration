@@ -69,6 +69,21 @@ namespace OnlineEditorsExampleMVC.Models
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var userId = request.Cookies.GetOrDefault("uid", "uid-1");
+            var uname = userId.Equals("uid-0") ? null : request.Cookies.GetOrDefault("uname", "John Smith");
+            string userGroup = null;
+            List<string> reviewGroups = null;
+            if (userId.Equals("uid-2"))
+            {
+                userGroup = "group-2";
+                reviewGroups = new List<string>() { "group-2", "" };
+            }
+            if (userId.Equals("uid-3"))
+            {
+                userGroup = "group-3";
+                reviewGroups = new List<string>() { "group-2" };
+            }
+
             object favorite = null;
             if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
             {
@@ -92,8 +107,8 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "info", new Dictionary<string, object>
                                         {
-                                            { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "owner", "Me" },
+                                            { "uploaded", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite}
                                         }
                                 },
@@ -106,7 +121,8 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
-                                            { "review", editorsMode == "edit" || editorsMode == "review" }
+                                            { "review", editorsMode == "edit" || editorsMode == "review" },
+                                            { "reviewGroups", reviewGroups }
                                         }
                                 }
                             }
@@ -121,8 +137,9 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", userId },
+                                            { "name", uname },
+                                            { "group", userGroup }
                                         }
                                 },
                                 {
@@ -139,6 +156,7 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "about", true },
                                             { "feedback", true },
+                                            { "forcesave", false },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
@@ -174,18 +192,18 @@ namespace OnlineEditorsExampleMVC.Models
                 var hist = new List<Dictionary<string, object>>();
                 var histData = new Dictionary<string, object>();
 
-                for (var i = 0; i <= currentVersion; i++)
+                for (var i = 1; i <= currentVersion; i++)
                 {
                     var obj = new Dictionary<string, object>();
                     var dataObj = new Dictionary<string, object>();
-                    var verDir = DocManagerHelper.VersionDir(histDir, i + 1);
+                    var verDir = DocManagerHelper.VersionDir(histDir, i);
 
                     var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));
 
                     obj.Add("key", key);
                     obj.Add("version", i);
 
-                    if (i == 0)
+                    if (i == 1)
                     {
                         var infoPath = Path.Combine(histDir, "createdInfo.json");
 
@@ -203,9 +221,9 @@ namespace OnlineEditorsExampleMVC.Models
                     dataObj.Add("key", key);
                     dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
                     dataObj.Add("version", i);
-                    if (i > 0)
+                    if (i > 1)
                     {
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "changes.json")));
+                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
                         var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
 
                         obj.Add("changes", changes["changes"]);
@@ -213,16 +231,20 @@ namespace OnlineEditorsExampleMVC.Models
                         obj.Add("created", change["created"]);
                         obj.Add("user", change["user"]);
 
-                        var prev = (Dictionary<string, object>)histData[(i - 1).ToString()];
+                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];
                         dataObj.Add("previous", new Dictionary<string, object>() {
                             { "key", prev["key"] },
                             { "url", prev["url"] },
                         });
-                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
+                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
                     }
-
+                    if(JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);
-                    histData.Add(i.ToString(), dataObj);
+                    histData.Add((i - 1).ToString(), dataObj);
                 }
 
                 history = jss.Serialize(new Dictionary<string, object>()
@@ -243,7 +265,7 @@ namespace OnlineEditorsExampleMVC.Models
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
-                Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx")
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
             var dataCompareFile = new Dictionary<string, object>

@@ -38,6 +38,10 @@ USERS = [
     {
         'uid': 'uid-3',
         'uname': 'Hamish Mitchell'
+    },
+    {
+        'uid': 'uid-0',
+        'uname': 'anonymous'
     }
 ]
 
