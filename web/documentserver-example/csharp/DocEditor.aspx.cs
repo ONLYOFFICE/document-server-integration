@@ -63,6 +63,7 @@ namespace OnlineEditorsExample
         protected string InsertImageConfig { get; private set; }
         protected string compareFileData { get; private set; }
         protected string dataMailMergeRecipients { get; private set; }
+        protected string documentType { get { return _Default.DocumentType(FileName); } }
 
         public static string CallbackUrl
         {
@@ -89,7 +90,7 @@ namespace OnlineEditorsExample
             }
             else
             {
-                FileName = Request["fileID"];
+                FileName = Path.GetFileName(Request["fileID"]);
             }
 
             var type = Request["type"];
@@ -107,7 +108,7 @@ namespace OnlineEditorsExample
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
             var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
-
+            var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
             string userGroup = null;
             List<string> reviewGroups = null;
             if (userId.Equals("uid-2"))
@@ -135,7 +136,7 @@ namespace OnlineEditorsExample
             var config = new Dictionary<string, object>
                 {
                     { "type", Request.GetOrDefault("editorsType", "desktop") },
-                    { "documentType", _Default.DocumentType(FileName) },
+                    { "documentType", documentType },
                     {
                         "document", new Dictionary<string, object>
                             {
@@ -146,8 +147,8 @@ namespace OnlineEditorsExample
                                 {
                                     "info", new Dictionary<string, object>
                                         {
-                                            { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "owner", "Me" },
+                                            { "uploaded", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite }
                                         }
                                 },
@@ -177,7 +178,7 @@ namespace OnlineEditorsExample
                                     "user", new Dictionary<string, object>
                                         {
                                             { "id", userId },
-                                            { "name", Request.Cookies.GetOrDefault("uname", "John Smith") },
+                                            { "name",  uname },
                                             { "group", userGroup }
                                         }
                                 },
@@ -195,6 +196,7 @@ namespace OnlineEditorsExample
                                         {
                                             { "about", true },
                                             { "feedback", true },
+                                            { "forcesave", false },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
@@ -345,7 +347,7 @@ namespace OnlineEditorsExample
             compareFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
-            compareFileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode("demo.docx");
+            compareFileUrl.Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx");
 
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
@@ -397,23 +399,25 @@ namespace OnlineEditorsExample
             string ext;
             switch (type)
             {
-                case "document":
+                case "word":
                     ext = ".docx";
                     break;
-                case "spreadsheet":
+                case "cell":
                     ext = ".xlsx";
                     break;
-                case "presentation":
+                case "slide":
                     ext = ".pptx";
                     break;
                 default:
                     return;
             }
-            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "demo") + ext;
+            var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;
+            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");
+
             FileName = _Default.GetCorrectName(demoName);
 
             var filePath = _Default.StoragePath(FileName, null);
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data/" + demoName, filePath);
+            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);
 
             var histDir = _Default.HistoryDir(filePath);
             Directory.CreateDirectory(histDir);

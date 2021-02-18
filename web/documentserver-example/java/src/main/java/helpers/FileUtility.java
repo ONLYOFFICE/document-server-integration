@@ -34,15 +34,15 @@ public class FileUtility
         String ext = GetFileExtension(fileName).toLowerCase();
 
         if (ExtsDocument.contains(ext))
-            return FileType.Text;
+            return FileType.Word;
 
         if (ExtsSpreadsheet.contains(ext))
-            return FileType.Spreadsheet;
+            return FileType.Cell;
 
         if (ExtsPresentation.contains(ext))
-            return FileType.Presentation;
+            return FileType.Slide;
 
-        return FileType.Text;
+        return FileType.Word;
     }
 
     public static List<String> ExtsDocument = Arrays.asList
@@ -72,17 +72,10 @@ public class FileUtility
 
     public static String GetFileName(String url)
     {
-        if (url == null) return null;
-
-        //for external file url
-        String tempstorage = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.tempstorage");
-        if (!tempstorage.isEmpty() && url.startsWith(tempstorage))
-        {
-            Map<String, String> params = GetUrlParams(url);
-            return params == null ? null : params.get("filename");
-        }
+        if (url == null) return "";
 
         String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
+        fileName = fileName.split("\\?")[0];
         return fileName;
     }
 

@@ -72,7 +72,40 @@ namespace OnlineEditorsExampleMVC.Helpers
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + fileName;
+            return directory + Path.GetFileName(fileName);
+        }
+
+        public static string ForcesavePath(string fileName, string userAddress, Boolean create)
+        {
+            var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
+            if (!Directory.Exists(directory))
+            {
+                return "";
+            }
+
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\";
+            if (!Directory.Exists(directory))
+            {
+                if (create)
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            directory = directory + Path.GetFileName(fileName);
+            if (!File.Exists(directory))
+            {
+                if (!create)
+                {
+                    return "";
+                }
+            }
+
+            return directory;
         }
 
         public static string HistoryDir(string storagePath)
@@ -114,24 +147,26 @@ namespace OnlineEditorsExampleMVC.Helpers
             return name;
         }
 
-        public static List<string> GetStoredFiles()
+        public static List<FileInfo> GetStoredFiles()
         {
             var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
-            if (!Directory.Exists(directory)) return new List<string>();
+            if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
 
-            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Select(fileInfo => fileInfo.Name).ToList();
+            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+
             return storedFiles;
         }
 
         public static string CreateDemo(string fileExt, bool withContent)
         {
             var demoName = (withContent ? "sample." : "new.") + fileExt;
+            var demoPath = "assets\\" + (withContent ? "sample\\" : "new\\");
 
             var fileName = GetCorrectName(demoName);
 
-            File.Copy(HttpRuntime.AppDomainAppPath + "app_data\\" + demoName, StoragePath(fileName));
+            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName)); 
 
             return fileName;
         }
@@ -208,15 +243,46 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             switch (fileType)
             {
-                case FileUtility.FileType.Text:
+                case FileUtility.FileType.Word:
                     return ".docx";
-                case FileUtility.FileType.Spreadsheet:
+                case FileUtility.FileType.Cell:
                     return ".xlsx";
-                case FileUtility.FileType.Presentation:
+                case FileUtility.FileType.Slide:
                     return ".pptx";
                 default:
                     return ".docx";
             }
+        }
+
+        public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
+        {
+            var files = new List<Dictionary<string, object>>();
+
+            foreach (var file in GetStoredFiles())
+            {
+                var dictionary = new Dictionary<string, object>();
+                dictionary.Add("version", GetFileVersion(file.Name, null));
+                dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file.Name + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(file.Name, null)).GetHashCode()));
+                dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
+                dictionary.Add("pureContentLength", file.Length);
+                dictionary.Add("title", file.Name);
+                dictionary.Add("updated", file.LastWriteTime.ToString());
+
+                if (fileId != null) 
+                {
+                    if (fileId.Equals(dictionary["id"]))
+                    {
+                        files.Add(dictionary);
+                        break;
+                    }
+                }
+                else
+                {
+                    files.Add(dictionary);
+                }
+            }
+
+            return files;
         }
     }
 }

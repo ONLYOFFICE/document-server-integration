@@ -40,6 +40,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.urlConverter="ConvertService.ashx"
     Rails.configuration.urlApi="web-apps/apps/api/documents/api.js"
     Rails.configuration.urlPreloader="web-apps/apps/api/documents/cache-scripts.html"
+    Rails.configuration.commandUrl="coauthoring/CommandService.ashx"
+
     Rails.configuration.urlExample=""
 
     Rails.configuration.jwtSecret = ""

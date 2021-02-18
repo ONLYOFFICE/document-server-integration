@@ -32,12 +32,14 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('', index.default),
     path('upload', actions.upload),
+    path('download', actions.download),
     path('convert', actions.convert),
     path('create', actions.createNew),
     path('edit', actions.edit),
     path('track', actions.track),
     path('remove', actions.remove),
-    path('csv', actions.csv)
+    path('csv', actions.csv),
+    path('files', actions.files)
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -1,6 +1,8 @@
 <%@page import="entities.FileModel"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<% FileModel Model = (FileModel) request.getAttribute("file"); %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,10 +28,8 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
-
-        <% FileModel Model = (FileModel) request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
 

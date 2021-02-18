@@ -28,18 +28,18 @@ class FileUtility
         ext = File.extname(file_name)
 
         if @@exts_document.include? ext
-          return 'text'
+          return 'word'
         end
 
         if @@exts_spreadsheet.include? ext
-          return 'spreadsheet'
+          return 'cell'
         end
 
         if @@exts_presentation.include? ext
-          return 'presentation'
+          return 'slide'
         end
 
-        'text'
+        'word'
     end
 
   end

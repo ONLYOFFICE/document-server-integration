@@ -91,17 +91,17 @@
                 <div class="create-panel clearFix">
                     <ul class="try-editor-list clearFix">
                         <li>
-                            <a class="try-editor document reload-page" target="_blank" data-type="text">Create
+                            <a class="try-editor word reload-page" target="_blank" data-type="word">Create
                                 <br />
                                 Document</a>
                         </li>
                         <li>
-                            <a class="try-editor spreadsheet reload-page" target="_blank" data-type="spreadsheet">Create
+                            <a class="try-editor cell reload-page" target="_blank" data-type="cell">Create
                                 <br />
                                 Spreadsheet</a>
                         </li>
                         <li>
-                            <a class="try-editor presentation reload-page" target="_blank" data-type="presentation">Create
+                            <a class="try-editor slide reload-page" target="_blank" data-type="slide">Create
                                 <br />
                                 Presentation</a>
                         </li>
@@ -137,7 +137,7 @@
                                     <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
                                         <span title="{{ file.title }}">{{ file.title }}</span>
                                     </a>
-                                    <a href="{{ file.url }}">
+                                    <a href="download?filename={{ file.title }}">
                                         <img class="icon-download" src="{% static "images/download-24.png" %}" alt="Download" title="Download" />
                                     </a>
                                     <a class="delete-file" data-filename="{{ file.title }}">
@@ -156,11 +156,11 @@
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    {% if file.type == 'text' %}
+                                    {% if file.type == 'word' %}
                                         <a href="edit?filename={{ file.title }}&type=desktop&mode=review" target="_blank">
                                             <img src="{% static "images/review-24.png" %}" alt="Open in editor for review" title="Open in editor for review"/>
                                         </a>
-                                    {% elif file.type == 'spreadsheet' %}
+                                    {% elif file.type == 'cell' %}
                                         <a href="edit?filename={{ file.title }}&type=desktop&mode=filter" target="_blank">
                                             <img src="{% static "images/filter-24.png" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                         </a>
@@ -172,14 +172,14 @@
                                     </a>
                                 </td>
                                 <td class="contentCells contentCells-icon">
-                                    {% if file.type == 'text' %}
+                                    {% if file.type == 'word' %}
                                         <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
                                             <img src="{% static "images/fill-forms-24.png" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                         </a>
                                     {% endif %}
                                 </td>
                                 <td class="contentCells contentCells-shift contentCells-icon">
-                                    {% if file.type == 'text' %}
+                                    {% if file.type == 'word' %}
                                         <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
                                             <img src="{% static "images/block-content-24.png" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>

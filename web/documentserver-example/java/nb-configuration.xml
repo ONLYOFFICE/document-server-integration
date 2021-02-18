@@ -54,7 +54,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>ppsx</word>
         <word>ppt</word>
         <word>pptx</word>
-        <word>ResourceService</word>
         <word>rtf</word>
         <word>SIA</word>
         <word>teamlab</word>

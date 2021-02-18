@@ -70,7 +70,7 @@ namespace OnlineEditorsExampleMVC.Models
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
             var userId = request.Cookies.GetOrDefault("uid", "uid-1");
-
+            var uname = userId.Equals("uid-0") ? null : request.Cookies.GetOrDefault("uname", "John Smith");
             string userGroup = null;
             List<string> reviewGroups = null;
             if (userId.Equals("uid-2"))
@@ -107,8 +107,8 @@ namespace OnlineEditorsExampleMVC.Models
                                 {
                                     "info", new Dictionary<string, object>
                                         {
-                                            { "author", "Me" },
-                                            { "created", DateTime.Now.ToShortDateString() },
+                                            { "owner", "Me" },
+                                            { "uploaded", DateTime.Now.ToShortDateString() },
                                             { "favorite", favorite}
                                         }
                                 },
@@ -138,7 +138,7 @@ namespace OnlineEditorsExampleMVC.Models
                                     "user", new Dictionary<string, object>
                                         {
                                             { "id", userId },
-                                            { "name", request.Cookies.GetOrDefault("uname", "John Smith") },
+                                            { "name", uname },
                                             { "group", userGroup }
                                         }
                                 },
@@ -156,6 +156,7 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "about", true },
                                             { "feedback", true },
+                                            { "forcesave", false },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
@@ -264,7 +265,7 @@ namespace OnlineEditorsExampleMVC.Models
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
-                Query = "type=download&fileName=" + HttpUtility.UrlEncode("sample.docx")
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
             var dataCompareFile = new Dictionary<string, object>

@@ -31,7 +31,11 @@ import shutil
 import io
 import re
 import requests
+import time
+import urllib.parse
+import magic
 
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src import settings
 from . import fileUtils, historyManager
 
@@ -83,9 +87,9 @@ def isSupportedExt(ext):
 
 def getInternalExtension(fileType):
     mapping = {
-        'text': '.docx',
-        'spreadsheet': '.xlsx',
-        'presentation': '.pptx'
+        'word': '.docx',
+        'cell': '.xlsx',
+        'slide': '.pptx'
     }
 
     return mapping.get(fileType, '.docx')
@@ -134,7 +138,30 @@ def getRootFolder(req):
 def getStoragePath(filename, req):
     directory = getRootFolder(req)
 
-    return os.path.join(directory, filename)
+    return os.path.join(directory, fileUtils.getFileName(filename))
+
+def getForcesavePath(filename, req, create):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
+    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    if not os.path.exists(directory):
+        return ""
+ 
+    directory = os.path.join(directory, f'{filename}-hist')
+    if (not os.path.exists(directory)):
+        if create:
+            os.makedirs(directory)
+        else:
+            return ""
+
+    directory = os.path.join(directory, filename)
+    if (not os.path.exists(directory) and not create):
+        return ""
+
+    return directory
 
 def getStoredFiles(req):
     directory = getRootFolder(req)
@@ -151,21 +178,26 @@ def getStoredFiles(req):
     return fileInfos
 
 def createFile(stream, path, req = None, meta = False):
-    bufSize = 8196
+    bufSize = 8192
     with io.open(path, 'wb') as out:
         read = stream.read(bufSize)
-
         while len(read) > 0:
             out.write(read)
             read = stream.read(bufSize)
-
     if meta:
         historyManager.createMeta(path, req)
     return
 
+def createFileResponse(response, path, req, meta):
+    response.raise_for_status()
+    with open(path, 'wb') as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+    return
+
 def saveFileFromUri(uri, path, req = None, meta = False):
     resp = requests.get(uri, stream=True)
-    createFile(resp.raw, path, req, meta)
+    createFileResponse(resp, path, req, meta)
     return
 
 def createSample(fileType, sample, req):
@@ -179,7 +211,7 @@ def createSample(fileType, sample, req):
     filename = getCorrectName(f'{sampleName}{ext}', req)
     path = getStoragePath(filename, req)
 
-    with io.open(os.path.join('samples', f'{sampleName}{ext}'), 'rb') as stream:
+    with io.open(os.path.join('assets', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream:
         createFile(stream, path, req, True)
     return filename
 
@@ -199,3 +231,42 @@ def generateFileKey(filename, req):
     h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20]
+
+def generateRevisionId(expectedKey):
+    if (len(expectedKey) > 20):
+        expectedKey = str(hash(expectedKey))
+
+    key = re.sub(r'[^0-9-.a-zA-Z_=]', '_', expectedKey)
+    return key[:20]
+
+def getFilesInfo(req):
+    fileId = req.GET.get('fileId') if req.GET.get('fileId') else None
+
+    result = []
+    resultID = []
+    for f in getStoredFiles(req):
+        stats = os.stat(os.path.join(getRootFolder(req), f.get("title")))
+        result.append(
+            {   "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+                "id" :  generateFileKey(f.get("title"), req),   
+                "contentLength" : "%.2f KB" % (stats.st_size/1024),
+                "pureContentLength" : stats.st_size,
+                "title" :  f.get("title"),
+                "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
+        })
+        if fileId :
+            if fileId == generateFileKey(f.get("title"), req) :
+                resultID.append(result[-1]) 
+
+    if fileId :
+        if len(resultID) > 0 : return resultID
+        else : return "File not found"     
+    else :
+        return result
+
+def download(filePath):
+    response = FileResponse(open(filePath, 'rb'), True)
+    response['Content-Length'] =  os.path.getsize(filePath)
+    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
+    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    return response

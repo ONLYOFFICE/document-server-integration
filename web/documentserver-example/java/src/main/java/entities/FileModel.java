@@ -60,9 +60,9 @@ public class FileModel
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
         if (lang != null) editorConfig.lang = lang;
-        
+
         if (uid != null) editorConfig.user.id = uid;
-        if (uname != null) editorConfig.user.name = uname;
+        if (uname != null) editorConfig.user.name = uid.equals("uid-0") ? null : uname;
         if (editorConfig.user.id.equals("uid-2")) editorConfig.user.group = "group-2";
         if (editorConfig.user.id.equals("uid-3")) editorConfig.user.group = "group-3";
 
@@ -281,8 +281,11 @@ public class FileModel
         public class Customization
         {
             public Goback goback;
+            public Boolean forcesave;
+
             public Customization()
             {
+                forcesave = false;
                 goback = new Goback();
             }
 

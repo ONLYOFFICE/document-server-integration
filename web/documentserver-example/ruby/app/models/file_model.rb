@@ -68,15 +68,16 @@ class FileModel
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
     userId = @user_id ? @user_id : "uid-1"
-    userGroup = nil;
-    reviewGroups = nil;
+    user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
+    userGroup = nil
+    reviewGroups = nil
     if (userId == "uid-2")
-        userGroup = "group-2";
-        reviewGroups = ["group-2", ""];
+        userGroup = "group-2"
+        reviewGroups = ["group-2", ""]
     end 
     if (userId == "uid-3") 
-        userGroup = "group-3";
-        reviewGroups = ["group-2"];
+        userGroup = "group-3"
+        reviewGroups = ["group-2"]
     end
 
     config = {
@@ -88,8 +89,8 @@ class FileModel
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
-          :author => "Me",
-          :created => Time.now.to_s,
+          :owner => "Me",
+          :uploaded => Time.now.to_s,
           :favorite => @user_id ? @user_id.eql?("uid-2") : nil
         },
         :permissions => {
@@ -110,7 +111,7 @@ class FileModel
         :callbackUrl => callback_url,
         :user => {
           :id => userId,
-          :name => @user_name ? @user_name : "John Smith",
+          :name => user_name,
           :group => userGroup
         },
         :embedded => {
@@ -118,6 +119,9 @@ class FileModel
           :embedUrl => file_uri_user,
           :shareUrl => file_uri_user,
           :toolbarDocked => "top"
+        },
+        :customization => {
+          :forcesave => false
         }
       }
     }
@@ -157,14 +161,16 @@ class FileModel
         obj["version"] = i
 
         if (i == 1)
-          File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
-            cr_info = JSON.parse(file.read())
+          if File.file?(File.join(hist_dir, "createdInfo.json"))
+            File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|
+              cr_info = JSON.parse(file.read())
 
-            obj["created"] = cr_info["created"]
-            obj["user"] = {
-              :id => cr_info["created"],
-              :name => cr_info["name"]
-            }
+              obj["created"] = cr_info["created"]
+              obj["user"] = {
+                :id => cr_info["created"],
+                :name => cr_info["name"]
+              }
+            end
           end
         end
 
@@ -231,7 +237,7 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",
-      :url => DocumentHelper.get_server_url(true) + "/samples/sample.docx"
+      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"
     }
 
     if JwtHelper.is_enabled

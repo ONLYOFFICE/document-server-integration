@@ -1,0 +1,28 @@
+[submodule "web/documentserver-example/nodejs/public/assets"]
+	path = web/documentserver-example/nodejs/public/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/java/src/main/resources/assets"]
+	path = web/documentserver-example/java/src/main/resources/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/php/assets"]
+	path = web/documentserver-example/php/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/python/assets"]
+	path = web/documentserver-example/python/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/csharp-mvc/assets"]
+	path = web/documentserver-example/csharp-mvc/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/csharp/assets"]
+	path = web/documentserver-example/csharp/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/ruby/public/assets"]
+	path = web/documentserver-example/ruby/public/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en

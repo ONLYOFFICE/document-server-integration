@@ -65,6 +65,9 @@
             $ugroup = "group-3";
             $reviewGroups = ["group-2"];
             break;
+        case 3:
+            $uname = null;
+            break;
     }
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
@@ -80,8 +83,8 @@
             "fileType" => $filetype,
             "key" => $docKey,
             "info" => [
-                "author" => "Me",
-                "created" => date('d.m.y'),
+                "owner" => "Me",
+                "uploaded" => date('d.m.y'),
                 "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
             "permissions" => [
@@ -114,6 +117,7 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
+                "forcesave" => false,
                 "goback" => [
                     "url" => serverPath(),
                 ]
@@ -128,7 +132,7 @@
 
     $dataCompareFile = [
         "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=download&name=demo.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
     ];
 
     $dataMailMergeRecipients = [
@@ -144,10 +148,11 @@
     }
 
     function tryGetDefaultByType($createExt) {
-        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
+        $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
+        $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
+        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
         {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             //Copy error!!!
@@ -248,7 +253,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="css/images/<?php echo getDocumentType($filename) ?>.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
