@@ -29,7 +29,7 @@
     * limitations under the License.
     *
     -->
-   <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="<%= "content/images/" + Model.DocumentType + ".ico" %>" type="image/x-icon" />
     <title><%= Model.FileName + " - ONLYOFFICE" %></title>
     
     <%: Styles.Render("~/Content/editor") %>

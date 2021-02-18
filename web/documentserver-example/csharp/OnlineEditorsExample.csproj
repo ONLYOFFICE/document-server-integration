@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\images\block-content-24.png" />
+    <Content Include="App_Themes\images\cell.ico" />
     <Content Include="App_Themes\images\comment-24.png" />
     <Content Include="App_Themes\images\delete-24.png" />
     <Content Include="App_Themes\images\desktop-24.png" />
@@ -86,6 +87,8 @@
     <Content Include="App_Themes\images\icon_xlsx.png" />
     <Content Include="App_Themes\images\mobile-24.png" />
     <Content Include="App_Themes\images\review-24.png" />
+    <Content Include="App_Themes\images\slide.ico" />
+    <Content Include="App_Themes\images\word.ico" />
     <Content Include="LICENSE" />
     <Content Include="licenses\jquery.license" />
     <Content Include="ReadMe.txt" />
