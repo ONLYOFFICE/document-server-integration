@@ -171,7 +171,7 @@ def edit(request):
             'callbackUrl': docManager.getCallbackUrl(filename, request),
             'user': {
                 'id': user['uid'],
-                'name': user['uname']
+                'name': None if user['uid'] == 'uid-0' else user['uname']
             },
             'embedded': {
                 'saveUrl': fileUriUser,

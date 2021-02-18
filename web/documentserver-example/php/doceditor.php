@@ -61,6 +61,9 @@
         case 2:
             $uname = "Hamish Mitchell";
             break;
+        case 3:
+            $uname = null;
+            break;
     }
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];

@@ -305,6 +305,9 @@ function createMeta($fileName, $uid = "0") {
         case 2:
             $name = "Hamish Mitchell";
             break;
+        case 3:
+            $name = null;
+            break;
     }
 
     $json = [

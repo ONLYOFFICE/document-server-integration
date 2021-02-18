@@ -107,6 +107,9 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
 
+            var uid = Request.Cookies.GetOrDefault("uid", "uid-1");
+            var uname = uid.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
+
             var jss = new JavaScriptSerializer();
 
             object favorite = null;
@@ -161,8 +164,8 @@ namespace OnlineEditorsExample
                                 {
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", Request.Cookies.GetOrDefault("uid", "uid-1") },
-                                            { "name", Request.Cookies.GetOrDefault("uname", "John Smith") }
+                                            { "id", uid },
+                                            { "name",  uname }
                                         }
                                 },
                                 {

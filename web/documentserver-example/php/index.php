@@ -77,6 +77,7 @@
                             <option value="0">John Smith</option>
                             <option value="1">Mark Pottato</option>
                             <option value="2">Hamish Mitchell</option>
+                            <option value="3">anonymous</option>
                         </select>
                     </td>
                     <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>

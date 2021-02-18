@@ -67,6 +67,8 @@ class FileModel
     editorsmode = @mode ? @mode : "edit"
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
+    user_id = @user_id ? @user_id : "uid-1"
+    user_name = (user_id.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
 
     config = {
       :type => type(),
@@ -97,8 +99,8 @@ class FileModel
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,
         :user => {
-          :id => @user_id ? @user_id : "uid-0",
-          :name => @user_name ? @user_name : "John Smith"
+          :id => user_id,
+          :name => user_name
         },
         :embedded => {
           :saveUrl => file_uri_user,
