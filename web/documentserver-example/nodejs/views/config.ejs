@@ -45,10 +45,11 @@
         "chat": true,
         "comments": true,
         "feedback": true,
-        "forcesave": false,
+        "forcesave": true,
         "goback": {
             "url": "<%- editor.backUrl %>"
-        }
+        },
+        "submitForm": <%- editor.submitForm %>
     },
     "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
     "plugins": <%- editor.plugins %>

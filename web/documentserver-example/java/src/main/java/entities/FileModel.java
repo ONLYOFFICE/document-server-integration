@@ -77,7 +77,7 @@ public class FileModel
         if (_type != null) type = _type;
 
         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(document.title));
-
+        editorConfig.customization.submitForm = canEdit && (mode.equals("edit") || mode.equals("fillForms"));
         editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
 
         document.permissions = new Permissions(mode, type, canEdit);
@@ -282,10 +282,11 @@ public class FileModel
         {
             public Goback goback;
             public Boolean forcesave;
+            public Boolean submitForm;
 
             public Customization()
             {
-                forcesave = false;
+                forcesave = true;
                 goback = new Goback();
             }
 

@@ -70,12 +70,12 @@ class TrackHelper
                 begin
                     percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false)
                     if (new_file_uri == nil || new_file_uri.empty?)
-                        new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext)
+                        new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                     else
                         download_uri = new_file_uri
                     end
                 rescue StandardError => msg
-                    new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext)
+                    new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                 end
             end
 
@@ -127,29 +127,44 @@ class TrackHelper
 
             cur_ext = File.extname(file_name)
             download_ext = File.extname(download_uri)
+            new_file_name = file_name
 
             if (!cur_ext.eql?(download_ext))
                 key = ServiceConverter.generate_revision_id(download_uri)
                 begin
                     percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false)
                     if (new_file_uri == nil || new_file_uri.empty?)
-                        file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext)
+                        new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                     else
                         download_uri = new_file_uri
                     end
                 rescue StandardError => msg
-                    file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext)
+                    new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                 end
             end
 
             saved = 1
             begin
-                forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
-                if (forcesave_path.eql?(""))
-                    forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true)
+                is_submit_form = file_data["forcesavetype"].to_i == 3     
+
+                if (is_submit_form)
+                    if (new_file_name.eql?(file_name))
+                        new_file_name = DocumentHelper.get_correct_name(file_name, user_address)
+                    end
+                    forcesave_path = DocumentHelper.storage_path(new_file_name, user_address)
+                else
+                    forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false)
+                    if (forcesave_path.eql?(""))
+                        forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, true)
+                    end
                 end
 
                 save_from_uri(forcesave_path, download_uri)
+
+                if (is_submit_form)
+                    uid = file_data['actions'][0]['userid']
+                    DocumentHelper.create_meta(new_file_name, uid, "Filling Form", user_address)
+                end
 
                 saved = 0
             rescue StandardError => msg

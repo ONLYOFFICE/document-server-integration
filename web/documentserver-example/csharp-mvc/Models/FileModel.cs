@@ -68,6 +68,7 @@ namespace OnlineEditorsExampleMVC.Models
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
+            var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));
 
             var userId = request.Cookies.GetOrDefault("uid", "uid-1");
             var uname = userId.Equals("uid-0") ? null : request.Cookies.GetOrDefault("uname", "John Smith");
@@ -156,7 +157,8 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "about", true },
                                             { "feedback", true },
-                                            { "forcesave", false },
+                                            { "forcesave", true },
+                                            { "submitForm", submitForm },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {

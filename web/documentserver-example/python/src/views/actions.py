@@ -130,6 +130,7 @@ def edit(request):
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)
+    submitForm = canEdit & ((edMode == 'edit') | (edMode == 'fillForms'))
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'
 
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'
@@ -192,7 +193,8 @@ def edit(request):
             'customization': {
                 'about': True,
                 'feedback': True,
-                'forcesave': False,
+                'forcesave': True,
+                'submitForm': submitForm,
                 'goback': {
                     'url': docManager.getServerUrl(False, request)
                 }
@@ -252,9 +254,9 @@ def track(request):
         usAddr = request.GET['userAddress']
 
         if (status == 2) | (status == 3): # mustsave, corrupted
-            trackManager.processSave(body, filename, usAddr, request)
+            trackManager.processSave(body, filename, usAddr)
         if (status == 6) | (status == 7): # mustforcesave, corruptedforcesave
-            trackManager.processForceSave(body, filename, usAddr, request)
+            trackManager.processForceSave(body, filename, usAddr)
 
     except Exception as e:
         response.setdefault('error', 1)

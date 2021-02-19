@@ -267,13 +267,7 @@ namespace OnlineEditorsExample
             var savedFileName = StoragePath(_fileName, null);
             httpPostedFile.SaveAs(savedFileName);
 
-            var histDir = HistoryDir(savedFileName);
-            Directory.CreateDirectory(histDir);
-            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-                { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
-                { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
-            }));
+            DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
 
             return _fileName;
         }
@@ -314,13 +308,7 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                var histDir = HistoryDir(StoragePath(_fileName, null));
-                Directory.CreateDirectory(histDir);
-                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                    { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-                    { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                    { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
-                }));
+                DocEditor.CreateMeta(_fileName, request.Cookies.GetOrDefault("uid", "uid-1"), request.Cookies.GetOrDefault("uname", "John Smith"), null);
             }
             catch (Exception)
             {
@@ -380,13 +368,7 @@ namespace OnlineEditorsExample
                 if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
 
                 _fileName = fileName;
-                histDir = HistoryDir(StoragePath(_fileName, null));
-                Directory.CreateDirectory(histDir);
-                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                    { "created", DateTime.Now.ToString() },
-                    { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
-                    { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
-                }));
+                DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";

@@ -110,9 +110,11 @@ docManager.createDemo = function (isSample, fileExt, userid, username) {
     return fileName;
 };
 
-docManager.saveFileData = function (fileName, userid, username) {
-    const userAddress = docManager.curUserHostAddress();
-    const date_create = fileSystem.statSync(docManager.storagePath(fileName)).mtime;
+docManager.saveFileData = function (fileName, userid, username, userAddress) {
+    if (!userAddress) {
+        userAddress = docManager.curUserHostAddress();
+    }
+    const date_create = fileSystem.statSync(docManager.storagePath(fileName, userAddress)).mtime;
     const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
     const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
     const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();

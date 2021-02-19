@@ -98,7 +98,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
                     if (string.IsNullOrEmpty(newFileUri))
                     {
-                        newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt);
+                        newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                     }
                     else 
                     {
@@ -107,7 +107,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 } 
                 catch (Exception)
                 {
-                    newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt);
+                    newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 }
             }
 
@@ -152,6 +152,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             string curExt = Path.GetExtension(fileName);
             string downloadExt = Path.GetExtension(downloadUri);
+            var newFileName = fileName;
 
             if (!curExt.Equals(downloadExt))
             {
@@ -161,7 +162,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
                     if (string.IsNullOrEmpty(newFileUri))
                     {
-                        fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt);
+                        newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                     }
                     else 
                     {
@@ -170,17 +171,40 @@ namespace OnlineEditorsExampleMVC.Helpers
                 } 
                 catch (Exception)
                 {
-                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt);
+                    newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 }
             }
 
-            string forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
-            if (forcesavePath.Equals(""))
+            string forcesavePath = "";
+            Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");
+
+            if (isSubmitForm)
             {
-                forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
+                if (newFileName.Equals(fileName))
+                {
+                    newFileName = DocManagerHelper.GetCorrectName(fileName, userAddress);
+                }
+                forcesavePath = DocManagerHelper.StoragePath(newFileName, userAddress);
+            }
+            else
+            {
+                forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, false);
+                if (forcesavePath.Equals(""))
+                {
+                    forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, true);
+                }
             }
 
             DownloadToFile(downloadUri, forcesavePath);
+
+            if (isSubmitForm)
+            {
+                var jss = new JavaScriptSerializer();
+                var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
+                var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
+                var user = action["userid"].ToString();
+                DocManagerHelper.CreateMeta(newFileName, user, "Filling Form", userAddress);
+            }
 
             return 0;
         }
