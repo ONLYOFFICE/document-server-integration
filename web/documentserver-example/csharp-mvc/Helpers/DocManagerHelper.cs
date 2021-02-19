@@ -134,13 +134,13 @@ namespace OnlineEditorsExampleMVC.Helpers
             return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
         }
 
-        public static string GetCorrectName(string fileName)
+        public static string GetCorrectName(string fileName, string userAddress = null)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
             var ext = Path.GetExtension(fileName);
             var name = baseName + ext;
 
-            for (var i = 1; File.Exists(StoragePath(name)); i++)
+            for (var i = 1; File.Exists(StoragePath(name, userAddress)); i++)
             {
                 name = baseName + " (" + i + ")" + ext;
             }
@@ -171,9 +171,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             return fileName;
         }
 
-        public static void CreateMeta(string fileName, string uid, string uname)
+        public static void CreateMeta(string fileName, string uid, string uname, string userAddress = null)
         {
-            var histDir = HistoryDir(StoragePath(fileName, null));
+            var histDir = HistoryDir(StoragePath(fileName, userAddress));
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
