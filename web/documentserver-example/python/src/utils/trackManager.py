@@ -50,7 +50,7 @@ def readBody(request):
             body = body['payload']
     return body
 
-def processSave(body, filename, usAddr, request):
+def processSave(body, filename, usAddr):
     download = body.get('url')
     changesUri = body.get('changesurl')
     newFilename = filename
@@ -62,11 +62,11 @@ def processSave(body, filename, usAddr, request):
         try:
             newUri = serviceConverter.getConverterUri(download, downloadExt, curExt, docManager.generateRevisionId(download), False)
             if not newUri:
-                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, request)
+                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
             else:
                 download = newUri
         except Exception:
-            newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, request)
+            newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
 
     path = docManager.getStoragePath(newFilename, usAddr)
 
@@ -89,34 +89,45 @@ def processSave(body, filename, usAddr, request):
 
     historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))
 
-    forcesavePath = docManager.getForcesavePath(newFilename, request, False)
+    forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False)
     if (forcesavePath != ""):
        os.remove(forcesavePath)
 
     return
 
-def processForceSave(body, filename, usAddr, request):
+def processForceSave(body, filename, usAddr):
     download = body.get('url')
 
     curExt = fileUtils.getFileExt(filename)
     downloadExt = fileUtils.getFileExt(download)
+    newFilename = filename
 
     if (curExt != downloadExt):
         try:
             newUri = serviceConverter.getConverterUri(download, downloadExt, curExt, docManager.generateRevisionId(download), False)
             if not newUri:
-                filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, request)
+                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
             else:
                 download = newUri
         except Exception:
-            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, request)
+            newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
 
-    forcesavePath = docManager.getForcesavePath(filename, request, False)
-    if (forcesavePath == ""):
-       forcesavePath = docManager.getForcesavePath(filename, request, True)
+    isSubmitForm = body.get('forcesavetype') == 3
+
+    if(isSubmitForm):
+        if (newFilename == filename):
+            newFilename = docManager.getCorrectName(filename, usAddr)
+        forcesavePath = docManager.getStoragePath(newFilename, usAddr)
+    else:
+        forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False)
+        if (forcesavePath == ""):
+            forcesavePath = docManager.getForcesavePath(newFilename, usAddr, True)
 
     docManager.saveFileFromUri(download, forcesavePath)
 
+    if(isSubmitForm):
+        uid = body['actions'][0]['userid']
+        historyManager.createMetaData(newFilename, uid, "Filling Form", usAddr)
     return
 
 def commandRequest(method, key):

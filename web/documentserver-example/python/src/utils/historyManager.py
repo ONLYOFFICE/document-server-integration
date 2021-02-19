@@ -95,6 +95,23 @@ def createMeta(storagePath, req):
     
     return
 
+def createMetaData(filename, uid, uname, usAddr):
+    histDir = getHistoryDir(docManager.getStoragePath(filename, usAddr))
+    path = getMetaPath(histDir)
+
+    if not os.path.exists(histDir):
+        os.makedirs(histDir)
+
+    obj = {
+        'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+        'uid': uid,
+        'uname': uname
+    }
+
+    writeFile(path, json.dumps(obj))
+
+    return
+
 def writeFile(path, content):
     with io.open(path, 'w') as out:
         out.write(content)
