@@ -121,7 +121,7 @@ public class IndexServlet extends HttpServlet
 
             InputStream fileStream = httpPostedFile.getInputStream();
 
-            fileName = DocumentManager.GetCorrectName(fileName);
+            fileName = DocumentManager.GetCorrectName(fileName, null);
             String fileStoragePath = DocumentManager.StoragePath(fileName, null);
 
             File file = new File(fileStoragePath);
@@ -139,7 +139,7 @@ public class IndexServlet extends HttpServlet
             }
 
             CookieManager cm = new CookieManager(request);
-            DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"));
+            DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
 
             writer.write("{ \"filename\": \"" + fileName + "\"}");
 
@@ -174,7 +174,7 @@ public class IndexServlet extends HttpServlet
                     return;
                 }
 
-                String correctName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + internalFileExt);
+                String correctName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + internalFileExt, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -207,7 +207,7 @@ public class IndexServlet extends HttpServlet
                 fileName = correctName;
 
                 CookieManager cm = new CookieManager(request);
-                DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"));
+                DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
             }
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");

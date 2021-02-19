@@ -19,6 +19,7 @@
 package helpers;
 
 import com.google.gson.Gson;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.primeframework.jwt.domain.JWT;
@@ -124,12 +125,12 @@ public class TrackManager {
             try {
                 String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false);
                 if (newFileUri.isEmpty()) {
-                    newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt);
+                    newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e){
-                newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt);
+                newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
         }
 
@@ -176,27 +177,46 @@ public class TrackManager {
 
         String curExt = FileUtility.GetFileExtension(fileName);
         String downloadExt = FileUtility.GetFileExtension(downloadUri);
+        String newFileName = fileName;
 
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false);
                 if (newFileUri.isEmpty()) {
-                    fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt);
+                    newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e){
-                fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt);
+                newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
         }
 
-        String forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, false);
-        if (forcesavePath == "") {
-            forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, true);
+        String forcesavePath = "";
+        boolean isSubmitForm = body.get("forcesavetype").toString().equals("3");
+
+        if (isSubmitForm) {
+            //new file
+            if (newFileName.equals(fileName)){
+                newFileName = DocumentManager.GetCorrectName(fileName, userAddress);
+            }
+            forcesavePath = DocumentManager.StoragePath(newFileName, userAddress);
+        } else {
+            forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, false);
+            if (forcesavePath == "") {
+                forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, true);
+            }
         }
 
         File toSave = new File(forcesavePath);
         downloadToFile(downloadUri, toSave);
+
+        if (isSubmitForm) {
+            JSONArray actions = (JSONArray) body.get("actions");
+            JSONObject action = (JSONObject) actions.get(0);
+            String user = (String) action.get("userid");
+            DocumentManager.CreateMeta(newFileName, user, "Filling Form", userAddress);
+        }
     }
 
     private static void downloadToFile(String url, File file) throws Exception {

@@ -197,26 +197,26 @@ public class DocumentManager
         return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
     }
 
-    public static String GetCorrectName(String fileName)
+    public static String GetCorrectName(String fileName, String userAddress)
     {
         String baseName = FileUtility.GetFileNameWithoutExtension(fileName);
         String ext = FileUtility.GetFileExtension(fileName);
         String name = baseName + ext;
 
-        File file = new File(StoragePath(name, null));
+        File file = new File(StoragePath(name, userAddress));
 
         for (int i = 1; file.exists(); i++)
         {
             name = baseName + " (" + i + ")" + ext;
-            file = new File(StoragePath(name, null));
+            file = new File(StoragePath(name, userAddress));
         }
 
         return name;
     }
 
-    public static void CreateMeta(String fileName, String uid, String uname) throws Exception
+    public static void CreateMeta(String fileName, String uid, String uname, String userAddress) throws Exception
     {
-        String histDir = HistoryDir(StoragePath(fileName, null));
+        String histDir = HistoryDir(StoragePath(fileName, userAddress));
 
         File dir = new File(histDir);
         dir.mkdir();
@@ -249,7 +249,7 @@ public class DocumentManager
     {
         String demoName = (sample ? "sample." : "new.") + fileExt;
         String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;
-        String fileName = GetCorrectName(demoName);
+        String fileName = GetCorrectName(demoName, null);
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);
 
@@ -266,7 +266,7 @@ public class DocumentManager
             out.flush();
         }
 
-        CreateMeta(fileName, uid, uname);
+        CreateMeta(fileName, uid, uname, null);
 
         return fileName;
     }
