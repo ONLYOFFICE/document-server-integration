@@ -72,6 +72,7 @@
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
+    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";
 
     $config = [
@@ -117,7 +118,8 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
-                "forcesave" => false,
+                "forcesave" => true,
+                "submitForm" => $submitForm,
                 "goback" => [
                     "url" => serverPath(),
                 ]

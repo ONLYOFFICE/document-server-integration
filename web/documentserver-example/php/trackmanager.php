@@ -88,12 +88,12 @@ function processSave($data, $fileName, $userAddress) {
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                 $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-                $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt);
+                $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
         } catch (Exception $e) {
             sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
             $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-            $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt);
+            $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
         }
     }
 
@@ -140,6 +140,7 @@ function processForceSave($data, $fileName, $userAddress) {
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
     $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));
+    $newFileName = $fileName;
 
     if ($downloadExt != $curExt) {
         $key = GenerateRevisionId($downloadUri);
@@ -153,24 +154,39 @@ function processForceSave($data, $fileName, $userAddress) {
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                 $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-                $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt);
+                $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
         } catch (Exception $e) {
             sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
             $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-            $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt);
+            $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
         }
     }
 
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
-        $forcesavePath = getForcesavePath($fileName, $userAddress, false);
-        if ($forcesavePath == "") {
-            $forcesavePath = getForcesavePath($fileName, $userAddress, true);
+
+        $isSubmitForm = $data["forcesavetype"] == 3;
+
+        if ($isSubmitForm) {
+            if ($newFileName == $fileName){
+                $newFileName = GetCorrectName($fileName, $userAddress);
+            }
+            $forcesavePath = getStoragePath($newFileName, $userAddress);
+        } else {
+            $forcesavePath = getForcesavePath($newFileName, $userAddress, false);
+            if ($forcesavePath == "") {
+                $forcesavePath = getForcesavePath($newFileName, $userAddress, true);
+            }
         }
 
         file_put_contents($forcesavePath, $new_data, LOCK_EX);
+
+        if ($isSubmitForm) {
+            $user = $data["actions"][0]["userid"];
+            createMeta($newFileName, $user, $userAddress);
+        }
 
         $saved = 0;
     }

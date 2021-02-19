@@ -289,8 +289,8 @@ function getVirtualPath($forDocumentServer) {
     return $virtPath;
 }
 
-function createMeta($fileName, $uid = "0") {
-    $histDir = getHistoryDir(getStoragePath($fileName));
+function createMeta($fileName, $uid = "0", $userAddress = NULL) {
+    $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
 
     if (empty($uid)) $uid = "0";
 
@@ -358,14 +358,14 @@ function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
 
-function GetCorrectName($fileName) {
+function GetCorrectName($fileName, $userAddress = NULL) {
     $path_parts = pathinfo($fileName);
 
     $ext = $path_parts['extension'];
     $name = $path_parts['basename'];
     $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);
 
-    for ($i = 1; file_exists(getStoragePath($name)); $i++)
+    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++)
     {
         $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;
     }
