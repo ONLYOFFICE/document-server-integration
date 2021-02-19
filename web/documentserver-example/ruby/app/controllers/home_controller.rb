@@ -57,13 +57,13 @@ class HomeController < ApplicationController
         raise 'File type is not supported'
       end
 
-      file_name = DocumentHelper.get_correct_name(file_name)
+      file_name = DocumentHelper.get_correct_name(file_name, nil)
 
       File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
         file.write(http_posted_file.read)
       end
 
-      DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
+      DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname], nil)
 
       render plain: '{ "filename": "' + file_name + '"}'
     rescue => ex
@@ -89,7 +89,7 @@ class HomeController < ApplicationController
           return
         end
 
-        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + internal_extension)
+        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + internal_extension, nil)
 
         uri = URI.parse(new_file_uri)
         http = Net::HTTP.new(uri.host, uri.port)
@@ -113,7 +113,7 @@ class HomeController < ApplicationController
 
         file_name = correct_name
 
-        DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname])
+        DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname], nil)
       end
 
       render plain: '{ "filename" : "' + file_name + '"}'

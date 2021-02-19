@@ -66,6 +66,7 @@ class FileModel
   def get_config
     editorsmode = @mode ? @mode : "edit"
     canEdit = DocumentHelper.edited_exts.include?(file_ext)
+    submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))
     mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
     userId = @user_id ? @user_id : "uid-1"
     user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
@@ -121,7 +122,8 @@ class FileModel
           :toolbarDocked => "top"
         },
         :customization => {
-          :forcesave => false
+          :forcesave => true,
+          :submitForm => submitForm
         }
       }
     }

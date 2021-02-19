@@ -134,13 +134,13 @@ class DocumentHelper
       return ver
     end
 
-    def get_correct_name(file_name)
+    def get_correct_name(file_name, user_address)
       ext = File.extname(file_name)
       base_name = File.basename(file_name, ext)
       name = base_name + ext
       index = 1
 
-      while File.exist?(storage_path(name, nil))
+      while File.exist?(storage_path(name, user_address))
           name = base_name + ' (' + index.to_s + ')' + ext
           index = index + 1
       end
@@ -166,8 +166,8 @@ class DocumentHelper
       return arr
     end
 
-    def create_meta(file_name, uid, uname)
-      hist_dir = history_dir(storage_path(file_name, nil))
+    def create_meta(file_name, uid, uname, user_address)
+      hist_dir = history_dir(storage_path(file_name, user_address))
 
       json = {
         :created => Time.now.to_formatted_s(:db),
@@ -182,14 +182,14 @@ class DocumentHelper
 
     def create_demo(file_ext, sample, uid, uname)
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
-      file_name = get_correct_name demo_name
+      file_name = get_correct_name(demo_name, nil)
 
       src = Rails.root.join('public', 'assets', sample == 'true' ? 'sample' : 'new', demo_name)
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
 
-      create_meta(file_name, uid, uname)
+      create_meta(file_name, uid, uname, nil)
 
       file_name
     end
