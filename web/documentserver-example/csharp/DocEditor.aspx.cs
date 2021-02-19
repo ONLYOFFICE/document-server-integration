@@ -106,6 +106,7 @@ namespace OnlineEditorsExample
 
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
+            var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));
 
             var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
             var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
@@ -196,7 +197,8 @@ namespace OnlineEditorsExample
                                         {
                                             { "about", true },
                                             { "feedback", true },
-                                            { "forcesave", false },
+                                            { "forcesave", true },
+                                            { "submitForm", submitForm },
                                             {
                                                 "goback", new Dictionary<string, object>
                                                     {
@@ -419,12 +421,17 @@ namespace OnlineEditorsExample
             var filePath = _Default.StoragePath(FileName, null);
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);
 
-            var histDir = _Default.HistoryDir(filePath);
+            CreateMeta(FileName, request.Cookies.GetOrDefault("uid", "uid-1"), request.Cookies.GetOrDefault("uname", "John Smith"), null);
+        }
+
+        public static void CreateMeta(string fileName, string uid, string uname, string userAddress)
+        {
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, userAddress)); 
             Directory.CreateDirectory(histDir);
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-                { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
+                { "id", uid },
+                { "name", uname }
             }));
         }
     }
