@@ -424,7 +424,7 @@ app.post("/track", function (req, res) {
                 var key = documentService.generateRevisionId(downloadUri);
                 newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                 try {
-                    documentService.getConvertedUriSync("", downloadExt, curExt, key, function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
                         if (err) {
                             callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
@@ -447,31 +447,29 @@ app.post("/track", function (req, res) {
             callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
         };
 
-        var callbackProcessForceSave = function (downloadUri, fileName, userAddress){
+        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName){
             try {
-
                 var isSubmitForm = body.forcesavetype === 3; //SubmitForm
 
                 if (isSubmitForm) {
-
                     //new file
-                    fileName = docManager.getCorrectName(fileName, userAddress);
-                    var forcesavePath = docManager.storagePath(fileName, userAddress);
-
-                } else {
-
-                    forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                    if (forcesavePath == "") {
-                        forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
+                    if (newFileName == fileName){
+                        newFileName = docManager.getCorrectName(fileName, userAddress);
                     }
-
+                    var forcesavePath = docManager.storagePath(newFileName, userAddress);
+                } else {
+                    forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);
+                    if (forcesavePath == "") {
+                        forcesavePath = docManager.forcesavePath(newFileName, userAddress, true);
+                    }
                 }
 
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(forcesavePath, file.getBody());
 
                 if (isSubmitForm) {
-                    docManager.saveFileData(fileName, "", "", userAddress);
+                    var uid =body.actions[0].userid
+                    docManager.saveFileData(newFileName, uid, "Filling Form", userAddress);
                 }
             } catch (ex) {
                 response.write("{\"error\":1}");
@@ -490,20 +488,21 @@ app.post("/track", function (req, res) {
 
             if (downloadExt != curExt) {
                 var key = documentService.generateRevisionId(downloadUri);
-                newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                 try {
-                    documentService.getConvertedUriSync("", downloadExt, curExt, key, function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
                         if (err) {
-                            callbackProcessForceSave(downloadUri, newFileName, userAddress);
+                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            callbackProcessForceSave(res.value, fileName, userAddress);
+                            callbackProcessForceSave(res.value, body, fileName, userAddress, newFileName);
                             return;
                         } catch (ex) {
                             console.log(ex);
-                            callbackProcessForceSave(downloadUri, newFileName, userAddress);
+                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
                         }
                     });
@@ -512,7 +511,7 @@ app.post("/track", function (req, res) {
                     console.log(ex);
                 }
             }
-            callbackProcessForceSave (downloadUri, newFileName, userAddress);
+            callbackProcessForceSave (downloadUri, body, fileName, userAddress, newFileName);
         };
 
         if (body.status == 1) { //Editing
