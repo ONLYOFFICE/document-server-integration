@@ -75,7 +75,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         params.token = documentService.getToken(params);
     }
 
-    urllib.request(uri,
+    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(urlModule.parse(uri),
         {
             method: "POST",
             headers: headers,
@@ -180,7 +181,8 @@ documentService.commandRequest = function (method, documentRevisionId, callback)
         params.token = documentService.getToken(params);
     }
 
-    urllib.request(uri,
+    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(urlModule.parse(uri),
         {
             method: "POST",
             headers: headers,
@@ -203,11 +205,11 @@ documentService.checkJwtHeader = function (req) {
   return decoded;
 }
 
-documentService.fillJwtByUrl = function (uri, opt_dataObject, opt_iss, opt_payloadhash) {
+documentService.fillJwtByUrl = function (uri, opt_dataObject) {
   var parseObject = urlModule.parse(uri, true);
-  var payload = {query: parseObject.query, payload: opt_dataObject, payloadhash: opt_payloadhash};
+  var payload = {query: parseObject.query, payload: opt_dataObject};
 
-  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn, issuer: opt_iss};
+  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
   return jwt.sign(payload, cfgSignatureSecret, options);
 }
 
