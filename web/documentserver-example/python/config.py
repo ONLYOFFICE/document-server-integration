@@ -10,7 +10,7 @@ DOC_SERV_CONVERT = [
     ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm",
     ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt",
     ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot",
-    ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".epub", ".fb2"
+    ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"
 ]
 
 DOC_SERV_TIMEOUT = 120000
@@ -44,7 +44,7 @@ EXT_DOCUMENT = [
     ".doc", ".docx", ".docm",
     ".dot", ".dotx", ".dotm",
     ".odt", ".fodt", ".ott", ".rtf", ".txt",
-    ".html", ".htm", ".mht",
+    ".html", ".htm", ".mht", ".xml",
     ".pdf", ".djvu", ".fb2", ".epub", ".xps"
 ]
 

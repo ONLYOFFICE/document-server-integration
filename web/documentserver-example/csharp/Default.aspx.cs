@@ -52,7 +52,7 @@ namespace OnlineEditorsExample
                 ".doc", ".docx", ".docm",
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht",
+                ".html", ".htm", ".mht", ".xml",
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
 
