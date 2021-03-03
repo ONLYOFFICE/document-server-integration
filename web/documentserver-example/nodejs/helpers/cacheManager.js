@@ -18,10 +18,12 @@
 
 var cache = {};
 
+// write the key value and its creation time to the cache
 exports.put = function (key, value) {
     cache[key] = { value:value, time: new Date().getTime()};
 }
 
+// check if the given key is in the cache
 exports.containsKey = function (key) {
     if (typeof cache[key] == "undefined"){
         return false;
@@ -29,24 +31,27 @@ exports.containsKey = function (key) {
 
     var secondsCache = 30;
 
-    var t1 = new Date(cache[key].time + (1000 * secondsCache));
-    var t2 = new Date();
-    if (t1 < t2 ){
-        delete cache[key];
-        return false;
+    var t1 = new Date(cache[key].time + (1000 * secondsCache));  // get the creation time of the given key and add 30 seconds to it
+    var t2 = new Date();  // get the current time
+    if (t1 < t2 ){  // if the current time is greater
+        delete cache[key];  // delete the given key from the cache
+        return false; 
     }
 
     return true;
 }
 
+// get the given key from the cache
 exports.get = function (key) {
     return cache[key];
 }
 
+// delete the given key from the cache
 exports.delete = function (key) {
     delete cache[key];
 }
 
+// clear the cache
 exports.clear = function () {
     cache = {};
 }
