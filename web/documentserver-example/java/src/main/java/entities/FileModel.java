@@ -286,7 +286,7 @@ public class FileModel
 
             public Customization()
             {
-                forcesave = true;
+                forcesave = false;
                 goback = new Goback();
             }
 
