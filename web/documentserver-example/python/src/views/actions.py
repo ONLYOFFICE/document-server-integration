@@ -193,7 +193,7 @@ def edit(request):
             'customization': {
                 'about': True,
                 'feedback': True,
-                'forcesave': True,
+                'forcesave': False,
                 'submitForm': submitForm,
                 'goback': {
                     'url': docManager.getServerUrl(False, request)

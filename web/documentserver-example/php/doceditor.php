@@ -118,7 +118,7 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
-                "forcesave" => true,
+                "forcesave" => false,
                 "submitForm" => $submitForm,
                 "goback" => [
                     "url" => serverPath(),

@@ -197,7 +197,7 @@ namespace OnlineEditorsExample
                                         {
                                             { "about", true },
                                             { "feedback", true },
-                                            { "forcesave", true },
+                                            { "forcesave", false },
                                             { "submitForm", submitForm },
                                             {
                                                 "goback", new Dictionary<string, object>

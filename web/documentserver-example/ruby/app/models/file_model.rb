@@ -122,7 +122,7 @@ class FileModel
           :toolbarDocked => "top"
         },
         :customization => {
-          :forcesave => true,
+          :forcesave => false,
           :submitForm => submitForm
         }
       }
