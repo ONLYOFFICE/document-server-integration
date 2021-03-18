@@ -12,7 +12,7 @@
   },
   "server": {
     "port": 3000,
-    "siteUrl": "http://192.168.0.142/",
+    "siteUrl": "https://documentserver/",
     "commandUrl": "coauthoring/CommandService.ashx",
     "converterUrl": "ConvertService.ashx",
     "apiUrl": "web-apps/apps/api/documents/api.js",
