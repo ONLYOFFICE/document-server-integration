@@ -160,7 +160,7 @@ namespace OnlineEditorsExample
 
             string curExt = Path.GetExtension(fileName);
             string downloadExt = Path.GetExtension(downloadUri);
-            var newFileName = fileName;
+            Boolean newFileName = false;
 
             if (!curExt.Equals(downloadExt))
             {
@@ -170,7 +170,7 @@ namespace OnlineEditorsExample
                     var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
                     if (string.IsNullOrEmpty(newFileUri))
                     {
-                        newFileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                        newFileName = true;
                     }
                     else
                     {
@@ -179,7 +179,7 @@ namespace OnlineEditorsExample
                 }
                 catch (Exception)
                 {
-                    newFileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                    newFileName = true;
                 }
             }
 
@@ -194,18 +194,26 @@ namespace OnlineEditorsExample
 
             if (isSubmitForm)
             {
-                if (newFileName.Equals(fileName))
+                if (newFileName)
                 {
-                    newFileName = _Default.GetCorrectName(fileName, userAddress);
+                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);
+                } else
+                {
+                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
                 }
-                forcesavePath = _Default.StoragePath(newFileName, userAddress);
+                forcesavePath = _Default.StoragePath(fileName, userAddress);
             }
             else
             {
-                forcesavePath = _Default.ForcesavePath(newFileName, userAddress, false);
+                if (newFileName)
+                {
+                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                }
+
+                forcesavePath = _Default.ForcesavePath(fileName, userAddress, false);
                 if (forcesavePath.Equals(""))
                 {
-                    forcesavePath = _Default.ForcesavePath(newFileName, userAddress, true);
+                    forcesavePath = _Default.ForcesavePath(fileName, userAddress, true);
                 }
             }
 
@@ -217,7 +225,7 @@ namespace OnlineEditorsExample
                 var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
                 var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
                 var user = action["userid"].ToString();
-                DocEditor.CreateMeta(newFileName, user, "Filling Form", userAddress);
+                DocEditor.CreateMeta(fileName, user, "Filling Form", userAddress);
             }
 
             return 0;
