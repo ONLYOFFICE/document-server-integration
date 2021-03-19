@@ -447,20 +447,27 @@ app.post("/track", function (req, res) {
             callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
         };
 
-        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName){
+        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
+                var downloadExt = fileUtility.getFileExtension(downloadUri);
                 var isSubmitForm = body.forcesavetype === 3; //SubmitForm
 
                 if (isSubmitForm) {
                     //new file
-                    if (newFileName == fileName){
-                        newFileName = docManager.getCorrectName(fileName, userAddress);
+                    if (newFileName){
+                        fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + "-form" + downloadExt, userAddress);
+                    } else {
+                        var ext = fileUtility.getFileExtension(fileName);
+                        fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + "-form" + ext, userAddress);
                     }
-                    var forcesavePath = docManager.storagePath(newFileName, userAddress);
+                    var forcesavePath = docManager.storagePath(fileName, userAddress);
                 } else {
-                    forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);
+                    if (newFileName){
+                        fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                    }
+                    forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
                     if (forcesavePath == "") {
-                        forcesavePath = docManager.forcesavePath(newFileName, userAddress, true);
+                        forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
                     }
                 }
 
@@ -469,7 +476,7 @@ app.post("/track", function (req, res) {
 
                 if (isSubmitForm) {
                     var uid =body.actions[0].userid
-                    docManager.saveFileData(newFileName, uid, "Filling Form", userAddress);
+                    docManager.saveFileData(fileName, uid, "Filling Form", userAddress);
                 }
             } catch (ex) {
                 response.write("{\"error\":1}");
@@ -484,25 +491,22 @@ app.post("/track", function (req, res) {
         var processForceSave = function (downloadUri, body, fileName, userAddress, resp) {
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = fileUtility.getFileExtension(downloadUri);
-            var newFileName = fileName;
 
             if (downloadExt != curExt) {
                 var key = documentService.generateRevisionId(downloadUri);
                 try {
                     documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
                         if (err) {
-                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
-                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
                             return;
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            callbackProcessForceSave(res.value, body, fileName, userAddress, newFileName);
+                            callbackProcessForceSave(res.value, body, fileName, userAddress, false);
                             return;
                         } catch (ex) {
                             console.log(ex);
-                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
-                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
                             return;
                         }
                     });
@@ -511,7 +515,7 @@ app.post("/track", function (req, res) {
                     console.log(ex);
                 }
             }
-            callbackProcessForceSave (downloadUri, body, fileName, userAddress, newFileName);
+            callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
         };
 
         if (body.status == 1) { //Editing
