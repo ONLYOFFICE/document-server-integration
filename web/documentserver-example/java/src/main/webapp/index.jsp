@@ -246,31 +246,33 @@
 
         <div id="mainProgress">
             <div id="uploadSteps">
-                <span id="step1" class="step">1. Loading the file</span>
-                <span class="step-descr">The file loading process will take some time depending on the file size, presence or absence of additional elements in it (macros, etc.) and the connection speed.</span>
+                <span id="uploadFileName" class="uploadFileName"></span>
+                <div class="describeUpload">After these steps are completed, you can work with your document.</div>
+                <span id="step1" class="step">1. Loading the file.</span>
+                <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
                 <br />
-                <span id="step2" class="step">2. File conversion</span>
-                <span class="step-descr">The file is being converted into Office Open XML format for the document faster viewing and editing.</span>
+                <span id="step2" class="step">2. Conversion.</span>
+                <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
                 <br />
-                <span id="step3" class="step">3. Loading editor scripts</span>
-                <span class="step-descr">The scripts for the editor are loaded only once and are will be cached on your computer in future. It might take some time depending on the connection speed.</span>
+                <span id="step3" class="step">3. Loading editor scripts.</span>
+                <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                 <br />
                 <br />
-                <span class="progress-descr">Please note, that the speed of all operations greatly depends on the server and the client locations. In case they differ or are located in different countries/continents, there might be lack of speed and greater wait time. The best results are achieved when the server and client computers are located in one and the same place (city).</span>
+                <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
                 <br />
                 <br />
                 <div class="error-message">
-                    <span></span>
+                    <b>Upload error: </b><span></span>
                     <br />
-                    Please select another file and try again. If you have questions please <a href="mailto:sales@onlyoffice.com">contact us.</a>
+                    Please select another file and try again.
                 </div>
             </div>
-            <iframe id="embeddedView" src="" height="345px" width="600px" frameborder="0" scrolling="no" allowtransparency></iframe>
+            <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
-            <div id="beginEmbedded" class="button disable">Embedded view</div>
-            <div id="beginView" class="button disable">View</div>
             <div id="beginEdit" class="button disable">Edit</div>
+            <div id="beginView" class="button gray disable">View</div>
+            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
 

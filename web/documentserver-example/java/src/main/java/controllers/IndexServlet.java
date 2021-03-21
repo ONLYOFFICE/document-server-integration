@@ -123,6 +123,7 @@ public class IndexServlet extends HttpServlet
 
             fileName = DocumentManager.GetCorrectName(fileName, null);
             String fileStoragePath = DocumentManager.StoragePath(fileName, null);
+            String documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
 
             File file = new File(fileStoragePath);
 
@@ -141,7 +142,7 @@ public class IndexServlet extends HttpServlet
             CookieManager cm = new CookieManager(request);
             DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
 
-            writer.write("{ \"filename\": \"" + fileName + "\"}");
+            writer.write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\" }");
 
         }
         catch (Exception e)
