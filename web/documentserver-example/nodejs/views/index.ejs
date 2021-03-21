@@ -57,7 +57,7 @@
                                         </li>
                                     </ul>
                                     <label class="create-sample">
-                                        <input type="checkbox" id="createSample" class="checkbox" />With sample content
+                                        <input id="createSample" type="checkbox" class="checkbox" />With sample content
                                     </label>
                                 </div>
 
@@ -68,57 +68,59 @@
                                 </div>
 
                                 <table class="user-block-table" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td valign="middle" width="30%">
-                                            <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="images/info.svg" />
-                                            <select class="select-user" id="user">
-                                                <option value="uid-1">John Smith</option>
-                                                <option value="uid-2">Mark Pottato</option>
-                                                <option value="uid-3">Hamish Mitchell</option>
-                                                <option value="uid-0">anonymous</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td valign="middle" width="30%">
-                                            <span class="select-user">Language</span>
-                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
-                                            <select class="select-user" id="language">
-                                                <option value="en">English</option>
-                                                <option value="be">Belarusian</option>
-                                                <option value="bg">Bulgarian</option>
-                                                <option value="ca">Catalan</option>
-                                                <option value="zh">Chinese</option>
-                                                <option value="cs">Czech</option>
-                                                <option value="da">Danish</option>
-                                                <option value="nl">Dutch</option>
-                                                <option value="fi">Finnish</option>
-                                                <option value="fr">French</option>
-                                                <option value="de">German</option>
-                                                <option value="el">Greek</option>
-                                                <option value="hu">Hungarian</option>
-                                                <option value="id">Indonesian</option>
-                                                <option value="it">Italian</option>
-                                                <option value="ja">Japanese</option>
-                                                <option value="ko">Korean</option>
-                                                <option value="lv">Latvian</option>
-                                                <option value="lo">Lao</option>
-                                                <option value="nb">Norwegian</option>
-                                                <option value="pl">Polish</option>
-                                                <option value="pt">Portuguese</option>
-                                                <option value="ro">Romanian</option>
-                                                <option value="ru">Russian</option>
-                                                <option value="sk">Slovak</option>
-                                                <option value="sl">Slovenian</option>
-                                                <option value="sv">Swedish</option>
-                                                <option value="es">Spanish</option>
-                                                <option value="tr">Turkish</option>
-                                                <option value="uk">Ukrainian</option>
-                                                <option value="vi">Vietnamese</option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    <tbody>
+                                        <tr>
+                                            <td valign="middle">
+                                                <span class="select-user">Username</span>
+                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="images/info.svg" />
+                                                <select class="select-user" id="user">
+                                                    <option value="uid-1">John Smith</option>
+                                                    <option value="uid-2">Mark Pottato</option>
+                                                    <option value="uid-3">Hamish Mitchell</option>
+                                                    <option value="uid-0">anonymous</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="middle">
+                                                <span class="select-user">Language</span>
+                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
+                                                <select class="select-user" id="language">
+                                                    <option value="en">English</option>
+                                                    <option value="be">Belarusian</option>
+                                                    <option value="bg">Bulgarian</option>
+                                                    <option value="ca">Catalan</option>
+                                                    <option value="zh">Chinese</option>
+                                                    <option value="cs">Czech</option>
+                                                    <option value="da">Danish</option>
+                                                    <option value="nl">Dutch</option>
+                                                    <option value="fi">Finnish</option>
+                                                    <option value="fr">French</option>
+                                                    <option value="de">German</option>
+                                                    <option value="el">Greek</option>
+                                                    <option value="hu">Hungarian</option>
+                                                    <option value="id">Indonesian</option>
+                                                    <option value="it">Italian</option>
+                                                    <option value="ja">Japanese</option>
+                                                    <option value="ko">Korean</option>
+                                                    <option value="lv">Latvian</option>
+                                                    <option value="lo">Lao</option>
+                                                    <option value="nb">Norwegian</option>
+                                                    <option value="pl">Polish</option>
+                                                    <option value="pt">Portuguese</option>
+                                                    <option value="ro">Romanian</option>
+                                                    <option value="ru">Russian</option>
+                                                    <option value="sk">Slovak</option>
+                                                    <option value="sl">Slovenian</option>
+                                                    <option value="sv">Swedish</option>
+                                                    <option value="es">Spanish</option>
+                                                    <option value="tr">Turkish</option>
+                                                    <option value="uk">Ukrainian</option>
+                                                    <option value="vi">Vietnamese</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -230,30 +232,32 @@
 
     <div id="mainProgress">
         <div id="uploadSteps">
+            <span id="uploadFileName" class="uploadFileName"></span>
+            <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file</span>
-            <span class="step-descr">The file loading process will take some time depending on the file size, presence or absence of additional elements in it (macros, etc.) and the connection speed.</span>
+            <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
             <br />
-            <span id="step2" class="step">2. File conversion</span>
-            <span class="step-descr">The file is being converted into Office Open XML format for the document faster viewing and editing.</span>
+            <span id="step2" class="step">2. Conversion.</span>
+            <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
             <br />
-            <span id="step3" class="step">3. Loading editor scripts</span>
-            <span class="step-descr">The scripts for the editor are loaded only once and are will be cached on your computer in future. It might take some time depending on the connection speed.</span>
+            <span id="step3" class="step">3. Loading editor scripts.</span>
+            <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
             <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
             <br />
             <br />
-            <span class="progress-descr">Please note, that the speed of all operations greatly depends on the server and the client locations. In case they differ or are located in differernt countries/continents, there might be lack of speed and greater wait time. The best results are achieved when the server and client computers are located in one and the same place (city).</span>
+            <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
             <br />
             <br />
             <div class="error-message">
-                <span></span>
+                <b>Upload error: </b><span></span>
                 <br />
-                Please select another file and try again. If you have questions please <a href="mailto:sales@onlyoffice.com">contact us.</a>
+                Please select another file and try again.
             </div>
         </div>
         <br />
-        <div id="beginEmbedded" class="button disable">Embedded view</div>
-        <div id="beginView" class="button disable">View</div>
         <div id="beginEdit" class="button disable">Edit</div>
+        <div id="beginView" class="button gray disable">View</div>
+        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
         <div id="cancelEdit" class="button gray">Cancel</div>
     </div>
 

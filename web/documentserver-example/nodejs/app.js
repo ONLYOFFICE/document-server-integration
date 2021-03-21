@@ -176,6 +176,7 @@ app.post("/upload", function (req, res) {
 
         const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
         const curExt = fileUtility.getFileExtension(file.name);
+        const documentType = fileUtility.getFileType(file.name)
 
         if (exts.indexOf(curExt) == -1) {
 			docManager.cleanFolderRecursive(uploadDirTmp, true);
@@ -191,7 +192,7 @@ app.post("/upload", function (req, res) {
             if (err) {
                 res.write("{ \"error\": \"" + err + "\"}");
             } else {
-                res.write("{ \"filename\": \"" + file.name + "\"}");
+                res.write("{ \"filename\": \"" + file.name + "\", \"documentType\": \"" + documentType + "\" }");
 
                 const userid = req.query.userid ? req.query.userid : "uid-1";
                 const name = req.query.name ? req.query.name : "John Smith";
