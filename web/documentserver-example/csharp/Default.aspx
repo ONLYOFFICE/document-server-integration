@@ -35,24 +35,6 @@
 
     <link rel="stylesheet" type="text/css" href="app_themes/jquery-ui.css" />
 
-    <script language="javascript" type="text/javascript" src="script/jquery-1.9.0.min.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jquery-ui.min.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jquery.blockUI.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
-
-    <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
-
-    <script language="javascript" type="text/javascript">
-        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
-    </script>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -99,6 +81,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
+                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <option value="uid-1">John Smith</option>
                                                     <option value="uid-2">Mark Pottato</option>
@@ -110,6 +93,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Language</span>
+                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="language">
                                                     <option value="en">English</option>
                                                     <option value="be">Belarusian</option>
@@ -322,5 +306,18 @@
             </div>
         </footer>
     </form>
+
+    <script language="javascript" type="text/javascript" src="script/jquery-1.9.0.min.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery-ui.min.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery.blockUI.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
+    <script language="javascript" type="text/javascript">
+        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
+        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
+    </script>
+
 </body>
 </html>

@@ -238,8 +238,18 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq.dropdownToggle({
-        switcherSelector: ".question",
-        dropdownID: "hint"
+
+    jq(".info").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({ "top": top, "left": left });
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
     });
 }
