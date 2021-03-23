@@ -84,7 +84,6 @@ header img {
     vertical-align: top;
 }
 
-
 .main-panel {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -160,46 +159,62 @@ label .checkbox {
     line-height: 24px;
 }
 
-.button, .button:visited, .button:hover, .button:active {
+.button,
+.button:visited,
+.button:hover,
+.button:active {
+    align-items: center;
+    border-radius: 3px;
+    box-sizing: border-box;
+    cursor: pointer;
     display: inline-block;
-    font-weight: normal;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 133%;
+    padding: 8px 20px;
     text-align: center;
     text-decoration: none;
-    vertical-align: middle;    
-    cursor:pointer;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    touch-callout: none;
+    text-transform: uppercase;
+    vertical-align: middle;
+    user-select: none;
     -o-touch-callout: none;
     -moz-touch-callout: none;
     -webkit-touch-callout: none;
-    user-select: none;
     -o-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
-    font-size: 12px;
-    line-height: 16px;
-    margin-right: 3px;
-    padding: 4px 12px;
-
-    color: #fff; 
-
-    background: #3D96C6;
-
-    border-width: 1px;
-    border-style: solid;
-    border-color: #3D96C6;
 }
 
-.button.disable {
+#beginEdit {
+    background: #FF6F3D;
+    border: 1px solid #FF6F3D;
+    color: #FFFFFF;
+}
+
+#beginEdit.disable {
+    background: #EDC2B3;
+    border: 1px solid #EDC2B3;
     cursor: default;
-    background: #BADDEF;
-    border: 1px solid #BADDEF;   
 }
+
+#beginEdit:not(.disable):hover {
+    background: #ff7a4b;
+}
+
 .button.gray {
-    background: #888;
-    border: 1px solid #E9EAEA;
+    border: 1px solid #AAAAAA;
+    margin-left: 8px;
+}
+
+.button.gray.disable {
+    border: 1px solid #E5E5E5;
+    color: #B5B5B5;
+    cursor: default;
+}
+
+.button.gray:not(.disable):hover {
+    border: 1px solid #FF6F3D;
+    color: #FF6F3D;
 }
 
 .upload-panel {
@@ -234,17 +249,38 @@ label .checkbox {
 
 .create-panel {
     float: left;
+    padding: 16px 0;
 }
 
 .upload-panel,
 .create-panel {
-    padding: 10px 0;
+    width: 100%;
+    border-bottom: 1px solid #D0D5DA;
 }
 
 #mainProgress {
-    color: #979b9f;
+    color: #333333;
     display: none;
-    margin: 15px;
+    font-size: 12px;
+    margin: 30px 40px;
+}
+
+#mainProgress .uploadFileName {
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: block;
+    font-size: 14px;
+    line-height: 160%;
+    overflow: hidden;
+    padding-left: 28px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#mainProgress .describeUpload {
+    line-height: 150%;
+    letter-spacing: -0.02em;
+    padding: 16px 0;
 }
 
 #mainProgress #embeddedView {
@@ -260,55 +296,48 @@ label .checkbox {
 }
 
 .error-message {
-    background: url("images/alert.png") no-repeat scroll 4px 10px #FFECE3;
-    color: #666668 !important;
+    background: url("images/error.svg") no-repeat scroll 4px 10px;
+    color: #CB0000;
     display: none;
-    font-size: 13px;
-    font-weight: normal;
+    line-height: 160%;
+    letter-spacing: -0.02em;
     margin: 5px 0;
     padding: 10px 10px 10px 30px;
     vertical-align: middle;
-}
-
-#mainProgress .error-message a {
-    color: #666668;
+    word-wrap: break-word;
 }
 
 .step {
     background-repeat: no-repeat;
     background-position: left center;
     background-color: transparent;
-    color: #979B9F;
-    font-size: 14px;
-    line-height: 30px;
-    padding-left: 25px;
+    font-weight: bold;
+    line-height: 167%;
+    padding-left: 35px;
 }
 
 .current {
     background-image: url("images/loader16.gif");
-    color: #333;
 }
 
 .done {
-    background-image: url("images/done.png");
-    color: #333;
+    background-image: url("images/done.svg");
 }
 
 .error {
-    background-image: url("images/alert.png");
+    background-image: url("images/notdone.svg");
 }
 
 .step-descr {
     display: block;
-    margin-left: 45px;
-}
-
-#mainProgress .step-descr a {
-    color: #979B9F;
+    margin-left: 35px;
+    font-size: 11px;
+    line-height: 188%;
 }
 
 .progress-descr {
-    color: #333;
+    letter-spacing: -0.02em;
+    line-height: 150%;
 }
 
 #loadScripts {
@@ -329,7 +358,7 @@ footer {
 }
 
 footer table {
-border-spacing: 0;
+    border-spacing: 0;
 }
 
 footer table tr {
@@ -343,9 +372,9 @@ footer table td {
 footer a,
 footer a:hover,
 footer a:visited {
-color: #FF6F3D;
-font-size: 14px;
-line-height: 120%;
+    color: #FF6F3D;
+    font-size: 14px;
+    line-height: 120%;
 }
 
 footer a:hover {
@@ -387,15 +416,18 @@ footer a:hover {
     white-space: nowrap;
 }
 
-.stored-edit.word {
+.stored-edit.word,
+.uploadFileName.word {
     background-image: url("images/icon_docx.svg");
 }
 
-.stored-edit.cell {
+.stored-edit.cell,
+.uploadFileName.cell {
     background-image: url("images/icon_xlsx.svg");
 }
 
-.stored-edit.slide {
+.stored-edit.slide,
+.uploadFileName.slide {
     background-image: url("images/icon_pptx.svg");
 }
 
@@ -409,26 +441,28 @@ footer a:hover {
 }
 
 .blockTitle {
-    background-color: #E2E2E2 !important;
+    background-color: #333333 !important;
     border: none !important;
     border-radius: 0 !important;
     -moz-border-radius: 0 !important;
     -webkit-border-radius: 0 !important;
-    color: #333 !important;
+    color: #F5F5F5 !important;
     font-size: 16px !important;
-    font-weight: normal !important;
-    padding: 15px 25px !important;
+    font-weight: 600 !important;
+    line-height: 133%;
+    letter-spacing: -0.02em;
+    padding: 14px 16px 14px 46px !important;
 }
 
 .dialog-close {
-    background: url("images/close.png") no-repeat scroll left top #E2E2E2;
+    background: url("images/close.svg") no-repeat scroll left top;
     cursor: pointer;
     float: right;
     font-size: 1px;
-    height: 12px;
+    height: 14px;
     line-height: 1px;
     margin-top: 4px;
-    width: 12px;
+    width: 14px;
 }
 
 .blockPage {
@@ -522,13 +556,6 @@ footer a:hover {
 
 .contentCells-icon {
     width: 4%;
-}
-.primaryRow {
-    background-color: #e9e9e9;
-}
-
-.secondaryRow {
-    background-color: #F9F9F9;
 }
 
 .select-user {

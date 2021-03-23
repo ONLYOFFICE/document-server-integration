@@ -126,8 +126,16 @@ namespace OnlineEditorsExampleMVC
                 {
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
 
+                    var downloadUri = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+                    {
+                        Path = HttpRuntime.AppDomainAppVirtualPath
+                            + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                            + "webeditor.ashx",
+                        Query = "type=download&fileName=" + HttpUtility.UrlEncode(fileName)
+                    };
+
                     string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(fileUri, extension, internalExtension, key, true, out newFileUri);
+                    var result = ServiceConverter.GetConvertedUri(downloadUri.ToString(), extension, internalExtension, key, true, out newFileUri);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
@@ -159,7 +167,8 @@ namespace OnlineEditorsExampleMVC
                     DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
                 }
 
-                context.Response.Write("{ \"filename\" : \"" + fileName + "\"}");
+                var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
+                context.Response.Write("{ \"filename\" : \"" + fileName + "\", \"documentType\": \"" + documentType + "\" }");
             }
             catch (Exception e)
             {
