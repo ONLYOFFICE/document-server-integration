@@ -81,6 +81,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="content/images/info.svg" />
                                             <select class="select-user" id="user">
                                                 <option value="uid-1">John Smith</option>
                                                 <option value="uid-2">Mark Pottato</option>
@@ -92,6 +93,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Language</span>
+                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="content/images/info.svg" />
                                             <select class="select-user" id="language">
                                                 <option value="en">English</option>
                                                 <option value="be">Belarusian</option>
