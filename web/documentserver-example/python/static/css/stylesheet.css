@@ -575,6 +575,33 @@ footer a:hover {
     line-height: 16px!important;
 }
 
+.info{
+    cursor: pointer;
+    padding: 3px 5px;
+    position: absolute;
+}
+
+.tooltip {
+    background: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
+    color: #666666;
+    line-height: 160%;
+    max-width: 312px;
+    padding: 14px;
+    position: absolute;
+  }
+
+.arrow{
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #FFFFFF;
+    left: -4px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .user-block-table {
     height: 100%;
     padding: 14px 0;
