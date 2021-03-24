@@ -42,10 +42,10 @@ if (typeof jQuery != "undefined") {
 
                 jq.blockUI({
                     theme: true,
-                    title: "Getting ready to load the file" + "<div class=\"dialog-close\"></div>",
+                    title: "File upload" + "<div class=\"dialog-close\"></div>",
                     message: jq("#mainProgress"),
                     overlayCSS: { "background-color": "#aaa" },
-                    themedCSS: { width: "656px", top: "20%", left: "50%", marginLeft: "-328px" }
+                    themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
                 });
                 jq("#beginEdit, #beginView, #beginEmbedded").addClass("disable");
 
@@ -65,6 +65,8 @@ if (typeof jQuery != "undefined") {
                 }
 
                 jq("#hiddenFileName").val(response.filename);
+                jq("#uploadFileName").text(response.filename);
+                jq("#uploadFileName").addClass(response.documentType);
 
                 jq("#step1").addClass("done").removeClass("current");
                 jq("#step2").addClass("current");
