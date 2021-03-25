@@ -80,4 +80,4 @@ If you have any problems with or questions about [ONLYOFFICE Document Server][2]
   
 ## License
 
-document-server-integration is released under the MIT License. See the LICENSE.txt file for more information.
+document-server-integration is released under the Apache-2.0 License. See the LICENSE file for more information.

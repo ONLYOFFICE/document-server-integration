@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2020
+ (c) Copyright Ascensio System SIA 2021
  *
  The MIT License (MIT)
 
@@ -100,34 +100,38 @@ def processForceSave(body, filename, usAddr):
 
     curExt = fileUtils.getFileExt(filename)
     downloadExt = fileUtils.getFileExt(download)
-    newFilename = filename
+    newFilename = False
 
     if (curExt != downloadExt):
         try:
             newUri = serviceConverter.getConverterUri(download, downloadExt, curExt, docManager.generateRevisionId(download), False)
             if not newUri:
-                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
+                newFilename = True
             else:
                 download = newUri
         except Exception:
-            newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
+            newFilename = True
 
     isSubmitForm = body.get('forcesavetype') == 3
 
     if(isSubmitForm):
-        if (newFilename == filename):
-            newFilename = docManager.getCorrectName(filename, usAddr)
-        forcesavePath = docManager.getStoragePath(newFilename, usAddr)
+        if (newFilename):
+            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + downloadExt, usAddr)
+        else :
+            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + curExt, usAddr)
+        forcesavePath = docManager.getStoragePath(filename, usAddr)
     else:
-        forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False)
+        if (newFilename):
+            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
+        forcesavePath = docManager.getForcesavePath(filename, usAddr, False)
         if (forcesavePath == ""):
-            forcesavePath = docManager.getForcesavePath(newFilename, usAddr, True)
+            forcesavePath = docManager.getForcesavePath(filename, usAddr, True)
 
     docManager.saveFileFromUri(download, forcesavePath)
 
     if(isSubmitForm):
         uid = body['actions'][0]['userid']
-        historyManager.createMetaData(newFilename, uid, "Filling Form", usAddr)
+        historyManager.createMetaData(filename, uid, "Filling Form", usAddr)
     return
 
 def commandRequest(method, key):

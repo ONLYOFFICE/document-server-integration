@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,18 +177,18 @@ public class TrackManager {
 
         String curExt = FileUtility.GetFileExtension(fileName);
         String downloadExt = FileUtility.GetFileExtension(downloadUri);
-        String newFileName = fileName;
+        Boolean newFileName = false;
 
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false);
                 if (newFileUri.isEmpty()) {
-                    newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                    newFileName = true;
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e){
-                newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                newFileName = true;
             }
         }
 
@@ -197,14 +197,20 @@ public class TrackManager {
 
         if (isSubmitForm) {
             //new file
-            if (newFileName.equals(fileName)){
-                newFileName = DocumentManager.GetCorrectName(fileName, userAddress);
+            if (newFileName){
+                fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);
+            } else {
+                fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
             }
-            forcesavePath = DocumentManager.StoragePath(newFileName, userAddress);
+            forcesavePath = DocumentManager.StoragePath(fileName, userAddress);
         } else {
-            forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, false);
+            if (newFileName){
+                fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+            }
+
+            forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, false);
             if (forcesavePath == "") {
-                forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, true);
+                forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, true);
             }
         }
 
@@ -215,7 +221,7 @@ public class TrackManager {
             JSONArray actions = (JSONArray) body.get("actions");
             JSONObject action = (JSONObject) actions.get(0);
             String user = (String) action.get("userid");
-            DocumentManager.CreateMeta(newFileName, user, "Filling Form", userAddress);
+            DocumentManager.CreateMeta(fileName, user, "Filling Form", userAddress);
         }
     }
 

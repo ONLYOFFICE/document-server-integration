@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             string curExt = Path.GetExtension(fileName);
             string downloadExt = Path.GetExtension(downloadUri);
-            var newFileName = fileName;
+            Boolean newFileName = false;
 
             if (!curExt.Equals(downloadExt))
             {
@@ -162,7 +162,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
                     if (string.IsNullOrEmpty(newFileUri))
                     {
-                        newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                        newFileName = true;
                     }
                     else 
                     {
@@ -171,7 +171,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 } 
                 catch (Exception)
                 {
-                    newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                    newFileName = true;
                 }
             }
 
@@ -180,18 +180,25 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             if (isSubmitForm)
             {
-                if (newFileName.Equals(fileName))
+                if (newFileName)
                 {
-                    newFileName = DocManagerHelper.GetCorrectName(fileName, userAddress);
+                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);
+                } else
+                {
+                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
                 }
-                forcesavePath = DocManagerHelper.StoragePath(newFileName, userAddress);
+                forcesavePath = DocManagerHelper.StoragePath(fileName, userAddress);
             }
             else
             {
-                forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, false);
+                if (newFileName)
+                {
+                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                }
+                forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
                 if (forcesavePath.Equals(""))
                 {
-                    forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, true);
+                    forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
                 }
             }
 
@@ -203,7 +210,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
                 var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
                 var user = action["userid"].ToString();
-                DocManagerHelper.CreateMeta(newFileName, user, "Filling Form", userAddress);
+                DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);
             }
 
             return 0;
