@@ -176,7 +176,7 @@ app.post("/upload", function (req, res) {
 
         const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));
         const curExt = fileUtility.getFileExtension(file.name);
-        const documentType = fileUtility.getFileType(file.name)
+        const documentType = fileUtility.getFileType(file.name);
 
         if (exts.indexOf(curExt) == -1) {
 			docManager.cleanFolderRecursive(uploadDirTmp, true);
