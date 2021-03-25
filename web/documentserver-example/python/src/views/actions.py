@@ -41,9 +41,8 @@ def upload(request):
 
     try:
         fileInfo = request.FILES['uploadedFile']
-
-        if fileInfo.size > config.FILE_SIZE_MAX:
-            raise Exception('File size is too big')
+        if ((fileInfo.size > config.FILE_SIZE_MAX) | (fileInfo.size <= 0)):
+            raise Exception('File size is incorrect')
 
         curExt = fileUtils.getFileExt(fileInfo.name)
         if not docManager.isSupportedExt(curExt):
@@ -55,6 +54,7 @@ def upload(request):
         docManager.createFile(fileInfo.file, path, request, True)
 
         response.setdefault('filename', name)
+        response.setdefault('documentType', fileUtils.getFileType(name))
 
     except Exception as e:
         response.setdefault('error', e.args[0])
