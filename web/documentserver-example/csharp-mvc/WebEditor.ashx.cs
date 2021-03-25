@@ -97,12 +97,13 @@ namespace OnlineEditorsExampleMVC
                 }
 
                 fileName = DocManagerHelper.GetCorrectName(fileName);
+                var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
 
                 var savedFileName = DocManagerHelper.StoragePath(fileName);
                 httpPostedFile.SaveAs(savedFileName);
                 DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
 
-                context.Response.Write("{ \"filename\": \"" + fileName + "\"}");
+                context.Response.Write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\"}");
             }
             catch (Exception e)
             {
