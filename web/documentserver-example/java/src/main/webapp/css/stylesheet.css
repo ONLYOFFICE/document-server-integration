@@ -46,7 +46,7 @@ div {
 a,
 a:hover,
 a:visited {
-    color: #333;
+    color: #333333;
     cursor: pointer;
 }
 
@@ -119,11 +119,7 @@ header img {
 label .checkbox {
     margin: 0 5px 3px 0;
     vertical-align: middle;
-}
-
-.try-descr {
-    font-size: 16px;
-    white-space : nowrap;
+    cursor: pointer;
 }
 
 .try-editor-list {
@@ -311,10 +307,6 @@ label .checkbox {
     word-wrap: break-word;
 }
 
-#mainProgress .error-message a {
-    color: #666668;
-}
-
 .step {
     background-repeat: no-repeat;
     background-position: left center;
@@ -326,7 +318,6 @@ label .checkbox {
 
 .current {
     background-image: url("img/loader16.gif");
-    color: #333;
 }
 
 .done {
