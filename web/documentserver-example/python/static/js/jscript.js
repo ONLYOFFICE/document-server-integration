@@ -37,6 +37,7 @@ if (typeof jQuery !== "undefined") {
                 jq("#step1").addClass("current");
                 jq("#mainProgress .error-message").hide().find("span").text("");
                 jq("#mainProgress").removeClass("embedded");
+                jq("#uploadFileName").text("");
 
                 jq.blockUI({
                     theme: true,
