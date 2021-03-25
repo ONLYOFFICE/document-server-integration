@@ -200,7 +200,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=embedded&fileName=" + fileId;
+        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
