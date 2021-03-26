@@ -64,6 +64,24 @@ a:hover {
     max-width: 736px;
 }
 
+.button {
+    background: #FF6F3D;
+    border-radius: 3px;
+    color: #FFFFFF;
+    display: inline-block;
+    font-weight: 600;
+    line-height: 133%;
+    letter-spacing: 0.04em;
+    margin-top: 24px;
+    padding: 16px 40px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.button:hover {
+    background: #ff7a4b;
+}
+
 .content-block {
     margin: 0 auto;
     padding: 64px 0;
