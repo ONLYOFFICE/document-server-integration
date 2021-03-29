@@ -361,9 +361,10 @@ function getFileExts() {
 function GetCorrectName($fileName, $userAddress = NULL) {
     $path_parts = pathinfo($fileName);
 
-    $ext = $path_parts['extension'];
+    $ext = strtolower($path_parts['extension']);
     $name = $path_parts['basename'];
     $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);
+    $name = $baseNameWithoutExt . "." . $ext;
 
     for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++)
     {
