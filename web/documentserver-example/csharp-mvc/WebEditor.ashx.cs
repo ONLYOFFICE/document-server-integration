@@ -118,7 +118,7 @@ namespace OnlineEditorsExampleMVC
                 var fileName = Path.GetFileName(context.Request["filename"]);
                 var fileUri = DocManagerHelper.GetFileUri(fileName, true);
 
-                var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
+                var extension = (Path.GetExtension(fileUri).ToLower() ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
 
                 if (DocManagerHelper.ConvertExts.Contains("." + extension)

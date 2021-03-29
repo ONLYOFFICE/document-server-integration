@@ -137,7 +137,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
-            var ext = Path.GetExtension(fileName);
+            var ext = Path.GetExtension(fileName).ToLower();
             var name = baseName + ext;
 
             for (var i = 1; File.Exists(StoragePath(name, userAddress)); i++)
