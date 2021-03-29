@@ -87,7 +87,7 @@ namespace ASC.Api.DocumentConverter
         {
             convertedDocumentUri = string.Empty;
 
-            fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri) : fromExtension;
+            fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
 
             var title = Path.GetFileName(documentUri);
             title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;

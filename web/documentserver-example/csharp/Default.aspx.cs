@@ -321,7 +321,7 @@ namespace OnlineEditorsExample
         {
             _fileName = Path.GetFileName(context.Request["filename"]);
 
-            var extension = (Path.GetExtension(_fileName) ?? "").Trim('.');
+            var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
 
             if (ConvertExts.Contains("." + extension)
@@ -377,7 +377,7 @@ namespace OnlineEditorsExample
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
-            var ext = Path.GetExtension(fileName);
+            var ext = Path.GetExtension(fileName).ToLower();
             var name = baseName + ext;
 
             for (var i = 1; File.Exists(StoragePath(name, userAddress)); i++)

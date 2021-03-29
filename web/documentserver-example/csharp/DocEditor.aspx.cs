@@ -100,7 +100,7 @@ namespace OnlineEditorsExample
                 Response.Redirect("doceditor.aspx?fileID=" + HttpUtility.UrlEncode(FileName));
             }
 
-            var ext = Path.GetExtension(FileName);
+            var ext = Path.GetExtension(FileName).ToLower();
 
             var editorsMode = Request.GetOrDefault("editorsMode", "edit");
 

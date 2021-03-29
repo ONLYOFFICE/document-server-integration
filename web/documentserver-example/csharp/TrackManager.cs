@@ -88,8 +88,8 @@ namespace OnlineEditorsExample
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
             var downloadUri = (string)fileData["url"];
-            var curExt = Path.GetExtension(fileName);
-            var downloadExt = Path.GetExtension(downloadUri) ?? "";
+            var curExt = Path.GetExtension(fileName).ToLower();
+            var downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";
             var newFileName = fileName;
 
             if (!downloadExt.Equals(curExt, StringComparison.InvariantCultureIgnoreCase))
@@ -158,8 +158,8 @@ namespace OnlineEditorsExample
         {
             var downloadUri = (string)fileData["url"];
 
-            string curExt = Path.GetExtension(fileName);
-            string downloadExt = Path.GetExtension(downloadUri);
+            string curExt = Path.GetExtension(fileName).ToLower();
+            string downloadExt = Path.GetExtension(downloadUri).ToLower();
             Boolean newFileName = false;
 
             if (!curExt.Equals(downloadExt))
