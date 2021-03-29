@@ -137,11 +137,11 @@ class DocumentHelper
     def get_correct_name(file_name, user_address)
       ext = File.extname(file_name)
       base_name = File.basename(file_name, ext)
-      name = base_name + ext
+      name = base_name + ext.downcase
       index = 1
 
       while File.exist?(storage_path(name, user_address))
-          name = base_name + ' (' + index.to_s + ')' + ext
+          name = base_name + ' (' + index.to_s + ')' + ext.downcase
           index = index + 1
       end
 

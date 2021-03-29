@@ -62,8 +62,8 @@ class TrackHelper
             download_uri = file_data['url']
             new_file_name = file_name
 
-            cur_ext = File.extname(file_name)
-            download_ext = File.extname(download_uri)
+            cur_ext = File.extname(file_name).downcase
+            download_ext = File.extname(download_uri).downcase
 
             if (!cur_ext.eql?(download_ext))
                 key = ServiceConverter.generate_revision_id(download_uri)
@@ -125,8 +125,8 @@ class TrackHelper
         def process_force_save(file_data, file_name, user_address)  
             download_uri = file_data['url'] 
 
-            cur_ext = File.extname(file_name)
-            download_ext = File.extname(download_uri)
+            cur_ext = File.extname(file_name).downcase
+            download_ext = File.extname(download_uri).downcase
             new_file_name = false
 
             if (!cur_ext.eql?(download_ext))
