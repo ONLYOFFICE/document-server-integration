@@ -206,6 +206,10 @@ footer {
     width: auto;
 }
 
+.wait-example {
+    display: none;
+}
+
 @media screen and (max-width: 1199px) {
     .black-block p {
         width: 55vw;
