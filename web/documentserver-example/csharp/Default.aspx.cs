@@ -329,8 +329,14 @@ namespace OnlineEditorsExample
             {
                 var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName, true));
 
+                var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
+                fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName);
+
                 string newFileUri;
-                var result = ServiceConverter.GetConvertedUri(FileUri(_fileName, true), extension, internalExtension, key, true, out newFileUri);
+                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri); ;
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";

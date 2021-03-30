@@ -37,13 +37,14 @@ if (typeof jQuery !== "undefined") {
                 jq("#step1").addClass("current");
                 jq("#mainProgress .error-message").hide().find("span").text("");
                 jq("#mainProgress").removeClass("embedded");
+                jq("#uploadFileName").text("");
 
                 jq.blockUI({
                     theme: true,
-                    title: "Getting ready to load the file" + "<div class=\"dialog-close\"></div>",
+                    title: "File upload" + "<div class=\"dialog-close\"></div>",
                     message: jq("#mainProgress"),
                     overlayCSS: { "background-color": "#aaa" },
-                    themedCSS: { width: "656px", top: "20%", left: "50%", marginLeft: "-328px" }
+                    themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
                 });
                 jq("#beginEdit, #beginView, #beginEmbedded").addClass("disable");
 
@@ -63,6 +64,8 @@ if (typeof jQuery !== "undefined") {
                 }
 
                 jq("#hiddenFileName").val(response.filename);
+                jq("#uploadFileName").text(response.filename);
+                jq("#uploadFileName").addClass(response.documentType);
 
                 jq("#step1").addClass("done").removeClass("current");
                 jq("#step2").addClass("current");
@@ -205,12 +208,12 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=embedded&filename=" + fileId;
+        var url = UrlEditor + "?type=embedded&mode=embedded&filename=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
 
-        jq("#embeddedView").attr("src", url);
+        jq("#uploadSteps").after('<iframe id="embeddedView" src="' + url + '" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>');
     });
 
     jq(document).on("click", "#cancelEdit, .dialog-close", function () {
@@ -243,5 +246,19 @@ if (typeof jQuery !== "undefined") {
                 document.location.reload();
             }
         });
+    });
+
+    jq(".info").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
     });
 }

@@ -66,7 +66,9 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                context.Response.Write("{ \"filename\": \"" + _Default.DoUpload(context) + "\"}");
+                var filename = _Default.DoUpload(context);
+                var documentType = _Default.DocumentType(filename);
+                context.Response.Write("{ \"filename\": \"" + filename + "\", \"documentType\": \"" + documentType + "\"}");
             }
             catch (Exception e)
             {

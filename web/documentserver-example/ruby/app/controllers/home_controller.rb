@@ -58,6 +58,7 @@ class HomeController < ApplicationController
       end
 
       file_name = DocumentHelper.get_correct_name(file_name, nil)
+      document_type = FileUtility.get_file_type(file_name)
 
       File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
         file.write(http_posted_file.read)
@@ -65,7 +66,7 @@ class HomeController < ApplicationController
 
       DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname], nil)
 
-      render plain: '{ "filename": "' + file_name + '"}'
+      render plain: '{ "filename": "' + file_name + '", "documentType": "' + document_type + '"}'
     rescue => ex
       render plain: '{ "error": "' + ex.message + '"}'
     end

@@ -131,6 +131,7 @@ function upload() {
     }
 
     $result["filename"] = $filename;
+    $result["documentType"] = getDocumentType($filename);
     return $result;
 }
 
