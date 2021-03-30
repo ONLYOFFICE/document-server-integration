@@ -119,7 +119,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     if (empty($from_extension))
     {
         $path_parts = pathinfo($document_uri);
-        $from_extension = $path_parts['extension'];
+        $from_extension = strtolower($path_parts['extension']);
     }
 
     $title = basename($document_uri);

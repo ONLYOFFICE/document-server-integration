@@ -34,7 +34,7 @@ class FileModel
   end
 
   def file_ext
-    File.extname(@file_name)
+    File.extname(@file_name).downcase
   end
 
   def file_uri
@@ -137,7 +137,7 @@ class FileModel
 
   def get_history
     file_name = @file_name
-    file_ext = File.extname(file_name)
+    file_ext = File.extname(file_name).downcase
     doc_key = key()
     doc_uri = file_uri()
 

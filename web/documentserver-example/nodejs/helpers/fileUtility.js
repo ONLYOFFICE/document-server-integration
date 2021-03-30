@@ -21,13 +21,12 @@ var fileUtility = {};
 fileUtility.getFileName = function (url, withoutExtension) {
     if (!url) return "";
 
-    var parts = url.toLowerCase().split("/");
+    var parts = url.split("/");
     var fileName = parts.pop();
     fileName = fileName.split("?")[0];
 
     if (withoutExtension) {
-        var ext = fileUtility.getFileExtension(fileName);
-        return fileName.replace(ext, "");
+        return fileName.substring(0, fileName.lastIndexOf("."));
     }
 
     return fileName;

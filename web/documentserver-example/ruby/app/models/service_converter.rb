@@ -23,7 +23,7 @@ class ServiceConverter
 
     def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async)
 
-      from_ext = from_ext == nil ? File.extname(document_uri) : from_ext
+      from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext
 
       title = File.basename(URI.parse(document_uri).path)
       title = title == nil ? UUID.generate.to_s : title

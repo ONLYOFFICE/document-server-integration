@@ -86,8 +86,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
             var downloadUri = (string)fileData["url"];
-            string curExt = Path.GetExtension(fileName);
-            string downloadExt = Path.GetExtension(downloadUri) ?? "";
+            string curExt = Path.GetExtension(fileName).ToLower();
+            string downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";
             var newFileName = fileName;
 
             if (!curExt.Equals(downloadExt, StringComparison.InvariantCultureIgnoreCase))
@@ -150,8 +150,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var downloadUri = (string)fileData["url"];
 
-            string curExt = Path.GetExtension(fileName);
-            string downloadExt = Path.GetExtension(downloadUri);
+            string curExt = Path.GetExtension(fileName).ToLower();
+            string downloadExt = Path.GetExtension(downloadUri).ToLower();
             Boolean newFileName = false;
 
             if (!curExt.Equals(downloadExt))

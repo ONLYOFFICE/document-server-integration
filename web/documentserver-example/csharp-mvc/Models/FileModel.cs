@@ -63,7 +63,7 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var jss = new JavaScriptSerializer();
 
-            var ext = Path.GetExtension(FileName);
+            var ext = Path.GetExtension(FileName).ToLower();
             var editorsMode = Mode ?? "edit";
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
