@@ -77,13 +77,13 @@ header img {
 
 .main{
     height: calc(100% - 136px);
-    min-height: 549px;
+    min-height: 536px;
 }
 
 .table-main {
     border-spacing: 0;
     height: 100%;
-    min-height: 549px;
+    min-height: 536px;
 }
 
 .section{
@@ -97,9 +97,9 @@ header img {
     -moz-box-sizing: border-box;
     height: 100%;
     list-style: none;
-    padding: 48px 32px;
+    padding: 48px 32px 24px;
     position: relative;
-    width: 896px;  
+    width: 896px;
 }
 
 .portal-name {
@@ -394,7 +394,7 @@ footer a:hover {
 }
 
 .help-block {
-    margin: 48px 32px;
+    margin: 48px 32px 24px;
 }
 
 .help-block span {
@@ -603,7 +603,7 @@ footer a:hover {
 
 .user-block-table {
     height: 100%;
-    padding: 14px 0;
+    padding-top: 14px;
     width: 100%;
 }
 
@@ -617,13 +617,9 @@ footer a:hover {
     box-sizing: border-box;
     border-radius: 3px;
     cursor: pointer;
-}
-
-#user,
-#language {
-    width: 100%;
     margin-top: 5px;
-    padding-left: 5px;
+    padding: 2px 5px;
+    width: 100%;
 }
 
 .icon-delete {
