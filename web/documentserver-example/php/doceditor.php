@@ -292,8 +292,6 @@
     <script type="text/javascript">
 
         var docEditor;
-        var fileName = "<?php echo $filename ?>";
-        var fileType = "<?php echo $filetype ?>";
 
         var innerAlert = function (message) {
             if (console && console.log)
