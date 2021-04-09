@@ -169,8 +169,8 @@ class FileModel
 
               obj["created"] = cr_info["created"]
               obj["user"] = {
-                :id => cr_info["created"],
-                :name => cr_info["name"]
+                :id => cr_info["uid"],
+                :name => cr_info["uname"]
               }
             end
           end
