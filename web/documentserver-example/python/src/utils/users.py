@@ -47,11 +47,12 @@ USERS = [
 
 DEFAULT_USER = USERS[0]
 
+# get user information from the request
 def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
     uname = req.COOKIES.get('uname')
 
-    if (not uid) | (not uname):
-        return DEFAULT_USER
+    if (not uid) | (not uname): # check if we got both the user id and name parameters
+        return DEFAULT_USER # if not, return default user values
     else:
         return { 'uid': unquote(uid), 'uname': unquote(uname) }

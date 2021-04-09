@@ -395,8 +395,8 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     fileSystem.writeFileSync(path_changes_json, changeshistory);  // and write this data to the path in json format
                 }
 
-                var path_key = docManager.keyPath(newFileName, userAddress, version);  // get the path to the file with key value in it
-                fileSystem.writeFileSync(path_key, body.key);  // and write this data to the body object
+                var path_key = docManager.keyPath(newFileName, userAddress, version);  // get the path to the key.txt file
+                fileSystem.writeFileSync(path_key, body.key);  // write the key value to the key.txt file
 
                 var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
