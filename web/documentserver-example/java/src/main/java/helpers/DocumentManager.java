@@ -224,7 +224,11 @@ public class DocumentManager
         JSONObject json = new JSONObject();
         json.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         json.put("id", (uid == null || uid.isEmpty()) ? "uid-1" : uid);
-        json.put("name", (uname == null || uname.isEmpty()) ? "John Smith" : uname);
+        if (json.get("id").equals("uid-0")) {
+            json.put("name", null);
+        } else {
+            json.put("name", (uname == null || uname.isEmpty()) ? "John Smith" : uname);
+        }
 
         File meta = new File(histDir + File.separator + "createdInfo.json");
         try (FileWriter writer = new FileWriter(meta)) {
