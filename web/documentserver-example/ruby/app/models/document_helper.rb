@@ -169,10 +169,12 @@ class DocumentHelper
     def create_meta(file_name, uid, uname, user_address)
       hist_dir = history_dir(storage_path(file_name, user_address))
 
+      uid =uid ? uid : "uid-1"
+      uname = uname ? uname : "John Smith"
       json = {
         :created => Time.now.to_formatted_s(:db),
-        :uid => uid ? uid : "uid-0",
-        :uname => uname ? uname : "John Smith"
+        :uid => uid,
+        :uname => uid == "uid-0" ? nil : uname
       }
 
       File.open(File.join(hist_dir, "createdInfo.json"), 'wb') do |file|

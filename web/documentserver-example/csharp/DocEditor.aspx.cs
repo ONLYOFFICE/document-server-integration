@@ -431,7 +431,7 @@ namespace OnlineEditorsExample
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", uid },
-                { "name", uname }
+                { "name", uid.Equals("uid-0") ? null : uname }
             }));
         }
     }
