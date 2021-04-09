@@ -349,7 +349,7 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
     res.created = created;
     res.user = {
         id: userid,
-        name: username
+        name: username != "null" ? username : null
     };
 
     return res;
