@@ -30,13 +30,14 @@ import config
 
 from . import fileUtils, jwtManager
 
+# convert file and give url to a new file
 def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None):
-    if not fromExt:
-        fromExt = fileUtils.getFileExt(docUri)
+    if not fromExt: # check if the extension from the request matches the real file extension
+        fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
 
     title = fileUtils.getFileName(docUri)
 
-    payload = {
+    payload = { # write all the necessary data to the payload object
         'url': docUri,
         'outputtype': toExt.replace('.', ''),
         'filetype': fromExt.replace('.', ''),
@@ -47,20 +48,21 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None):
 
     headers={'accept': 'application/json'}
 
-    if (isAsync):
-        payload.setdefault('async', True)
+    if (isAsync): # check if the operation is asynchronous
+        payload.setdefault('async', True) # and write this information to the payload object
 
-    if jwtManager.isEnabled():
-        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-        headerToken = jwtManager.encode({'payload': payload})
-        payload['token'] = jwtManager.encode(payload)
-        headers[jwtHeader] = f'Bearer {headerToken}'
+    if jwtManager.isEnabled(): # check if a secret key to generate token exists or not
+        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
+        headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
+        payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
+        headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
-    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers )
+    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers ) # send the headers and body values to the converter and write the result to the response
     json = response.json()
 
     return getResponseUri(json)
 
+# get response url
 def getResponseUri(json):
     isEnd = json.get('endConvert')
     error = json.get('error')
@@ -70,6 +72,7 @@ def getResponseUri(json):
     if isEnd:
         return json.get('fileUrl')
 
+# display an error that occurs during conversion
 def processError(error):
     prefix = 'Error occurred in the ConvertService: '
 
