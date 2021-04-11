@@ -42,7 +42,7 @@
     };
 
     var onRequestEditRights = function () {
-        location.href = location.href.replace(RegExp("action=view?&", "i"), "");
+        location.href = location.href.replace(RegExp("editorsMode=view\&?", "i"), "");
     };
 
     var onError = function (event) {
@@ -107,6 +107,7 @@
         config.events = {
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
+            'onRequestEditRights': onRequestEditRights,
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
