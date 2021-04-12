@@ -62,7 +62,7 @@
         };
 
         var onRequestEditRights = function () {
-            location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("editorsMode=view\&?", "i"), "");
         };
 
         var onError = function (event) {
