@@ -338,6 +338,7 @@ namespace OnlineEditorsExample
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
 
             _fileName = Path.GetFileName(body["filename"].ToString());
+            var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
@@ -354,7 +355,7 @@ namespace OnlineEditorsExample
                 fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName);
 
                 string newFileUri;
-                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri); ;
+                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri, filePass); ;
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";

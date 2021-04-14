@@ -83,7 +83,8 @@ namespace ASC.Api.DocumentConverter
                                           string toExtension,
                                           string documentRevisionId,
                                           bool isAsync,
-                                          out string convertedDocumentUri)
+                                          out string convertedDocumentUri,
+                                          string filePass = null)
         {
             convertedDocumentUri = string.Empty;
 
@@ -109,7 +110,8 @@ namespace ASC.Api.DocumentConverter
                 { "key", documentRevisionId },
                 { "outputtype", toExtension.Trim('.') },
                 { "title", title },
-                { "url", documentUri }
+                { "url", documentUri },
+                { "password", filePass }
             };
 
             if (JwtManager.Enabled)
@@ -230,7 +232,7 @@ namespace ASC.Api.DocumentConverter
                     break;
                 case -5:
                     // public const int c_nErrorUnexpectedGuid = -5;
-                    errorMessage = String.Format(errorMessageTemplate, "Error unexpected guid");
+                    errorMessage = String.Format(errorMessageTemplate, "Incorrect password");
                     break;
                 case -4:
                     // public const int c_nErrorDownloadError = -4;

@@ -263,6 +263,17 @@
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
                 <br />
+                <div id="blockPassword">
+                    <span class="descrFilePass">The file is password protected.</span>
+                    <br />
+                    <div>
+                        <input id="filePass" type="password"/>
+                        <div id="enterPass" class="button orange">Enter</div>
+                        <div id="skipPass" class="button gray">Skip</div>
+                    </div>
+                    <span class="errorPass"></span>
+                    <br />
+                </div>
                 <span id="step3" class="step">3. Loading editor scripts.</span>
                 <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
@@ -279,7 +290,7 @@
             </div>
             <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
-            <div id="beginEdit" class="button disable">Edit</div>
+            <div id="beginEdit" class="button orange disable">Edit</div>
             <div id="beginView" class="button gray disable">View</div>
             <div id="beginEmbedded" class="button gray disable">Embedded view</div>
             <div id="cancelEdit" class="button gray">Cancel</div>
