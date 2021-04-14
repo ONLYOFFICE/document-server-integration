@@ -41,48 +41,60 @@ public class FileModel
     public EditorConfig editorConfig;
     public String token;
 
+    // create file model
     public FileModel(String fileName, String lang, String uid, String uname, String actionData)
     {
         if (fileName == null) fileName = "";
-        fileName = fileName.trim();
+        fileName = fileName.trim();  // remove extra spaces in the file name
 
+        // get file type from the file name (word, cell or slide)
         documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
 
+        // set the document parameters
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetFileUri(fileName, true);
+        document.url = DocumentManager.GetFileUri(fileName, true);  // get file url
         document.urlUser = DocumentManager.GetFileUri(fileName, false);
-        document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
+        document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
+        // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
         document.info = new Info();
         document.info.favorite = uid != null && !uid.isEmpty() ? uid.equals("uid-2") : null;
 
+        // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
-        editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
-        if (lang != null) editorConfig.lang = lang;
+        editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
+        if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
+        // write user information to the config (id, name and group)
         if (uid != null) editorConfig.user.id = uid;
         if (uname != null) editorConfig.user.name = uid.equals("uid-0") ? null : uname;
         if (editorConfig.user.id.equals("uid-2")) editorConfig.user.group = "group-2";
         if (editorConfig.user.id.equals("uid-3")) editorConfig.user.group = "group-3";
 
+        // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
         changeType(mode, type);
     }
 
+    // change the document type
     public void changeType(String _mode, String _type)
     {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
 
+        // check if the file with such an extension can be edited
         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(document.title));
+        // check if the Submit form button is displayed or not
         editorConfig.customization.submitForm = canEdit && (mode.equals("edit") || mode.equals("fillForms"));
+        // set the mode parameter: change it to view if the document can't be edited
         editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
 
+        // set document permissions
         document.permissions = new Permissions(mode, type, canEdit);
 
-        if (type.equals("embedded")) InitDesktop();
+        if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
     }
 
     public void InitDesktop()
@@ -90,44 +102,50 @@ public class FileModel
         editorConfig.InitDesktop(document.urlUser);
     }
 
+    // generate document token
     public void BuildToken()
     {
+        // write all the necessary document parameters to the map
         Map<String, Object> map = new HashMap<>();
         map.put("type", type);
         map.put("documentType", documentType);
         map.put("document", document);
         map.put("editorConfig", editorConfig);
 
+        // and create token from them
         token = DocumentManager.CreateToken(map);
     }
 
+    // get document history
     public String[] GetHistory()
     {
         JSONParser parser = new JSONParser();
-        String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));
+        String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));  // get history directory
         if (DocumentManager.GetFileVersion(histDir) > 0) {
-            Integer curVer = DocumentManager.GetFileVersion(histDir);
+            Integer curVer = DocumentManager.GetFileVersion(histDir);  // get current file version if it is greater than 0
 
             List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<String, Object>();
 
-            for (Integer i = 1; i <= curVer; i++) {
+            for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
                 Map<String, Object> obj = new HashMap<String, Object>();
                 Map<String, Object> dataObj = new HashMap<String, Object>();
-                String verDir = DocumentManager.VersionDir(histDir, i);
+                String verDir = DocumentManager.VersionDir(histDir, i);  // get the path to the given file version
 
                 try {
                     String key = null;
 
+                    // get document key
                     key = i == curVer ? document.key : readFileToEnd(new File(verDir + File.separator + "key.txt"));
 
                     obj.put("key", key);
                     obj.put("version", i);
 
-                    if (i == 1) {
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));
-                        JSONObject json = (JSONObject) parser.parse(createdInfo);
+                    if (i == 1) {  // check if the version number is equal to 1
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));  // get file with meta data
+                        JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
+                        // write meta information to the object (user information and creation date)
                         obj.put("created", json.get("created"));
                         Map<String, Object> user = new HashMap<String, Object>();
                         user.put("id", json.get("id"));
@@ -139,20 +157,23 @@ public class FileModel
                     dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
-                    if (i > 1) {
+                    if (i > 1) {  //check if the version number is greater than 1
+                        // if so, get the path to the changes.json file
                         JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "changes.json")));
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
+                        // write information about changes to the object
                         obj.put("changes", changes.get("changes"));
                         obj.put("serverVersion", changes.get("serverVersion"));
                         obj.put("created", change.get("created"));
                         obj.put("user", change.get("user"));
 
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
-                        prevInfo.put("key", prev.get("key"));
+                        prevInfo.put("key", prev.get("key"));  // write key and url information about previous file version
                         prevInfo.put("url", prev.get("url"));
-                        dataObj.put("previous", prevInfo);
+                        dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
+                        // write the path to the diff.zip archive with differences in this file version
                         dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
                     }
 
@@ -167,6 +188,7 @@ public class FileModel
                 } catch (Exception ex) { }
             }
 
+            // write history information about the current file version to the history object
             Map<String, Object> histObj = new HashMap<String, Object>();
             histObj.put("currentVersion", curVer);
             histObj.put("history", hist);
@@ -177,12 +199,13 @@ public class FileModel
         return new String[] { "", "" };
     }
 
+    // read a file
     private String readFileToEnd(File file) {
         String output = "";
         try {
             try(FileInputStream is = new FileInputStream(file))
             {
-                Scanner scanner = new Scanner(is);
+                Scanner scanner = new Scanner(is);  // read data from the source
                 scanner.useDelimiter("\\A");
                 while (scanner.hasNext()) {
                     output += scanner.next();
@@ -193,6 +216,7 @@ public class FileModel
         return output;
     }
 
+    // the document parameters
     public class Document
     {
         public String title;
@@ -204,6 +228,7 @@ public class FileModel
         public Permissions permissions;
     }
 
+    // the permissions parameters
     public class Permissions
     {
         public Boolean comment;
@@ -215,6 +240,7 @@ public class FileModel
         public Boolean review;
         public List<String> reviewGroups;
 
+        // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit)
         {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
@@ -227,6 +253,7 @@ public class FileModel
             reviewGroups = editorConfig.user.group != null ? GetReviewGroups(editorConfig.user.group) : null;
         }
 
+        // defines the list of groups whose documents the user can review
         private List<String> GetReviewGroups(String group){
             Map<String, List<String>> reviewGroups = new HashMap<>();
 
@@ -237,11 +264,13 @@ public class FileModel
         }
     }
 
+    // the Favorite icon state
     public class Info
     {
         Boolean favorite;
     }
 
+    // the editor config parameters
     public class EditorConfig
     {
         public HashMap<String, Object> actionLink = null;
@@ -254,6 +283,7 @@ public class FileModel
 
         public EditorConfig(String actionData)
         {
+            // get the action in the document that will be scrolled to (bookmark or comment)
             if (actionData != null) {
                 Gson gson = new Gson();
                 actionLink = gson.fromJson(actionData, new TypeToken<HashMap<String, Object>>() { }.getType());
@@ -262,15 +292,17 @@ public class FileModel
             customization = new Customization();
         }
 
+        // set parameters for the embedded document
         public void InitDesktop(String url)
         {
             embedded = new Embedded();
-            embedded.saveUrl = url;
-            embedded.embedUrl = url;
-            embedded.shareUrl = url;
-            embedded.toolbarDocked = "top";
+            embedded.saveUrl = url;  // the absolute URL that will allow the document to be saved onto the user personal computer
+            embedded.embedUrl = url;  // the absolute URL to the document serving as a source file for the document embedded into the web page
+            embedded.shareUrl = url;  // the absolute URL that will allow other users to share this document
+            embedded.toolbarDocked = "top";  // the place for the embedded viewer toolbar, can be either top or bottom
         }
 
+        // default user parameters (id, name and group)
         public class User
         {
             public String id = "uid-1";
@@ -278,6 +310,7 @@ public class FileModel
             public String group = null;
         }
 
+        // customization parameters
         public class Customization
         {
             public Goback goback;
@@ -296,6 +329,7 @@ public class FileModel
             }
         }
 
+        // parameters for embedded document
         public class Embedded
         {
             public String saveUrl;
@@ -306,6 +340,7 @@ public class FileModel
     }
 
 
+    // turn java objects into json strings
     public static String Serialize(FileModel model)
     {
         Gson gson = new Gson();

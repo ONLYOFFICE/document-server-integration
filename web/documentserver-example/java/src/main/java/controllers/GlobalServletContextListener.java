@@ -33,12 +33,14 @@ import javax.servlet.ServletContextListener;
 public class GlobalServletContextListener implements ServletContextListener
 {
     @Override
+    // destroy ServletContextListener interface
     public void contextDestroyed(ServletContextEvent arg0)
     {
         System.out.println("ServletContextListener destroyed");
     }
 
     @Override
+    // start ServletContextListener interface
     public void contextInitialized(ServletContextEvent arg0)
     {
         TrustManager[] trustAllCerts = new TrustManager[]
@@ -46,17 +48,20 @@ public class GlobalServletContextListener implements ServletContextListener
             new X509TrustManager()
             {
                 @Override
+                // return an array of certificates which are trusted
                 public java.security.cert.X509Certificate[] getAcceptedIssuers()
                 {
                     return null;
                 }
 
                 @Override
+                // check whether the X509 certificate chain can be validated and is trusted for client authentication
                 public void checkClientTrusted(X509Certificate[] certs, String authType)
                 {
                 }
 
                 @Override
+                // check whether the X509 certificate chain can be validated and is trusted for server authentication
                 public void checkServerTrusted(X509Certificate[] certs, String authType)
                 {
                 }
@@ -67,6 +72,7 @@ public class GlobalServletContextListener implements ServletContextListener
 
         try
         {
+            // register the all-trusting trust manager for HTTPS
             sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -75,6 +81,7 @@ public class GlobalServletContextListener implements ServletContextListener
         {
         }
 
+        // create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier()
         {
             @Override
@@ -84,6 +91,7 @@ public class GlobalServletContextListener implements ServletContextListener
             }
         };
 
+        // install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         System.out.println("ServletContextListener started");

@@ -34,6 +34,7 @@ public class ConfigManager
     {
         try
         {
+            // get stream from the settings.properties resource and load it
             properties = new Properties();
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("settings.properties");
             properties.load(stream);
@@ -44,6 +45,7 @@ public class ConfigManager
         }
     }
 
+    // get name from the settings.properties file
     public static String GetProperty(String name)
     {
         if (properties == null)
@@ -51,6 +53,7 @@ public class ConfigManager
             return "";
         }
 
+        // get property by its name
         String property = properties.getProperty(name);
 
         return property == null ? "" : property;

@@ -31,14 +31,15 @@ public class CookieManager {
     public CookieManager(HttpServletRequest request) throws UnsupportedEncodingException {
         cookiesMap = new HashMap<String, String>();
 
-        Cookie[] cookies = request.getCookies();
+        Cookie[] cookies = request.getCookies();  // get all the cookies from the request
         if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                cookiesMap.putIfAbsent(cookie.getName(), URLDecoder.decode(cookie.getValue(), "UTF-8"));
+            for (Cookie cookie : cookies) {  // run through all the cookies
+                cookiesMap.putIfAbsent(cookie.getName(), URLDecoder.decode(cookie.getValue(), "UTF-8"));  // add cookie to the cookies map if its name isn't in the map yet
             }
         }
     }
 
+    // get cookie by its name
     public String getCookie(String name) {
         return cookiesMap.get(name);
     }
