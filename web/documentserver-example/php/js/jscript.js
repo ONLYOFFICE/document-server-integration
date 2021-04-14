@@ -104,15 +104,14 @@ if (typeof jQuery != "undefined") {
         }
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor-ajax.php"
-                + "?type=convert"
-                + "&filename=" + encodeURIComponent(jq("#hiddenFileName").val())
-                + "&fileUri=" + encodeURIComponent(fileUri || "");
+            var requestAddress = "webeditor-ajax.php?type=convert";
 
             jq.ajax({
                 async: true,
                 contentType: "text/xml",
-                type: "get",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({filename : fileName, fileUri : fileUri || ""}),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
