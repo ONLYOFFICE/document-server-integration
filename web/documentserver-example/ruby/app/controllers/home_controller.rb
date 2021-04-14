@@ -76,7 +76,14 @@ class HomeController < ApplicationController
   def convert
 
     begin
-      file_name = File.basename(params[:filename])
+      file_data = request.body.read
+      if file_data == nil || file_data.empty?
+          return ""
+      end
+
+      body = JSON.parse(file_data)
+      
+      file_name = File.basename(body["filename"])
       file_uri = DocumentHelper.get_file_uri(file_name, true)
       extension = File.extname(file_name).downcase
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
