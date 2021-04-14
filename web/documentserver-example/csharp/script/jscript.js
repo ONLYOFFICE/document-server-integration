@@ -89,14 +89,14 @@ if (typeof jQuery != "undefined") {
         }
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor.ashx"
-                + "?type=convert"
-                + "&filename=" + encodeURIComponent(jq("#hiddenFileName").val());
+            var requestAddress = "webeditor.ashx?type=convert";
 
             jq.ajax({
                 async: true,
                 contentType: "text/xml",
-                type: "get",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({ filename: fileName }),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;

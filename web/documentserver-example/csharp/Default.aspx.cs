@@ -319,7 +319,25 @@ namespace OnlineEditorsExample
 
         public static string DoConvert(HttpContext context)
         {
-            _fileName = Path.GetFileName(context.Request["filename"]);
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) context.Response.Write("{\"error\":1,\"message\":\"Request stream is empty\"}");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+
+            _fileName = Path.GetFileName(body["filename"].ToString());
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
