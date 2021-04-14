@@ -123,7 +123,7 @@ public class TrackManager {
 
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false);
+                String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), null, false);
                 if (newFileUri.isEmpty()) {
                     newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 } else {
@@ -181,7 +181,7 @@ public class TrackManager {
 
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false);
+                String newFileUri = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), null, false);
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {

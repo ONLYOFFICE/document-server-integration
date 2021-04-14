@@ -52,6 +52,7 @@ public class ServiceConverter
         public String key;
         public Boolean async;
         public String token;
+        public String password;
     }
 
     static
@@ -69,7 +70,7 @@ public class ServiceConverter
         }
     }
 
-    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, Boolean isAsync) throws Exception
+    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync) throws Exception
     {
         fromExtension = fromExtension == null || fromExtension.isEmpty() ? FileUtility.GetFileExtension(documentUri) : fromExtension;
 
@@ -86,6 +87,7 @@ public class ServiceConverter
         body.filetype = fromExtension.replace(".", "");
         body.title = title;
         body.key = documentRevisionId;
+        body.password = filePass;
         if (isAsync)
             body.async = true;
 
@@ -98,6 +100,7 @@ public class ServiceConverter
             map.put("filetype", body.filetype);
             map.put("title", body.title);
             map.put("key", body.key);
+            map.put("password", body.password);
             if (isAsync)
                 map.put("async", body.async);
 
@@ -172,7 +175,7 @@ public class ServiceConverter
                 errorMessage = errorMessageTemplate + "Error database";
                 break;
             case -5:
-                errorMessage = errorMessageTemplate + "Error unexpected guid";
+                errorMessage = errorMessageTemplate + "Incorrect password";
                 break;
             case -4:
                 errorMessage = errorMessageTemplate + "Error download error";

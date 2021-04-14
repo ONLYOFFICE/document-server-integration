@@ -164,6 +164,7 @@ public class IndexServlet extends HttpServlet
             JSONObject body = (JSONObject) parser.parse(bodyString);
 
             String fileName = FileUtility.GetFileName((String) body.get("filename"));
+            String filePass = body.get("filePass") != null ? (String) body.get("filePass") : null;
             String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
@@ -173,7 +174,7 @@ public class IndexServlet extends HttpServlet
             {
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
-                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
+                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
 
                 if (newFileUri.isEmpty())
                 {
