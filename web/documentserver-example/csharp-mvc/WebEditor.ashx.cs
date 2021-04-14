@@ -129,6 +129,7 @@ namespace OnlineEditorsExampleMVC
                 var body = jss.Deserialize<Dictionary<string, object>>(fileData);
 
                 var fileName = Path.GetFileName(body["filename"].ToString());
+                var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
                 var fileUri = DocManagerHelper.GetFileUri(fileName, true);
 
                 var extension = (Path.GetExtension(fileUri).ToLower() ?? "").Trim('.');
@@ -148,7 +149,7 @@ namespace OnlineEditorsExampleMVC
                     };
 
                     string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(downloadUri.ToString(), extension, internalExtension, key, true, out newFileUri);
+                    var result = ServiceConverter.GetConvertedUri(downloadUri.ToString(), extension, internalExtension, key, true, out newFileUri, filePass);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
