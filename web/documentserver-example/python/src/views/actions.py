@@ -65,7 +65,8 @@ def convert(request):
     response = {}
 
     try:
-        filename = fileUtils.getFileName(request.GET['filename'])
+        body = json.loads(request.body)
+        filename = fileUtils.getFileName(body.get("filename"))
         fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
