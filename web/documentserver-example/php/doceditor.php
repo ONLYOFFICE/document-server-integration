@@ -24,11 +24,13 @@
 
     $filename;
 
+    // get the file url and upload it
     $externalUrl = $_GET["fileUrl"];
     if (!empty($externalUrl))
     {
         $filename = DoUpload($externalUrl);
     }
+    // if the file url doesn't exist, get file name and file extension
     else
     {
         $filename = basename($_GET["fileID"]);
@@ -37,9 +39,11 @@
 
     if (!empty($createExt))
     {
+        // and get demo file name by the extension
         $filename = tryGetDefaultByType($createExt);
 
-        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
+        // create the demo file url
+        new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
         header('Location: ' . $new_url, true);
         exit;
     }
@@ -49,8 +53,9 @@
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $uid = empty($_GET["user"]) ? "0" : $_GET["user"];
+    $uid = empty($_GET["user"]) ? "0" : $_GET["user"];  // get file uid by its user
     $uname = "";
+    // get user names and groups by the uids
     switch ($uid) {
         case 0:
             $uname = "John Smith";
@@ -70,12 +75,13 @@
             break;
     }
 
-    $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
-    $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
-    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");
-    $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";
+    $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
+    $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
+    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");  // check if the Submit form button is displayed or not
+    $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
+    // specify the document config
     $config = [
         "type" => $type,
         "documentType" => getDocumentType($filename),
@@ -89,7 +95,7 @@
                 "uploaded" => date('d.m.y'),
                 "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
-            "permissions" => [
+            "permissions" => [  // the permission for the document to be edited and downloaded or not
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "download" => true,
                 "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
@@ -104,53 +110,58 @@
             "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
-            "callbackUrl" => getCallbackUrl($filename),
+            "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
             "createUrl" => getCreateUrl($filename, $uid, $type),
-            "user" => [
+            "user" => [  // the user currently viewing or editing the document
                 "id" => $uid,
                 "name" => $uname,
                 "group" => $ugroup
             ],
-            "embedded" => [
-                "saveUrl" => $fileuriUser,
-                "embedUrl" => $fileuriUser,
-                "shareUrl" => $fileuriUser,
-                "toolbarDocked" => "top",
+            "embedded" => [  // the parameters for the embedded document type
+                "saveUrl" => $fileuriUser,  // the absolute URL that will allow the document to be saved onto the user personal computer
+                "embedUrl" => $fileuriUser,  // the absolute URL to the document serving as a source file for the document embedded into the web page
+                "shareUrl" => $fileuriUser,  // the absolute URL that will allow other users to share this document
+                "toolbarDocked" => "top",  // the place for the embedded viewer toolbar (top or bottom)
             ],
-            "customization" => [
-                "about" => true,
-                "feedback" => true,
-                "forcesave" => false,
-                "submitForm" => $submitForm,
-                "goback" => [
-                    "url" => serverPath(),
+            "customization" => [  // the parameters for the editor interface
+                "about" => true,  // the About section display
+                "feedback" => true,  // the Feedback & Support menu button display
+                "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
+                "submitForm" => $submitForm,  // if the Submit form button is displayed or not
+                "goback" => [  // settings for the Open file location menu button and upper right corner button
+                    "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                 ]
             ]
         ]
     ];
 
+    // an image for inserting
     $dataInsertImage = [
         "fileType" => "png",
         "url" => serverPath(true) . "/css/images/logo.png"
     ];
 
+    // a document for comparing
     $dataCompareFile = [
         "fileType" => "docx",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
     ];
 
+    // recipients data for mail merging
     $dataMailMergeRecipients = [
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
 
+    // check if the secret key to generate token exists
     if (isJwtEnabled()) {
-        $config["token"] = jwtEncode($config);
-        $dataInsertImage["token"] = jwtEncode($dataInsertImage);
-        $dataCompareFile["token"] = jwtEncode($dataCompareFile);
-        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
+        $config["token"] = jwtEncode($config);  // encode config into the token
+        $dataInsertImage["token"] = jwtEncode($dataInsertImage);  // encode the dataInsertImage object into the token
+        $dataCompareFile["token"] = jwtEncode($dataCompareFile);  // encode the dataCompareFile object into the token
+        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);  // encode the dataMailMergeRecipients object into the token
     }
 
+    // get demo file name by the extension
     function tryGetDefaultByType($createExt) {
         $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
         $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
@@ -159,14 +170,16 @@
         if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
         {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
-            //Copy error!!!
+            // Copy error!!!
         }
 
+        // create demo file meta information
         createMeta($demoFilename, $_GET["user"]);
 
         return $demoFilename;
     }
 
+    // get the callback url
     function getCallbackUrl($fileName) {
         return serverPath(TRUE) . '/'
                     . "webeditor-ajax.php"
@@ -184,27 +197,28 @@
                     . "&type=" . $type;
     }
 
+    // get document history
     function getHistory($filename, $filetype, $docKey, $fileuri) {
-        $histDir = getHistoryDir(getStoragePath($filename));
+        $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
-        if (getFileVersion($histDir) > 0) {
+        if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
             $curVer = getFileVersion($histDir);
 
             $hist = [];
             $histData = [];
 
-            for ($i = 1; $i <= $curVer; $i++) {
+            for ($i = 1; $i <= $curVer; $i++) {  // run through all the file versions
                 $obj = [];
                 $dataObj = [];
-                $verDir = getVersionDir($histDir, $i);
+                $verDir = getVersionDir($histDir, $i);  // get the path to the file version
 
-                $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
+                $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");  // get document key
                 $obj["key"] = $key;
                 $obj["version"] = $i;
 
-                if ($i == 1) {
-                    $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
-                    $json = json_decode($createdInfo, true);
+                if ($i == 1) {  // check if the version number is equal to 1
+                    $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");  // get meta data of this file
+                    $json = json_decode($createdInfo, true);  // decode the meta data from the createdInfo.json file
 
                     $obj["created"] = $json["created"];
                     $obj["user"] = [
@@ -216,26 +230,27 @@
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
                 $dataObj["key"] = $key;
-                $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
+                $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
                 $dataObj["version"] = $i;
 
-                if ($i > 1) {
-                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);
+                if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
+                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $changes["changes"];
+                    $obj["changes"] = $changes["changes"];  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
                     $obj["created"] = $change["created"];
                     $obj["user"] = $change["user"];
 
-                    $prev = $histData[$i - 2];
-                    $dataObj["previous"] = [
+                    $prev = $histData[$i - 2];  // get the history data from the previous file version
+                    $dataObj["previous"] = [  // write information about previous file version to the data object
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
                     $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
                     $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
+                    // write the path to the diff.zip archive with differences in this file version
                     $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
                 }
 
@@ -243,10 +258,11 @@
                     $dataObj["token"] = jwtEncode($dataObj);
                 }
 
-                array_push($hist, $obj);
-                $histData[$i - 1] = $dataObj;
+                array_push($hist, $obj);  // add object dictionary to the hist list
+                $histData[$i - 1] = $dataObj;  // write data object information to the history data
             }
 
+            // write history information about the current file version
             $out = [];
             array_push($out, [
                     "currentVersion" => $curVer,
@@ -309,28 +325,34 @@
                 console.log(message);
         };
 
+        // the application is loaded into the browser
         var onAppReady = function () {
             innerAlert("Document editor ready");
         };
 
+        // the document is modified
         var onDocumentStateChange = function (event) {
             var title = document.title.replace(/\*$/g, "");
             document.title = title + (event.data ? "*" : "");
         };
 
+        // the user is trying to switch the document from the viewing into the editing mode
         var onRequestEditRights = function () {
             location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
         };
 
+        // an error or some other specific event occurs
         var onError = function (event) {
             if (event)
                 innerAlert(event.data);
         };
 
+        // the document is opened for editing with the old document.key value
         var onOutdatedVersion = function (event) {
             location.reload(true);
         };
 
+        // replace the link to the document which contains a bookmark
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&actionLink=");
@@ -347,32 +369,37 @@
             return link;
         }
 
+        // the user is trying to get link for opening the document which contains a bookmark, scrolling to the bookmark position
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
-            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
         };
 
+        // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
             var favorite = !!event.data.favorite;
             var title = document.title.replace(/^\☆/g, "");
             document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);
+            docEditor.setFavorite(favorite);  // change the Favorite icon state
         };
 
+        // the user is trying to insert an image by clicking the Image from Storage button
         var onRequestInsertImage = function(event) {
-            docEditor.insertImage({
+            docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
                 <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
             })
         };
 
+        // the user is trying to select document for comparing by clicking the Document from Storage button
         var onRequestCompareFile = function() {
-            docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
+            docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);  // select a document for comparing
         };
 
+        // the user is trying to select recipients data by clicking the Mail merge button
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
         };
 
         var сonnectEditor = function () {
@@ -407,14 +434,17 @@
                 $historyData = $out[1];
             ?>
             <?php if ($history != null && $historyData != null): ?>
+            // the user is trying to show the document version history
             config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<?php echo json_encode($history) ?>);
+                docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
             };
+            // the user is trying to click the specific document version in the document version history
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver - 1]);
+                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
             };
+            // the user is trying to go back to the document from viewing the document version history
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
             };
