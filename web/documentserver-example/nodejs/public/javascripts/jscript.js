@@ -131,12 +131,13 @@ if (typeof jQuery != "undefined") {
         }
 
         timer = setTimeout(function () {
-            var requestAddress = UrlConverter + "?filename=" + encodeURIComponent(jq("#hiddenFileName").val());
             jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
-                type: "get",
-                url: requestAddress,
+                type: "post",
+                dataType: "json",
+                data: {filename: fileName},
+                url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
                     try {

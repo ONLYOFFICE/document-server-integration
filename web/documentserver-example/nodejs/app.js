@@ -204,9 +204,9 @@ app.post("/upload", function (req, res) {
     });
 });
 
-app.get("/convert", function (req, res) {
+app.post("/convert", function (req, res) {
 
-    var fileName = fileUtility.getFileName(req.query.filename);
+    var fileName = fileUtility.getFileName(req.body.filename);
     var fileUri = docManager.getFileUri(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
