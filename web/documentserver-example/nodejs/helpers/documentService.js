@@ -43,7 +43,7 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
     });
 };
 
-documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback) {
+documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);
 
     var title = fileUtility.getFileName(documentUri) || guidManager.newGuid();
@@ -56,7 +56,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         outputtype: toExtension.replace(".", ""),
         filetype: fromExtension.replace(".", ""),
         title: title,
-        key: documentRevisionId
+        key: documentRevisionId,
+        password: filePass
     };
 
     var uri = siteUrl + configServer.get('converterUrl');
@@ -109,7 +110,7 @@ documentService.processConvertServiceResponceError = function (errorCode) {
             errorMessage = errorMessageTemplate + "Error database";
             break;
         case -5:
-            errorMessage = errorMessageTemplate + "Error unexpected guid";
+            errorMessage = errorMessageTemplate + "Incorrect password";
             break;
         case -4:
             errorMessage = errorMessageTemplate + "Error download error";
