@@ -64,7 +64,7 @@ function ProcessConvServResponceError($errorCode) {
             $errorMessage = $errorMessageTemplate . "Error database";
             break;
         case -5:
-            $errorMessage = $errorMessageTemplate . "Error unexpected guid";
+            $errorMessage = $errorMessageTemplate . "Incorrect password";
             break;
         case -4:
             $errorMessage = $errorMessageTemplate . "Error download error";
@@ -115,7 +115,7 @@ function GenerateRevisionId($expected_key) {
 *
 * @return Document request result of conversion
 */
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async) {
+function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass) {
     if (empty($from_extension))
     {
         $path_parts = pathinfo($document_uri);
@@ -141,7 +141,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         "outputtype" => trim($to_extension,'.'),
         "filetype" => trim($from_extension, '.'),
         "title" => $title,
-        "key" => $document_revision_id
+        "key" => $document_revision_id,
+        "password" => $filePass
     ];
 
     $headerToken = "";
@@ -191,9 +192,9 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 *
 * @return The percentage of completion of conversion
 */
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri) {
+function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async);
+    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass);
     $json = json_decode($responceFromConvertService, true);
 
     $errorElement = $json["error"];

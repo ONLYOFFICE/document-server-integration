@@ -179,6 +179,7 @@ function track() {
 function convert() {
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
+    $filePass = $post["filePass"];
     $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
@@ -195,7 +196,7 @@ function convert() {
         $percent;
 
         try {
-            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri);
+            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri, $filePass);
         }
         catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
