@@ -76,14 +76,22 @@ class HomeController < ApplicationController
   def convert
 
     begin
-      file_name = File.basename(params[:filename])
+      file_data = request.body.read
+      if file_data == nil || file_data.empty?
+          return ""
+      end
+
+      body = JSON.parse(file_data)
+      
+      file_name = File.basename(body["filename"])
+      file_pass = body["filePass"] ? body["filePass"] : nil
       file_uri = DocumentHelper.get_file_uri(file_name, true)
       extension = File.extname(file_name).downcase
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
 
       if DocumentHelper.convert_exts.include? (extension)
         key = ServiceConverter.generate_revision_id(file_uri)
-        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true)
+        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass)
 
         if percent != 100
           render plain: '{ "step" : "' + percent.to_s + '", "filename" : "' + file_name + '"}'

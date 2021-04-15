@@ -68,7 +68,7 @@ class TrackHelper
             if (!cur_ext.eql?(download_ext))
                 key = ServiceConverter.generate_revision_id(download_uri)
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false)
+                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil)
                     if (new_file_uri == nil || new_file_uri.empty?)
                         new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                     else
@@ -132,7 +132,7 @@ class TrackHelper
             if (!cur_ext.eql?(download_ext))
                 key = ServiceConverter.generate_revision_id(download_uri)
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false)
+                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil)
                     if (new_file_uri == nil || new_file_uri.empty?)
                         new_file_name = true
                     else

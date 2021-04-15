@@ -204,9 +204,10 @@ app.post("/upload", function (req, res) {
     });
 });
 
-app.get("/convert", function (req, res) {
+app.post("/convert", function (req, res) {
 
-    var fileName = fileUtility.getFileName(req.query.filename);
+    var fileName = fileUtility.getFileName(req.body.filename);
+    var filePass = req.body.filePass ? req.body.filePass : null;
     var fileUri = docManager.getFileUri(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
@@ -268,7 +269,7 @@ app.get("/convert", function (req, res) {
             writeResult(correctName, result, null);
         } catch (e) {
             console.log(e);
-            writeResult(null, null, "Server error");
+            writeResult(null, null, e.message);
         }
     };
 
@@ -279,7 +280,7 @@ app.get("/convert", function (req, res) {
             let key = fileUri + stat.mtime.getTime();
 
             key = documentService.generateRevisionId(key);
-            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback);
+            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass);
         } else {
             writeResult(fileName, null, null);
         }

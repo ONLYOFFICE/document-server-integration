@@ -38,6 +38,7 @@ if (typeof jQuery != "undefined") {
                 jq(".current").removeClass("current");
                 jq("#step1").addClass("current");
                 jq("#mainProgress .error-message").hide().find("span").text("");
+                jq("#blockPassword").hide();
                 jq("#mainProgress").removeClass("embedded");
                 jq("#uploadFileName").text("");
 
@@ -70,7 +71,6 @@ if (typeof jQuery != "undefined") {
                 jq("#uploadFileName").addClass(response.documentType);
 
                 jq("#step1").addClass("done").removeClass("current");
-                jq("#step2").addClass("current");
 
                 checkConvert();
             }
@@ -80,7 +80,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (fileUri) {
+    var checkConvert = function (fileUri, filePass) {
         if (timer != null) {
             clearTimeout(timer);
         }
@@ -102,17 +102,18 @@ if (typeof jQuery != "undefined") {
             loadScripts();
             return;
         }
+        jq("#step2").addClass("current");
+        jq("#filePass").val("");
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor-ajax.php"
-                + "?type=convert"
-                + "&filename=" + encodeURIComponent(jq("#hiddenFileName").val())
-                + "&fileUri=" + encodeURIComponent(fileUri || "");
+            var requestAddress = "webeditor-ajax.php?type=convert";
 
             jq.ajax({
                 async: true,
                 contentType: "text/xml",
-                type: "get",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({filename : fileName, fileUri : fileUri || "", filePass: filePass}),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -123,18 +124,30 @@ if (typeof jQuery != "undefined") {
                     }
 
                     if (response.error) {
-                        jq(".current").removeClass("current");
-                        jq(".step:not(.done)").addClass("error");
-                        jq("#mainProgress .error-message").show().find("span").text(response.error);
-                        jq('#hiddenFileName').val("");
-                        return;
+                        if (response.error.includes("Incorrect password")) {
+                            jq(".current").removeClass("current");
+                            jq("#step2").addClass("error");
+                            jq("#blockPassword").show();
+                            if (filePass) {
+                                jq("#filePass").addClass("errorInput");
+                                jq(".errorPass").text("The password is incorrect, please try again.");
+                            }
+                            return;
+                        } else {
+                            jq(".current").removeClass("current");
+                            jq(".step:not(.done)").addClass("error");
+                            jq("#mainProgress .error-message").show().find("span").text(response.error);
+                            jq('#hiddenFileName').val("");
+                            return;
+                        }
                     }
 
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step < 100) {
-                        checkConvert(response.fileUri);
+                        checkConvert(response.fileUri, filePass);
                     } else {
+                        jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
                 }
@@ -146,7 +159,6 @@ if (typeof jQuery != "undefined") {
         if (!jq("#mainProgress").is(":visible")) {
             return;
         }
-        jq("#step2").addClass("done").removeClass("current");
         jq("#step3").addClass("current");
 
         if (jq("#loadScripts").is(":empty")) {
@@ -196,6 +208,23 @@ if (typeof jQuery != "undefined") {
             setCookie("ulang", langSel.val());
         });
     };
+
+    jq(document).on("click", "#enterPass", function () {
+        var filePass = jq("#filePass").val();
+        if (filePass) {
+            jq("#step2").removeClass("error");
+            jq("#blockPassword").hide();
+            checkConvert(null, filePass);
+        } else {
+            jq("#filePass").addClass("errorInput");
+            jq(".errorPass").text("Password can't be blank.");
+        }
+    });
+
+    jq(document).on("click", "#skipPass", function () {
+        jq("#blockPassword").hide();
+        loadScripts();
+    });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());

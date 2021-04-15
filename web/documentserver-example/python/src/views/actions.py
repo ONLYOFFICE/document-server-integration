@@ -65,7 +65,9 @@ def convert(request):
     response = {}
 
     try:
-        filename = fileUtils.getFileName(request.GET['filename'])
+        body = json.loads(request.body)
+        filename = fileUtils.getFileName(body.get("filename"))
+        filePass = body.get("filePass")
         fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
@@ -74,7 +76,7 @@ def convert(request):
         if docManager.isCanConvert(fileExt):
             key = docManager.generateFileKey(filename, request)
 
-            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True)
+            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass)
 
             if not newUri:
                 response.setdefault('step', '0')

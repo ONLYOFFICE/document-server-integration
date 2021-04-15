@@ -185,19 +185,19 @@ label .checkbox {
     -webkit-user-select: none;
 }
 
-#beginEdit {
+.button.orange {
     background: #FF6F3D;
     border: 1px solid #FF6F3D;
     color: #FFFFFF;
 }
 
-#beginEdit.disable {
+.button.orange.disable {
     background: #EDC2B3;
     border: 1px solid #EDC2B3;
-    cursor: default; 
+    cursor: default;
 }
 
-#beginEdit:not(.disable):hover{
+.button.orange:not(.disable):hover {
     background: #ff7a4b;
 }
 
@@ -642,4 +642,40 @@ footer a:hover {
 .scroll-table-body::-webkit-scrollbar-thumb {
     background: #D0D5DA;
     border-radius: 3px;
+}
+
+.descrFilePass {
+    display: block;
+    font-weight: bold;
+    line-height: 167%;
+}
+
+#filePass {
+    border: 1px solid #D0D5DA;
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 33px;
+    letter-spacing: -0.02em;
+    line-height: 150%;
+    margin-right: 8px;
+    outline: none;
+    padding: 7px 8px;
+    vertical-align: bottom;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    width: 250px;
+}
+
+.errorInput {
+    border-color: #CB0000 !important;
+}
+
+.errorPass {
+    color: #CB0000;
+    display: block;
+    line-height: 160%;
+    letter-spacing: -0.02em;
+    word-wrap: break-word;
 }

@@ -30,7 +30,7 @@ import config
 
 from . import fileUtils, jwtManager
 
-def getConverterUri(docUri, fromExt, toExt, docKey, isAsync):
+def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None):
     if not fromExt:
         fromExt = fileUtils.getFileExt(docUri)
 
@@ -41,7 +41,8 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync):
         'outputtype': toExt.replace('.', ''),
         'filetype': fromExt.replace('.', ''),
         'title': title,
-        'key': docKey
+        'key': docKey,
+        'password': filePass
     }
 
     headers={'accept': 'application/json'}
@@ -76,7 +77,7 @@ def processError(error):
         '-8': f'{prefix}Error document VKey',
         '-7': f'{prefix}Error document request',
         '-6': f'{prefix}Error database',
-        '-5': f'{prefix}Error unexpected guid',
+        '-5': f'{prefix}Incorrect password',
         '-4': f'{prefix}Error download error',
         '-3': f'{prefix}Error convertation error',
         '-2': f'{prefix}Error convertation timeout',

@@ -21,7 +21,7 @@ class ServiceConverter
 
   class << self
 
-    def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async)
+    def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass)
 
       from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext
 
@@ -37,7 +37,8 @@ class ServiceConverter
         :outputtype => to_ext.delete('.'),
         :filetype => from_ext.delete('.'),
         :title => title,
-        :key => document_revision_id
+        :key => document_revision_id,
+        :password => file_pass
       }
 
       data = nil
@@ -100,7 +101,7 @@ class ServiceConverter
         when -6
           error_message = 'Error occurred in the ConvertService.ashx: Error database'
         when -5
-          error_message = 'Error occurred in the ConvertService.ashx: Error unexpected guid'
+          error_message = 'Error occurred in the ConvertService.ashx: Incorrect password'
         when -4
           error_message = 'Error occurred in the ConvertService.ashx: Error download error'
         when -3

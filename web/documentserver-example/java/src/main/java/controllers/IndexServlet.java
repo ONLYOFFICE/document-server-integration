@@ -40,8 +40,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import org.primeframework.jwt.domain.JWT;
-
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet
@@ -157,7 +155,16 @@ public class IndexServlet extends HttpServlet
 
         try
         {
-            String fileName = FileUtility.GetFileName(request.getParameter("filename"));
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            String fileName = FileUtility.GetFileName((String) body.get("filename"));
+            String filePass = body.get("filePass") != null ? (String) body.get("filePass") : null;
             String fileUri = DocumentManager.GetFileUri(fileName, true);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
@@ -167,7 +174,7 @@ public class IndexServlet extends HttpServlet
             {
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
-                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, true);
+                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
 
                 if (newFileUri.isEmpty())
                 {
