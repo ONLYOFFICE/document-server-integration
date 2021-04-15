@@ -1,6 +1,6 @@
 ## Requirements
 
-Example is written for Python 3.6+
+Example is written for Python 3.9+
 
 You should also install following dependencies:
 ```
