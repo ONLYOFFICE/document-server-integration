@@ -16,30 +16,35 @@
 
 class FileUtility
 
+  
+  # the document extension list
   @@exts_document = %w(.doc .docx .docm .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps)
 
+  # the spreadsheet extension list
   @@exts_spreadsheet = %w(.xls .xlsx .xlsm .xlt .xltx .xltm .ods .fods .ots .csv)
 
+  # the presentation extension list
   @@exts_presentation = %w(.pps .ppsx .ppsm .ppt .pptx .pptm .pot .potx .potm .odp .fodp .otp)
 
   class << self
 
+    # get file type by its name
     def get_file_type(file_name)
-        ext = File.extname(file_name)
+        ext = File.extname(file_name)  # get file extension by its name
 
-        if @@exts_document.include? ext
+        if @@exts_document.include? ext  # word type for document extensions
           return 'word'
         end
 
-        if @@exts_spreadsheet.include? ext
+        if @@exts_spreadsheet.include? ext  # cell type for spreadsheet extensions
           return 'cell'
         end
 
-        if @@exts_presentation.include? ext
+        if @@exts_presentation.include? ext  # slide type for presentation extensions
           return 'slide'
         end
 
-        'word'
+        'word'  # the default file type is word
     end
 
   end
