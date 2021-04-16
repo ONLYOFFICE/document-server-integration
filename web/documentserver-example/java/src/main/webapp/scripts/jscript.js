@@ -86,6 +86,7 @@ if (typeof jQuery !== "undefined") {
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
         if (ConverExtList.indexOf(posExt) === -1) {
+            jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
         }
