@@ -27,6 +27,8 @@
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
+    mustReload = false;
+
     jq(function () {
         jq("#fileupload").fileupload({
             dataType: "json",
@@ -67,6 +69,8 @@ if (typeof jQuery !== "undefined") {
                 jq("#hiddenFileName").val(response.filename);
                 jq("#uploadFileName").text(response.filename);
                 jq("#uploadFileName").addClass(response.documentType);
+
+                mustReload = true;
 
                 jq("#step1").addClass("done").removeClass("current");
 
@@ -250,7 +254,9 @@ if (typeof jQuery !== "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
-        document.location.reload();
+        if (mustReload) {
+            document.location.reload();
+        }
     });
 
     jq(document).on("click", ".try-editor", function (e) {
