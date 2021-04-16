@@ -270,7 +270,8 @@ function getStoredFiles() {
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
                 $result[$dat] = (object) array(
                         "name" => $fileName,
-                        "documentType" => getDocumentType($fileName)
+                        "documentType" => getDocumentType($fileName),
+                        "canEdit" => in_array(strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED'])
                     );
             }
         }
