@@ -222,6 +222,12 @@ class DocumentHelper
 
     end
 
+    def get_create_url(document_type)
+
+      get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
+
+    end
+
     def get_internal_extension(file_type)
 
       case file_type
