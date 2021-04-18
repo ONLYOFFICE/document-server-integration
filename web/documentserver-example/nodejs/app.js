@@ -718,6 +718,7 @@ app.get("/editor", function (req, res) {
                 key: key,
                 token: "",
                 callbackUrl: docManager.getCallback(fileName),
+                createUrl: docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, name, type, lang),
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: mode == "edit" || mode == "review",
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
