@@ -59,6 +59,11 @@ namespace OnlineEditorsExampleMVC.Models
             get { return DocManagerHelper.GetCallback(FileName); }
         }
 
+        public string CreateUrl
+        {
+            get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
+        }
+
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
             var jss = new JavaScriptSerializer();
@@ -135,6 +140,7 @@ namespace OnlineEditorsExampleMVC.Models
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },
+                                { "createUrl", CreateUrl },
                                 {
                                     "user", new Dictionary<string, object>
                                         {
