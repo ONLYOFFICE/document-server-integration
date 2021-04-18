@@ -81,6 +81,18 @@ namespace OnlineEditorsExample
             }
         }
 
+        public static string getCreateUrl(String documentType, String editorsType)
+        {
+            var createUrl = new UriBuilder(_Default.GetServerUrl(false));
+            createUrl.Path =
+                HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "doceditor.aspx";
+            createUrl.Query = "type=" + documentType
+                                + "&editorsType=" + editorsType;
+            return createUrl.ToString();
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             var externalUrl = Request["fileUrl"];
@@ -107,6 +119,7 @@ namespace OnlineEditorsExample
             var canEdit = _Default.EditedExts.Contains(ext);
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";
             var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));
+            var editorsType = Request.GetOrDefault("editorsType", "desktop");
 
             var userId = Request.Cookies.GetOrDefault("uid", "uid-1");
             var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");
@@ -136,7 +149,7 @@ namespace OnlineEditorsExample
 
             var config = new Dictionary<string, object>
                 {
-                    { "type", Request.GetOrDefault("editorsType", "desktop") },
+                    { "type", editorsType },
                     { "documentType", documentType },
                     {
                         "document", new Dictionary<string, object>
@@ -175,6 +188,7 @@ namespace OnlineEditorsExample
                                 { "mode", mode },
                                 { "lang", Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },
+                                { "createUrl",  getCreateUrl(documentType, editorsType)},
                                 {
                                     "user", new Dictionary<string, object>
                                         {
