@@ -71,7 +71,7 @@ namespace ASC.Api.DocumentConverter
         /// <param name="documentRevisionId">Key for caching on service</param>
         /// <param name="isAsync">Perform conversions asynchronously</param>
         /// <param name="convertedDocumentUri">Uri to the converted document</param>
-        /// <returns>The percentage of completion of conversion</returns>
+        /// <returns>The percentage of conversion completion</returns>
         /// <example>
         /// string convertedDocumentUri;
         /// GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
@@ -88,22 +88,27 @@ namespace ASC.Api.DocumentConverter
         {
             convertedDocumentUri = string.Empty;
 
+            // check if the fromExtension parameter is defined; if not, get it from the document url
             fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
 
+            // check if the file name parameter is defined; if not, get random uuid for this file
             var title = Path.GetFileName(documentUri);
             title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;
 
+            // get document key
             documentRevisionId = string.IsNullOrEmpty(documentRevisionId)
                                      ? documentUri
                                      : documentRevisionId;
             documentRevisionId = GenerateRevisionId(documentRevisionId);
 
+            // specify request parameters
             var request = (HttpWebRequest)WebRequest.Create(DocumentConverterUrl);
             request.Method = "POST";
             request.ContentType = "application/json";
             request.Accept = "application/json";
             request.Timeout = ConvertTimeout;
 
+            // write all the necessary parameters to the body object
             var body = new Dictionary<string, object>() {
                 { "async", isAsync },
                 { "filetype", fromExtension.Trim('.') },
@@ -116,24 +121,26 @@ namespace ASC.Api.DocumentConverter
 
             if (JwtManager.Enabled)
             {
+                // create payload object
                 var payload = new Dictionary<string, object>
                     {
                         { "payload", body }
                     };
 
-                var payloadToken =  JwtManager.Encode(payload);
-                var bodyToken = JwtManager.Encode(body);
+                var payloadToken =  JwtManager.Encode(payload);  // encode the payload object to the payload token
+                var bodyToken = JwtManager.Encode(body);  // encode the body object to the body token
+                // create header token
                 string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
-                request.Headers.Add(JWTheader, "Bearer " + payloadToken);
+                request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // and add it to the request headers with the Bearer prefix
 
                 body.Add("token", bodyToken);
             }
 
             var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
             request.ContentLength = bytes.Length;
-            using (var requestStream = request.GetRequestStream())
+            using (var requestStream = request.GetRequestStream())  // get the request stream
             {
-                requestStream.Write(bytes, 0, bytes.Length);
+                requestStream.Write(bytes, 0, bytes.Length);  // and write the serialized body object to it
             }
 
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
@@ -144,13 +151,13 @@ namespace ASC.Api.DocumentConverter
 
             string dataResponse;
             using (var response = request.GetResponse())
-            using (var stream = response.GetResponseStream())
+            using (var stream = response.GetResponseStream())  // get the response stream
             {
                 if (stream == null) throw new Exception("Response is null");
 
                 using (var reader = new StreamReader(stream))
                 {
-                    dataResponse = reader.ReadToEnd();
+                    dataResponse = reader.ReadToEnd();  // and read it
                 }
             }
 
@@ -164,9 +171,10 @@ namespace ASC.Api.DocumentConverter
         /// <returns>Supported key</returns>
         public static string GenerateRevisionId(string expectedKey)
         {
+            // if the expected key length is greater than 20, it is hashed and a fixed length value is stored in the string format 
             if (expectedKey.Length > 20) expectedKey = expectedKey.GetHashCode().ToString();
             var key = Regex.Replace(expectedKey, "[^0-9-.a-zA-Z_=]", "_");
-            return key.Substring(key.Length - Math.Min(key.Length, 20));
+            return key.Substring(key.Length - Math.Min(key.Length, 20));  // the resulting key length is 20 or less
         }
 
         #endregion
@@ -178,7 +186,7 @@ namespace ASC.Api.DocumentConverter
         /// </summary>
         /// <param name="jsonDocumentResponse">The resulting json from editing service</param>
         /// <param name="responseUri">Uri to the converted document</param>
-        /// <returns>The percentage of completion of conversion</returns>
+        /// <returns>The percentage of conversion completion</returns>
         private static int GetResponseUri(string jsonDocumentResponse, out string responseUri)
         {
             if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
@@ -186,21 +194,22 @@ namespace ASC.Api.DocumentConverter
             var responseFromService = Json.Decode(jsonDocumentResponse);
             if (jsonDocumentResponse == null) throw new WebException("Invalid answer format");
 
-            var errorElement = responseFromService.error;
-            if (errorElement != null) ProcessResponseError(Convert.ToInt32(errorElement));
+            var errorElement = responseFromService.error;  // if an error occurs
+            if (errorElement != null) ProcessResponseError(Convert.ToInt32(errorElement));  // then get an error message
 
+            // check if the conversion is completed and save the result to a variable
             var isEndConvert = responseFromService.endConvert;
 
             int resultPercent;
             responseUri = string.Empty;
-            if (isEndConvert)
+            if (isEndConvert)  // if the conversion is completed
             {
-                responseUri = responseFromService.fileUrl;
+                responseUri = responseFromService.fileUrl;  // get the file url
                 resultPercent = 100;
             }
-            else
+            else  // if the conversion isn't completed
             {
-                resultPercent = responseFromService.percent;
+                resultPercent = responseFromService.percent;  // get the percentage value
                 if (resultPercent >= 100) resultPercent = 99;
             }
 
