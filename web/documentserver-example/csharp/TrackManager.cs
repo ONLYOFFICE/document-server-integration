@@ -258,7 +258,7 @@ namespace OnlineEditorsExample
                     };
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
-                var bodyToken = JwtManager.Encode(body);  // encode a payload object into a body token
+                var bodyToken = JwtManager.Encode(body);  // encode body into a body token
                 string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 

@@ -30,22 +30,24 @@ namespace OnlineEditorsExampleMVC.Controllers
             return View();
         }
 
+        // viewing file in the editor
         public ActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
             var file = new FileModel
             {
-                Mode = editorsMode,
-                Type = editorsType,
-                FileName = Path.GetFileName(fileName)
+                Mode = editorsMode,  // editor mode: edit or view
+                Type = editorsType,  // editor type: desktop, mobile, embedded
+                FileName = Path.GetFileName(fileName)  // file name
             };
 
             return View("Editor", file);
         }
 
+        // creating a sample document
         public ActionResult Sample(string fileExt, bool? sample)
         {
-            var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);
-            DocManagerHelper.CreateMeta(fileName, Request.Cookies.GetOrDefault("uid", ""), Request.Cookies.GetOrDefault("uname", ""));
+            var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);  // create a sample document
+            DocManagerHelper.CreateMeta(fileName, Request.Cookies.GetOrDefault("uid", ""), Request.Cookies.GetOrDefault("uname", ""));  // create meta information for the sample document
             Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             return null;
         }
