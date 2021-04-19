@@ -173,7 +173,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req) })
+            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))})
 
     return fileInfos
 

@@ -157,54 +157,60 @@
                                         <div class="scroll-table-body">
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
-                                                    <% for (Integer i = 0; i < files.length; i++) { %>
-                                                        <% String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase(); %>
+                                                    <% for (Integer i = 0; i < files.length; i++) {
+                                                        String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
+                                                        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
+                                                    %>
                                                         <tr class="tableRow" title="<%= files[i].getName() %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                                     <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
-                                                                    <img src="css/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
-                                                                </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
-                                                                    <img src="css/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
-                                                                </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <% if (docType.equals("word")) { %>
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
-                                                                        <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                            <% if (canEdit) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
+                                                                        <img src="css/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
-                                                                <% } else if (docType.equals("cell")) { %>
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
-                                                                        <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                </td>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
+                                                                        <img src="css/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
-                                                                <% } %>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
-                                                                    <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <% if (docType.equals("word")) { %>
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                </td>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <% if (docType.equals("word")) { %>
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                                            <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                        </a>
+                                                                    <% } else if (docType.equals("cell")) { %>
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                                            <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                        </a>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
+                                                                        <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
-                                                                <% } %>
-                                                            </td>
-                                                            <td class="contentCells contentCells-shift contentCells-icon">
-                                                                <% if (docType.equals("word")) { %>
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
-                                                                        <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                                    </a>
-                                                                <% } %>
-                                                            </td>
+                                                                </td>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <% if (docType.equals("word")) { %>
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                            <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        </a>
+                                                                    <% } %>
+                                                                </td>
+                                                                <td class="contentCells contentCells-shift contentCells-icon">
+                                                                    <% if (docType.equals("word")) { %>
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                                            <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                        </a>
+                                                                    <% } %>
+                                                                </td>
+                                                            <% } else { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                            <% } %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
                                                                     <img src="css/img/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
