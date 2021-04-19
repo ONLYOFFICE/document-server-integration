@@ -22,6 +22,7 @@ namespace OnlineEditorsExampleMVC
 {
     public class FilterConfig
     {
+        // register global filters
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());

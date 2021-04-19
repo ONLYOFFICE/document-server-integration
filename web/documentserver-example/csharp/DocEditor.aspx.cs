@@ -125,7 +125,7 @@ namespace OnlineEditorsExample
             // get file extension
             var ext = Path.GetExtension(FileName).ToLower();
 
-            // get editor mode (view/edit/review/comment/fillForms/embedded) or set the default one (edit)
+            // get editor mode or set the default one (edit)
             var editorsMode = Request.GetOrDefault("editorsMode", "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
