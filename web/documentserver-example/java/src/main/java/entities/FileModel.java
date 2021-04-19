@@ -207,8 +207,10 @@ public class FileModel
     public class Permissions
     {
         public Boolean comment;
+        public Boolean сopy;
         public Boolean download;
         public Boolean edit;
+        public Boolean print;
         public Boolean fillForms;
         public Boolean modifyFilter;
         public Boolean modifyContentControl;
@@ -218,8 +220,10 @@ public class FileModel
         public Permissions(String mode, String type, Boolean canEdit)
         {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            download = true;
+            сopy = editorConfig.user.id.equals("uid-2") ? false : true;
+            download = сopy = editorConfig.user.id.equals("uid-2") ? false : true;
             edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
+            print = editorConfig.user.id.equals("uid-2") ? false : true;
             fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
