@@ -96,8 +96,10 @@ class FileModel
         },
         :permissions => {
           :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
-          :download => true,
+          :copy => userId.eql?("uid-2") ? false : true,
+          :download => userId.eql?("uid-2") ? false : true,
           :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("view") ||  editorsmode.eql?("filter") || editorsmode.eql?("blockcontent")),
+          :print => userId.eql?("uid-2") ? false : true,
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
