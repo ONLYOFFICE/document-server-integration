@@ -37,6 +37,8 @@ const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('file
 const plugins = config.get('plugins');
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
+const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 
@@ -115,7 +117,21 @@ app.get("/download", function(req, res) {
     docManager.init(storageFolder, req, res);
 
     var fileName = fileUtility.getFileName(req.query.fileName);
-    var userAddress = docManager.curUserHostAddress();
+    var userAddress = req.query.useraddress;
+
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+        var authorization = req.get(cfgSignatureAuthorizationHeader);
+        if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+            var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+            try {
+                var decoded = jwt.verify(token, cfgSignatureSecret);
+            } catch (err) {
+                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+                res.sendStatus(403);
+                return;
+            }
+        }
+    }
 
     var path = docManager.forcesavePath(fileName, userAddress, false);
     if (path == "") {
@@ -636,7 +652,7 @@ app.get("/editor", function (req, res) {
             };
         }
         var key = docManager.getKey(fileName);
-        var url = docManager.getFileUri(fileName);
+        var url = docManager.getDownloadUrl(fileName);
         var urlUser = docManager.getlocalFileUri(fileName, 0, false)
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop

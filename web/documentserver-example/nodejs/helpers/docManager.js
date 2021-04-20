@@ -165,8 +165,17 @@ docManager.getCreateUrl = function (docType, userid, name, type, lang) {
     const server = docManager.getServerUrl();
     var ext = docManager.getInternalExtension(docType).replace(".", "");
     const handler = "/editor?fileExt=" + ext + "&userid=" + userid + "&name=" + name + "&type=" + type + "&lang=" + lang;
+
     return server + handler;
 }
+
+docManager.getDownloadUrl = function (fileName) {
+    const server = docManager.getServerUrl(true);
+    const hostAddress = docManager.curUserHostAddress();
+    const handler = "/download?fileName=" + encodeURIComponent(fileName) + "&useraddress=" + encodeURIComponent(hostAddress);
+
+    return server + handler;
+};
 
 docManager.storagePath = function (fileName, userAddress) {
     fileName = fileUtility.getFileName(fileName);
