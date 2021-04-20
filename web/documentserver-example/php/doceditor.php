@@ -74,9 +74,10 @@
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
     $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";
+    $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
     $config = [
-        "type" => empty($_GET["type"]) ? "desktop" : $_GET["type"],
+        "type" => $type,
         "documentType" => getDocumentType($filename),
         "document" => [
             "title" => $filename,
@@ -104,6 +105,7 @@
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),
+            "createUrl" => getCreateUrl($filename, $uid, $type),
             "user" => [
                 "id" => $uid,
                 "name" => $uname,
@@ -171,6 +173,15 @@
                     . "?type=track"
                     . "&fileName=" . urlencode($fileName)
                     . "&userAddress=" . getClientIp();
+    }
+
+    function getCreateUrl($fileName, $uid, $type) {
+        $ext = trim(getInternalExtension($fileName),'.');
+        return serverPath(false) . '/'
+                    . "doceditor.php"
+                    . "?fileExt=" . $ext
+                    . "&user=" . $uid
+                    . "&type=" . $type;
     }
 
     function getHistory($filename, $filetype, $docKey, $fileuri) {

@@ -241,6 +241,19 @@ namespace OnlineEditorsExampleMVC.Helpers
             return callbackUrl.ToString();
         }
 
+        public static string GetCreateUrl(FileUtility.FileType fileType)
+        {
+            var createUrl = new UriBuilder(GetServerUrl(false))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Sample",
+                Query = "fileExt=" + DocManagerHelper.GetInternalExtension(fileType).Trim('.')
+            };
+            return createUrl.ToString();
+        }
+
         public static string GetInternalExtension(FileUtility.FileType fileType)
         {
             switch (fileType)

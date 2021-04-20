@@ -359,6 +359,14 @@ public class DocumentManager
         }
     }
 
+    public static String GetCreateUrl (FileType fileType) {
+        String serverPath = GetServerUrl(false);
+        String fileExt = GetInternalExtension(fileType).replace(".", "");
+        String query = "?fileExt=" + fileExt;
+
+        return serverPath + "/EditorServlet" + query;
+    }
+
     public static String GetInternalExtension(FileType fileType)
     {
         if (fileType.equals(FileType.Word))

@@ -181,6 +181,7 @@ def edit(request):
             'mode': mode,
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),
+            'createUrl': docManager.getCreateUrl(edType, request),
             'user': {
                 'id': user['uid'],
                 'name': None if user['uid'] == 'uid-0' else user['uname'],

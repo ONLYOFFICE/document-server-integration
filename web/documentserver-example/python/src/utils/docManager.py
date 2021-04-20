@@ -122,6 +122,10 @@ def getCallbackUrl(filename, req):
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}/track?filename={filename}&userAddress={curAdr}'
 
+def getCreateUrl(fileType, req):
+    host = getServerUrl(False, req)
+    return f'{host}/create?fileType={fileType}'
+
 def getRootFolder(req):
     if isinstance(req, str):
         curAdr = req

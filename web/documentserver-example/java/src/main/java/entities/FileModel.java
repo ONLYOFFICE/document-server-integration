@@ -59,6 +59,7 @@ public class FileModel
 
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);
+        editorConfig.createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
         if (lang != null) editorConfig.lang = lang;
 
         if (uid != null) editorConfig.user.id = uid;
@@ -247,6 +248,7 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
+        public String createUrl;
         public String lang = "en";
         public User user;
         public Customization customization;

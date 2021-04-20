@@ -59,6 +59,10 @@ class FileModel
     DocumentHelper.get_callback(@file_name)
   end
 
+  def create_url
+    DocumentHelper.get_create_url(document_type)
+  end
+
   def cur_user_host_address
     DocumentHelper.cur_user_host_address(nil)
   end
@@ -110,6 +114,7 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,
+        :createUrl => create_url,
         :user => {
           :id => userId,
           :name => user_name,
