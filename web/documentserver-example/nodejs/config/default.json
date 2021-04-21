@@ -10,6 +10,9 @@
       "nodeJS": "Debug"
     }
   },
+  "wopi": {
+    "discovery": "http://documentserver/hosting/discovery"
+  },
   "server": {
     "port": 3000,
     "siteUrl": "https://documentserver/",
