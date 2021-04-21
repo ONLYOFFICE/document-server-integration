@@ -188,7 +188,7 @@ function processForceSave($data, $fileName, $userAddress) {
                 $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
             // create forcesave path if it doesn't exist
-            $forcesavePath = getForcesavePath($newFileName, $userAddress, false);
+            $forcesavePath = getForcesavePath($fileName, $userAddress, false);
             if ($forcesavePath == "") {
                 $forcesavePath = getForcesavePath($fileName, $userAddress, true);
             }
