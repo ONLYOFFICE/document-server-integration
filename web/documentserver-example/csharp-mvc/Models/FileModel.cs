@@ -64,6 +64,11 @@ namespace OnlineEditorsExampleMVC.Models
             get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
         }
 
+        public string DownloadUrl
+        {
+            get { return DocManagerHelper.GetDownloadUrl(FileName); }
+        }
+
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
             var jss = new JavaScriptSerializer();
@@ -107,7 +112,7 @@ namespace OnlineEditorsExampleMVC.Models
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                { "url", FileUri },
+                                { "url", DownloadUrl },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
