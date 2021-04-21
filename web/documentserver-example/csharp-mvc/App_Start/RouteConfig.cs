@@ -23,10 +23,12 @@ namespace OnlineEditorsExampleMVC
 {
     public class RouteConfig
     {
+        // register routes
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            // create a route map
             routes.MapRoute(
                 name: "Default",
                 url: "{action}",

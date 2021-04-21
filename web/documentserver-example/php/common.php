@@ -20,28 +20,30 @@
 require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/functions.php' );
 
+// put log files into the log folder
 function sendlog($msg, $logFileName) {
     $logsFolder = "logs/";
-    if (!file_exists($logsFolder)) {
+    if (!file_exists($logsFolder)) {  // if log folder does't exist, make it
         mkdir($logsFolder);
     }
     file_put_contents($logsFolder . $logFileName, $msg . PHP_EOL, FILE_APPEND);
 }
 
+// create new uuid
 function guid() {
     if (function_exists('com_create_guid')) {
         return com_create_guid();
     } else {
-        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+        mt_srand((double)microtime()*10000);  // optional for php 4.2.0 and up
         $charid = strtoupper(md5(uniqid(rand(), true)));
-        $hyphen = chr(45);// "-"
-        $uuid = chr(123)// "{"
+        $hyphen = chr(45);  // "-"
+        $uuid = chr(123)  // "{"
                 .substr($charid, 0, 8).$hyphen
                 .substr($charid, 8, 4).$hyphen
                 .substr($charid,12, 4).$hyphen
                 .substr($charid,16, 4).$hyphen
                 .substr($charid,20,12)
-                .chr(125);// "}"
+                .chr(125);  // "}"
         return $uuid;
     }
 }
@@ -105,10 +107,12 @@ if(!function_exists('mime_content_type')) {
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
+        // check if the file extension is in the mime type array
         $ext = strtolower(array_pop(explode('.',$filename)));
         if (array_key_exists($ext, $mime_types)) {
-            return $mime_types[$ext];
+            return $mime_types[$ext];  // get the mime type of this extension
         }
+        // or get the mime type from the file information
         elseif (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
@@ -121,6 +125,7 @@ if(!function_exists('mime_content_type')) {
     }
 }
 
+// get ip address
 function getClientIp() {
     $ipaddress =
         getenv('HTTP_CLIENT_IP')?:
@@ -136,12 +141,14 @@ function getClientIp() {
     return $ipaddress;
 }
 
+// get server url
 function serverPath($forDocumentServer = NULL) {
     return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
         ? $GLOBALS['EXAMPLE_URL']
         : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
+// get current user host address
 function getCurUserHostAddress($userAddress = NULL) {
     if ($GLOBALS['ALONE']) {
         if (empty($GLOBALS['STORAGE_PATH'])) {
@@ -154,28 +161,32 @@ function getCurUserHostAddress($userAddress = NULL) {
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
 
+// get an internal file extension
 function getInternalExtension($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return ".docx";
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return ".xlsx";
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return ".pptx";
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) return ".docx";  // .docx for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return ".xlsx";  // .xlsx for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return ".pptx";  // .pptx for presentation extensions
     return "";
 }
 
+// get the document type
 function getDocumentType($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "word";
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "cell";
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "slide";
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "word";  // word for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "cell";  // cell for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "slide";  // slide for presentation extensions
     return "word";
 }
 
+// get the protocol
 function getScheme() {
     return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 }
 
+// get the storage path of the given file
 function getStoragePath($fileName, $userAddress = NULL) {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
@@ -184,6 +195,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
     {
         $directory =  $directory  . DIRECTORY_SEPARATOR;
 
+        // if the file directory doesn't exist, make it
         if (!file_exists($directory) && !is_dir($directory)) {
             mkdir($directory);
         }
@@ -198,12 +210,15 @@ function getStoragePath($fileName, $userAddress = NULL) {
     return $directory . basename($fileName);
 }
 
+// get the path to the forcesaved file version
 function getForcesavePath($fileName, $userAddress, $create) {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    // create the directory to this file version
     $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
 
     if (!is_dir($directory)) return "";
 
+    // create the directory to the history of this file version
     $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
     if (!$create && !is_dir($directory))  return "";
 
@@ -215,20 +230,24 @@ function getForcesavePath($fileName, $userAddress, $create) {
     return $directory;
 }
 
+// get the path to the file history
 function getHistoryDir($storagePath) {
     $directory = $storagePath . "-hist";
+    // if the history directory doesn't exist, make it
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     }
     return $directory;
 }
 
+// get the path to the specified file version
 function getVersionDir($histDir, $version) {
     return $histDir . DIRECTORY_SEPARATOR . $version;
 }
 
+// get a number of the last file version from the history directory
 function getFileVersion($histDir) {
-    if (!file_exists($histDir) || !is_dir($histDir)) return 0;
+    if (!file_exists($histDir) || !is_dir($histDir)) return 0;  // check if the history directory exists
 
     $cdir = scandir($histDir);
     $ver = 1;
@@ -242,10 +261,12 @@ function getFileVersion($histDir) {
     return $ver;
 }
 
+// get all the stored files from the folder
 function getStoredFiles() {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
 
+    // get the storage path and check if it exists
     $result = array();
     if ($storagePath != "")
     {
@@ -262,13 +283,13 @@ function getStoredFiles() {
         return $result;
     }
 
-    $cdir = scandir($directory);
+    $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = array();
-    foreach($cdir as $key => $fileName) {
+    foreach($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName,array(".", ".."))) {
-            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {
-                $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
-                $result[$dat] = (object) array(
+            if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
+                $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
+                $result[$dat] = (object) array(  // and write the file to the result
                         "name" => $fileName,
                         "documentType" => getDocumentType($fileName),
                         "canEdit" => in_array(strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED'])
@@ -276,10 +297,11 @@ function getStoredFiles() {
             }
         }
     }
-    ksort($result);
+    ksort($result);  // sort files by the modification date
     return array_reverse($result);
 }
 
+// get the virtual path
 function getVirtualPath($forDocumentServer) {
     $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
@@ -290,11 +312,13 @@ function getVirtualPath($forDocumentServer) {
     return $virtPath;
 }
 
+// get a file with meta information
 function createMeta($fileName, $uid = "0", $userAddress = NULL) {
-    $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
+    $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));  // get the history directory
 
     if (empty($uid)) $uid = "0";
 
+    // get the user name for each uid
     $name = "";
     switch ($uid) {
         case 0:
@@ -311,27 +335,32 @@ function createMeta($fileName, $uid = "0", $userAddress = NULL) {
             break;
     }
 
+    // turn the file information into the json format
     $json = [
         "created" => date("Y-m-d H:i:s"),
         "uid" => $uid,
         "name" => $name,
     ];
 
+    // write the encoded file information to the createdInfo.json file
     file_put_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json", json_encode($json, JSON_PRETTY_PRINT));
 }
 
+// get the file url
 function FileUri($file_name, $forDocumentServer = NULL) {
-    $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);
+    $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
     return $uri;
 }
 
+// get file information
 function getFileInfo($fileId){
     $storedFiles = getStoredFiles();
     $result = array();
     $resultID = array();
 
+    // run through all the stored files
     foreach ($storedFiles as $key => $value){
-        $result[$key] = (object) array(
+        $result[$key] = (object) array(  // write all the parameters to the map
             "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
             "id" => getDocEditorKey($value->name),
             "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
@@ -339,6 +368,7 @@ function getFileInfo($fileId){
             "title" => $value->name,
             "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
         );
+        // get file information by its id
         if ($fileId != null){
             if ($fileId == getDocEditorKey($value->name)){
                 $resultID[count($resultID)] = $result[$key];
@@ -355,30 +385,33 @@ function getFileInfo($fileId){
     }
 }
 
+// get all the supported file extensions
 function getFileExts() {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
 }
 
+// get the correct file name if such a name already exists
 function GetCorrectName($fileName, $userAddress = NULL) {
     $path_parts = pathinfo($fileName);
 
     $ext = strtolower($path_parts['extension']);
     $name = $path_parts['basename'];
-    $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);
+    $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);  // get file name from the basename without extension
     $name = $baseNameWithoutExt . "." . $ext;
 
-    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++)
+    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++)  // if a file with such a name already exists in this directory
     {
-        $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;
+        $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
     }
     return $name;
 }
 
+// get document key
 function getDocEditorKey($fileName) {
-    $key = getCurUserHostAddress() . FileUri($fileName);
-    $stat = filemtime(getStoragePath($fileName));
-    $key = $key . $stat;
-    return GenerateRevisionId($key);
+    $key = getCurUserHostAddress() . FileUri($fileName);  // get document key by adding local file url to the current user host address
+    $stat = filemtime(getStoragePath($fileName));  // get creation time
+    $key = $key . $stat;  // and add it to the document key
+    return GenerateRevisionId($key);  // generate the document key value
 }
 
 ?>
