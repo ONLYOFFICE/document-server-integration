@@ -46,17 +46,20 @@ public class IndexServlet extends HttpServlet
 {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        // get the type parameter from the request
         String action = request.getParameter("type");
 
         if (action == null)
         {
+            // forward the request and response objects to the index.jsp
             request.getRequestDispatcher("index.jsp").forward(request, response);
             return;
         }
 
         DocumentManager.Init(request, response);
-        PrintWriter writer = response.getWriter();
+        PrintWriter writer = response.getWriter();  // create a variable to display information about the application and error messages
 
+        // define functions for each type of operation
         switch (action.toLowerCase())
         {
             case "upload":
@@ -86,6 +89,7 @@ public class IndexServlet extends HttpServlet
     }
 
 
+    // upload a file
     private static void Upload(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         response.setContentType("text/plain");
@@ -94,6 +98,7 @@ public class IndexServlet extends HttpServlet
         {
             Part httpPostedFile = request.getPart("file");
 
+            // get file name from the content-disposition response header
             String fileName = "";
             for (String content : httpPostedFile.getHeader("content-disposition").split(";"))
             {
@@ -103,24 +108,24 @@ public class IndexServlet extends HttpServlet
                 }
             }
 
-            long curSize = httpPostedFile.getSize();
-            if (DocumentManager.GetMaxFileSize() < curSize || curSize <= 0)
+            long curSize = httpPostedFile.getSize();  // get file size
+            if (DocumentManager.GetMaxFileSize() < curSize || curSize <= 0)  // check if the file size exceeds the maximum file size or is less than 0
             {
-                writer.write("{ \"error\": \"File size is incorrect\"}");
+                writer.write("{ \"error\": \"File size is incorrect\"}");  // if so, write the error status and message to the response
                 return;
             }
 
-            String curExt = FileUtility.GetFileExtension(fileName);
-            if (!DocumentManager.GetFileExts().contains(curExt))
+            String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
+            if (!DocumentManager.GetFileExts().contains(curExt))  // check if this extension is supported by the editor
             {
-                writer.write("{ \"error\": \"File type is not supported\"}");
+                writer.write("{ \"error\": \"File type is not supported\"}");  // if not, write the error status and message to the response
                 return;
             }
 
-            InputStream fileStream = httpPostedFile.getInputStream();
+            InputStream fileStream = httpPostedFile.getInputStream();  // get input file stream
 
-            fileName = DocumentManager.GetCorrectName(fileName, null);
-            String fileStoragePath = DocumentManager.StoragePath(fileName, null);
+            fileName = DocumentManager.GetCorrectName(fileName, null);  // get a file name with an index if the file with such a name already exists
+            String fileStoragePath = DocumentManager.StoragePath(fileName, null);  // get the storage path of the file
             String documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
 
             File file = new File(fileStoragePath);
@@ -131,12 +136,14 @@ public class IndexServlet extends HttpServlet
                 final byte[] bytes = new byte[1024];
                 while ((read = fileStream.read(bytes)) != -1)
                 {
-                    out.write(bytes, 0, read);
+                    out.write(bytes, 0, read);  // write bytes to the output stream
                 }
 
+                // force write data to the output stream that can be cached in the current thread
                 out.flush();
             }
 
+            // create meta information with the user id and name specified
             CookieManager cm = new CookieManager(request);
             DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
 
@@ -149,6 +156,7 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    // convert a file
     private static void Convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         response.setContentType("text/plain");
@@ -170,10 +178,13 @@ public class IndexServlet extends HttpServlet
             FileType fileType = FileUtility.GetFileType(fileName);
             String internalFileExt = DocumentManager.GetInternalExtension(fileType);
 
+            // check if the file with such an extension can be converted
             if (DocumentManager.GetConvertExts().contains(fileExt))
             {
+                // generate document key
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
+                // get the url to the converted file
                 String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
 
                 if (newFileUri.isEmpty())
@@ -182,11 +193,12 @@ public class IndexServlet extends HttpServlet
                     return;
                 }
 
+                // get a file name of an internal file extension with an index if the file with such a name already exists
                 String correctName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + internalFileExt, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-                InputStream stream = connection.getInputStream();
+                InputStream stream = connection.getInputStream();  // get input stream of the converted file
 
                 if (stream == null)
                 {
@@ -200,20 +212,22 @@ public class IndexServlet extends HttpServlet
                     final byte[] bytes = new byte[1024];
                     while ((read = stream.read(bytes)) != -1)
                     {
-                        out.write(bytes, 0, read);
+                        out.write(bytes, 0, read);  // write bytes to the output stream
                     }
 
+                    // force write data to the output stream that can be cached in the current thread
                     out.flush();
                 }
 
                 connection.disconnect();
 
-                //remove source file ?
-                //File sourceFile = new File(DocumentManager.StoragePath(fileName, null));
-                //sourceFile.delete();
+                // remove source file ?
+                // File sourceFile = new File(DocumentManager.StoragePath(fileName, null));
+                // sourceFile.delete();
 
                 fileName = correctName;
 
+                // create meta information about the converted file with the user id and name specified
                 CookieManager cm = new CookieManager(request);
                 DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
             }
@@ -227,10 +241,12 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    // track file changes
     private static void Track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         JSONObject body = null;
 
+        // read request body
         try {
             body = TrackManager.readBody(request, writer);
         } catch (Exception e) {
@@ -238,19 +254,20 @@ public class IndexServlet extends HttpServlet
             return;
         }
 
+        // get status from the request body
         int status = Math.toIntExact((long) body.get("status"));
         int saved = 0;
 
-        if (status == 1) { //Editing
+        if (status == 1) { // editing
             JSONArray actions = (JSONArray) body.get("actions");
             JSONArray users = (JSONArray) body.get("users");
             JSONObject action = (JSONObject) actions.get(0);
-            if (actions != null && action.get("type").toString().equals("0")) { //finished edit
-                String user = (String) action.get("userid");
+            if (actions != null && action.get("type").toString().equals("0")) { // finished edit
+                String user = (String) action.get("userid");  // the user who finished editing
                 if (users.indexOf(user) == -1) {
                     String key = (String) body.get("key");
                     try {
-                        TrackManager.commandRequest("forcesave", key);
+                        TrackManager.commandRequest("forcesave", key);  // create a command request with the forcesave method
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -261,7 +278,7 @@ public class IndexServlet extends HttpServlet
         String userAddress = request.getParameter("userAddress");
         String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
 
-        if (status == 2 || status == 3) { //MustSave, Corrupted
+        if (status == 2 || status == 3) { // MustSave, Corrupted
             try {
                 TrackManager.processSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -271,7 +288,7 @@ public class IndexServlet extends HttpServlet
 
         }
 
-        if (status == 6 || status == 7) { //MustForceSave, CorruptedForceSave
+        if (status == 6 || status == 7) { // MustForceSave, CorruptedForceSave
             try {
                 TrackManager.processForceSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -283,6 +300,7 @@ public class IndexServlet extends HttpServlet
         writer.write("{\"error\":" + saved + "}");
     }
 
+    // remove a file
     private static void Remove(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         try
@@ -290,9 +308,11 @@ public class IndexServlet extends HttpServlet
             String fileName = FileUtility.GetFileName(request.getParameter("filename"));
             String path = DocumentManager.StoragePath(fileName, null);
 
+            // delete file
             File f = new File(path);
             delete(f);
 
+            // delete file history
             File hist = new File(DocumentManager.HistoryDir(path));
             delete(hist);
 
@@ -304,6 +324,7 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    // get files information
     private static void Files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         ArrayList<Map<String, Object>> files = null;
@@ -313,10 +334,10 @@ public class IndexServlet extends HttpServlet
             response.setContentType("application/json");
 
             if (request.getParameter("fileId") == null) {
-                files = DocumentManager.GetFilesInfo();
+                files = DocumentManager.GetFilesInfo();  // get the information about the files from the storage path
                 writer.write(gson.toJson(files));
             }else {
-                String fileId = request.getParameter("fileId");
+                String fileId = request.getParameter("fileId");  // get file id from the request
                 files = DocumentManager.GetFilesInfo(fileId);
                 if(files.isEmpty()) {
                     writer.write("\"File not found\"");
@@ -331,6 +352,7 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    // download a csv file
     private static void CSV(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String fileName = "assets/sample/csv.csv";
@@ -344,6 +366,7 @@ public class IndexServlet extends HttpServlet
         download(filePath.toString(), response, writer);
     }
 
+    // get sample files from the assests
     private static void Assets(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         String fileName = "assets/sample/" + FileUtility.GetFileName(request.getParameter("name"));
@@ -357,13 +380,14 @@ public class IndexServlet extends HttpServlet
         download(filePath.toString(), response, writer);
     }
 
+    // download a file
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         try {
             String fileName = FileUtility.GetFileName(request.getParameter("name"));
-            String filePath = DocumentManager.ForcesavePath(fileName, null, false);
+            String filePath = DocumentManager.ForcesavePath(fileName, null, false);  // get the path to the force saved document version
             if (filePath.equals("")) {
-                filePath = DocumentManager.StoragePath(fileName, null);
+                filePath = DocumentManager.StoragePath(fileName, null);  // or to the original document
             }
             download(filePath, response, writer);
         } catch (Exception e) {
@@ -372,14 +396,16 @@ public class IndexServlet extends HttpServlet
     }
 
     private static void delete(File f) throws Exception {
+        // to delete a directory
         if (f.isDirectory()) {
-            for (File c : f.listFiles())
-            delete(c);
+            for (File c : f.listFiles())  // run through all the files in it
+            delete(c);  // and delete them
         }
         if (!f.delete())
             throw new Exception("Failed to delete file: " + f);
     }
 
+    // download data from the url to the file
     private static void download(String filePath, HttpServletResponse response, PrintWriter writer) {
         String fileType = null;
         try {
@@ -390,6 +416,7 @@ public class IndexServlet extends HttpServlet
 
         File file = new File(filePath);
 
+        // set headers to the response
         response.setHeader("Content-Length", String.valueOf(file.length()));
         response.setHeader("Content-Type", fileType);
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + file.getName());
@@ -399,7 +426,7 @@ public class IndexServlet extends HttpServlet
             FileInputStream fileInputStream = new FileInputStream(file);
             inputStream = new BufferedInputStream(fileInputStream);
             int readBytes = 0;
-            while ((readBytes = inputStream.read()) != -1)
+            while ((readBytes = inputStream.read()) != -1)  // write bytes to the output stream
                 writer.write(readBytes);
         }catch (Exception e){
             e.printStackTrace();
@@ -412,18 +439,21 @@ public class IndexServlet extends HttpServlet
         }
     }
 
+    // process get request
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         processRequest(request, response);
     }
 
+    // process post request
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         processRequest(request, response);
     }
 
+    // get servlet information
     @Override
     public String getServletInfo()
     {
