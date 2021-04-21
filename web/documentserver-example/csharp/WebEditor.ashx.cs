@@ -23,6 +23,9 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using System.Diagnostics;
+using System.Web.Configuration;
+using System.Linq;
+using System.Net;
 
 namespace OnlineEditorsExample
 {
@@ -234,12 +237,31 @@ namespace OnlineEditorsExample
         {
             try
             {
-                var fileName = Path.GetFileName(context.Request["filename"]);
+                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = Path.GetFileName(context.Request["userAddress"]);
 
-                var filePath = _Default.ForcesavePath(fileName, null, false);
+                if (JwtManager.Enabled)
+                {
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                    if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                        string token = JwtManager.Decode(headerToken);
+
+                        if (token == null || token.Equals(""))
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.Write("JWT validation failed");
+                            return;
+                        }
+                    }
+                }
+
+                var filePath = _Default.ForcesavePath(fileName, userAddress, false);
                 if (filePath.Equals(""))
                 {
-                    filePath = _Default.StoragePath(fileName, null);
+                    filePath = _Default.StoragePath(fileName, userAddress);
                 }
                 download(filePath, context);
             }

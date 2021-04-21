@@ -93,6 +93,22 @@ namespace OnlineEditorsExample
             return createUrl.ToString();
         }
 
+        public static string getDownloadUrl
+        {
+            get
+            {
+                var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
+                downloadUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                downloadUrl.Query = "type=download"
+                                    + "&fileName=" + HttpUtility.UrlEncode(FileName)
+                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+                return downloadUrl.ToString();
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             var externalUrl = Request["fileUrl"];
@@ -155,7 +171,7 @@ namespace OnlineEditorsExample
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                { "url", FileUri },
+                                { "url", getDownloadUrl },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {

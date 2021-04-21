@@ -234,7 +234,7 @@
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
-                                                                <a href="webeditor.ashx?type=download&filename=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
+                                                                <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                                                     <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
                                                                 </a>
                                                             </td>
