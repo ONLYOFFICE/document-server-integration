@@ -63,6 +63,10 @@ class FileModel
     DocumentHelper.get_create_url(document_type)
   end
 
+  def download_url
+    DocumentHelper.get_download_url(@file_name)
+  end
+
   def cur_user_host_address
     DocumentHelper.cur_user_host_address(nil)
   end
@@ -90,7 +94,7 @@ class FileModel
       :documentType => document_type,
       :document => {
         :title => @file_name,
-        :url => file_uri,
+        :url => download_url,
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
