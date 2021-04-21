@@ -275,7 +275,8 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                var filePath = _Default.ForcesavePath(fileName, userAddress, false);  // get the path to the force saved document version                if (filePath.Equals(""))
+                var filePath = _Default.ForcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
+                if (filePath.Equals(""))
                 {
                     filePath = _Default.StoragePath(fileName, userAddress);  // or to the original document
                 }
