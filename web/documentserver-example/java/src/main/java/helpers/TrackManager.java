@@ -217,7 +217,7 @@ public class TrackManager {
             }
 
             // create forcesave path if it doesn't exist
-            forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, false);
+            forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, false);
             if (forcesavePath == "") {
                 forcesavePath = DocumentManager.ForcesavePath(fileName, userAddress, true);
             }
