@@ -126,6 +126,11 @@ def getCreateUrl(fileType, req):
     host = getServerUrl(False, req)
     return f'{host}/create?fileType={fileType}'
 
+def getDownloadUrl(filename, req):
+    host = getServerUrl(True, req)
+    curAdr = req.META['REMOTE_ADDR']
+    return f'{host}/download?fileName={filename}&userAddress={curAdr}'
+
 def getRootFolder(req):
     if isinstance(req, str):
         curAdr = req

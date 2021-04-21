@@ -161,7 +161,7 @@ def edit(request):
         'documentType': fileType,
         'document': {
             'title': filename,
-            'url': fileUri,
+            'url': docManager.getDownloadUrl(filename, request),
             'fileType': ext[1:],
             'key': docKey,
             'info': infObj,
@@ -293,10 +293,22 @@ def csv(request):
 
 def download(request):
     try:
-        fileName = fileUtils.getFileName(request.GET['filename'])
-        filePath = docManager.getForcesavePath(fileName, request, False)
+        fileName = fileUtils.getFileName(request.GET['fileName'])
+        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+
+        if (jwtManager.isEnabled()):
+            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+            token = request.headers.get(jwtHeader)
+            if token:
+                token = token[len('Bearer '):]
+                try:
+                    body = jwtManager.decode(token)
+                except Exception:
+                    return HttpResponse('JWT validation failed', status=403)
+
+        filePath = docManager.getForcesavePath(fileName, userAddress, False)
         if (filePath == ""):
-            filePath = docManager.getStoragePath(fileName, request)
+            filePath = docManager.getStoragePath(fileName, userAddress)
         response = docManager.download(filePath)
         return response
     except Exception:
