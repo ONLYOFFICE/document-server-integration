@@ -43,7 +43,7 @@
         $filename = tryGetDefaultByType($createExt);
 
         // create the demo file url
-        new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
+        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
         header('Location: ' . $new_url, true);
         exit;
     }
