@@ -172,8 +172,10 @@ def edit(request):
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
                 'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') & (edMode != "blockcontent"),
-                'download': True,
+                'copy': False if user['uid'] == 'uid-2' else True,
+                'download': False if user['uid'] == 'uid-2' else True,
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') | (edMode == "blockcontent")),
+                'print': False if user['uid'] == 'uid-2' else True,
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
