@@ -367,6 +367,21 @@ public class DocumentManager
         return serverPath + "/EditorServlet" + query;
     }
 
+    public static String GetDownloadUrl(String fileName) {
+        String serverPath = GetServerUrl(true);
+        String hostAddress = CurUserHostAddress(null);
+        try
+        {
+            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+            return serverPath + "/IndexServlet" + query;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
+        }
+    }
+
     public static String GetInternalExtension(FileType fileType)
     {
         if (fileType.equals(FileType.Word))
@@ -418,7 +433,7 @@ public class DocumentManager
         return secret != null && !secret.isEmpty();
     }
 
-    private static String GetTokenSecret()
+    public static String GetTokenSecret()
     {
         return ConfigManager.GetProperty("files.docservice.secret");
     }

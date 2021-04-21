@@ -50,7 +50,7 @@ public class FileModel
 
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetFileUri(fileName, true);
+        document.url = DocumentManager.GetDownloadUrl(fileName);
         document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -240,9 +240,8 @@ public class FileModel
 
     public class Info
     {
-        Boolean favorite;
+        public Boolean favorite;
     }
-
     public class EditorConfig
     {
         public HashMap<String, Object> actionLink = null;

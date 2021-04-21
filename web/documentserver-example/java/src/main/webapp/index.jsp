@@ -227,7 +227,7 @@
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
-                                                                <a href="IndexServlet?type=download&name=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
+                                                                <a href="IndexServlet?type=download&fileName=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
                                                                     <img class="icon-download" src="css/img/download-24.png" alt="Download" title="Download" />
                                                                 </a>
                                                             </td>
