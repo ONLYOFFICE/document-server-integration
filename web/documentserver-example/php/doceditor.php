@@ -81,7 +81,7 @@
         "documentType" => getDocumentType($filename),
         "document" => [
             "title" => $filename,
-            "url" => $fileuri,
+            "url" => getDownloadUrl($filename),
             "fileType" => $filetype,
             "key" => $docKey,
             "info" => [
@@ -182,6 +182,14 @@
                     . "?fileExt=" . $ext
                     . "&user=" . $uid
                     . "&type=" . $type;
+    }
+
+    function getDownloadUrl($fileName) {
+        return serverPath(TRUE) . '/'
+            . "webeditor-ajax.php"
+            . "?type=download"
+            . "&fileName=" . urlencode($fileName)
+            . "&userAddress=" . getClientIp();
     }
 
     function getHistory($filename, $filetype, $docKey, $fileuri) {
