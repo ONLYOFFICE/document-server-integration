@@ -137,10 +137,10 @@ namespace OnlineEditorsExampleMVC.Models
                                     "permissions", new Dictionary<string, object>
                                         {
                                             { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent" },
-                                            { "copy", userId.Equals("uid-2") ? false : true },
-                                            { "download", userId.Equals("uid-2") ? false : true },
+                                            { "copy", userId.Equals("uid-3") ? false : true },
+                                            { "download", userId.Equals("uid-3") ? false : true },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
-                                            { "print", userId.Equals("uid-2") ? false : true },
+                                            { "print", userId.Equals("uid-3") ? false : true },
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },

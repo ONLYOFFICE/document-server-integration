@@ -247,10 +247,10 @@ public class FileModel
         public Permissions(String mode, String type, Boolean canEdit)
         {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            сopy = editorConfig.user.id.equals("uid-2") ? false : true;
-            download = сopy = editorConfig.user.id.equals("uid-2") ? false : true;
+            сopy = editorConfig.user.id.equals("uid-3") ? false : true;
+            download = сopy = editorConfig.user.id.equals("uid-3") ? false : true;
             edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
-            print = editorConfig.user.id.equals("uid-2") ? false : true;
+            print = editorConfig.user.id.equals("uid-3") ? false : true;
             fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");

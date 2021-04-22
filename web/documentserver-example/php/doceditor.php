@@ -97,10 +97,10 @@
             ],
             "permissions" => [  // the permission for the document to be edited and downloaded or not
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
-                "copy" => $uid == 1 ? false : true,
-                "download" => $uid == 1 ? false : true,
+                "copy" => $uid == 2 ? false : true,
+                "download" => $uid == 2 ? false : true,
                 "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
-                "print" => $uid == 1 ? false : true,
+                "print" => $uid == 2 ? false : true,
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
