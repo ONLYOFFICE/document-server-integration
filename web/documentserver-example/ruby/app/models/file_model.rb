@@ -84,7 +84,7 @@ class FileModel
     editorsmode = @mode ? @mode : "edit"  # mode: view/edit/review/comment/fillForms/embedded
     canEdit = DocumentHelper.edited_exts.include?(file_ext)  # check if the document can be edited
     submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))  # the Submit form button state
-    mode = canEdit && editorsmode.eql?("view") ? "view" : "edit"
+    mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
     userId = @user_id ? @user_id : "uid-1"
     user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
     userGroup = nil
@@ -120,7 +120,7 @@ class FileModel
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
-          :review => editorsmode.eql?("edit") || editorsmode.eql?("review"),
+          :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
           :reviewGroups => reviewGroups
         }
       },
