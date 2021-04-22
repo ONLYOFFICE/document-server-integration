@@ -104,7 +104,7 @@
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
-                "review" => $editorsMode == "edit" || $editorsMode == "review",
+                "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
                 "reviewGroups" => $reviewGroups
             ]
         ],

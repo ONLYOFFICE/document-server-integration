@@ -254,7 +254,7 @@ public class FileModel
             fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
-            review = mode.equals("edit") || mode.equals("review");
+            review = canEdit && (mode.equals("edit") || mode.equals("review"));
             reviewGroups = editorConfig.user.group != null ? GetReviewGroups(editorConfig.user.group) : null;
         }
 

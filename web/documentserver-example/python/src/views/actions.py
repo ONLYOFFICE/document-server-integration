@@ -179,7 +179,7 @@ def edit(request):
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
-                'review': (edMode == 'edit') | (edMode == 'review'),
+                'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
                 'reviewGroups': reviewGroups
             }
         },
