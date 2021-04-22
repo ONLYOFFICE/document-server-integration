@@ -1,6 +1,7 @@
 const config = require('config');
 const syncRequest = require("sync-request");
 const xmlParser = require("fast-xml-parser");
+const he = require("he");
 
 var cache = null;
 
@@ -13,7 +14,8 @@ function getDiscoveryInfo() {
     let discovery = xmlParser.parse(response.getBody().toString(), {
         attributeNamePrefix: "",
         ignoreAttributes: false,
-        parseAttributeValue: true
+        parseAttributeValue: true,
+        attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
     });
 
     for (let app of discovery["wopi-discovery"]["net-zone"].app) {
@@ -65,7 +67,7 @@ function getAction(ext, name) {
 }
 
 function getActionUrl(host, userAddress, action, filename) {
-    return action.urlsrc + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
+    return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
 }
 
 exports.getDiscoveryInfo = getDiscoveryInfo;
