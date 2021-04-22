@@ -279,6 +279,21 @@ namespace OnlineEditorsExampleMVC.Helpers
             return createUrl.ToString();
         }
 
+        public static string GetDownloadUrl(string fileName)
+        {
+            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=download"
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+            };
+            return downloadUrl.ToString();
+        }
+
         // get an editor internal extension
         public static string GetInternalExtension(FileUtility.FileType fileType)
         {

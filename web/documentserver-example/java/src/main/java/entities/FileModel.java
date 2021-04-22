@@ -53,7 +53,7 @@ public class FileModel
         // set the document parameters
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetFileUri(fileName, true);  // get file url
+        document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
         document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
@@ -272,9 +272,8 @@ public class FileModel
     // the Favorite icon state
     public class Info
     {
-        Boolean favorite;
+        public Boolean favorite;
     }
-
     // the editor config parameters
     public class EditorConfig
     {

@@ -363,12 +363,30 @@ namespace OnlineEditorsExampleMVC
         {
             try
             {
-                var fileName = Path.GetFileName(context.Request["filename"]);
+                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = context.Request["userAddress"];
 
-                var filePath = DocManagerHelper.ForcesavePath(fileName, null, false);  // get the path to the force saved document version
+                if (JwtManager.Enabled)
+                {
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                    if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                        string token = JwtManager.Decode(headerToken);
+                        if (token == null || token.Equals(""))
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.Write("JWT validation failed");
+                            return;
+                        }
+                    }
+                }
+
+                var filePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
                 if (filePath.Equals(""))
                 {
-                    filePath = DocManagerHelper.StoragePath(fileName, null);  // or to the original document
+                    filePath = DocManagerHelper.StoragePath(fileName, userAddress);  // or to the original document
                 }
                 download(filePath, context);
             }

@@ -228,7 +228,7 @@
                                                                 echo '  </a>';
                                                                 echo ' </td>';
                                                                 echo ' <td class="contentCells contentCells-icon contentCells-shift">';
-                                                                echo '  <a href="webeditor-ajax.php?type=download&name='.urlencode($storeFile->name).'">';
+                                                                echo '  <a href="webeditor-ajax.php?type=download&fileName='.urlencode($storeFile->name).'">';
                                                                 echo '   <img class="icon-download" src="css/images/download-24.png" alt="Download" title="Download" /></a>';
                                                                 echo '  </a>';
                                                                 echo ' </td>';

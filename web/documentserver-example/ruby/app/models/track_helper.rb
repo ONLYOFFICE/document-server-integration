@@ -46,7 +46,7 @@ class TrackHelper
                     raise "Expected JWT"  # token missing error message
                 end
 
-                if !token
+                if !token || token.eql?("")
                     raise "Invalid JWT signature"
                 end
 

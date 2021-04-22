@@ -39,6 +39,9 @@ import entities.FileType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.primeframework.jwt.Verifier;
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACVerifier;
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
@@ -384,10 +387,29 @@ public class IndexServlet extends HttpServlet
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         try {
-            String fileName = FileUtility.GetFileName(request.getParameter("name"));
-            String filePath = DocumentManager.ForcesavePath(fileName, null, false);  // get the path to the force saved document version
+            String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
+            String userAddress = request.getParameter("userAddress");
+
+            if (DocumentManager.TokenEnabled()) {
+
+                String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
+                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                if (header != null && !header.isEmpty()) {
+                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    try {
+                        Verifier verifier = HMACVerifier.newVerifier(DocumentManager.GetTokenSecret());
+                        JWT jwt = JWT.getDecoder().decode(token, verifier);
+                    } catch (Exception e) {
+                        response.sendError(403, "JWT validation failed");
+                        return;
+                    }
+                }
+            }
+
+            String filePath = DocumentManager.ForcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
             if (filePath.equals("")) {
-                filePath = DocumentManager.StoragePath(fileName, null);  // or to the original document
+                filePath = DocumentManager.StoragePath(fileName, userAddress);  // or to the original document
             }
             download(filePath, response, writer);
         } catch (Exception e) {

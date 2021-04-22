@@ -228,10 +228,25 @@ class HomeController < ApplicationController
   # downloading a file
   def download
     begin
-      file_name = File.basename(params[:filename])
-      file_path = DocumentHelper.forcesave_path(file_name, nil, false)  # get the path to the force saved document version
+      file_name = File.basename(params[:fileName])
+      user_address = params[:userAddress]
+
+      if JwtHelper.is_enabled
+        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        if request.headers[jwtHeader]
+            hdr = request.headers[jwtHeader]
+            hdr.slice!(0, "Bearer ".length)
+            token = JwtHelper.decode(hdr)
+            if !token || token.eql?("")
+              render plain: "JWT validation failed", :status => 403
+              return
+            end
+          end
+      end
+
+      file_path = DocumentHelper.forcesave_path(file_name, user_address, false)  # get the path to the force saved document version
       if file_path.eql?("")
-        file_path = DocumentHelper.storage_path(file_name, nil)  # or to the original document
+        file_path = DocumentHelper.storage_path(file_name, user_address)  # or to the original document
       end
 
       # add headers to the response to specify the page parameters

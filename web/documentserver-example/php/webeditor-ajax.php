@@ -304,10 +304,23 @@ function csv() {
 // download a file
 function download() {
     try {
-        $fileName = basename($_GET["name"]);  // get the file name
-        $filePath = getForcesavePath($fileName, null, false);  // get the path to the forcesaved file version
-        if ($filePath == "") {  // if this path is empty
-            $filePath = getStoragePath($fileName, null);  // get file from the storage directory
+        $fileName = basename($_GET["fileName"]);  // get the file name
+        $userAddress = $_GET["userAddress"];
+
+        if (isJwtEnabled()) {
+            $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+            if (!empty(apache_request_headers()[$jwtHeader])) {
+                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                if (empty($token)) {
+                    http_response_code(403);
+                    die("Invalid JWT signature");
+                }
+            }
+        }
+
+        $filePath = getForcesavePath($fileName, $userAddress, false);  // get the path to the forcesaved file version
+        if ($filePath == "") {
+            $filePath = getStoragePath($fileName, $userAddress);  // get file from the storage directory
         }
         downloadFile($filePath);  // download this file
     } catch (Exception $e) {

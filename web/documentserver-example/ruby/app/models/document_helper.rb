@@ -244,13 +244,19 @@ class DocumentHelper
     # get callback url
     def get_callback(file_name)
 
-      get_server_url(true) + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 
     def get_create_url(document_type)
 
       get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
+
+    end
+
+    def get_download_url(file_name)
+
+      get_server_url(true) + '/download?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 

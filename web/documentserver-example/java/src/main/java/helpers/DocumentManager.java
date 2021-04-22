@@ -401,6 +401,21 @@ public class DocumentManager
         return serverPath + "/EditorServlet" + query;
     }
 
+    public static String GetDownloadUrl(String fileName) {
+        String serverPath = GetServerUrl(true);
+        String hostAddress = CurUserHostAddress(null);
+        try
+        {
+            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+            return serverPath + "/IndexServlet" + query;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
+        }
+    }
+
     // get an editor internal extension
     public static String GetInternalExtension(FileType fileType)
     {
@@ -463,7 +478,7 @@ public class DocumentManager
     }
 
     // get token secret from the config parameters
-    private static String GetTokenSecret()
+    public static String GetTokenSecret()
     {
         return ConfigManager.GetProperty("files.docservice.secret");
     }

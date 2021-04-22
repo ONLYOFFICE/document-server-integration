@@ -166,7 +166,7 @@ def edit(request):
         'documentType': fileType,
         'document': {
             'title': filename,
-            'url': fileUri,
+            'url': docManager.getDownloadUrl(filename, request),
             'fileType': ext[1:],
             'key': docKey,
             'info': infObj,
@@ -309,10 +309,22 @@ def csv(request):
 # download a file
 def download(request):
     try:
-        fileName = fileUtils.getFileName(request.GET['filename'])  # get the file name
-        filePath = docManager.getForcesavePath(fileName, request, False)  # get the path to the forcesaved file version
-        if (filePath == ""):  # if this path is empty
-            filePath = docManager.getStoragePath(fileName, request)  # get file from the storage directory
+        fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+
+        if (jwtManager.isEnabled()):
+            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+            token = request.headers.get(jwtHeader)
+            if token:
+                token = token[len('Bearer '):]
+                try:
+                    body = jwtManager.decode(token)
+                except Exception:
+                    return HttpResponse('JWT validation failed', status=403)
+
+        filePath = docManager.getForcesavePath(fileName, userAddress, False)  # get the path to the forcesaved file version
+        if (filePath == ""):
+            filePath = docManager.getStoragePath(fileName, userAddress)  # get file from the storage directory
         response = docManager.download(filePath)  # download this file
         return response
     except Exception:

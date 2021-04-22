@@ -70,6 +70,11 @@ namespace OnlineEditorsExampleMVC.Models
             get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
         }
 
+        public string DownloadUrl
+        {
+            get { return DocManagerHelper.GetDownloadUrl(FileName); }
+        }
+
         // get the document config
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
@@ -116,7 +121,7 @@ namespace OnlineEditorsExampleMVC.Models
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                { "url", FileUri },
+                                { "url", DownloadUrl },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
