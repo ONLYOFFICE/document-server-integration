@@ -313,14 +313,14 @@ function getVirtualPath($forDocumentServer) {
 }
 
 // get a file with meta information
-function createMeta($fileName, $user, $userAddress = NULL) {
+function createMeta($fileName, $uid, $uname, $userAddress = NULL) {
     $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));  // get the history directory
 
     // turn the file information into the json format
     $json = [
         "created" => date("Y-m-d H:i:s"),
-        "uid" => $user->id,
-        "name" => $user->name,
+        "uid" => $uid,
+        "name" => $uname,
     ];
 
     // write the encoded file information to the createdInfo.json file

@@ -157,7 +157,7 @@
         }
 
         // create demo file meta information
-        createMeta($demoFilename, $user);
+        createMeta($demoFilename, $user->id, $user->name);
 
         return $demoFilename;
     }

@@ -197,8 +197,8 @@ function processForceSave($data, $fileName, $userAddress) {
         file_put_contents($forcesavePath, $new_data, LOCK_EX);
 
         if ($isSubmitForm) {
-            $user = $data["actions"][0]["userid"];  // get the user id
-            createMeta($fileName, $user, $userAddress);  // create meta data for the forcesaved file
+            $uid = $data["actions"][0]["userid"];  // get the user id
+            createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
         }
 
         $saved = 0;

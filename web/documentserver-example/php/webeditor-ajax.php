@@ -136,7 +136,7 @@ function upload() {
             return $result;
         }
         $user = getUser($_GET["user"]);
-        createMeta($filename, $user);  // create file meta data
+        createMeta($filename, $user->id, $user->name);  // create file meta data
 
     } else {
         $result["error"] = 'Upload failed';
@@ -241,7 +241,7 @@ function convert() {
         } else {
             file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
             $user = getUser($_GET["user"]);
-            createMeta($newFileName, $user);  // and create meta data for this file
+            createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
         }
 
         // delete the original file and its history
