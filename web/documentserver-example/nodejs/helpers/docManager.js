@@ -72,9 +72,6 @@ docManager.getCustomParams = function () {
     const userid = docManager.req.query.userid;  // user id
     params += (userid ? "&userid=" + userid : "");
 
-    const name = docManager.req.query.name;  // user name
-    params += (name ? "&name=" + name : "");
-
     const lang = docManager.req.query.lang;  // language
     params += (lang ? "&lang=" + docManager.getLang() : "");
 
@@ -175,10 +172,10 @@ docManager.getCallback = function (fileName) {
     return server + handler;
 };
 
-docManager.getCreateUrl = function (docType, userid, name, type, lang) {
+docManager.getCreateUrl = function (docType, userid, type, lang) {
     const server = docManager.getServerUrl();
     var ext = docManager.getInternalExtension(docType).replace(".", "");
-    const handler = "/editor?fileExt=" + ext + "&userid=" + userid + "&name=" + name + "&type=" + type + "&lang=" + lang;
+    const handler = "/editor?fileExt=" + ext + "&userid=" + userid + "&type=" + type + "&lang=" + lang;
 
     return server + handler;
 }

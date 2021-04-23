@@ -18,12 +18,10 @@
 
 var language;
 var userid;
-var username;
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
-    username = getUrlVars()["name"];
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
 
@@ -36,8 +34,7 @@ if (typeof jQuery != "undefined") {
 
 
     jq("#language").change(function() {
-        var username = jq('#user option:selected').text();
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&name=" + username;
+        window.location = "?lang=" + jq(this).val() + "&userid=" + userid;
     });
 
 
@@ -46,16 +43,8 @@ if (typeof jQuery != "undefined") {
     else
         userid = jq("#user").val();
 
-    if ("" != username && undefined != username) {
-        username = getUrlVars()["name"];
-    }
-    else {
-        username = jq('#user option:selected').text();
-    }
-
     jq("#user").change(function() {
-        var username = jq('#user option:selected').text();
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&name=" + username;
+        window.location = "?lang=" + language + "&userid=" + jq(this).val();
     });
 
     jq(function () {
@@ -232,7 +221,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -241,7 +230,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -250,7 +239,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
