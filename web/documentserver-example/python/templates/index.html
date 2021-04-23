@@ -85,7 +85,7 @@
                                             <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="user">
                                                 {% for user in users %}
-                                                    <option value="{{ user.uid }}">{{ user.uname }}</option>
+                                                    <option value="{{ user.id }}">{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %} </option>
                                                 {% endfor %}
                                             </select>
                                         </td>

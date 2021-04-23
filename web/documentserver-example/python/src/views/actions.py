@@ -124,15 +124,7 @@ def edit(request):
     fileUriUser = docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
-    user = users.getUserFromReq(request)  # get user id and name
-    userGroup = None
-    reviewGroups = None
-    if (user['uid'] == 'uid-2'):
-        userGroup = 'group-2'
-        reviewGroups = ['group-2', '']
-    if (user['uid'] == 'uid-3'):
-        userGroup = 'group-3'
-        reviewGroups = ['group-2']
+    user = users.getUserFromReq(request)  # get user
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
@@ -159,7 +151,7 @@ def edit(request):
             'owner': 'Me',
             'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-    infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None
+    infObj['favorite'] = None if (user.id == 'uid-0') | (user.id == 'uid-1') else user.id == 'uid-2'
     # specify the document config
     edConfig = {
         'type': edType,
@@ -172,15 +164,15 @@ def edit(request):
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
                 'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') & (edMode != "blockcontent"),
-                'copy': False if user['uid'] == 'uid-3' else True,
-                'download': False if user['uid'] == 'uid-3' else True,
+                'copy': False if user.id == 'uid-3' else True,
+                'download': False if user.id == 'uid-3' else True,
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') | (edMode == "blockcontent")),
-                'print': False if user['uid'] == 'uid-3' else True,
+                'print': False if user.id == 'uid-3' else True,
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
-                'reviewGroups': reviewGroups
+                'reviewGroups': user.reviewGroups
             }
         },
         'editorConfig': {
@@ -190,9 +182,9 @@ def edit(request):
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
             'createUrl': docManager.getCreateUrl(edType, request),
             'user': {  # the user currently viewing or editing the document
-                'id': user['uid'],
-                'name': None if user['uid'] == 'uid-0' else user['uname'],
-                'group': userGroup
+                'id': user.id,
+                'name': user.name,
+                'group': user.group
             },
             'embedded': {  # the parameters for the embedded document type
                 'saveUrl': fileUriUser,  # the absolute URL that will allow the document to be saved onto the user personal computer

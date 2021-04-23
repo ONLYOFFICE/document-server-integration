@@ -26,23 +26,19 @@
 
 from urllib.parse import unquote
 
+class User:
+    def __init__(self, id, name, email, group, reviewGroups):
+        self.id = id
+        self.name = name
+        self.email = email
+        self.group = group
+        self.reviewGroups = reviewGroups
+
 USERS = [
-    {
-        'uid': 'uid-1',
-        'uname': 'John Smith'
-    },
-    {
-        'uid': 'uid-2',
-        'uname': 'Mark Pottato'
-    },
-    {
-        'uid': 'uid-3',
-        'uname': 'Hamish Mitchell'
-    },
-    {
-        'uid': 'uid-0',
-        'uname': 'anonymous'
-    }
+    User('uid-1', 'John Smith', 'smith@mail.ru', None, None),
+    User('uid-2', 'Mark Pottato', 'pottato@mail.ru', 'group-2', ['group-2', '']),
+    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru', 'group-3', ['group-2']),
+    User('uid-0', None, None, None, None)
 ]
 
 DEFAULT_USER = USERS[0]
@@ -50,9 +46,9 @@ DEFAULT_USER = USERS[0]
 # get user information from the request
 def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
-    uname = req.COOKIES.get('uname')
 
-    if (not uid) | (not uname): # check if we got both the user id and name parameters
-        return DEFAULT_USER # if not, return default user values
-    else:
-        return { 'uid': unquote(uid), 'uname': unquote(uname) }
+    for user in USERS:
+        if (user.id == uid):
+            return user
+
+    return DEFAULT_USER
