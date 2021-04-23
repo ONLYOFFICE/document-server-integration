@@ -187,13 +187,11 @@ class DocumentHelper
     def create_meta(file_name, uid, uname, user_address)
       hist_dir = history_dir(storage_path(file_name, user_address))  # get the path to the file history
 
-      uid =uid ? uid : "uid-1"
-      uname = uname ? uname : "John Smith"
       # write user name, user uid and the creation time to the json object
       json = {
         :created => Time.now.to_formatted_s(:db),
         :uid => uid,
-        :uname => uid == "uid-0" ? nil : uname
+        :uname => uname
       }
 
       # write file meta information to the createdInfo.json file
@@ -203,7 +201,7 @@ class DocumentHelper
     end
 
     # create demo document
-    def create_demo(file_ext, sample, uid, uname)
+    def create_demo(file_ext, sample, user)
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name(demo_name, nil)  # get the correct file name if such a name already exists
 
@@ -213,7 +211,8 @@ class DocumentHelper
       FileUtils.cp src, dest
 
       # save file meta data to the file
-      create_meta(file_name, uid, uname, nil)
+
+      create_meta(file_name, user.id, user.name, nil)
 
       file_name
     end

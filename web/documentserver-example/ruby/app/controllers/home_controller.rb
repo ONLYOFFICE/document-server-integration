@@ -24,8 +24,9 @@ class HomeController < ApplicationController
   def editor
 
     DocumentHelper.init(request.remote_ip, request.base_url)
+    user = Users.get_user(cookies[:uid])
 
-    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :uid => cookies[:uid], :uname => cookies[:uname], :action_data => params[:actionLink])
+    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :user => user, :action_data => params[:actionLink])
 
   end
 
@@ -33,8 +34,9 @@ class HomeController < ApplicationController
   def sample
 
     DocumentHelper.init(request.remote_ip, request.base_url)
+    user = Users.get_user(cookies[:uid])
 
-    file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], cookies[:uid], cookies[:uname])
+    file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
     redirect_to :controller => 'home', :action => 'editor', :fileName => file_name
 
   end
@@ -71,7 +73,9 @@ class HomeController < ApplicationController
       end
 
       # create file meta information
-      DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname], nil)
+      user = Users.get_user(cookies[:uid])
+
+      DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
       render plain: '{ "filename": "' + file_name + '", "documentType": "' + document_type + '"}'  # write a new file name to the response
     rescue => ex
@@ -132,8 +136,9 @@ class HomeController < ApplicationController
         end
 
         file_name = correct_name
+        user = Users.get_user(cookies[:uid])
 
-        DocumentHelper.create_meta(file_name, cookies[:uid], cookies[:uname], nil)  # create meta data of the new file
+        DocumentHelper.create_meta(file_name, user.id, user.name, nil)  # create meta data of the new file
       end
 
       render plain: '{ "filename" : "' + file_name + '"}'
