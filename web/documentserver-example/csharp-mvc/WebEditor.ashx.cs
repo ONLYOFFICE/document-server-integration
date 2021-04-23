@@ -105,7 +105,9 @@ namespace OnlineEditorsExampleMVC
                 var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
                 httpPostedFile.SaveAs(savedFileName);  // and save it
                 // get file meta information or create the default one
-                DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
+                var id = context.Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);
+                DocManagerHelper.CreateMeta(fileName, user.id, user.name);
 
                 context.Response.Write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\"}");
             }
@@ -187,7 +189,9 @@ namespace OnlineEditorsExampleMVC
 
                     Remove(fileName);  // remove the original file and its history if it exists
                     fileName = correctName;  // create meta information about the converted file with user id and name specified
-                    DocManagerHelper.CreateMeta(fileName, context.Request.Cookies.GetOrDefault("uid", ""), context.Request.Cookies.GetOrDefault("uname", ""));
+                    var id = context.Request.Cookies.GetOrDefault("uid", null);
+                    var user = Users.getUser(id);
+                    DocManagerHelper.CreateMeta(fileName, user.id, user.name);
                 }
 
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();

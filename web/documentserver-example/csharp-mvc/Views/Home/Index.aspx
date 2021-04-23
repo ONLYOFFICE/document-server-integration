@@ -84,10 +84,10 @@
                                             <span class="select-user">Username</span>
                                             <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="content/images/info.svg" />
                                             <select class="select-user" id="user">
-                                                <option value="uid-1">John Smith</option>
-                                                <option value="uid-2">Mark Pottato</option>
-                                                <option value="uid-3">Hamish Mitchell</option>
-                                                <option value="uid-0">anonymous</option>
+                                                <% foreach (User user in Users.getAllUsers())
+                                                   { %>
+                                                    <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name  %></option>
+                                                <% } %>
                                             </select>
                                         </td>
                                     </tr>

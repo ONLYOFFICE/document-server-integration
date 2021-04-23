@@ -195,13 +195,11 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var histDir = HistoryDir(StoragePath(fileName, userAddress));  // create history directory
             Directory.CreateDirectory(histDir);
-            var id = string.IsNullOrEmpty(uid) ? "uid-1" : uid;
-            var name = string.IsNullOrEmpty(uname) ? "John Smith" : uname;
             // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-                { "id", id },
-                { "name", id.Equals("uid-0") ? null : name }
+                { "id", uid },
+                { "name", uname }
             }));
         }
 

@@ -87,26 +87,14 @@ namespace OnlineEditorsExampleMVC.Models
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
             var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or not
 
-            var userId = request.Cookies.GetOrDefault("uid", "uid-1");  // get the user id or set the default one
-            var uname = userId.Equals("uid-0") ? null : request.Cookies.GetOrDefault("uname", "John Smith");  // get the user name or set the default one
-            string userGroup = null;  // get the group the user belongs to
-            List<string> reviewGroups = null;
-            if (userId.Equals("uid-2"))
-            {
-                userGroup = "group-2";
-                reviewGroups = new List<string>() { "group-2", "" };
-            }
-            if (userId.Equals("uid-3"))
-            {
-                userGroup = "group-3";
-                reviewGroups = new List<string>() { "group-2" };
-            }
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);  // get the user
 
             // favorite icon state
             object favorite = null;
-            if (!string.IsNullOrEmpty(request.Cookies.GetOrDefault("uid", null)))
+            if (!user.id.Equals("uid-0") && !user.id.Equals("uid-1"))
             {
-                favorite = request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
+                favorite = user.id.Equals("uid-2");
             }
 
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
@@ -137,15 +125,15 @@ namespace OnlineEditorsExampleMVC.Models
                                     "permissions", new Dictionary<string, object>
                                         {
                                             { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent" },
-                                            { "copy", userId.Equals("uid-3") ? false : true },
-                                            { "download", userId.Equals("uid-3") ? false : true },
+                                            { "copy", user.id.Equals("uid-3") ? false : true },
+                                            { "download", user.id.Equals("uid-3") ? false : true },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
-                                            { "print", userId.Equals("uid-3") ? false : true },
+                                            { "print", user.id.Equals("uid-3") ? false : true },
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                            { "reviewGroups", reviewGroups }
+                                            { "reviewGroups", user.reviewGroups }
                                         }
                                 }
                             }
@@ -162,9 +150,9 @@ namespace OnlineEditorsExampleMVC.Models
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", userId },
-                                            { "name", uname },
-                                            { "group", userGroup }
+                                            { "id", user.id },
+                                            { "name", user.name },
+                                            { "group", user.group }
                                         }
                                 },
                                 {
