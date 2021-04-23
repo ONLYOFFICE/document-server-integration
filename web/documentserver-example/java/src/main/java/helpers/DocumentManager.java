@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileType;
 
+import entities.User;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACSigner;
 import org.primeframework.jwt.hmac.HMACVerifier;
@@ -245,12 +246,8 @@ public class DocumentManager
         // create json object and put there file information (creation time, user id and name)
         JSONObject json = new JSONObject();
         json.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        json.put("id", (uid == null || uid.isEmpty()) ? "uid-1" : uid);
-        if (json.get("id").equals("uid-0")) {
-            json.put("name", null);
-        } else {
-            json.put("name", (uname == null || uname.isEmpty()) ? "John Smith" : uname);
-        }
+        json.put("id", uid);
+        json.put("name", uname);
 
         // create createdInfo.json file with meta information in the history directory
         File meta = new File(histDir + File.separator + "createdInfo.json");
@@ -274,7 +271,7 @@ public class DocumentManager
     }
 
     // create demo document
-    public static String CreateDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception
+    public static String CreateDemo(String fileExt, Boolean sample, User user) throws Exception
     {
         String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
         String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;  // get the path to the sample document
@@ -297,7 +294,7 @@ public class DocumentManager
         }
 
         // create meta information of the demo file
-        CreateMeta(fileName, uid, uname, null);
+        CreateMeta(fileName, user.id, user.name, null);
 
         return fileName;
     }

@@ -19,6 +19,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+import entities.User;
 import helpers.*;
 
 import java.io.*;
@@ -148,7 +149,9 @@ public class IndexServlet extends HttpServlet
 
             // create meta information with the user id and name specified
             CookieManager cm = new CookieManager(request);
-            DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
+            User user = Users.getUser(cm.getCookie("uid"));
+
+            DocumentManager.CreateMeta(fileName, user.id, user.name, null);
 
             writer.write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\" }");
 
@@ -232,7 +235,9 @@ public class IndexServlet extends HttpServlet
 
                 // create meta information about the converted file with the user id and name specified
                 CookieManager cm = new CookieManager(request);
-                DocumentManager.CreateMeta(fileName, cm.getCookie("uid"), cm.getCookie("uname"), null);
+                User user = Users.getUser(cm.getCookie("uid"));
+
+                DocumentManager.CreateMeta(fileName, user.id, user.name, null);
             }
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");
