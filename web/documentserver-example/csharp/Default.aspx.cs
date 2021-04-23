@@ -290,7 +290,9 @@ namespace OnlineEditorsExample
             httpPostedFile.SaveAs(savedFileName);  // and save it
 
             // get file meta information or create the default one
-            DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
+            var id = context.Request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);  // get the user
+            DocEditor.CreateMeta(_fileName, user.id, user.name, null);
 
             return _fileName;
         }
@@ -333,7 +335,9 @@ namespace OnlineEditorsExample
                 }
 
                 // get file meta information or create the default one
-                DocEditor.CreateMeta(_fileName, request.Cookies.GetOrDefault("uid", "uid-1"), request.Cookies.GetOrDefault("uname", "John Smith"), null);
+                var id = request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);  // get the user
+                DocEditor.CreateMeta(_fileName, user.id, user.name, null);
             }
             catch (Exception)
             {
@@ -425,7 +429,9 @@ namespace OnlineEditorsExample
 
                 // create meta information about the converted file with user id and name specified
                 _fileName = fileName;
-                DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
+                var id = context.Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);  // get the user
+                DocEditor.CreateMeta(_fileName, user.id, user.name, null);
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";
