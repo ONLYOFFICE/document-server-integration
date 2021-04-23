@@ -20,6 +20,7 @@
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
+    require_once( dirname(__FILE__) . '/users.php' );
 
     $user = $_GET["user"];
 ?>
@@ -74,7 +75,7 @@
                                         </div>
                                         <div class="upload-panel clearFix">
                                             <a class="file-upload">Upload file
-                                                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
+                                                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload&user=<?php echo htmlentities($user); ?>" />
                                             </a>
                                         </div>
 
@@ -84,10 +85,10 @@
                                                     <span class="select-user">Username</span>
                                                     <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
-                                                        <option value="0">John Smith</option>
-                                                        <option value="1">Mark Pottato</option>
-                                                        <option value="2">Hamish Mitchell</option>
-                                                        <option value="3">anonymous</option>
+                                                        <?php foreach(getAllUsers() as $user_l) {
+                                                            $name = $user_l->name ? $user_l->name : "Anonymous";
+                                                            echo '<option value="'.$user_l->id.'">'.$name.'</option>';
+                                                        } ?>
                                                     </select>
                                                 </td>
                                             </tr>
