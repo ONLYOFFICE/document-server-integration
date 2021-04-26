@@ -74,14 +74,14 @@
             "info" => [
                 "owner" => "Me",
                 "uploaded" => date('d.m.y'),
-                "favorite" => $user->id == "uid-0" || $user->id == "uid-1" ? null : $user->id == "uid-2"
+                "favorite" => $user->favorite
             ],
             "permissions" => [  // the permission for the document to be edited and downloaded or not
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
-                "copy" => $user->id == "uid-3" ? false : true,
-                "download" => $user->id == "uid-3" ? false : true,
+                "copy" => !in_array("copy", $user->deniedPermissions),
+                "download" => !in_array("download", $user->deniedPermissions),
                 "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
-                "print" => $user->id == "uid-3" ? false : true,
+                "print" => !in_array("print", $user->deniedPermissions),
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
@@ -112,7 +112,7 @@
                 "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
                 "submitForm" => $submitForm,  // if the Submit form button is displayed or not
                 "goback" => [  // settings for the Open file location menu button and upper right corner button
-                "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                    "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                 ]
             ]
         ]

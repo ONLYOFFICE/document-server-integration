@@ -18,21 +18,23 @@
  */
 
 class User {
-    function __construct($id, $name, $email, $group, $reviewGroups)
+    function __construct($id, $name, $email, $group, $reviewGroups, $favorite, $deniedPermissions)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->group = $group;
         $this->reviewGroups = $reviewGroups;
+        $this->favorite = $favorite;
+        $this->deniedPermissions = $deniedPermissions;
     }
 }
 
 $users = [
-    new User("uid-1", "John Smith", "smith@mial.ru", null, null),
-    new User("uid-2", "Mark Pottato", "pottato@mial.ru", "group-2", ["group-2", ""]),
-    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru", "group-3", ["group-2"]),
-    new User("uid-0", null, null, null, null)
+    new User("uid-1", "John Smith", "smith@mial.ru", null, null, null, []),
+    new User("uid-2", "Mark Pottato", "pottato@mial.ru", "group-2", ["group-2", ""], true, []),
+    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru", "group-3", ["group-2"], false, ["copy", "download", "print"]),
+    new User("uid-0", null, null, null, null, null, [])
 ];
 
 function getAllUsers() {
