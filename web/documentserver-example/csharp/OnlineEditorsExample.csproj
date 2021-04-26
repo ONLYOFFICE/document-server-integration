@@ -113,6 +113,7 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="TrackManager.cs" />
+    <Compile Include="Users.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WebEditor.ashx.cs">
       <DependentUpon>WebEditor.ashx</DependentUpon>

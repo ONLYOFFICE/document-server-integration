@@ -19,9 +19,9 @@
 package controllers;
 
 import com.google.gson.Gson;
-import helpers.ConfigManager;
-import helpers.CookieManager;
-import helpers.DocumentManager;
+import entities.User;
+import helpers.*;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileModel;
-import helpers.FileUtility;
 
 
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
@@ -52,13 +51,14 @@ public class EditorServlet extends HttpServlet
         Boolean sampleData = (sample == null || sample.isEmpty()) ? false : sample.toLowerCase().equals("true");
 
         CookieManager cm = new CookieManager(request);
+        User user = Users.getUser(cm.getCookie("uid"));
 
         if (fileExt != null)
         {
             try
             {
                 // create demo document
-                fileName = DocumentManager.CreateDemo(fileExt, sampleData, cm.getCookie("uid"), cm.getCookie("uname"));
+                fileName = DocumentManager.CreateDemo(fileExt, sampleData, user);
                 response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
                 return;
             }
@@ -69,9 +69,9 @@ public class EditorServlet extends HttpServlet
         }
 
         // create file model (get all the necessary parameters from cookies)
-        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"), request.getParameter("actionLink"));
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user);
         // change type parameter if needed
-        file.changeType(request.getParameter("mode"), request.getParameter("type"));
+        file.changeType(request.getParameter("mode"), request.getParameter("type"), user);
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();

@@ -4,6 +4,9 @@
 <%@page import="java.util.Calendar"%>
 <%@page import="java.io.File"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="helpers.Users"%>
+<%@page import="entities.User"%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -79,10 +82,9 @@
                                                     <span class="select-user">Username</span>
                                                     <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
-                                                        <option value="uid-1">John Smith</option>
-                                                        <option value="uid-2">Mark Pottato</option>
-                                                        <option value="uid-3">Hamish Mitchell</option>
-                                                        <option value="uid-0">anonymous</option>
+                                                        <% for (User user : Users.getAllUsers()) { %>
+                                                            <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
+                                                        <% } %>
                                                     </select>
                                                 </td>
                                             </tr>

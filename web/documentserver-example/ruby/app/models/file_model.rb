@@ -16,7 +16,7 @@
 
 class FileModel
 
-  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :uid, :uname, :action_data
+  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data
 
   # set file parameters
   def initialize(attributes = {})
@@ -25,8 +25,7 @@ class FileModel
     @type = attributes[:type]
     @user_ip = attributes[:user_ip]
     @lang = attributes[:lang]
-    @user_id = attributes[:uid]
-    @user_name = attributes[:uname]
+    @user = attributes[:user]
     @action_data = attributes[:action_data]
   end
 
@@ -85,18 +84,6 @@ class FileModel
     canEdit = DocumentHelper.edited_exts.include?(file_ext)  # check if the document can be edited
     submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))  # the Submit form button state
     mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
-    userId = @user_id ? @user_id : "uid-1"
-    user_name = (userId.eql?("uid-0") ? nil : (@user_name ? @user_name : "John Smith"))
-    userGroup = nil
-    reviewGroups = nil
-    if (userId == "uid-2")
-        userGroup = "group-2"
-        reviewGroups = ["group-2", ""]
-    end 
-    if (userId == "uid-3") 
-        userGroup = "group-3"
-        reviewGroups = ["group-2"]
-    end
 
     config = {
       :type => type(),
@@ -109,19 +96,19 @@ class FileModel
         :info => {
           :owner => "Me",
           :uploaded => Time.now.to_s,
-          :favorite => @user_id ? @user_id.eql?("uid-2") : nil
+          :favorite => @user.favorite
         },
         :permissions => {  # the permission for the document to be edited and downloaded or not
           :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
-          :copy => userId.eql?("uid-3") ? false : true,
-          :download => userId.eql?("uid-3") ? false : true,
+          :copy => !@user.deniedPermissions.include?("copy"),
+          :download => !@user.deniedPermissions.include?("download"),
           :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("view") ||  editorsmode.eql?("filter") || editorsmode.eql?("blockcontent")),
-          :print => userId.eql?("uid-3") ? false : true,
+          :print => !@user.deniedPermissions.include?("print"),
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
-          :reviewGroups => reviewGroups
+          :reviewGroups => @user.reviewGroups
         }
       },
       :editorConfig => {
@@ -131,9 +118,9 @@ class FileModel
         :callbackUrl => callback_url,  # absolute URL to the document storage service
         :createUrl => create_url,
         :user => {  # the user currently viewing or editing the document
-          :id => userId,
-          :name => user_name,
-          :group => userGroup
+          :id => @user.id,
+          :name => @user.name,
+          :group => @user.group
         },
         :embedded => {  # the parameters for the embedded document type
           :saveUrl => file_uri_user,  # the absolute URL that will allow the document to be saved onto the user personal computer

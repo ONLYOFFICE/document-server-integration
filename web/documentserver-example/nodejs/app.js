@@ -33,6 +33,7 @@ const mime = require("mime");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
+const users = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
 const plugins = config.get('plugins');
@@ -102,7 +103,8 @@ app.get("/", function (req, res) {  // define a handler for default page
             convertExts: configServer.get('convertedDocs').join(","),
             editedExts: configServer.get('editedDocs').join(","),
             storedFiles: docManager.getStoredFiles(),
-            params: docManager.getCustomParams()
+            params: docManager.getCustomParams(),
+            users: users,
         });
 
     }
@@ -211,10 +213,9 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
             } else {
                 res.write("{ \"filename\": \"" + file.name + "\", \"documentType\": \"" + documentType + "\" }");  // otherwise, write a new file name to the response
 
-                const userid = req.query.userid ? req.query.userid : "uid-1";  // get user id and name parameters or set them to the default values
-                const name = req.query.name ? req.query.name : "John Smith";
+                var user = users.getUser(req.query.userid); // get user id and name parameters or set them to the default values
 
-                docManager.saveFileData(file.name, userid, name);
+                docManager.saveFileData(file.name, user.id, user.name);
             }
             res.end();
         });
@@ -631,22 +632,14 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var history = [];
         var historyData = [];
         var lang = docManager.getLang();
-        var userid = req.query.userid ? req.query.userid : "uid-1";
-        var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
+        var user = users.getUser(req.query.userid);
+
+        var userid = user.id;
+        var name = user.name;
         var actionData = req.query.action ? req.query.action : "null";
 
-        var userGroup = null;
-        var reviewGroups = null;
-        if (userid == "uid-2")
-        {
-            userGroup = "group-2";
-            // own and without group
-            reviewGroups = ["group-2", ""];
-        } else if (userid == "uid-3") {
-            userGroup = "group-3";
-            // other group only
-            reviewGroups = ["group-2"];
-        }
+        var userGroup = user.group;
+        var reviewGroups = user.reviewGroups;
 
         if (fileExt != null) {
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
@@ -740,7 +733,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 uriUser: urlUser,
                 version: countVersion,
                 created: new Date().toDateString(),
-                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
+                favorite: user.favorite != null ? user.favorite : "null"
             },
             editor: {
                 type: type,
@@ -748,16 +741,16 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 key: key,
                 token: "",
                 callbackUrl: docManager.getCallback(fileName),
-                createUrl: docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, name, type, lang),
+                createUrl: docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang),
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
                 fillForms: mode != "view" && mode != "comment" && mode != "embedded" && mode != "blockcontent",
                 modifyFilter: mode != "filter",
                 modifyContentControl: mode != "blockcontent",
-                copy: userid == "uid-3" ? false : true,
-                download: userid == "uid-3" ? false : true,
-                print: userid == "uid-3" ? false : true,
+                copy: !user.deniedPermissions.includes("copy"),
+                download: !user.deniedPermissions.includes("download"),
+                print: !user.deniedPermissions.includes("print"),
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
                 backUrl: docManager.getServerUrl() + "/",

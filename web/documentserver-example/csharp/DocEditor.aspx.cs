@@ -149,29 +149,13 @@ namespace OnlineEditorsExample
             var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or hidden
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
 
-            var userId = Request.Cookies.GetOrDefault("uid", "uid-1");  // get the user id or set the default one
-            var uname = userId.Equals("uid-0") ? null : Request.Cookies.GetOrDefault("uname", "John Smith");  // get the user name or set the default one
-            string userGroup = null;  // get the group the user belongs to
-            List<string> reviewGroups = null;
-            if (userId.Equals("uid-2"))
-            {
-                userGroup = "group-2";
-                reviewGroups = new List<string>() { "group-2", "" };
-            }
-            if (userId.Equals("uid-3"))
-            {
-                userGroup = "group-3";
-                reviewGroups = new List<string>() { "group-2" };
-            }
+            var id = Request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);  // get the user
 
             var jss = new JavaScriptSerializer();
 
             // favorite icon state
-            object favorite = null;
-            if (!string.IsNullOrEmpty(Request.Cookies.GetOrDefault("uid", null)))
-            {
-                favorite = Request.Cookies.GetOrDefault("uid", null).Equals("uid-2");
-            }
+            bool? favorite = user.favorite;
 
             var actionLink = Request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
@@ -201,15 +185,15 @@ namespace OnlineEditorsExample
                                     "permissions", new Dictionary<string, object>
                                         {
                                             { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent"},
-                                            { "copy", userId.Equals("uid-3") ?  false : true },
-                                            { "download", userId.Equals("uid-3") ?  false : true },
+                                            { "copy", !user.deniedPermissions.Contains("copy") },
+                                            { "download", !user.deniedPermissions.Contains("download") },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode =="view" || editorsMode == "filter" || editorsMode == "blockcontent") },
-                                            { "print", userId.Equals("uid-3") ?  false : true },
+                                            { "print", !user.deniedPermissions.Contains("print") },
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                            { "reviewGroups", reviewGroups }
+                                            { "reviewGroups", user.reviewGroups }
                                         }
                                 }
                             }
@@ -226,9 +210,9 @@ namespace OnlineEditorsExample
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", userId },
-                                            { "name",  uname },
-                                            { "group", userGroup }
+                                            { "id", user.id },
+                                            { "name",  user.name },
+                                            { "group", user.group }
                                         }
                                 },
                                 {
@@ -494,7 +478,9 @@ namespace OnlineEditorsExample
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);  // copy this file to the storage directory
 
             // create a json file with file meta data
-            CreateMeta(FileName, request.Cookies.GetOrDefault("uid", "uid-1"), request.Cookies.GetOrDefault("uname", "John Smith"), null);
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);  // get the user
+            CreateMeta(FileName, user.id, user.name, null);
         }
 
         // create a json file with file meta data
@@ -506,7 +492,7 @@ namespace OnlineEditorsExample
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
                 { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                 { "id", uid },
-                { "name", uid.Equals("uid-0") ? null : uname }
+                { "name", uname }
             }));
         }
     }

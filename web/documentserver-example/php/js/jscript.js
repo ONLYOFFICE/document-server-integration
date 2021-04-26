@@ -111,7 +111,7 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor-ajax.php?type=convert";
+            var requestAddress = "webeditor-ajax.php?type=convert&user=" + user;
 
             jq.ajax({
                 async: true,

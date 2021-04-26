@@ -200,7 +200,6 @@ if (typeof jQuery !== "undefined") {
 
         userSel.on("change", function () {
             setCookie("uid", userSel.val());
-            setCookie("uname", encodeURIComponent(userSel.find("option:selected").text()));
         });
         langSel.on("change", function () {
             setCookie("ulang", langSel.val());

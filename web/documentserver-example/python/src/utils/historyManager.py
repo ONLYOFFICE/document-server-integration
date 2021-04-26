@@ -97,8 +97,8 @@ def createMeta(storagePath, req):
 
     obj = { # create the meta data object
         'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-        'uid': user['uid'],
-        'uname': None if user['uid'] == 'uid-0' else user['uname']
+        'uid': user.id,
+        'uname': user.name
     }
 
     writeFile(path, json.dumps(obj))

@@ -21,8 +21,11 @@
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
     require_once( dirname(__FILE__) . '/jwtmanager.php' );
+    require_once( dirname(__FILE__) . '/users.php' );
 
     $filename;
+
+    $user = getUser($_GET["user"]);
 
     // get the file url and upload it
     $externalUrl = $_GET["fileUrl"];
@@ -40,7 +43,7 @@
     if (!empty($createExt))
     {
         // and get demo file name by the extension
-        $filename = tryGetDefaultByType($createExt);
+        $filename = tryGetDefaultByType($createExt, $user);
 
         // create the demo file url
         $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
@@ -52,28 +55,6 @@
     $fileuriUser = FileUri($filename);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
-    $uid = empty($_GET["user"]) ? "0" : $_GET["user"];  // get file uid by its user
-    $uname = "";
-    // get user names and groups by the uids
-    switch ($uid) {
-        case 0:
-            $uname = "John Smith";
-            break;
-        case 1:
-            $uname = "Mark Pottato";
-            $ugroup = "group-2";
-            $reviewGroups = ["group-2", ""];
-            break;
-        case 2:
-            $uname = "Hamish Mitchell";
-            $ugroup = "group-3";
-            $reviewGroups = ["group-2"];
-            break;
-        case 3:
-            $uname = null;
-            break;
-    }
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
@@ -93,19 +74,19 @@
             "info" => [
                 "owner" => "Me",
                 "uploaded" => date('d.m.y'),
-                "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
+                "favorite" => $user->favorite
             ],
             "permissions" => [  // the permission for the document to be edited and downloaded or not
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
-                "copy" => $uid == 2 ? false : true,
-                "download" => $uid == 2 ? false : true,
+                "copy" => !in_array("copy", $user->deniedPermissions),
+                "download" => !in_array("download", $user->deniedPermissions),
                 "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
-                "print" => $uid == 2 ? false : true,
+                "print" => !in_array("print", $user->deniedPermissions),
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
-                "reviewGroups" => $reviewGroups
+                "reviewGroups" => $user->reviewGroups
             ]
         ],
         "editorConfig" => [
@@ -113,11 +94,11 @@
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
-            "createUrl" => getCreateUrl($filename, $uid, $type),
+            "createUrl" => getCreateUrl($filename, $user->id, $type),
             "user" => [  // the user currently viewing or editing the document
-                "id" => $uid,
-                "name" => $uname,
-                "group" => $ugroup
+                "id" => $user->id,
+                "name" => $user->name,
+                "group" => $user->group
             ],
             "embedded" => [  // the parameters for the embedded document type
                 "saveUrl" => $fileuriUser,  // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -164,7 +145,7 @@
     }
 
     // get demo file name by the extension
-    function tryGetDefaultByType($createExt) {
+    function tryGetDefaultByType($createExt, $user) {
         $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
         $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
@@ -176,7 +157,7 @@
         }
 
         // create demo file meta information
-        createMeta($demoFilename, $_GET["user"]);
+        createMeta($demoFilename, $user->id, $user->name);
 
         return $demoFilename;
     }

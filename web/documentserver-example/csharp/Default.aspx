@@ -1,8 +1,10 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="OnlineEditorsExample._Default" Title="ONLYOFFICE" %>
 
 <%@ Import Namespace="System.IO" %>
+<%@ Import Namespace="System.Web.WebPages" %>
 <%@ Import Namespace="System.Linq" %>
 <%@ Import Namespace="System.Web.Configuration" %>
+<%@ Import Namespace="OnlineEditorsExample" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -82,10 +84,10 @@
                                                 <span class="select-user">Username</span>
                                                 <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
-                                                    <option value="uid-1">John Smith</option>
-                                                    <option value="uid-2">Mark Pottato</option>
-                                                    <option value="uid-3">Hamish Mitchell</option>
-                                                    <option value="uid-0">anonymous</option>
+                                                    <% foreach (User user in Users.getAllUsers())
+                                                       { %>
+                                                        <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name  %></option>
+                                                    <% } %>
                                                 </select>
                                             </td>
                                         </tr>

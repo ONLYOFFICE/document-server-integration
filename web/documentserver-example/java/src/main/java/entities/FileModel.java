@@ -42,7 +42,7 @@ public class FileModel
     public String token;
 
     // create file model
-    public FileModel(String fileName, String lang, String uid, String uname, String actionData)
+    public FileModel(String fileName, String lang, String actionData, User user)
     {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();  // remove extra spaces in the file name
@@ -59,7 +59,7 @@ public class FileModel
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
         document.info = new Info();
-        document.info.favorite = uid != null && !uid.isEmpty() ? uid.equals("uid-2") : null;
+        document.info.favorite = user.favorite;
 
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
@@ -68,19 +68,18 @@ public class FileModel
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
         // write user information to the config (id, name and group)
-        if (uid != null) editorConfig.user.id = uid;
-        if (uname != null) editorConfig.user.name = uid.equals("uid-0") ? null : uname;
-        if (editorConfig.user.id.equals("uid-2")) editorConfig.user.group = "group-2";
-        if (editorConfig.user.id.equals("uid-3")) editorConfig.user.group = "group-3";
+        editorConfig.user.id = user.id;
+        editorConfig.user.name = user.name;
+        editorConfig.user.group = user.group;
 
         // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
-        changeType(mode, type);
+        changeType(mode, type, user);
     }
 
     // change the document type
-    public void changeType(String _mode, String _type)
+    public void changeType(String _mode, String _type, User user)
     {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
@@ -93,7 +92,7 @@ public class FileModel
         editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
 
         // set document permissions
-        document.permissions = new Permissions(mode, type, canEdit);
+        document.permissions = new Permissions(mode, type, canEdit, user);
 
         if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
     }
@@ -244,28 +243,18 @@ public class FileModel
         public List<String> reviewGroups;
 
         // defines what can be done with a document
-        public Permissions(String mode, String type, Boolean canEdit)
+        public Permissions(String mode, String type, Boolean canEdit, User user)
         {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            сopy = editorConfig.user.id.equals("uid-3") ? false : true;
-            download = сopy = editorConfig.user.id.equals("uid-3") ? false : true;
+            сopy = !user.deniedPermissions.contains("сopy");
+            download = !user.deniedPermissions.contains("download");
             edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
-            print = editorConfig.user.id.equals("uid-3") ? false : true;
+            print = !user.deniedPermissions.contains("print");
             fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
-            reviewGroups = editorConfig.user.group != null ? GetReviewGroups(editorConfig.user.group) : null;
-        }
-
-        // defines the list of groups whose documents the user can review
-        private List<String> GetReviewGroups(String group){
-            Map<String, List<String>> reviewGroups = new HashMap<>();
-
-            reviewGroups.put("group-2", Arrays.asList("group-2", ""));
-            reviewGroups.put("group-3", Arrays.asList("group-2"));
-
-            return reviewGroups.get(group);
+            reviewGroups = user.reviewGroups;
         }
     }
 
@@ -310,9 +299,9 @@ public class FileModel
         // default user parameters (id, name and group)
         public class User
         {
-            public String id = "uid-1";
-            public String name = "John Smith";
-            public String group = null;
+            public String id;
+            public String name;
+            public String group;
         }
 
         // customization parameters

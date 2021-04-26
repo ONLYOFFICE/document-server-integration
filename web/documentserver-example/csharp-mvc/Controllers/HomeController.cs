@@ -47,7 +47,9 @@ namespace OnlineEditorsExampleMVC.Controllers
         public ActionResult Sample(string fileExt, bool? sample)
         {
             var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);  // create a sample document
-            DocManagerHelper.CreateMeta(fileName, Request.Cookies.GetOrDefault("uid", ""), Request.Cookies.GetOrDefault("uname", ""));  // create meta information for the sample document
+            var id = Request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
             Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             return null;
         }
