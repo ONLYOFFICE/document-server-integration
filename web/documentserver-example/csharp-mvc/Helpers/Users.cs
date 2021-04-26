@@ -22,11 +22,11 @@ namespace OnlineEditorsExampleMVC.Helpers
 {
     public class Users
     {
-        private static List<User> users = new List<User>() { 
-            new User("uid-1", "John Smith", "smith@mail.ru", null, null),
-            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }),
-            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }),
-            new User("uid-0", null, null, null, null)
+        private static List<User> users = new List<User>() {
+            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>()),
+            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>()),
+            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }),
+            new User("uid-0", null, null, null, null, null, new List<string>())
         };
         
         public static User getUser(string id)
@@ -51,14 +51,18 @@ namespace OnlineEditorsExampleMVC.Helpers
         public string email;
         public string group;
         public List<string> reviewGroups;
+        public bool? favorite;
+        public List<string> deniedPermissions;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions)
         {
             this.id = id;
             this.name = name;
             this.email = email;
             this.group = group;
             this.reviewGroups = reviewGroups;
+            this.favorite = favorite;
+            this.deniedPermissions = deniedPermissions;
         }
 
     }
