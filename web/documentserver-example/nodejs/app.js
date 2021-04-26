@@ -34,6 +34,7 @@ const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
 const users = require("./helpers/users");
+const { getUsersForMentions } = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
 const plugins = config.get('plugins');
@@ -778,7 +779,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             dataMailMergeRecipients: {
                 fileType: "csv",
                 url: docManager.getServerUrl(true) + "/csv"
-            }
+            },
+            usersForMentions: users.getUsersForMentions(user.id)
         };
 
         if (cfgSignatureEnable) {

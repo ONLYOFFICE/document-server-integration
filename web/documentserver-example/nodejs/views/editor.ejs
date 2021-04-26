@@ -132,6 +132,19 @@
             docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
 
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": <%- JSON.stringify(usersForMentions) %>
+            });
+        };
+
+        var onRequestSendNotify = function(event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
         var connectEditor = function () {
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
@@ -149,6 +162,8 @@
                         "onRequestInsertImage": onRequestInsertImage,
                         "onRequestCompareFile": onRequestCompareFile,
                         "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                        "onRequestUsers": onRequestUsers,
+                        "onRequestSendNotify": onRequestSendNotify,
                     }
             });
 
