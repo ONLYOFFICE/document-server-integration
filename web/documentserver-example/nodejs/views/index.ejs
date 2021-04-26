@@ -72,7 +72,17 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="images/info.svg" />
+                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                </br>
+                                                <% users.forEach(user => { %>
+                                                    <b><%= user.name == null ? 'Anonymous' : user.name %></b>
+                                                    <ul>
+                                                        <% user.descriptions.forEach(description => { %>
+                                                            <li><%= description %></li>
+                                                        <% }) %>
+                                                    </ul>
+                                                <% }) %>"
+                                                src="images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
