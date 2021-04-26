@@ -82,7 +82,17 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="{% static "images/info.svg" %}" />
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            {% for user in users %}
+                                                <b>{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %}</b>
+                                                <ul>
+                                                    {% for description in user.descriptions %}
+                                                        <li>{{ description }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endfor %}"
+                                            src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="user">
                                                 {% for user in users %}
                                                     <option value="{{ user.id }}">{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %} </option>
