@@ -733,7 +733,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 uriUser: urlUser,
                 version: countVersion,
                 created: new Date().toDateString(),
-                favorite: user.id == "uid-0" || user.id == "uid-1" ? "null" : user.id == "uid-2"
+                favorite: user.favorite != null ? user.favorite : "null"
             },
             editor: {
                 type: type,
@@ -748,9 +748,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fillForms: mode != "view" && mode != "comment" && mode != "embedded" && mode != "blockcontent",
                 modifyFilter: mode != "filter",
                 modifyContentControl: mode != "blockcontent",
-                copy: userid == "uid-3" ? false : true,
-                download: userid == "uid-3" ? false : true,
-                print: userid == "uid-3" ? false : true,
+                copy: !user.deniedPermissions.includes("copy"),
+                download: !user.deniedPermissions.includes("download"),
+                print: !user.deniedPermissions.includes("print"),
                 mode: canEdit && mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
                 backUrl: docManager.getServerUrl() + "/",

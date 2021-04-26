@@ -17,18 +17,20 @@
  */
 
 var users = [
-    new User("uid-1", "John Smith", "smith@mail.ru", null, null),
-    new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""]),  // own and without group
-    new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"]),  // other group only
-    new User("uid-0", null, null, null, null),
+    new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, []),
+    new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, []),  // own and without group
+    new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"]),  // other group only
+    new User("uid-0", null, null, null, null, null, []),
 ];
 
-function User(id, name, email, group, reviewGroups) {
+function User(id, name, email, group, reviewGroups, favorite, deniedPermissions) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.group = group;
     this.reviewGroups = reviewGroups;
+    this.favorite = favorite;
+    this.deniedPermissions = deniedPermissions;
 };
 
 users.getUser = function (id) {
