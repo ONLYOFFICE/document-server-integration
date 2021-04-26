@@ -155,11 +155,7 @@ namespace OnlineEditorsExample
             var jss = new JavaScriptSerializer();
 
             // favorite icon state
-            object favorite = null;
-            if (!user.id.Equals("uid-0") && !user.id.Equals("uid-1"))
-            {
-                favorite = user.id.Equals("uid-2");
-            }
+            bool? favorite = user.favorite;
 
             var actionLink = Request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
@@ -189,10 +185,10 @@ namespace OnlineEditorsExample
                                     "permissions", new Dictionary<string, object>
                                         {
                                             { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent"},
-                                            { "copy", user.id.Equals("uid-3") ?  false : true },
-                                            { "download", user.id.Equals("uid-3") ?  false : true },
+                                            { "copy", !user.deniedPermissions.Contains("copy") },
+                                            { "download", !user.deniedPermissions.Contains("download") },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode =="view" || editorsMode == "filter" || editorsMode == "blockcontent") },
-                                            { "print", user.id.Equals("uid-3") ?  false : true },
+                                            { "print", !user.deniedPermissions.Contains("print") },
                                             { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
