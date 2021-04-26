@@ -96,14 +96,14 @@ class FileModel
         :info => {
           :owner => "Me",
           :uploaded => Time.now.to_s,
-          :favorite => @user.id.eql?("uid-0") || @user.id.eql?("uid-1") ? nil : @user.id.eql?("uid-2")
+          :favorite => @user.favorite
         },
         :permissions => {  # the permission for the document to be edited and downloaded or not
           :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
-          :copy => @user.id.eql?("uid-3") ? false : true,
-          :download => @user.id.eql?("uid-3") ? false : true,
+          :copy => !@user.deniedPermissions.include?("copy"),
+          :download => !@user.deniedPermissions.include?("download"),
           :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("view") ||  editorsmode.eql?("filter") || editorsmode.eql?("blockcontent")),
-          :print => @user.id.eql?("uid-3") ? false : true,
+          :print => !@user.deniedPermissions.include?("print"),
           :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),

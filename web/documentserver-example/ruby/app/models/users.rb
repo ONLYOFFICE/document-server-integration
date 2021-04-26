@@ -15,23 +15,25 @@
 #
 
 class User
-    attr_accessor :id, :name, :email, :group, :reviewGroups
+    attr_accessor :id, :name, :email, :group, :reviewGroups, :favorite, :deniedPermissions
 
-    def initialize (id, name, email, group, reviewGroups)
+    def initialize (id, name, email, group, reviewGroups, favorite, deniedPermissions)
         @id = id
         @name = name
         @email = email
         @group = group
         @reviewGroups = reviewGroups
+        @favorite = favorite
+        @deniedPermissions = deniedPermissions
     end
 end
 
 class Users
     @@users = [
-        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil),
-        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""]),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"]),
-        User.new("uid-0", nil, nil, nil, nil)
+        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil, nil, []),
+        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, []),
+        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"]),
+        User.new("uid-0", nil, nil, nil, nil, nil, [])
     ]
 
     class << self
