@@ -27,18 +27,20 @@
 from urllib.parse import unquote
 
 class User:
-    def __init__(self, id, name, email, group, reviewGroups):
+    def __init__(self, id, name, email, group, reviewGroups, favorite, deniedPermissions):
         self.id = id
         self.name = name
         self.email = email
         self.group = group
         self.reviewGroups = reviewGroups
+        self.favorite = favorite
+        self.deniedPermissions = deniedPermissions
 
 USERS = [
-    User('uid-1', 'John Smith', 'smith@mail.ru', None, None),
-    User('uid-2', 'Mark Pottato', 'pottato@mail.ru', 'group-2', ['group-2', '']),
-    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru', 'group-3', ['group-2']),
-    User('uid-0', None, None, None, None)
+    User('uid-1', 'John Smith', 'smith@mail.ru', None, None, None, []),
+    User('uid-2', 'Mark Pottato', 'pottato@mail.ru', 'group-2', ['group-2', ''], True, []),
+    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru', 'group-3', ['group-2'], False, ["copy", "download", "print"]),
+    User('uid-0', None, None, None, None, None, [])
 ]
 
 DEFAULT_USER = USERS[0]

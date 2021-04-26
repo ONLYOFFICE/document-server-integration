@@ -151,7 +151,7 @@ def edit(request):
             'owner': 'Me',
             'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-    infObj['favorite'] = None if (user.id == 'uid-0') | (user.id == 'uid-1') else user.id == 'uid-2'
+    infObj['favorite'] = user.favorite
     # specify the document config
     edConfig = {
         'type': edType,
@@ -164,10 +164,10 @@ def edit(request):
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
                 'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') & (edMode != "blockcontent"),
-                'copy': False if user.id == 'uid-3' else True,
-                'download': False if user.id == 'uid-3' else True,
+                'copy': 'copy' not in user.deniedPermissions,
+                'download': 'download' not in user.deniedPermissions,
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') | (edMode == "blockcontent")),
-                'print': False if user.id == 'uid-3' else True,
+                'print': 'print' not in user.deniedPermissions,
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
