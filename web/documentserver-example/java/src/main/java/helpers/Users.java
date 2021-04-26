@@ -26,10 +26,10 @@ import java.util.List;
 public class Users {
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", "")));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2")));
-        add(new User("uid-0", null, null, null, null));
+        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>()));
+        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>()));
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print")));
+        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>()));
     }};
 
     public static User getUser (String id) {

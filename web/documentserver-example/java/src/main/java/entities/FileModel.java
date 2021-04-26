@@ -59,7 +59,7 @@ public class FileModel
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
         document.info = new Info();
-        document.info.favorite = user.id.equals("uid-0") || user.id.equals("uid-1") ? null : user.id.equals("uid-2") ;
+        document.info.favorite = user.favorite;
 
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
@@ -246,10 +246,10 @@ public class FileModel
         public Permissions(String mode, String type, Boolean canEdit, User user)
         {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            сopy = user.id.equals("uid-3") ? false : true;
-            download = сopy = user.id.equals("uid-3") ? false : true;
+            сopy = !user.deniedPermissions.contains("сopy");
+            download = !user.deniedPermissions.contains("download");
             edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
-            print = user.id.equals("uid-3") ? false : true;
+            print = !user.deniedPermissions.contains("print");
             fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
