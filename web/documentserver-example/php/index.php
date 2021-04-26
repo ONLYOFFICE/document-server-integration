@@ -83,7 +83,18 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="css/images/info.svg" />
+                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                    </br>
+                                                    <?php foreach(getAllUsers() as $user_l) {
+                                                        $name = $user_l->name ? $user_l->name : "Anonymous";
+                                                        echo '<b>'.$name.'</b>';
+                                                        echo '<ul>';
+                                                        foreach ($user_l->descriptions as $description) {
+                                                            echo '<li>'.$description.'</li>';
+                                                        }
+                                                        echo '</ul>';
+                                                    } ?>"
+                                                    src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <?php foreach(getAllUsers() as $user_l) {
                                                             $name = $user_l->name ? $user_l->name : "Anonymous";
