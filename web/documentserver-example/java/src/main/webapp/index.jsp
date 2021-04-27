@@ -80,7 +80,17 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="css/img/info.svg" />
+                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                    </br>
+                                                    <% for (User user : Users.getAllUsers()) { %>
+                                                        <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                                        <ul>
+                                                            <% for (String description : user.descriptions) { %>
+                                                                <li><%= description %></li>
+                                                            <% } %>
+                                                        </ul>
+                                                    <% } %>"
+                                                    src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
                                                             <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>

@@ -82,7 +82,19 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="content/images/info.svg" />
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            <% foreach (User user in Users.getAllUsers())
+                                               { %>
+                                                    <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                                    <ul>
+                                                    <% foreach (string description in user.descriptions)
+                                                       { %>
+                                                            <li><%= description %></li>
+                                                    <% } %>
+                                                    </ul>
+                                            <% } %>"
+                                            src="content/images/info.svg" />
                                             <select class="select-user" id="user">
                                                 <% foreach (User user in Users.getAllUsers())
                                                    { %>
