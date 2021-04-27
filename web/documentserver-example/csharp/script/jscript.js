@@ -277,7 +277,6 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-
     jq(".info").mouseover(function (event) {
         var target = event.target;
         var id = target.dataset.id ? target.dataset.id : target.id;

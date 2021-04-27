@@ -16,7 +16,7 @@
  *
  */
 
- var descr_user_1 = [
+var descr_user_1 = [
     "File author by default",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
