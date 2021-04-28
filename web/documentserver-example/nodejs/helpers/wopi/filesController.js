@@ -7,6 +7,7 @@ const mime = require("mime");
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
+actionMapping[reqConsts.requestType.PutFile] = putFile;
 actionMapping[reqConsts.requestType.CheckFileInfo] = checkFileInfo;
 
 function parseWopiRequest(req) {
@@ -86,6 +87,23 @@ function getFile(wopi, req, res, userHost) {
     filestream.pipe(res);
 }
 
+function putFile(wopi, req, res, userHost) {
+    let userAddress = docManager.curUserHostAddress(userHost);
+
+    let path = docManager.storagePath(wopi.id, userAddress);
+
+    if (req.body) {
+        let filestream = fileSystem.createWriteStream(path);
+        req.pipe(filestream);
+        req.on('end', () => {
+            filestream.close();
+            res.sendStatus(200);
+        })
+    } else {
+        res.sendStatus(404);
+    }
+}
+
 function checkFileInfo(wopi, req, res, userHost) {
     let userAddress = docManager.curUserHostAddress(userHost);
     let historyPath = docManager.historyPath(wopi.id, userAddress);
@@ -100,7 +118,8 @@ function checkFileInfo(wopi, req, res, userHost) {
         "OwnerId": docManager.getFileData(wopi.id, userAddress)[1],
         "Size": fileSystem.statSync(path).size,
         "UserId": req.query.userid ? req.query.userid : "uid-1",
-        "Version": version
+        "Version": version,
+        "UserCanWrite": true
     };
     res.status(200).send(fileInfo);
 }
