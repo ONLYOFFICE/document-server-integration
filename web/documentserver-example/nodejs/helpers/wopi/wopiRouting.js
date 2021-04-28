@@ -30,6 +30,18 @@ exports.registerRoutes = function(app) {
             return;
         }
     });
+    app.get("/wopi-new", function(req, res) {
+        var fileExt = req.query.fileExt;
+        var userid = req.query.userid ? req.query.userid : "uid-1";
+        var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
+
+        if (fileExt != null) {
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);
+            var redirectPath = docManager.getServerUrl() + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit";
+            res.redirect(redirectPath);
+            return;
+        }
+    });
     app.get("/wopi-action/:id", function(req, res) {
         try {
             docManager.init(storageFolder, req, res);
