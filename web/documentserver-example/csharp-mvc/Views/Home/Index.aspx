@@ -82,12 +82,24 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="content/images/info.svg" />
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            <% foreach (User user in Users.getAllUsers())
+                                               { %>
+                                                    <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                                    <ul>
+                                                    <% foreach (string description in user.descriptions)
+                                                       { %>
+                                                            <li><%= description %></li>
+                                                    <% } %>
+                                                    </ul>
+                                            <% } %>"
+                                            src="content/images/info.svg" />
                                             <select class="select-user" id="user">
-                                                <option value="uid-1">John Smith</option>
-                                                <option value="uid-2">Mark Pottato</option>
-                                                <option value="uid-3">Hamish Mitchell</option>
-                                                <option value="uid-0">anonymous</option>
+                                                <% foreach (User user in Users.getAllUsers())
+                                                   { %>
+                                                    <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name  %></option>
+                                                <% } %>
                                             </select>
                                         </td>
                                     </tr>
@@ -236,7 +248,7 @@
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
-                                                                    <a href="webeditor.ashx?type=download&filename=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
+                                                                    <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                                                         <img class="icon-download" src="content/images/download-24.png" alt="Download" title="Download" />
                                                                     </a>
                                                                 </td>

@@ -19,9 +19,9 @@
 package controllers;
 
 import com.google.gson.Gson;
-import helpers.ConfigManager;
-import helpers.CookieManager;
-import helpers.DocumentManager;
+import entities.User;
+import helpers.*;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -33,12 +33,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import entities.FileModel;
-import helpers.FileUtility;
 
 
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
 public class EditorServlet extends HttpServlet
 {
+    // process request
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         DocumentManager.Init(request, response);
@@ -47,16 +47,19 @@ public class EditorServlet extends HttpServlet
         String fileExt = request.getParameter("fileExt");
         String sample = request.getParameter("sample");
 
+        // check if there is sample data in the request
         Boolean sampleData = (sample == null || sample.isEmpty()) ? false : sample.toLowerCase().equals("true");
 
         CookieManager cm = new CookieManager(request);
+        User user = Users.getUser(cm.getCookie("uid"));
 
         if (fileExt != null)
         {
             try
             {
-                fileName = DocumentManager.CreateDemo(fileExt, sampleData, cm.getCookie("uid"), cm.getCookie("uname"));
-                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
+                // create demo document
+                fileName = DocumentManager.CreateDemo(fileExt, sampleData, user);
+                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
                 return;
             }
             catch (Exception ex)
@@ -65,27 +68,33 @@ public class EditorServlet extends HttpServlet
             }
         }
 
-        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), cm.getCookie("uid"), cm.getCookie("uname"), request.getParameter("actionLink"));
-        file.changeType(request.getParameter("mode"), request.getParameter("type"));
+        // create file model (get all the necessary parameters from cookies)
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user);
+        // change type parameter if needed
+        file.changeType(request.getParameter("mode"), request.getParameter("type"), user);
 
+        // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
 
+        // a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
 
+        // recipients data for mail merging
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
 
+        // check if the document token is enabled
         if (DocumentManager.TokenEnabled())
         {
-            file.BuildToken();
-            dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));
-            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));
-            dataMailMergeRecipients.put("token", DocumentManager.CreateToken(dataMailMergeRecipients));
+            file.BuildToken();  // generate document token
+            dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));  // create token from the dataInsertImage object
+            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));  // create token from the dataCompareFile object
+            dataMailMergeRecipients.put("token", DocumentManager.CreateToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 
         Gson gson = new Gson();
@@ -97,18 +106,21 @@ public class EditorServlet extends HttpServlet
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
+    // create get request
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         processRequest(request, response);
     }
 
+    // create post request
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         processRequest(request, response);
     }
 
+    // get servlet information
     @Override
     public String getServletInfo()
     {

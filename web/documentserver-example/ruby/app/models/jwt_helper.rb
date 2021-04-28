@@ -19,19 +19,23 @@ class JwtHelper
     @jwt_secret = Rails.configuration.jwtSecret
   
     class << self
+        # check if a secret key to generate token exists or not
         def is_enabled
             return @jwt_secret && !@jwt_secret.empty? ? true : false
         end
 
+        # encode a payload object into a token using a secret key
         def encode(payload)
-            header = { :alg => "HS256", :typ => "JWT" }
-            enc_header = Base64.urlsafe_encode64(header.to_json).remove("=")
-            enc_payload = Base64.urlsafe_encode64(payload.to_json).remove("=")
-            hash = Base64.urlsafe_encode64(calc_hash(enc_header, enc_payload)).remove("=")
+            header = { :alg => "HS256", :typ => "JWT" }  # define the hashing algorithm and the token type
+            # three parts of token
+            enc_header = Base64.urlsafe_encode64(header.to_json).remove("=")  # header
+            enc_payload = Base64.urlsafe_encode64(payload.to_json).remove("=")  # payload
+            hash = Base64.urlsafe_encode64(calc_hash(enc_header, enc_payload)).remove("=")  # signature
 
             return "#{enc_header}.#{enc_payload}.#{hash}"
         end
 
+        # decode a token into a payload object using a secret key
         def decode(token)
             if !is_enabled
                 return ""
@@ -50,6 +54,7 @@ class JwtHelper
 
         private
 
+        # generate a hash code based on a key using the HMAC method
         def calc_hash(header, payload)
             return OpenSSL::HMAC.digest("SHA256", @jwt_secret, "#{header}.#{payload}")
         end

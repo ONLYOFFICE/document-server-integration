@@ -57,12 +57,21 @@
                   <tr>
                     <td valign="middle">
                       <span class="select-user">Username</span>
-                      <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="assets/info.svg" />
+                      <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                      </br>
+                      <% for user in Users.get_all_users() do %>
+                        <b><%= user.name ? user.name : "Anonymous" %></b>
+                        <ul>
+                          <% for description in user.descriptions do %>
+                            <li><%= description %></li>
+                          <% end %>
+                        </ul>
+                      <% end %>"
+                      src="assets/info.svg" />
                       <select class="select-user" id="user">
-                        <option value="uid-1">John Smith</option>
-                        <option value="uid-2">Mark Pottato</option>
-                        <option value="uid-3">Hamish Mitchell</option>
-                        <option value="uid-0">anonymous</option>
+                        <% for user in Users.get_all_users() do %>
+                          <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
+                        <% end %>
                       </select>
                     </td>
                   </tr>
@@ -210,7 +219,7 @@
                                 </a>
                             </td>
                             <td class="contentCells contentCells-shift contentCells-icon">
-                              <a href="<%= "download?filename=#{URI::encode(d)}" %>">
+                              <a href="<%= "download?fileName=#{URI::encode(d)}" %>">
                                 <img class="icon-download" src="assets/download-24.png" alt="Download" title="Download" />
                               </a>
                             </td>

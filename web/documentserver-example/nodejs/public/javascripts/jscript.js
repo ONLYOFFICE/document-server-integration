@@ -18,12 +18,10 @@
 
 var language;
 var userid;
-var username;
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
-    username = getUrlVars()["name"];
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
 
@@ -36,8 +34,7 @@ if (typeof jQuery != "undefined") {
 
 
     jq("#language").change(function() {
-        var username = jq('#user option:selected').text();
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&name=" + username;
+        window.location = "?lang=" + jq(this).val() + "&userid=" + userid;
     });
 
 
@@ -46,16 +43,8 @@ if (typeof jQuery != "undefined") {
     else
         userid = jq("#user").val();
 
-    if ("" != username && undefined != username) {
-        username = getUrlVars()["name"];
-    }
-    else {
-        username = jq('#user option:selected').text();
-    }
-
     jq("#user").change(function() {
-        var username = jq('#user option:selected').text();
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&name=" + username;
+        window.location = "?lang=" + language + "&userid=" + jq(this).val();
     });
 
     jq(function () {
@@ -232,7 +221,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -241,7 +230,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -250,7 +239,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&name=" + username;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -312,13 +301,26 @@ if (typeof jQuery != "undefined") {
         var id = target.dataset.id ? target.dataset.id : target.id;
         var tooltip = target.dataset.tooltip;
 
-        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
 
-        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
-        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
-        jq("div.tooltip").css({"top": top, "left": left});
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
+
+        var topElement = jq("#" + id).offset().top;
+        var halfHeightElement = jq("#" + id).outerHeight() / 2;
+
+        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
+        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
+        if (heightToFooter > (halfHeightTooltip + 10)) {
+            var top = topElement + halfHeightElement - halfHeightTooltip;
+        } else {
+            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
+        }
+
+        jq("div.tooltip").css({"top": top, "left": left + 10});
+        jq("div.arrow").css({"top": topElement + halfHeightElement, "left": left + 6});
     }).mouseout(function () {
         jq("div.tooltip").remove();
+        jq("div.arrow").remove();
     });
 }
 
