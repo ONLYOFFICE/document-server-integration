@@ -16,7 +16,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 Download the [.Net (C#) example](https://api.onlyoffice.com/editors/demopreview) from our site.
 You need to connnect the editors to your web site. For that specify the path to the editors installation in the *settings.config* file:
 ```
-	<add key="files.docservice.url.site" value="https://documentserver/" />
+<add key="files.docservice.url.site" value="https://documentserver/" />
 ```
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *DocEditor.aspx* file.
