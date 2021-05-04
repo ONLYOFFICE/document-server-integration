@@ -2,7 +2,7 @@
 
 ## Introduction
 
-To integrate **ONLYOFFICE online editors** into your own website on **Node.js** you need to download and install ONLYOFFICE editors on your local server and use the [Node.js Example](https://api.onlyoffice.com/editors/demopreview) for their integration. We will show you how to run the Node.js example on [Windows OS](https://api.onlyoffice.com/editors/example/nodejs#Windows) and [Linux OS](https://api.onlyoffice.com/editors/example/nodejs#Linux).
+To integrate **ONLYOFFICE online editors** into your own website on **Node.js** you need to download and install ONLYOFFICE editors on your local server and use the [Node.js Example](https://api.onlyoffice.com/editors/demopreview) for their integration. We will show you how to run the Node.js example on [Windows OS](#running-the-example-on-windows-os) and [Linux OS](#running-the-example-on-linux-os).
 
 Please nore that the integration examples are used to demonstrate document editors functions and the ways to connect **Document Server** to your own application. **DO NOT USE** these examples on your own server without **PROPER CODE MODIFICATIONS**!
 

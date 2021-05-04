@@ -4,7 +4,7 @@
 
 To integrate **ONLYOFFICE online editors** into your own website on **Java** you need to download and install ONLYOFFICE editors on your local server and use the [Java Example](https://api.onlyoffice.com/editors/demopreview) for their integration.
 
-You can choose any appropriate way how to run the Java example code. We will show how to run the Java code using the **Apache Tomcat** web server on [Windows OS](https://api.onlyoffice.com/editors/example/java#Windows) and [Linux OS](https://api.onlyoffice.com/editors/example/java#Linux).
+You can choose any appropriate way how to run the Java example code. We will show how to run the Java code using the **Apache Tomcat** web server on [Windows OS](#running-the-example-on-windows-os) and [Linux OS](#running-the-example-on-linux-os).
 
 Please note that the integration examples are used to demonstrate document editors functions and the ways to connect **Document Server** to your own application. **DO NOT USE** these examples on your own server without **PROPER CODE MODIFICATIONS**!
 
