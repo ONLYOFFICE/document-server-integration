@@ -1,6 +1,7 @@
 const reqConsts = require('./request');
 const docManager = require("../docManager");
 const fileUtility = require("../fileUtility");
+const lockManager = require("./lockManager");
 const utils = require("./utils");
 const fileSystem = require("fs");
 const mime = require("mime");
@@ -9,6 +10,11 @@ const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
 actionMapping[reqConsts.requestType.PutFile] = putFile;
 actionMapping[reqConsts.requestType.CheckFileInfo] = checkFileInfo;
+actionMapping[reqConsts.requestType.UnlockAndRelock] = unlockAndRelock;
+actionMapping[reqConsts.requestType.Lock] = lock;
+actionMapping[reqConsts.requestType.GetLock] = getLock;
+actionMapping[reqConsts.requestType.RefreshLock] = refreshLock;
+actionMapping[reqConsts.requestType.Unlock] = unlock;
 
 function parseWopiRequest(req) {
     let wopiData = {
@@ -30,10 +36,10 @@ function parseWopiRequest(req) {
             if (req.method == "GET") {
                 wopiData.requestType = reqConsts.requestType.CheckFileInfo;
             } else if (req.method == "POST") {
-                let wopiOverride = req.headers[reqConsts.requestHeaders.requestType]
+                let wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];
                 switch (wopiOverride) {
                     case "LOCK":
-                        if (req.headers[reqConsts.requestHeaders.OldLock]) {
+                        if (req.headers[reqConsts.requestHeaders.OldLock.toLowerCase()]) {
                             wopiData.requestType = reqConsts.requestType.UnlockAndRelock;
                         } else {
                             wopiData.requestType = reqConsts.requestType.Lock;
@@ -73,6 +79,93 @@ function parseWopiRequest(req) {
     return wopiData;
 }
 
+function lock(wopi, req, res, userHost) {
+    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+
+    let userAddress = docManager.curUserHostAddress(userHost);
+    let filePath = docManager.storagePath(wopi.id, userAddress);
+
+    if (!lockManager.hasLock(filePath)) {
+        // file isn't locked => lock
+        lockManager.lock(filePath, requestLock);
+        res.sendStatus(200);
+    } else if (lockManager.getLock(filePath) == requestLock) {
+        // lock matches current lock => extend duration
+        lockManager.lock(filePath, requestLock);
+        res.sendStatus(200);
+    } else {
+        // file locked by someone else => return lock mismatch
+        let lock = lockManager.getLock(filePath);
+        returnLockMismatch(res, lock, "File already locked by " + lock)
+    }
+}
+
+function getLock(wopi, req, res, userHost) {
+    let userAddress = docManager.curUserHostAddress(userHost);
+    let filePath = docManager.storagePath(wopi.id, userAddress);
+
+    res.headers[reqConsts.requestHeaders.lock] == lockManager.getLock(filePath);
+    res.sendStatus(200);
+}
+
+function refreshLock(wopi, req, res, userHost) {
+    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+
+    let userAddress = docManager.curUserHostAddress(userHost);
+    let filePath = docManager.storagePath(wopi.id, userAddress);
+
+    if (!lockManager.hasLock(filePath)) {
+        // file isn't locked => mismatch
+        returnLockMismatch(res, "", "File isn't locked");
+    } else if (lockManager.getLock(filePath) == requestLock) {
+        // lock matches current lock => extend duration
+        lockManager.lock(filePath, requestLock);
+        res.sendStatus(200);
+    } else {
+        // lock mismatch
+        returnLockMismatch(res, lockManager.getLock(filePath), "Lock mismatch");
+    }
+}
+
+function unlock(wopi, req, res, userHost) {
+    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+
+    let userAddress = docManager.curUserHostAddress(userHost);
+    let filePath = docManager.storagePath(wopi.id, userAddress);
+
+    if (!lockManager.hasLock(filePath)) {
+        // file isn't locked => mismatch
+        returnLockMismatch(res, "", "File isn't locked");
+    } else if (lockManager.getLock(filePath) == requestLock) {
+        // lock matches current lock => unlock
+        lockManager.unlock(filePath);
+        res.sendStatus(200);
+    } else {
+        // lock mismatch
+        returnLockMismatch(res, lockManager.getLock(filePath), "Lock mismatch");
+    }
+}
+
+function unlockAndRelock(wopi, req, res, userHost) {
+    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    let oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()];
+
+    let userAddress = docManager.curUserHostAddress(userHost);
+    let filePath = docManager.storagePath(wopi.id, userAddress);
+
+    if (!lockManager.hasLock(filePath)) {
+        // file isn't locked => mismatch
+        returnLockMismatch(res, "", "File isn't locked");
+    } else if (lockManager.getLock(filePath) == oldLock) {
+        // lock matches current lock => lock with new key
+        lockManager.lock(filePath, requestLock);
+        res.sendStatus(200);
+    } else {
+        // lock mismatch
+        returnLockMismatch(res, lockManager.getLock(filePath), "Lock mismatch");
+    }
+}
+
 function getFile(wopi, req, res, userHost) {
     let userAddress = docManager.curUserHostAddress(userHost);
 
@@ -88,19 +181,31 @@ function getFile(wopi, req, res, userHost) {
 }
 
 function putFile(wopi, req, res, userHost) {
-    let userAddress = docManager.curUserHostAddress(userHost);
+    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
+    let userAddress = docManager.curUserHostAddress(userHost);
     let path = docManager.storagePath(wopi.id, userAddress);
 
-    if (req.body) {
-        let filestream = fileSystem.createWriteStream(path);
-        req.pipe(filestream);
-        req.on('end', () => {
-            filestream.close();
-            res.sendStatus(200);
-        })
+    if (!lockManager.hasLock(path)) {
+        // ToDo: if body length is 0 bytes => handle document creation
+
+        // file isn't locked => mismatch
+        returnLockMismatch(res, "", "File isn't locked");
+    } else if (lockManager.getLock(path) == requestLock) {
+        // lock matches current lock => put file
+        if (req.body) {
+            let filestream = fileSystem.createWriteStream(path);
+            req.pipe(filestream);
+            req.on('end', () => {
+                filestream.close();
+                res.sendStatus(200);
+            })
+        } else {
+            res.sendStatus(404);
+        }
     } else {
-        res.sendStatus(404);
+        // lock mismatch
+        returnLockMismatch(res, lockManager.getLock(path), "Lock mismatch");
     }
 }
 
@@ -119,9 +224,19 @@ function checkFileInfo(wopi, req, res, userHost) {
         "Size": fileSystem.statSync(path).size,
         "UserId": req.query.userid ? req.query.userid : "uid-1",
         "Version": version,
-        "UserCanWrite": true
+        "UserCanWrite": true,
+        "SupportsGetLock": true,
+        "SupportsLocks": true
     };
     res.status(200).send(fileInfo);
+}
+
+function returnLockMismatch(res, lock, reason) {
+    res.headers[reqConsts.requestHeaders.Lock] = lock || "";
+    if (reason) {
+        res.headers[reqConsts.requestHeaders.LockFailureReason] = reason;
+    }
+    res.sendStatus(409); // conflict
 }
 
 exports.fileRequestHandler = (req, res) => {
