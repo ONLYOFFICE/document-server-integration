@@ -136,11 +136,13 @@ exports.fileRequestHandler = (req, res) => {
 
     if (wopiData.requestType == reqConsts.requestType.None) {
         res.status(500).send({ 'title': 'fileHandler', 'method': req.method, 'id': req.params['id'], 'error': "unknown" });
+        return;
     }
 
     let action = actionMapping[wopiData.requestType];
     if (!action) {
         res.status(501).send({ 'title': 'fileHandler', 'method': req.method, 'id': req.params['id'], 'error': "unsupported" });
+        return;
     }
 
     action(wopiData, req, res);
