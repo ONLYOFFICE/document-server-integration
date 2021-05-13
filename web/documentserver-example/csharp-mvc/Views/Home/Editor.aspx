@@ -135,6 +135,21 @@
             docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);  // insert recipient data for mail merge into the file
         };
 
+        var onRequestUsers = function () {
+            <% string users; %>
+            <% Model.GetUsersMentions(Request, out users); %>
+            docEditor.setUsers({
+                "users": <%= users%>
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
         var config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -151,6 +166,8 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestUsers": onRequestUsers,
+            "onRequestSendNotify": onRequestSendNotify,
         };
 
         <% string hist, histData; %>
