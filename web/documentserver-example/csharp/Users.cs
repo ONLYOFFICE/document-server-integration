@@ -42,6 +42,24 @@ namespace OnlineEditorsExample
         {
             return users;
         }
+
+        public static List<Dictionary<string, object>> getUsersForMentions(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+
+            foreach (User user in users)
+            {
+                if (!user.id.Equals(id) && user.name != null && user.email != null)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"name", user.name },
+                        {"email", user.email },
+                    });
+                }
+            }
+            return usersData;
+        }
     }
 
     public class User
