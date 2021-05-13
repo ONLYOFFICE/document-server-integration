@@ -53,4 +53,18 @@ function getUser($id) {
     return $users[0];
 }
 
+function getUsersForMentions($id) {
+    global $users;
+    $usersData = [];
+    
+    foreach ($users as $user) {
+        if ($user->id != $id && $user->name != null && $user->email != null) {
+            array_push($usersData,[
+                "name" => $user->name,
+                "email" => $user->email
+            ]);
+        }
+    }
+    return json_encode($usersData);
+}
 ?>

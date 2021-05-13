@@ -135,6 +135,9 @@
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
+    
+    // users data for mentions
+    $usersData = getUsersForMentions($user->id);
 
     // check if the secret key to generate token exists
     if (isJwtEnabled()) {
@@ -393,6 +396,19 @@
             docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
         };
 
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": <?php echo $usersData ?>
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -417,6 +433,8 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+                "onRequestUsers": onRequestUsers,
+                "onRequestSendNotify": onRequestSendNotify,
             };
 
             <?php
