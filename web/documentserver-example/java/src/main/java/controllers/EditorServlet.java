@@ -103,6 +103,7 @@ public class EditorServlet extends HttpServlet
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
+        request.setAttribute("users", gson.toJson(Users.getUsersForMentions(user.id)));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

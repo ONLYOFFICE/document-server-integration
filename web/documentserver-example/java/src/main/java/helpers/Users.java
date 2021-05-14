@@ -19,9 +19,8 @@
 package helpers;
 
 import entities.User;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import java.util.*;
 
 public class Users {
 
@@ -43,6 +42,20 @@ public class Users {
 
     public static List<User> getAllUsers () {
         return users;
+    }
+
+    public static List<Map<String, Object>> getUsersForMentions (String id) {
+        List<Map<String, Object>> usersData = new ArrayList<>();
+
+        for (User user : users) {
+            if (!user.id.equals(id) && user.name != null && user.email != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", user.name);
+                data.put("email", user.email);
+                usersData.add(data);
+            }
+        }
+        return usersData;
     }
 }
 

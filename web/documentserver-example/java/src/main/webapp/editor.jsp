@@ -119,6 +119,19 @@
             docEditor.setMailMergeRecipients(${dataMailMergeRecipients});  // insert recipient data for mail merge into the file
         };
 
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": ${users}
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -133,6 +146,8 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestUsers": onRequestUsers,
+            "onRequestSendNotify": onRequestSendNotify,
         };
 
         <%
