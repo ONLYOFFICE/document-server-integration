@@ -109,6 +109,19 @@
         docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);  // insert recipient data for mail merge into the file
     };
 
+    var onRequestUsers = function () {
+        docEditor.setUsers({
+            "users": <%= raw @file.get_users_mentions.to_json %>
+        });
+    };
+
+    var onRequestSendNotify = function (event) {
+        var actionLink = JSON.stringify(event.data.actionLink);
+        console.log("onRequestSendNotify:");
+        console.log(event.data);
+        console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+    };
+
     var сonnectEditor = function () {
 
         var config = <%= raw @file.get_config.to_json %>;
@@ -126,6 +139,8 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+            "onRequestUsers": onRequestUsers,
+            "onRequestSendNotify": onRequestSendNotify,
         };
 
         <%

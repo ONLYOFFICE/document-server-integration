@@ -278,4 +278,8 @@ class FileModel
     return dataMailMergeRecipients
   end
 
+  def get_users_mentions
+    return Users.get_users_for_mentions(@user.id)
+  end
+
 end
