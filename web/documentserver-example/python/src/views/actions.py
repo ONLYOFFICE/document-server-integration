@@ -238,7 +238,8 @@ def edit(request):
         'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
-        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients)  # recipient data for mail merging
+        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
+        'users': json.dumps(users.getUsersForMentions(request))
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 

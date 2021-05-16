@@ -134,6 +134,19 @@
             );
         };
 
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": {{ users | safe }}
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -150,6 +163,8 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                "onRequestUsers": onRequestUsers,
+                "onRequestSendNotify": onRequestSendNotify,
             };
 
             {% if history and historyData %}
