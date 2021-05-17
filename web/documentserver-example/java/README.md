@@ -1,6 +1,8 @@
-# How to integrate online editors into your own web site on Java
+## Overview
 
-## Introduction
+This example will help you integrate ONLYOFFICE Docs into your web application written in Java. 
+
+It is aimed at testing the editors. Please, do not use it for production without proper modifications.
 
 To integrate **ONLYOFFICE online editors** into your own website on **Java** you need to download and install ONLYOFFICE editors on your local server and use the [Java Example](https://api.onlyoffice.com/editors/demopreview) for their integration.
 
@@ -12,17 +14,17 @@ This guide will show you the sequence of actions to integrate the editors succes
 
 ## Running the example on Windows OS
 
-## Step 1. Download and Install Document Server
+### Step 1. Download and Install Document Server
 
-First, download the [**ONLYOFFICE Editors**](https://api.onlyoffice.com/editors/demopreview) (the ONLYOFFICE Document Server).
+Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx?from=api_java_example).
+See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
 
-## Step 2. Download the Java code for the editors integration
+### Step 2. Download the Java code for the editors integration
 
 Download the [Java example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-You need to connect the editors to your web site. For that specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
 
 ```
 files.docservice.url.site=https://documentserver/
@@ -32,16 +34,16 @@ where the **documentserver** is the name of the server with the ONLYOFFICE Docum
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\webapp\editor.jsp* file.
 
-## Step 3. Install the prerequisites
+### Step 3. Install the prerequisites
 
-To run the Java example code you will need to install the Java version appropriate for your OS and web server **Apache Tomcat**:
+To run the Java example code, install the Java version appropriate for your OS and web server **Apache Tomcat**:
 
 * Java (download from [the Oracle official web site](https://www.java.com/en/download/manual.jsp));
 * Apache Tomcat (download from [the official website](http://tomcat.apache.org/)).
 
-## Step 4. Running Apache Tomcat
+### Step 4. Run Apache Tomcat
 
-1. After you have installed Java in Windows, you must set the **JAVA_HOME** environment variable to point to the Java installation directory.
+1. After you have installed Java on Windows, set the **JAVA_HOME** environment variable to point to the Java installation directory.
 
 	Find out where Java is installed. If you didn't change the path during installation, it will be something like this:
 
@@ -93,7 +95,7 @@ To run the Java example code you will need to install the Java version appropria
 
 	If everything is correct, you will see the Tomcat web page in the browser as shown below.
 
-## Step 5 . Running the Java code
+### Step 5. Run the Java code
 
 1. Open Tomcat Web Application Manager by clicking **Manager App:**
 
@@ -103,7 +105,7 @@ To run the Java example code you will need to install the Java version appropria
 	![author](screenshots/author.jpg)
    
 
-	For that you will need to specify user data in *tomcat-users.xml* file in the Apache Tomcat installation folder. Define the **manager-gui** user role, specify the **user name** and **password** values:
+	Specify user data in *tomcat-users.xml* file in the Apache Tomcat installation folder. Define the **manager-gui** user role, specify the **user name** and **password** values:
 
 	```
 	<tomcat-users>
@@ -121,21 +123,21 @@ To run the Java example code you will need to install the Java version appropria
    
 5. Click the link with the application name to run it.
 
-## Step 6. Checking accessibility
+### Step 6. Checkg accessibility
 
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. And you must also make sure that the Document Server in its turn has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
+In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
-If you integrated the editors successfully the result should look like the [demo preview](https://api.onlyoffice.com/editors/demopreview#DemoPreview) on our site.
+Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
 ## Running the example on Linux OS
 
-## Step 1. Download and Install Document Server
+### Step 1. Download and Install Document Server
 
-First, download the [**ONLYOFFICE Editors**](https://api.onlyoffice.com/editors/demopreview) (the ONLYOFFICE Document Server).
+Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to [install Document Server for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx?from=api_java_example).
+See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
 
-## Step 2. Install the prerequisites and run the web site with the editors
+### Step 2. Install the prerequisites and run the website with the editors
 
 1. Install **Java**:
 
@@ -226,11 +228,11 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     http://localhost:8080/OnlineEditorsExampleJava-1.0/
     ```
     
-## Step 3. Checking accessibility
+### Step 3. Checking accessibility
 
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. And you must also make sure that the Document Server in its turn has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
+In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
-If you integrated the editors successfully the result should look like the [demo preview](https://api.onlyoffice.com/editors/demopreview#DemoPreview) on our site.
+Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
 ## Build from Docker
 
