@@ -6,7 +6,7 @@ It is aimed at testing the editors. Please, do not use it for production without
 
 ## For Windows
 
-### Step 1. Install Document Server
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
@@ -16,7 +16,7 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [PHP example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-You need to connect the editors to your web site. Specify the path to the editors installation in the *config.php* file:
+You need to connect the editors to your website. Specify the path to the editors installation in the *config.php* file:
 
 ```
 $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
@@ -93,7 +93,7 @@ You can use any web server capable of runnig PHP code to run the example. We wil
 	
 	![php-add](screenshots/php-add.png)  
 
-3. Browse your web site with the IIS manager:
+3. Browse your website with the IIS manager:
 
    Right-click the site -> **Manage Website** -> **Browse**
    
@@ -107,13 +107,13 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Linux
 
-### Step 1. Install Document Server
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx?from=api_php_example).
 
-### Step 2. Install the prerequisites and run the web site with the editors
+### Step 2. Install the prerequisites and run the website with the editors
 
 1. Install **Apache** and **PHP**:
 
