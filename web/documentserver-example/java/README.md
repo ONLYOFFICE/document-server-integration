@@ -4,21 +4,13 @@ This example will help you integrate ONLYOFFICE Docs into your web application w
 
 It is aimed at testing the editors. Please, do not use it for production without proper modifications.
 
-To integrate **ONLYOFFICE online editors** into your own website on **Java** you need to download and install ONLYOFFICE editors on your local server and use the [Java Example](https://api.onlyoffice.com/editors/demopreview) for their integration.
-
-You can choose any appropriate way how to run the Java example code. We will show how to run the Java code using the **Apache Tomcat** web server on [Windows OS](#running-the-example-on-windows-os) and [Linux OS](#running-the-example-on-linux-os).
-
-Please note that the integration examples are used to demonstrate document editors functions and the ways to connect **Document Server** to your own application. **DO NOT USE** these examples on your own server without **PROPER CODE MODIFICATIONS**!
-
-This guide will show you the sequence of actions to integrate the editors successfully.
-
 ## For Windows
 
-### Step 1. Download and Install Document Server
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
+See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
 
 ### Step 2. Download the Java code for the editors integration
 
@@ -131,11 +123,11 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Linux
 
-### Step 1. Download and Install Document Server
+### Step 1. ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
+See the detailed guide to learn how to install Document Server [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx). 
 
 ### Step 2. Install the prerequisites and run the website with the editors
 
@@ -236,7 +228,7 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Docker
 
-1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed (you can find the installation instructions link above).
+1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed ([installation instructions](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx)).
 
 	```
 	nano src/main/resources/settings.properties
