@@ -123,7 +123,7 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Linux
 
-### Step 1. ONLYOFFICE Docs
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
