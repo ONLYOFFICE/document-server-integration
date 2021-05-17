@@ -12,7 +12,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ## Step 2. Download the .Net (C#) code for the editors integration
 
-Download the compiled [.Net (C#) example](https://api.onlyoffice.com/editors/demopreview) from our site.
+Download the [.Net (C#) example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
 Connect the editors to your website by specifying the path to the editors installation in the *settings.config* file:
 ```
