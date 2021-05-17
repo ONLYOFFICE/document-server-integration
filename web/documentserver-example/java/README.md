@@ -12,7 +12,7 @@ Please note that the integration examples are used to demonstrate document edito
 
 This guide will show you the sequence of actions to integrate the editors successfully.
 
-## Running the example on Windows OS
+## For Windows
 
 ### Step 1. Download and Install Document Server
 
@@ -123,13 +123,13 @@ To run the Java example code, install the Java version appropriate for your OS a
    
 5. Click the link with the application name to run it.
 
-### Step 6. Checkg accessibility
+### Step 6. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
 Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
-## Running the example on Linux OS
+## For Linux
 
 ### Step 1. Download and Install Document Server
 
@@ -228,13 +228,13 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     http://localhost:8080/OnlineEditorsExampleJava-1.0/
     ```
     
-### Step 3. Checking accessibility
+### Step 3. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
 Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
-## Build from Docker
+## Docker
 
 1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
