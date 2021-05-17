@@ -234,9 +234,9 @@ In case the example and Document Server are installed on different computers, ma
 
 Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
-## Docker
+## For Docker
 
-1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed (you can find the installation instructions link above).
 
 	```
 	nano src/main/resources/settings.properties
