@@ -30,7 +30,7 @@ If you want to experiment with the editor configuration, modify the [parameters]
 
 To run the Java example code, install the Java version appropriate for your OS and web server **Apache Tomcat**:
 
-* Java (download from [the Oracle official web site](https://www.java.com/en/download/manual.jsp));
+* Java (download from [the Oracle official website](https://www.java.com/en/download/manual.jsp));
 * Apache Tomcat (download from [the official website](http://tomcat.apache.org/)).
 
 ### Step 4. Run Apache Tomcat
