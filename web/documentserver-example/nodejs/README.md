@@ -134,7 +134,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     http://localhost:3000
     ```
 
-### Step 3. Checking accessibility
+### Step 3. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
