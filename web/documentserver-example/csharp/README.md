@@ -28,7 +28,7 @@ Check that your system meets the requirements:
 * Microsoft .NET Framework: version 4.5 (download it from the [official Microsoft website](https://www.microsoft.com/en-US/download/details.aspx?id=30653));
 * Internet Information Services: version 7 or later.
 
-### Step 4. Run your website with the editors
+## Step 4. Run your website with the editors
 1. Run the Internet Information Service (IIS) manager
 	Start -> ControlPanel -> System and Security -> Administrative Tools -> Internet Information Services (IIS) Manager
 2. Add your website in the IIS Manager
@@ -45,7 +45,7 @@ Check that your system meets the requirements:
 	Right-click the site -> **Manage Website** -> **Browse**
 	![browse](screenshots/browse.png)
 
-### Step 5. Check accessibility
+## Step 5. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files.
 
