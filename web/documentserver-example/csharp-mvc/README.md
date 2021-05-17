@@ -13,7 +13,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 ## Step 2. Download the .Net (C# MVC) code for the editors integration
 
 Download the compiled [.Net (C# MVC) example](https://api.onlyoffice.com/editors/demopreview) from our site.
-You need to connnect the editors to your web site. For that specify the path to the editors installation in the *settings.config* file:
+You need to connnect the editors to your web site. Specify path to the editors installation in the *settings.config* file:
 ```
 <add key="files.docservice.url.site" value="https://documentserver/" />
 ```
