@@ -60,7 +60,7 @@ We will run the code in Node.js runtime environment and will interact with it us
     http://localhost:3000
     ```
 
-## Step 5. Checking accessibility
+### Step 5. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
@@ -74,7 +74,7 @@ Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx).
 
-## Step 2. Install the prerequisites and run the website with the editors
+### Step 2. Install the prerequisites and run the website with the editors
 
 1. Install **Node.js**:
 
@@ -134,7 +134,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     http://localhost:3000
     ```
 
-## Step 3. Checking accessibility
+### Step 3. Checking accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
