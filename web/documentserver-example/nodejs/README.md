@@ -6,7 +6,7 @@ It is aimed at testing the editors. Please, do not use it for production without
 
 ## For Windows
 
-### Step 1. Install Document Server
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
@@ -68,7 +68,7 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Linux
 
-### Step 1. Install Document Server
+### Step 1. Install ONLYOFFICE Docs
 
 Download and install ONLYOFFICE Docs (packaged as Document Server).
 
