@@ -60,7 +60,7 @@
         <form id="form1">
         <header>
             <a href="">
-                <img src ="css/images/logo.png" alt="ONLYOFFICE" />
+                <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </header>
         <div class="main-panel">
@@ -77,6 +77,7 @@
                             <option value="0">John Smith</option>
                             <option value="1">Mark Pottato</option>
                             <option value="2">Hamish Mitchell</option>
+                            <option value="3">anonymous</option>
                         </select>
                     </td>
                     <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
@@ -142,17 +143,17 @@
                     <div class="create-panel clearFix">
                         <ul class="try-editor-list clearFix">
                             <li>
-                                <a class="try-editor document reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor word reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Document</a>
                             </li>
                             <li>
-                                <a class="try-editor spreadsheet reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor cell reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Spreadsheet</a>
                             </li>
                             <li>
-                                <a class="try-editor presentation reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
+                                <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
                                     <br />
                                     Presentation</a>
                             </li>
@@ -190,7 +191,7 @@
                                     echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
                                     echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
                                     echo '  </a>';
-                                    echo '  <a href="'.FileUri($storeFile->name).'">';
+                                    echo '  <a href="webeditor-ajax.php?type=download&name='.urlencode($storeFile->name).'">';
                                     echo '   <img class="icon-download" src="css/images/download-24.png" alt="Download" title="Download" /></a>';
                                     echo '  </a>';
                                     echo '  <a class="delete-file" data="'.$storeFile->name.'">';
@@ -208,11 +209,11 @@
                                     echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
                                     echo '  </a>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
                                     echo '  </a>';
-                                    } else if ($storeFile->documentType == "spreadsheet") {
+                                    } else if ($storeFile->documentType == "cell") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=filter&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                     echo '  </a>';
@@ -224,14 +225,14 @@
                                     echo '  </a>';
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
                                     echo '  </a>';
                                     }
                                     echo ' </td>';
                                     echo ' <td class="contentCells contentCells-shift contentCells-icon">';
-                                    if ($storeFile->documentType == "text") {
+                                    if ($storeFile->documentType == "word") {
                                     echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=blockcontent&type=desktop" target="_blank">';
                                     echo '   <img src="css/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                     echo '  </a>';
@@ -314,7 +315,7 @@
             <div id="cancelEdit" class="button gray">Cancel</div>
         </div>
 
-        <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
+        <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
         <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
 
         <script type="text/javascript" src="js/jscript.js"></script>

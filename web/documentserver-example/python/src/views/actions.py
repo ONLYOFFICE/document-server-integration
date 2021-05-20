@@ -27,11 +27,13 @@
 import config
 import json
 import os
+import urllib.parse
+import magic
 
 from datetime import datetime
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
-from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager
+from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
 
 def upload(request):
@@ -63,8 +65,8 @@ def convert(request):
     response = {}
 
     try:
-        filename = request.GET['filename']
-        fileUri = docManager.getFileUri(filename, request)
+        filename = fileUtils.getFileName(request.GET['filename'])
+        fileUri = docManager.getFileUri(filename, True,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
         newExt = docManager.getInternalExtension(fileType)
@@ -108,17 +110,27 @@ def createNew(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 def edit(request):
-    filename = request.GET['filename']
+    filename = fileUtils.getFileName(request.GET['filename'])
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, request)
+    fileUri = docManager.getFileUri(filename, True, request)
+    fileUriUser = docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)
+    userGroup = None
+    reviewGroups = None
+    if (user['uid'] == 'uid-2'):
+        userGroup = 'group-2'
+        reviewGroups = ['group-2', '']
+    if (user['uid'] == 'uid-3'):
+        userGroup = 'group-3'
+        reviewGroups = ['group-2']
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)
+    submitForm = canEdit & ((edMode == 'edit') | (edMode == 'fillForms'))
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'
 
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'
@@ -133,15 +145,15 @@ def edit(request):
 
     if (meta):
         infObj = {
-            'author': meta['uname'],
-            'created': meta['created']
+            'owner': meta['uname'],
+            'uploaded': meta['created']
         }
     else:
         infObj = {
-            'author': 'Me',
-            'created': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
+            'owner': 'Me',
+            'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
-
+    infObj['favorite'] = request.COOKIES.get('uid') == 'uid-2' if request.COOKIES.get('uid') else None
     edConfig = {
         'type': edType,
         'documentType': fileType,
@@ -158,7 +170,8 @@ def edit(request):
                 'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
-                'review': (edMode == 'edit') | (edMode == 'review')
+                'review': (edMode == 'edit') | (edMode == 'review'),
+                'reviewGroups': reviewGroups
             }
         },
         'editorConfig': {
@@ -168,26 +181,47 @@ def edit(request):
             'callbackUrl': docManager.getCallbackUrl(filename, request),
             'user': {
                 'id': user['uid'],
-                'name': user['uname']
+                'name': None if user['uid'] == 'uid-0' else user['uname'],
+                'group': userGroup
             },
             'embedded': {
-                'saveUrl': fileUri,
-                'embedUrl': fileUri,
-                'shareUrl': fileUri,
+                'saveUrl': fileUriUser,
+                'embedUrl': fileUriUser,
+                'shareUrl': fileUriUser,
                 'toolbarDocked': 'top'
             },
             'customization': {
                 'about': True,
                 'feedback': True,
+                'forcesave': False,
+                'submitForm': submitForm,
                 'goback': {
-                    'url': config.EXAMPLE_DOMAIN
+                    'url': docManager.getServerUrl(False, request)
                 }
             }
         }
     }
 
+    dataInsertImage = {
+        'fileType': 'png',
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
+    }
+
+    dataCompareFile = {
+        'fileType': 'docx',
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
+    }
+
+    dataMailMergeRecipients = {
+        'fileType': 'csv',
+        'url': docManager.getServerUrl(True, request) + 'csv'
+    }
+
     if jwtManager.isEnabled():
         edConfig['token'] = jwtManager.encode(edConfig)
+        dataInsertImage['token'] = jwtManager.encode(dataInsertImage)
+        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)
+        dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)
 
@@ -196,55 +230,33 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,
-        'apiUrl': config.DOC_SERV_API_URL
+        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,
+        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],
+        'dataCompareFile': dataCompareFile,
+        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients)
     }
     return render(request, 'editor.html', context)
 
 def track(request):
-    filename = request.GET['filename']
-    usAddr = request.GET['userAddress']
-
     response = {}
 
     try:
-        body = json.loads(request.body)
-
-        if jwtManager.isEnabled():
-            token = body.get('token')
-
-            if (not token):
-                token = request.headers.get('Authorization')
-                if token:
-                    token = token[len('Bearer '):]
-
-            if (not token):
-                raise Exception('Expected JWT')
-
-            body = jwtManager.decode(token)
-            if (body.get('payload')):
-                body = body['payload']
-
+        body = trackManager.readBody(request)
         status = body['status']
-        download = body.get('url')
+
+        if (status == 1): # Editing
+            if (body['actions'] and body['actions'][0]['type'] == 0):# finished edit
+                user = body['actions'][0]['userid']
+                if (not user in body['users']):
+                    trackManager.commandRequest('forcesave', body['key'])
+
+        filename = fileUtils.getFileName(request.GET['filename'])
+        usAddr = request.GET['userAddress']
 
         if (status == 2) | (status == 3): # mustsave, corrupted
-            path = docManager.getStoragePath(filename, usAddr)
-            histDir = historyManager.getHistoryDir(path)
-            versionDir = historyManager.getNextVersionDir(histDir)
-            changesUri = body.get('changesurl')
-
-            os.rename(path, historyManager.getPrevFilePath(versionDir, fileUtils.getFileExt(filename)))
-            docManager.saveFileFromUri(download, path)
-            docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir))
-
-            hist = None
-            hist = body.get('changeshistory')
-            if (not hist) & ('history' in body):
-                hist = json.dumps(body.get('history'))
-            if hist:
-                historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist)
-
-            historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))
+            trackManager.processSave(body, filename, usAddr)
+        if (status == 6) | (status == 7): # mustforcesave, corruptedforcesave
+            trackManager.processForceSave(body, filename, usAddr)
 
     except Exception as e:
         response.setdefault('error', 1)
@@ -254,7 +266,7 @@ def track(request):
     return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
 
 def remove(request):
-    filename = request.GET['filename']
+    filename = fileUtils.getFileName(request.GET['filename'])
 
     response = {}
 
@@ -262,3 +274,29 @@ def remove(request):
 
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
+def files(request):
+    try:
+        response = docManager.getFilesInfo(request)
+    except Exception as e:
+        response = {}
+        response.setdefault('error', e.args[0])
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+def csv(request):
+    filePath = os.path.join('assets', 'sample', "csv.csv")
+    response = docManager.download(filePath)
+    return response
+
+def download(request):
+    try:
+        fileName = fileUtils.getFileName(request.GET['filename'])
+        filePath = docManager.getForcesavePath(fileName, request, False)
+        if (filePath == ""):
+            filePath = docManager.getStoragePath(fileName, request)
+        response = docManager.download(filePath)
+        return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json')

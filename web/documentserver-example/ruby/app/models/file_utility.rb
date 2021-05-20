@@ -16,7 +16,7 @@
 
 class FileUtility
 
-  @@exts_document = %w(.doc .docx .docm .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .pdf .djvu .fb2 .epub .xps)
+  @@exts_document = %w(.doc .docx .docm .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps)
 
   @@exts_spreadsheet = %w(.xls .xlsx .xlsm .xlt .xltx .xltm .ods .fods .ots .csv)
 
@@ -28,18 +28,18 @@ class FileUtility
         ext = File.extname(file_name)
 
         if @@exts_document.include? ext
-          return 'text'
+          return 'word'
         end
 
         if @@exts_spreadsheet.include? ext
-          return 'spreadsheet'
+          return 'cell'
         end
 
         if @@exts_presentation.include? ext
-          return 'presentation'
+          return 'slide'
         end
 
-        'text'
+        'word'
     end
 
   end

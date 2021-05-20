@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="<%= "app_themes/images/" + documentType + ".ico" %>" type="image/x-icon" />
     <title>ONLYOFFICE</title>
     <!--
     *
@@ -114,6 +114,28 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function (event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <%= InsertImageConfig%>
+            })
+        };
+
+        var onRequestCompareFile = function () {
+            docEditor.setRevisedFile(<%= compareFileData%>);
+        };
+
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);
+        };
+
         var config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -126,6 +148,10 @@
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
+            'onMetaChange': onMetaChange,
+            'onRequestInsertImage': onRequestInsertImage,
+            'onRequestCompareFile': onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
@@ -136,7 +162,7 @@
         config.events['onRequestHistoryData'] = function (event) {
             var ver = event.data;
             var histData = <%= HistoryData %>;
-            docEditor.setHistoryData(histData[ver]);
+            docEditor.setHistoryData(histData[ver - 1]);
         };
         config.events['onRequestHistoryClose '] = function () {
             document.location.reload();

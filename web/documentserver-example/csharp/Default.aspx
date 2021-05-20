@@ -57,7 +57,11 @@
 <body>
     <form id="form1" runat="server">
 
-        <div class="top-panel"></div>
+        <div class="top-panel">
+            <a href="">
+                <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
+            </a>
+        </div>
         <div class="main-panel">
             <span class="portal-name">ONLYOFFICE Document Editors</span>
             <br />
@@ -73,6 +77,7 @@
                                 <option value="uid-1">John Smith</option>
                                 <option value="uid-2">Mark Pottato</option>
                                 <option value="uid-3">Hamish Mitchell</option>
+                                <option value="uid-0">anonymous</option>
                             </select>
                         </td>
                         <td width="70%" valign="middle">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
@@ -135,9 +140,9 @@
                     </div>
                     <div class="create-panel">
                         <ul class="try-editor-list clearFix">
-                            <li><a class="try-editor document" data-type="document">Create<br />Document</a></li>
-                            <li><a class="try-editor spreadsheet" data-type="spreadsheet">Create<br />Spreadsheet</a></li>
-                            <li><a class="try-editor presentation" data-type="presentation">Create<br />Presentation</a></li>
+                            <li><a class="try-editor word" data-type="word">Create<br />Document</a></li>
+                            <li><a class="try-editor cell" data-type="cell">Create<br />Spreadsheet</a></li>
+                            <li><a class="try-editor slide" data-type="slide">Create<br />Presentation</a></li>
                         </ul>
                         <label class="create-sample">
                             <input id="createSample" class="checkbox" type="checkbox" />
@@ -168,18 +173,18 @@
                             <% foreach (var storedFile in storedFiles)
                                { %>
                                 <%
-                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile);
-                                    var docType = DocumentType(storedFile);
+                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                    var docType = DocumentType(storedFile.Name);
                                 %>
-                                <tr class="tableRow" title="<%= storedFile %>">
+                                <tr class="tableRow" title="<%= storedFile.Name %>">
                                     <td class="contentCells">
                                         <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
-                                            <span title="<%= storedFile %>"><%= storedFile %></span>
+                                            <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
                                         </a>
-                                        <a href="<%= VirtualPath + WebConfigurationManager.AppSettings["storage-path"] + storedFile %>">
+                                        <a href="webeditor.ashx?type=download&filename=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                             <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
                                         </a>
-                                        <a class="delete-file" data-filename="<%= storedFile %>">
+                                        <a class="delete-file" data-filename="<%= storedFile.Name %>">
                                             <img class="icon-delete" src="app_themes/images/delete-24.png" alt="Delete" title="Delete" />
                                         </a>
                                     </td>
@@ -195,11 +200,11 @@
                                         </a>
                                     </td>
                                     <td class="contentCells contentCells-icon">
-                                        <% if (docType == "text") { %>
+                                        <% if (docType == "word") { %>
                                             <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
                                                 <img src="app_themes/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
                                             </a>
-                                        <% } else if (docType == "spreadsheet") { %>
+                                        <% } else if (docType == "cell") { %>
                                             <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
                                                 <img src="app_themes/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                             </a>
@@ -211,14 +216,14 @@
                                         </a>
                                     </td>
                                     <td class="contentCells contentCells-icon">
-                                        <% if (docType == "text") { %>
+                                        <% if (docType == "word") { %>
                                             <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
                                                 <img src="app_themes/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                             </a>
                                         <% } %>
                                     </td>
                                     <td class="contentCells contentCells-icon contentCells-shift">
-                                        <% if (docType == "text") { %>
+                                        <% if (docType == "word") { %>
                                             <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                                 <img src="app_themes/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                             </a>
@@ -254,7 +259,7 @@
             <div class="help-block">
                 <span>Want to learn how it works?</span>
 
-                <% var examples = new DirectoryInfo(HttpRuntime.AppDomainAppPath + "App_Data")
+                <% var examples = new DirectoryInfo(HttpRuntime.AppDomainAppPath + "assets")
                        .GetFiles("*.zip", SearchOption.TopDirectoryOnly)
                        .Select(fileInfo => fileInfo.Name).ToList();
                    if (examples.Any())

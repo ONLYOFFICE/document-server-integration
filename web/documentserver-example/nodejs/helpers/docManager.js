@@ -99,19 +99,22 @@ docManager.getCorrectName = function (fileName, userAddress) {
     return name;
 };
 
-docManager.createDemo = function (demoName, userid, username) {
+docManager.createDemo = function (isSample, fileExt, userid, username) {
+    const demoName = (isSample ? "sample" : "new") + "." + fileExt;
     const fileName = docManager.getCorrectName(demoName);
 
-    docManager.copyFile(path.join(__dirname, "..","public", "samples", demoName), docManager.storagePath(fileName));
+    docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));
 
     docManager.saveFileData(fileName, userid, username);
 
     return fileName;
 };
 
-docManager.saveFileData = function (fileName, userid, username) {
-    const userAddress = docManager.curUserHostAddress();
-    const date_create = fileSystem.statSync(docManager.storagePath(fileName)).mtime;
+docManager.saveFileData = function (fileName, userid, username, userAddress) {
+    if (!userAddress) {
+        userAddress = docManager.curUserHostAddress();
+    }
+    const date_create = fileSystem.statSync(docManager.storagePath(fileName, userAddress)).mtime;
     const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
     const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
     const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();
@@ -276,13 +279,13 @@ docManager.copyFile = function (exist, target) {
 };
 
 docManager.getInternalExtension = function (fileType) {
-    if (fileType == fileUtility.fileType.text)
+    if (fileType == fileUtility.fileType.word)
         return ".docx";
 
-    if (fileType == fileUtility.fileType.spreadsheet)
+    if (fileType == fileUtility.fileType.cell)
         return ".xlsx";
 
-    if (fileType == fileUtility.fileType.presentation)
+    if (fileType == fileUtility.fileType.slide)
         return ".pptx";
 
     return ".docx";

@@ -52,7 +52,7 @@ namespace OnlineEditorsExample
                 ".doc", ".docx", ".docm",
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht",
+                ".html", ".htm", ".mht", ".xml",
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
 
@@ -68,18 +68,6 @@ namespace OnlineEditorsExample
 
     public partial class _Default : Page
     {
-        public static UriBuilder Host
-        {
-            get
-            {
-                var uri = new UriBuilder(HttpContext.Current.Request.Url) {Query = ""};
-                var requestHost = HttpContext.Current.Request.Headers["Host"];
-                if (!string.IsNullOrEmpty(requestHost))
-                    uri = new UriBuilder(uri.Scheme + "://" + requestHost);
-
-                return uri;
-            }
-        }
 
         public static string VirtualPath
         {
@@ -144,7 +132,40 @@ namespace OnlineEditorsExample
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + fileName;
+            return directory + Path.GetFileName(fileName);
+        }
+
+        public static string ForcesavePath(string fileName, string userAddress, Boolean create)
+        {
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            if (!Directory.Exists(directory))
+            {
+                return "";
+            }
+
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\";
+            if (!Directory.Exists(directory))
+            {
+                if (create)
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+
+            directory = directory + Path.GetFileName(fileName);
+            if (!File.Exists(directory))
+            {
+                if (!create)
+                {
+                    return "";
+                }
+            }
+
+            return directory;
         }
 
         public static string HistoryDir(string storagePath)
@@ -165,7 +186,7 @@ namespace OnlineEditorsExample
         public static int GetFileVersion(string historyPath)
         {
             if (!Directory.Exists(historyPath)) return 0;
-            return Directory.EnumerateDirectories(historyPath).Count();
+            return Directory.EnumerateDirectories(historyPath).Count() + 1;
         }
 
         public static int GetFileVersion(string fileName, string userAddress)
@@ -173,25 +194,42 @@ namespace OnlineEditorsExample
             return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
         }
 
-        public static string FileUri(string fileName)
+        public static string FileUri(string fileName, Boolean forDocumentServer)
         {
-            var uri = Host;
+            var uri = new UriBuilder(GetServerUrl(forDocumentServer));
             uri.Path = VirtualPath + fileName;
             return uri.ToString();
+        }
+
+        public static string GetServerUrl(Boolean forDocumentServer)
+        {
+            if (forDocumentServer && !WebConfigurationManager.AppSettings["files.docservice.url.example"].Equals(""))
+            {
+                return WebConfigurationManager.AppSettings["files.docservice.url.example"];
+            }
+            else
+            {
+                var uri = new UriBuilder(HttpContext.Current.Request.Url) { Query = "" };
+                var requestHost = HttpContext.Current.Request.Headers["Host"];
+                if (!string.IsNullOrEmpty(requestHost))
+                    uri = new UriBuilder(uri.Scheme + "://" + requestHost);
+
+                return uri.ToString();
+            }
         }
 
         public static string DocumentType(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (FileType.ExtsDocument.Contains(ext)) return "text";
-            if (FileType.ExtsSpreadsheet.Contains(ext)) return "spreadsheet";
-            if (FileType.ExtsPresentation.Contains(ext)) return "presentation";
+            if (FileType.ExtsDocument.Contains(ext)) return "word";
+            if (FileType.ExtsSpreadsheet.Contains(ext)) return "cell";
+            if (FileType.ExtsPresentation.Contains(ext)) return "slide";
 
-            return string.Empty;
+            return "word";
         }
 
-        protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
+        protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -229,13 +267,7 @@ namespace OnlineEditorsExample
             var savedFileName = StoragePath(_fileName, null);
             httpPostedFile.SaveAs(savedFileName);
 
-            var histDir = HistoryDir(savedFileName);
-            Directory.CreateDirectory(histDir);
-            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString() },
-                { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
-                { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
-            }));
+            DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
 
             return _fileName;
         }
@@ -276,13 +308,7 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                var histDir = HistoryDir(StoragePath(_fileName, null));
-                Directory.CreateDirectory(histDir);
-                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                    { "created", DateTime.Now.ToString() },
-                    { "id", request.Cookies.GetOrDefault("uid", "uid-1") },
-                    { "name", request.Cookies.GetOrDefault("uname", "John Smith") }
-                }));
+                DocEditor.CreateMeta(_fileName, request.Cookies.GetOrDefault("uid", "uid-1"), request.Cookies.GetOrDefault("uname", "John Smith"), null);
             }
             catch (Exception)
             {
@@ -293,7 +319,7 @@ namespace OnlineEditorsExample
 
         public static string DoConvert(HttpContext context)
         {
-            _fileName = context.Request["filename"];
+            _fileName = Path.GetFileName(context.Request["filename"]);
 
             var extension = (Path.GetExtension(_fileName) ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
@@ -301,10 +327,10 @@ namespace OnlineEditorsExample
             if (ConvertExts.Contains("." + extension)
                 && !string.IsNullOrEmpty(internalExtension))
             {
-                var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName));
+                var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName, true));
 
                 string newFileUri;
-                var result = ServiceConverter.GetConvertedUri(FileUri(_fileName), extension, internalExtension, key, true, out newFileUri);
+                var result = ServiceConverter.GetConvertedUri(FileUri(_fileName, true), extension, internalExtension, key, true, out newFileUri);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";
@@ -342,13 +368,7 @@ namespace OnlineEditorsExample
                 if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
 
                 _fileName = fileName;
-                histDir = HistoryDir(StoragePath(_fileName, null));
-                Directory.CreateDirectory(histDir);
-                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                    { "created", DateTime.Now.ToString() },
-                    { "id", context.Request.Cookies.GetOrDefault("uid", "uid-1") },
-                    { "name", context.Request.Cookies.GetOrDefault("uname", "John Smith") }
-                }));
+                DocEditor.CreateMeta(_fileName, context.Request.Cookies.GetOrDefault("uid", "uid-1"), context.Request.Cookies.GetOrDefault("uname", "John Smith"), null);
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";
@@ -367,15 +387,45 @@ namespace OnlineEditorsExample
             return name;
         }
 
-        protected static List<string> GetStoredFiles()
+        protected static List<FileInfo> GetStoredFiles()
         {
             var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
-            if (!Directory.Exists(directory)) return new List<string>();
+            if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
 
-            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).Select(fileInfo => fileInfo.Name).ToList();
+            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
             return storedFiles;
+        }
+
+        public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
+        {
+            var files = new List<Dictionary<string, object>>();
+
+            foreach (var file in GetStoredFiles())
+            {
+                var dictionary = new Dictionary<string, object>();
+                dictionary.Add("version", GetFileVersion(file.Name, null));
+                dictionary.Add("id", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null) + "/" + file.Name + "/" + File.GetLastWriteTime(_Default.StoragePath(file.Name, null)).GetHashCode()));
+                dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
+                dictionary.Add("pureContentLength", file.Length);
+                dictionary.Add("title", file.Name);
+                dictionary.Add("updated", file.LastWriteTime.ToString());
+                if (fileId != null)
+                {
+                    if (fileId.Equals(dictionary["id"]))
+                    {
+                        files.Add(dictionary);
+                        break;
+                    }
+                }
+                else
+                {
+                    files.Add(dictionary);
+                }
+            }
+
+            return files;
         }
     }
 }

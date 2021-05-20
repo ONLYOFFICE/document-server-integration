@@ -57,14 +57,22 @@
             break;
         case 1:
             $uname = "Mark Pottato";
+            $ugroup = "group-2";
+            $reviewGroups = ["group-2", ""];
             break;
         case 2:
             $uname = "Hamish Mitchell";
+            $ugroup = "group-3";
+            $reviewGroups = ["group-2"];
+            break;
+        case 3:
+            $uname = null;
             break;
     }
 
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];
     $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);
+    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";
 
     $config = [
@@ -76,8 +84,9 @@
             "fileType" => $filetype,
             "key" => $docKey,
             "info" => [
-                "author" => "Me",
-                "created" => date('d.m.y')
+                "owner" => "Me",
+                "uploaded" => date('d.m.y'),
+                "favorite" => isset($_GET["user"]) ? $_GET["user"] == 1 : null
             ],
             "permissions" => [
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
@@ -86,7 +95,8 @@
                 "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
-                "review" => $editorsMode == "edit" || $editorsMode == "review"
+                "review" => $editorsMode == "edit" || $editorsMode == "review",
+                "reviewGroups" => $reviewGroups
             ]
         ],
         "editorConfig" => [
@@ -96,7 +106,8 @@
             "callbackUrl" => getCallbackUrl($filename),
             "user" => [
                 "id" => $uid,
-                "name" => $uname
+                "name" => $uname,
+                "group" => $ugroup
             ],
             "embedded" => [
                 "saveUrl" => $fileuriUser,
@@ -107,6 +118,8 @@
             "customization" => [
                 "about" => true,
                 "feedback" => true,
+                "forcesave" => false,
+                "submitForm" => $submitForm,
                 "goback" => [
                     "url" => serverPath(),
                 ]
@@ -114,15 +127,34 @@
         ]
     ];
 
+    $dataInsertImage = [
+        "fileType" => "png",
+        "url" => serverPath(true) . "/css/images/logo.png"
+    ];
+
+    $dataCompareFile = [
+        "fileType" => "docx",
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
+    ];
+
+    $dataMailMergeRecipients = [
+        "fileType" =>"csv",
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
+    ];
+
     if (isJwtEnabled()) {
         $config["token"] = jwtEncode($config);
+        $dataInsertImage["token"] = jwtEncode($dataInsertImage);
+        $dataCompareFile["token"] = jwtEncode($dataCompareFile);
+        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
     }
 
     function tryGetDefaultByType($createExt) {
-        $demoName = ($_GET["sample"] ? "demo." : "new.") . $createExt;
+        $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
+        $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . "app_data" . DIRECTORY_SEPARATOR . $demoName, getStoragePath($demoFilename)))
+        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
         {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             //Copy error!!!
@@ -150,16 +182,16 @@
             $hist = [];
             $histData = [];
 
-            for ($i = 0; $i <= $curVer; $i++) {
+            for ($i = 1; $i <= $curVer; $i++) {
                 $obj = [];
                 $dataObj = [];
-                $verDir = getVersionDir($histDir, $i + 1);
+                $verDir = getVersionDir($histDir, $i);
 
                 $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
                 $obj["key"] = $key;
                 $obj["version"] = $i;
 
-                if ($i == 0) {
+                if ($i == 1) {
                     $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
                     $json = json_decode($createdInfo, true);
 
@@ -176,8 +208,8 @@
                 $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
                 $dataObj["version"] = $i;
 
-                if ($i > 0) {
-                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "changes.json"), true);
+                if ($i > 1) {
+                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);
                     $change = $changes["changes"][0];
 
                     $obj["changes"] = $changes["changes"];
@@ -185,19 +217,23 @@
                     $obj["created"] = $change["created"];
                     $obj["user"] = $change["user"];
 
-                    $prev = $histData[$i -1];
+                    $prev = $histData[$i - 2];
                     $dataObj["previous"] = [
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesUrl = getVersionDir($histDir, $i) . DIRECTORY_SEPARATOR . "diff.zip";
+                    $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
                     $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
                     $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
                 }
 
+                if (isJwtEnabled()) {
+                    $dataObj["token"] = jwtEncode($dataObj);
+                }
+
                 array_push($hist, $obj);
-                $histData[$i] = $dataObj;
+                $histData[$i - 1] = $dataObj;
             }
 
             $out = [];
@@ -219,7 +255,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="css/images/<?php echo getDocumentType($filename) ?>.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
@@ -251,7 +287,7 @@
         }
     </style>
 
-    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_API_URL"] ?>"></script>
+    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>"></script>
 
     <script type="text/javascript">
 
@@ -308,6 +344,28 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+            })
+        };
+
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(<?php echo json_encode($dataCompareFile)?>);
+        };
+
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -328,6 +386,10 @@
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
+                'onMetaChange': onMetaChange,
+                'onRequestInsertImage': onRequestInsertImage,
+                'onRequestCompareFile': onRequestCompareFile,
+                'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
             };
 
             <?php
@@ -342,7 +404,7 @@
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver]);
+                docEditor.setHistoryData(histData[ver - 1]);
             };
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();

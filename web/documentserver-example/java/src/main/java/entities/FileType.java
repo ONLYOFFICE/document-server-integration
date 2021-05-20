@@ -20,7 +20,7 @@ package entities;
 
 public enum FileType
 {
-    Text,
-    Spreadsheet,
-    Presentation
+    Word,
+    Cell,
+    Slide
 }

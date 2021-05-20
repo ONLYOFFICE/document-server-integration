@@ -44,9 +44,12 @@ a, a:hover, a:visited {
 
 
 .top-panel {
-    background: url("images/logo.png") no-repeat 30px center #3D4A6B;
+    background: #3D4A6B;
     height: 80px;
     width: 100%;
+}
+.top-panel img {
+    margin: 12px 0 0 16px;
 }
 .main-panel {
     margin: 80px auto;
@@ -127,13 +130,13 @@ label .checkbox {
     text-align: center;
     text-decoration: none;
 }
-.try-editor.document {
+.try-editor.word {
     background-image: url("images/file_docx.png");
 }
-.try-editor.spreadsheet {
+.try-editor.cell {
     background-image: url("images/file_xlsx.png");
 }
-.try-editor.presentation {
+.try-editor.slide {
     background-image: url("images/file_pptx.png");
 }
 
@@ -322,13 +325,13 @@ label .checkbox {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.stored-edit.text {
+.stored-edit.word {
     background-image: url("images/icon_docx.png");
 }
-.stored-edit.spreadsheet {
+.stored-edit.cell {
     background-image: url("images/icon_xlsx.png");
 }
-.stored-edit.presentation {
+.stored-edit.slide {
     background-image: url("images/icon_pptx.png");
 }
 .stored-edit span {

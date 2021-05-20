@@ -40,7 +40,7 @@ import org.json.simple.parser.ParseException;
 public class ServiceConverter
 {
     private static int ConvertTimeout = 120000;
-    private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.converter");
+    private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.converter");
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
     public static class ConvertBody
@@ -125,7 +125,7 @@ public class ServiceConverter
 
         if (DocumentManager.TokenEnabled())
         {
-            connection.setRequestProperty(DocumentJwtHeader == "" ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+            connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
         }
 
         connection.connect();
@@ -223,7 +223,7 @@ public class ServiceConverter
         return resultPercent >= 100l ? responseUri : "";
     }
 
-    private static String ConvertStreamToString(InputStream stream) throws IOException
+    public static String ConvertStreamToString(InputStream stream) throws IOException
     {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);
         StringBuilder stringBuilder = new StringBuilder();
@@ -241,7 +241,7 @@ public class ServiceConverter
         return result;
     }
 
-    private static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
+    public static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
     {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);

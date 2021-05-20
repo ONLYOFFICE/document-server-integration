@@ -25,20 +25,20 @@ namespace OnlineEditorsExampleMVC.Models
     {
         public enum FileType
         {
-            Text,
-            Spreadsheet,
-            Presentation
+            Word,
+            Cell,
+            Slide
         }
 
         public static FileType GetFileType(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (ExtsDocument.Contains(ext)) return FileType.Text;
-            if (ExtsSpreadsheet.Contains(ext)) return FileType.Spreadsheet;
-            if (ExtsPresentation.Contains(ext)) return FileType.Presentation;
+            if (ExtsDocument.Contains(ext)) return FileType.Word;
+            if (ExtsSpreadsheet.Contains(ext)) return FileType.Cell;
+            if (ExtsPresentation.Contains(ext)) return FileType.Slide;
 
-            return FileType.Text;
+            return FileType.Word;
         }
 
         public static readonly List<string> ExtsDocument = new List<string>
@@ -46,7 +46,7 @@ namespace OnlineEditorsExampleMVC.Models
                 ".doc", ".docx", ".docm",
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht",
+                ".html", ".htm", ".mht", ".xml",
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
 

@@ -1,6 +1,8 @@
 <%@page import="entities.FileModel"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<% FileModel Model = (FileModel) request.getAttribute("file"); %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,10 +28,8 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
-
-        <% FileModel Model = (FileModel) request.getAttribute("file"); %>
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
 
@@ -86,6 +86,28 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onMetaChange = function (event) {
+            var favorite = !!event.data.favorite;
+            var title = document.title.replace(/^\☆/g, "");
+            document.title = (favorite ? "☆" : "") + title;
+            docEditor.setFavorite(favorite);
+        };
+
+        var onRequestInsertImage = function(event) {
+            docEditor.insertImage({
+                "c": event.data.c,
+                ${dataInsertImage}
+            })
+        };
+
+        var onRequestCompareFile = function() {
+            docEditor.setRevisedFile(${dataCompareFile});
+        };
+
+        var onRequestMailMergeRecipients = function (event) {
+            docEditor.setMailMergeRecipients(${dataMailMergeRecipients});
+        };
+
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -96,6 +118,10 @@
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
         <%
@@ -111,7 +137,7 @@
             config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = <%= historyData %>;
-                docEditor.setHistoryData(histData[ver]);
+                docEditor.setHistoryData(histData[ver - 1]);
             };
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();

@@ -9,8 +9,9 @@
     "fileType": "<%- file.ext %>",
     "key": "<%- editor.key %>",
     "info": {
-        "author": "Me",
-        "created": "<%- file.created %>"
+        "owner": "Me",
+        "uploaded": "<%- file.created %>",
+        "favorite": <%- file.favorite %>
     },
     "permissions": {
         "comment": <%- editor.comment %>,
@@ -19,7 +20,8 @@
         "fillForms": <%- editor.fillForms %>,
         "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
-        "review": <%- editor.review %>
+        "review": <%- editor.review %>,
+        "reviewGroups": <%- editor.reviewGroups %>
     }
 },
 "editorConfig": {
@@ -28,13 +30,14 @@
     "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
     "user": {
+        "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",
         "name": "<%- editor.name %>"
     },
     "embedded": {
-        "saveUrl": "<%- file.uri %>",
-        "embedUrl": "<%- file.uri %>",
-        "shareUrl": "<%- file.uri %>",
+        "saveUrl": "<%- file.uriUser %>",
+        "embedUrl": "<%- file.uriUser %>",
+        "shareUrl": "<%- file.uriUser %>",
         "toolbarDocked": "top"
     },
     "customization": {
@@ -45,7 +48,8 @@
         "forcesave": false,
         "goback": {
             "url": "<%- editor.backUrl %>"
-        }
+        },
+        "submitForm": <%- editor.submitForm %>
     },
     "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
     "plugins": <%- editor.plugins %>

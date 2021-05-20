@@ -105,6 +105,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\TrackManager.cs" />
     <Compile Include="Helpers\DocManagerHelper.cs" />
     <Compile Include="Helpers\DocumentConverter.cs" />
     <Compile Include="Helpers\JwtManager.cs" />
@@ -120,6 +121,7 @@
     <Content Include="Content\editor.css" />
     <Content Include="Content\images\alert.png" />
     <Content Include="Content\images\block-content-24.png" />
+    <Content Include="Content\images\cell.ico" />
     <Content Include="Content\images\close.png" />
     <Content Include="Content\images\comment-24.png" />
     <Content Include="Content\images\corner.png" />
@@ -139,6 +141,8 @@
     <Content Include="Content\images\mobile-24.png" />
     <Content Include="Content\images\question_small.png" />
     <Content Include="Content\images\review-24.png" />
+    <Content Include="Content\images\slide.ico" />
+    <Content Include="Content\images\word.ico" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\stylesheet.css" />
     <Content Include="favicon.ico" />
@@ -168,9 +172,15 @@
     <Content Include="WebEditor.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="assets\AUTHORS.md" />
+    <Content Include="assets\LICENSE" />
+    <Content Include="assets\new\new.docx" />
+    <Content Include="assets\new\new.pptx" />
+    <Content Include="assets\new\new.xlsx" />
+    <Content Include="assets\sample\csv.csv" />
+    <Content Include="assets\sample\sample.docx" />
+    <Content Include="assets\sample\sample.pptx" />
+    <Content Include="assets\sample\sample.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

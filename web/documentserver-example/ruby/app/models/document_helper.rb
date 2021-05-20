@@ -74,7 +74,33 @@ class DocumentHelper
         FileUtils.mkdir_p(directory)
       end
 
-      directory.join(file_name).to_s
+      directory.join(File.basename(file_name)).to_s
+    end
+
+    def forcesave_path(file_name, user_address, create)
+      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+
+      unless File.directory?(directory)
+        return ""
+      end
+
+      directory = directory.join("#{File.basename(file_name)}-hist")
+      unless File.directory?(directory)
+        if create
+          FileUtils.mkdir_p(directory)
+        else
+          return ""
+        end
+      end
+
+      directory = directory.join(File.basename(file_name))
+      unless File.file?(directory)
+        if !create
+          return ""
+        end
+      end
+
+      return directory.to_s
     end
 
     def history_dir(storage_path)
@@ -96,7 +122,7 @@ class DocumentHelper
         return 0
       end
 
-      ver = 0
+      ver = 1
       Dir.foreach(hist_dir) {|e|
         next if e.eql?(".")
         next if e.eql?("..")
@@ -108,13 +134,13 @@ class DocumentHelper
       return ver
     end
 
-    def get_correct_name(file_name)
+    def get_correct_name(file_name, user_address)
       ext = File.extname(file_name)
       base_name = File.basename(file_name, ext)
       name = base_name + ext
       index = 1
 
-      while File.exist?(storage_path(name, nil))
+      while File.exist?(storage_path(name, user_address))
           name = base_name + ' (' + index.to_s + ')' + ext
           index = index + 1
       end
@@ -140,11 +166,11 @@ class DocumentHelper
       return arr
     end
 
-    def create_meta(file_name, uid, uname)
-      hist_dir = history_dir(storage_path(file_name, nil))
+    def create_meta(file_name, uid, uname, user_address)
+      hist_dir = history_dir(storage_path(file_name, user_address))
 
       json = {
-        :created => Time.now.to_s,
+        :created => Time.now.to_formatted_s(:db),
         :uid => uid ? uid : "uid-0",
         :uname => uname ? uname : "John Smith"
       }
@@ -156,49 +182,91 @@ class DocumentHelper
 
     def create_demo(file_ext, sample, uid, uname)
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
-      file_name = get_correct_name demo_name
-      src = Rails.root.join('public', 'samples', demo_name)
+      file_name = get_correct_name(demo_name, nil)
+
+      src = Rails.root.join('public', 'assets', sample == 'true' ? 'sample' : 'new', demo_name)
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
 
-      create_meta(file_name, uid, uname)
+      create_meta(file_name, uid, uname, nil)
 
       file_name
     end
 
-    def get_file_uri(file_name)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
+    def get_file_uri(file_name, for_document_server)
+      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
 
       return uri
     end
 
     def get_path_uri(path)
-      uri = @@base_url + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
+      uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
 
       return uri
+    end
+    
+    def get_server_url(for_document_server)
+      if for_document_server && !Rails.configuration.urlExample.empty?
+        return Rails.configuration.urlExample
+      else
+        return @@base_url
+      end 
     end
 
     def get_callback(file_name)
 
-      @@base_url + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?type=track&fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 
     def get_internal_extension(file_type)
 
       case file_type
-        when 'text'
+        when 'word'
           ext = '.docx'
-        when 'spreadsheet'
+        when 'cell'
           ext = '.xlsx'
-        when 'presentation'
+        when 'slide'
           ext = '.pptx'
         else
           ext = '.docx'
       end
 
       ext
+    end
+
+    def get_files_info(file_id)
+      result = [];
+
+      for fileName in get_stored_files(nil)
+        directory = storage_path(fileName, nil)
+        uri = cur_user_host_address(nil) + '/' + fileName
+
+        info = {
+          "version" => get_file_version(history_dir(directory)),
+          "id" => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory).to_s}"),
+          "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
+          "pureContentLength" => File.size(directory),
+          "title" => fileName,
+          "updated" => File.mtime(directory) 
+        }
+
+        if file_id == nil
+          result.push(info)
+        else
+          if file_id.eql?(info["id"])
+            result.push(info)
+            return result
+          end
+        end
+      end
+
+      if file_id != nil
+        return "\"File not found\""
+      else
+        return result
+      end
     end
 
   end

@@ -292,6 +292,7 @@ app.get("/files", function(req, res) {
     try {
         docManager.init(storageFolder, req, res); 
         const filesInDirectoryInfo = docManager.getFilesInfo();
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(filesInDirectoryInfo));
     } catch (ex) {
         console.log(ex);
@@ -305,6 +306,7 @@ app.get("/files/file/:fileId", function(req, res) {
         docManager.init(storageFolder, req, res);
         const fileId = req.params.fileId;
         const fileInfoById = docManager.getFilesInfo(fileId);
+        res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(fileInfoById));
     } catch (ex) {
         console.log(ex);
@@ -338,6 +340,19 @@ app.delete("/file", function (req, res) {
     res.end();
 });
 
+app.get("/csv", function (req, res) {
+    var fileName = "csv.csv";
+    var csvPath = path.join(__dirname, "public", "assets",  "sample", fileName);
+
+    res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);
+    res.setHeader("Content-Type", mime.getType(csvPath));
+
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
+
+    var filestream = fileSystem.createReadStream(csvPath);
+    filestream.pipe(res);
+})
+
 app.post("/track", function (req, res) {
 
     docManager.init(storageFolder, req, res);
@@ -348,110 +363,155 @@ app.post("/track", function (req, res) {
 
     var processTrack = function (response, body, fileName, userAddress) {
 
-        var processSave = function (downloadUri, body, fileName, userAddress, resp) {
-            var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = fileUtility.getFileExtension(downloadUri);
-
-            if (downloadExt != curExt) {
-                var key = documentService.generateRevisionId(downloadUri);
-
-                try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (dUri) {
-                        processSave(dUri, body, fileName, userAddress, resp)
-                    });
-                    return;
-                } catch (ex) {
-                    console.log(ex);
-                    fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress)
-                }
-            }
-
+        var callbackProcessSave = function (downloadUri, body, fileName, userAddress, newFileName) {
             try {
+                var storagePath = docManager.storagePath(newFileName, userAddress);
 
-                var path = docManager.storagePath(fileName, userAddress);
-
-                if (docManager.existsSync(path)) {
-                    var historyPath = docManager.historyPath(fileName, userAddress);
-                    if (historyPath == "") {
-                        historyPath = docManager.historyPath(fileName, userAddress, true);
-                        docManager.createDirectory(historyPath);
-                    }
-
-                    var count_version = docManager.countVersion(historyPath);
-                    version = count_version + 1;
-                    var versionPath = docManager.versionPath(fileName, userAddress, version);
-                    docManager.createDirectory(versionPath);
-
-                    var downloadZip = body.changesurl;
-                    if (downloadZip) {
-                        var path_changes = docManager.diffPath(fileName, userAddress, version);
-                        var diffZip = syncRequest("GET", downloadZip);
-                        fileSystem.writeFileSync(path_changes, diffZip.getBody());
-                    }
-
-                    var changeshistory = body.changeshistory || JSON.stringify(body.history);
-                    if (changeshistory) {
-                        var path_changes_json = docManager.changesPath(fileName, userAddress, version);
-                        fileSystem.writeFileSync(path_changes_json, changeshistory);
-                    }
-
-                    var path_key = docManager.keyPath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_key, body.key);
-
-                    var path_prev = docManager.prevFilePath(fileName, userAddress, version);
-                    fileSystem.writeFileSync(path_prev, fileSystem.readFileSync(path));
-
-                    var file = syncRequest("GET", downloadUri);
-                    fileSystem.writeFileSync(path, file.getBody());
-
-                    var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                    if (forcesavePath != "") {
-                        fileSystem.unlinkSync(forcesavePath);
-                    }
+                var historyPath = docManager.historyPath(newFileName, userAddress);
+                if (historyPath == "") {
+                    historyPath = docManager.historyPath(newFileName, userAddress, true);
+                    docManager.createDirectory(historyPath);
                 }
+
+                var count_version = docManager.countVersion(historyPath);
+                version = count_version + 1;
+                var versionPath = docManager.versionPath(newFileName, userAddress, version);
+                docManager.createDirectory(versionPath);
+
+                var downloadZip = body.changesurl;
+                if (downloadZip) {
+                    var path_changes = docManager.diffPath(newFileName, userAddress, version);
+                    var diffZip = syncRequest("GET", downloadZip);
+                    fileSystem.writeFileSync(path_changes, diffZip.getBody());
+                }
+
+                var changeshistory = body.changeshistory || JSON.stringify(body.history);
+                if (changeshistory) {
+                    var path_changes_json = docManager.changesPath(newFileName, userAddress, version);
+                    fileSystem.writeFileSync(path_changes_json, changeshistory);
+                }
+
+                var path_key = docManager.keyPath(newFileName, userAddress, version);
+                fileSystem.writeFileSync(path_key, body.key);
+
+                var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));
+                fileSystem.renameSync(docManager.storagePath(fileName, userAddress), path_prev);
+
+                var file = syncRequest("GET", downloadUri);
+                fileSystem.writeFileSync(storagePath, file.getBody());
+
+                var forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);
+                if (forcesavePath != "") {
+                    fileSystem.unlinkSync(forcesavePath);
+                }
+
             } catch (ex) {
-                console.log(ex);
+                response.write("{\"error\":1}");
+                response.end();
+                return;
             }
 
             response.write("{\"error\":0}");
             response.end();
-        };
+        }
 
-        var processForceSave = function (downloadUri, body, fileName, userAddress, resp) {
+        var processSave = function (downloadUri, body, fileName, userAddress, resp) {
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = fileUtility.getFileExtension(downloadUri);
+            var newFileName = fileName;
 
             if (downloadExt != curExt) {
                 var key = documentService.generateRevisionId(downloadUri);
-
+                newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (dUri) {
-                        processForceSave(dUri, body, fileName, userAddress, resp)
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
+                        if (err) {
+                            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+                            return;
+                        }
+                        try {
+                            var res = documentService.getResponseUri(data);
+                            callbackProcessSave(res.value, body, fileName, userAddress, fileName);
+                            return;
+                        } catch (ex) {
+                            console.log(ex);
+                            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+                            return;
+                        }
                     });
                     return;
                 } catch (ex) {
                     console.log(ex);
-                    fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress)
                 }
             }
+            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+        };
 
+        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName){
             try {
+                var isSubmitForm = body.forcesavetype === 3; //SubmitForm
 
-                var path = docManager.storagePath(fileName, userAddress);
-
-                var forcesavePath = docManager.forcesavePath(fileName, userAddress, false);
-                if (forcesavePath == "") {
-                    forcesavePath = docManager.forcesavePath(fileName, userAddress, true);
+                if (isSubmitForm) {
+                    //new file
+                    if (newFileName == fileName){
+                        newFileName = docManager.getCorrectName(fileName, userAddress);
+                    }
+                    var forcesavePath = docManager.storagePath(newFileName, userAddress);
+                } else {
+                    forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);
+                    if (forcesavePath == "") {
+                        forcesavePath = docManager.forcesavePath(newFileName, userAddress, true);
+                    }
                 }
 
                 var file = syncRequest("GET", downloadUri);
                 fileSystem.writeFileSync(forcesavePath, file.getBody());
+
+                if (isSubmitForm) {
+                    var uid =body.actions[0].userid
+                    docManager.saveFileData(newFileName, uid, "Filling Form", userAddress);
+                }
             } catch (ex) {
-                console.log(ex);
+                response.write("{\"error\":1}");
+                response.end();
+                return;
             }
 
             response.write("{\"error\":0}");
             response.end();
+        }
+
+        var processForceSave = function (downloadUri, body, fileName, userAddress, resp) {
+            var curExt = fileUtility.getFileExtension(fileName);
+            var downloadExt = fileUtility.getFileExtension(downloadUri);
+            var newFileName = fileName;
+
+            if (downloadExt != curExt) {
+                var key = documentService.generateRevisionId(downloadUri);
+                try {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
+                        if (err) {
+                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
+                            return;
+                        }
+                        try {
+                            var res = documentService.getResponseUri(data);
+                            callbackProcessForceSave(res.value, body, fileName, userAddress, newFileName);
+                            return;
+                        } catch (ex) {
+                            console.log(ex);
+                            newFileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, newFileName);
+                            return;
+                        }
+                    });
+                    return;
+                } catch (ex) {
+                    console.log(ex);
+                }
+            }
+            callbackProcessForceSave (downloadUri, body, fileName, userAddress, newFileName);
         };
 
         if (body.status == 1) { //Editing
@@ -538,11 +598,24 @@ app.get("/editor", function (req, res) {
         var historyData = [];
         var lang = docManager.getLang();
         var userid = req.query.userid ? req.query.userid : "uid-1";
-        var name = req.query.name ? req.query.name : "John Smith";
+        var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
         var actionData = req.query.action ? req.query.action : "null";
 
+        var userGroup = null;
+        var reviewGroups = null;
+        if (userid == "uid-2")
+        {
+            userGroup = "group-2";
+            // own and without group
+            reviewGroups = ["group-2", ""];
+        } else if (userid == "uid-3") {
+            userGroup = "group-3";
+            // other group only
+            reviewGroups = ["group-2"];
+        }
+
         if (fileExt != null) {
-            var fileName = docManager.createDemo((req.query.sample ? "sample." : "new.") + fileExt, userid, name);
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);
 
             var redirectPath = docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();
             res.redirect(redirectPath);
@@ -558,6 +631,7 @@ app.get("/editor", function (req, res) {
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getFileUri(fileName);
+        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
         var mode = req.query.mode || "edit"; //mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; //type: embedded/mobile/desktop
         if (type == "") {
@@ -565,6 +639,7 @@ app.get("/editor", function (req, res) {
             }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;
+        var submitForm = canEdit && (mode == "edit" || mode == "fillForms");
 
         var countVersion = 1;
 
@@ -626,8 +701,10 @@ app.get("/editor", function (req, res) {
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
+                uriUser: urlUser,
                 version: countVersion,
-                created: new Date().toDateString()
+                created: new Date().toDateString(),
+                favorite: req.query.userid ? req.query.userid === "uid-2" : "null"
             },
             editor: {
                 type: type,
@@ -648,12 +725,27 @@ app.get("/editor", function (req, res) {
                 lang: lang,
                 userid: userid,
                 name: name,
+                userGroup: userGroup,
+                reviewGroups: JSON.stringify(reviewGroups),
                 fileChoiceUrl: fileChoiceUrl,
+                submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData
             },
             history: history,
-            historyData: historyData
+            historyData: historyData,
+            dataInsertImage: {
+                fileType: "png",
+                url: docManager.getServerUrl(true) + "/images/logo.png"
+            },
+            dataCompareFile: {
+                fileType: "docx",
+                url: docManager.getServerUrl(true) + "/assets/sample/sample.docx"
+            },
+            dataMailMergeRecipients: {
+                fileType: "csv",
+                url: docManager.getServerUrl(true) + "/csv"
+            }
         };
 
         if (cfgSignatureEnable) {
@@ -662,6 +754,9 @@ app.get("/editor", function (req, res) {
                     console.log(err);
                 } else {
                     argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);
               });

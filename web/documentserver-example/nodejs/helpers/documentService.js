@@ -39,12 +39,7 @@ documentService.userIp = null;
 
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
     documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, function (err, data) {
-        if (err) {
-            callback();
-            return;
-        }
-        var res = documentService.getResponseUri(data);
-        callback(res.value);
+        callback(err, data);
     });
 };
 

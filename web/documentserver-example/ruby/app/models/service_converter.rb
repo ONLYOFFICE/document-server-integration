@@ -17,7 +17,7 @@
 class ServiceConverter
 
   @@convert_timeout = Rails.configuration.timeout
-  @@document_converter_url = Rails.configuration.urlConverter
+  @@document_converter_url = Rails.configuration.urlSite + Rails.configuration.urlConverter
 
   class << self
 
@@ -58,7 +58,8 @@ class ServiceConverter
 
         if JwtHelper.is_enabled
           payload["token"] = JwtHelper.encode(payload)
-          req.add_field("Authorization", "Bearer #{JwtHelper.encode({ :payload => payload })}")
+          jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")
         end
 
         req.body = payload.to_json

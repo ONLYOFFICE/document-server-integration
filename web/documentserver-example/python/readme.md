@@ -4,8 +4,8 @@ Example is written for Python 3.6+
 
 You should also install following dependencies:
 ```
-pip install Django==2.2.6
-pip install requests==2.22.0
+pip install Django==3.1.6
+pip install requests==2.25.1
 pip install pyjwt==1.7.1
 ```
 

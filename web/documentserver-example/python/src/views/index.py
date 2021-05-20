@@ -36,7 +36,7 @@ def default(request):
     context = {
         'users': users.USERS,
         'languages': docManager.LANGUAGES,
-        'preloadurl': config.DOC_SERV_PRELOADER_URL,
+        'preloadurl': config.DOC_SERV_SITE_URL + config.DOC_SERV_PRELOADER_URL,
         'editExt': json.dumps(config.DOC_SERV_EDITED),
         'convExt': json.dumps(config.DOC_SERV_CONVERT),
         'files': docManager.getStoredFiles(request)

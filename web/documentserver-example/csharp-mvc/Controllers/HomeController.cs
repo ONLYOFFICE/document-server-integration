@@ -16,6 +16,7 @@
  *
  */
 
+using System.IO;
 using System.Web.Mvc;
 using OnlineEditorsExampleMVC.Helpers;
 using OnlineEditorsExampleMVC.Models;
@@ -35,7 +36,7 @@ namespace OnlineEditorsExampleMVC.Controllers
             {
                 Mode = editorsMode,
                 Type = editorsType,
-                FileName = fileName
+                FileName = Path.GetFileName(fileName)
             };
 
             return View("Editor", file);

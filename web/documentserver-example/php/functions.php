@@ -133,7 +133,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $document_revision_id = GenerateRevisionId($document_revision_id);
 
-    $urlToConverter = $GLOBALS['DOC_SERV_CONVERTER_URL'];
+    $urlToConverter = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_CONVERTER_URL'];
 
     $arr = [
         "async" => $is_async,
@@ -145,6 +145,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     ];
 
     $headerToken = "";
+    $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+
     if (isJwtEnabled()) {
         $headerToken = jwtEncode([ "payload" => $arr ]);
         $arr["token"] = jwtEncode($arr);
@@ -157,7 +159,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
                 'header'=> "Content-type: application/json\r\n" . 
                             "Accept: application/json\r\n" .
-                            (empty($headerToken) ? "" : "Authorization: $headerToken\r\n"),
+                            (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
                 'content' => $data
             )
         );
@@ -166,7 +168,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         $opts['ssl'] = array( 'verify_peer'   => FALSE );
     }
  
-    $context  = stream_context_create($opts);
+    $context = stream_context_create($opts);
     $response_data = file_get_contents($urlToConverter, FALSE, $context);
 
     return $response_data;

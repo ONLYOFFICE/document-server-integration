@@ -16,24 +16,14 @@
  *
  */
 
-var configServer = require('config').get('server');
-var siteUrl = configServer.get('siteUrl');
-var tempStorageUrl = siteUrl + configServer.get('tempStorageUrl');
-
 var fileUtility = {};
 
 fileUtility.getFileName = function (url, withoutExtension) {
     if (!url) return "";
 
-    var filename;
-
-    if (tempStorageUrl && url.indexOf(tempStorageUrl) == 0) {
-        var params = getUrlParams(url);
-        filename = params == null ? null : params["filename"];
-    } else {
-        var parts = url.toLowerCase().split("/");
-        fileName = parts.pop();
-    }
+    var parts = url.toLowerCase().split("/");
+    var fileName = parts.pop();
+    fileName = fileName.split("?")[0];
 
     if (withoutExtension) {
         var ext = fileUtility.getFileExtension(fileName);
@@ -56,20 +46,20 @@ fileUtility.getFileExtension = function (url, withoutDot) {
 fileUtility.getFileType = function (url) {
     var ext = fileUtility.getFileExtension(url);
 
-    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.text;
-    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.spreadsheet;
-    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.presentation;
+    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;
+    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;
+    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;
 
-    return fileUtility.fileType.text;
+    return fileUtility.fileType.word;
 }
 
 fileUtility.fileType = {
-    text: "text",
-    spreadsheet: "spreadsheet",
-    presentation: "presentation"
+    word: "word",
+    cell: "cell",
+    slide: "slide"
 }
 
-fileUtility.documentExts = [".doc", ".docx", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".ott", ".rtf", ".txt", ".html", ".htm", ".mht", ".pdf", ".djvu", ".fb2", ".epub", ".xps"];
+fileUtility.documentExts = [".doc", ".docx", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".ott", ".rtf", ".txt", ".html", ".htm", ".mht", ".xml", ".pdf", ".djvu", ".fb2", ".epub", ".xps"];
 
 fileUtility.spreadsheetExts = [".xls", ".xlsx", ".xlsm", ".xlt", ".xltx", ".xltm", ".ods", ".fods", ".ots", ".csv"];
 

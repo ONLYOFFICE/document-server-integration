@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\images\block-content-24.png" />
+    <Content Include="App_Themes\images\cell.ico" />
     <Content Include="App_Themes\images\comment-24.png" />
     <Content Include="App_Themes\images\delete-24.png" />
     <Content Include="App_Themes\images\desktop-24.png" />
@@ -86,6 +87,8 @@
     <Content Include="App_Themes\images\icon_xlsx.png" />
     <Content Include="App_Themes\images\mobile-24.png" />
     <Content Include="App_Themes\images\review-24.png" />
+    <Content Include="App_Themes\images\slide.ico" />
+    <Content Include="App_Themes\images\word.ico" />
     <Content Include="LICENSE" />
     <Content Include="licenses\jquery.license" />
     <Content Include="ReadMe.txt" />
@@ -109,6 +112,7 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="TrackManager.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WebEditor.ashx.cs">
       <DependentUpon>WebEditor.ashx</DependentUpon>
@@ -142,16 +146,15 @@
     <Content Include="WebEditor.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\demo.docx" />
-    <Content Include="App_Data\demo.pptx" />
-    <Content Include="App_Data\demo.xlsx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_Data\new.docx" />
-    <Content Include="App_Data\new.pptx" />
-    <Content Include="App_Data\new.xlsx" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="assets\AUTHORS.md" />
+    <Content Include="assets\LICENSE" />
+    <Content Include="assets\new\new.docx" />
+    <Content Include="assets\new\new.pptx" />
+    <Content Include="assets\new\new.xlsx" />
+    <Content Include="assets\sample\csv.csv" />
+    <Content Include="assets\sample\sample.docx" />
+    <Content Include="assets\sample\sample.pptx" />
+    <Content Include="assets\sample\sample.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
