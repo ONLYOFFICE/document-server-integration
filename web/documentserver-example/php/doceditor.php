@@ -137,7 +137,7 @@
     ];
     
     // users data for mentions
-    $usersData = getUsersForMentions($user->id);
+    $users = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
     // check if the secret key to generate token exists
     if (isJwtEnabled()) {
@@ -398,7 +398,7 @@
 
         var onRequestUsers = function () {
             docEditor.setUsers({
-                "users": <?php echo $usersData ?>
+                "users": <?php echo json_encode($users) ?>
             });
         };
 

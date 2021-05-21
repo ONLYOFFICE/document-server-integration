@@ -56,7 +56,6 @@ function getUser($id) {
 function getUsersForMentions($id) {
     global $users;
     $usersData = [];
-    
     foreach ($users as $user) {
         if ($user->id != $id && $user->name != null && $user->email != null) {
             array_push($usersData,[
@@ -65,6 +64,6 @@ function getUsersForMentions($id) {
             ]);
         }
     }
-    return json_encode($usersData);
+    return $usersData;
 }
 ?>
