@@ -222,6 +222,9 @@ def edit(request):
         'url': docManager.getServerUrl(True, request) + 'csv'
     }
 
+    # users data for mentions
+    usersData = users.getUsersForMentions(user.id) if user.id !='uid-0' else None
+
     if jwtManager.isEnabled():  # if the secret key to generate token exists
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
         dataInsertImage['token'] = jwtManager.encode(dataInsertImage)  # encode the dataInsertImage object into a token
@@ -239,7 +242,7 @@ def edit(request):
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
         'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
-        'users': json.dumps(users.getUsersForMentions(request))
+        'users': json.dumps(usersData)
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 
