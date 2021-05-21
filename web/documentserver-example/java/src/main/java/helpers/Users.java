@@ -46,7 +46,6 @@ public class Users {
 
     public static List<Map<String, Object>> getUsersForMentions (String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
-
         for (User user : users) {
             if (!user.id.equals(id) && user.name != null && user.email != null) {
                 Map<String, Object> data = new HashMap<>();
