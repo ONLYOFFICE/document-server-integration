@@ -780,7 +780,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fileType: "csv",
                 url: docManager.getServerUrl(true) + "/csv"
             },
-            usersForMentions: users.getUsersForMentions(user.id)
+            usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null
         };
 
         if (cfgSignatureEnable) {
