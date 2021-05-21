@@ -272,7 +272,7 @@ namespace OnlineEditorsExample
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
-                users = jss.Serialize(usersData);
+                users = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : jss.Serialize(null);
 
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
