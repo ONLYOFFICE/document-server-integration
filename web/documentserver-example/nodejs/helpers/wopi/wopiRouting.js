@@ -16,7 +16,9 @@ exports.registerRoutes = function(app) {
             let files = docManager.getStoredFiles();
 
             for (var file of files) {
-                file.actions = utils.getActions(fileUtility.getFileExtension(file.name, true));
+                let ext = fileUtility.getFileExtension(file.name, true);
+                file.actions = utils.getActions(ext);
+                file.defaultAction = utils.getDefaultAction(ext);
             }
 
             res.render("wopiIndex", {

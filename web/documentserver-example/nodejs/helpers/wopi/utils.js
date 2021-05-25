@@ -15,7 +15,7 @@ function getDiscoveryInfo() {
         attributeNamePrefix: "",
         ignoreAttributes: false,
         parseAttributeValue: true,
-        attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
+        attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
     });
 
     for (let app of discovery["wopi-discovery"]["net-zone"].app) {
@@ -66,6 +66,18 @@ function getAction(ext, name) {
     return null;
 }
 
+function getDefaultAction(ext) {
+    let actions = getDiscoveryInfo();
+
+    for (let action of actions) {
+        if (action.ext == ext && action.isDefault) {
+            return action;
+        }
+    }
+
+    return null;
+}
+
 function getActionUrl(host, userAddress, action, filename) {
     return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
 }
@@ -74,3 +86,4 @@ exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;
 exports.getActionUrl = getActionUrl;
+exports.getDefaultAction = getDefaultAction;
