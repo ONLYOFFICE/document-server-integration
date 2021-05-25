@@ -6,6 +6,7 @@ const fileUtility = require("../fileUtility");
 const config = require('config');
 const configServer = config.get('server');
 const storageFolder = configServer.get("storageFolder");
+const users = require("../users");
 
 exports.registerRoutes = function(app) {
 
@@ -22,7 +23,9 @@ exports.registerRoutes = function(app) {
             }
 
             res.render("wopiIndex", {
-                storedFiles: files
+                storedFiles: files,
+                params: docManager.getCustomParams(),
+                users: users,
             });
 
         } catch (ex) {
@@ -34,12 +37,11 @@ exports.registerRoutes = function(app) {
     });
     app.get("/wopi-new", function(req, res) {
         var fileExt = req.query.fileExt;
-        var userid = req.query.userid ? req.query.userid : "uid-1";
-        var name = (userid == "uid-0" ? null : (req.query.name ? req.query.name : "John Smith"));
+        var user = users.getUser(req.query.userid);
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);
-            var redirectPath = docManager.getServerUrl() + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit";
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, user.id, user.name);
+            var redirectPath = docManager.getServerUrl() + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();
             res.redirect(redirectPath);
             return;
         }
@@ -54,6 +56,7 @@ exports.registerRoutes = function(app) {
                 actionUrl: utils.getActionUrl(docManager.getServerUrl(), docManager.curUserHostAddress(), action, req.params['id']),
                 token: "test",
                 tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
+                params: docManager.getCustomParams(),
             });
 
         } catch (ex) {

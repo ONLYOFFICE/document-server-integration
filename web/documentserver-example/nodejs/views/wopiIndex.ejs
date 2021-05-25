@@ -49,13 +49,13 @@
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
                                         <li>
-                                            <a class="try-editor word reload-page" target="_blank" href="/wopi-new?fileExt=docx" title="Create new document">Document</a>
+                                            <a class="try-editor word reload-page" target="_blank" href="/wopi-new?fileExt=docx<%= params %>" title="Create new document">Document</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor cell reload-page" target="_blank" href="/wopi-new?fileExt=xlsx" title="Create new spreadsheet">Spreadsheet</a>
+                                            <a class="try-editor cell reload-page" target="_blank" href="/wopi-new?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor slide reload-page" target="_blank" href="/wopi-new?fileExt=pptx" title="Create new presentation">Presentation</a>
+                                            <a class="try-editor slide reload-page" target="_blank" href="/wopi-new?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
                                         </li>
                                     </ul>
                                     <label class="create-sample">
@@ -64,7 +64,72 @@
                                 </div>
                             </div>
 
-                            <div class="links-panel clearFix">
+                            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Username</span>
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            <% users.forEach(user => { %>
+                                                <b><%= user.name == null ? 'Anonymous' : user.name %></b>
+                                                <ul>
+                                                    <% user.descriptions.forEach(description => { %>
+                                                        <li><%= description %></li>
+                                                    <% }) %>
+                                                </ul>
+                                            <% }) %>"
+                                            src="images/info.svg" />
+                                            <select class="select-user" id="user">
+                                                <% users.forEach(user => { %>
+                                                    <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
+                                                <% }) %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Language</span>
+                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
+                                            <select class="select-user" id="language">
+                                                <option value="en">English</option>
+                                                <option value="be">Belarusian</option>
+                                                <option value="bg">Bulgarian</option>
+                                                <option value="ca">Catalan</option>
+                                                <option value="zh">Chinese</option>
+                                                <option value="cs">Czech</option>
+                                                <option value="da">Danish</option>
+                                                <option value="nl">Dutch</option>
+                                                <option value="fi">Finnish</option>
+                                                <option value="fr">French</option>
+                                                <option value="de">German</option>
+                                                <option value="el">Greek</option>
+                                                <option value="hu">Hungarian</option>
+                                                <option value="id">Indonesian</option>
+                                                <option value="it">Italian</option>
+                                                <option value="ja">Japanese</option>
+                                                <option value="ko">Korean</option>
+                                                <option value="lv">Latvian</option>
+                                                <option value="lo">Lao</option>
+                                                <option value="nb">Norwegian</option>
+                                                <option value="pl">Polish</option>
+                                                <option value="pt">Portuguese</option>
+                                                <option value="ro">Romanian</option>
+                                                <option value="ru">Russian</option>
+                                                <option value="sk">Slovak</option>
+                                                <option value="sl">Slovenian</option>
+                                                <option value="sv">Swedish</option>
+                                                <option value="es">Spanish</option>
+                                                <option value="tr">Turkish</option>
+                                                <option value="uk">Ukrainian</option>
+                                                <option value="vi">Vietnamese</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="links-panel links-panel-border clearFix">
                                 <a href="/" class="">Go to Index page</a>
                             </div>
                         </div>
@@ -100,7 +165,7 @@
                                                         <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                             <td class="contentCells">
                                                                 <% if (storedFiles[i].defaultAction) { %>
-                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %>">
+                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>">
                                                                 <%} else { %>
                                                                     <a class="stored-edit <%= storedFiles[i].documentType %>" href="#">
                                                                 <% } %>
@@ -110,7 +175,7 @@
                                                             <% if (storedFiles[i].actions && storedFiles[i].actions.length > 0) { %>
                                                                 <td class="contentCells contentCells-wopi contentCells-shift">
                                                                     <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
-                                                                        <a href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %>" target="_blank">
+                                                                        <a href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
                                                                             <img src="images/desktop-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                         </a>
                                                                     <% } %>

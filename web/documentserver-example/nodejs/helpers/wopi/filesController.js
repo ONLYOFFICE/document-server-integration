@@ -6,6 +6,7 @@ const utils = require("./utils");
 const fileSystem = require("fs");
 const mime = require("mime");
 const path = require("path");
+const users = require("../users");
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
@@ -233,11 +234,13 @@ function checkFileInfo(wopi, req, res, userHost) {
     }
     let path = docManager.storagePath(wopi.id, userAddress);
 
+    let user = users.getUser(req.query.userid);
+
     let fileInfo = {
         "BaseFileName": wopi.id,
         "OwnerId": docManager.getFileData(wopi.id, userAddress)[1],
         "Size": fileSystem.statSync(path).size,
-        "UserId": req.query.userid ? req.query.userid : "uid-1",
+        "UserId": user.id,
         "Version": version,
         "UserCanWrite": true,
         "SupportsGetLock": true,
