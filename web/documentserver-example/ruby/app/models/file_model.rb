@@ -193,6 +193,7 @@ class FileModel
 
         if (i > 1)  # check if the version number is greater than 1
           changes = nil
+          change = nil
           File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|  # get the path to the changes.json file
             changes = JSON.parse(file.read())  # and parse its content
           end
@@ -200,10 +201,10 @@ class FileModel
           change = changes["changes"][0]
 
           # write information about changes to the object
-          obj["changes"] = changes["changes"]
+          obj["changes"] = change ? changes["changes"] : nil
           obj["serverVersion"] = changes["serverVersion"]
-          obj["created"] = change["created"]
-          obj["user"] = change["user"]
+          obj["created"] = change ? change["created"] : nil
+          obj["user"] = change ? change["user"] : nil
 
           prev = histData[(i - 2).to_s]  # get the history data from the previous file version
           dataObj["previous"] = {  # write key and url information about previous file version
