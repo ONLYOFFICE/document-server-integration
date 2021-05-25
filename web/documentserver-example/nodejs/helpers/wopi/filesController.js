@@ -5,6 +5,7 @@ const lockManager = require("./lockManager");
 const utils = require("./utils");
 const fileSystem = require("fs");
 const mime = require("mime");
+const path = require("path");
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
@@ -184,17 +185,31 @@ function putFile(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
     let userAddress = docManager.curUserHostAddress(userHost);
-    let path = docManager.storagePath(wopi.id, userAddress);
+    let storagePath = docManager.storagePath(wopi.id, userAddress);
 
-    if (!lockManager.hasLock(path)) {
+    if (!lockManager.hasLock(storagePath)) {
         // ToDo: if body length is 0 bytes => handle document creation
 
         // file isn't locked => mismatch
         returnLockMismatch(res, "", "File isn't locked");
-    } else if (lockManager.getLock(path) == requestLock) {
+    } else if (lockManager.getLock(storagePath) == requestLock) {
         // lock matches current lock => put file
         if (req.body) {
-            let filestream = fileSystem.createWriteStream(path);
+            var historyPath = docManager.historyPath(wopi.id, userAddress);
+            if (historyPath == "") {
+                historyPath = docManager.historyPath(wopi.id, userAddress, true);
+                docManager.createDirectory(historyPath);
+            }
+
+            var count_version = docManager.countVersion(historyPath);
+            version = count_version + 1;
+            var versionPath = docManager.versionPath(wopi.id, userAddress, version);
+            docManager.createDirectory(versionPath);
+
+            var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(wopi.id));
+            fileSystem.renameSync(docManager.storagePath(wopi.id, userAddress), path_prev);
+
+            let filestream = fileSystem.createWriteStream(storagePath);
             req.pipe(filestream);
             req.on('end', () => {
                 filestream.close();
@@ -205,7 +220,7 @@ function putFile(wopi, req, res, userHost) {
         }
     } else {
         // lock mismatch
-        returnLockMismatch(res, lockManager.getLock(path), "Lock mismatch");
+        returnLockMismatch(res, lockManager.getLock(storagePath), "Lock mismatch");
     }
 }
 
@@ -226,7 +241,8 @@ function checkFileInfo(wopi, req, res, userHost) {
         "Version": version,
         "UserCanWrite": true,
         "SupportsGetLock": true,
-        "SupportsLocks": true
+        "SupportsLocks": true,
+        "SupportsUpdate": true,
     };
     res.status(200).send(fileInfo);
 }
