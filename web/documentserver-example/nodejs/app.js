@@ -34,6 +34,7 @@ const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
 const wopiApp = require("./helpers/wopi/wopiRouting");
+const wopiUtils = require("./helpers/wopi/utils");
 const users = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
@@ -807,6 +808,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 });
 
 wopiApp.registerRoutes(app);
+wopiUtils.getDiscoveryInfo();
 
 // "Not found" error with 404 status
 app.use(function (req, res, next) {
