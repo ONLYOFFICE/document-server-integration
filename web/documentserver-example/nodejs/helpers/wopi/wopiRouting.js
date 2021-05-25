@@ -51,7 +51,7 @@ exports.registerRoutes = function(app) {
             res.render("wopiAction", {
                 actionUrl: utils.getActionUrl(docManager.getServerUrl(), docManager.curUserHostAddress(), action, req.params['id']),
                 token: "test",
-                tokenTtl: 1000 * 60 * 60
+                tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
             });
 
         } catch (ex) {
