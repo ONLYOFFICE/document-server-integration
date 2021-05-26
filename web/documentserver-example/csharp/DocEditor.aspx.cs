@@ -66,7 +66,7 @@ namespace OnlineEditorsExample
         protected string InsertImageConfig { get; private set; }
         protected string compareFileData { get; private set; }
         protected string dataMailMergeRecipients { get; private set; }
-        protected string users { get; private set; }
+        protected string usersForMentions { get; private set; }
         protected string documentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -272,7 +272,7 @@ namespace OnlineEditorsExample
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
-                users = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : jss.Serialize(null);
+                usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : jss.Serialize(null);
 
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;

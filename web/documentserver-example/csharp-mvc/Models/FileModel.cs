@@ -366,13 +366,13 @@ namespace OnlineEditorsExampleMVC.Models
             dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
         }
 
-        //get a users mentions
-        public void GetUsersMentions(HttpRequest request, out string users)
+        //get a users for mentions
+        public void GetUsersMentions(HttpRequest request, out string usersForMentions)
         {
             var jss = new JavaScriptSerializer();
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
-            users = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : jss.Serialize(null);
+            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : jss.Serialize(null);
         }
     }
 }

@@ -136,10 +136,10 @@
         };
 
         var onRequestUsers = function () {
-            <% string users; %>
-            <% Model.GetUsersMentions(Request, out users); %>
+            <% string usersForMentions; %>
+            <% Model.GetUsersMentions(Request, out usersForMentions); %>
             docEditor.setUsers({
-                "users": <%= users%>
+                "users": <%= usersForMentions%>
             });
         };
 

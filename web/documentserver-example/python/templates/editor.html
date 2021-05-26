@@ -136,7 +136,7 @@
 
         var onRequestUsers = function () {
             docEditor.setUsers({
-                "users": {{ users | safe }}
+                "users": {{ usersForMentions | safe }}
             });
         };
 

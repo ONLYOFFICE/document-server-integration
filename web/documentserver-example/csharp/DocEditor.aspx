@@ -149,7 +149,7 @@
 
         var onRequestUsers = function () {
             docEditor.setUsers({
-                "users": <%= users%>
+                "users": <%= usersForMentions%>
             });
         }
 
