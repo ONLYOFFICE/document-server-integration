@@ -91,7 +91,6 @@
     <Content Include="App_Themes\images\word.ico" />
     <Content Include="LICENSE" />
     <Content Include="licenses\jquery.license" />
-    <Content Include="ReadMe.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

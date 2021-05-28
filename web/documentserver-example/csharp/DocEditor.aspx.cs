@@ -331,13 +331,16 @@ namespace OnlineEditorsExample
                     {
                         // get the path to the changes.json file 
                         var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
-                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+                        var changesArray = (ArrayList)changes["changes"];
+                        var change = changesArray.Count > 0
+                            ? (Dictionary<string, object>)changesArray[0]
+                            : new Dictionary<string, object>();
 
                         // write information about changes to the object
-                        obj.Add("changes", changes["changes"]);
+                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
                         obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change["created"]);
-                        obj.Add("user", change["user"]);
+                        obj.Add("created", change.Count > 0 ? change["created"] : null);
+                        obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
