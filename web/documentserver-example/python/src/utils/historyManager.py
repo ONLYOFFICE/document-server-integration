@@ -194,10 +194,10 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
                     change = changes['changes'][0]
                     
-                    obj['changes'] = changes['changes'] # write information about changes to the object
+                    obj['changes'] = changes['changes'] if change else None # write information about changes to the object
                     obj['serverVersion'] = changes['serverVersion']
-                    obj['created'] = change['created']
-                    obj['user'] = change['user']
+                    obj['created'] = change['created'] if change else None
+                    obj['user'] = change['user'] if change else None
 
                     prev = histData[str(i - 2)] # get the history data from the previous file version
                     prevInfo = { # write key and url information about previous file version
