@@ -228,10 +228,10 @@
                     $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $changes["changes"];  // write information about changes to the object
+                    $obj["changes"] = $change ? $changes["changes"][0] : null;  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
-                    $obj["created"] = $change["created"];
-                    $obj["user"] = $change["user"];
+                    $obj["created"] = $change ? $change["created"] : null;
+                    $obj["user"] = $change ? $change["user"] : null;
 
                     $prev = $histData[$i - 2];  // get the history data from the previous file version
                     $dataObj["previous"] = [  // write information about previous file version to the data object
