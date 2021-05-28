@@ -396,19 +396,6 @@
             docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {
-            docEditor.setUsers({
-                "users": <?php echo json_encode($usersForMentions) ?>
-            });
-        };
-
-        var onRequestSendNotify = function (event) {
-            var actionLink = JSON.stringify(event.data.actionLink);
-            console.log("onRequestSendNotify:");
-            console.log(event.data);
-            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
-        };
-
         var сonnectEditor = function () {
 
             <?php
@@ -433,8 +420,6 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
-                "onRequestUsers": onRequestUsers,
-                "onRequestSendNotify": onRequestSendNotify,
             };
 
             <?php
@@ -456,6 +441,21 @@
             // the user is trying to go back to the document from viewing the document version history
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
+            };
+            <?php endif; ?>
+
+            <?php if ($usersForMentions != null): ?>
+            // add mentions for not anonymous users
+            config.events['onRequestUsers'] = function () {
+                docEditor.setUsers({
+                    "users": <?php echo json_encode($usersForMentions) ?>
+                });
+            };
+            config.events['onRequestSendNotify'] = function (event) {
+                var actionLink = JSON.stringify(event.data.actionLink);
+                console.log("onRequestSendNotify:");
+                console.log(event.data);
+                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
             };
             <?php endif; ?>
 

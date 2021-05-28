@@ -34,7 +34,6 @@ const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
 const users = require("./helpers/users");
-const { getUsersForMentions } = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
 const plugins = config.get('plugins');

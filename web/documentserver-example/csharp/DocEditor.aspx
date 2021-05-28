@@ -147,19 +147,6 @@
             docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {
-            docEditor.setUsers({
-                "users": <%= usersForMentions%>
-            });
-        }
-
-        var onRequestSendNotify = function (event) {
-            var actionLink = JSON.stringify(event.data.actionLink);
-            console.log("onRequestSendNotify:");
-            console.log(event.data);
-            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
-        };
-
         var config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -176,8 +163,6 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestUsers": onRequestUsers,
-            "onRequestSendNotify": onRequestSendNotify,
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
@@ -192,6 +177,22 @@
         };
         config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
             document.location.reload();
+        };
+        <% } %>
+
+        <% if (!string.IsNullOrEmpty(usersForMentions))
+        { %>
+        // add mentions for not anonymous users
+        config.events['onRequestUsers'] = function () {
+            docEditor.setUsers({
+                "users": <%= usersForMentions%>
+        });
+        };
+        config.events['onRequestSendNotify'] = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
         };
         <% } %>
 

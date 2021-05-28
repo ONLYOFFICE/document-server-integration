@@ -372,7 +372,7 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
-            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : jss.Serialize(null);
+            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
         }
     }
 }

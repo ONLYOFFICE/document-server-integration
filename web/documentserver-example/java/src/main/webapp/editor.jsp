@@ -119,19 +119,6 @@
             docEditor.setMailMergeRecipients(${dataMailMergeRecipients});  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {
-            docEditor.setUsers({
-                "users": ${usersForMentions}
-            });
-        };
-
-        var onRequestSendNotify = function (event) {
-            var actionLink = JSON.stringify(event.data.actionLink);
-            console.log("onRequestSendNotify:");
-            console.log(event.data);
-            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
-        };
-
         var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -146,14 +133,13 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestUsers": onRequestUsers,
-            "onRequestSendNotify": onRequestSendNotify,
         };
 
         <%
             String[] histArray = Model.GetHistory();
             String history = histArray[0];
             String historyData = histArray[1];
+            String usersForMentions = (String) request.getAttribute("usersForMentions");
         %>
 
         <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
@@ -170,6 +156,22 @@
             // the user is trying to go back to the document from viewing the document version history
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
+            };
+        <% } %>
+
+        <% if (usersForMentions != null) { %>
+            // add mentions for not anonymous users
+            config.events['onRequestUsers'] = function () {
+                docEditor.setUsers({
+                    "users": ${usersForMentions}
+                });
+            console.log(usersForMentions);
+            };
+            config.events['onRequestSendNotify'] = function (event) {
+                var actionLink = JSON.stringify(event.data.actionLink);
+                console.log("onRequestSendNotify:");
+                console.log(event.data);
+                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
             };
         <% } %>
 

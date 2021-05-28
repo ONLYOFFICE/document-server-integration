@@ -90,7 +90,7 @@ public class EditorServlet extends HttpServlet
         dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
 
         // users data for mentions
-        List<Map<String, Object>> usersForMentions = !user.id.equals("uid-0") ? Users.getUsersForMentions(user.id) : null;
+        List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);
 
         // check if the document token is enabled
         if (DocumentManager.TokenEnabled())
@@ -107,7 +107,7 @@ public class EditorServlet extends HttpServlet
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
-        request.setAttribute("usersForMentions", gson.toJson(usersForMentions));
+        request.setAttribute("usersForMentions", !user.id.equals("uid-0") ? gson.toJson(usersForMentions) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
