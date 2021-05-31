@@ -57,7 +57,8 @@ $descr_user_0 = [
     "The user without a name. The name is requested upon the editor opening",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "He cannot mention others in the comments"
 ];
 
 $users = [
@@ -83,4 +84,17 @@ function getUser($id) {
     return $users[0];
 }
 
+function getUsersForMentions($id) {
+    global $users;
+    $usersData = [];
+    foreach ($users as $user) {
+        if ($user->id != $id && $user->name != null && $user->email != null) {
+            array_push($usersData,[
+                "name" => $user->name,
+                "email" => $user->email
+            ]);
+        }
+    }
+    return $usersData;
+}
 ?>

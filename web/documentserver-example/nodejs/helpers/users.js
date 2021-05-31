@@ -42,7 +42,8 @@ var descr_user_0 = [
     "The user without a name. The name is requested upon the editor opening",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "He cannot mention others in the comments"
 ];
 
 var users = [
@@ -72,5 +73,15 @@ users.getUser = function (id) {
     });
     return result ? result : this[0];
 };
+
+users.getUsersForMentions = function (id) {
+    var result = [];
+    this.forEach(user => {
+        if (user.id != id && user.name != null && user.email != null) {
+            result.push({ name: user.name, email: user.email });
+        }
+    });
+    return result;
+}
 
 module.exports = users;

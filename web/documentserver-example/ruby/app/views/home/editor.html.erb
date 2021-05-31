@@ -148,6 +148,24 @@
             <% end
         %>
 
+        <%
+            h = @file.get_users_mentions
+            if h %>
+            // add mentions for not anonymous users
+            config.events['onRequestUsers'] = function () {
+                docEditor.setUsers({
+                    "users": <%= raw @file.get_users_mentions.to_json %>
+                });
+            };
+            config.events['onRequestSendNotify'] = function (event) {
+                var actionLink = JSON.stringify(event.data.actionLink);
+                console.log("onRequestSendNotify:");
+                console.log(event.data);
+                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+            };
+            <% end
+        %>
+
         docEditor = new DocsAPI.DocEditor("iframeEditor", config);
     };
 

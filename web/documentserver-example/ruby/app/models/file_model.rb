@@ -278,4 +278,9 @@ class FileModel
     return dataMailMergeRecipients
   end
 
+  # get users data for mentions
+  def get_users_mentions
+    return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
+  end
+
 end

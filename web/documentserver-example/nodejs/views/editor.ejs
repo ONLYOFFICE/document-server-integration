@@ -132,27 +132,49 @@
             docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
 
-        var connectEditor = function () {
-
-            docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
-                    events: {
-                        "onAppReady": onAppReady,
-                        "onDocumentStateChange": onDocumentStateChange,
-                        "onRequestEditRights": onRequestEditRights,
-                        "onError": onError,
-                        "onRequestHistory":  onRequestHistory,
-                        "onRequestHistoryData": onRequestHistoryData,
-                        "onRequestHistoryClose": onRequestHistoryClose,
-                        "onOutdatedVersion": onOutdatedVersion,
-                        "onMakeActionLink": onMakeActionLink,
-                        "onMetaChange": onMetaChange,
-                        "onRequestInsertImage": onRequestInsertImage,
-                        "onRequestCompareFile": onRequestCompareFile,
-                        "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                    }
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": <%- JSON.stringify(usersForMentions) %>
             });
+        };
 
+        var onRequestSendNotify = function(event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
+        var events = {
+            "onAppReady": onAppReady,
+            "onDocumentStateChange": onDocumentStateChange,
+            "onRequestEditRights": onRequestEditRights,
+            "onError": onError,
+            "onRequestHistory":  onRequestHistory,
+            "onRequestHistoryData": onRequestHistoryData,
+            "onRequestHistoryClose": onRequestHistoryClose,
+            "onOutdatedVersion": onOutdatedVersion,
+            "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+        };
+
+        var config = {<%- include("config") %>, events};
+
+        var connectEditor = function () {
+            addMentions();
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
             fixSize();
+        };
+
+        var addMentions = function () {
+            if (<%- JSON.stringify(usersForMentions) %> != null)
+            {
+                events.onRequestUsers = onRequestUsers;
+                events.onRequestSendNotify = onRequestSendNotify;
+            }
         };
 
         // get the editor sizes

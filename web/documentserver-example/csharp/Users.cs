@@ -52,7 +52,8 @@ namespace OnlineEditorsExample
             "The user without a name. The name is requested upon the editor opening",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
-            "The file favorite state is undefined"
+            "The file favorite state is undefined",
+            "He cannot mention others in the comments"
         };
 
         private static List<User> users = new List<User>() {
@@ -74,6 +75,24 @@ namespace OnlineEditorsExample
         public static List<User> getAllUsers()
         {
             return users;
+        }
+
+        public static List<Dictionary<string, object>> getUsersForMentions(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+
+            foreach (User user in users)
+            {
+                if (!user.id.Equals(id) && user.name != null && user.email != null)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"name", user.name },
+                        {"email", user.email },
+                    });
+                }
+            }
+            return usersData;
         }
     }
 

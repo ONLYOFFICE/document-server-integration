@@ -365,5 +365,14 @@ namespace OnlineEditorsExampleMVC.Models
 
             dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
         }
+
+        //get a users for mentions
+        public void GetUsersMentions(HttpRequest request, out string usersForMentions)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+        }
     }
 }

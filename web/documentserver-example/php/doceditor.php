@@ -135,6 +135,9 @@
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
+    
+    // users data for mentions
+    $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
     // check if the secret key to generate token exists
     if (isJwtEnabled()) {
@@ -438,6 +441,21 @@
             // the user is trying to go back to the document from viewing the document version history
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
+            };
+            <?php endif; ?>
+
+            <?php if ($usersForMentions != null): ?>
+            // add mentions for not anonymous users
+            config.events['onRequestUsers'] = function () {
+                docEditor.setUsers({
+                    "users": <?php echo json_encode($usersForMentions) ?>
+                });
+            };
+            config.events['onRequestSendNotify'] = function (event) {
+                var actionLink = JSON.stringify(event.data.actionLink);
+                console.log("onRequestSendNotify:");
+                console.log(event.data);
+                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
             };
             <?php endif; ?>
 

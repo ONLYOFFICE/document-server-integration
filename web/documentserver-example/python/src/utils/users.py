@@ -63,7 +63,8 @@ descr_user_0 = [
     "The user without a name. The name is requested upon the editor opening",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "He cannot mention others in the comments"
 ]
 
 USERS = [
@@ -84,3 +85,11 @@ def getUserFromReq(req):
             return user
 
     return DEFAULT_USER
+
+# get users data for mentions
+def getUsersForMentions(uid):
+    usersData = []
+    for user in USERS:
+        if(user.id != uid and user.name != None and user.email != None):
+            usersData.append({'name':user.name, 'email':user.email})
+    return usersData

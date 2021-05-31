@@ -56,7 +56,8 @@ class Users
         "The user without a name. The name is requested upon the editor opening",
         "He doesn’t belong to any of the groups",
         "He can review all the changes",
-        "The file favorite state is undefined"
+        "The file favorite state is undefined",
+        "He cannot mention others in the comments"
     ];
 
     @@users = [
@@ -79,6 +80,17 @@ class Users
             end
             return @@users[0]
         end
+
+        def get_users_for_mentions(id)
+            usersData = []
+            for user in @@users do
+                if (!user.id.eql?(id) && user.name != nil && user.email != nil)
+                    usersData.push({:name => user.name, :email => user.email})
+                end
+            end
+            return usersData
+        end
+
     end
 end
 
