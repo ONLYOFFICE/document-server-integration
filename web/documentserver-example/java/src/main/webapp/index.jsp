@@ -80,7 +80,17 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="css/img/info.svg" />
+                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                    </br>
+                                                    <% for (User user : Users.getAllUsers()) { %>
+                                                        <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                                        <ul>
+                                                            <% for (String description : user.descriptions) { %>
+                                                                <li><%= description %></li>
+                                                            <% } %>
+                                                        </ul>
+                                                    <% } %>"
+                                                    src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
                                                             <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -172,41 +182,41 @@
                                                             <% if (canEdit) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
-                                                                        <img src="css/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                        <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
-                                                                        <img src="css/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                        <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <% if (docType.equals("word")) { %>
                                                                         <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
-                                                                            <img src="css/img/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                            <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                                         </a>
                                                                     <% } else if (docType.equals("cell")) { %>
                                                                         <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
-                                                                            <img src="css/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                            <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
-                                                                        <img src="css/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <% if (docType.equals("word")) { %>
                                                                         <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                            <img src="css/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
                                                                 <td class="contentCells contentCells-shift contentCells-icon">
                                                                     <% if (docType.equals("word")) { %>
                                                                         <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
-                                                                            <img src="css/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                            <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
@@ -215,27 +225,27 @@
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
-                                                                    <img src="css/img/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                    <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=view" target="_blank">
-                                                                    <img src="css/img/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                    <img src="css/img/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=embedded&mode=embedded" target="_blank">
-                                                                    <img src="css/img/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                    <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="IndexServlet?type=download&fileName=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
-                                                                    <img class="icon-download" src="css/img/download-24.png" alt="Download" title="Download" />
+                                                                    <img class="icon-download" src="css/img/download.svg" alt="Download" title="Download" />
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="delete-file" data-filename="<%= files[i].getName() %>">
-                                                                    <img class="icon-delete" src="css/img/delete-24.png" alt="Delete" title="Delete" />
+                                                                    <img class="icon-delete" src="css/img/delete.svg" alt="Delete" title="Delete" />
                                                                 </a>
                                                             </td>
                                                         </tr>

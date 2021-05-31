@@ -82,11 +82,23 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions" src="app_themes/images/info.svg" />
+                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                </br>
+                                                <% foreach (User user in Users.getAllUsers())
+                                                   { %>
+                                                       <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                                       <ul>
+                                                       <% foreach (string description in user.descriptions)
+                                                          { %>
+                                                              <li><%= description %></li>
+                                                       <% } %>
+                                                       </ul>
+                                                <% } %>"
+                                                src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% foreach (User user in Users.getAllUsers())
                                                        { %>
-                                                        <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name  %></option>
+                                                           <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
                                                     <% } %>
                                                 </select>
                                             </td>
@@ -179,41 +191,41 @@
                                                             <% if (canEdit) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                        <img src="app_themes/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=mobile&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                        <img src="app_themes/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <% if (docType == "word") { %>
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                                                            <img src="app_themes/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                            <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                                         </a>
                                                                     <% } else if (docType == "cell") { %>
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                                                            <img src="app_themes/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                            <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                                                        <img src="app_themes/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <% if (docType == "word") { %>
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                            <img src="app_themes/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
                                                                 <td class="contentCells contentCells-shift contentCells-icon">
                                                                     <% if (docType == "word") { %>
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
-                                                                            <img src="app_themes/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                            <img src="app_themes/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
@@ -222,27 +234,27 @@
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                    <img src="app_themes/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="<%= editUrl + "&editorsType=mobile&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                    <img src="app_themes/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="<%= editUrl + "&editorsType=embedded&editorsMode=embedded" %>" target="_blank">
-                                                                    <img src="app_themes/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                    <img src="app_themes/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
-                                                                    <img class="icon-download" src="app_themes/images/download-24.png" alt="Download" title="Download" />
+                                                                    <img class="icon-download" src="app_themes/images/download.svg" alt="Download" title="Download" />
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="delete-file" data-filename="<%= storedFile.Name %>">
-                                                                    <img class="icon-delete" src="app_themes/images/delete-24.png" alt="Delete" title="Delete" />
+                                                                    <img class="icon-delete" src="app_themes/images/delete.svg" alt="Delete" title="Delete" />
                                                                 </a>
                                                             </td>
                                                         </tr>

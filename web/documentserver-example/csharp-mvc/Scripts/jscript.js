@@ -283,12 +283,25 @@ if (typeof jQuery != "undefined") {
         var id = target.dataset.id ? target.dataset.id : target.id;
         var tooltip = target.dataset.tooltip;
 
-        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
 
-        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
-        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
-        jq("div.tooltip").css({ "top": top, "left": left });
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
+
+        var topElement = jq("#" + id).offset().top;
+        var halfHeightElement = jq("#" + id).outerHeight() / 2;
+
+        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
+        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
+        if (heightToFooter > (halfHeightTooltip + 10)) {
+            var top = topElement + halfHeightElement - halfHeightTooltip;
+        } else {
+            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
+        }
+
+        jq("div.tooltip").css({ "top": top, "left": left + 10 });
+        jq("div.arrow").css({ "top": topElement + halfHeightElement, "left": left + 6 });
     }).mouseout(function () {
         jq("div.tooltip").remove();
+        jq("div.arrow").remove();
     });
 }
