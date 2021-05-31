@@ -42,7 +42,8 @@ var descr_user_0 = [
     "The user without a name. The name is requested upon the editor opening",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "He cannot mention others in the comments"
 ];
 
 var users = [

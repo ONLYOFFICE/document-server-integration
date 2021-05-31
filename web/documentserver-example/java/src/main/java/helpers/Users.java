@@ -51,6 +51,7 @@ public class Users {
         add("He doesn’t belong to any of the groups");
         add("He can review all the changes");
         add("The file favorite state is undefined");
+        add("He cannot mention others in the comments");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
