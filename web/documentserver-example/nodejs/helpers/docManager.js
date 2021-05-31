@@ -376,11 +376,13 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
     let oldVersion = false;
     let contentJson = null;
     if (content) {  // if content is defined
-        if (content.changes) {  // and there are some modifications in the content
+        if (content.changes && content.changes.length) {  // and there are some modifications in the content
             contentJson = content.changes[0];  // write these modifications to the json content
-        } else {
+        } else if (content.length){
             contentJson = content[0];  // otherwise, write original content to the json content
             oldVersion = true;  // and note that this is an old version
+        } else {
+            content = false;
         }
     }
 

@@ -163,10 +163,10 @@ public class FileModel
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         // write information about changes to the object
-                        obj.put("changes", changes.get("changes"));
+                        obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);
                         obj.put("serverVersion", changes.get("serverVersion"));
-                        obj.put("created", change.get("created"));
-                        obj.put("user", change.get("user"));
+                        obj.put("created", !change.isEmpty() ? change.get("created") : null);
+                        obj.put("user", !change.isEmpty() ? change.get("user") : null);
 
                         Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
