@@ -176,7 +176,11 @@
                                                                 <td class="contentCells contentCells-wopi contentCells-shift">
                                                                     <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
                                                                         <a href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
-                                                                            <img src="images/desktop-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <% if (storedFiles[i].actions[j].name == "edit") { %>
+                                                                                <img src="images/fill-forms-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <%} else { %>
+                                                                                <img src="images/desktop-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <% } %>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
