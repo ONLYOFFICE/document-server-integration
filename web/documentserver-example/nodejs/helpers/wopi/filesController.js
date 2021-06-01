@@ -204,6 +204,7 @@ function putFile(wopi, req, res, userHost) {
 
             var count_version = docManager.countVersion(historyPath);
             version = count_version + 1;
+            res.headers[reqConsts.requestHeaders.ItemVersion] = version;
             var versionPath = docManager.versionPath(wopi.id, userAddress, version);
             docManager.createDirectory(versionPath);
 
