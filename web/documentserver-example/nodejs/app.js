@@ -683,6 +683,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             for (var i = 1; i <= countVersion; i++) {  // get keys to all the file versions
                 if (i < countVersion) {
                     var keyPath = docManager.keyPath(fileName, userAddress, i);
+                    if (!fileSystem.existsSync(keyPath)) continue;
                     keyVersion = "" + fileSystem.readFileSync(keyPath);
                 } else {
                     keyVersion = key;
