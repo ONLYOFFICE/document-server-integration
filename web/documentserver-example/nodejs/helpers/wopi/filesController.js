@@ -242,6 +242,7 @@ function checkFileInfo(wopi, req, res, userHost) {
         "OwnerId": docManager.getFileData(wopi.id, userAddress)[1],
         "Size": fileSystem.statSync(path).size,
         "UserId": user.id,
+        "UserFriendlyName": user.name,
         "Version": version,
         "UserCanWrite": true,
         "SupportsGetLock": true,
