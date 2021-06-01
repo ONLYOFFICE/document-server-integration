@@ -5,34 +5,40 @@ const he = require("he");
 
 var cache = null;
 
-function getDiscoveryInfo() {
+function getDiscoveryInfo(retry) {
     let actions = [];
 
     if (cache) return cache;
 
-    let response = syncRequest("GET", config.get("wopi.discovery"));
-    let discovery = xmlParser.parse(response.getBody().toString(), {
-        attributeNamePrefix: "",
-        ignoreAttributes: false,
-        parseAttributeValue: true,
-        attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
-    });
-
-    for (let app of discovery["wopi-discovery"]["net-zone"].app) {
-        if (!Array.isArray(app.action)) { app.action = [app.action]; }
-        for (let action of app.action) {
-            actions.push({
-                app: app.name,
-                favIconUrl: app.favIconUrl,
-                checkLicense: app.checkLicense == 'true',
-                name: action.name,
-                ext: action.ext || "",
-                progid: action.progid || "",
-                isDefault: action.default ? true : false,
-                urlsrc: action.urlsrc,
-                requires: action.requires || ""
-            });
+    try {
+        let response = syncRequest("GET", config.get("wopi.discovery"));
+        let discovery = xmlParser.parse(response.getBody().toString(), {
+            attributeNamePrefix: "",
+            ignoreAttributes: false,
+            parseAttributeValue: true,
+            attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
+        });
+        for (let app of discovery["wopi-discovery"]["net-zone"].app) {
+            if (!Array.isArray(app.action)) { app.action = [app.action]; }
+            for (let action of app.action) {
+                actions.push({
+                    app: app.name,
+                    favIconUrl: app.favIconUrl,
+                    checkLicense: app.checkLicense == 'true',
+                    name: action.name,
+                    ext: action.ext || "",
+                    progid: action.progid || "",
+                    isDefault: action.default ? true : false,
+                    urlsrc: action.urlsrc,
+                    requires: action.requires || ""
+                });
+            }
         }
+    } catch (e) {
+        if (retry) {
+            setTimeout(getDiscoveryInfo, 1000, true);
+        }
+        return actions;
     }
 
     cache = actions;
