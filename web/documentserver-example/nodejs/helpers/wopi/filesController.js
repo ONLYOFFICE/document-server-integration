@@ -204,7 +204,7 @@ function putFile(wopi, req, res, userHost) {
 
             var count_version = docManager.countVersion(historyPath);
             version = count_version + 1;
-            res.setHeader(reqConsts.requestHeaders.ItemVersion, version);
+            res.setHeader(reqConsts.requestHeaders.ItemVersion, version + 1);
             var versionPath = docManager.versionPath(wopi.id, userAddress, version);
             docManager.createDirectory(versionPath);
 
@@ -231,7 +231,7 @@ function checkFileInfo(wopi, req, res, userHost) {
     let historyPath = docManager.historyPath(wopi.id, userAddress);
     let version = 1;
     if (historyPath != "") {
-        version = docManager.countVersion(historyPath);
+        version = docManager.countVersion(historyPath) + 1;
     }
     let path = docManager.storagePath(wopi.id, userAddress);
 
