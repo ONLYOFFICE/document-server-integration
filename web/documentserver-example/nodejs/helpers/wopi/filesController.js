@@ -106,7 +106,7 @@ function getLock(wopi, req, res, userHost) {
     let userAddress = docManager.curUserHostAddress(userHost);
     let filePath = docManager.storagePath(wopi.id, userAddress);
 
-    res.headers[reqConsts.requestHeaders.lock] == lockManager.getLock(filePath);
+    res.setHeader(reqConsts.requestHeaders.lock, lockManager.getLock(filePath));
     res.sendStatus(200);
 }
 
@@ -204,7 +204,7 @@ function putFile(wopi, req, res, userHost) {
 
             var count_version = docManager.countVersion(historyPath);
             version = count_version + 1;
-            res.headers[reqConsts.requestHeaders.ItemVersion] = version;
+            res.setHeader(reqConsts.requestHeaders.ItemVersion, version);
             var versionPath = docManager.versionPath(wopi.id, userAddress, version);
             docManager.createDirectory(versionPath);
 
@@ -253,9 +253,9 @@ function checkFileInfo(wopi, req, res, userHost) {
 }
 
 function returnLockMismatch(res, lock, reason) {
-    res.headers[reqConsts.requestHeaders.Lock] = lock || "";
+    res.setHeader(reqConsts.requestHeaders.Lock, lock || "");
     if (reason) {
-        res.headers[reqConsts.requestHeaders.LockFailureReason] = reason;
+        res.setHeader(reqConsts.requestHeaders.LockFailureReason, reason);
     }
     res.sendStatus(409); // conflict
 }
