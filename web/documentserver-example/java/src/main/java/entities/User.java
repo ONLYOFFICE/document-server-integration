@@ -29,8 +29,9 @@ public class User {
     public Boolean favorite;
     public List<String> deniedPermissions;
     public List<String> descriptions;
+    public Boolean templates;
 
-    public User(String id, String name, String email, String group, List<String> reviewGroups, Boolean favorite, List<String> deniedPermissions, List<String> descriptions) {
+    public User(String id, String name, String email, String group, List<String> reviewGroups, Boolean favorite, List<String> deniedPermissions, List<String> descriptions, Boolean templates) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -39,5 +40,6 @@ public class User {
         this.favorite = favorite;
         this.deniedPermissions = deniedPermissions;
         this.descriptions = descriptions;
+        this.templates = templates;
     }
 }

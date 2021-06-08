@@ -165,7 +165,6 @@
                 docEditor.setUsers({
                     "users": ${usersForMentions}
                 });
-            console.log(usersForMentions);
             };
             config.events['onRequestSendNotify'] = function (event) {
                 var actionLink = JSON.stringify(event.data.actionLink);

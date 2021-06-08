@@ -55,10 +55,10 @@ public class Users {
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>(), descr_user_1));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>(), descr_user_2));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print"), descr_user_3));
-        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>(), descr_user_0));
+        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>(), descr_user_1, true));
+        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>(), descr_user_2, false));
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
+        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>(), descr_user_0, false));
     }};
 
     public static User getUser (String id) {

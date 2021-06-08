@@ -25,6 +25,7 @@ import java.util.*;
 import helpers.DocumentManager;
 import helpers.ServiceConverter;
 import helpers.FileUtility;
+import helpers.Users;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -61,11 +62,30 @@ public class FileModel
         document.info = new Info();
         document.info.favorite = user.favorite;
 
+        String templatesImageUrl = DocumentManager.GetTemplateImageUrl(FileUtility.GetFileType(fileName));
+        List<Map<String, String>> templates = new ArrayList<>();
+        String createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
+
+        // add templates for the "Create New" from menu option
+        Map<String, String> templateForBlankDocument = new HashMap<>();
+        templateForBlankDocument.put("image", templatesImageUrl);
+        templateForBlankDocument.put("title", "Blank");
+        templateForBlankDocument.put("url", createUrl);
+        templates.add(templateForBlankDocument);
+        Map<String, String> templateForDocumentWithSampleContent = new HashMap<>();
+        templateForDocumentWithSampleContent.put("image", templatesImageUrl);
+        templateForDocumentWithSampleContent.put("title", "With sample content");
+        templateForDocumentWithSampleContent.put("url", createUrl + "&sample=true");
+        templates.add(templateForDocumentWithSampleContent);
+
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
-        editorConfig.createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
+        
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
+
+        editorConfig.createUrl = !user.id.equals("uid-0") ? createUrl : null;
+        editorConfig.templates = user.templates ? templates : null;
 
         // write user information to the config (id, name and group)
         editorConfig.user.id = user.id;
@@ -269,8 +289,9 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
-        public String createUrl;
         public String lang = "en";
+        public String createUrl;
+        public List<Map<String, String>> templates;
         public User user;
         public Customization customization;
         public Embedded embedded;
