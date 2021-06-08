@@ -47,13 +47,13 @@ var descr_user_0 = [
 ];
 
 var users = [
-    new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, [], descr_user_1),
-    new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], descr_user_2),  // own and without group
-    new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], descr_user_3),  // other group only
-    new User("uid-0", null, null, null, null, null, [], descr_user_0),
+    new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, [], descr_user_1, true),
+    new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], descr_user_2, false),  // own and without group
+    new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], descr_user_3, false),  // other group only
+    new User("uid-0", null, null, null, null, null, [], descr_user_0, false),
 ];
 
-function User(id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions) {
+function User(id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions, templates) {
     this.id = id;
     this.name = name;
     this.email = email;
@@ -62,6 +62,11 @@ function User(id, name, email, group, reviewGroups, favorite, deniedPermissions,
     this.favorite = favorite;
     this.deniedPermissions = deniedPermissions;
     this.descriptions = descriptions;
+    this.templates = templates;
+};
+
+users.getAllUsers = function () {
+    return users;
 };
 
 users.getUser = function (id) {
@@ -82,6 +87,6 @@ users.getUsersForMentions = function (id) {
         }
     });
     return result;
-}
+};
 
 module.exports = users;
