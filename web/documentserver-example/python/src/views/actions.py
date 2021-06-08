@@ -141,6 +141,21 @@ def edit(request):
     actionData = request.GET.get('actionLink')  # get the action data that will be scrolled to (comment or bookmark)
     actionLink = json.loads(actionData) if actionData else None
 
+    templatesImageUrl = docManager.getTemplateImageUrl(fileType, request) # templates image url in the "From Template" section
+    createUrl = docManager.getCreateUrl(edType, request)
+    templates = [
+        {
+            'image': templatesImageUrl,
+            'title': 'Blank',
+            'url': createUrl
+        },
+        {
+            'image': templatesImageUrl,
+            'title': 'With sample content',
+            'url': createUrl + '&sample=true'
+        }
+    ]
+
     if (meta):  # if the document meta data exists,
         infObj = {  # write author and creation time parameters to the information object
             'owner': meta['uname'],
@@ -180,7 +195,8 @@ def edit(request):
             'mode': mode,
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
-            'createUrl': docManager.getCreateUrl(edType, request),
+            'createUrl' : createUrl if user.id !='uid-0' else None,
+            'templates' : templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
                 'id': user.id,
                 'name': user.name,
