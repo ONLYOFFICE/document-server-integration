@@ -18,7 +18,7 @@
  */
 
 class User {
-    function __construct($id, $name, $email, $group, $reviewGroups, $favorite, $deniedPermissions, $descriptions)
+    function __construct($id, $name, $email, $group, $reviewGroups, $favorite, $deniedPermissions, $descriptions, $templates)
     {
         $this->id = $id;
         $this->name = $name;
@@ -28,6 +28,7 @@ class User {
         $this->favorite = $favorite;
         $this->deniedPermissions = $deniedPermissions;
         $this->descriptions = $descriptions;
+        $this->templates = $templates;
     }
 }
 
@@ -62,10 +63,10 @@ $descr_user_0 = [
 ];
 
 $users = [
-    new User("uid-1", "John Smith", "smith@mial.ru", null, null, null, [], $descr_user_1),
-    new User("uid-2", "Mark Pottato", "pottato@mial.ru", "group-2", ["group-2", ""], true, [], $descr_user_2),
-    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], $descr_user_3),
-    new User("uid-0", null, null, null, null, null, [], $descr_user_0)
+    new User("uid-1", "John Smith", "smith@mial.ru", null, null, null, [], $descr_user_1, true),
+    new User("uid-2", "Mark Pottato", "pottato@mial.ru", "group-2", ["group-2", ""], true, [], $descr_user_2, false),
+    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], $descr_user_3, false),
+    new User("uid-0", null, null, null, null, null, [], $descr_user_0, false)
 ];
 
 function getAllUsers() {
