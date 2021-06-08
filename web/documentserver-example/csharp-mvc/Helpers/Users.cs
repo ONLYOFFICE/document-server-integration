@@ -58,10 +58,10 @@ namespace OnlineEditorsExampleMVC.Helpers
         };
 
         private static List<User> users = new List<User>() {
-            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>(), descr_user_1),
-            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>(), descr_user_2),
-            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }, descr_user_3),
-            new User("uid-0", null, null, null, null, null, new List<string>(), descr_user_0)
+            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>(), descr_user_1, true),
+            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>(), descr_user_2, false),
+            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }, descr_user_3, false),
+            new User("uid-0", null, null, null, null, null, new List<string>(), descr_user_0, false)
         };
         
         public static User getUser(string id)
@@ -106,8 +106,9 @@ namespace OnlineEditorsExampleMVC.Helpers
         public bool? favorite;
         public List<string> deniedPermissions;
         public List<string> descriptions;
+        public bool templates;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
         {
             this.id = id;
             this.name = name;
@@ -117,7 +118,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             this.favorite = favorite;
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
+            this.templates = templates;
         }
-
     }
 }
