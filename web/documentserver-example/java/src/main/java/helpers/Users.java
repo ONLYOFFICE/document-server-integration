@@ -29,12 +29,14 @@ public class Users {
         add("He doesn’t belong to any of the groups");
         add("He can review all the changes");
         add("The file favorite state is undefined");
+        add("Can create a file from a template with data from the editor");
     }};
 
     static List<String> descr_user_2 = new ArrayList<String>() {{
         add("He belongs to Group2");
         add("He can review only his own changes or the changes made by the users who don’t belong to any of the groups");
         add("This file is favorite");
+        add("Can create a file from an editor");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
@@ -44,6 +46,7 @@ public class Users {
         add("He can’t copy data from the file into the clipboard");
         add("He can’t download the file");
         add("He can’t print the file");
+        add("Can create a file from an editor");
     }};
 
     static List<String> descr_user_0 = new ArrayList<String>() {{
@@ -52,6 +55,7 @@ public class Users {
         add("He can review all the changes");
         add("The file favorite state is undefined");
         add("He cannot mention others in the comments");
+        add("Can't create file from editor");
     }};
 
     private static List<User> users = new ArrayList<User>() {{

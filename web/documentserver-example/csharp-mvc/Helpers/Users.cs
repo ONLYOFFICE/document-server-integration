@@ -28,14 +28,16 @@ namespace OnlineEditorsExampleMVC.Helpers
             "File author by default",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
-            "The file favorite state is undefined"
+            "The file favorite state is undefined",
+            "Can create a file from a template with data from the editor"
         };
 
         static List<string> descr_user_2 = new List<string>()
         {
             "He belongs to Group2",
             "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-            "This file is favorite"
+            "This file is favorite",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -45,7 +47,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "This file isn’t favorite",
             "He can’t copy data from the file into the clipboard",
             "He can’t download the file",
-            "He can’t print the file"
+            "He can’t print the file",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -54,7 +57,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
             "The file favorite state is undefined",
-            "He cannot mention others in the comments"
+            "He cannot mention others in the comments",
+            "Can't create file from editor"
         };
 
         private static List<User> users = new List<User>() {
