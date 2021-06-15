@@ -640,6 +640,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         var userGroup = user.group;
         var reviewGroups = user.reviewGroups;
+        var commentGroups = user.commentGroups;
 
         if (fileExt != null) {
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
@@ -760,6 +761,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 name: name,
                 userGroup: userGroup,
                 reviewGroups: JSON.stringify(reviewGroups),
+                commentGroups: JSON.stringify(commentGroups),
                 fileChoiceUrl: fileChoiceUrl,
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
