@@ -86,7 +86,8 @@
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
-                "reviewGroups" => $user->reviewGroups
+                "reviewGroups" => $user->reviewGroups,
+                "commentGroups" => $user->commentGroups
             ]
         ],
         "editorConfig" => [
