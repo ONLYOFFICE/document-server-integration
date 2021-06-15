@@ -27,14 +27,14 @@ var descr_user_1 = [
 var descr_user_2 = [
     "He belongs to Group2",
     "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-    "He can view, edit and delete only his comments and the comments left by the users who don't belong to any of the groups",
+    "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
     "This file is favorite"
 ];
 
 var descr_user_3 = [
     "He belongs to Group3",
     "He can review only the changes made by the users from Group2",
-    "He can view, edit and delete only his comments and the comments left by the users from Group2",
+    "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
     "This file isn’t favorite",
     "He can’t copy data from the file into the clipboard",
     "He can’t download the file",
@@ -56,16 +56,16 @@ var users = [
             null, [], descr_user_1),
     new User("uid-2", "Mark Pottato", "pottato@mail.ru",
             "group-2", ["group-2", ""], {
-                view: ["group-2", ""],
+                view: ".",
                 edit: ["group-2", ""],
-                remove: ["group-2", ""]
+                remove: ["group-2"]
             },
             true, [], descr_user_2),  // own and without group
     new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
             "group-3", ["group-2"], {
                 view: ["group-3", "group-2"],
                 edit: ["group-2"],
-                remove: ["group-2"]
+                remove: []
             },
             false, ["copy", "download", "print"], descr_user_3),  // other group only
     new User("uid-0", null, null,
