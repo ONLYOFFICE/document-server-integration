@@ -35,14 +35,14 @@ public class Users {
     static List<String> descr_user_2 = new ArrayList<String>() {{
         add("He belongs to Group2");
         add("He can review only his own changes or the changes made by the users who don’t belong to any of the groups");
-        add("He can view, edit and delete only his comments and the comments left by the users who don't belong to any of the groups");
+        add("He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments");
         add("This file is favorite");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
         add("He belongs to Group3");
         add("He can review only the changes made by the users from Group2");
-        add("He can view, edit and delete only his comments and the comments left by the users from Group2");
+        add("He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2");
         add("This file isn’t favorite");
         add("He can’t copy data from the file into the clipboard");
         add("He can’t download the file");
@@ -63,10 +63,10 @@ public class Users {
                 null, null, new CommentGroups(),
                 null, new ArrayList<String>(), descr_user_1));
         add(new User("uid-2", "Mark Pottato", "pottato@mail.ru",
-                "group-2", Arrays.asList("group-2", ""), new CommentGroups(Arrays.asList("group-2", ""), Arrays.asList("group-2", ""), Arrays.asList("group-2", "")),
+                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
                 true, new ArrayList<String>(), descr_user_2));
         add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
-                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), Arrays.asList("group-2")),
+                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
                 false, Arrays.asList("copy", "download", "print"), descr_user_3));
         add(new User("uid-0", null, null,
                 null, null, new CommentGroups(),
