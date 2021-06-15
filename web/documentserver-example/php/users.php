@@ -72,16 +72,16 @@ $users = [
             null, [], $descr_user_1),
     new User("uid-2", "Mark Pottato", "pottato@mial.ru",
             "group-2", ["group-2", ""], [
-                "view" => ["group-2", ""],
+                "view" => ".",
                 "edit" => ["group-2", ""],
-                "remove" => ["group-2", ""]
+                "remove" => ["group-2"]
             ],
             true, [], $descr_user_2),
     new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru",
             "group-3", ["group-2"], [
                 "view" => ["group-3", "group-2"],
                 "edit" => ["group-2"],
-                "remove" => ["group-2"]
+                "remove" => []
             ],
             false, ["copy", "download", "print"], $descr_user_3),
     new User("uid-0", null, null,
