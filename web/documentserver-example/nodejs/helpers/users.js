@@ -20,7 +20,7 @@ var descr_user_1 = [
     "File author by default",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "He can do everything with comments",
+    "He can do everything with the comments",
     "The file favorite state is undefined"
 ];
 
@@ -45,7 +45,7 @@ var descr_user_0 = [
     "The user without a name. The name is requested upon the editor opening",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "He can view only his comments",
+    "He can do everything with the comments",
     "The file favorite state is undefined",
     "He cannot mention others in the comments"
 ];
