@@ -26,16 +26,19 @@ public class User {
     public String email;
     public String group;
     public List<String> reviewGroups;
+    public CommentGroups commentGroups;
     public Boolean favorite;
     public List<String> deniedPermissions;
     public List<String> descriptions;
 
-    public User(String id, String name, String email, String group, List<String> reviewGroups, Boolean favorite, List<String> deniedPermissions, List<String> descriptions) {
+    public User(String id, String name, String email, String group, List<String> reviewGroups, CommentGroups commentGroups,
+                Boolean favorite, List<String> deniedPermissions, List<String> descriptions) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.group = group;
         this.reviewGroups = reviewGroups;
+        this.commentGroups = commentGroups;
         this.favorite = favorite;
         this.deniedPermissions = deniedPermissions;
         this.descriptions = descriptions;

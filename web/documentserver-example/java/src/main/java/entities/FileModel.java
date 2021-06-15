@@ -18,19 +18,18 @@
 
 package entities;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.*;
-
-import helpers.DocumentManager;
-import helpers.ServiceConverter;
-import helpers.FileUtility;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+import helpers.DocumentManager;
+import helpers.FileUtility;
+import helpers.ServiceConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.*;
 
 public class FileModel
 {
@@ -241,6 +240,7 @@ public class FileModel
         public Boolean modifyContentControl;
         public Boolean review;
         public List<String> reviewGroups;
+        public CommentGroups commentGroups;
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -255,6 +255,7 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             reviewGroups = user.reviewGroups;
+            commentGroups = user.commentGroups;
         }
     }
 
