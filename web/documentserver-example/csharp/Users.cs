@@ -27,6 +27,7 @@ namespace OnlineEditorsExample
             "File author by default",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
+            "He can do everything with the comments",
             "The file favorite state is undefined"
         };
 
@@ -34,6 +35,7 @@ namespace OnlineEditorsExample
         {
             "He belongs to Group2",
             "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
+            "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
             "This file is favorite"
         };
 
@@ -41,6 +43,7 @@ namespace OnlineEditorsExample
         {
             "He belongs to Group3",
             "He can review only the changes made by the users from Group2",
+            "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
             "This file isn’t favorite",
             "He can’t copy data from the file into the clipboard",
             "He can’t download the file",
@@ -52,6 +55,7 @@ namespace OnlineEditorsExample
             "The user without a name. The name is requested upon the editor opening",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
+            "He can do everything with the comments",
             "The file favorite state is undefined",
             "He cannot mention others in the comments"
         };
@@ -78,7 +82,7 @@ namespace OnlineEditorsExample
                     {
                         { "view",  "."  },
                         { "edit", new List<string>() { "group-2", "" } },
-                        { "remove", new List<string>() {"group-2"} }
+                        { "remove", new List<string>() { "group-2" } }
                     },
                     true,
                     new List<string>(),
@@ -93,7 +97,7 @@ namespace OnlineEditorsExample
                     new Dictionary<string,object>()
                     {
                         { "view", new List<string>() { "group-2", "group-3" } },
-                        { "edit", new List<string>() {"group-2"} },
+                        { "edit", new List<string>() { "group-2" } },
                         { "remove", new List<string>() { } }
                     },
                     false,
@@ -106,7 +110,7 @@ namespace OnlineEditorsExample
                     null,
                     null,
                     null,
-                    new Dictionary<string,object>(),
+                    new Dictionary<string, object>(),
                     null,
                     new List<string>(),
                     descr_user_0
