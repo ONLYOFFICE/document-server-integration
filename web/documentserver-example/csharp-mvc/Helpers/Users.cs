@@ -58,12 +58,62 @@ namespace OnlineEditorsExampleMVC.Helpers
         };
 
         private static List<User> users = new List<User>() {
-            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>(), descr_user_1),
-            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>(), descr_user_2),
-            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }, descr_user_3),
-            new User("uid-0", null, null, null, null, null, new List<string>(), descr_user_0)
+            new User(
+                    "uid-1",
+                    "John Smith",
+                    "smith@mail.ru",
+                    null,
+                    null,
+                    new Dictionary<string, object>(),
+                    null,
+                    new List<string>(),
+                    descr_user_1
+                ),
+            new User(
+                    "uid-2",
+                    "Mark Pottato",
+                    "pottato@mail.ru",
+                    "group-2",
+                    new List<string>() { "group-2", "" },
+                    new Dictionary<string, object>()
+                    {
+                        { "view",  "."  },
+                        { "edit", new List<string>() { "group-2", "" } },
+                        { "remove", new List<string>() { "group-2" } }
+                    },
+                    true,
+                    new List<string>(),
+                    descr_user_2
+                ),
+            new User(
+                    "uid-3",
+                    "Hamish Mitchell",
+                    "mitchell@mail.ru",
+                    "group-3",
+                    new List<string>() { "group-2" },
+                    new Dictionary<string,object>()
+                    {
+                        { "view", new List<string>() { "group-2", "group-3" } },
+                        { "edit", new List<string>() { "group-2" } },
+                        { "remove", new List<string>() { } }
+                    },
+                    false,
+                    new List<string>() { "copy", "download", "print" },
+                    descr_user_3
+                ),
+            new User(
+                    "uid-0",
+                    null,
+                    null,
+                    null,
+                    null,
+                    new Dictionary<string,object>(),
+                    null,
+                    new List<string>(),
+                    descr_user_0
+                )
         };
-        
+
         public static User getUser(string id)
         {
             foreach(User user in users)
@@ -103,17 +153,19 @@ namespace OnlineEditorsExampleMVC.Helpers
         public string email;
         public string group;
         public List<string> reviewGroups;
+        public Dictionary<string, object> commentGroups;
         public bool? favorite;
         public List<string> deniedPermissions;
         public List<string> descriptions;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions)
         {
             this.id = id;
             this.name = name;
             this.email = email;
             this.group = group;
             this.reviewGroups = reviewGroups;
+            this.commentGroups = commentGroups;
             this.favorite = favorite;
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
