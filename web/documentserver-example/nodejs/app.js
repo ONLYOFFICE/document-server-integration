@@ -628,6 +628,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         docManager.init(storageFolder, req, res);
 
+        var fileName = fileUtility.getFileName(req.query.fileName);
         var fileExt = req.query.fileExt;
         var history = [];
         var historyData = [];
@@ -637,6 +638,21 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var userid = user.id;
         var name = user.name;
         var actionData = req.query.action ? req.query.action : "null";
+
+        var templatesImageUrl = docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
+        var createUrl = docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+        var templates = [
+            {
+                "image": templatesImageUrl,
+                "title": "Blank",
+                "url": createUrl
+            },
+            {
+                "image": templatesImageUrl,
+                "title": "With sample content",
+                "url": createUrl + "&sample=true"
+            }
+        ];
 
         var userGroup = user.group;
         var reviewGroups = user.reviewGroups;
@@ -651,7 +667,6 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
 
         var userAddress = docManager.curUserHostAddress();
-        var fileName = fileUtility.getFileName(req.query.fileName);
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
             throw { 
                 "message": "File not found: " + fileName  // display error message
@@ -741,7 +756,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 key: key,
                 token: "",
                 callbackUrl: docManager.getCallback(fileName),
-                createUrl: docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang),
+                createUrl: userid != "uid-0" ? createUrl : null,
+                templates: user.templates ? templates : null,
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
@@ -779,7 +795,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fileType: "csv",
                 url: docManager.getServerUrl(true) + "/csv"
             },
-            usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null
+            usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null,
         };
 
         if (cfgSignatureEnable) {

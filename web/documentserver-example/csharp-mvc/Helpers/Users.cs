@@ -28,14 +28,16 @@ namespace OnlineEditorsExampleMVC.Helpers
             "File author by default",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
-            "The file favorite state is undefined"
+            "The file favorite state is undefined",
+            "Can create a file from a template with data from the editor"
         };
 
         static List<string> descr_user_2 = new List<string>()
         {
             "He belongs to Group2",
             "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-            "This file is favorite"
+            "This file is favorite",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -45,7 +47,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "This file isn’t favorite",
             "He can’t copy data from the file into the clipboard",
             "He can’t download the file",
-            "He can’t print the file"
+            "He can’t print the file",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -54,14 +57,15 @@ namespace OnlineEditorsExampleMVC.Helpers
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
             "The file favorite state is undefined",
-            "He cannot mention others in the comments"
+            "He cannot mention others in the comments",
+            "Can't create file from editor"
         };
 
         private static List<User> users = new List<User>() {
-            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>(), descr_user_1),
-            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>(), descr_user_2),
-            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }, descr_user_3),
-            new User("uid-0", null, null, null, null, null, new List<string>(), descr_user_0)
+            new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new List<string>(), descr_user_1, true),
+            new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", new List<string>() { "group-2", "" }, true, new List<string>(), descr_user_2, false),
+            new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", new List<string>() { "group-2" }, false, new List<string>() { "copy", "download", "print" }, descr_user_3, false),
+            new User("uid-0", null, null, null, null, null, new List<string>(), descr_user_0, false)
         };
         
         public static User getUser(string id)
@@ -106,8 +110,9 @@ namespace OnlineEditorsExampleMVC.Helpers
         public bool? favorite;
         public List<string> deniedPermissions;
         public List<string> descriptions;
+        public bool templates;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
         {
             this.id = id;
             this.name = name;
@@ -117,7 +122,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             this.favorite = favorite;
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
+            this.templates = templates;
         }
-
     }
 }

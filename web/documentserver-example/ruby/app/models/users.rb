@@ -15,9 +15,9 @@
 #
 
 class User
-    attr_accessor :id, :name, :email, :group, :reviewGroups, :favorite, :deniedPermissions, :descriptions
+    attr_accessor :id, :name, :email, :group, :reviewGroups, :favorite, :deniedPermissions, :descriptions, :templates
 
-    def initialize (id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions)
+    def initialize (id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions, templates)
         @id = id
         @name = name
         @email = email
@@ -26,6 +26,7 @@ class User
         @favorite = favorite
         @deniedPermissions = deniedPermissions
         @descriptions = descriptions
+        @templates = templates
     end
 end
 
@@ -34,13 +35,15 @@ class Users
         "File author by default",
         "He doesn’t belong to any of the groups",
         "He can review all the changes",
-        "The file favorite state is undefined"
+        "The file favorite state is undefined",
+        "Can create a file from a template with data from the editor"
     ];
 
     @@descr_user_2 = [
         "He belongs to Group2",
         "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-        "This file is favorite"
+        "This file is favorite",
+        "Can create a file from an editor"
     ];
 
     @@descr_user_3 = [
@@ -49,7 +52,8 @@ class Users
         "This file isn’t favorite",
         "He can’t copy data from the file into the clipboard",
         "He can’t download the file",
-        "He can’t print the file"
+        "He can’t print the file",
+        "Can create a file from an editor"
     ];
 
     @@descr_user_0 = [
@@ -57,14 +61,15 @@ class Users
         "He doesn’t belong to any of the groups",
         "He can review all the changes",
         "The file favorite state is undefined",
-        "He cannot mention others in the comments"
+        "He cannot mention others in the comments",
+        "Can't create file from editor"
     ];
 
     @@users = [
-        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil, nil, [], @@descr_user_1),
-        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], @@descr_user_2),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], @@descr_user_3),
-        User.new("uid-0", nil, nil, nil, nil, nil, [], @@descr_user_0)
+        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil, nil, [], @@descr_user_1, true),
+        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], @@descr_user_2, false),
+        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], @@descr_user_3, false),
+        User.new("uid-0", nil, nil, nil, nil, nil, [], @@descr_user_0, false)
     ]
 
     class << self

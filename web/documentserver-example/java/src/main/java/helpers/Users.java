@@ -29,12 +29,14 @@ public class Users {
         add("He doesn’t belong to any of the groups");
         add("He can review all the changes");
         add("The file favorite state is undefined");
+        add("Can create a file from a template with data from the editor");
     }};
 
     static List<String> descr_user_2 = new ArrayList<String>() {{
         add("He belongs to Group2");
         add("He can review only his own changes or the changes made by the users who don’t belong to any of the groups");
         add("This file is favorite");
+        add("Can create a file from an editor");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
@@ -44,6 +46,7 @@ public class Users {
         add("He can’t copy data from the file into the clipboard");
         add("He can’t download the file");
         add("He can’t print the file");
+        add("Can create a file from an editor");
     }};
 
     static List<String> descr_user_0 = new ArrayList<String>() {{
@@ -52,13 +55,14 @@ public class Users {
         add("He can review all the changes");
         add("The file favorite state is undefined");
         add("He cannot mention others in the comments");
+        add("Can't create file from editor");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>(), descr_user_1));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>(), descr_user_2));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print"), descr_user_3));
-        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>(), descr_user_0));
+        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>(), descr_user_1, true));
+        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>(), descr_user_2, false));
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
+        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>(), descr_user_0, false));
     }};
 
     public static User getUser (String id) {

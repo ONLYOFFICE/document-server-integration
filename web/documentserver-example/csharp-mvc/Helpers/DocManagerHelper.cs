@@ -308,6 +308,28 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
         }
 
+        // get image url for templates
+        public static string GetTemplateImageUrl(FileUtility.FileType fileType)
+        {
+            var path = new UriBuilder(GetServerUrl(true)) // templates image url in the "From Template" section
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Content\\images\\"
+            };
+            switch (fileType)
+            {
+                case FileUtility.FileType.Word:  // for word file type
+                    return path + "file_docx.svg";
+                case FileUtility.FileType.Cell:  // for cell file type
+                    return path + "file_xlsx.svg";
+                case FileUtility.FileType.Slide:  // for slide file type
+                    return path + "file_pptx.svg";
+                default:
+                    return path + "file_docx.svg";  // the default value
+            }
+        }
+
         // get file information
         public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
         {

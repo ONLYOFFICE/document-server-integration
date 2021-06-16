@@ -331,6 +331,20 @@ docManager.getInternalExtension = function (fileType) {
     return ".docx";  // the default value is .docx
 };
 
+docManager.getTemplateImageUrl = function (fileType) {
+    let path = docManager.getServerUrl(true);
+    if (fileType == fileUtility.fileType.word)  // for word type
+        return path + "/images/file_docx.svg";
+
+    if (fileType == fileUtility.fileType.cell)  // for cell type
+        return path + "/images/file_xlsx.svg";
+
+    if (fileType == fileUtility.fileType.slide)  // for slide type
+        return path + "/images/file_pptx.svg";
+
+    return path + "/images/file_docx.svg";  // the default value
+}
+
 // get document key
 docManager.getKey = function (fileName) {
     const userAddress = docManager.curUserHostAddress();

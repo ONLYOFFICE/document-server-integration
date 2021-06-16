@@ -27,7 +27,7 @@
 from urllib.parse import unquote
 
 class User:
-    def __init__(self, id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions):
+    def __init__(self, id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions, templates):
         self.id = id
         self.name = name
         self.email = email
@@ -36,18 +36,21 @@ class User:
         self.favorite = favorite
         self.deniedPermissions = deniedPermissions
         self.descriptions = descriptions
+        self.templates = templates
 
 descr_user_1 = [
     "File author by default",
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "Can create a file from a template with data from the editor"
 ]
 
 descr_user_2 = [
     "He belongs to Group2",
     "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-    "This file is favorite"
+    "This file is favorite",
+    "Can create a file from an editor"
 ]
 
 descr_user_3 = [
@@ -56,7 +59,8 @@ descr_user_3 = [
     "This file isn’t favorite",
     "He can’t copy data from the file into the clipboard",
     "He can’t download the file",
-    "He can’t print the file"
+    "He can’t print the file",
+    "Can create a file from an editor"
 ]
 
 descr_user_0 = [
@@ -64,17 +68,22 @@ descr_user_0 = [
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
     "The file favorite state is undefined",
-    "He cannot mention others in the comments"
+    "He cannot mention others in the comments",
+    "Can't create file from editor"
 ]
 
 USERS = [
-    User('uid-1', 'John Smith', 'smith@mail.ru', None, None, None, [], descr_user_1),
-    User('uid-2', 'Mark Pottato', 'pottato@mail.ru', 'group-2', ['group-2', ''], True, [], descr_user_2),
-    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru', 'group-3', ['group-2'], False, ["copy", "download", "print"], descr_user_3),
-    User('uid-0', None, None, None, None, None, [], descr_user_0)
+    User('uid-1', 'John Smith', 'smith@mail.ru', None, None, None, [], descr_user_1, True),
+    User('uid-2', 'Mark Pottato', 'pottato@mail.ru', 'group-2', ['group-2', ''], True, [], descr_user_2, False),
+    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru', 'group-3', ['group-2'], False, ["copy", "download", "print"], descr_user_3, False),
+    User('uid-0', None, None, None, None, None, [], descr_user_0, False)
 ]
 
 DEFAULT_USER = USERS[0]
+
+# get all users
+def getAllUsers():
+    return USERS
 
 # get user information from the request
 def getUserFromReq(req):
