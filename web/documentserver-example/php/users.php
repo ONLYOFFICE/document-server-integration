@@ -43,14 +43,14 @@ $descr_user_1 = [
 $descr_user_2 = [
     "He belongs to Group2",
     "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-    "He can view, edit and delete only his comments and the comments left by the users who don't belong to any of the groups",
+    "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
     "This file is favorite"
 ];
 
 $descr_user_3 = [
     "He belongs to Group3",
     "He can review only the changes made by the users from Group2",
-    "He can view, edit and delete only his comments and the comments left by the users from Group2",
+    "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
     "This file isn’t favorite",
     "He can’t copy data from the file into the clipboard",
     "He can’t download the file",
