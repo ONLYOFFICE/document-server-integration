@@ -28,6 +28,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             "File author by default",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
+            "He can do everything with the comments",
             "The file favorite state is undefined"
         };
 
@@ -35,6 +36,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             "He belongs to Group2",
             "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
+            "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
             "This file is favorite"
         };
 
@@ -42,6 +44,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             "He belongs to Group3",
             "He can review only the changes made by the users from Group2",
+            "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
             "This file isn’t favorite",
             "He can’t copy data from the file into the clipboard",
             "He can’t download the file",
@@ -53,6 +56,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             "The user without a name. The name is requested upon the editor opening",
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
+            "He can do everything with the comments",
             "The file favorite state is undefined",
             "He cannot mention others in the comments"
         };
