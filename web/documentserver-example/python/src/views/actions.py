@@ -187,7 +187,8 @@ def edit(request):
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
-                'reviewGroups': user.reviewGroups
+                'reviewGroups': user.reviewGroups,
+                'commentGroups': user.commentGroups
             }
         },
         'editorConfig': {

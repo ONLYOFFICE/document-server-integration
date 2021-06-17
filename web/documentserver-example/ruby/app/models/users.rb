@@ -15,14 +15,15 @@
 #
 
 class User
-    attr_accessor :id, :name, :email, :group, :reviewGroups, :favorite, :deniedPermissions, :descriptions, :templates
+    attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :favorite, :deniedPermissions, :descriptions, :templates
 
-    def initialize (id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions, templates)
+    def initialize (id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions, templates)
         @id = id
         @name = name
         @email = email
         @group = group
         @reviewGroups = reviewGroups
+        @commentGroups = commentGroups
         @favorite = favorite
         @deniedPermissions = deniedPermissions
         @descriptions = descriptions
@@ -35,6 +36,7 @@ class Users
         "File author by default",
         "He doesn’t belong to any of the groups",
         "He can review all the changes",
+        "He can do everything with the comments",
         "The file favorite state is undefined",
         "Can create a file from a template with data from the editor"
     ];
@@ -42,6 +44,7 @@ class Users
     @@descr_user_2 = [
         "He belongs to Group2",
         "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
+        "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
         "This file is favorite",
         "Can create a file from an editor"
     ];
@@ -49,6 +52,7 @@ class Users
     @@descr_user_3 = [
         "He belongs to Group3",
         "He can review only the changes made by the users from Group2",
+        "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
         "This file isn’t favorite",
         "He can’t copy data from the file into the clipboard",
         "He can’t download the file",
@@ -60,16 +64,33 @@ class Users
         "The user without a name. The name is requested upon the editor opening",
         "He doesn’t belong to any of the groups",
         "He can review all the changes",
+        "He can do everything with the comments",
         "The file favorite state is undefined",
         "He cannot mention others in the comments",
         "Can't create file from editor"
     ];
 
     @@users = [
-        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil, nil, [], @@descr_user_1, true),
-        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], @@descr_user_2, false),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], @@descr_user_3, false),
-        User.new("uid-0", nil, nil, nil, nil, nil, [], @@descr_user_0, false)
+        User.new("uid-1", "John Smith", "smith@mail.ru",
+                nil, nil, {},
+                nil, [], @@descr_user_1, true),
+        User.new("uid-2", "Mark Pottato", "pottato@mail.ru",
+                "group-2", ["group-2", ""], {
+                    :view => "",
+                    :edit => ["group-2", ""],
+                    :remove => ["group-2"]
+                },
+                true, [], @@descr_user_2, false),
+        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+                "group-3", ["group-2"], {
+                    :view => ["group-3", "group-2"],
+                    :edit => ["group-2"],
+                    :remove => []
+                },
+                false, ["copy", "download", "print"], @@descr_user_3, false),
+        User.new("uid-0", nil, nil,
+                nil, nil, {},
+                nil, [], @@descr_user_0, false)
     ]
 
     class << self
