@@ -83,7 +83,7 @@ USERS = [
         None, [], descr_user_1, True),
     User('uid-2', 'Mark Pottato', 'pottato@mail.ru',
         'group-2', ['group-2', ''], {
-            'view': ".",
+            'view': "",
             'edit': ["group-2", ""],
             'remove': ["group-2"]
         },

@@ -86,7 +86,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     new List<string>() { "group-2", "" },
                     new Dictionary<string, object>()
                     {
-                        { "view",  "."  },
+                        { "view",  ""  },
                         { "edit", new List<string>() { "group-2", "" } },
                         { "remove", new List<string>() { "group-2" } }
                     },
