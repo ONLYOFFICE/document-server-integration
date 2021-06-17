@@ -65,11 +65,6 @@ namespace OnlineEditorsExampleMVC.Models
             get { return DocManagerHelper.GetCallback(FileName); }
         }
 
-        public string CreateUrl
-        {
-            get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
-        }
-
         public string DownloadUrl
         {
             get { return DocManagerHelper.GetDownloadUrl(FileName); }
@@ -95,6 +90,24 @@ namespace OnlineEditorsExampleMVC.Models
 
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
+
+            var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
+            var templatesImageUrl = DocManagerHelper.GetTemplateImageUrl(FileUtility.GetFileType(FileName)); // image url for templates
+            var templates = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "Blank" },
+                    { "url", createUrl },
+                },
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "With sample content" },
+                    { "url", createUrl + "&sample=true" },
+                }
+            };
 
             // specify the document config
             var config = new Dictionary<string, object>
@@ -142,7 +155,8 @@ namespace OnlineEditorsExampleMVC.Models
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "createUrl", CreateUrl },
+                                { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
+                                { "templates", user.templates ? templates : null },
                                 {
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>

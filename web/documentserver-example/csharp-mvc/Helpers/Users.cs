@@ -29,7 +29,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "He doesn’t belong to any of the groups",
             "He can review all the changes",
             "He can do everything with the comments",
-            "The file favorite state is undefined"
+            "The file favorite state is undefined",
+            "Can create a file from a template with data from the editor"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -37,7 +38,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "He belongs to Group2",
             "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
             "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
-            "This file is favorite"
+            "This file is favorite",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -48,7 +50,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "This file isn’t favorite",
             "He can’t copy data from the file into the clipboard",
             "He can’t download the file",
-            "He can’t print the file"
+            "He can’t print the file",
+            "Can create a file from an editor"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -58,7 +61,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "He can review all the changes",
             "He can do everything with the comments",
             "The file favorite state is undefined",
-            "He cannot mention others in the comments"
+            "He cannot mention others in the comments",
+            "Can't create file from editor"
         };
 
         private static List<User> users = new List<User>() {
@@ -71,7 +75,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     new Dictionary<string, object>(),
                     null,
                     new List<string>(),
-                    descr_user_1
+                    descr_user_1,
+                    true
                 ),
             new User(
                     "uid-2",
@@ -87,7 +92,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     },
                     true,
                     new List<string>(),
-                    descr_user_2
+                    descr_user_2,
+                    false
                 ),
             new User(
                     "uid-3",
@@ -103,7 +109,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     },
                     false,
                     new List<string>() { "copy", "download", "print" },
-                    descr_user_3
+                    descr_user_3,
+                    false
                 ),
             new User(
                     "uid-0",
@@ -114,7 +121,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     new Dictionary<string,object>(),
                     null,
                     new List<string>(),
-                    descr_user_0
+                    descr_user_0,
+                    false
                 )
         };
 
@@ -161,8 +169,9 @@ namespace OnlineEditorsExampleMVC.Helpers
         public bool? favorite;
         public List<string> deniedPermissions;
         public List<string> descriptions;
+        public bool templates;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
         {
             this.id = id;
             this.name = name;
@@ -173,7 +182,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             this.favorite = favorite;
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
+            this.templates = templates;
         }
-
     }
 }

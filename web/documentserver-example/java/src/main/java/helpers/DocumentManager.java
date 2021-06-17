@@ -432,6 +432,26 @@ public class DocumentManager
         return ".docx";
     }
 
+    // get image url for templates
+    public static String GetTemplateImageUrl(FileType fileType)
+    {
+        String path = GetServerUrl(true) + "/css/img/";
+        // for word file type
+        if (fileType.equals(FileType.Word))
+            return path + "file_docx.svg";
+
+        // .xlsx for cell file type
+        if (fileType.equals(FileType.Cell))
+            return path + "file_xlsx.svg";
+
+        // .pptx for slide file type
+        if (fileType.equals(FileType.Slide))
+            return path + "file_pptx.svg";
+
+        // the default file type
+        return path + "file_docx.svg";
+    }
+
     // create document token
     public static String CreateToken(Map<String, Object> payloadClaims)
     {

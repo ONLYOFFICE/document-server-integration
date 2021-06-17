@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="<%= "app_themes/images/" + documentType + ".ico" %>" type="image/x-icon" />
+    <link rel="icon" href="<%= "app_themes/images/" + DocumentType + ".ico" %>" type="image/x-icon" />
     <title>ONLYOFFICE</title>
     <!--
     *
@@ -133,18 +133,18 @@
         var onRequestInsertImage = function (event) {
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
-                <%= InsertImageConfig%>
+                <%= InsertImageConfig %>
             })
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
         var onRequestCompareFile = function () {
-            docEditor.setRevisedFile(<%= compareFileData%>);  // select a document for comparing
+            docEditor.setRevisedFile(<%= CompareFileData %>);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);  // insert recipient data for mail merge into the file
+            docEditor.setMailMergeRecipients(<%= DataMailMergeRecipients %>);  // insert recipient data for mail merge into the file
         };
 
         var config = <%= DocConfig %>;
@@ -180,12 +180,12 @@
         };
         <% } %>
 
-        <% if (!string.IsNullOrEmpty(usersForMentions))
+        <% if (!string.IsNullOrEmpty(UsersForMentions))
         { %>
         // add mentions for not anonymous users
         config.events['onRequestUsers'] = function () {
             docEditor.setUsers({
-                "users": <%= usersForMentions%>
+                "users": <%= UsersForMentions %>
         });
         };
         config.events['onRequestSendNotify'] = function (event) {

@@ -84,6 +84,19 @@ class FileModel
     canEdit = DocumentHelper.edited_exts.include?(file_ext)  # check if the document can be edited
     submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))  # the Submit form button state
     mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
+    templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
+    templates = [
+      {
+        :image => templatesImageUrl,
+        :title => "Blank",
+        :url => create_url
+      },
+      {
+        :image => templatesImageUrl,
+        :title => "With sample content",
+        :url => create_url + "&sample=true"
+      }
+    ]
 
     config = {
       :type => type(),
@@ -117,7 +130,8 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
-        :createUrl => create_url,
+        :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
+        :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
           :id => @user.id,
           :name => @user.name,

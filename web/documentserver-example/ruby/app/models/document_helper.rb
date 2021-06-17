@@ -276,6 +276,23 @@ class DocumentHelper
       ext
     end
 
+    # get image url for templates
+    def get_template_image_url(file_type)
+      path = get_server_url(true) + "/assets/"
+      case file_type
+        when 'word'  # for word type
+          full_path = path + 'file_docx.svg'
+        when 'cell'  # .xlsx for cell type
+          full_path = path + 'file_xlsx.svg'
+        when 'slide'  # .pptx for slide type
+          full_path = path + 'file_pptx.svg'
+        else
+          full_path = path + 'file_docx.svg'  # the default value is .docx
+      end
+
+      full_path
+    end
+
     # get files information
     def get_files_info(file_id)
       result = [];

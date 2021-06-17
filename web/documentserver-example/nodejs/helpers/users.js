@@ -21,14 +21,16 @@ var descr_user_1 = [
     "He doesn’t belong to any of the groups",
     "He can review all the changes",
     "He can do everything with the comments",
-    "The file favorite state is undefined"
+    "The file favorite state is undefined",
+    "Can create a file from a template with data from the editor"
 ];
 
 var descr_user_2 = [
     "He belongs to Group2",
     "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
     "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
-    "This file is favorite"
+    "This file is favorite",
+    "Can create a file from an editor"
 ];
 
 var descr_user_3 = [
@@ -38,7 +40,8 @@ var descr_user_3 = [
     "This file isn’t favorite",
     "He can’t copy data from the file into the clipboard",
     "He can’t download the file",
-    "He can’t print the file"
+    "He can’t print the file",
+    "Can create a file from an editor"
 ];
 
 var descr_user_0 = [
@@ -47,33 +50,34 @@ var descr_user_0 = [
     "He can review all the changes",
     "He can do everything with the comments",
     "The file favorite state is undefined",
-    "He cannot mention others in the comments"
+    "He cannot mention others in the comments",
+    "Can't create file from editor"
 ];
 
 var users = [
     new User("uid-1", "John Smith", "smith@mail.ru",
             null, null, {},
-            null, [], descr_user_1),
+            null, [], descr_user_1, true),
     new User("uid-2", "Mark Pottato", "pottato@mail.ru",
             "group-2", ["group-2", ""], {
                 view: ".",
                 edit: ["group-2", ""],
                 remove: ["group-2"]
             },
-            true, [], descr_user_2),  // own and without group
+            true, [], descr_user_2, false),  // own and without group
     new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
             "group-3", ["group-2"], {
                 view: ["group-3", "group-2"],
                 edit: ["group-2"],
                 remove: []
             },
-            false, ["copy", "download", "print"], descr_user_3),  // other group only
+            false, ["copy", "download", "print"], descr_user_3, false),  // other group only
     new User("uid-0", null, null,
             null, null, {},
-            null, [], descr_user_0),
+            null, [], descr_user_0, false),
 ];
 
-function User(id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions) {
+function User(id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions, templates) {
     this.id = id;
     this.name = name;
     this.email = email;
@@ -83,6 +87,11 @@ function User(id, name, email, group, reviewGroups, commentGroups, favorite, den
     this.favorite = favorite;
     this.deniedPermissions = deniedPermissions;
     this.descriptions = descriptions;
+    this.templates = templates;
+};
+
+users.getAllUsers = function () {
+    return users;
 };
 
 users.getUser = function (id) {
@@ -103,6 +112,6 @@ users.getUsersForMentions = function (id) {
         }
     });
     return result;
-}
+};
 
 module.exports = users;

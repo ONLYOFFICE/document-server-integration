@@ -62,6 +62,21 @@
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
+    $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
+    $createUrl = getCreateUrl($filename, $user->id, $type);
+    $templates = array(
+        array (
+            "image" => $templatesImageUrl,
+            "title" => "Blank",
+            "url" => $createUrl
+        ),
+        array (
+            "image" => $templatesImageUrl,
+            "title" => "With sample content",
+            "url" => $createUrl . "&sample=true"
+        )
+    );
+
     // specify the document config
     $config = [
         "type" => $type,
@@ -95,7 +110,8 @@
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
-            "createUrl" => getCreateUrl($filename, $user->id, $type),
+            "createUrl" => $user->id != "uid-0" ? $createUrl : null,
+            "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document
                 "id" => $user->id,
                 "name" => $user->name,
@@ -178,10 +194,10 @@
     function getCreateUrl($fileName, $uid, $type) {
         $ext = trim(getInternalExtension($fileName),'.');
         return serverPath(false) . '/'
-                    . "doceditor.php"
-                    . "?fileExt=" . $ext
-                    . "&user=" . $uid
-                    . "&type=" . $type;
+                . "doceditor.php"
+                . "?fileExt=" . $ext
+                . "&user=" . $uid
+                . "&type=" . $type;
     }
 
     function getDownloadUrl($fileName) {
