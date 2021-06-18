@@ -36,8 +36,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         static List<string> descr_user_2 = new List<string>()
         {
             "Belongs to Group2",
-            "Can review only his own changes or changes made by users without groups",
-            "Can view comments, edit his own comments and comments left by users without groups. Can remove his own comments only",
+            "Can review only his own changes or changes made by users with no group",
+            "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
             "This file is marked as favorite",
             "Can create new files from the editor"
         };
@@ -46,7 +46,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             "Belongs to Group3",
             "Can review changes made by Group2 users",
-            "Can view comments left by Group2 and Group3 users. Can edit the comments left by the Group2 users",
+            "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
             "This file isn’t marked as favorite",
             "Can’t copy data from the file to clipboard",
             "Can’t download the file",
@@ -56,7 +56,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
         static List<string> descr_user_0 = new List<string>()
         {
-            "Anonymous user. The name is requested when the editor is opened",
+            "The name is requested when the editor is opened",
             "Doesn’t belong to any group",
             "Can review all the changes",
             "Can perform all actions with comments",
