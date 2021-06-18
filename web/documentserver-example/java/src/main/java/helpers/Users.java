@@ -26,40 +26,40 @@ public class Users {
 
     static List<String> descr_user_1 = new ArrayList<String>() {{
         add("File author by default");
-        add("He doesn’t belong to any of the groups");
-        add("He can review all the changes");
-        add("He can do everything with the comments");
+        add("Doesn’t belong to any group");
+        add("Can review all the changes");
+        add("Can perform all actions with comments");
         add("The file favorite state is undefined");
-        add("Can create a file from a template with data from the editor");
+        add("Can create files from templates using data from the editor");
     }};
 
     static List<String> descr_user_2 = new ArrayList<String>() {{
-        add("He belongs to Group2");
-        add("He can review only his own changes or the changes made by the users who don’t belong to any of the groups");
-        add("He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments");
-        add("This file is favorite");
-        add("Can create a file from an editor");
+        add("Belongs to Group2");
+        add("Can review only his own changes or changes made by users with no group");
+        add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
+        add("This file is marked as favorite");
+        add("Can create new files from the editor");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
-        add("He belongs to Group3");
-        add("He can review only the changes made by the users from Group2");
-        add("He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2");
-        add("This file isn’t favorite");
-        add("He can’t copy data from the file into the clipboard");
-        add("He can’t download the file");
-        add("He can’t print the file");
-        add("Can create a file from an editor");
+        add("Belongs to Group3");
+        add("Can review changes made by Group2 users");
+        add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
+        add("This file isn’t marked as favorite");
+        add("Can’t copy data from the file to clipboard");
+        add("Can’t download the file");
+        add("Can’t print the file");
+        add("Can create new files from the editor");
     }};
 
     static List<String> descr_user_0 = new ArrayList<String>() {{
-        add("The user without a name. The name is requested upon the editor opening");
-        add("He doesn’t belong to any of the groups");
-        add("He can review all the changes");
-        add("He can do everything with the comments");
+        add("The name is requested when the editor is opened");
+        add("Doesn’t belong to any group");
+        add("Can review all the changes");
+        add("Can perform all actions with comments");
         add("The file favorite state is undefined");
-        add("He cannot mention others in the comments");
-        add("Can't create file from editor");
+        add("Can't mention others in comments");
+        add("Can't create new files from the editor");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
