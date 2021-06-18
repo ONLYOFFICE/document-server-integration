@@ -44,7 +44,7 @@ public class Users {
     static List<String> descr_user_3 = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
-        add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
+        add("Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users");
         add("This file isn’t marked as favorite");
         add("Can’t copy data from the file to clipboard");
         add("Can’t download the file");
