@@ -25,43 +25,43 @@ namespace OnlineEditorsExample
         static List<string> descr_user_1 = new List<string>()
         {
             "File author by default",
-            "He doesn’t belong to any of the groups",
-            "He can review all the changes",
-            "He can do everything with the comments",
+            "Doesn’t belong to any group",
+            "Can review all the changes",
+            "Can perform all actions with comments",
             "The file favorite state is undefined",
-            "Can create a file from a template with data from the editor"
+            "Can create files from templates using data from the editor"
         };
 
         static List<string> descr_user_2 = new List<string>()
         {
-            "He belongs to Group2",
-            "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-            "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
-            "This file is favorite",
-            "Can create a file from an editor"
+            "Belongs to Group2",
+            "Can review only his own changes or changes made by users without groups",
+            "Can view comments, edit his own comments and comments left by users without groups. Can remove his own comments only",
+            "This file is marked as favorite",
+            "Can create new files from the editor"
         };
 
         static List<string> descr_user_3 = new List<string>()
         {
-            "He belongs to Group3",
-            "He can review only the changes made by the users from Group2",
-            "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
-            "This file isn’t favorite",
-            "He can’t copy data from the file into the clipboard",
-            "He can’t download the file",
-            "He can’t print the file",
-            "Can create a file from an editor"
+            "Belongs to Group3",
+            "Can review changes made by Group2 users",
+            "Can view comments left by Group2 and Group3 users. Can edit the comments left by the Group2 users",
+            "This file isn’t marked as favorite",
+            "Can’t copy data from the file to clipboard",
+            "Can’t download the file",
+            "Can’t print the file",
+            "Can create new files from the editor"
         };
 
         static List<string> descr_user_0 = new List<string>()
         {
-            "The user without a name. The name is requested upon the editor opening",
-            "He doesn’t belong to any of the groups",
-            "He can review all the changes",
-            "He can do everything with the comments",
+            "Anonymous user. The name is requested when the editor is opened",
+            "Doesn’t belong to any group",
+            "Can review all the changes",
+            "Can perform all actions with comments",
             "The file favorite state is undefined",
-            "He cannot mention others in the comments",
-            "Can't create file from editor"
+            "Can't mention others in comments",
+            "Can't create new files from the editor"
         };
 
         private static List<User> users = new List<User>() {
