@@ -1,7 +1,4 @@
 ﻿{
-  "wopi": {
-    "discovery": "http://127.0.0.1:8001/hosting/discovery"
-  },
   "server": {
     "port": 80,
     "siteUrl": "http://127.0.0.1:8001/",	

@@ -1,4 +1,6 @@
-const config = require('config');
+const config = require("config");
+const configServer = config.get("server");
+const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 const syncRequest = require("sync-request");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
@@ -11,7 +13,7 @@ function getDiscoveryInfo(retry) {
     if (cache) return cache;
 
     try {
-        let response = syncRequest("GET", config.get("wopi.discovery"));
+        let response = syncRequest("GET", siteUrl + configServer.get("wopi.discovery"));
         let discovery = xmlParser.parse(response.getBody().toString(), {
             attributeNamePrefix: "",
             ignoreAttributes: false,
