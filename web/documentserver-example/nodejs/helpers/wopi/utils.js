@@ -25,7 +25,7 @@ const he = require("he");
 
 var cache = null;
 
-function getDiscoveryInfo(retry) {
+function getDiscoveryInfo(maxTry = 1) {
     let actions = [];
 
     if (cache) return cache;
@@ -55,8 +55,8 @@ function getDiscoveryInfo(retry) {
             }
         }
     } catch (e) {
-        if (retry) {
-            setTimeout(getDiscoveryInfo, 1000, true);
+        if (--maxTry > 0) {
+            setTimeout(getDiscoveryInfo, 1000, maxTry);
         }
         return actions;
     }

@@ -828,7 +828,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 });
 
 wopiApp.registerRoutes(app);
-wopiUtils.getDiscoveryInfo(true);
+wopiUtils.getDiscoveryInfo(3);
 
 // "Not found" error with 404 status
 app.use(function (req, res, next) {
