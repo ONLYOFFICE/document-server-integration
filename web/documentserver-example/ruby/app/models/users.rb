@@ -15,55 +15,82 @@
 #
 
 class User
-    attr_accessor :id, :name, :email, :group, :reviewGroups, :favorite, :deniedPermissions, :descriptions
+    attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :favorite, :deniedPermissions, :descriptions, :templates
 
-    def initialize (id, name, email, group, reviewGroups, favorite, deniedPermissions, descriptions)
+    def initialize (id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions, templates)
         @id = id
         @name = name
         @email = email
         @group = group
         @reviewGroups = reviewGroups
+        @commentGroups = commentGroups
         @favorite = favorite
         @deniedPermissions = deniedPermissions
         @descriptions = descriptions
+        @templates = templates
     end
 end
 
 class Users
     @@descr_user_1 = [
         "File author by default",
-        "He doesn’t belong to any of the groups",
-        "He can review all the changes",
-        "The file favorite state is undefined"
+        "Doesn’t belong to any group",
+        "Can review all the changes",
+        "Can perform all actions with comments",
+        "The file favorite state is undefined",
+        "Can create files from templates using data from the editor"
     ];
 
     @@descr_user_2 = [
-        "He belongs to Group2",
-        "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-        "This file is favorite"
+        "Belongs to Group2",
+        "Can review only his own changes or changes made by users with no group",
+        "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+        "This file is marked as favorite",
+        "Can create new files from the editor"
     ];
 
     @@descr_user_3 = [
-        "He belongs to Group3",
-        "He can review only the changes made by the users from Group2",
-        "This file isn’t favorite",
-        "He can’t copy data from the file into the clipboard",
-        "He can’t download the file",
-        "He can’t print the file"
+        "Belongs to Group3",
+        "Can review changes made by Group2 users",
+        "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
+        "This file isn’t marked as favorite",
+        "Can’t copy data from the file to clipboard",
+        "Can’t download the file",
+        "Can’t print the file",
+        "Can create new files from the editor"
     ];
 
     @@descr_user_0 = [
-        "The user without a name. The name is requested upon the editor opening",
-        "He doesn’t belong to any of the groups",
-        "He can review all the changes",
-        "The file favorite state is undefined"
+        "The name is requested when the editor is opened",
+        "Doesn’t belong to any group",
+        "Can review all the changes",
+        "Can perform all actions with comments",
+        "The file favorite state is undefined",
+        "Can't mention others in comments",
+        "Can't create new files from the editor"
     ];
 
     @@users = [
-        User.new("uid-1", "John Smith", "smith@mail.ru", nil, nil, nil, [], @@descr_user_1),
-        User.new("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", ["group-2", ""], true, [], @@descr_user_2),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", ["group-2"], false, ["copy", "download", "print"], @@descr_user_3),
-        User.new("uid-0", nil, nil, nil, nil, nil, [], @@descr_user_0)
+        User.new("uid-1", "John Smith", "smith@mail.ru",
+                nil, nil, {},
+                nil, [], @@descr_user_1, true),
+        User.new("uid-2", "Mark Pottato", "pottato@mail.ru",
+                "group-2", ["group-2", ""], {
+                    :view => "",
+                    :edit => ["group-2", ""],
+                    :remove => ["group-2"]
+                },
+                true, [], @@descr_user_2, false),
+        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+                "group-3", ["group-2"], {
+                    :view => ["group-3", "group-2"],
+                    :edit => ["group-2"],
+                    :remove => []
+                },
+                false, ["copy", "download", "print"], @@descr_user_3, false),
+        User.new("uid-0", nil, nil,
+                nil, nil, {},
+                nil, [], @@descr_user_0, false)
     ]
 
     class << self
@@ -79,6 +106,17 @@ class Users
             end
             return @@users[0]
         end
+
+        def get_users_for_mentions(id)
+            usersData = []
+            for user in @@users do
+                if (!user.id.eql?(id) && user.name != nil && user.email != nil)
+                    usersData.push({:name => user.name, :email => user.email})
+                end
+            end
+            return usersData
+        end
+
     end
 end
 

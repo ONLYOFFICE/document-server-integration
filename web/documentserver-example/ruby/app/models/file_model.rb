@@ -84,6 +84,19 @@ class FileModel
     canEdit = DocumentHelper.edited_exts.include?(file_ext)  # check if the document can be edited
     submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))  # the Submit form button state
     mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
+    templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
+    templates = [
+      {
+        :image => templatesImageUrl,
+        :title => "Blank",
+        :url => create_url
+      },
+      {
+        :image => templatesImageUrl,
+        :title => "With sample content",
+        :url => create_url + "&sample=true"
+      }
+    ]
 
     config = {
       :type => type(),
@@ -108,7 +121,8 @@ class FileModel
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
-          :reviewGroups => @user.reviewGroups
+          :reviewGroups => @user.reviewGroups,
+          :commentGroups => @user.commentGroups
         }
       },
       :editorConfig => {
@@ -116,7 +130,8 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
-        :createUrl => create_url,
+        :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
+        :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
           :id => @user.id,
           :name => @user.name,
@@ -193,6 +208,7 @@ class FileModel
 
         if (i > 1)  # check if the version number is greater than 1
           changes = nil
+          change = nil
           File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|  # get the path to the changes.json file
             changes = JSON.parse(file.read())  # and parse its content
           end
@@ -200,10 +216,10 @@ class FileModel
           change = changes["changes"][0]
 
           # write information about changes to the object
-          obj["changes"] = changes["changes"]
+          obj["changes"] = change ? changes["changes"] : nil
           obj["serverVersion"] = changes["serverVersion"]
-          obj["created"] = change["created"]
-          obj["user"] = change["user"]
+          obj["created"] = change ? change["created"] : nil
+          obj["user"] = change ? change["user"] : nil
 
           prev = histData[(i - 2).to_s]  # get the history data from the previous file version
           dataObj["previous"] = {  # write key and url information about previous file version
@@ -276,6 +292,11 @@ class FileModel
     end
 
     return dataMailMergeRecipients
+  end
+
+  # get users data for mentions
+  def get_users_mentions
+    return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
   end
 
 end

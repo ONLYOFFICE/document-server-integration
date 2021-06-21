@@ -173,6 +173,24 @@
         };
         <% } %>
 
+        <% string usersForMentions; %>
+        <% Model.GetUsersMentions(Request, out usersForMentions); %>
+        <% if (!string.IsNullOrEmpty(usersForMentions))
+        // add mentions for not anonymous users
+        { %>
+        config.events['onRequestUsers'] = function () {
+            docEditor.setUsers({
+                "users": <%= usersForMentions%>
+            });
+        };
+        config.events['onRequestSendNotify'] = function (event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+        <% } %>
+
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

@@ -18,47 +18,63 @@
 
 package helpers;
 
-import entities.User;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import entities.*;
+
+import java.util.*;
 
 public class Users {
 
     static List<String> descr_user_1 = new ArrayList<String>() {{
         add("File author by default");
-        add("He doesn’t belong to any of the groups");
-        add("He can review all the changes");
+        add("Doesn’t belong to any group");
+        add("Can review all the changes");
+        add("Can perform all actions with comments");
         add("The file favorite state is undefined");
+        add("Can create files from templates using data from the editor");
     }};
 
     static List<String> descr_user_2 = new ArrayList<String>() {{
-        add("He belongs to Group2");
-        add("He can review only his own changes or the changes made by the users who don’t belong to any of the groups");
-        add("This file is favorite");
+        add("Belongs to Group2");
+        add("Can review only his own changes or changes made by users with no group");
+        add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
+        add("This file is marked as favorite");
+        add("Can create new files from the editor");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
-        add("He belongs to Group3");
-        add("He can review only the changes made by the users from Group2");
-        add("This file isn’t favorite");
-        add("He can’t copy data from the file into the clipboard");
-        add("He can’t download the file");
-        add("He can’t print the file");
+        add("Belongs to Group3");
+        add("Can review changes made by Group2 users");
+        add("Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users");
+        add("This file isn’t marked as favorite");
+        add("Can’t copy data from the file to clipboard");
+        add("Can’t download the file");
+        add("Can’t print the file");
+        add("Can create new files from the editor");
     }};
 
     static List<String> descr_user_0 = new ArrayList<String>() {{
-        add("The user without a name. The name is requested upon the editor opening");
-        add("He doesn’t belong to any of the groups");
-        add("He can review all the changes");
+        add("The name is requested when the editor is opened");
+        add("Doesn’t belong to any group");
+        add("Can review all the changes");
+        add("Can perform all actions with comments");
         add("The file favorite state is undefined");
+        add("Can't mention others in comments");
+        add("Can't create new files from the editor");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru", null, null, null, new ArrayList<String>(), descr_user_1));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru", "group-2", Arrays.asList("group-2", ""), true, new ArrayList<String>(), descr_user_2));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru", "group-3", Arrays.asList("group-2"), false, Arrays.asList("copy", "download", "print"), descr_user_3));
-        add(new User("uid-0", null, null, null, null, null, new ArrayList<String>(), descr_user_0));
+        add(new User("uid-1", "John Smith", "smith@mail.ru",
+                null, null, new CommentGroups(),
+                null, new ArrayList<String>(), descr_user_1, true));
+        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru",
+                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
+                true, new ArrayList<String>(), descr_user_2, false));
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
+                false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
+        add(new User("uid-0", null, null,
+                null, null, new CommentGroups(),
+                null, new ArrayList<String>(), descr_user_0, false));
     }};
 
     public static User getUser (String id) {
@@ -72,6 +88,19 @@ public class Users {
 
     public static List<User> getAllUsers () {
         return users;
+    }
+
+    public static List<Map<String, Object>> getUsersForMentions (String id) {
+        List<Map<String, Object>> usersData = new ArrayList<>();
+        for (User user : users) {
+            if (!user.id.equals(id) && user.name != null && user.email != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", user.name);
+                data.put("email", user.email);
+                usersData.add(data);
+            }
+        }
+        return usersData;
     }
 }
 

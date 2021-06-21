@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -88,6 +89,9 @@ public class EditorServlet extends HttpServlet
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
 
+        // users data for mentions
+        List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);
+
         // check if the document token is enabled
         if (DocumentManager.TokenEnabled())
         {
@@ -103,6 +107,7 @@ public class EditorServlet extends HttpServlet
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
+        request.setAttribute("usersForMentions", !user.id.equals("uid-0") ? gson.toJson(usersForMentions) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

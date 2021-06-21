@@ -62,6 +62,21 @@
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
+    $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
+    $createUrl = getCreateUrl($filename, $user->id, $type);
+    $templates = array(
+        array (
+            "image" => $templatesImageUrl,
+            "title" => "Blank",
+            "url" => $createUrl
+        ),
+        array (
+            "image" => $templatesImageUrl,
+            "title" => "With sample content",
+            "url" => $createUrl . "&sample=true"
+        )
+    );
+
     // specify the document config
     $config = [
         "type" => $type,
@@ -86,7 +101,8 @@
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
-                "reviewGroups" => $user->reviewGroups
+                "reviewGroups" => $user->reviewGroups,
+                "commentGroups" => $user->commentGroups
             ]
         ],
         "editorConfig" => [
@@ -94,7 +110,8 @@
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
-            "createUrl" => getCreateUrl($filename, $user->id, $type),
+            "createUrl" => $user->id != "uid-0" ? $createUrl : null,
+            "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document
                 "id" => $user->id,
                 "name" => $user->name,
@@ -135,6 +152,9 @@
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
+    
+    // users data for mentions
+    $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
     // check if the secret key to generate token exists
     if (isJwtEnabled()) {
@@ -174,10 +194,10 @@
     function getCreateUrl($fileName, $uid, $type) {
         $ext = trim(getInternalExtension($fileName),'.');
         return serverPath(false) . '/'
-                    . "doceditor.php"
-                    . "?fileExt=" . $ext
-                    . "&user=" . $uid
-                    . "&type=" . $type;
+                . "doceditor.php"
+                . "?fileExt=" . $ext
+                . "&user=" . $uid
+                . "&type=" . $type;
     }
 
     function getDownloadUrl($fileName) {
@@ -228,10 +248,10 @@
                     $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $changes["changes"];  // write information about changes to the object
+                    $obj["changes"] = $change ? $changes["changes"][0] : null;  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
-                    $obj["created"] = $change["created"];
-                    $obj["user"] = $change["user"];
+                    $obj["created"] = $change ? $change["created"] : null;
+                    $obj["user"] = $change ? $change["user"] : null;
 
                     $prev = $histData[$i - 2];  // get the history data from the previous file version
                     $dataObj["previous"] = [  // write information about previous file version to the data object
@@ -438,6 +458,21 @@
             // the user is trying to go back to the document from viewing the document version history
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
+            };
+            <?php endif; ?>
+
+            <?php if ($usersForMentions != null): ?>
+            // add mentions for not anonymous users
+            config.events['onRequestUsers'] = function () {
+                docEditor.setUsers({
+                    "users": <?php echo json_encode($usersForMentions) ?>
+                });
+            };
+            config.events['onRequestSendNotify'] = function (event) {
+                var actionLink = JSON.stringify(event.data.actionLink);
+                console.log("onRequestSendNotify:");
+                console.log(event.data);
+                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
             };
             <?php endif; ?>
 
