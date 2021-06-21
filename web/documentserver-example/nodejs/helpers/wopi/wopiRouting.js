@@ -29,6 +29,9 @@ const users = require("../users");
 exports.registerRoutes = function(app) {
 
     app.get("/wopi", function(req, res) {
+
+        utils.getDiscoveryInfo(3);
+
         try {
             docManager.init(storageFolder, req, res);
 
