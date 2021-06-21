@@ -247,7 +247,8 @@ label .checkbox {
     width: 192px;
 }
 
-.create-panel {
+.create-panel,
+.links-panel {
     float: left;
     padding: 16px 0;
 }
@@ -256,6 +257,12 @@ label .checkbox {
 .create-panel {
     width: 100%;
     border-bottom: 1px solid #D0D5DA;
+}
+
+.links-panel-border {
+    margin-top: 24px;
+    width: 100%;
+    border-top: 1px solid #D0D5DA;
 }
 
 #mainProgress {
@@ -556,6 +563,15 @@ footer a:hover {
 
 .contentCells-icon {
     width: 4%;
+}
+
+.contentCells-wopi {
+    width: 16%;
+    text-align: center;
+}
+
+.contentCells-wopi a {
+    text-decoration: none;
 }
 
 .select-user {

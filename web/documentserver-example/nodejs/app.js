@@ -33,6 +33,7 @@ const mime = require("mime");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
+const wopiApp = require("./helpers/wopi/wopiRouting");
 const users = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
@@ -697,6 +698,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             for (var i = 1; i <= countVersion; i++) {  // get keys to all the file versions
                 if (i < countVersion) {
                     var keyPath = docManager.keyPath(fileName, userAddress, i);
+                    if (!fileSystem.existsSync(keyPath)) continue;
                     keyVersion = "" + fileSystem.readFileSync(keyPath);
                 } else {
                     keyVersion = key;
@@ -823,6 +825,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         res.render("error", { message: "Server error" });
     }
 });
+
+wopiApp.registerRoutes(app);
 
 // "Not found" error with 404 status
 app.use(function (req, res, next) {

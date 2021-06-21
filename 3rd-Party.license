@@ -112,9 +112,17 @@ express       - Fast, unopinionated, minimalist web framework for node. (https:/
 License:        MIT
 License File:   express.license
 
+fast-xml-parser - Validate XML, Parse XML to JS/JSON and vice versa, or parse XML to Nimn rapidly without C/C++ based libraries and no callback. (https://github.com/NaturalIntelligence/fast-xml-parser/blob/master/LICENSE)
+License:        MIT
+License File:   fast-xml-parser.license
+
 formidable    - A Node.js module for parsing form data, especially file uploads. (https://github.com/node-formidable/formidable/blob/master/LICENSE)
 License:        MIT
 License File:   formidable.license
+
+he            - a robust HTML entity encoder/decoder written in JavaScript. (https://github.com/mathiasbynens/he/blob/master/LICENSE-MIT.txt)
+License:        MIT
+License File:   he.license
 
 jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
 License:        MIT
