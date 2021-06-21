@@ -117,13 +117,10 @@ public class DocumentManagerImpl implements DocumentManager {
     }
 
     public void createDirectory(Path path){
-        if (!Files.exists(path))
-        {
-            try {
-                Files.createDirectory(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -244,11 +241,7 @@ public class DocumentManagerImpl implements DocumentManager {
         String histDir = historyDir(storagePath(fileName, userAddress));
 
         Path path = Paths.get(histDir);
-        try {
-            Files.createDirectory(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createDirectory(path);
 
         JSONObject json = new JSONObject();
         json.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -407,8 +400,11 @@ public class DocumentManagerImpl implements DocumentManager {
 
     private String buildDirectoryLocation(String userAddress){
         String hostAddress = curUserHostAddress(userAddress);
-        String serverPath = request.getSession().getServletContext().getRealPath("");
-        String directory = serverPath + storageFolder + File.separator + hostAddress + File.separator;
+        String serverPath = System.getProperty("user.dir");
+        if(userAddress != null){
+            serverPath = request.getSession().getServletContext().getRealPath("");
+        }
+        String directory = serverPath + File.separator + storageFolder + File.separator + hostAddress + File.separator;
 
         return directory;
     }
