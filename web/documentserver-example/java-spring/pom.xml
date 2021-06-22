@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.onlyoffice</groupId>
 	<artifactId>integration</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>Java Spring Integration Example</name>
-	<description>Onlyoffice Java Spring Integration</description>
+	<description>ONLYOFFICE Java Spring Integration</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
