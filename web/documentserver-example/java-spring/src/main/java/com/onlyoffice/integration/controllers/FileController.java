@@ -179,8 +179,7 @@ public class FileController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public String delete(@RequestBody ConverterBody body,
-                       @CookieValue("uid") String uid){
+    public String delete(@RequestBody ConverterBody body){
         try
         {
             String fullFileName = fileUtility.getFileName(body.getFileName());
@@ -273,8 +272,7 @@ public class FileController {
     @PostMapping("/track")
     @ResponseBody
     public String track(@RequestParam("fileName") String fileName,
-                         @RequestParam("userAddress") String userAddress,
-                         @CookieValue(value = "uid", required = false) String uid){
+                         @RequestParam("userAddress") String userAddress){
         JSONObject body = null;
 
         try {

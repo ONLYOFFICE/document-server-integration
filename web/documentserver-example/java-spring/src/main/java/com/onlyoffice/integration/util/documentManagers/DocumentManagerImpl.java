@@ -166,11 +166,7 @@ public class DocumentManagerImpl implements DocumentManager {
         path = Paths.get(directory);
         if (!create && !Files.exists(path)) return "";
 
-        try {
-            Files.createDirectories(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createDirectory(path);
 
         directory = directory + fileName;
         path = Paths.get(directory);
@@ -401,9 +397,6 @@ public class DocumentManagerImpl implements DocumentManager {
     private String buildDirectoryLocation(String userAddress){
         String hostAddress = curUserHostAddress(userAddress);
         String serverPath = System.getProperty("user.dir");
-        if(userAddress != null){
-            serverPath = request.getSession().getServletContext().getRealPath("");
-        }
         String directory = serverPath + File.separator + storageFolder + File.separator + hostAddress + File.separator;
 
         return directory;
