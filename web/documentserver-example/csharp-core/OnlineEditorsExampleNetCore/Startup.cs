@@ -17,6 +17,7 @@ namespace OnlineEditorsExampleNetCore
     {
         public IConfiguration Configuration { get; set; }
         public IWebHostEnvironment HostEnvironment { get; set; }
+        public static Dictionary<string, string> AppSettings { get; set; }
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -26,18 +27,14 @@ namespace OnlineEditorsExampleNetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var builder = new ConfigurationBuilder()
-            //    .AddXmlFile("web.appsetting.config");
+            AppSettings = Configuration.GetSection("AppSettings").GetChildren()
+                  .ToDictionary(x => x.Key, x => x.Value);
 
-            //Configuration = builder.Build();
-
-            Configuration.Bind("appSettings", new Config());
+            //Configuration.Bind("appSettings", new Config());
 
             services.AddSingleton(HostEnvironment);
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-            services.AddHttpContextAccessor();
 
             services.AddHttpContextAccessor();
 

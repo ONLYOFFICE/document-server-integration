@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Nancy.Json;
+using System.Text.RegularExpressions;
+using System.Web.Helpers;
+using System.Web;
 
 namespace OnlineEditorsExampleNetCore.Models
 {
@@ -40,11 +44,11 @@ namespace OnlineEditorsExampleNetCore.Models
             get { return FileUtility.GetFileType(FileName).ToString().ToLower(); }
         }
 
-        //// get document key
-        //public string Key
-        //{
-        //    get { return ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + FileName + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(FileName, null)).GetHashCode()); }
-        //}
+        // get document key
+        public string Key
+        {
+            get { return ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + FileName + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(FileName, null)).GetHashCode()); }
+        }
 
         // get the callback url
         public string CallbackUrl
@@ -56,40 +60,32 @@ namespace OnlineEditorsExampleNetCore.Models
         {
             get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
         }
-        //public string DownloadUrl
-        //{
-        //    get { return DocManagerHelper.GetDownloadUrl(FileName); }
-        //}
+
+        public string Ext { get; set; }
+        public string DownloadUrl
+        {
+            get { return DocManagerHelper.GetDownloadUrl(FileName); }
+        }
 
         // get the document config
-
-        public  IWebHostEnvironment _environment;
-        public  IHttpContextAccessor _httpContextAccessor;
-        public  IConfiguration _configuration;
-
-        public FileModel(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
-        {
-            _environment = environment;
-            _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
-        }
-        public string GetDocConfig(HttpRequest request, UrlHelper url)
+        public string GetDocConfig(HttpContext context, IUrlHelper url)
         {
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
             var editorsMode = Mode ?? "edit";  // get editor mode
+            var jss = new JavaScriptSerializer();
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
             var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or not
 
-            //var id = request.Cookies.GetOrDefault("uid", null);
-            //var user = Users.getUser(id);  // get the user
+            var id = context.Request.Cookies["uid"];
+            var user = Users.getUser(id);  // get the user
 
             // favorite icon state
-            //bool? favorite = user.favorite;
+            bool? favorite = user.favorite;
 
-            //var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
-            //var actionData = string.IsNullOrEmpty(actionLink) ? null : JsonConvert.SerializeObject(actionLink);  // get action data for the action link
+            var actionLink = context.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
+            var actionData = string.IsNullOrEmpty(actionLink) ? null : JsonConvert.SerializeObject(actionLink);  // get action data for the action link
 
             // specify the document config
             var config = new Dictionary<string, object>
@@ -100,52 +96,52 @@ namespace OnlineEditorsExampleNetCore.Models
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                //{ "url", DownloadUrl },
+                                { "url", DownloadUrl },
                                 { "fileType", ext.Trim('.') },
-                                //{ "key", Key },
+                                { "key", Key },
                                 {
                                     "info", new Dictionary<string, object>
                                         {
                                             { "owner", "Me" },
                                             { "uploaded", DateTime.Now.ToShortDateString() },
-                                            //{ "favorite", favorite}
+                                            { "favorite", favorite}
                                         }
                                 },
-                                //{
-                                //    // the permission for the document to be edited and downloaded or not
-                                //    "permissions", new Dictionary<string, object>
-                                //        {
-                                //            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent" },
-                                //            { "copy", !user.deniedPermissions.Contains("copy") },
-                                //            { "download", !user.deniedPermissions.Contains("download") },
-                                //            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
-                                //            { "print", !user.deniedPermissions.Contains("print") },
-                                //            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
-                                //            { "modifyFilter", editorsMode != "filter" },
-                                //            { "modifyContentControl", editorsMode != "blockcontent" },
-                                //            { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                //            { "reviewGroups", user.reviewGroups }
-                                //        }
-                                //}
+                                {
+                                    // the permission for the document to be edited and downloaded or not
+                                    "permissions", new Dictionary<string, object>
+                                        {
+                                            { "comment", editorsMode != "view" && editorsMode != "fillForms" && editorsMode != "embedded" && editorsMode != "blockcontent" },
+                                            { "copy", !user.deniedPermissions.Contains("copy") },
+                                            { "download", !user.deniedPermissions.Contains("download") },
+                                            { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
+                                            { "print", !user.deniedPermissions.Contains("print") },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
+                                            { "modifyFilter", editorsMode != "filter" },
+                                            { "modifyContentControl", editorsMode != "blockcontent" },
+                                            { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
+                                            { "reviewGroups", user.reviewGroups }
+                                        }
+                                }
                             }
                     },
                     {
                         "editorConfig", new Dictionary<string, object>
                             {
-                                //{ "actionLink", actionData },
+                                { "actionLink", actionData },
                                 { "mode", mode },
-                                //{ "lang", request.Cookies.GetOrDefault("ulang", "en") },
+                                { "lang", context.Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
                                 { "createUrl", CreateUrl },
-                                //{
-                                //    // the user currently viewing or editing the document
-                                //    "user", new Dictionary<string, object>
-                                //        {
-                                //            { "id", user.id },
-                                //            { "name", user.name },
-                                //            { "group", user.group }
-                                //        }
-                                //},
+                                {
+                                    // the user currently viewing or editing the document
+                                    "user", new Dictionary<string, object>
+                                        {
+                                            { "id", user.id },
+                                            { "name", user.name },
+                                            { "group", user.group }
+                                        }
+                                },
                                 {
                                     // the parameters for the embedded document type
                                     "embedded", new Dictionary<string, object>
@@ -175,120 +171,118 @@ namespace OnlineEditorsExampleNetCore.Models
                             }
                     }
                 };
-
-
-            return JsonConvert.SerializeObject(config);
+            return jss.Serialize(config);
         }
 
         // get the document history
-        //public static void GetHistory(out string history, out string historyData)
-        //{
-        //    var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
+        public void GetHistory(out string history, out string historyData)
+        {
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
 
-        //    history = null;
-        //    historyData = null;
+            history = null;
+            historyData = null;
 
-        //    if (DocManagerHelper.GetFileVersion(histDir) > 0)  // if the file was modified (the file version is greater than 0)
-        //    {
-        //        var currentVersion = DocManagerHelper.GetFileVersion(histDir);
-        //        var hist = new List<Dictionary<string, object>>();
-        //        var histData = new Dictionary<string, object>();
+            if (DocManagerHelper.GetFileVersion(histDir) > 0)  // if the file was modified (the file version is greater than 0)
+            {
+                var currentVersion = DocManagerHelper.GetFileVersion(histDir);
+                var hist = new List<Dictionary<string, object>>();
+                var histData = new Dictionary<string, object>();
 
-        //        for (var i = 1; i <= currentVersion; i++)  // run through all the file versions
-        //        {
-        //            var obj = new Dictionary<string, object>();
-        //            var dataObj = new Dictionary<string, object>();
-        //            var verDir = DocManagerHelper.VersionDir(histDir, i);  // get the path to the given file version
+                for (var i = 1; i <= currentVersion; i++)  // run through all the file versions
+                {
+                    var obj = new Dictionary<string, object>();
+                    var dataObj = new Dictionary<string, object>();
+                    var verDir = DocManagerHelper.VersionDir(histDir, i);  // get the path to the given file version
 
-        //            var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
+                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
 
-        //            obj.Add("key", key);
-        //            obj.Add("version", i);
+                    obj.Add("key", key);
+                    obj.Add("version", i);
 
-        //            if (i == 1)  // check if the version number is equal to 1
-        //            {
-        //                var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
+                    if (i == 1)  // check if the version number is equal to 1
+                    {
+                        var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
 
-        //                if (File.Exists(infoPath))
-        //                {
-        //                    var info = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(infoPath));
-        //                    obj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
-        //                    obj.Add("user", new Dictionary<string, object>() {
-        //                        { "id", info["id"] },
-        //                        { "name", info["name"] },
-        //                    });
-        //                }
-        //            }
+                        if (File.Exists(infoPath))
+                        {
+                            var info = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(infoPath));
+                            obj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
+                            obj.Add("user", new Dictionary<string, object>() {
+                                { "id", info["id"] },
+                                { "name", info["name"] },
+                            });
+                        }
+                    }
 
-        //            dataObj.Add("key", key);
-        //            // write file url to the data object
-        //            dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
-        //            dataObj.Add("version", i);
-        //            if (i > 1)  // check if the version number is greater than 1 (the file was modified)
-        //            {
-        //                // get the path to the changes.json file
-        //                var changes = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
-        //                var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+                    dataObj.Add("key", key);
+                    // write file url to the data object
+                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(DocManagerHelper.ContentPath.Length)));
+                    dataObj.Add("version", i);
+                    if (i > 1)  // check if the version number is greater than 1 (the file was modified)
+                    {
+                        // get the path to the changes.json file
+                        var changes = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
+                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
 
-        //                // write information about changes to the object
-        //                obj.Add("changes", changes["changes"]);
-        //                obj.Add("serverVersion", changes["serverVersion"]);
-        //                obj.Add("created", change["created"]);
-        //                obj.Add("user", change["user"]);
+                        // write information about changes to the object
+                        obj.Add("changes", changes["changes"]);
+                        obj.Add("serverVersion", changes["serverVersion"]);
+                        obj.Add("created", change["created"]);
+                        obj.Add("user", change["user"]);
 
-        //                var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-        //                dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
-        //                    { "key", prev["key"] },  // write key and url information about previous file version
-        //                    { "url", prev["url"] },
-        //                });
-        //                // write the path to the diff.zip archive with differences in this file version
-        //                dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
-        //            }
-        //            hist.Add(obj);  // add object dictionary to the hist list
-        //            histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
-        //        }
+                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
+                        dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
+                            { "key", prev["key"] },  // write key and url information about previous file version
+                            { "url", prev["url"] },
+                        });
+                        // write the path to the diff.zip archive with differences in this file version
+                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(DocManagerHelper.ContentPath.Length)));
+                    }
+                    hist.Add(obj);  // add object dictionary to the hist list
+                    histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
+                }
 
-        //        // write history information about the current file version to the history object
-        //        history = JsonConvert.SerializeObject(new Dictionary<string, object>()
-        //        {
-        //            { "currentVersion", currentVersion },
-        //            { "history", hist }
-        //        });
-        //        historyData = JsonConvert.SerializeObject(histData);
-        //    }
-        //}
+                // write history information about the current file version to the history object
+                history = JsonConvert.SerializeObject(new Dictionary<string, object>()
+                {
+                    { "currentVersion", currentVersion },
+                    { "history", hist }
+                });
+                historyData = JsonConvert.SerializeObject(histData);
+            }
+        }
 
         // get a document which will be compared with the current document
-        //public static void GetCompareFileData(out string compareConfig)
-        //{
+        public void GetCompareFileData(out string compareConfig)
+        {
 
-        //    // get the path to the compared file
-        //    var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
-        //    {
-        //        Path = HttpRuntime.AppDomainAppVirtualPath
-        //            + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-        //            + "webeditor.ashx",
-        //        Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
-        //    };
+            // get the path to the compared file
+            var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+            {
+                Path = DocManagerHelper.ContentPath
+                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
+            };
 
-        //    // create an object with the information about the compared file
-        //    var dataCompareFile = new Dictionary<string, object>
-        //    {
-        //        { "fileType", "docx" },
-        //        { "url", compareFileUrl.ToString() }
-        //    };
+            // create an object with the information about the compared file
+            var dataCompareFile = new Dictionary<string, object>
+            {
+                { "fileType", "docx" },
+                { "url", compareFileUrl.ToString() }
+            };
 
-        //    compareConfig = JsonConvert.SerializeObject(dataCompareFile);
-        //}
+            compareConfig = JsonConvert.SerializeObject(dataCompareFile);
+        }
 
         // get a logo config
-        public static void GetLogoConfig(out string logoUrl)
+        public void GetLogoConfig(out string logoUrl)
         {
             // get the path to the logo image
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                Path = _environment.ContentRootPath
-                    + (_environment.ContentRootPath.EndsWith("/") ? "" : "/")
+                Path = DocManagerHelper.ContentPath
+                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
                     + "Content\\images\\logo.png"
             };
 
@@ -309,26 +303,26 @@ namespace OnlineEditorsExampleNetCore.Models
         }
 
         // get a mail merge config
-        //public static void GetMailMergeConfig(out string dataMailMergeRecipients)
-        //{
-        //    // get the path to the recipients data for mail merging
-        //    var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
-        //    {
-        //        Path =
-        //            HttpRuntime.AppDomainAppVirtualPath
-        //            + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-        //            + "webeditor.ashx",
-        //        Query = "type=csv"
-        //    };
+        public void GetMailMergeConfig(out string dataMailMergeRecipients)
+        {
+            // get the path to the recipients data for mail merging
+            var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+            {
+                Path =
+                    DocManagerHelper.ContentPath
+                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=csv"
+            };
 
-        //    // create a mail merge config
-        //    var mailMergeConfig = new Dictionary<string, object>
-        //    {
-        //        { "fileType", "csv" },
-        //        { "url", mailMergeUrl.ToString()}
-        //    };
+            // create a mail merge config
+            var mailMergeConfig = new Dictionary<string, object>
+            {
+                { "fileType", "csv" },
+                { "url", mailMergeUrl.ToString()}
+            };
 
-        //    dataMailMergeRecipients = JsonConvert.SerializeObject(mailMergeConfig);
-        //}
+            dataMailMergeRecipients = JsonConvert.SerializeObject(mailMergeConfig);
+        }
     }
 }

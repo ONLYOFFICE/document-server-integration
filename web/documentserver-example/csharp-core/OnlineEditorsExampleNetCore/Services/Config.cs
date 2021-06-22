@@ -7,6 +7,6 @@ namespace OnlineEditorsExampleNetCore.Services
 {
     public class Config
     {
-        public static Dictionary<string, string> AppSettings { get; set; }
+        public Dictionary<string, string> Values { get; set; }
     }
 }

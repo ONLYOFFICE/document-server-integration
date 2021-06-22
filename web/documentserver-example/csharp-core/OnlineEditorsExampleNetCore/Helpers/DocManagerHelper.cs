@@ -11,66 +11,67 @@ using OnlineEditorsExampleNetCore.Services;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using OnlineEditorsExampleNetCore.Models;
+using Nancy.Json;
 
 namespace OnlineEditorsExampleNetCore.Helpers
 {
     public class DocManagerHelper
     {
-        private static IWebHostEnvironment _environment;
-        private static IHttpContextAccessor _httpContextAccessor;
-        private static IConfiguration _configuration;
+        public static string wwwPath { get; set; }
+        //{
+        //    get { return _environment.WebRootPath; }
+        //}
+        public static string ContentPath{ get; set; }
+        public static string Host { get; set; }
+        public static IConfiguration Configuration { get; set; }
+        public static HttpContext HttpContext { get; set; }
 
-        public DocManagerHelper(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        // get max file size
+        public static long MaxFileSize
         {
-            _environment = environment;
-            _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
+            get
+            {
+                long size;
+                long.TryParse(Startup.AppSettings["filesize-max"], out size);
+                return size > 0 ? size : 5 * 1024 * 1024;
+            }
         }
-        //    // get max file size
-        //    public static long MaxFileSize
-        //    {
-        //        get
-        //        {
-        //            long size;
-        //            long.TryParse(WebConfigurationManager.AppSettings["filesize-max"], out size);
-        //            return size > 0 ? size : 5 * 1024 * 1024;
-        //        }
-        //    }
 
-        //    // get all the supported file extensions
-        //    public static List<string> FileExts
-        //    {
-        //        get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
-        //    }
+        // get all the supported file extensions
+        public static List<string> FileExts
+        {
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+        }
 
-        //    // get file extensions that can be viewed
-        //    public static List<string> ViewedExts
-        //    {
-        //        get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
-        //    }
+        // get file extensions that can be viewed
+        public static List<string> ViewedExts
+        {
+            get { return (Startup.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+        }
 
         // get file extensions that can be edited
         public static List<string> EditedExts
         {
-            get { return (Config.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return (Startup.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // get file extensions that can be converted
         public static List<string> ConvertExts
         {
-            get { return (Config.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return (Startup.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // get current user host address
         public static string CurUserHostAddress(string userAddress = null)
         {
-            return Regex.Replace(userAddress ?? _httpContextAccessor.HttpContext.Request.Host.ToString(), "[^0-9a-zA-Z.=]", "_");
+            var host = Host;
+            return Regex.Replace(userAddress ?? Host, "[^0-9a-zA-Z.=]", "_");
         }
 
         // get the storage path of the file
         public static string StoragePath(string fileName, string userAddress = null)
         {
-            var directory = _environment.ContentRootPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = ContentPath + CurUserHostAddress(userAddress) + "\\";
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -78,72 +79,72 @@ namespace OnlineEditorsExampleNetCore.Helpers
             return directory + Path.GetFileName(fileName);
         }
 
-        //    // get the path to the forcesaved file version
-        //    public static string ForcesavePath(string fileName, string userAddress, Boolean create)
-        //    {
-        //        // create the directory to this file version
-        //        var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
-        //        if (!Directory.Exists(directory))
-        //        {
-        //            return "";
-        //        }
+        // get the path to the forcesaved file version
+        public static string ForcesavePath(string fileName, string userAddress, Boolean create)
+        {
+            // create the directory to this file version
+            var directory = wwwPath + CurUserHostAddress(userAddress) + "\\";
+            if (!Directory.Exists(directory))
+            {
+                return "";
+            }
 
-        //        // create the directory to the history of this file version
-        //        directory = directory + Path.GetFileName(fileName) + "-hist" + "\\";
-        //        if (!Directory.Exists(directory))
-        //        {
-        //            if (create)
-        //            {
-        //                Directory.CreateDirectory(directory);
-        //            }
-        //            else
-        //            {
-        //                return "";
-        //            }
-        //        }
+            // create the directory to the history of this file version
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\";
+            if (!Directory.Exists(directory))
+            {
+                if (create)
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                else
+                {
+                    return "";
+                }
+            }
 
-        //        directory = directory + Path.GetFileName(fileName);
-        //        if (!File.Exists(directory))
-        //        {
-        //            if (!create)
-        //            {
-        //                return "";
-        //            }
-        //        }
+            directory = directory + Path.GetFileName(fileName);
+            if (!File.Exists(directory))
+            {
+                if (!create)
+                {
+                    return "";
+                }
+            }
 
-        //        return directory;
-        //    }
+            return directory;
+        }
 
-        //    // get the history directory
-        //    public static string HistoryDir(string storagePath)
-        //    {
-        //        return storagePath += "-hist";
-        //    }
+        // get the history directory
+        public static string HistoryDir(string storagePath)
+        {
+            return storagePath += "-hist";
+        }
 
-        //    // get the path to the file version by the history path and file version
-        //    public static string VersionDir(string histPath, int version)
-        //    {
-        //        return Path.Combine(histPath, version.ToString());
-        //    }
+        // get the path to the file version by the history path and file version
+        public static string VersionDir(string histPath, int version)
+        {
+            return Path.Combine(histPath, version.ToString());
+        }
 
-        //    // get the path to the file version by the file name, user address and file version
-        //    public static string VersionDir(string fileName, string userAddress, int version)
-        //    {
-        //        return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
-        //    }
+        // get the path to the file version by the file name, user address and file version
+        public static string VersionDir(string fileName, string userAddress, int version)
+        {
+            return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+        }
 
-        //    // get the file version by the history path
-        //    public static int GetFileVersion(string historyPath)
-        //    {
-        //        if (!Directory.Exists(historyPath)) return 0;  // if the history path doesn't exist, then the file version is 0
-        //        return Directory.EnumerateDirectories(historyPath).Count() + 1;  // take only directories from the history folder and count them
-        //    }
+        // get the file version by the history path
+        public static int GetFileVersion(string historyPath)
+        {
+            if (!Directory.Exists(historyPath)) return 0;  // if the history path doesn't exist, then the file version is 0
+            return Directory.EnumerateDirectories(historyPath).Count() + 1;  // take only directories from the history folder and count them
+        }
 
-        //    // get the file version by the file name and user address
-        //    public static int GetFileVersion(string fileName, string userAddress)
-        //    {
-        //        return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
-        //    }
+        // get the file version by the file name and user address
+        public static int GetFileVersion(string fileName, string userAddress)
+        {
+            return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
+        }
 
         // get a file name with an index if the file with such a name already exists
         public static string GetCorrectName(string fileName, string userAddress = null)
@@ -160,18 +161,18 @@ namespace OnlineEditorsExampleNetCore.Helpers
         }
 
         // get all the stored files from the user host address
-        //public static List<FileInfo> GetStoredFiles()
-        //{
-        //    var directory = _environment.ContentRootPath + ConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
-        //    if (!Directory.Exists(directory)) return new List<FileInfo>();
+        public static List<FileInfo> GetStoredFiles()
+        {
+            var directory = ContentPath + CurUserHostAddress(null) + "\\";
+            if (!Directory.Exists(directory)) return new List<FileInfo>();
 
-        //    var directoryInfo = new DirectoryInfo(directory);
+            var directoryInfo = new DirectoryInfo(directory);
 
-        //    // take files from the root directory
-        //    List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+            // take files from the root directory
+            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
 
-        //    return storedFiles;
-        //}
+            return storedFiles;
+        }
 
         // create demo document
         public static string CreateDemo(string fileExt, bool withContent)
@@ -181,30 +182,30 @@ namespace OnlineEditorsExampleNetCore.Helpers
 
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 
-            File.Copy(_environment.ContentRootPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
+            File.Copy(ContentPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
 
             return fileName;
         }
 
-        //// create meta information
-        //public static void CreateMeta(string fileName, string uid, string uname, string userAddress = null)
-        //{
-        //    var histDir = HistoryDir(StoragePath(fileName, userAddress));  // create history directory
-        //    Directory.CreateDirectory(histDir);
-        //    // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
-        //    File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-        //            { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-        //            { "id", uid },
-        //            { "name", uname }
-        //        }));
-        //}
+        // create meta information
+        public static void CreateMeta(string fileName, string uid, string uname, string userAddress = null)
+        {
+            var histDir = HistoryDir(StoragePath(fileName, userAddress));  // create history directory
+            Directory.CreateDirectory(histDir);
+            // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                    { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
+                    { "id", uid },
+                    { "name", uname }
+                }));
+        }
 
         // get file url
         public static string GetFileUri(string fileName, Boolean forDocumentServer)
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
             {
-                Path = _environment.ContentRootPath + "/"
+                Path = ContentPath + "/"
                            + CurUserHostAddress() + "/"
                            + fileName,
                 Query = ""
@@ -213,30 +214,30 @@ namespace OnlineEditorsExampleNetCore.Helpers
             return uri.ToString();
         }
 
-        //    // get the path url
-        //    public static string GetPathUri(string path)
-        //    {
-        //        var uri = new UriBuilder(GetServerUrl(true))
-        //        {
-        //            Path = HttpRuntime.AppDomainAppVirtualPath + "/"
-        //                       + path,
-        //            Query = ""
-        //        };
+        // get the path url
+        public static string GetPathUri(string path)
+        {
+            var uri = new UriBuilder(GetServerUrl(true))
+            {
+                Path = ContentPath + "/"
+                           + path,
+                Query = ""
+            };
 
-        //        return uri.ToString();
-        //    }
+            return uri.ToString();
+        }
 
         // get the server url
         public static string GetServerUrl(Boolean forDocumentServer)
         {
-            if (forDocumentServer && !_configuration["files.docservice.url.example"].Equals(""))
+            if (forDocumentServer && !Startup.AppSettings["files.docservice.url.example"].Equals(""))
             {
-                return Config.AppSettings["files.docservice.url.example"];
+                return Startup.AppSettings["files.docservice.url.example"];
             }
             else
             {
-                var uri = new UriBuilder(_httpContextAccessor.HttpContext.Request.Host.ToString()) { Query = "" };
-                var requestHost = _httpContextAccessor.HttpContext.Request.Headers["Host"];
+                var uri = new UriBuilder(Host) { Query = "" };
+                var requestHost = HttpContext.Request.Headers["Host"];
                 if (!string.IsNullOrEmpty(requestHost))
                     uri = new UriBuilder(uri.Scheme + "://" + requestHost);
 
@@ -250,9 +251,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             var callbackUrl = new UriBuilder(GetServerUrl(true))
             {
                 Path =
-                    _environment.ContentRootPath
-                    + (_environment.ContentRootPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx",
+                     "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
                         + "&userAddress=" /*+ HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)*/
@@ -265,28 +264,24 @@ namespace OnlineEditorsExampleNetCore.Helpers
             var createUrl = new UriBuilder(GetServerUrl(false))
             {
                 Path =
-                    _environment.ContentRootPath
-                    + (_environment.ContentRootPath.EndsWith("/") ? "" : "/")
-                    + "Sample",
+                     "Sample",
                 Query = "fileExt=" + DocManagerHelper.GetInternalExtension(fileType).Trim('.')
             };
             return createUrl.ToString();
         }
 
-        //    public static string GetDownloadUrl(string fileName)
-        //    {
-        //        var downloadUrl = new UriBuilder(GetServerUrl(true))
-        //        {
-        //            Path =
-        //                HttpRuntime.AppDomainAppVirtualPath
-        //                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-        //                + "webeditor.ashx",
-        //            Query = "type=download"
-        //                    + "&fileName=" + HttpUtility.UrlEncode(fileName)
-        //                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
-        //        };
-        //        return downloadUrl.ToString();
-        //    }
+        public static string GetDownloadUrl(string fileName)
+        {
+            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            {
+                Path =
+                    "webeditor.ashx",
+                Query = "type=download"
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" /*+ HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)*/
+            };
+            return downloadUrl.ToString();
+        }
 
         // get an editor internal extension
         public static string GetInternalExtension(FileUtility.FileType fileType)
@@ -304,39 +299,39 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
         }
 
-        //    // get file information
-        //    public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
-        //    {
-        //        var files = new List<Dictionary<string, object>>();
+        // get file information
+        public static List<Dictionary<string, object>> GetFilesInfo(string fileId = null)
+        {
+            var files = new List<Dictionary<string, object>>();
 
-        //        // run through all the stored files
-        //        foreach (var file in GetStoredFiles())
-        //        {
-        //            // write all the parameters to the map
-        //            var dictionary = new Dictionary<string, object>();
-        //            dictionary.Add("version", GetFileVersion(file.Name, null));
-        //            dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file.Name + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(file.Name, null)).GetHashCode()));
-        //            dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
-        //            dictionary.Add("pureContentLength", file.Length);
-        //            dictionary.Add("title", file.Name);
-        //            dictionary.Add("updated", file.LastWriteTime.ToString());
+            // run through all the stored files
+            foreach (var file in GetStoredFiles())
+            {
+                // write all the parameters to the map
+                var dictionary = new Dictionary<string, object>();
+                dictionary.Add("version", GetFileVersion(file.Name, null));
+                dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file.Name + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(file.Name, null)).GetHashCode()));
+                dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
+                dictionary.Add("pureContentLength", file.Length);
+                dictionary.Add("title", file.Name);
+                dictionary.Add("updated", file.LastWriteTime.ToString());
 
-        //            // get file information by its id
-        //            if (fileId != null)
-        //            {
-        //                if (fileId.Equals(dictionary["id"]))
-        //                {
-        //                    files.Add(dictionary);
-        //                    break;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                files.Add(dictionary);
-        //            }
-        //        }
+                // get file information by its id
+                if (fileId != null)
+                {
+                    if (fileId.Equals(dictionary["id"]))
+                    {
+                        files.Add(dictionary);
+                        break;
+                    }
+                }
+                else
+                {
+                    files.Add(dictionary);
+                }
+            }
 
-        //        return files;
-        //    }
+            return files;
+        }
     }
 }
