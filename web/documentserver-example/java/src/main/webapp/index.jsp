@@ -39,6 +39,11 @@
     <body>
         <header>
             <div class="center">
+                <div class="menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
                 <a href="">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
@@ -191,39 +196,51 @@
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
-                                                                            <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                        </a>
-                                                                    <% } else if (docType.equals("cell")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
-                                                                            <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                        </a>
-                                                                    <% } %>
-                                                                </td>
-                                                                <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
                                                                         <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
                                                                 </td>
+                                                                <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                            <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                        </a>
-                                                                    <% } %>
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                                        <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-shift contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
-                                                                            <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                                        </a>
-                                                                    <% } %>
+                                                                <% } else if (docType.equals("cell")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                                        <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
+                                                                    </a>
                                                                 </td>
+                                                                <% } %>
+                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                <% } %>
+                                                                <% if (docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
+                                                                </td>
+                                                                <% } else { %>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <% } %>
+                                                                <% if (docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                                        <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                    </a>
+                                                                </td>
+                                                                <% } else { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty"></td>
+                                                                <% } %>
+                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                <% } %>
                                                             <% } else { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift" colspan="6"></td>
                                                             <% } %>
-                                                            <td class="contentCells contentCells-icon">
+                                                            <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
                                                                     <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
@@ -238,7 +255,7 @@
                                                                     <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
                                                                 <a href="IndexServlet?type=download&fileName=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
                                                                     <img class="icon-download" src="css/img/download.svg" alt="Download" title="Download" />
                                                                 </a>
