@@ -163,7 +163,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         // get all the stored files from the user host address
         public static List<FileInfo> GetStoredFiles()
         {
-            var directory = ContentPath + CurUserHostAddress(null) + "\\";
+            var directory = /*ContentPath + */CurUserHostAddress(null) + "\\";
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
@@ -205,8 +205,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
             {
-                Path = ContentPath + "/"
-                           + CurUserHostAddress() + "/"
+                Path = CurUserHostAddress() + "/"
                            + fileName,
                 Query = ""
             };
@@ -219,8 +218,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(true))
             {
-                Path = ContentPath + "/"
-                           + path,
+                Path = path,
                 Query = ""
             };
 
@@ -250,11 +248,9 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var callbackUrl = new UriBuilder(GetServerUrl(true))
             {
-                Path =
-                     "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" /*+ HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)*/
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Request.Host.Host)
             };
             return callbackUrl.ToString();
         }
@@ -274,11 +270,9 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var downloadUrl = new UriBuilder(GetServerUrl(true))
             {
-                Path =
-                    "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" /*+ HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)*/
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Request.Host.Host)
             };
             return downloadUrl.ToString();
         }

@@ -37,7 +37,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
             DocManagerHelper.wwwPath = _environment.WebRootPath;
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
             DocManagerHelper.Configuration = _configuration;
-            var test = Environment.GetEnvironmentVariable("applicationUrl");
             DocManagerHelper.HttpContext = _httpContextAccessor.HttpContext;
 
             var file = new FileModel
@@ -56,10 +55,9 @@ namespace OnlineEditorsExampleNetCore.Controllers
             if (ModelState.IsValid)
             {
                 var fileName = DocManagerHelper.CreateDemo(fileExt, false);  // create a sample document
-
-                //var id = Request.Cookies.GetOrDefault("uid", null);
-                //var user = Users.getUser(id);
-                //DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
+                var id = Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);
+                DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
                 Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             }
             return new EmptyResult();
