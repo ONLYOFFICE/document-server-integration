@@ -46,7 +46,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
             catch (Exception e)
             {
-                throw new Exception(HttpStatusCode.BadRequest.ToString()/*, e.Message*/);
+                throw new Exception(HttpStatusCode.BadRequest.ToString(), e);
             }
 
             var jss = new JavaScriptSerializer();
@@ -288,7 +288,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         }
 
         // save file information from the url to the file specified
-        private static void DownloadToFile(string url, string path)
+        public static void DownloadToFile(string url, string path)
         {
             if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
             if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified

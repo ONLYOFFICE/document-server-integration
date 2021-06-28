@@ -53,15 +53,296 @@
                                         <li>
                                             <a class="try-editor word" asp-for="docx" data-type="docx">Document</a>
                                         </li>
+                                        <li>
+                                            <a class="try-editor cell" data-type="xlsx">Spreadsheet</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor slide" data-type="pptx">Presentation</a>
+                                        </li>
                                     </ul>
+                                    <label class="create-sample">
+                                        <input id="createSample" class="checkbox" type="checkbox" />With sample content
+                                    </label>
+                                </div>
+                                <div class="upload-panel clearFix">
+                                    <a class="file-upload">
+                                        Upload file
+                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Content("~/?type=upload")" />
+                                    </a>
                                 </div>
                             </div>
+                            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Username</span>
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            @foreach (User user in Users.getAllUsers())
+                                            {
+                                                <b>
+                                                    @if (@user.name.IsEmpty())
+                                                    {
+                                                        user.name = "Anonymous";
+                                                    }
+                                                    else@user.name
+                                                </b>
+                                                <ul>
+                                                    @foreach (string description in user.descriptions)
+                                                    {
+                                                        <li>@description</li>
+                                                    }
+                                                </ul>
+                                            }"
+                                            src="~/img/info.svg" />
+                                            <select class="select-user" id="user">
+                                                @foreach (User user in Users.getAllUsers())
+                                                {
+                                                    <option value="@user.id">
+                                                        @if (@user.name.IsEmpty())
+                                                        {
+                                                            user.name = "Anonymous";
+                                                        }
+                                                        else@user.name
+                                                    </option>
+                                                }
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Language</span>
+                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="~/img/info.svg" />
+                                            <select class="select-user" id="language">
+                                                <option value="en">English</option>
+                                                <option value="be">Belarusian</option>
+                                                <option value="bg">Bulgarian</option>
+                                                <option value="ca">Catalan</option>
+                                                <option value="zh">Chinese</option>
+                                                <option value="cs">Czech</option>
+                                                <option value="da">Danish</option>
+                                                <option value="nl">Dutch</option>
+                                                <option value="fi">Finnish</option>
+                                                <option value="fr">French</option>
+                                                <option value="de">German</option>
+                                                <option value="el">Greek</option>
+                                                <option value="hu">Hungarian</option>
+                                                <option value="id">Indonesian</option>
+                                                <option value="it">Italian</option>
+                                                <option value="ja">Japanese</option>
+                                                <option value="ko">Korean</option>
+                                                <option value="lv">Latvian</option>
+                                                <option value="lo">Lao</option>
+                                                <option value="nb">Norwegian</option>
+                                                <option value="pl">Polish</option>
+                                                <option value="pt">Portuguese</option>
+                                                <option value="ro">Romanian</option>
+                                                <option value="ru">Russian</option>
+                                                <option value="sk">Slovak</option>
+                                                <option value="sl">Slovenian</option>
+                                                <option value="sv">Swedish</option>
+                                                <option value="es">Spanish</option>
+                                                <option value="tr">Turkish</option>
+                                                <option value="uk">Ukrainian</option>
+                                                <option value="vi">Vietnamese</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                    <td class="section">
+                        <div class="main-panel">
+                            @{ var storedFiles = DocManagerHelper.GetStoredFiles(); }
+                            @if (!storedFiles.Any())
+                            {
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                            }
+                            else
+                            {
+
+                                <div class="stored-list">
+
+                                    <span class="header-list">Your documents</span>
+
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+
+                                                <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+
+                                                <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+
+                                                <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+
+                                                <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+
+                                            </tr>
+
+                                        </thead>
+
+                                    </table>
+
+                                    <div class="scroll-table-body">
+
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
+                                                @foreach (var storedFile in storedFiles)
+                                                {
+                                                    var editUrl = "Editor?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                    var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
+                                                    var canEdir = DocManagerHelper.EditedExts.Contains(System.IO.Path.GetExtension(storedFile.Name).ToLower());
+
+                                                    <tr class="tableRow" title="@storedFile.Name">
+                                                        <td class="contentCells">
+                                                            <a class="stored-edit @docType" href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name })" target="_blank">
+                                                                <span title="@storedFile.Name">@storedFile.Name</span>
+                                                            </a>
+                                                        </td>
+                                                        @if (canEdir)
+                                                        {
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit" })" target="_blank">
+                                                                    <img src="~/img/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" />
+                                                                </a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit" })" target="_blank">
+                                                                    <img src="~/img/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" />
+                                                                </a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                @if (docType == "word")
+                                                                {
+                                                                    <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" })" target="_blank">
+                                                                        <img src="~/img/review-24.png" alt="Open in editor for review" title="Open in editor for review" />
+                                                                    </a>
+                                                                }
+                                                                else if (docType == "cell")
+                                                                {
+                                                                    <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" })" target="_blank">
+                                                                        <img src="~/img/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment" })" target="_blank">
+                                                                    <img src="~/img/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" />
+                                                                </a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                @if (docType == "word")
+                                                                {
+                                                                    <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" })" target="_blank">
+                                                                        <img src="~/img/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                            <td class="contentCells contentCells-shift contentCells-icon">
+                                                                @if (docType == "word")
+                                                                {
+                                                                    <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" })" target="_blank">
+                                                                        <img src="~/img/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" />
+                                                                    </a>
+                                                                }
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                        }
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view" })" target="_blank">
+                                                                <img src="~/img/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view" })" target="_blank">
+                                                                <img src="~/img/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <a href="@Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded" })" target="_blank">
+                                                                <img src="~/img/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <a href="?type=download&fileName=@HttpUtility.UrlEncode(storedFile.Name)">
+                                                                <img class="icon-download" src="~/img/download-24.png" alt="Download" title="Download" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <a class="delete-file" data-filename="@storedFile.Name">
+                                                                <img class="icon-delete" src="~/img/delete-24.png" alt="Delete" title="Delete" />
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <div id="mainProgress">
+        <div id="uploadSteps">
+            <span id="uploadFileName" class="uploadFileName"></span>
+            <div class="describeUpload">After these steps are completed, you can work with your document.</div>
+            <span id="step1" class="step">1. Loading the file.</span>
+            <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <br />
+            <span id="step2" class="step">2. Conversion.</span>
+            <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
+            <br />
+            <div id="blockPassword">
+                <span class="descrFilePass">The file is password protected.</span>
+                <br />
+                <div>
+                    <input id="filePass" type="password" />
+                    <div id="enterPass" class="button orange">Enter</div>
+                    <div id="skipPass" class="button gray">Skip</div>
+                </div>
+                <span class="errorPass"></span>
+                <br />
+            </div>
+            <span id="step3" class="step">3. Loading editor scripts.</span>
+            <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            <br />
+            <br />
+            <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
+            <br />
+            <br />
+            <div class="error-message">
+                <b>Upload error: </b><span></span>
+                <br />
+                Please select another file and try again.
+            </div>
+        </div>
+        <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency=allowtransparency></iframe>
+        <br />
+        <div id="beginEdit" class="button orange disable">Edit</div>
+        <div id="beginView" class="button gray disable">View</div>
+        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+        <div id="cancelEdit" class="button gray">Cancel</div>
+    </div>
+
+    <span id="loadScripts" data-docs="@Startup.AppSettings["files.docservice.url.site"]@Startup.AppSettings["files.docservice.url.preloader"]"></span>
 
     <footer>
         <div class="center">
@@ -86,9 +367,9 @@
     <script src="~/bundles/scripts"></script>
     @await Html.PartialAsync("ScriptsPartial")
     <script language="javascript" type="text/javascript">
-            @*var ConverExtList = '@string.Join(",", DocManagerHelper.ConvertExts.ToArray())';
-            var EditedExtList = '@string.Join(",", DocManagerHelper.EditedExts.ToArray())';*@
-            var UrlConverter = '@Url.Content("~/webeditor.ashx?type=convert")';
+            var ConverExtList = '@string.Join(",", DocManagerHelper.ConvertExts.ToArray())';
+            var EditedExtList = '@string.Join(",", DocManagerHelper.EditedExts.ToArray())';
+            var UrlConverter = '@Url.Content("~/?type=convert")';
             var UrlEditor = '@Url.Action("editor", "Home")';
     </script>
 </body>

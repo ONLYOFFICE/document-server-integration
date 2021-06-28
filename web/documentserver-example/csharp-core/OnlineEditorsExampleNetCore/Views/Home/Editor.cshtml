@@ -109,7 +109,7 @@
         // the user is trying to insert an image by clicking the Image from Storage button
         var onRequestInsertImage = function (event) {
             @{string logoUrl;
-                Model.GetLogoConfig(out logoUrl);}
+            Model.GetLogoConfig(out logoUrl);}
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
                 @Html.Raw(logoUrl)
@@ -119,14 +119,14 @@
         // the user is trying to select document for comparing by clicking the Document from Storage button
         var onRequestCompareFile = function () {
             @{string compareFileData;
-                Model.GetCompareFileData(out compareFileData);}
+            Model.GetCompareFileData(out compareFileData);}
             docEditor.setRevisedFile(@Html.Raw(compareFileData));  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
             var onRequestMailMergeRecipients = function (event) {
             @{ string dataMailMergeRecipients;
-                Model.GetMailMergeConfig(out dataMailMergeRecipients); }
+            Model.GetMailMergeConfig(out dataMailMergeRecipients); }
             docEditor.setMailMergeRecipients(@Html.Raw(dataMailMergeRecipients));  // insert recipient data for mail merge into the file
         };
 
@@ -151,22 +151,23 @@
                 @*@{ string hist, histData; }
                 @{ Model.GetHistory(out hist, out histData); }
                 @if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData))
+                { 
 
-                        // the user is trying to show the document version history
-                        config.events['onRequestHistory'] = function () {
+                // the user is trying to show the document version history
+                config.events['onRequestHistory'] = function () {
                 docEditor.refreshHistory(@Html.Raw(hist));  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
+                };
+                // the user is trying to click the specific document version in the document version history
+                config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = @Html.Raw(histData);
                 docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose '] = function () {
+                };
+                // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose '] = function () {
                 document.location.reload();
-            };
-        @}*@
+                };
+                }*@
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);

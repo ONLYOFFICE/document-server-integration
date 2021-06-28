@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,8 +32,6 @@ namespace OnlineEditorsExampleNetCore
             AppSettings = Configuration.GetSection("AppSettings").GetChildren()
                   .ToDictionary(x => x.Key, x => x.Value);
 
-            //Configuration.Bind("appSettings", new Config());
-
             services.AddSingleton(HostEnvironment);
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -40,6 +39,18 @@ namespace OnlineEditorsExampleNetCore
             services.AddHttpContextAccessor();
 
             services.AddControllersWithViews();
+
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

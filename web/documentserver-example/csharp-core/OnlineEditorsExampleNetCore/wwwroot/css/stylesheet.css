@@ -144,15 +144,15 @@ label .checkbox {
 }
 
 .try-editor.word {
-    background-image: url("images/file_docx.svg");
+    background-image: url("/img/file_docx.svg");
 }
 
 .try-editor.cell {
-    background-image: url("images/file_xlsx.svg");
+    background-image: url("/img/file_xlsx.svg");
 }
 
 .try-editor.slide {
-    background-image: url("images/file_pptx.svg");
+    background-image: url("/img/file_pptx.svg");
 }
 
 .create-sample {
@@ -224,7 +224,7 @@ label .checkbox {
 }
 
 .file-upload {
-    background: url("images/file_upload.svg") no-repeat 0 transparent;
+    background: url("/img/file_upload.svg") no-repeat 0 transparent;
     cursor: pointer;
     display: block;
     font-size: 14px;
@@ -297,7 +297,7 @@ label .checkbox {
 }
 
 .error-message {
-    background: url("images/error.svg") no-repeat scroll 4px 10px;
+    background: url("img/error.svg") no-repeat scroll 4px 10px;
     color: #CB0000;
     display: none;
     line-height: 160%;
@@ -318,15 +318,15 @@ label .checkbox {
 }
 
 .current {
-    background-image: url("images/loader16.gif");
+    background-image: url("img/loader16.gif");
 }
 
 .done {
-    background-image: url("images/done.svg");
+    background-image: url("img/done.svg");
 }
 
 .error {
-    background-image: url("images/notdone.svg");
+    background-image: url("img/notdone.svg");
 }
 
 .step-descr {
@@ -419,17 +419,17 @@ footer a:hover {
 
 .stored-edit.word,
 .uploadFileName.word {
-    background-image: url("images/icon_docx.svg");
+    background-image: url("img/icon_docx.svg");
 }
 
 .stored-edit.cell,
 .uploadFileName.cell {
-    background-image: url("images/icon_xlsx.svg");
+    background-image: url("img/icon_xlsx.svg");
 }
 
 .stored-edit.slide,
 .uploadFileName.slide {
-    background-image: url("images/icon_pptx.svg");
+    background-image: url("img/icon_pptx.svg");
 }
 
 .stored-edit span {
@@ -456,7 +456,7 @@ footer a:hover {
 }
 
 .dialog-close {
-    background: url("images/close.svg") no-repeat scroll left top;
+    background: url("img/close.svg") no-repeat scroll left top;
     cursor: pointer;
     float: right;
     font-size: 1px;

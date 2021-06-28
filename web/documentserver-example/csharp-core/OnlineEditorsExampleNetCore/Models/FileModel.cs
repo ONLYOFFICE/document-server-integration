@@ -259,9 +259,9 @@ namespace OnlineEditorsExampleNetCore.Models
             // get the path to the compared file
             var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                Path = DocManagerHelper.ContentPath
-                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx",
+                //Path = DocManagerHelper.ContentPath
+                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
+                //    + "webeditor.ashx",
                 Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
@@ -281,9 +281,10 @@ namespace OnlineEditorsExampleNetCore.Models
             // get the path to the logo image
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                Path = DocManagerHelper.ContentPath
-                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                Path =
+                //DocManagerHelper.ContentPath
+                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
+                     "\\img\\logo.png"
             };
 
             // create a logo config
@@ -308,10 +309,10 @@ namespace OnlineEditorsExampleNetCore.Models
             // get the path to the recipients data for mail merging
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                Path =
-                    DocManagerHelper.ContentPath
-                    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx",
+                //Path =
+                //    DocManagerHelper.ContentPath
+                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
+                //    + "webeditor.ashx",
                 Query = "type=csv"
             };
 

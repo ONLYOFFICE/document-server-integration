@@ -5,11 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System;
-using OnlineEditorsExampleNetCore.Services;
-using Microsoft.Extensions.Configuration;
-using System.Configuration;
 using OnlineEditorsExampleNetCore.Models;
 using Nancy.Json;
 
@@ -17,14 +13,9 @@ namespace OnlineEditorsExampleNetCore.Helpers
 {
     public class DocManagerHelper
     {
-        public static string wwwPath { get; set; }
-        //{
-        //    get { return _environment.WebRootPath; }
-        //}
         public static string ContentPath{ get; set; }
         public static string Host { get; set; }
-        public static IConfiguration Configuration { get; set; }
-        public static HttpContext HttpContext { get; set; }
+        public static HttpContext Context { get; set; }
 
         // get max file size
         public static long MaxFileSize
@@ -64,14 +55,13 @@ namespace OnlineEditorsExampleNetCore.Helpers
         // get current user host address
         public static string CurUserHostAddress(string userAddress = null)
         {
-            var host = Host;
-            return Regex.Replace(userAddress ?? Host, "[^0-9a-zA-Z.=]", "_");
+            return Regex.Replace(userAddress ?? Context.Request.Host.Host, "[^0-9a-zA-Z.=]", "_");
         }
 
         // get the storage path of the file
         public static string StoragePath(string fileName, string userAddress = null)
         {
-            var directory = ContentPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = ContentPath + "\\" + CurUserHostAddress(userAddress) + "\\";
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -83,7 +73,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
             // create the directory to this file version
-            var directory = wwwPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = ContentPath + CurUserHostAddress(userAddress) + "\\";
             if (!Directory.Exists(directory))
             {
                 return "";
@@ -163,7 +153,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         // get all the stored files from the user host address
         public static List<FileInfo> GetStoredFiles()
         {
-            var directory = /*ContentPath + */CurUserHostAddress(null) + "\\";
+            var directory = ContentPath + "\\" + CurUserHostAddress(null) + "\\";
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
@@ -234,8 +224,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
             else
             {
-                var uri = new UriBuilder(Host) { Query = "" };
-                var requestHost = HttpContext.Request.Headers["Host"];
+                var uri = new UriBuilder(Context.Request.Host.Host) { Query = "" }; // тут было просто Host
+                var requestHost = Context.Request.Headers["Host"];
                 if (!string.IsNullOrEmpty(requestHost))
                     uri = new UriBuilder(uri.Scheme + "://" + requestHost);
 
@@ -250,7 +240,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             {
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Request.Host.Host)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
             };
             return callbackUrl.ToString();
         }
@@ -272,7 +262,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             {
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Request.Host.Host)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
             };
             return downloadUrl.ToString();
         }

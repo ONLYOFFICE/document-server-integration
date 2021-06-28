@@ -19,26 +19,22 @@ namespace OnlineEditorsExampleNetCore.Controllers
     {
         private readonly IWebHostEnvironment _environment;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IConfiguration _configuration;
 
-        public HomeController(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public HomeController(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor)
         {
             _environment = environment;
             _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
         }
+
         public IActionResult Index()
         {
+            DocManagerHelper.ContentPath = _environment.ContentRootPath;
+            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
             return View();
         }
 
         public IActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
-            DocManagerHelper.wwwPath = _environment.WebRootPath;
-            DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Configuration = _configuration;
-            DocManagerHelper.HttpContext = _httpContextAccessor.HttpContext;
-
             var file = new FileModel
                 {
                     Mode = editorsMode,  // editor mode: edit or view

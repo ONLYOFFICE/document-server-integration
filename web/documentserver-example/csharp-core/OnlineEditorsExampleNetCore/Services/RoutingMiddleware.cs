@@ -17,29 +17,29 @@ namespace OnlineEditorsExampleNetCore.Services
         {
             switch (context.Request.Query["type"])
             {
-                //case "upload":
-                //    WebEditor.Upload(context);
-                //    break;
-                //case "download":
-                //    WebEditor.Download(context);
-                //    break;
-                //case "convert":
-                //    WebEditor.Convert(context);
-                //    break;
-                case "track":
-                    WebEditorController.Track(context);
+                case "upload":
+                    WebEditor.Upload(context);
                     break;
-                //case "remove":
-                //    WebEditor.Remove(context);
-                //    break;
-                //case "assets":
-                //    WebEditor.Assets(context);
-                //    break;
-                //case "csv":
-                //    WebEditor.GetCsv(context);
-                //    break;
+                case "download":
+                    WebEditor.Download(context);
+                    break;
+                case "convert":
+                    WebEditor.Convert(context);
+                    break;
+                case "track":
+                    WebEditor.Track(context);
+                    break;
+                case "remove":
+                    WebEditor.Remove(context);
+                    break;
+                case "assets":
+                    WebEditor.Assets(context);
+                    break;
+                case "csv":
+                    WebEditor.GetCsv(context);
+                    break;
                 case "files":
-                    WebEditorController.Files(context);
+                    WebEditor.Files(context);
                     break;
             }
             return _next.Invoke(context);
