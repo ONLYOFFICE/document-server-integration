@@ -442,9 +442,6 @@
         border: none;
         width: 85%;
     }
-    .downloadContentCellShift:after{
-        top: -1px;
-    }
     .contentCellsEmpty{
         display: none;
         width: 1%;
