@@ -4,11 +4,11 @@
 }
 
 .tableRow td:last-child:after{
-    top: 34px;
+    top: 33px;
     left: 0;
     content: "";
     background: #e5e5e5;
-    height: 1%;
+    height: 2%;
     position: absolute;
     width: 100%;
 }
