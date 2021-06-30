@@ -232,13 +232,13 @@
                                                                     </a>
                                                                 </td>
                                                                 <% } else { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty"></td>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                                 <% } %>
                                                                 <% if (!docType.equals("cell") && !docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
                                                             <% } else { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift" colspan="6"></td>
+                                                            <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
