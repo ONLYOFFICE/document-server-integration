@@ -35,6 +35,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         public IActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
+            DocManagerHelper.ContentPath = _environment.ContentRootPath;
+            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
             var file = new FileModel
                 {
                     Mode = editorsMode,  // editor mode: edit or view
@@ -45,8 +47,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
             return View("Editor", file);
         }
 
-        public ActionResult Sample(string fileExt, bool? sample) ///Editor?fileName=new%20%287%29.docx
+        public IActionResult Sample(string fileExt, bool? sample) ///Editor?fileName=new%20%287%29.docx
         {
+            DocManagerHelper.ContentPath = _environment.ContentRootPath;
+            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
             DocManagerHelper.Host = _httpContextAccessor.HttpContext.Request.Host.ToString();
             if (ModelState.IsValid)
             {
@@ -56,6 +60,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
                 Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             }
+            return new EmptyResult();
+        }
+
+        public IActionResult Upload()
+        {
+            DocManagerHelper.ContentPath = _environment.ContentRootPath;
+            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            Response.Redirect(Url.Content("~/?type=upload"));
             return new EmptyResult();
         }
     }

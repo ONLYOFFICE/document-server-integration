@@ -25,6 +25,7 @@ using System.Web;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Nancy.Json;
+using Newtonsoft.Json;
 
 namespace OnlineEditorsExampleNetCore.Helpers
 {
@@ -49,40 +50,39 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 throw new Exception(HttpStatusCode.BadRequest.ToString(), e);
             }
 
-            var jss = new JavaScriptSerializer();
-            var fileData = jss.Deserialize<Dictionary<string, object>>(body);
+            var fileData = JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
 
             // check if the document token is enabled
-            //if (JwtManager.Enabled)
-            //{
-            //    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+            if (JwtManager.Enabled)
+            {
+                string JWTheader = Startup.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : Startup.AppSettings["files.docservice.header"];
 
-            //    string token = null;
+                string token = null;
 
-            //    // if the document token is in the data
-            //    if (fileData.ContainsKey("token"))
-            //    {
-            //        token = JwtManager.Decode(fileData["token"].ToString());  // decode it
-            //    }
-            //    else if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))  // if the Authorization header exists
-            //    {
-            //        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
-            //        token = JwtManager.Decode(headerToken);  // decode its part after Authorization prefix
-            //    }
-            //    else  // otherwise, an error occurs
-            //    {
-            //        context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
-            //    }
+                // if the document token is in the data
+                if (fileData.ContainsKey("token"))
+                {
+                    token = JwtManager.Decode(fileData["token"].ToString());  // decode it
+                }
+                else if (context.Request.Headers.Keys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))  // if the Authorization header exists
+                {
+                    var headerToken = context.Request.Headers[JWTheader].ToString().Substring("Bearer ".Length);
+                    token = JwtManager.Decode(headerToken);  // decode its part after Authorization prefix
+                }
+                else  // otherwise, an error occurs
+                {
+                    context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT expected\"}");
+                }
 
-            //    if (token != null && !token.Equals(""))  // invalid signature error
-            //    {
-            //        fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
-            //    }
-            //    else
-            //    {
-            //        context.Response.Write("{\"error\":1,\"message\":\"JWT validation failed\"}");
-            //    }
-            //}
+                if (token != null && !token.Equals(""))  // invalid signature error
+                {
+                    fileData = (Dictionary<string, object>)JsonConvert.DeserializeObject<Dictionary<string, object>>(token)["payload"];
+                }
+                else
+                {
+                    context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT validation failed\"}");
+                }
+            }
 
             return fileData;
         }
@@ -243,20 +243,20 @@ namespace OnlineEditorsExampleNetCore.Helpers
             };
 
             // check if a secret key to generate token exists or not
-            //if (JwtManager.Enabled)
-            //{
-            //    var payload = new Dictionary<string, object>
-            //        {
-            //            { "payload", body }
-            //        };
+            if (JwtManager.Enabled)
+            {
+                var payload = new Dictionary<string, object>
+                    {
+                        { "payload", body }
+                    };
 
-            //    var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
-            //    var bodyToken = JwtManager.Encode(body);  // encode body into a body token
-            //    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
-            //    request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
+                var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
+                var bodyToken = JwtManager.Encode(body);  // encode body into a body token
+                string JWTheader = Startup.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : Startup.AppSettings["files.docservice.header"];
+                request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 
-            //    body.Add("token", bodyToken);
-            //}
+                body.Add("token", bodyToken);
+            }
 
             var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
             request.ContentLength = bytes.Length;
@@ -279,8 +279,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
 
             // convert stream to json string
-            var jss = new JavaScriptSerializer();
-            var responseObj = jss.Deserialize<Dictionary<string, object>>(dataResponse);
+            var responseObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataResponse);
             if (!responseObj["error"].ToString().Equals("0"))
             {
                 throw new Exception(dataResponse);

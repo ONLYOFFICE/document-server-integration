@@ -65,9 +65,11 @@ namespace OnlineEditorsExampleNetCore
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseMiddleware<RoutingMiddleware>();
+            app.UseMyMiddleware();
 
             app.UseStaticFiles();
+
+            app.UseCors();
 
             app.UseRouting();
 

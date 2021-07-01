@@ -49,7 +49,7 @@
                             <span>Create new</span>
                             <div class="clearFix">
                                 <div class="create-panel">
-                                    <ul class="try-editor-list clearFix" data-link="@Url.Action("sample", "Home")">
+                                    <ul class="try-editor-list clearFix" data-link="@Url.Action("Sample", "Home")">
                                         <li>
                                             <a class="try-editor word" asp-for="docx" data-type="docx">Document</a>
                                         </li>
@@ -67,7 +67,7 @@
                                 <div class="upload-panel clearFix">
                                     <a class="file-upload">
                                         Upload file
-                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Content("~/?type=upload")" />
+                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Action("Upload", "Home")" />
                                     </a>
                                 </div>
                             </div>
@@ -363,8 +363,6 @@
             </table>
         </div>
     </footer>
-    <script src="~/js/"></script>
-    <script src="~/bundles/scripts"></script>
     @await Html.PartialAsync("ScriptsPartial")
     <script language="javascript" type="text/javascript">
             var ConverExtList = '@string.Join(",", DocManagerHelper.ConvertExts.ToArray())';

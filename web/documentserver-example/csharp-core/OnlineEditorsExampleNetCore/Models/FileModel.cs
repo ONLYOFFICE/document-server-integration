@@ -284,7 +284,7 @@ namespace OnlineEditorsExampleNetCore.Models
                 Path =
                 //DocManagerHelper.ContentPath
                 //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                     "\\img\\logo.png"
+                     "wwwroot\\img\\logo.png"
             };
 
             // create a logo config
@@ -294,11 +294,11 @@ namespace OnlineEditorsExampleNetCore.Models
                 { "url", mailMergeUrl.ToString()}
             };
 
-            //if (JwtManager.Enabled)  // if the secret key to generate token exists
-            //{
-            //    var token = JwtManager.Encode(logoConfig);  // encode logoConfig into the token
-            //    logoConfig.Add("token", token);  // and add it to the logo config
-            //}
+            if (JwtManager.Enabled)  // if the secret key to generate token exists
+            {
+                var token = JwtManager.Encode(logoConfig);  // encode logoConfig into the token
+                logoConfig.Add("token", token);  // and add it to the logo config
+            }
 
             logoUrl = JsonConvert.SerializeObject(logoConfig).Replace("{", "").Replace("}", "");
         }

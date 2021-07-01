@@ -103,22 +103,22 @@ namespace OnlineEditorsExampleNetCore.Helpers
                     { "password", filePass }
                 };
 
-            //if (JwtManager.Enabled)
-            //{
-            //    // create payload object
-            //    var payload = new Dictionary<string, object>
-            //            {
-            //                { "payload", body }
-            //            };
+            if (JwtManager.Enabled)
+            {
+                // create payload object
+                var payload = new Dictionary<string, object>
+                        {
+                            { "payload", body }
+                        };
 
-            //    var payloadToken = JwtManager.Encode(payload);  // encode the payload object to the payload token
-            //    var bodyToken = JwtManager.Encode(body);  // encode the body object to the body token
-            //                                              // create header token
-            //    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
-            //    request.Headers.Add(JWTheader, "Bearer " + payloadToken);
+                var payloadToken = JwtManager.Encode(payload);  // encode the payload object to the payload token
+                var bodyToken = JwtManager.Encode(body);  // encode the body object to the body token
+                                                          // create header token
+                string JWTheader = Startup.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : Startup.AppSettings["files.docservice.header"];
+                request.Headers.Add(JWTheader, "Bearer " + payloadToken);
 
-            //    body.Add("token", bodyToken);
-            //}
+                body.Add("token", bodyToken);
+            }
 
             var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
             request.ContentLength = bytes.Length;
