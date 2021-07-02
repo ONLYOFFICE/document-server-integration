@@ -25,7 +25,7 @@ import com.onlyoffice.integration.entities.enums.Language;
 import com.onlyoffice.integration.entities.enums.Type;
 import com.onlyoffice.integration.entities.filemodel.Document;
 import com.onlyoffice.integration.entities.filemodel.EditorConfig;
-import com.onlyoffice.integration.entities.filemodel.File;
+import com.onlyoffice.integration.entities.filemodel.FileModel;
 import com.onlyoffice.integration.entities.filemodel.Permission;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class EditorServices {
     @Autowired
     private FileUtility fileUtility;
 
-    public File createConfiguration(User user, String fileName, String actionData,
-                                    Action action, Language lang, Type type){
+    public FileModel createConfiguration(User user, String fileName, String actionData,
+                                         Action action, Language lang, Type type){
         DocumentType documentType = fileUtility.getDocumentType(fileName);
 
         Permission permissions = createPermissions(user);
@@ -52,9 +52,9 @@ public class EditorServices {
 
         EditorConfig config = this.createEditorConfig(user, fileName, actionData, action, lang, type);
 
-        File file = context.getBean(File.class);
-        file.configure(doc, documentType, config, type);
-        return file;
+        FileModel fileModel = context.getBean(FileModel.class);
+        fileModel.configure(doc, documentType, config, type);
+        return fileModel;
     }
 
     private Permission createPermissions(User user){
