@@ -15,7 +15,6 @@ namespace OnlineEditorsExampleNetCore.Helpers
     public class DocManagerHelper
     {
         public static string ContentPath{ get; set; }
-        public static string Host { get; set; }
         public static HttpContext Context { get; set; }
 
         // get max file size
@@ -261,11 +260,11 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var downloadUrl = new UriBuilder(GetServerUrl(true))
             {
-                Path = "//" + Context.Request.Host.Host + "/"
-                    + fileName
-                //Query = "type=download"
-                //        + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                //        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
+                //Path = "//" + Context.Request.Host.Host + "/"
+                //    + fileName
+                Query = "type=download"
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
             };
             return downloadUrl.ToString();
         }
@@ -319,6 +318,24 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
 
             return files;
+        }
+
+        public class ContentPathExtenstion
+        {
+            public string ContentPath { get; set; }
+
+            public ContentPathExtenstion (string contentPath)
+            {
+                ContentPath = contentPath;
+            }
+        }
+        public class ContextExtenstion
+        {
+            public HttpContext Context { get; set; }
+            public ContextExtenstion (HttpContext context)
+            {
+                Context = context;
+            }
         }
     }
 }

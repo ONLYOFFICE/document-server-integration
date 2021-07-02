@@ -51,7 +51,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
             DocManagerHelper.Context = _httpContextAccessor.HttpContext;
-            DocManagerHelper.Host = _httpContextAccessor.HttpContext.Request.Host.ToString();
             if (ModelState.IsValid)
             {
                 var fileName = DocManagerHelper.CreateDemo(fileExt, false);  // create a sample document

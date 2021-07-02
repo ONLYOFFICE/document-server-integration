@@ -17,89 +17,46 @@ namespace OnlineEditorsExampleNetCore.Services
         }
         public async Task Invoke(HttpContext context)
         {
-            
-            if (!context.Response.HasStarted)
+            try
             {
-                //if (context.Request.Query["type"] == "upload")
-                //{
-                //    await WebEditor.Upload(context);
-                //}
-                   
-                //else if (context.Request.Query["type"] == "download")
-                //{
-                //    await WebEditor.Download(context);
- 
-                //}
-                    
-                //else if (context.Request.Query["type"] == "convert")
-                //{
-                //    await WebEditor.Convert(context);
-
-                //}
-                    
-                //else if (context.Request.Query["type"] == "track")
-                //{
-                //    await WebEditor.Track(context);
-                  
-                //}
-                    
-                //else if (context.Request.Query["type"] == "remove")
-                //{
-                //    await WebEditor.Remove(context);
-            
-                //}
-                   
-                //else if (context.Request.Query["type"] == "assets")
-                //{
-                //    await WebEditor.Assets(context);
-                   
-                //}
-                    
-                //else if (context.Request.Query["type"] == "csv")
-                //{
-                //    await WebEditor.GetCsv(context);
-                   
-                //}
-                    
-                //else if (context.Request.Query["type"] == "files")
-                //{
-                //    await WebEditor.Files(context);
-              
-                //}
-
-
-                switch (context.Request.Query["type"])
-                {
-                    case "upload":
-                        await WebEditor.Upload(context);
-                        break;
-                    case "download":
-                        await WebEditor.Download(context);
-                        break;
-                    case "convert":
-                        await WebEditor.Convert(context);
-                        break;
-                    case "track":
-                        await WebEditor.Track(context);
-                        break;
-                    case "remove":
-                        await WebEditor.Remove(context);
-                        break;
-                    case "assets":
-                        await WebEditor.Assets(context);
-                        break;
-                    case "csv":
-                        await WebEditor.GetCsv(context);
-                        break;
-                    case "files":
-                        await WebEditor.Files(context);
-                        break;
-                }
-                await _next.Invoke(context);
-
+                    switch (context.Request.Query["type"])
+                    {
+                        case "upload":
+                            await WebEditor.Upload(context);
+                            break;
+                        case "download":
+                            await WebEditor.Download(context);
+                            break;
+                        case "convert":
+                            await WebEditor.Convert(context);
+                            break;
+                        case "track":
+                            await WebEditor.Track(context);
+                            break;
+                        case "remove":
+                            await WebEditor.Remove(context);
+                            break;
+                        case "assets":
+                            await WebEditor.Assets(context);
+                            break;
+                        case "csv":
+                            await WebEditor.GetCsv(context);
+                            break;
+                        case "files":
+                            await WebEditor.Files(context);
+                            break;
+                    }
+            }
+            catch (Exception e)
+            {
+                await context.Response.WriteAsync(e.Message);
             }
 
-            
+            finally
+            {
+                if (!context.Response.HasStarted)
+                    await _next(context);
+            }
         }
     }
         public static class RoutingMiddlewareExtensions

@@ -325,7 +325,7 @@ namespace OnlineEditorsExampleNetCore
                         if (token == null || token.Equals(""))
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            context.Response.WriteAsync("JWT validation failed");
+                            await context.Response.WriteAsync("JWT validation failed");
                             return;
                         }
                     }
@@ -340,12 +340,12 @@ namespace OnlineEditorsExampleNetCore
             }
             catch (Exception)
             {
-                await context .Response.WriteAsync("{ \"error\": \"File not found!\"}");
+                await context.Response.WriteAsync("{ \"error\": \"File not found!\"}");
             }
         }
 
         // download data from the url to the file
-        public static async Task download(string filePath, HttpContext context)
+        private static async Task download(string filePath, HttpContext context)
         {
             var fileinf = new FileInfo(filePath);
             context.Response.Headers.Add("Content-Length", fileinf.Length.ToString());  // set headers to the response
@@ -354,24 +354,7 @@ namespace OnlineEditorsExampleNetCore
             var tmp = HttpUtility.UrlEncode(Path.GetFileName(filePath));
             tmp = tmp.Replace("+", "%20");
             context.Response.Headers.Add("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            //context.Response.TransmitFile(filePath);
-            var req = (HttpWebRequest)WebRequest.Create(filePath);
-            using (var stream = req.GetResponse().GetResponseStream())
-            {
-                if (stream == null) throw new Exception("stream is null");
-                const int bufferSize = 4096;
-
-                using (var fs = File.Open(filePath, FileMode.Create))
-                {
-                    var buffer = new byte[bufferSize];
-                    int readed;
-                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fs.Write(buffer, 0, readed);
-                    }
-                }
-            }
+            await context.Response.SendFileAsync(filePath);
         }
-
     }
 }
