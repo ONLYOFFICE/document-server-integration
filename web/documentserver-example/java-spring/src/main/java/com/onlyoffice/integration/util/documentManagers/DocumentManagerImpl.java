@@ -21,11 +21,6 @@ package com.onlyoffice.integration.util.documentManagers;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import org.json.simple.JSONObject;
-import org.primeframework.jwt.Signer;
-import org.primeframework.jwt.Verifier;
-import org.primeframework.jwt.domain.JWT;
-import org.primeframework.jwt.hmac.HMACSigner;
-import org.primeframework.jwt.hmac.HMACVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -65,23 +60,11 @@ public class DocumentManagerImpl implements DocumentManager {
     @Value("${storage-folder}")
     private String storageFolder;
 
-    @Value("${files.docservice.secret}")
-    private String tokenSecret;
-
     @Value("${files.docservice.url.example}")
     private String docserviceUrlExample;
 
     @Value("${filesize-max}")
     private String filesizeMax;
-
-    @Value("${files.docservice.viewed-docs}")
-    private String docserviceViewedDocs;
-
-    @Value("${files.docservice.edited-docs}")
-    private String docserviceEditedDocs;
-
-    @Value("${files.docservice.convert-docs}")
-    private String docserviceConvertDocs;
 
     @Value("${files.docservice.history.postfix}")
     private String historyPostfix;
@@ -95,32 +78,6 @@ public class DocumentManagerImpl implements DocumentManager {
     public long getMaxFileSize(){
         long size = Long.parseLong(filesizeMax);
         return size > 0 ? size : 5 * 1024 * 1024;
-    }
-
-    public List<String> getFileExts()
-    {
-        List<String> res = new ArrayList<>();
-
-        res.addAll(getViewedExts());
-        res.addAll(getEditedExts());
-        res.addAll(getConvertExts());
-
-        return res;
-    }
-
-    public List<String> getViewedExts()
-    {
-        return Arrays.asList(docserviceViewedDocs.split("\\|"));
-    }
-
-    public List<String> getEditedExts()
-    {
-        return Arrays.asList(docserviceEditedDocs.split("\\|"));
-    }
-
-    public List<String> getConvertExts()
-    {
-        return Arrays.asList(docserviceConvertDocs.split("\\|"));
     }
 
     public String curUserHostAddress(String userAddress){
@@ -172,7 +129,7 @@ public class DocumentManagerImpl implements DocumentManager {
         return directory + fileUtility.getFileName(fileName);
     }
 
-    public String forcesavePath(String fileName, String userAddress, Boolean create)
+    public String forceSavePath(String fileName, String userAddress, Boolean create)
     {
         String directory = buildDirectoryLocation(userAddress);
 
@@ -210,7 +167,6 @@ public class DocumentManagerImpl implements DocumentManager {
         return versionDir(historyDir(storagePath(fileName, userAddress)), version);
     }
 
-    //TODO: NOT TESTED
     public int getFileVersion(String historyPath)
     {
         Path path = Paths.get(historyPath);
@@ -305,29 +261,6 @@ public class DocumentManagerImpl implements DocumentManager {
         }
     }
 
-    public String createToken(Map<String, Object> payloadClaims)
-    {
-        try
-        {
-            Signer signer = HMACSigner.newSHA256Signer(tokenSecret);
-            JWT jwt = new JWT();
-            for (String key : payloadClaims.keySet())
-            {
-                jwt.addClaim(key, payloadClaims.get(key));
-            }
-            return JWT.getEncoder().encode(jwt, signer);
-        }
-        catch (Exception e)
-        {
-            return "";
-        }
-    }
-
-    public boolean tokenEnabled()
-    {
-        return tokenSecret != null && !tokenSecret.isEmpty();
-    }
-
     public String getCallback(String fileName)
     {
         String serverPath = getServerUrl(true);
@@ -342,19 +275,6 @@ public class DocumentManagerImpl implements DocumentManager {
         catch (UnsupportedEncodingException e)
         {
             return "";
-        }
-    }
-
-    public JWT readToken(String token)
-    {
-        try
-        {
-            Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
-            return JWT.getDecoder().decode(token, verifier);
-        }
-        catch (Exception exception)
-        {
-            return null;
         }
     }
 
@@ -418,5 +338,24 @@ public class DocumentManagerImpl implements DocumentManager {
         String directory = serverPath + File.separator + storageFolder + File.separator + hostAddress + File.separator;
 
         return directory;
+    }
+    public String createDemo(String fileExt,Boolean sample,String uid,String uname) throws Exception{
+        String demoName=(sample ?"sample.":"new.")+fileExt;
+        String demoPath="assets" +File.separator+(sample ?"sample.":"new")+File.separator;
+        String fileName=getCorrectName(demoName,null);
+        InputStream stream=Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath+demoName);
+        File file=new File(storagePath(fileName,null));
+        try(FileOutputStream out=new FileOutputStream(file)){
+            int read;
+            final byte[] bytes=new byte[1024];
+            while((read=stream.read(bytes))!=-1){
+                out.write(bytes,0,read);
+            }
+            out.flush();
+        }
+
+        createMeta(fileName,uid,uname,null);
+
+        return fileName;
     }
 }
