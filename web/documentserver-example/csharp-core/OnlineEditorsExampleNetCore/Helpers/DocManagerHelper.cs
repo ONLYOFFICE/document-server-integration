@@ -238,9 +238,9 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var callbackUrl = new UriBuilder(GetServerUrl(true))
             {
-                Query = "type=track"
-                        + /*HttpUtility.UrlEncode("&", Encoding.Default) + */"&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + /*HttpUtility.UrlEncode("&") +*/ "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
+                Path = "/track",
+                Query = "fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
             };
             return callbackUrl.ToString();
         }
@@ -249,8 +249,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var createUrl = new UriBuilder(GetServerUrl(false))
             {
-                Path =
-                     "Home/Sample",
+                Path = "Home/Sample",
                 Query = "fileExt=" + DocManagerHelper.GetInternalExtension(fileType).Trim('.')
             };
             return createUrl.ToString();
@@ -260,10 +259,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var downloadUrl = new UriBuilder(GetServerUrl(true))
             {
-                //Path = "//" + Context.Request.Host.Host + "/"
-                //    + fileName
-                Query = "type=download"
-                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                Path = "/download",
+                Query = "fileName=" + HttpUtility.UrlEncode(fileName)
                         + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
             };
             return downloadUrl.ToString();
@@ -318,24 +315,6 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
 
             return files;
-        }
-
-        public class ContentPathExtenstion
-        {
-            public string ContentPath { get; set; }
-
-            public ContentPathExtenstion (string contentPath)
-            {
-                ContentPath = contentPath;
-            }
-        }
-        public class ContextExtenstion
-        {
-            public HttpContext Context { get; set; }
-            public ContextExtenstion (HttpContext context)
-            {
-                Context = context;
-            }
         }
     }
 }
