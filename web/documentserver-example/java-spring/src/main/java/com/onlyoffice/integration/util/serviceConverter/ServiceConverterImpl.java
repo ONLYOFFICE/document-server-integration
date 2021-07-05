@@ -18,8 +18,10 @@
 
 package com.onlyoffice.integration.util.serviceConverter;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.objects.ConvertBody;
 import org.json.simple.JSONObject;
@@ -43,6 +45,9 @@ public class ServiceConverterImpl implements ServiceConverter
 
     @Autowired
     private DocumentManager documentManager;
+
+    @Autowired
+    private DocumentTokenManager documentTokenManager;
 
     @Autowired
     private FileUtility fileUtility;
@@ -69,8 +74,13 @@ public class ServiceConverterImpl implements ServiceConverter
     }
 
     private String postToServer(ConvertBody body, String headerToken){
-        Gson gson = new Gson();
-        String bodyString = gson.toJson(body);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String bodyString= null;
+        try {
+            bodyString = objectMapper.writeValueAsString(body);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         URL url = null;
         java.net.HttpURLConnection connection = null;
         InputStream response = null;
@@ -87,7 +97,7 @@ public class ServiceConverterImpl implements ServiceConverter
             connection.setRequestProperty("Accept", "application/json");
             connection.setConnectTimeout(convertTimeout);
 
-            if (documentManager.tokenEnabled())
+            if (documentTokenManager.tokenEnabled())
             {
                 connection.setRequestProperty(documentJwtHeader.equals("") ?
                         "Authorization" : documentJwtHeader, "Bearer " + headerToken);
@@ -136,7 +146,7 @@ public class ServiceConverterImpl implements ServiceConverter
             body.setAsync(true);
 
         String headerToken = "";
-        if (documentManager.tokenEnabled())
+        if (documentTokenManager.tokenEnabled())
         {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("url", body.getUrl());
@@ -149,12 +159,12 @@ public class ServiceConverterImpl implements ServiceConverter
                 map.put("async", body.getAsync());
 
             // add token to the body if it is enabled
-            String token = documentManager.createToken(map);
+            String token = documentTokenManager.createToken(map);
             body.setToken(token);
 
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", map);  // create payload object
-            headerToken = documentManager.createToken(payloadMap);  // create header token
+            headerToken = documentTokenManager.createToken(payloadMap);  // create header token
         }
 
         String jsonString = postToServer(body, headerToken);

@@ -18,6 +18,9 @@
 
 package com.onlyoffice.integration.entities.filemodel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.onlyoffice.integration.Action;
@@ -27,6 +30,7 @@ import com.onlyoffice.integration.entities.enums.Language;
 import com.onlyoffice.integration.entities.enums.Mode;
 import com.onlyoffice.integration.entities.enums.ToolbarDocked;
 import com.onlyoffice.integration.entities.enums.Type;
+import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +51,8 @@ public class EditorConfig {
     private DocumentManager documentManager;
 
     @Autowired
+    private DocumentManagerExts documentManagerExts;
+    @Autowired
     private FileUtility fileUtility;
 
     private HashMap<String, Object> actionLink = null;
@@ -65,12 +71,16 @@ public class EditorConfig {
                           Language lang,
                           Type type){
         if (actionData != null) {
-            Gson gson = new Gson();
-            this.actionLink = gson.fromJson(actionData, new TypeToken<HashMap<String, Object>>() { }.getType());
+            ObjectMapper om=new ObjectMapper();
+            try {
+                this.actionLink = om.readValue(actionData, (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
         this.callbackUrl = documentManager.getCallback(fileName);
         this.lang = lang;
-        Boolean canEdit = documentManager.getEditedExts().contains(fileUtility.getFileExtension(fileName));
+        Boolean canEdit = documentManagerExts.getEditedExts().contains(fileUtility.getFileExtension(fileName));
         this.customization = applicationContext.getBean(Customization.class);
         this.customization.setSubmitForm(canEdit && (action.equals(Action.edit) || action.equals(Action.fillForms)));
         this.mode = canEdit && !action.equals(Action.view) ? Mode.edit : Mode.view;

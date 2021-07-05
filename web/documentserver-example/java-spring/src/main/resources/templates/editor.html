@@ -122,7 +122,7 @@
                 var histArray = [[${model.GetHistory()}]];
                 var history = histArray[0];
                 var historyData = histArray[1];
-<!--                String usersForMentions = [[${usersForMentions}]];-->
+                var usersForMentions = [[${usersForMentions}]];
 
                 if (history && historyData) {
                     config.events['onRequestHistory'] = function () {
@@ -138,19 +138,19 @@
                     };
                 }
 
-<!--                if(usersForMentions){-->
-<!--                    config.events['onRequestUsers'] = function () {-->
-<!--                        docEditor.setUsers({-->
-<!--                            "users": usersForMentions-->
-<!--                        });-->
-<!--                    };-->
-<!--                    config.events['onRequestSendNotify'] = function (event) {-->
-<!--                        var actionLink = JSON.stringify(event.data.actionLink);-->
-<!--                        console.log("onRequestSendNotify:");-->
-<!--                        console.log(event.data);-->
-<!--                        console.log("Link to comment: " + replaceActionLink(location.href, actionLink));-->
-<!--                    };-->
-<!--                }-->
+                if(usersForMentions){
+                    config.events['onRequestUsers'] = function () {
+                        docEditor.setUsers({
+                            "users": usersForMentions
+                        });
+                    };
+                    config.events['onRequestSendNotify'] = function (event) {
+                        var actionLink = JSON.stringify(event.data.actionLink);
+                        console.log("onRequestSendNotify:");
+                        console.log(event.data);
+                        console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+                    };
+                }
 
                 var сonnectEditor = function () {
                     docEditor = new DocsAPI.DocEditor("iframeEditor", config);

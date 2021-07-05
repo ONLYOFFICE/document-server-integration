@@ -21,6 +21,7 @@ package com.onlyoffice.integration.controllers;
 import com.onlyoffice.integration.serializer.FilterState;
 import com.onlyoffice.integration.entities.*;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class IndexController {
     @Autowired
     private DocumentManager documentManager;
 
+    @Autowired
+    private DocumentManagerExts documentManagerExts;
     @Autowired
     private FileUtility fileUtility;
 
@@ -106,7 +109,7 @@ public class IndexController {
                 ).collect(Collectors.toList());
 
         List<Boolean> filesEditable = Arrays.stream(files).map(
-                file -> documentManager.getEditedExts().contains(fileUtility.getFileExtension(file.getName()))
+                file -> documentManagerExts.getEditedExts().contains(fileUtility.getFileExtension(file.getName()))
         ).collect(Collectors.toList());
 
         List<User> users = userService.findAll();
@@ -127,8 +130,8 @@ public class IndexController {
     public HashMap<String, String> configParameters(){
         HashMap<String, String> configuration = new HashMap<>();
 
-        configuration.put("ConverExtList", String.join(",",documentManager.getConvertExts()));
-        configuration.put("EditedExtList", String.join(",",documentManager.getEditedExts()));
+        configuration.put("ConverExtList", String.join(",",documentManagerExts.getConvertExts()));
+        configuration.put("EditedExtList", String.join(",",documentManagerExts.getEditedExts()));
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 

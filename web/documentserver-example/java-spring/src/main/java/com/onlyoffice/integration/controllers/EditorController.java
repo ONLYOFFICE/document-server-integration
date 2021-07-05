@@ -18,15 +18,18 @@
 
 package com.onlyoffice.integration.controllers;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.Action;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.controllers.objects.UserForMention;
 import com.onlyoffice.integration.entities.enums.Language;
 import com.onlyoffice.integration.entities.enums.Type;
-import com.onlyoffice.integration.entities.filemodel.File;
+import com.onlyoffice.integration.entities.filemodel.FileModel;
 import com.onlyoffice.integration.services.EditorServices;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -49,6 +52,9 @@ public class EditorController {
     private DocumentManager documentManager;
 
     @Autowired
+    private DocumentTokenManager documentTokenManager;
+
+    @Autowired
     private UserServices userService;
 
     @Autowired
@@ -61,7 +67,7 @@ public class EditorController {
                         @RequestParam(value = "actionLink", required = false) String actionLink,
                         @CookieValue(value = "uid") String uid,
                         @CookieValue(value = "ulang") String lang,
-                        Model model){
+                        Model model) throws JsonProcessingException {
         Action action = Action.edit;
         Type type = Type.desktop;
         Language language = Language.en;
@@ -76,7 +82,7 @@ public class EditorController {
 
         User user = optionalUser.get();
 
-        File file = editorService.createConfiguration(user, fileName, actionLink, action, language, type);
+        FileModel fileModel = editorService.createConfiguration(user, fileName, actionLink, action, language, type);
 
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
@@ -90,26 +96,31 @@ public class EditorController {
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", documentManager.getServerUrl(true) + "/csv");
 
-        //TODO: Implementation
-        List<Map<String, Object>> usersForMentions = new ArrayList<>();
-
-        if(documentManager.tokenEnabled()){
-            file.generateToken();
-            dataInsertImage.put("token", documentManager.createToken(dataInsertImage));
-            dataCompareFile.put("token", documentManager.createToken(dataInsertImage));
-            dataMailMergeRecipients.put("token", documentManager.createToken(dataMailMergeRecipients));
+        List<UserForMention> usersForMentions=new ArrayList<>();
+        if(uid!=null && !uid.equals("uid-0")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                if (!u.getName().equals("anonymous")) {
+                    usersForMentions.add(new UserForMention(u.getName(), u.getEmail()));
+                }
+            }
         }
 
-        //TODO: Get rid of GSON
-        Gson gson = new Gson();
+        if(documentTokenManager.tokenEnabled()){
+            fileModel.generateToken();
+            dataInsertImage.put("token", documentTokenManager.createToken(dataInsertImage));
+            dataCompareFile.put("token", documentTokenManager.createToken(dataInsertImage));
+            dataMailMergeRecipients.put("token", documentTokenManager.createToken(dataMailMergeRecipients));
+        }
 
-        model.addAttribute("model", file);
+        ObjectMapper objectMapper=new ObjectMapper();
+
+        model.addAttribute("model", fileModel);
         model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);
-        model.addAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
-        model.addAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
-        model.addAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
+        model.addAttribute("dataInsertImage",  objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1));
+        model.addAttribute("dataCompareFile",  objectMapper.writeValueAsString(dataCompareFile));
+        model.addAttribute("dataMailMergeRecipients", objectMapper.writeValueAsString(dataMailMergeRecipients));
         model.addAttribute("usersForMentions", usersForMentions);
-
         return "editor.html";
     }
 }
