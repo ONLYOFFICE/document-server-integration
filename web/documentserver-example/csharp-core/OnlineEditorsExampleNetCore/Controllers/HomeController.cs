@@ -175,10 +175,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         // track file changes
         [Route("/track")]
-        public IActionResult Track([FromQuery(Name = "userAddress")] string userAddress, [FromQuery(Name = "fileName")] string fileName)
+        public IActionResult Track([FromQuery] string userAddress, [FromQuery] string fileName)
         {
             // read request body
-            var fileData = TrackManager.readBody(_httpContextAccessor.HttpContext);
+            var fileData = TrackManager.readBody(HttpContext);
 
             //var userAddress = _httpContextAccessor.HttpContext.Request.Query["userAddress"];
             //var fileName = Path.GetFileName(_httpContextAccessor.HttpContext.Request.Query["fileName"]);
@@ -206,7 +206,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     {
                         Debug.Print(e.StackTrace);
                     }
-                    break;
+                    return Json(new Dictionary<string, object>() { { "error", 0 } });
 
                 // MustSave, Corrupted
                 case WebEditorExtenstion.TrackerStatus.MustSave:
@@ -220,8 +220,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     {
                         saved = 1;
                     }
-                    _httpContextAccessor.HttpContext.Response.WriteAsync("{\"error\":" + saved + "}");
-                    break;
+                    return Json(new Dictionary<string, object>() { { "error", saved } });
 
                 // MustForceSave, CorruptedForceSave
                 case WebEditorExtenstion.TrackerStatus.MustForceSave:
@@ -235,10 +234,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     {
                         saved = 1;
                     }
-                    _httpContextAccessor.HttpContext.Response.WriteAsync("{\"error\":" + saved + "}");
-                    break;
+                    return Json(new Dictionary<string, object>() { { "error", saved } });
             }
-            return new EmptyResult();
+
+            return BadRequest();
         }
 
         // remove a file
