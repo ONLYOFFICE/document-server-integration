@@ -63,7 +63,6 @@ public class EditorConfig {
     private Mode mode;
     private User user;
 
-    //TODO: Refactor
     public void configure(com.onlyoffice.integration.entities.User user,
                           String fileName,
                           String actionData,

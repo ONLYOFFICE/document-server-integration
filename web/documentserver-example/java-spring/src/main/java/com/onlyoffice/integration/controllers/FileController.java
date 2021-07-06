@@ -22,7 +22,11 @@ import com.onlyoffice.integration.controllers.objects.ConverterBody;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.entities.enums.DocumentType;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
+import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
+import com.onlyoffice.integration.util.objects.ActionObject;
+import com.onlyoffice.integration.util.objects.TrackManagerRequestBody;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import com.onlyoffice.integration.util.TrackManager;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
@@ -38,20 +42,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-//TODO: Refactor
 @Controller
 public class FileController {
 
@@ -61,6 +68,11 @@ public class FileController {
     @Autowired
     private DocumentManager documentManager;
 
+    @Autowired
+    private DocumentTokenManager documentTokenManager;
+
+    @Autowired
+    private DocumentManagerExts documentManagerExts;
     @Autowired
     private TrackManager trackManager;
 
@@ -89,7 +101,7 @@ public class FileController {
     }
 
     private ResponseEntity<Resource> downloadFile(String fileName){
-        String fileLocation = documentManager.forcesavePath(fileName, null, false);
+        String fileLocation = documentManager.forceSavePath(fileName, null, false);
         if (fileLocation.equals("")){
             fileLocation = documentManager.storagePath(fileName, null);
         }
@@ -98,7 +110,7 @@ public class FileController {
 
         String contentType = null;
         if(contentType == null) {
-            contentType = "application/octet-stream";
+        contentType = "application/octet-stream";
         }
 
         return ResponseEntity.ok()
@@ -122,7 +134,7 @@ public class FileController {
                 return "{ \"error\": \"File size is incorrect\"}";
             }
 
-            if(!documentManager.getFileExts().contains(fileExtension)){
+            if(!documentManagerExts.getFileExts().contains(fileExtension)){
                 return "{ \"error\": \"File type is not supported\"}";
             }
 
@@ -150,7 +162,7 @@ public class FileController {
         String internalFileExt = fileUtility.getInternalExtension(type);
 
         try{
-            if(documentManager.getConvertExts().contains(fileExt)){
+            if(documentManagerExts.getConvertExts().contains(fileExt)){
                 String key = serviceConverter.generateRevisionId(fileUri);
                 String newFileUri = serviceConverter
                         .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
@@ -224,7 +236,7 @@ public class FileController {
     public ResponseEntity<Resource> download(@RequestParam("fileName") String fileName,
                                              HttpServletRequest request){
         try{
-            if(documentManager.tokenEnabled()){
+            if(documentTokenManager.tokenEnabled()){
                 String header = request.getHeader(documentJwtHeader == null
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
 
@@ -249,11 +261,23 @@ public class FileController {
     @GetMapping("/create")
     public String create(@RequestParam("fileExt") String fileExt,
                          @RequestParam(value = "sample", required = false) Optional<Boolean> isSample,
-                         @CookieValue(value = "uid", required = false) String uid){
-        return "notImplemented.html";
+                         @CookieValue(value = "uid", required = false) String uid, Model model){
+        Boolean sampleData=(isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
+        if(fileExt!=null){
+            try{
+                Optional<User> user = userService.findUserById(Integer.parseInt(uid));
+                String uname = user.get().getName();
+                String fileName = documentManager.createDemo(fileExt, sampleData, uid, uname);
+                return "redirect:editor?fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            }catch (Exception ex){
+//                return "Error: "+ex.getMessage();
+                model.addAttribute("error",ex.getMessage());
+                return "error.html";
+            }
+        }
+        return "redirect:/";
     }
 
-    //TODO: NOT TESTED
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name") String name)
     {
@@ -261,7 +285,6 @@ public class FileController {
         return downloadFile(fileName);
     }
 
-    //TODO: NOT TESTED
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv()
     {
@@ -269,7 +292,6 @@ public class FileController {
         return downloadFile(fileName);
     }
 
-    //TODO: NOT TESTED
     @GetMapping("/files")
     @ResponseBody
     public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) String fileId){
@@ -284,33 +306,30 @@ public class FileController {
         return files;
     }
 
-    //TODO: A separate @RequestBody class
-    //TODO: A separate return class
-    //TODO: Refactor
     @PostMapping("/track")
     @ResponseBody
     public String track(@RequestParam("fileName") String fileName,
-                         @RequestParam("userAddress") String userAddress){
-        JSONObject body = null;
+                        @RequestParam("userAddress") String userAddress,
+                        @RequestBody TrackManagerRequestBody body){
 
         try {
-            body = trackManager.readBody();
+            JSONObject bodyCheck = trackManager.readBody(body);
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
 
-        int status = Math.toIntExact((long) body.get("status"));
+        int status = body.getStatus();
         int saved = 0;
 
         if (status == 1) { //Editing
-            JSONArray actions = (JSONArray) body.get("actions");
-            JSONArray users = (JSONArray) body.get("users");
-            JSONObject action = (JSONObject) actions.get(0);
-            if (actions != null && action.get("type").toString().equals("0")) { //finished edit
-                String user = (String) action.get("userid");
+            List<ActionObject> actions =  body.getActions();
+            List<String> users =  body.getUsers();
+            ActionObject action =  actions.get(0);
+            if (actions != null && action.getType().equals("0")) { //finished edit
+                String user =  action.getUserid();
                 if (users.indexOf(user) == -1) {
-                    String key = (String) body.get("key");
+                    String key = body.getKey();
                     try {
                         trackManager.commandRequest("forcesave", key);
                     } catch (Exception e) {

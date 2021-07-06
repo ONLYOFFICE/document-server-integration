@@ -18,9 +18,12 @@
 
 package com.onlyoffice.integration.util;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
+import com.onlyoffice.integration.util.objects.ActionObject;
+import com.onlyoffice.integration.util.objects.TrackManagerRequestBody;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,12 +40,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
-//TODO: Refactor everything
 @Component
 public class TrackManager {
 
@@ -51,6 +51,9 @@ public class TrackManager {
 
     @Autowired
     private DocumentManager documentManager;
+
+    @Autowired
+    private DocumentTokenManager documentTokenManager;
 
     @Autowired
     private FileUtility fileUtility;
@@ -67,19 +70,20 @@ public class TrackManager {
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
 
-    //TODO: A separate @RequestBody class
-    public JSONObject readBody() throws Exception {
-        String bodyString = "";
+    public JSONObject readBody(TrackManagerRequestBody tr) throws Exception {
 
-        try {
-            Scanner scanner = new Scanner(request.getInputStream());
-            scanner.useDelimiter("\\A");
-            bodyString = scanner.hasNext() ? scanner.next() : "";
-            scanner.close();
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        ObjectMapper om=new ObjectMapper();
+        String bodyString =om.writeValueAsString(tr);
+
+//        try {
+//            Scanner scanner = new Scanner(request.getInputStream());
+//            scanner.useDelimiter("\\A");
+//            bodyString = scanner.hasNext() ? scanner.next() : "";
+//            scanner.close();
+//        }
+//        catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
 
         if (bodyString.isEmpty()) {
             throw new Exception("{\"error\":1,\"message\":\"Request payload is empty\"}");
@@ -95,7 +99,7 @@ public class TrackManager {
             throw new Exception("{\"error\":1,\"message\":\"JSON Parsing error\"}");
         }
 
-        if (documentManager.tokenEnabled()) {
+        if (documentTokenManager.tokenEnabled()) {
             String token = (String) body.get("token");
 
             if (token == null) {
@@ -110,7 +114,7 @@ public class TrackManager {
                 throw new Exception("{\"error\":1,\"message\":\"JWT expected\"}");
             }
 
-            JWT jwt = documentManager.readToken(token);
+            JWT jwt = documentTokenManager.readToken(token);
             if (jwt == null) {
                 throw new Exception("{\"error\":1,\"message\":\"JWT validation failed\"}");
             }
@@ -127,8 +131,7 @@ public class TrackManager {
             }
 
             try {
-                Gson gson = new Gson();
-                Object obj = parser.parse(gson.toJson(jwt.claims));
+                Object obj = parser.parse(om.writeValueAsString(jwt.claims));
                 body = (JSONObject) obj;
             } catch (Exception ex) {
                 throw new Exception("{\"error\":1,\"message\":\"Parsing error\"}");
@@ -138,11 +141,10 @@ public class TrackManager {
         return body;
     }
 
-    //TODO: A separate @RequestBody class
-    public void processSave(JSONObject body, String fileName, String userAddress) throws Exception{
-        String downloadUri = (String) body.get("url");
-        String changesUri = (String) body.get("changesurl");
-        String key = (String) body.get("key");
+    public void processSave(TrackManagerRequestBody body, String fileName, String userAddress) throws Exception{
+        String downloadUri = body.getUrl();
+        String changesUri = body.getChangesurl();
+        String key = body.getKey();
         String newFileName = fileName;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
@@ -170,21 +172,22 @@ public class TrackManager {
         String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
                 documentManager.getFileVersion(histDir.toAbsolutePath().toString()));  // get the path to the file version
 
-        //TODO: Replace with NIO
-        File ver = new File(versionDir);
-        File lastVersion = new File(documentManager.storagePath(fileName, userAddress));
-        File toSave = new File(storagePath);
+        Path ver=Paths.get(versionDir);
+        Path lastVersion=Paths.get(documentManager.storagePath(fileName, userAddress));
+        Path toSave=Paths.get(storagePath);
 
-        if (!ver.exists()) ver.mkdirs();
+        if (!Files.exists(ver)) Files.createDirectories(ver);
+        Files.move(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt),
+                new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING}); // get the path to the previous file version and rename the last file version with it
 
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));  // get the path to the previous file version and rename the last file version with it
-
-        downloadToFile(downloadUri, toSave);  // save file to the storage path
+        downloadToFile(downloadUri, Files.createFile(toSave).toFile());  // save file to the storage path
         downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
 
-        String history = (String) body.get("changeshistory");
-        if (history == null && body.containsKey("history")) {
-            history = ((JSONObject) body.get("history")).toJSONString();
+        ObjectMapper om=new ObjectMapper();
+        String history = om.writeValueAsString(body.getChangeshistory());
+//        if (history == null && body.containsKey("history")) {
+        if(history==null && body.getHistory()!=null){
+            history = om.writeValueAsString(body.getHistory());
         }
         if (history != null && !history.isEmpty()) {
             FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));  // write the history changes to the changes.json file
@@ -196,7 +199,7 @@ public class TrackManager {
         fw.write(key);
         fw.close();
 
-        String forcesavePath = documentManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
+        String forcesavePath = documentManager.forceSavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
         if (!forcesavePath.equals("")) {  // if the forcesaved file version exists
             File forceSaveFile = new File(forcesavePath);
             forceSaveFile.delete();  // remove it
@@ -242,21 +245,21 @@ public class TrackManager {
         params.put("key", key);
 
         String headerToken = "";
-        if (documentManager.tokenEnabled())  // check if a secret key to generate token exists or not
+        if (documentTokenManager.tokenEnabled())  // check if a secret key to generate token exists or not
         {
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", params);
-            headerToken = documentManager.createToken(payloadMap);  // encode a payload object into a header token
+            headerToken = documentTokenManager.createToken(payloadMap);  // encode a payload object into a header token
 
             // add a header Authorization with a header token and Authorization prefix in it
             connection.setRequestProperty(documentJwtHeader.equals("") ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);
 
-            String token = documentManager.createToken(params);  // encode a payload object into a body token
+            String token = documentTokenManager.createToken(params);  // encode a payload object into a body token
             params.put("token", token);
         }
 
-        Gson gson = new Gson();
-        String bodyString = gson.toJson(params);
+        ObjectMapper objectMapper=new ObjectMapper();
+        String bodyString = objectMapper.writeValueAsString(params);
 
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
 
@@ -282,9 +285,9 @@ public class TrackManager {
         }
     }
 
-    public void processForceSave(JSONObject body, String fileName, String userAddress) throws Exception {
+    public void processForceSave(TrackManagerRequestBody body, String fileName, String userAddress) throws Exception {
 
-        String downloadUri = (String) body.get("url");
+        String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
@@ -306,7 +309,7 @@ public class TrackManager {
         }
 
         String forcesavePath = "";
-        boolean isSubmitForm = body.get("forcesavetype").toString().equals("3");  // SubmitForm
+        boolean isSubmitForm = body.getForcesavetype().toString().equals("3");  // SubmitForm
 
         if (isSubmitForm) {  // if the form is submitted
             // new file
@@ -323,9 +326,9 @@ public class TrackManager {
             }
 
             // create forcesave path if it doesn't exist
-            forcesavePath = documentManager.forcesavePath(fileName, userAddress, false);
+            forcesavePath = documentManager.forceSavePath(fileName, userAddress, false);
             if (forcesavePath == "") {
-                forcesavePath = documentManager.forcesavePath(fileName, userAddress, true);
+                forcesavePath = documentManager.forceSavePath(fileName, userAddress, true);
             }
         }
 
@@ -333,9 +336,9 @@ public class TrackManager {
         downloadToFile(downloadUri, toSave);
 
         if (isSubmitForm) {
-            JSONArray actions = (JSONArray) body.get("actions");
-            JSONObject action = (JSONObject) actions.get(0);
-            String user = (String) action.get("userid");  // get the user id
+            List<ActionObject> actions =  body.getActions();
+            ActionObject action = actions.get(0);
+            String user = action.getUserid();  // get the user id
             documentManager.createMeta(fileName, user, "Filling Form", userAddress);  // create meta data for forcesaved file
         }
     }

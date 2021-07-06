@@ -84,6 +84,7 @@
                     var title = document.title.replace(/^\☆/g, "");
                     document.title = (favorite ? "☆" : "") + title;
                     docEditor.setFavorite(favorite);
+                    [[${model.ChangeFavoriteFlag()}]];
                 };
 
 
@@ -146,9 +147,11 @@
                     };
                     config.events['onRequestSendNotify'] = function (event) {
                         var actionLink = JSON.stringify(event.data.actionLink);
+                        var replaceLink =replaceActionLink(location.href, actionLink);
+                        docEditor.setActionLink(replaceLink);
                         console.log("onRequestSendNotify:");
                         console.log(event.data);
-                        console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+                        console.log("Link to comment: " + replaceLink);
                     };
                 }
 

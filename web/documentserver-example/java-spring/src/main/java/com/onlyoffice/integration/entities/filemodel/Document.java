@@ -63,8 +63,7 @@ public class Document {
                         + Long.toString(new File(documentManager.storagePath(fileName, null)).lastModified()));
         this.info = applicationContext.getBean(Info.class);
         this.permissions = permissions;
-        //TODO: Add favorite logic
-        this.info.setFavorite(true);
+        this.info.setFavorite(false);
     }
 
     public String getFileType() {
