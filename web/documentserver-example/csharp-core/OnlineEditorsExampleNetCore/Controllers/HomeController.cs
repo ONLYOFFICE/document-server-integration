@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OnlineEditorsExampleNetCore.Helpers;
 using OnlineEditorsExampleNetCore.Models;
-using OnlineEditorsExampleNetCore.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -67,13 +66,13 @@ namespace OnlineEditorsExampleNetCore.Controllers
         [Route("/upload")]
         public IActionResult Upload()
         {
-            _httpContextAccessor.HttpContext.Response.ContentType = "text/plain";
+            HttpContext.Response.ContentType = "text/plain";
             try
             {
-                var httpPostedFile = _httpContextAccessor.HttpContext.Request.Form.Files[0];
+                var httpPostedFile = HttpContext.Request.Form.Files[0];
                 string fileName;
 
-                if (_httpContextAccessor.HttpContext.Request.Headers["User-Agent"] == "IE")
+                if (HttpContext.Request.Headers["User-Agent"] == "IE")
                 {
                     var files = httpPostedFile.FileName.Split(new char[] { '\\' });
                     fileName = files[files.Length - 1];
@@ -103,27 +102,28 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
                 //httpPostedFile.SaveAs(savedFileName);  // and save it
                 // get file meta information or create the default one
-                var id = _httpContextAccessor.HttpContext.Request.Cookies.GetOrDefault("uid", null);
+                var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\"}");
+                Json(new Dictionary<string, object>() {
+                    { "filename", fileName },
+                    { "documentType", documentType }
+                });
             }
             catch (Exception e)
             {
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"error\": \"" + e.Message + "\"}");
+                Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
 
         [Route("/convert")]
-        public IActionResult Convert([FromQuery(Name = "filename")] string fileName)
+        public IActionResult Convert([FromQuery] string fileName)
         {
-            _httpContextAccessor.HttpContext.Response.ContentType = "text/plain";
+            HttpContext.Response.ContentType = "text/plain";
             try
             {
-                //var fileName = _httpContextAccessor.HttpContext.Request.Query["filename"];
                 var fileUri = DocManagerHelper.GetFileUri(fileName, true);
-
                 var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
 
@@ -136,7 +136,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     var result = ServiceConverter.GetConvertedUri(fileUri, extension, internalExtension, key, true, out newFileUri);
                     if (result != 100)
                     {
-                        _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
+                        Json(new Dictionary<string, object>() {
+                            { "step", result },
+                            { "filename", fileName }
+                        });
                     }
 
                     var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
@@ -161,14 +164,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
                     WebEditorExtenstion.Remove(fileName);
                     fileName = correctName;
-                    DocManagerHelper.CreateMeta(fileName, _httpContextAccessor.HttpContext.Request.Cookies.GetOrDefault("uid", ""), _httpContextAccessor.HttpContext.Request.Cookies.GetOrDefault("uname", ""));
+                    DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
 
                 }
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"filename\" : \"" + fileName + "\"}");
+                Json(new Dictionary<string, object>() { { "filename", fileName } });
             }
             catch (Exception e)
             {
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"error\": \"" + e.Message + "\"}");
+                Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
@@ -180,8 +183,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
             // read request body
             var fileData = TrackManager.readBody(HttpContext);
 
-            //var userAddress = _httpContextAccessor.HttpContext.Request.Query["userAddress"];
-            //var fileName = Path.GetFileName(_httpContextAccessor.HttpContext.Request.Query["fileName"]);
             var status = (WebEditorExtenstion.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
             var saved = 1;  // editing
             switch (status)
@@ -242,65 +243,64 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         // remove a file
         [Route("/remove")]
-        public IActionResult Remove([FromQuery(Name = "fileName")] string fileName)
+        public IActionResult Remove([FromQuery] string fileName)
         {
-            _httpContextAccessor.HttpContext.Response.ContentType = "text/plain";
+            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            HttpContext.Response.ContentType = "text/plain";
             try
             {
-                //var fileName = _httpContextAccessor.HttpContext.Request.Query["fileName"];
                 WebEditorExtenstion.Remove(fileName);
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"success\": true }");
+                Json(new Dictionary<string, object>() { { "success", true } });
             }
             catch (Exception e)
             {
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"error\": \"" + e.Message + "\"}");
+                Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
+            Response.Redirect(Url.Action("Index", "Home"));
             return new EmptyResult();
         }
 
         // get files information
         [Route("/files")]
-        public IActionResult Files([FromQuery(Name = "fileId")] string fileId)
+        public IActionResult Files([FromQuery] string fileId)
         {
             List<Dictionary<string, object>> files = null;
 
             try
             {
-                _httpContextAccessor.HttpContext.Response.ContentType = "application/json";
+                HttpContext.Response.ContentType = "application/json";
 
                 if (fileId.ToString() == null)
                 {
                     files = DocManagerHelper.GetFilesInfo();  // get the information about the files from the storage path
-                    _httpContextAccessor.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(files));
+                    Json(JsonConvert.SerializeObject(files));
                 }
                 else
                 {
-                    //var fileId = _httpContextAccessor.HttpContext.Request.Query["fileId"];  // get file id from the request
                     files = DocManagerHelper.GetFilesInfo(fileId);
                     if (files.Count == 0)
                     {
-                        _httpContextAccessor.HttpContext.Response.WriteAsync("\"File not found\"");
+                        Json("File not found");
                     }
                     else
                     {
-                        _httpContextAccessor.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(files));
+                        Json(JsonConvert.SerializeObject(files));
                     }
                 }
             }
             catch (Exception e)
             {
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"error\": \"" + e.Message + "\"}");
+                Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
 
         // get sample files from the assests
         [Route("/assets")]
-        public IActionResult Assets([FromQuery(Name = "fileName")] string fileName)
+        public IActionResult Assets([FromQuery] string fileName)
         {
-            //var fileName = Path.GetFileName(_httpContextAccessor.HttpContext.Request.Query["filename"]);
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, _httpContextAccessor.HttpContext);
+            WebEditorExtenstion.download(filePath, HttpContext);
             return new EmptyResult();
         }
 
@@ -310,32 +310,28 @@ namespace OnlineEditorsExampleNetCore.Controllers
         {
             var fileName = "csv.csv";
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, _httpContextAccessor.HttpContext);
+            WebEditorExtenstion.download(filePath, HttpContext);
             return new EmptyResult();
         }
 
         // download a file
         [Route("/download")]
-        public IActionResult Download([FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "userAddress")] string userAddress)
+        public IActionResult Download([FromQuery] string fileName, [FromQuery] string userAddress)
         {
             try
             {
-                //var fileName = Path.GetFileName(_httpContextAccessor.HttpContext.Request.Query["fileName"]);
-                //var userAddress = _httpContextAccessor.HttpContext.Request.Query["userAddress"];
-
                 if (JwtManager.Enabled)
                 {
                     string JWTheader = Startup.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : Startup.AppSettings["files.docservice.header"];
 
-                    if (_httpContextAccessor.HttpContext.Request.Headers.Keys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    if (HttpContext.Request.Headers.Keys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        var headerToken = _httpContextAccessor.HttpContext.Request.Headers[JWTheader].ToString().Substring("Bearer ".Length);
+                        var headerToken = HttpContext.Request.Headers[JWTheader].ToString().Substring("Bearer ".Length);
                         string token = JwtManager.Decode(headerToken);
                         if (token == null || token.Equals(""))
                         {
-                            _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            _httpContextAccessor.HttpContext.Response.WriteAsync("JWT validation failed");
-                            
+                            HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            Json("JWT validation failed");
                         }
                     }
                 }
@@ -345,11 +341,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 {
                     filePath = DocManagerHelper.StoragePath(fileName, userAddress);  // or to the original document
                 }
-                WebEditorExtenstion.download(filePath, _httpContextAccessor.HttpContext);
+                WebEditorExtenstion.download(filePath, HttpContext);
             }
             catch (Exception)
             {
-                _httpContextAccessor.HttpContext.Response.WriteAsync("{ \"error\": \"File not found!\"}");
+                Json(new Dictionary<string, object>() { { "error", "File not found!" } });
             }
             return new EmptyResult();
         }

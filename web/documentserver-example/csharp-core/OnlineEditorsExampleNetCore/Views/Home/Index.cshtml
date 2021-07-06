@@ -67,7 +67,7 @@
                                 <div class="upload-panel clearFix">
                                     <a class="file-upload">
                                         Upload file
-                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Action("Upload", "Home")" />
+                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Content("~/upload")" /> 
                                     </a>
                                 </div>
                             </div>
@@ -276,15 +276,15 @@
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
-                                                            <a href="download&fileName=@HttpUtility.UrlEncode(storedFile.Name)">
+                                                            <a href="@DocManagerHelper.GetDownloadUrl(storedFile.Name)">
                                                                 <img class="icon-download" src="~/img/download-24.png" alt="Download" title="Download" />
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
-                                                            <a class="delete-file" data-filename="@storedFile.Name">
-                                                                <img class="icon-delete" src="~/img/delete-24.png" alt="Delete" title="Delete" />
+                                                            <a  href="@Url.Action("Remove", "Home", new { fileName = storedFile.Name })">
+                                                                    <img class="icon-delete" src="~/img/delete-24.png" alt="Delete" title="Delete" />
                                                             </a>
-                                                        </td>
+                                                         </td>
                                                     </tr>
                                                 }
                                             </tbody>
@@ -367,7 +367,7 @@
     <script language="javascript" type="text/javascript">
             var ConverExtList = '@string.Join(",", DocManagerHelper.ConvertExts.ToArray())';
             var EditedExtList = '@string.Join(",", DocManagerHelper.EditedExts.ToArray())';
-            var UrlConverter = '@Url.Content("~/?type=convert")';
+            var UrlConverter = '@Url.Content("~/convert")';
             var UrlEditor = '@Url.Action("editor", "Home")';
     </script>
 </body>
