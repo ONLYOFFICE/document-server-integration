@@ -189,7 +189,7 @@
     }
 }
 
-@media (max-width: 1080px) and (min-width: 980px) {
+@media (max-width: 1080px) and (min-width: 970px) {
     .tableHeader {
         width: 90%;
     }
@@ -218,7 +218,7 @@
     }
 }
 
-@media (max-width: 980px) and (min-width: 890px) {
+@media (max-width: 970px) and (min-width: 890px) {
     .tableHeader {
         width: 75%;
     }
@@ -316,7 +316,7 @@
 }
 
 .downloadContentCellShift:after {
-    top: 33px;
+    bottom: 0;
     left: 0;
     content: "";
     background: #e5e5e5;
@@ -328,10 +328,6 @@
 @media (max-width: 769px) {
     .tableRow td:first-child {
         max-width: 100%;
-    }
-
-    .downloadContentCellShift:after {
-        top: 65px;
     }
 }
 
@@ -426,8 +422,6 @@
     }
 
     .downloadContentCellShift:after {
-        /*content: none;*/
-        top:97px;
         width: 85%;
     }
 

@@ -213,6 +213,7 @@
     }
 
     .tableHeaderCellDownload {
+        padding-right: 22px;
         width: 22%;
     }
 }
@@ -315,7 +316,7 @@
 }
 
 .downloadContentCellShift:after {
-    top: 33px;
+    bottom: 0;
     left: 0;
     content: "";
     background: #e5e5e5;
@@ -327,10 +328,6 @@
 @media (max-width: 769px) {
     .tableRow td:first-child {
         max-width: 100%;
-    }
-
-    .downloadContentCellShift:after {
-        top: 65px;
     }
 }
 
@@ -425,8 +422,6 @@
     }
 
     .downloadContentCellShift:after {
-        /*content: none;*/
-        top:97px;
         width: 85%;
     }
 
