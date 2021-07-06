@@ -91,13 +91,14 @@ public class IndexController {
                 description_user_1, null, List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()));
+                List.of(FilterState.NULL.toString()),true);
         userService.createUser("Mark Pottato", "pottato@mail.ru",
                 description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"));
+                List.of("group-2", ""), List.of("group-2"),false);
         userService.createUser("Hamish Mitchell", "mitchell@mail.ru",
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>());
+                List.of("group-2"), new ArrayList<>(),false);
+
     }
 
     @GetMapping("${url.index}")

@@ -36,6 +36,7 @@ public class Permission {
     private Boolean modifyFilter = true;
     private Boolean modifyContentControl = true;
     private Boolean review = true;
+    private Boolean templates=true;
     @ManyToMany
     private List<Group> reviewGroups;
     @ManyToMany
@@ -151,5 +152,13 @@ public class Permission {
 
     public void setCommentsRemoveGroups(List<Group> commentsRemoveGroups) {
         this.commentsRemoveGroups = commentsRemoveGroups;
+    }
+
+    public Boolean getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(Boolean templates) {
+        this.templates = templates;
     }
 }

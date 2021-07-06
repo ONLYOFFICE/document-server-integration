@@ -48,7 +48,7 @@ public class EditorServices {
         Permission permissions = createPermissions(user);
 
         Document doc = context.getBean(Document.class);
-        doc.configure(fileName, permissions);
+        doc.configure(fileName, permissions,"uid-"+user.getId());
 
         EditorConfig config = this.createEditorConfig(user, fileName, actionData, action, lang, type);
 

@@ -59,9 +59,6 @@ public class FileModel {
         this.type = type;
     }
 
-    public void ChangeFavoriteFlag(){
-        this.document.getInfo().setFavorite(!this.document.getInfo().getFavorite());
-    }
 
     public String[] GetHistory(){
         JSONParser parser = new JSONParser();

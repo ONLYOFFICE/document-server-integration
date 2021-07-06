@@ -52,7 +52,7 @@ public class Document {
     private String url;
     private Permission permissions;
 
-    public void configure(String fileName, Permission permissions){
+    public void configure(String fileName, Permission permissions,String uid){
         this.title = fileName;
         this.url = documentManager.getDownloadUrl(fileName);
         this.urlUser = documentManager.getFileUri(fileName, false);
@@ -63,7 +63,20 @@ public class Document {
                         + Long.toString(new File(documentManager.storagePath(fileName, null)).lastModified()));
         this.info = applicationContext.getBean(Info.class);
         this.permissions = permissions;
-        this.info.setFavorite(false);
+        switch (uid){
+            case "uid-0":{
+                this.info.setFavorite(null);
+            }
+            case "uid-1":{
+                this.info.setFavorite(null);
+            }
+            case "uid-2":{
+                this.info.setFavorite(true);
+            }
+            case "uid-3":{
+                this.info.setFavorite(false);
+            }
+        }
     }
 
     public String getFileType() {

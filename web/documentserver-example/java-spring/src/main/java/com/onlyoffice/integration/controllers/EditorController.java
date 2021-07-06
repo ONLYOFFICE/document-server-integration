@@ -100,7 +100,7 @@ public class EditorController {
         if(uid!=null && !uid.equals("uid-0")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (!u.getName().equals("anonymous")) {
+                if (u.getName()!=null &&u.getEmail()!=null && "uid-"+u.getId()!=uid) {
                     usersForMentions.add(new UserForMention(u.getName(), u.getEmail()));
                 }
             }
