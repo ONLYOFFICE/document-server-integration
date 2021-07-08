@@ -570,3 +570,8 @@
         width: 50%;
     }
 }
+@media (max-width: 510px) {
+    .tableRow td:first-child{
+        flex-grow: 0;
+    }
+}
