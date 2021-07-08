@@ -3,6 +3,9 @@
     max-width: 100%;
 }
 
+.downloadContentCells{
+    margin-left: auto;
+}
 .tableRow td:last-child:after{
     top: 33px;
     left: 0;
