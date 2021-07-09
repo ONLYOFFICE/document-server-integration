@@ -153,10 +153,10 @@
                           editUrl = "editor?fileName=#{URI::encode(d)}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
-                          <tr class="tableRow" title="<%= d %>">
+                          <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
                             <td class="contentCells">
                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
-                                    <span title="<%= d %>"><%= d %></span>
+                                    <span><%= d %></span>
                                 </a>
                             </td>
                             <% if canEdit %>

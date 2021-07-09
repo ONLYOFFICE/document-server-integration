@@ -142,10 +142,10 @@
                                         <table cellspacing="0" cellpadding="0" width="100%">
                                             <tbody>
                                                 {% for file in files %}
-                                                    <tr class="tableRow" title="{{ file.title }}">
+                                                    <tr class="tableRow" title="{{ file.title }} [{{file.version}}]">
                                                         <td class="contentCells">
                                                             <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
-                                                                <span title="{{ file.title }}">{{ file.title }}</span>
+                                                                <span>{{ file.title }}</span>
                                                             </a>
                                                         </td>
                                                         {% if file.canEdit %}

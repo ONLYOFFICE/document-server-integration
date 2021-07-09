@@ -199,7 +199,7 @@ public class DocumentManager
     {
         File dir = new File(historyPath);
 
-        if (!dir.exists()) return 0;  // if the history path doesn't exist, then the file version is 0
+        if (!dir.exists()) return 1;  // if the history path doesn't exist, then the file version is 0
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override

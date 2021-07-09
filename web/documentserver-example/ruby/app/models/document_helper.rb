@@ -134,7 +134,7 @@ class DocumentHelper
     # get the last file version
     def get_file_version(hist_dir)
       if !Dir.exist?(hist_dir)
-        return 0
+        return 1
       end
 
       ver = 1

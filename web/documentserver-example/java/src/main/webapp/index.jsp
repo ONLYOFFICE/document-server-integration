@@ -177,11 +177,12 @@
                                                     <% for (Integer i = 0; i < files.length; i++) {
                                                         String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
+                                                        String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %>">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
-                                                                    <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
+                                                                    <span><%= files[i].getName() %></span>
                                                                 </a>
                                                             </td>
                                                             <% if (canEdit) { %>
