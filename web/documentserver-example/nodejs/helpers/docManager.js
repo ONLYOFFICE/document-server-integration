@@ -270,7 +270,7 @@ docManager.getStoredFiles = function () {
 
         if (!stats.isDirectory()) {  // if the element isn't a directory
             let historyPath = docManager.historyPath(storedFiles[i], userAddress);  // get the path to the file history
-            let version = 1;
+            let version = 0;
             if (historyPath != "") {  // if the history path exists
                 version = docManager.countVersion(historyPath);  // get the last file version
             }
@@ -281,7 +281,7 @@ docManager.getStoredFiles = function () {
                 name: storedFiles[i],
                 documentType: fileUtility.getFileType(storedFiles[i]),
                 canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
-                version: version
+                version: version+1
             };
 
             if (!result.length) {  // if the result array is empty

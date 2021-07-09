@@ -175,10 +175,10 @@
                                                     <table cellspacing="0" cellpadding="0" width="100%">
                                                         <tbody>
                                                             <?php foreach ($storedFiles as &$storeFile) {
-                                                                echo '<tr class="tableRow" title="'.$storeFile->name.'">';
+                                                                echo '<tr class="tableRow" title="'.$storeFile->name.' ['.getFileVersion(getHistoryDir(getStoragePath($storeFile->name))).']">';
                                                                 echo ' <td class="contentCells">';
                                                                 echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).'" target="_blank">';
-                                                                echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
+                                                                echo '   <span>'.$storeFile->name.'</span>';
                                                                 echo '  </a>';
                                                                 echo ' </td>';
                                                                 if ($storeFile->canEdit) {

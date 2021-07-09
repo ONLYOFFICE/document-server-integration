@@ -175,7 +175,7 @@
                                                 <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                     <td class="contentCells">
                                                         <a class="stored-edit <%= storedFiles[i].documentType %>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                            <span title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]"><%= storedFiles[i].name %></span>
+                                                            <span><%= storedFiles[i].name %></span>
                                                         </a>
                                                     </td>
                                                     <% if (storedFiles[i].canEdit) { %>
@@ -251,7 +251,7 @@
                                             <% } %>
                                         </tbody>
                                     </table>
-                                </div>  
+                                </div>
                             </div>
                             <% } %>
                         </div>
