@@ -28,6 +28,8 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/media.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/media-wopi.css">
 </head>
 
 <body>
@@ -185,13 +187,13 @@
                                                                     <% } %>
                                                                 </td>
                                                             <% } %>
-                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <td class="contentCells contentCells-icon contentCells-shift downloadContentCells">
                                                                 <a href="wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
-                                                                    <img class="icon-download" src="images/download-24.png" alt="Download" title="Download" /></a>
+                                                                    <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                                                    <img class="icon-delete" src="images/delete-24.png" alt="Delete" title="Delete" /></a>
+                                                                    <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
                                                             </td>
                                                         </tr>
                                                     <% } %>

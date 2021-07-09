@@ -43,7 +43,8 @@ namespace OnlineEditorsExampleMVC
             // create a style bundle
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/stylesheet.css",
-                "~/Content/jquery-ui.css"
+                "~/Content/jquery-ui.css",
+                "~/Content/media.css"
                             ));
 
             // create an editor style bundle
