@@ -1,7 +1,7 @@
 package com.onlyoffice.integration.util.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.entities.filemodel.User;
 
 import java.util.List;
 

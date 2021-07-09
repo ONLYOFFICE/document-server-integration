@@ -116,6 +116,11 @@ public class IndexController {
         List<User> users = userService.findAll();
         String tooltip = users.stream().map(user -> user.getDescriptions()).collect(Collectors.joining());
 
+        List<String> versions=new ArrayList<>();
+        for(java.io.File file:files){
+            versions.add(" ["+documentManager.getFileVersion(file.getName(),null)+"]");
+        }
+        model.addAttribute("versions",versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);

@@ -170,11 +170,11 @@ public class DocumentManagerImpl implements DocumentManager {
     public int getFileVersion(String historyPath)
     {
         Path path = Paths.get(historyPath);
-        if (!Files.exists(path)) return 0;
+        if (!Files.exists(path)) return 1;
 
         try (Stream<Path> stream = Files.walk(path, 1)) {
             return stream
-                    .filter(file -> !Files.isDirectory(file))
+                    .filter(file -> Files.isDirectory(file))
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .collect(Collectors.toSet()).size();

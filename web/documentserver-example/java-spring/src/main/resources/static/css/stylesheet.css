@@ -762,3 +762,9 @@ html {
 .firstContentCellViewers {
     margin-left: auto;
 }
+.tableHeaderCellDownload{
+    width: 12%;
+}
+.tableHeaderCellRemove{
+    padding-left: 10px;
+}
