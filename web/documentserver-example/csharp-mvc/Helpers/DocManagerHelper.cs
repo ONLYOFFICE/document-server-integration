@@ -139,7 +139,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the file version by the history path
         public static int GetFileVersion(string historyPath)
         {
-            if (!Directory.Exists(historyPath)) return 1;  // if the history path doesn't exist, then the file version is 0
+            if (!Directory.Exists(historyPath)) return 1;  // if the history path doesn't exist, then the file version is 1
             return Directory.EnumerateDirectories(historyPath).Count() + 1;  // take only directories from the history folder and count them
         }
 
