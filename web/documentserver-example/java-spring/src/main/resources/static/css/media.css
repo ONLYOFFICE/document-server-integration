@@ -142,12 +142,12 @@
     }
 
     .copy {
-        /*margin-right: 0.5%;*/
-        padding-right: 1%;
+        margin:auto;
+        padding-right: 3%;
     }
 
     footer table tr td:first-child {
-        margin-left: 2%;
+        margin-left: auto;
         padding-left: 1%;
         margin-right: 1.5%;
     }
@@ -217,7 +217,7 @@
     }
 }
 
-@media (max-width: 970px) and (min-width: 890px) {
+@media (max-width: 986px) and (min-width: 890px) {
     .tableHeader {
         width: 75%;
     }
