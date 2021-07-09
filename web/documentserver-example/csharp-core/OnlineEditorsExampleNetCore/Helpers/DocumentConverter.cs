@@ -1,5 +1,4 @@
-﻿using Microsoft.Web.Administration;
-using Nancy.Json;
+﻿using Newtonsoft.Json;
 using OnlineEditorsExampleNetCore.Models;
 using System;
 using System.Collections.Generic;
@@ -8,9 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web.Helpers;
-
 
 namespace OnlineEditorsExampleNetCore.Helpers
 {
@@ -120,7 +117,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 body.Add("token", bodyToken);
             }
 
-            var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
+            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(body));
             request.ContentLength = bytes.Length;
             using (var requestStream = request.GetRequestStream())  // get the request stream
             {
@@ -169,7 +166,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
 
-            var responseFromService = System.Web.Helpers.Json.Decode(jsonDocumentResponse);
+            var responseFromService = Json.Decode(jsonDocumentResponse);
             if (jsonDocumentResponse == null) throw new WebException("Invalid answer format");
 
             var errorElement = responseFromService.error;  // if an error occurs

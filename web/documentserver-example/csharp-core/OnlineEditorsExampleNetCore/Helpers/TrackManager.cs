@@ -1,30 +1,10 @@
-﻿/**
- *
- * (c) Copyright Ascensio System SIA 2021
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-using Nancy.Json;
 using Newtonsoft.Json;
 
 namespace OnlineEditorsExampleNetCore.Helpers
@@ -83,7 +63,6 @@ namespace OnlineEditorsExampleNetCore.Helpers
                     context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT validation failed\"}");
                 }
             }
-
             return fileData;
         }
 
@@ -135,8 +114,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
             if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
             {
-                var jss = new JavaScriptSerializer();
-                hist = jss.Serialize(fileData["history"]);
+                hist = JsonConvert.SerializeObject(fileData["history"]);
             }
 
             if (!string.IsNullOrEmpty(hist))
@@ -218,9 +196,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
 
             if (isSubmitForm)
             {
-                var jss = new JavaScriptSerializer();
-                var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
-                var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
+                var actions = JsonConvert.DeserializeObject<List<object>>(JsonConvert.SerializeObject(fileData["actions"]));
+                var action = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(actions[0]));
                 var user = action["userid"].ToString();  // get the user id
                 DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
             }
@@ -258,7 +235,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 body.Add("token", bodyToken);
             }
 
-            var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
+            var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(body));
             request.ContentLength = bytes.Length;
             using (var requestStream = request.GetRequestStream())
             {

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OnlineEditorsExampleNetCore.Helpers;
 using OnlineEditorsExampleNetCore.Models;
@@ -30,14 +28,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Index()
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             return View();
         }
 
         public IActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             var file = new FileModel
                 {
                     Mode = editorsMode,  // editor mode: edit or view
@@ -51,7 +49,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Sample(string fileExt, bool? sample)
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             if (ModelState.IsValid)
             {
                 var fileName = DocManagerHelper.CreateDemo(fileExt, false);  // create a sample document
@@ -256,8 +254,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
             {
                 Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            Response.Redirect(Url.Action("Index", "Home"));
-            return new EmptyResult();
+            return Redirect(Url.Action("Index", "Home"));
         }
 
         // get files information

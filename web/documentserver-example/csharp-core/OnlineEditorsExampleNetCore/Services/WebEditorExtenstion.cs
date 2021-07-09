@@ -1,24 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Nancy.Json;
-using Newtonsoft.Json;
 using OnlineEditorsExampleNetCore.Helpers;
-using OnlineEditorsExampleNetCore.Models;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace OnlineEditorsExampleNetCore
 {
     public class WebEditorExtenstion
     {
-
         // define tracker status
         public enum TrackerStatus
         {

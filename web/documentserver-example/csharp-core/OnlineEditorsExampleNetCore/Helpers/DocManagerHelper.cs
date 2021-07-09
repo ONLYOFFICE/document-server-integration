@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Web;
 using System.Collections.Generic;
 using System.IO;
@@ -7,8 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System;
 using OnlineEditorsExampleNetCore.Models;
-using Nancy.Json;
-using System.Text;
+using Newtonsoft.Json;
 
 namespace OnlineEditorsExampleNetCore.Helpers
 {
@@ -183,7 +181,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             var histDir = HistoryDir(StoragePath(fileName, userAddress));  // create history directory
             Directory.CreateDirectory(histDir);
             // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
-            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), JsonConvert.SerializeObject(new Dictionary<string, object> {
                     { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
                     { "id", uid },
                     { "name", uname }

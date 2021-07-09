@@ -9,23 +9,6 @@
 <html lang="en">
 <head runat="server">
     @await Html.PartialAsync("MetatagsPartial")
-    <!--
-    *
-    * (c) Copyright Ascensio System SIA 2021
-    *
-    * Licensed under the Apache License, Version 2.0 (the "License");
-    * you may not use this file except in compliance with the License.
-    * You may obtain a copy of the License at
-    *
-    *     http://www.apache.org/licenses/LICENSE-2.0
-    *
-    * Unless required by applicable law or agreed to in writing, software
-    * distributed under the License is distributed on an "AS IS" BASIS,
-    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    * See the License for the specific language governing permissions and
-    * limitations under the License.
-    *
-    -->
     <title>ONLYOFFICE</title>
     <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
@@ -49,7 +32,7 @@
                             <span>Create new</span>
                             <div class="clearFix">
                                 <div class="create-panel">
-                                    <ul class="try-editor-list clearFix" data-link="@Url.Action("Sample", "Home")">
+                                    <ul class="try-editor-list clearFix" data-link="@this.Url.Action("Sample", "Home")">
                                         <li>
                                             <a class="try-editor word" asp-for="docx" data-type="docx">Document</a>
                                         </li>
@@ -65,10 +48,10 @@
                                     </label>
                                 </div>
                                 <div class="upload-panel clearFix">
-                                    <a class="file-upload">
-                                        Upload file
-                                        <input type="file" id="fileupload" name="files[]" data-url="@Url.Content("~/upload")" /> 
-                                    </a>
+                                        <a class="file-upload">
+                                            Upload file
+                                            <input type="file" id="fileupload" name="files[]" data-url="@Url.Content("~/upload")" />
+                                        </a>
                                 </div>
                             </div>
                             <table class="user-block-table" cellspacing="0" cellpadding="0">
