@@ -97,7 +97,7 @@ public class EditorController {
         dataMailMergeRecipients.put("url", documentManager.getServerUrl(true) + "/csv");
 
         List<UserForMention> usersForMentions=new ArrayList<>();
-        if(uid!=null && !uid.equals("0")) {
+        if(uid!=null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
                 if (u.getName()!=null &&u.getEmail()!=null && u.getId()!=Integer.parseInt(uid)) {

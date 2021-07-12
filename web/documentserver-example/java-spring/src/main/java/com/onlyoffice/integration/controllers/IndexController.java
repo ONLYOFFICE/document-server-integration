@@ -62,6 +62,15 @@ public class IndexController {
 
     @PostConstruct
     private void init(){
+        List<String> description_user_0=List.of(
+                "The name is requested when the editor is opened",
+                "Doesn’t belong to any group",
+                "Can review all the changes",
+                "Can perform all actions with comments",
+                "The file favorite state is undefined",
+                "Can't mention others in comments",
+                "Can't create new files from the editor"
+        );
         List<String> description_user_1 = List.of(
                 "File author by default",
                 "He doesn’t belong to any of the groups",
@@ -98,6 +107,8 @@ public class IndexController {
         userService.createUser("Hamish Mitchell", "mitchell@mail.ru",
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
                 List.of("group-2"), new ArrayList<>(),false);
+        userService.createUser("Anonymous",null,description_user_0,null,
+                null,null,null,null,null);
 
     }
 

@@ -64,17 +64,18 @@ public class Document {
         this.info = applicationContext.getBean(Info.class);
         this.permissions = permissions;
         switch (uid){
-            case "uid-0":{
+            case "uid-4":
+            case "uid-1": {
                 this.info.setFavorite(null);
-            }
-            case "uid-1":{
-                this.info.setFavorite(null);
+                break;
             }
             case "uid-2":{
                 this.info.setFavorite(true);
+                break;
             }
             case "uid-3":{
                 this.info.setFavorite(false);
+                break;
             }
         }
     }

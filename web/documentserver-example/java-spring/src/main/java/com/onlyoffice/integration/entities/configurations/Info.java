@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class Info {
-    private Boolean favorite;
+    private Boolean favorite = null;
 
     public Boolean getFavorite() {
         return favorite;
