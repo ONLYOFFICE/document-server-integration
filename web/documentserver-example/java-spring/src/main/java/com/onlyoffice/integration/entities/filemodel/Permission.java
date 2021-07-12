@@ -19,9 +19,13 @@
 package com.onlyoffice.integration.entities.filemodel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.onlyoffice.integration.Action;
 import com.onlyoffice.integration.serializer.SerializerFilter;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
+import com.onlyoffice.integration.util.fileUtilities.FileUtility;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,16 +49,22 @@ public class Permission {
     private List<String> reviewGroups;
     private CommentGroup commentGroups;
 
-    public void configure(User user){
-        this.comment = user.getPermissions().getComment();
+    @Autowired
+    private DocumentManagerExts documentManagerExts;
+    @Autowired
+    private FileUtility fileUtility;
+
+    public void configure(User user, Action action, String fileName){
+        Boolean canEdit = documentManagerExts.getEditedExts().contains(fileUtility.getFileExtension(fileName));
+        this.comment = !action.equals(Action.view) && !action.equals(Action.fillForms) && !action.equals(Action.embedded) && !action.equals(Action.blockcontent);
         this.copy = user.getPermissions().getCopy();
         this.download = user.getPermissions().getDownload();
-        this.edit = user.getPermissions().getEdit();
+        this.edit = canEdit && (action.equals(Action.edit) ||action.equals(Action.view) ||action.equals(Action.filter) ||action.equals(Action.blockcontent)  );
         this.print = user.getPermissions().getPrint();
-        this.fillForms = user.getPermissions().getFillForms();
+        this.fillForms = !action.equals(Action.view) && !action.equals(Action.comment) && !action.equals(Action.embedded) && !action.equals(Action.blockcontent);
         this.modifyFilter = user.getPermissions().getModifyFilter();
         this.modifyContentControl = user.getPermissions().getModifyContentControl();
-        this.review = user.getPermissions().getReview();
+        this.review = canEdit && (action.equals(Action.edit) || action.equals(Action.review));
         this.reviewGroups = user.getPermissions()
                     .getReviewGroups()
                     .stream()

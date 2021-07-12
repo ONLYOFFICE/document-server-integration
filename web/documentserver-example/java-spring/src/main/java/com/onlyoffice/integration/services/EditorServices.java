@@ -45,7 +45,7 @@ public class EditorServices {
                                          Action action, Language lang, Type type){
         DocumentType documentType = fileUtility.getDocumentType(fileName);
 
-        Permission permissions = createPermissions(user);
+        Permission permissions = createPermissions(user,action,fileName);
 
         Document doc = context.getBean(Document.class);
         doc.configure(fileName, permissions,"uid-"+user.getId());
@@ -57,9 +57,9 @@ public class EditorServices {
         return fileModel;
     }
 
-    private Permission createPermissions(User user){
+    private Permission createPermissions(User user,Action action, String fileName){
         Permission permissions = context.getBean(Permission.class);
-        permissions.configure(user);
+        permissions.configure(user,action,fileName);
         return permissions;
     }
 
