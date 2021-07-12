@@ -56,7 +56,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var id = Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
-                Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
+                return Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             }
             return new EmptyResult();
         }
@@ -103,14 +103,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);
-                Json(new Dictionary<string, object>() {
+                return Json(new Dictionary<string, object>() {
                     { "filename", fileName },
                     { "documentType", documentType }
                 });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
@@ -134,10 +134,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     var result = ServiceConverter.GetConvertedUri(fileUri, extension, internalExtension, key, true, out newFileUri);
                     if (result != 100)
                     {
-                        Json(new Dictionary<string, object>() {
-                            { "step", result },
-                            { "filename", fileName }
-                        });
+                        return Json(new Dictionary<string, object>() { { "step", result }, { "filename", fileName } });
                     }
 
                     var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
@@ -165,11 +162,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
 
                 }
-                Json(new Dictionary<string, object>() { { "filename", fileName } });
+                return Json(new Dictionary<string, object>() { { "filename", fileName } });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
@@ -248,11 +245,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
             try
             {
                 WebEditorExtenstion.Remove(fileName);
-                Json(new Dictionary<string, object>() { { "success", true } });
+                return Json (new Dictionary<string, object>() { { "success", true } });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return Redirect(Url.Action("Index", "Home"));
         }
@@ -270,24 +267,24 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 if (fileId.ToString() == null)
                 {
                     files = DocManagerHelper.GetFilesInfo();  // get the information about the files from the storage path
-                    Json(JsonConvert.SerializeObject(files));
+                    return Json(JsonConvert.SerializeObject(files));
                 }
                 else
                 {
                     files = DocManagerHelper.GetFilesInfo(fileId);
                     if (files.Count == 0)
                     {
-                        Json("File not found");
+                        return Json("File not found");
                     }
                     else
                     {
-                        Json(JsonConvert.SerializeObject(files));
+                        return Json(JsonConvert.SerializeObject(files));
                     }
                 }
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return new EmptyResult();
         }
@@ -328,7 +325,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                         if (token == null || token.Equals(""))
                         {
                             HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            Json("JWT validation failed");
+                            return Json("JWT validation failed");
                         }
                     }
                 }
@@ -342,7 +339,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
             }
             catch (Exception)
             {
-                Json(new Dictionary<string, object>() { { "error", "File not found!" } });
+                return Json(new Dictionary<string, object>() { { "error", "File not found!" } });
             }
             return new EmptyResult();
         }
