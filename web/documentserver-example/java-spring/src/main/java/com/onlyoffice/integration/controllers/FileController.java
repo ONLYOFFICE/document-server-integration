@@ -220,9 +220,9 @@ public class FileController {
             String convertedHistoryLocation =  documentManager.historyDir(documentManager
                     .storagePath(fullFileName, null));
 
-            documentManager.deleteFilesRecursively(Paths.get(fileLocation));
-            documentManager.deleteFilesRecursively(Paths.get(historyLocation));
-            documentManager.deleteFilesRecursively(Paths.get(convertedHistoryLocation));
+            documentManager.deleteFilesRecursively(Paths.get(fileLocation.replace("%20"," ")));
+            documentManager.deleteFilesRecursively(Paths.get(historyLocation.replace("%20"," ")));
+            documentManager.deleteFilesRecursively(Paths.get(convertedHistoryLocation.replace("%20"," ")));
 
             return "{ \"success\": true }";
         }
