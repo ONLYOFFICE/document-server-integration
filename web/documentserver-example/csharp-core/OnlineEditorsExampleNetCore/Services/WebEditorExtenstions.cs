@@ -8,7 +8,7 @@ using System.Web;
 
 namespace OnlineEditorsExampleNetCore
 {
-    public class WebEditorExtenstion
+    public class WebEditorExtenstions
     {
         // define tracker status
         public enum TrackerStatus

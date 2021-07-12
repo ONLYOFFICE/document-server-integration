@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace OnlineEditorsExampleNetCore.Controllers
 {
@@ -103,7 +102,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);
-                return Json(new Dictionary<string, object>() {
+                Json(new Dictionary<string, object>() {
                     { "filename", fileName },
                     { "documentType", documentType }
                 });
@@ -157,12 +156,12 @@ namespace OnlineEditorsExampleNetCore.Controllers
                         }
                     }
 
-                    WebEditorExtenstion.Remove(fileName);
+                    WebEditorExtenstions.Remove(fileName);
                     fileName = correctName;
                     DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
 
                 }
-                return Json(new Dictionary<string, object>() { { "filename", fileName } });
+                Json(new Dictionary<string, object>() { { "filename", fileName } });
             }
             catch (Exception e)
             {
@@ -178,11 +177,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
             // read request body
             var fileData = TrackManager.readBody(HttpContext);
 
-            var status = (WebEditorExtenstion.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
+            var status = (WebEditorExtenstions.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
             var saved = 1;  // editing
             switch (status)
             {
-                case WebEditorExtenstion.TrackerStatus.Editing:
+                case WebEditorExtenstions.TrackerStatus.Editing:
                     try
                     {
                         var actions = JsonConvert.DeserializeObject<List<object>>(JsonConvert.SerializeObject(fileData["actions"]));
@@ -205,8 +204,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     return Json(new Dictionary<string, object>() { { "error", 0 } });
 
                 // MustSave, Corrupted
-                case WebEditorExtenstion.TrackerStatus.MustSave:
-                case WebEditorExtenstion.TrackerStatus.Corrupted:
+                case WebEditorExtenstions.TrackerStatus.MustSave:
+                case WebEditorExtenstions.TrackerStatus.Corrupted:
                     try
                     {
                         // saving a document
@@ -219,8 +218,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     return Json(new Dictionary<string, object>() { { "error", saved } });
 
                 // MustForceSave, CorruptedForceSave
-                case WebEditorExtenstion.TrackerStatus.MustForceSave:
-                case WebEditorExtenstion.TrackerStatus.CorruptedForceSave:
+                case WebEditorExtenstions.TrackerStatus.MustForceSave:
+                case WebEditorExtenstions.TrackerStatus.CorruptedForceSave:
                     try
                     {
                         // force saving a document
@@ -244,12 +243,12 @@ namespace OnlineEditorsExampleNetCore.Controllers
             HttpContext.Response.ContentType = "text/plain";
             try
             {
-                WebEditorExtenstion.Remove(fileName);
-                return Json (new Dictionary<string, object>() { { "success", true } });
+                WebEditorExtenstions.Remove(fileName);
+                Json (new Dictionary<string, object>() { { "success", true } });
             }
             catch (Exception e)
             {
-                return Json(new Dictionary<string, object>() { { "error", e.Message } });
+                Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return Redirect(Url.Action("Index", "Home"));
         }
@@ -274,11 +273,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     files = DocManagerHelper.GetFilesInfo(fileId);
                     if (files.Count == 0)
                     {
-                        return Json("File not found");
+                        Json("File not found");
                     }
                     else
                     {
-                        return Json(JsonConvert.SerializeObject(files));
+                        Json(JsonConvert.SerializeObject(files));
                     }
                 }
             }
@@ -294,8 +293,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Assets([FromQuery] string fileName)
         {
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, HttpContext);
-            return new EmptyResult();
+            WebEditorExtenstions.download(filePath, HttpContext);
+            return Redirect(Url.Action("Sample", "Home"));
         }
 
         // download a csv file
@@ -304,7 +303,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         {
             var fileName = "csv.csv";
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, HttpContext);
+            WebEditorExtenstions.download(filePath, HttpContext);
             return new EmptyResult();
         }
 
@@ -335,7 +334,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 {
                     filePath = DocManagerHelper.StoragePath(fileName, userAddress);  // or to the original document
                 }
-                WebEditorExtenstion.download(filePath, HttpContext);
+                WebEditorExtenstions.download(filePath, HttpContext);
             }
             catch (Exception)
             {

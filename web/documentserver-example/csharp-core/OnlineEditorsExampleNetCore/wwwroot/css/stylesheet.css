@@ -318,15 +318,15 @@ label .checkbox {
 }
 
 .current {
-    background-image: url("img/loader16.gif");
+    background-image: url("../img/loader16.gif");
 }
 
 .done {
-    background-image: url("img/done.svg");
+    background-image: url("../img/done.svg");
 }
 
 .error {
-    background-image: url("img/notdone.svg");
+    background-image: url("../img/notdone.svg");
 }
 
 .step-descr {
@@ -419,17 +419,17 @@ footer a:hover {
 
 .stored-edit.word,
 .uploadFileName.word {
-    background-image: url("img/icon_docx.svg");
+    background-image: url("../img/icon_docx.svg");
 }
 
 .stored-edit.cell,
 .uploadFileName.cell {
-    background-image: url("img/icon_xlsx.svg");
+    background-image: url("../img/icon_xlsx.svg");
 }
 
 .stored-edit.slide,
 .uploadFileName.slide {
-    background-image: url("img/icon_pptx.svg");
+    background-image: url("../img/icon_pptx.svg");
 }
 
 .stored-edit span {
@@ -456,7 +456,7 @@ footer a:hover {
 }
 
 .dialog-close {
-    background: url("img/close.svg") no-repeat scroll left top;
+    background: url("../img/close.svg") no-repeat scroll left top;
     cursor: pointer;
     float: right;
     font-size: 1px;

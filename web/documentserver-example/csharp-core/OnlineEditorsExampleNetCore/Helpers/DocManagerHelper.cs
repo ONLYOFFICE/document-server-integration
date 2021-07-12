@@ -13,8 +13,15 @@ namespace OnlineEditorsExampleNetCore.Helpers
     public class DocManagerHelper
     {
         public static string ContentPath{ get; set; }
-        public static HttpContext Context { set { Host = value.Request.Host.Host; } }
+        public static HttpContext Context {
+            set 
+            {
+                Host = value.Request.Host.Host;
+                RequestHost = value.Request.Headers["Host"];
+            }
+        }
         private static string Host { get; set; }
+        private static string RequestHost { get; set; }
 
         // get max file size
         public static long MaxFileSize
@@ -224,8 +231,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             else
             {
                 var uri = new UriBuilder(Host) { Query = "" }; // тут было просто Host
-                uri = new UriBuilder(uri.Scheme + "://" + uri.Host);
-
+                uri = new UriBuilder(uri.Scheme + "://" + RequestHost);
                 return uri.ToString();
             }
         }
@@ -247,7 +253,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             var createUrl = new UriBuilder(GetServerUrl(false))
             {
                 Path = "Home/Sample",
-                Query = "fileExt=" + DocManagerHelper.GetInternalExtension(fileType).Trim('.')
+                Query = "fileExt=" + GetInternalExtension(fileType).Trim('.')
             };
             return createUrl.ToString();
         }

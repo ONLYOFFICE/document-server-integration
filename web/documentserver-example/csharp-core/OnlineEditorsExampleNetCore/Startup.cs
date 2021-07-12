@@ -28,8 +28,6 @@ namespace OnlineEditorsExampleNetCore
 
             services.AddSingleton(HostEnvironment);
 
-            //services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
             services.AddHttpContextAccessor();
 
             services.AddDistributedMemoryCache();

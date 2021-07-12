@@ -8,11 +8,11 @@
 
 <html lang="en">
 <head runat="server">
-    @await Html.PartialAsync("MetatagsPartial")
+    @await Html.PartialAsync("IndexMetatagsPartial")
     <title>ONLYOFFICE</title>
     <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
-    @await Html.PartialAsync("CssPartial")
+    @await Html.PartialAsync("IndexCssPartial")
 </head>
 <body>
     <header>
@@ -32,9 +32,9 @@
                             <span>Create new</span>
                             <div class="clearFix">
                                 <div class="create-panel">
-                                    <ul class="try-editor-list clearFix" data-link="@this.Url.Action("Sample", "Home")">
+                                    <ul class="try-editor-list clearFix" data-link="@Url.Action("Assets", "Home")">
                                         <li>
-                                            <a class="try-editor word" asp-for="docx" data-type="docx">Document</a>
+                                            <a class="try-editor word" data-type="docx">Document</a>
                                         </li>
                                         <li>
                                             <a class="try-editor cell" data-type="xlsx">Spreadsheet</a>
@@ -346,7 +346,7 @@
             </table>
         </div>
     </footer>
-    @await Html.PartialAsync("ScriptsPartial")
+    @await Html.PartialAsync("IndexScriptsPartial")
     <script language="javascript" type="text/javascript">
             var ConverExtList = '@string.Join(",", DocManagerHelper.ConvertExts.ToArray())';
             var EditedExtList = '@string.Join(",", DocManagerHelper.EditedExts.ToArray())';
