@@ -62,22 +62,18 @@ namespace OnlineEditorsExampleNetCore.Controllers
         }
 
         [Route("/upload")]
-        public IActionResult Upload()
+        public IActionResult Upload(IFormCollection form)
         {
             HttpContext.Response.ContentType = "text/plain";
             try
             {
-                var httpPostedFile = HttpContext.Request.Form.Files[0];
-                string fileName;
+                var httpPostedFile = form.Files[0];
 
+                var fileName = httpPostedFile.FileName;
                 if (HttpContext.Request.Headers["User-Agent"] == "IE")
                 {
                     var files = httpPostedFile.FileName.Split(new char[] { '\\' });
                     fileName = files[files.Length - 1];
-                }
-                else
-                {
-                    fileName = httpPostedFile.FileName;
                 }
 
                 var curSize = httpPostedFile.Length;
@@ -98,7 +94,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
 
                 var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
-                //httpPostedFile.SaveAs(savedFileName);  // and save it
+                using (var fs = System.IO.File.Open(savedFileName, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    httpPostedFile.CopyTo(fs);  // and save it
+                }
+
                 // get file meta information or create the default one
                 var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);

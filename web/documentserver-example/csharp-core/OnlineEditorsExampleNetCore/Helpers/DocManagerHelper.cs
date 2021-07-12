@@ -13,7 +13,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
     public class DocManagerHelper
     {
         public static string ContentPath{ get; set; }
-        public static HttpContext Context { get; set; }
+        public static HttpContext Context { set { Host = value.Request.Host.Host; } }
+        private static string Host { get; set; }
 
         // get max file size
         public static long MaxFileSize
@@ -53,7 +54,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         // get current user host address
         public static string CurUserHostAddress(string userAddress = null)
         {
-            return Regex.Replace(userAddress ?? Context.Request.Host.Host, "[^0-9a-zA-Z.=]", "_");
+            return Regex.Replace(userAddress ?? Host, "[^0-9a-zA-Z.=]", "_");
         }
 
         // get the storage path of the file
@@ -222,10 +223,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
             else
             {
-                var uri = new UriBuilder(Context.Request.Host.Host) { Query = "" }; // тут было просто Host
-                var requestHost = Context.Request.Headers["Host"];
-                if (!string.IsNullOrEmpty(requestHost))
-                    uri = new UriBuilder(uri.Scheme + "://" + requestHost);
+                var uri = new UriBuilder(Host) { Query = "" }; // тут было просто Host
+                uri = new UriBuilder(uri.Scheme + "://" + uri.Host);
 
                 return uri.ToString();
             }
@@ -238,7 +237,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             {
                 Path = "/track",
                 Query = "fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Host)
             };
             return callbackUrl.ToString();
         }
@@ -259,7 +258,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             {
                 Path = "/download",
                 Query = "fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(Context.Request.Host.Host)
+                        + "&userAddress=" + HttpUtility.UrlEncode(Host)
             };
             return downloadUrl.ToString();
         }
