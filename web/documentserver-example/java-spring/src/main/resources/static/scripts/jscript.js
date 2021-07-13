@@ -196,6 +196,11 @@ if (typeof jQuery !== "undefined") {
         langSel.on("change", function () {
             setCookie("ulang", langSel.val());
         });
+        if(!userId){
+            jq(document).on("ready",function(){
+                setCookie("uid",1)
+            })
+        }
     };
 
     jq(document).on("click", "#enterPass", function () {

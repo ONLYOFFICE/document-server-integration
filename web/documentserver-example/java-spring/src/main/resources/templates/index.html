@@ -79,7 +79,6 @@
                                             <img class="info" data-id="user" src="css/img/info.svg"
                                                  th:attr="data-tooltip=${tooltip}"/>
                                             <select class="select-user" id="user">
-                                                <option disabled="disabled" selected="selected">...</option>
                                                 <option th:each="user : ${users}"
                                                         th:value="${user.id}"
                                                         th:text="${user.name}"/>

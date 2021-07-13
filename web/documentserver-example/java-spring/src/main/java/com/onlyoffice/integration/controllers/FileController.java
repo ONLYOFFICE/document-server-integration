@@ -49,6 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -214,15 +215,15 @@ public class FileController {
         {
             String fullFileName = fileUtility.getFileName(body.getFileName());
             String fileName = fileUtility.getFileNameWithoutExtension(body.getFileName());
-            String fileLocation = documentManager.storagePath(fullFileName, null);
-            String historyLocation =  documentManager.historyDir(documentManager
-                    .storagePath(fileName, null));
-            String convertedHistoryLocation =  documentManager.historyDir(documentManager
-                    .storagePath(fullFileName, null));
+            String fileLocation = URLDecoder.decode(documentManager.storagePath(fullFileName, null));
+            String historyLocation =  URLDecoder.decode(documentManager.historyDir(documentManager
+                    .storagePath(fileName, null)));
+            String convertedHistoryLocation =  URLDecoder.decode(documentManager.historyDir(documentManager
+                    .storagePath(fullFileName, null)));
 
-            documentManager.deleteFilesRecursively(Paths.get(fileLocation.replace("%20"," ")));
-            documentManager.deleteFilesRecursively(Paths.get(historyLocation.replace("%20"," ")));
-            documentManager.deleteFilesRecursively(Paths.get(convertedHistoryLocation.replace("%20"," ")));
+            documentManager.deleteFilesRecursively(Paths.get(fileLocation));
+            documentManager.deleteFilesRecursively(Paths.get(historyLocation));
+            documentManager.deleteFilesRecursively(Paths.get(convertedHistoryLocation));
 
             return "{ \"success\": true }";
         }
