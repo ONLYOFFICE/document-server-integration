@@ -23,7 +23,8 @@
         "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
         "review": <%- editor.review %>,
-        "reviewGroups": <%- editor.reviewGroups %>
+        "reviewGroups": <%- editor.reviewGroups %>,
+        "commentGroups": <%- editor.commentGroups %>
     }
 },
 "editorConfig": {
@@ -31,7 +32,8 @@
     "mode": "<%- editor.mode %>",
     "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
-    "createUrl": "<%- editor.createUrl%>",
+    "createUrl": <%- JSON.stringify(editor.createUrl) %>,
+    "templates": <%- JSON.stringify(editor.templates) %>,
     "user": {
         "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",

@@ -202,7 +202,7 @@ namespace OnlineEditorsExample
         // get the last file version by its history directory
         public static int GetFileVersion(string historyPath)
         {
-            if (!Directory.Exists(historyPath)) return 0;
+            if (!Directory.Exists(historyPath)) return 1;
             return Directory.EnumerateDirectories(historyPath).Count() + 1;  // run through all the file versions and count them
         }
 
@@ -384,7 +384,8 @@ namespace OnlineEditorsExample
                 fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-                fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName);
+                fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName)
+                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
 
                 // get the url to the converted file
                 string newFileUri;

@@ -38,6 +38,7 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
     <link rel="stylesheet" type="text/css" href="{% static "css/stylesheet.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "css/jquery-ui.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/media.css" %}" />
 </head>
 <body>
     <header>
@@ -141,79 +142,91 @@
                                         <table cellspacing="0" cellpadding="0" width="100%">
                                             <tbody>
                                                 {% for file in files %}
-                                                    <tr class="tableRow" title="{{ file.title }}">
+                                                    <tr class="tableRow" title="{{ file.title }} [{{file.version}}]">
                                                         <td class="contentCells">
                                                             <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
-                                                                <span title="{{ file.title }}">{{ file.title }}</span>
+                                                                <span>{{ file.title }}</span>
                                                             </a>
                                                         </td>
                                                         {% if file.canEdit %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=edit" target="_blank">
-                                                                    <img src="{% static "images/desktop-24.png" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                    <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=mobile&mode=edit" target="_blank">
-                                                                    <img src="{% static "images/mobile-24.png" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                    <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                {% if file.type == 'word' %}
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review" target="_blank">
-                                                                        <img src="{% static "images/review-24.png" %}" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                    </a>
-                                                                {% elif file.type == 'cell' %}
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter" target="_blank">
-                                                                        <img src="{% static "images/filter-24.png" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                    </a>
-                                                                {% endif %}
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=comment" target="_blank">
-                                                                    <img src="{% static "images/comment-24.png" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                    <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                {% if file.type == 'word' %}
+                                                            {% if file.type == 'word' %}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review" target="_blank">
+                                                                        <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
+                                                                </td>
+                                                            {% elif file.type == 'cell' %}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter" target="_blank">
+                                                                        <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                    </a>
+                                                                </td>
+                                                            {% endif %}
+                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                            {% endif %}
+                                                            {% if file.type == 'word' %}
+                                                                <td class="contentCells contentCells-icon">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="{% static "images/fill-forms-24.png" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td class="contentCells contentCells-shift contentCells-icon">
-                                                                {% if file.type == 'word' %}
+                                                                </td>
+                                                            {% else %}
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                            {% endif %}
+                                                            {% if file.type == 'word' %}
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
-                                                                        <img src="{% static "images/block-content-24.png" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                        <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
-                                                                {% endif %}
-                                                            </td>
+                                                                </td>
+                                                            {% else %}
+                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                            {% endif %}
+                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                            {% endif %}
                                                         {% else %}
-                                                            <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                            <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                         {% endif %}
-                                                        <td class="contentCells contentCells-icon">
+                                                        <td class="contentCells contentCells-icon firstContentCellViewers">
                                                             <a href="edit?filename={{ file.title }}&type=desktop&mode=view" target="_blank">
-                                                                <img src="{% static "images/desktop-24.png" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                <img src="{% static "images/desktop.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="edit?filename={{ file.title }}&type=mobile&mode=view" target="_blank">
-                                                                <img src="{% static "images/mobile-24.png" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                <img src="{% static "images/mobile.svg" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
                                                             <a href="edit?filename={{ file.title }}&type=embedded&mode=embedded" target="_blank">
-                                                                <img src="{% static "images/embeded-24.png" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                <img src="{% static "images/embeded.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                             </a>
                                                         </td>
-                                                        <td class="contentCells contentCells-icon contentCells-shift">
+                                                        <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
                                                             <a href="download?fileName={{ file.title }}">
-                                                                <img class="icon-download" src="{% static "images/download-24.png" %}" alt="Download" title="Download" />
+                                                                <img class="icon-download" src="{% static "images/download.svg" %}" alt="Download" title="Download" />
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
                                                             <a class="delete-file" data-filename="{{ file.title }}">
-                                                                <img class="icon-delete" src="{% static "images/delete-24.png" %}" alt="Delete" title="Delete" />
+                                                                <img class="icon-delete" src="{% static "images/delete.svg" %}" alt="Delete" title="Delete" />
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -222,10 +235,10 @@
                                         </table>
                                     </div>
                                 </div>
-                            {% endif %} 
+                            {% endif %}
                         </div>
                     </td>
-                </tr>   
+                </tr>
             </tbody>
         </table>
     </div>

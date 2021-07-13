@@ -18,19 +18,19 @@
 
 package entities;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.*;
-
-import helpers.DocumentManager;
-import helpers.ServiceConverter;
-import helpers.FileUtility;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+import helpers.DocumentManager;
+import helpers.FileUtility;
+import helpers.ServiceConverter;
+import helpers.Users;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.*;
 
 public class FileModel
 {
@@ -61,11 +61,30 @@ public class FileModel
         document.info = new Info();
         document.info.favorite = user.favorite;
 
+        String templatesImageUrl = DocumentManager.GetTemplateImageUrl(FileUtility.GetFileType(fileName));
+        List<Map<String, String>> templates = new ArrayList<>();
+        String createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
+
+        // add templates for the "Create New" from menu option
+        Map<String, String> templateForBlankDocument = new HashMap<>();
+        templateForBlankDocument.put("image", templatesImageUrl);
+        templateForBlankDocument.put("title", "Blank");
+        templateForBlankDocument.put("url", createUrl);
+        templates.add(templateForBlankDocument);
+        Map<String, String> templateForDocumentWithSampleContent = new HashMap<>();
+        templateForDocumentWithSampleContent.put("image", templatesImageUrl);
+        templateForDocumentWithSampleContent.put("title", "With sample content");
+        templateForDocumentWithSampleContent.put("url", createUrl + "&sample=true");
+        templates.add(templateForDocumentWithSampleContent);
+
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
-        editorConfig.createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
+        
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
+
+        editorConfig.createUrl = !user.id.equals("uid-0") ? createUrl : null;
+        editorConfig.templates = user.templates ? templates : null;
 
         // write user information to the config (id, name and group)
         editorConfig.user.id = user.id;
@@ -163,10 +182,10 @@ public class FileModel
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         // write information about changes to the object
-                        obj.put("changes", changes.get("changes"));
+                        obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);
                         obj.put("serverVersion", changes.get("serverVersion"));
-                        obj.put("created", change.get("created"));
-                        obj.put("user", change.get("user"));
+                        obj.put("created", !change.isEmpty() ? change.get("created") : null);
+                        obj.put("user", !change.isEmpty() ? change.get("user") : null);
 
                         Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
@@ -241,6 +260,7 @@ public class FileModel
         public Boolean modifyContentControl;
         public Boolean review;
         public List<String> reviewGroups;
+        public CommentGroups commentGroups;
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -255,6 +275,7 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             reviewGroups = user.reviewGroups;
+            commentGroups = user.commentGroups;
         }
     }
 
@@ -269,8 +290,9 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
-        public String createUrl;
         public String lang = "en";
+        public String createUrl;
+        public List<Map<String, String>> templates;
         public User user;
         public Customization customization;
         public Embedded embedded;

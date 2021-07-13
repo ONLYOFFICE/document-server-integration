@@ -64,9 +64,10 @@ namespace OnlineEditorsExample
         protected string History { get; private set; }
         protected string HistoryData { get; private set; }
         protected string InsertImageConfig { get; private set; }
-        protected string compareFileData { get; private set; }
-        protected string dataMailMergeRecipients { get; private set; }
-        protected string documentType { get { return _Default.DocumentType(FileName); } }
+        protected string CompareFileData { get; private set; }
+        protected string DataMailMergeRecipients { get; private set; }
+        protected string UsersForMentions { get; private set; }
+        protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
         public static string CallbackUrl
@@ -160,11 +161,29 @@ namespace OnlineEditorsExample
             var actionLink = Request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
 
+            var createUrl = getCreateUrl(DocumentType, editorsType);
+            var templatesImageUrl = GetTemplateImageUrl(ext); // image url for templates
+            var templates = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "Blank" },
+                    { "url", createUrl }
+                },
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "With sample content" },
+                    { "url", createUrl + "&sample=true" }
+                }
+            };
+
             // specify the document config
             var config = new Dictionary<string, object>
                 {
                     { "type", editorsType },
-                    { "documentType", documentType },
+                    { "documentType", DocumentType },
                     {
                         "document", new Dictionary<string, object>
                             {
@@ -193,7 +212,8 @@ namespace OnlineEditorsExample
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                            { "reviewGroups", user.reviewGroups }
+                                            { "reviewGroups", user.reviewGroups },
+                                            { "commentGroups", user.commentGroups }
                                         }
                                 }
                             }
@@ -205,7 +225,8 @@ namespace OnlineEditorsExample
                                 { "mode", mode },
                                 { "lang", Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "createUrl",  getCreateUrl(documentType, editorsType)},
+                                { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
+                                { "templates", user.templates ? templates : null },
                                 {
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
@@ -263,12 +284,15 @@ namespace OnlineEditorsExample
 
                 // a document which will be compared with the current document
                 Dictionary<string, object> compareFile = GetCompareFile();
-                compareFileData = jss.Serialize(compareFile);
+                CompareFileData = jss.Serialize(compareFile);
 
                 // recipient data for mail merging
                 Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
-                dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+                DataMailMergeRecipients = jss.Serialize(mailMergeConfig);
 
+                // get users for mentions
+                List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
+                UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
 
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
@@ -331,13 +355,16 @@ namespace OnlineEditorsExample
                     {
                         // get the path to the changes.json file 
                         var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
-                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+                        var changesArray = (ArrayList)changes["changes"];
+                        var change = changesArray.Count > 0
+                            ? (Dictionary<string, object>)changesArray[0]
+                            : new Dictionary<string, object>();
 
                         // write information about changes to the object
-                        obj.Add("changes", changes["changes"]);
+                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
                         obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change["created"]);
-                        obj.Add("user", change["user"]);
+                        obj.Add("created", change.Count > 0 ? change["created"] : null);
+                        obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
@@ -442,6 +469,28 @@ namespace OnlineEditorsExample
             }
 
             return mailMergeConfig;
+        }
+
+        // get image url for templates
+        private string GetTemplateImageUrl (string ext)
+        {
+            var path = new UriBuilder(_Default.GetServerUrl(true)) // templates image url in the "From Template" section
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "App_Themes\\images\\"
+            };
+            switch (ext)
+            {
+                case ".docx":
+                    return path + "file_docx.svg"; // for word document type
+                case ".xlsx":
+                    return path + "file_xlsx.svg"; // .xlsx for cell document type
+                case ".pptx":
+                    return path + "file_pptx.svg"; // .pptx for slide document type
+                default:
+                    return path + "file_docx.svg"; // the default value
+            }
         }
 
         // create the public url

@@ -33,6 +33,7 @@ const mime = require("mime");
 const docManager = require("./helpers/docManager");
 const documentService = require("./helpers/documentService");
 const fileUtility = require("./helpers/fileUtility");
+const wopiApp = require("./helpers/wopi/wopiRouting");
 const users = require("./helpers/users");
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : "";
@@ -628,6 +629,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         docManager.init(storageFolder, req, res);
 
+        var fileName = fileUtility.getFileName(req.query.fileName);
         var fileExt = req.query.fileExt;
         var history = [];
         var historyData = [];
@@ -638,8 +640,24 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var name = user.name;
         var actionData = req.query.action ? req.query.action : "null";
 
+        var templatesImageUrl = docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
+        var createUrl = docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+        var templates = [
+            {
+                "image": templatesImageUrl,
+                "title": "Blank",
+                "url": createUrl
+            },
+            {
+                "image": templatesImageUrl,
+                "title": "With sample content",
+                "url": createUrl + "&sample=true"
+            }
+        ];
+
         var userGroup = user.group;
         var reviewGroups = user.reviewGroups;
+        var commentGroups = user.commentGroups;
 
         if (fileExt != null) {
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
@@ -651,7 +669,6 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
 
         var userAddress = docManager.curUserHostAddress();
-        var fileName = fileUtility.getFileName(req.query.fileName);
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
             throw { 
                 "message": "File not found: " + fileName  // display error message
@@ -681,6 +698,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             for (var i = 1; i <= countVersion; i++) {  // get keys to all the file versions
                 if (i < countVersion) {
                     var keyPath = docManager.keyPath(fileName, userAddress, i);
+                    if (!fileSystem.existsSync(keyPath)) continue;
                     keyVersion = "" + fileSystem.readFileSync(keyPath);
                 } else {
                     keyVersion = key;
@@ -741,7 +759,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 key: key,
                 token: "",
                 callbackUrl: docManager.getCallback(fileName),
-                createUrl: docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang),
+                createUrl: userid != "uid-0" ? createUrl : null,
+                templates: user.templates ? templates : null,
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
@@ -760,6 +779,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 name: name,
                 userGroup: userGroup,
                 reviewGroups: JSON.stringify(reviewGroups),
+                commentGroups: JSON.stringify(commentGroups),
                 fileChoiceUrl: fileChoiceUrl,
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
@@ -778,7 +798,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             dataMailMergeRecipients: {
                 fileType: "csv",
                 url: docManager.getServerUrl(true) + "/csv"
-            }
+            },
+            usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null,
         };
 
         if (cfgSignatureEnable) {
@@ -804,6 +825,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         res.render("error", { message: "Server error" });
     }
 });
+
+wopiApp.registerRoutes(app);
 
 // "Not found" error with 404 status
 app.use(function (req, res, next) {

@@ -99,6 +99,17 @@ def getInternalExtension(fileType):
 
     return mapping.get(fileType, '.docx') # the default file type is .docx
 
+# get image url for templates
+def getTemplateImageUrl(fileType, request):
+    path = getServerUrl(True, request) + '/static/images/'
+    mapping = {
+        'word': path + 'file_docx.svg',
+        'cell': path + 'file_xlsx.svg',
+        'slide': path + 'file_pptx.svg'
+    }
+
+    return mapping.get(fileType, path + 'file_docx.svg') # the default file type
+
 # get file name with an index if such a file name already exists
 def getCorrectName(filename, req):
     basename = fileUtils.getFileNameWithoutExt(filename)
@@ -195,7 +206,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({ 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
+            fileInfos.append({'version':historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
 
     return fileInfos
 

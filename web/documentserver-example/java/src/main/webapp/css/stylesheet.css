@@ -33,6 +33,7 @@ body {
     overflow-y: overlay;
     padding: 0;
     text-decoration: none;
+    overflow-x: hidden;
 }
 
 form {
@@ -64,6 +65,7 @@ header img {
 }
 
 .center {
+    position: relative;
     margin: 0 auto 0;
     width: 1152px;
 }
@@ -354,19 +356,31 @@ footer {
     background: #333333;
     color: #AAAAAA;
     height: 64px;
-    min-width: 1152px;
-    width: auto;
+    width: 100%;
+}
+
+footer > .center {
+    width: 100%;
 }
 
 footer table {
+    width: 100%;
     border-spacing: 0;
 }
 
 footer table tr {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    width: 100%;
     height: 64px;
 }
 
 footer table td {
+    position: relative;
     padding-left: 32px;
 }
 
@@ -382,8 +396,15 @@ footer a:hover {
     text-decoration: none;
 }
 
+footer table tr td:first-child {
+    margin-left: 14%;
+}
+
 .copy {
-    padding-left: 510px;
+    width: max-content;
+    position: relative;
+    margin-left: auto;
+    margin-right: 14%;
 }
 
 .help-block {
@@ -622,7 +643,11 @@ footer a:hover {
 }
 
 .left-panel {
-    width: 256px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-width: 240px;
+    width: 100%;
     background: #F5F5F5;
 }
 
@@ -681,4 +706,62 @@ footer a:hover {
     line-height: 160%;
     letter-spacing: -0.02em;
     word-wrap: break-word;
+}
+
+.menu {
+    cursor: pointer;
+    display: none;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: space-between;
+    top: 23px;
+    left: 12px;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 30px;
+}
+
+.menu span {
+    content: "";
+    width: 26px;
+    height: 3px;
+    background: rgb(194, 194, 194);
+}
+
+html {
+    overflow-x: hidden;
+}
+
+
+.tableRow {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+}
+
+
+.tableRow td:first-child {
+    display: flex;
+    flex-grow: 1;
+    max-width: 25%;
+}
+
+.tableHeaderCellFileName {
+    width: 30%;
+}
+
+.tableHeaderCellEditors {
+    width: 28%;
+}
+
+.tableHeaderCellViewers {
+    text-align: center;
+    width: 18%
+}
+
+.firstContentCellViewers {
+    margin-left: auto;
 }
