@@ -179,7 +179,7 @@ public class IndexServlet extends HttpServlet
 
             String fileName = FileUtility.GetFileName((String) body.get("filename"));
             String filePass = body.get("filePass") != null ? (String) body.get("filePass") : null;
-            String fileUri = DocumentManager.GetFileUri(fileName, true);
+            String fileUri = DocumentManager.GetDownloadUrl(fileName);
             String fileExt = FileUtility.GetFileExtension(fileName);
             FileType fileType = FileUtility.GetFileType(fileName);
             String internalFileExt = DocumentManager.GetInternalExtension(fileType);

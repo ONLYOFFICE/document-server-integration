@@ -70,7 +70,7 @@ def convert(request):
         body = json.loads(request.body)
         filename = fileUtils.getFileName(body.get("filename"))
         filePass = body.get("filePass")
-        fileUri = docManager.getFileUri(filename, True,request)
+        fileUri = docManager.getDownloadUrl(filename,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
         newExt = docManager.getInternalExtension(fileType)  # internal editor extensions: .docx, .xlsx or .pptx
