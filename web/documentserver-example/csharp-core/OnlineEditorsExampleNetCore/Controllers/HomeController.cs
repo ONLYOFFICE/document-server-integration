@@ -102,7 +102,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);
-                Json(new Dictionary<string, object>() {
+                return Json(new Dictionary<string, object>() {
                     { "filename", fileName },
                     { "documentType", documentType }
                 });
@@ -111,7 +111,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
             {
                 return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         [Route("/convert")]
@@ -161,13 +160,12 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
 
                 }
-                Json(new Dictionary<string, object>() { { "filename", fileName } });
+                return Json(new Dictionary<string, object>() { { "filename", fileName } });
             }
             catch (Exception e)
             {
                 return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         // track file changes
@@ -239,16 +237,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
         [Route("/remove")]
         public IActionResult Remove([FromQuery] string fileName)
         {
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
             HttpContext.Response.ContentType = "text/plain";
             try
             {
                 WebEditorExtenstions.Remove(fileName);
-                Json (new Dictionary<string, object>() { { "success", true } });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
             return Redirect(Url.Action("Index", "Home"));
         }
@@ -273,11 +269,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     files = DocManagerHelper.GetFilesInfo(fileId);
                     if (files.Count == 0)
                     {
-                        Json("File not found");
+                        return Json("File not found");
                     }
                     else
                     {
-                        Json(JsonConvert.SerializeObject(files));
+                        return Json(JsonConvert.SerializeObject(files));
                     }
                 }
             }
@@ -285,7 +281,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
             {
                 return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         // get sample files from the assests
@@ -294,7 +289,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         {
             var filePath = "assets/sample/" + fileName;
             WebEditorExtenstions.download(filePath, HttpContext);
-            return Redirect(Url.Action("Sample", "Home"));
+            return new EmptyResult();
         }
 
         // download a csv file
