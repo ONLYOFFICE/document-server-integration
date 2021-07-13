@@ -51,7 +51,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
             DocManagerHelper.Context = HttpContext;
             if (ModelState.IsValid)
             {
-                var fileName = DocManagerHelper.CreateDemo(fileExt, false);  // create a sample document
+                var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);  // create a sample document
                 var id = Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
