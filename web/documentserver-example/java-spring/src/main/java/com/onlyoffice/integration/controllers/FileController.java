@@ -156,7 +156,7 @@ public class FileController {
     public String convert(@RequestBody ConverterBody body,
                           @CookieValue("uid") String uid){
         String fileName = body.getFileName();
-        String fileUri = documentManager.getFileUri(fileName, true);
+        String fileUri = documentManager.getDownloadUrl(fileName);
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
         String fileExt = fileUtility.getFileExtension(fileName);
         DocumentType type = fileUtility.getDocumentType(fileName);
