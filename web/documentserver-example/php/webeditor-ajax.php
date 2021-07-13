@@ -206,6 +206,11 @@ function convert() {
         if ($fileUri == NULL || $fileUri == "") {
             $fileUri = FileUri($fileName, TRUE);
         }
+        $fileUri=serverPath(TRUE) . '/'
+            . "webeditor-ajax.php"
+            . "?type=download"
+            . "&fileName=" . urlencode($fileName)
+            . "&userAddress=" . getClientIp();
         $key = getDocEditorKey($fileName);
 
         $newFileUri;

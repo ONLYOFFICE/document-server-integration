@@ -384,7 +384,8 @@ namespace OnlineEditorsExample
                 fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-                fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName);
+                fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName)
+                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
 
                 // get the url to the converted file
                 string newFileUri;
