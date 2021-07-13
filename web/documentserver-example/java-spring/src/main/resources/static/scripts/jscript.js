@@ -201,6 +201,11 @@ if (typeof jQuery !== "undefined") {
                 setCookie("uid",1)
             })
         }
+        if(!langId){
+            jq(document).on("ready",function () {
+                setCookie("ulang","en")
+            })
+        }
     };
 
     jq(document).on("click", "#enterPass", function () {
