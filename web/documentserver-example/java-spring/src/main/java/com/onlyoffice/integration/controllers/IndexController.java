@@ -108,7 +108,7 @@ public class IndexController {
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
                 List.of("group-2"), new ArrayList<>(),false);
         userService.createUser("Anonymous",null,description_user_0,null,
-                null,null,null,null,null);
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),null);
 
     }
 

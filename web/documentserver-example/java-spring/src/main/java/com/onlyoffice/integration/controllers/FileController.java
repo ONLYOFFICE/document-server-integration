@@ -30,7 +30,6 @@ import com.onlyoffice.integration.util.objects.TrackManagerRequestBody;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import com.onlyoffice.integration.util.TrackManager;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
@@ -271,7 +270,6 @@ public class FileController {
                 String fileName = documentManager.createDemo(fileExt, sampleData, uid, uname);
                 return "redirect:editor?fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8);
             }catch (Exception ex){
-//                return "Error: "+ex.getMessage();
                 model.addAttribute("error",ex.getMessage());
                 return "error.html";
             }

@@ -345,13 +345,18 @@ public class DocumentManagerImpl implements DocumentManager {
         String fileName=getCorrectName(demoName,null);
         InputStream stream=Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath+demoName);
         File file=new File(storagePath(fileName,null));
-        try(FileOutputStream out=new FileOutputStream(file)){
-            int read;
-            final byte[] bytes=new byte[1024];
-            while((read=stream.read(bytes))!=-1){
-                out.write(bytes,0,read);
+        if(!file.exists()){
+            file.createNewFile();
+        }
+        if(sample) {
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                int read;
+                final byte[] bytes = new byte[1024];
+                while ((read = stream.read(bytes)) != -1) {
+                    out.write(bytes, 0, read);
+                }
+                out.flush();
             }
-            out.flush();
         }
 
         createMeta(fileName,uid,uname,null);

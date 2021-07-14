@@ -1,12 +1,13 @@
 package com.onlyoffice.integration.util.objects;
 
+
 import com.onlyoffice.integration.Action;
 
 public class ActionObject {
     private String userid;
-    private String type;
+    private Action type;
 
-    public ActionObject(String userid,String type){
+    public ActionObject(String userid,Action type){
         this.userid=userid;
         this.type = type;
     }
@@ -19,11 +20,11 @@ public class ActionObject {
         this.userid = userid;
     }
 
-    public String getType() {
+    public Action getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Action type) {
         this.type = type;
     }
 }

@@ -63,21 +63,6 @@ public class Document {
                         + Long.toString(new File(documentManager.storagePath(fileName, null)).lastModified()));
         this.info = applicationContext.getBean(Info.class);
         this.permissions = permissions;
-        switch (uid){
-            case "uid-4":
-            case "uid-1": {
-                this.info.setFavorite(null);
-                break;
-            }
-            case "uid-2":{
-                this.info.setFavorite(true);
-                break;
-            }
-            case "uid-3":{
-                this.info.setFavorite(false);
-                break;
-            }
-        }
     }
 
     public String getFileType() {
