@@ -60,8 +60,6 @@ To run the Java example code, install the Java version 11 appropriate for your O
 
 	In the **Variable Value** field, enter your **JDK** or **JRE** installation path, for example C:\Program Files\Java\jdk11.
 
-	![make-var](screenshots/make-var.png)
-
 	Check if the variable created successfully by **echo** command in the **Command Prompt**:
 
 	```
