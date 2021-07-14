@@ -19,7 +19,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 Download the [Java-Spring example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation, server address and port in the *\src\main\resources\settings.properties* file:
 
 ```
  server.address=address
@@ -30,7 +30,7 @@ To connect the editors to your website, specify the path to the editors installa
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 **address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\webapp\editor.jsp* file.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\resources\editor.html* file.
 
 ### Step 3. Install the prerequisites
 To run the Java example code, install the Java version 11 appropriate for your OS and framework  **Apache Maven**:
@@ -45,7 +45,7 @@ To run the Java example code, install the Java version 11 appropriate for your O
 	Find out where Java is installed. If you didn't change the path during installation, it will be something like this:
 
 	```
-	C:\Program Files\Java\jdk
+	C:\Program Files\Java\jdk11
 	```
 
 	In **Windows 7** right click **My Computer** and select **Properties**, then click **Advanced**.
@@ -58,7 +58,7 @@ To run the Java example code, install the Java version 11 appropriate for your O
 
 	In the **Variable Name** field, enter **JAVA_HOME** if you installed the **JDK** (Java Development Kit) or **JRE_HOME** if you installed the **JRE** (Java Runtime Environment).
 
-	In the **Variable Value** field, enter your **JDK** or **JRE** installation path, for example C:\Program Files\Java\jdk.
+	In the **Variable Value** field, enter your **JDK** or **JRE** installation path, for example C:\Program Files\Java\jdk11.
 
 	![make-var](screenshots/make-var.png)
 
