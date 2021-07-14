@@ -182,79 +182,91 @@
                                                             var canEdir = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
                                                         %>
 
-                                                            <tr class="tableRow" title="<%= storedFile.Name %>">
+                                                            <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
                                                                 <td class="contentCells">
                                                                     <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
-                                                                        <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
+                                                                        <span><%= storedFile.Name %></span>
                                                                     </a>
                                                                 </td>
                                                                 <% if (canEdir) { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit" }) %>" target="_blank">
-                                                                            <img src="content/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                            <img src="content/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                         </a>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit" }) %>" target="_blank">
-                                                                            <img src="content/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                            <img src="content/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                         </a>
-                                                                    </td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <% if (docType == "word") { %>
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
-                                                                                <img src="content/images/review-24.png" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                            </a>
-                                                                        <% } else if (docType == "cell") { %>
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
-                                                                                <img src="content/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                            </a>
-                                                                        <% } %>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment" }) %>" target="_blank">
-                                                                            <img src="content/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                            <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                         </a>
                                                                     </td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <% if (docType == "word") { %>
+                                                                    <% if (docType == "word") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
+                                                                                <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } else if (docType == "cell") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
+                                                                                <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                            </a>
+                                                                         </td>
+                                                                    <% } %>
+                                                                    <% if (docType != "word" && docType != "cell") { %>
+                                                                        <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                    <% } %>
+                                                                    <% if (docType == "word") { %>
+                                                                        <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
-                                                                                <img src="content/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                             </a>
-                                                                        <% } %>
-                                                                    </td>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon">
-                                                                        <% if (docType == "word") { %>
+                                                                        </td>
+                                                                     <% } else { %>
+                                                                        <td class="contentCells contentCells-icon"></td>
+                                                                    <% } %>
+                                                                    <% if (docType == "word"){ %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
-                                                                                <img src="content/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                                <img src="content/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                             </a>
-                                                                        <% } %>
-                                                                    </td>
+                                                                        </td>
+                                                                    <% } else { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <% } %>
+                                                                    <% if (docType != "word" && docType != "cell") { %>
+                                                                        <td class="contentCells contentCells-icon "></td>
+                                                                    <% } %>
                                                                 <% } else { %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                                 <% } %>
-                                                                <td class="contentCells contentCells-icon">
+                                                                <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                     <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view" }) %>" target="_blank">
-                                                                        <img src="content/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                        <img src="content/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view" }) %>" target="_blank">
-                                                                        <img src="content/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                        <img src="content/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
                                                                     <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded" }) %>" target="_blank">
-                                                                        <img src="content/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                        <img src="content/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                                <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
                                                                     <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
-                                                                        <img class="icon-download" src="content/images/download-24.png" alt="Download" title="Download" />
+                                                                        <img class="icon-download" src="content/images/download.svg" alt="Download" title="Download" />
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
                                                                     <a class="delete-file" data-filename="<%= storedFile.Name %>">
-                                                                        <img class="icon-delete" src="content/images/delete-24.png" alt="Delete" title="Delete" />
+                                                                        <img class="icon-delete" src="content/images/delete.svg" alt="Delete" title="Delete" />
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -337,7 +349,7 @@
     </footer>
 
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
-    
+
     <script language="javascript" type="text/javascript">
         var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
         var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';

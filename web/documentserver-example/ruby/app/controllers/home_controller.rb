@@ -97,7 +97,7 @@ class HomeController < ApplicationController
       
       file_name = File.basename(body["filename"])
       file_pass = body["filePass"] ? body["filePass"] : nil
-      file_uri = DocumentHelper.get_file_uri(file_name, true)
+      file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
       internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
 

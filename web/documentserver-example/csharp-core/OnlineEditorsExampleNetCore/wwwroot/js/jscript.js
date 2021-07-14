@@ -263,16 +263,6 @@ if (typeof jQuery != "undefined") {
         }
     });
 
-        jq.ajax({
-            async: true,
-            contentType: "text/xml",
-            url: requestAddress,
-            complete: function (data) {
-                document.location.reload();
-            }
-        });
-    });
-
     jq(".info").mouseover(function (event) {
         var target = event.target;
         var id = target.dataset.id ? target.dataset.id : target.id;

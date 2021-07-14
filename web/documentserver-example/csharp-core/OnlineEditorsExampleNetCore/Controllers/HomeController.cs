@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OnlineEditorsExampleNetCore.Helpers;
 using OnlineEditorsExampleNetCore.Models;
@@ -12,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace OnlineEditorsExampleNetCore.Controllers
 {
@@ -30,14 +27,14 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Index()
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             return View();
         }
 
         public IActionResult Editor(string fileName, string editorsMode, string editorsType)
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             var file = new FileModel
                 {
                     Mode = editorsMode,  // editor mode: edit or view
@@ -51,35 +48,31 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Sample(string fileExt, bool? sample)
         {
             DocManagerHelper.ContentPath = _environment.ContentRootPath;
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
+            DocManagerHelper.Context = HttpContext;
             if (ModelState.IsValid)
             {
-                var fileName = DocManagerHelper.CreateDemo(fileExt, false);  // create a sample document
+                var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);  // create a sample document
                 var id = Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
-                Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
+                return Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
             }
             return new EmptyResult();
         }
 
         [Route("/upload")]
-        public IActionResult Upload()
+        public IActionResult Upload(IFormCollection form)
         {
             HttpContext.Response.ContentType = "text/plain";
             try
             {
-                var httpPostedFile = HttpContext.Request.Form.Files[0];
-                string fileName;
+                var httpPostedFile = form.Files[0];
 
+                var fileName = httpPostedFile.FileName;
                 if (HttpContext.Request.Headers["User-Agent"] == "IE")
                 {
                     var files = httpPostedFile.FileName.Split(new char[] { '\\' });
                     fileName = files[files.Length - 1];
-                }
-                else
-                {
-                    fileName = httpPostedFile.FileName;
                 }
 
                 var curSize = httpPostedFile.Length;
@@ -100,21 +93,24 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
 
                 var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
-                //httpPostedFile.SaveAs(savedFileName);  // and save it
+                using (var fs = System.IO.File.Open(savedFileName, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    httpPostedFile.CopyTo(fs);  // and save it
+                }
+
                 // get file meta information or create the default one
                 var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name);
-                Json(new Dictionary<string, object>() {
+                return Json(new Dictionary<string, object>() {
                     { "filename", fileName },
                     { "documentType", documentType }
                 });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         [Route("/convert")]
@@ -136,10 +132,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     var result = ServiceConverter.GetConvertedUri(fileUri, extension, internalExtension, key, true, out newFileUri);
                     if (result != 100)
                     {
-                        Json(new Dictionary<string, object>() {
-                            { "step", result },
-                            { "filename", fileName }
-                        });
+                        return Json(new Dictionary<string, object>() { { "step", result }, { "filename", fileName } });
                     }
 
                     var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
@@ -162,18 +155,17 @@ namespace OnlineEditorsExampleNetCore.Controllers
                         }
                     }
 
-                    WebEditorExtenstion.Remove(fileName);
+                    WebEditorExtenstions.Remove(fileName);
                     fileName = correctName;
                     DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
 
                 }
-                Json(new Dictionary<string, object>() { { "filename", fileName } });
+                return Json(new Dictionary<string, object>() { { "filename", fileName } });
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         // track file changes
@@ -183,11 +175,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
             // read request body
             var fileData = TrackManager.readBody(HttpContext);
 
-            var status = (WebEditorExtenstion.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
+            var status = (WebEditorExtenstions.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
             var saved = 1;  // editing
             switch (status)
             {
-                case WebEditorExtenstion.TrackerStatus.Editing:
+                case WebEditorExtenstions.TrackerStatus.Editing:
                     try
                     {
                         var actions = JsonConvert.DeserializeObject<List<object>>(JsonConvert.SerializeObject(fileData["actions"]));
@@ -210,8 +202,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     return Json(new Dictionary<string, object>() { { "error", 0 } });
 
                 // MustSave, Corrupted
-                case WebEditorExtenstion.TrackerStatus.MustSave:
-                case WebEditorExtenstion.TrackerStatus.Corrupted:
+                case WebEditorExtenstions.TrackerStatus.MustSave:
+                case WebEditorExtenstions.TrackerStatus.Corrupted:
                     try
                     {
                         // saving a document
@@ -224,8 +216,8 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     return Json(new Dictionary<string, object>() { { "error", saved } });
 
                 // MustForceSave, CorruptedForceSave
-                case WebEditorExtenstion.TrackerStatus.MustForceSave:
-                case WebEditorExtenstion.TrackerStatus.CorruptedForceSave:
+                case WebEditorExtenstions.TrackerStatus.MustForceSave:
+                case WebEditorExtenstions.TrackerStatus.CorruptedForceSave:
                     try
                     {
                         // force saving a document
@@ -245,19 +237,16 @@ namespace OnlineEditorsExampleNetCore.Controllers
         [Route("/remove")]
         public IActionResult Remove([FromQuery] string fileName)
         {
-            DocManagerHelper.Context = _httpContextAccessor.HttpContext;
             HttpContext.Response.ContentType = "text/plain";
             try
             {
-                WebEditorExtenstion.Remove(fileName);
-                Json(new Dictionary<string, object>() { { "success", true } });
+                WebEditorExtenstions.Remove(fileName);
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            Response.Redirect(Url.Action("Index", "Home"));
-            return new EmptyResult();
+            return Redirect(Url.Action("Index", "Home"));
         }
 
         // get files information
@@ -273,26 +262,25 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 if (fileId.ToString() == null)
                 {
                     files = DocManagerHelper.GetFilesInfo();  // get the information about the files from the storage path
-                    Json(JsonConvert.SerializeObject(files));
+                    return Json(JsonConvert.SerializeObject(files));
                 }
                 else
                 {
                     files = DocManagerHelper.GetFilesInfo(fileId);
                     if (files.Count == 0)
                     {
-                        Json("File not found");
+                        return Json("File not found");
                     }
                     else
                     {
-                        Json(JsonConvert.SerializeObject(files));
+                        return Json(JsonConvert.SerializeObject(files));
                     }
                 }
             }
             catch (Exception e)
             {
-                Json(new Dictionary<string, object>() { { "error", e.Message } });
+                return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
-            return new EmptyResult();
         }
 
         // get sample files from the assests
@@ -300,7 +288,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         public IActionResult Assets([FromQuery] string fileName)
         {
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, HttpContext);
+            WebEditorExtenstions.download(filePath, HttpContext);
             return new EmptyResult();
         }
 
@@ -310,7 +298,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         {
             var fileName = "csv.csv";
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstion.download(filePath, HttpContext);
+            WebEditorExtenstions.download(filePath, HttpContext);
             return new EmptyResult();
         }
 
@@ -331,7 +319,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                         if (token == null || token.Equals(""))
                         {
                             HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            Json("JWT validation failed");
+                            return Json("JWT validation failed");
                         }
                     }
                 }
@@ -341,11 +329,11 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 {
                     filePath = DocManagerHelper.StoragePath(fileName, userAddress);  // or to the original document
                 }
-                WebEditorExtenstion.download(filePath, HttpContext);
+                WebEditorExtenstions.download(filePath, HttpContext);
             }
             catch (Exception)
             {
-                Json(new Dictionary<string, object>() { { "error", "File not found!" } });
+                return Json(new Dictionary<string, object>() { { "error", "File not found!" } });
             }
             return new EmptyResult();
         }

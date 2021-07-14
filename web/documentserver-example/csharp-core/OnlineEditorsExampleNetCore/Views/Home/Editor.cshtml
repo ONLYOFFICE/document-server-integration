@@ -1,34 +1,17 @@
-﻿@model FileModel
+﻿@{
+    Layout = null;
+}
+
+@model FileModel
 
 <!DOCTYPE html>
 
 <html>
 <head runat="server">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <!--
-    *
-    * (c) Copyright Ascensio System SIA 2021
-    *
-    * Licensed under the Apache License, Version 2.0 (the "License");
-    * you may not use this file except in compliance with the License.
-    * You may obtain a copy of the License at
-    *
-    *     http://www.apache.org/licenses/LICENSE-2.0
-    *
-    * Unless required by applicable law or agreed to in writing, software
-    * distributed under the License is distributed on an "AS IS" BASIS,
-    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    * See the License for the specific language governing permissions and
-    * limitations under the License.
-    *
-    -->
+    @await Html.PartialAsync("EditorMetatagsPartial")
     <link rel="icon" href="@Url.Content("~/img/" + @Model.DocumentType + ".ico")" type="image/x-icon" />
     <title>@Model.FileName - ONLYOFFICE</title>
-    <link type="text/css" href="~/css/editor.css" rel="stylesheet" />
+    @await Html.PartialAsync("EditorCssPartial")
 
 </head>
 <body>
@@ -147,27 +130,25 @@
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
-
-                @{ string hist, histData; }
-                @{ Model.GetHistory(out hist, out histData); }
-                @{ if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData)) }
-                {
-
-                // the user is trying to show the document version history
-                config.events['onRequestHistory'] = function () {
+        @{ string hist, histData; }
+        @{ Model.GetHistory(out hist, out histData); }
+        @{ if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData)) }
+        {
+            // the user is trying to show the document version history
+            config.events['onRequestHistory'] = function () {
                 docEditor.refreshHistory(@Html.Raw(hist));  // show the document version history
-                };
-                // the user is trying to click the specific document version in the document version history
-                config.events['onRequestHistoryData'] = function (event) {
+            };
+            // the user is trying to click the specific document version in the document version history
+            config.events['onRequestHistoryData'] = function (event) {
                 var ver = event.data;
                 var histData = @Html.Raw(histData);
                 docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                // the user is trying to go back to the document from viewing the document version history
+            };
+            // the user is trying to go back to the document from viewing the document version history
                 config.events['onRequestHistoryClose '] = function () {
                 document.location.reload();
-                };
-                }
+            };
+        }
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);

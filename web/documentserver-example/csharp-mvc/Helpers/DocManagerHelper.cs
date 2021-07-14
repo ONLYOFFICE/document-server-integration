@@ -139,7 +139,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the file version by the history path
         public static int GetFileVersion(string historyPath)
         {
-            if (!Directory.Exists(historyPath)) return 0;  // if the history path doesn't exist, then the file version is 0
+            if (!Directory.Exists(historyPath)) return 1;  // if the history path doesn't exist, then the file version is 1
             return Directory.EnumerateDirectories(historyPath).Count() + 1;  // take only directories from the history folder and count them
         }
 
@@ -305,6 +305,28 @@ namespace OnlineEditorsExampleMVC.Helpers
                     return ".pptx";
                 default:
                     return ".docx";  // the default file type is .docx
+            }
+        }
+
+        // get image url for templates
+        public static string GetTemplateImageUrl(FileUtility.FileType fileType)
+        {
+            var path = new UriBuilder(GetServerUrl(true)) // templates image url in the "From Template" section
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Content\\images\\"
+            };
+            switch (fileType)
+            {
+                case FileUtility.FileType.Word:  // for word file type
+                    return path + "file_docx.svg";
+                case FileUtility.FileType.Cell:  // for cell file type
+                    return path + "file_xlsx.svg";
+                case FileUtility.FileType.Slide:  // for slide file type
+                    return path + "file_pptx.svg";
+                default:
+                    return path + "file_docx.svg";  // the default value
             }
         }
 

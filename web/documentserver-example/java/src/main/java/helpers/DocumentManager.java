@@ -199,7 +199,7 @@ public class DocumentManager
     {
         File dir = new File(historyPath);
 
-        if (!dir.exists()) return 0;  // if the history path doesn't exist, then the file version is 0
+        if (!dir.exists()) return 1;  // if the history path doesn't exist, then the file version is 1
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override
@@ -430,6 +430,26 @@ public class DocumentManager
 
         // the default file type is .docx
         return ".docx";
+    }
+
+    // get image url for templates
+    public static String GetTemplateImageUrl(FileType fileType)
+    {
+        String path = GetServerUrl(true) + "/css/img/";
+        // for word file type
+        if (fileType.equals(FileType.Word))
+            return path + "file_docx.svg";
+
+        // .xlsx for cell file type
+        if (fileType.equals(FileType.Cell))
+            return path + "file_xlsx.svg";
+
+        // .pptx for slide file type
+        if (fileType.equals(FileType.Slide))
+            return path + "file_pptx.svg";
+
+        // the default file type
+        return path + "file_docx.svg";
     }
 
     // create document token

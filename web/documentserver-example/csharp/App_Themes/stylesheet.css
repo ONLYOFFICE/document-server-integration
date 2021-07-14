@@ -33,6 +33,7 @@ body {
     overflow-y: overlay;
     padding: 0;
     text-decoration: none;
+    overflow-x: hidden;
 }
 
 form {
@@ -64,6 +65,7 @@ header img {
 }
 
 .center {
+    position: relative;
     margin: 0 auto 0;
     width: 1152px;
 }
@@ -120,6 +122,7 @@ header img {
 label .checkbox {
     margin: 0 5px 3px 0;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 .try-editor-list {
@@ -353,20 +356,32 @@ footer {
     background: #333333;
     color: #AAAAAA;
     height: 64px;
-    min-width: 1152px;
-    width: auto;
+    width: 100%;
 }
 
-footer table {
-    border-spacing: 0;
+    footer > .center {
+        width: 100%;
+    }
+
+    footer table {
+        width: 100%;
+        border-spacing: 0;
 }
 
 footer table tr {
-    height: 64px;
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            align-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 64px;
 }
 
 footer table td {
-    padding-left: 32px;
+            position: relative;
+            padding-left: 32px;
 }
 
 footer a,
@@ -381,8 +396,16 @@ footer a:hover {
     text-decoration: none;
 }
 
+    footer table tr td:first-child {
+        margin-left: 14%;
+    }
+
 .copy {
-    padding-left: 510px;
+    color: #aaaaaa;
+    width: max-content;
+    position: relative;
+    margin-left: auto;
+    margin-right: 14%;
 }
 
 .help-block {
@@ -501,12 +524,12 @@ footer a:hover {
 
 .tableHeader tr {
     background: transparent;
-    cursor: default;
-    height: 40px;
-    -khtml-user-select: none;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
+        cursor: default;
+        height: 40px;
+        -khtml-user-select: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
 }
 
 .tableHeaderCell {
@@ -610,10 +633,10 @@ footer a:hover {
     border: 1px solid #D0D5DA;
     box-sizing: border-box;
     border-radius: 3px;
-    cursor: pointer;
-    margin-top: 5px;
-    padding: 2px 5px;
-    width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+            padding: 2px 5px;
+            width: 100%;
 }
 
 .icon-delete {
@@ -680,4 +703,62 @@ footer a:hover {
     line-height: 160%;
     letter-spacing: -0.02em;
     word-wrap: break-word;
+}
+
+.menu {
+    cursor: pointer;
+    display: none;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: space-between;
+    top: 23px;
+    left: 12px;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 30px;
+}
+
+    .menu span {
+        content: "";
+        width: 26px;
+        height: 3px;
+        background: rgb(194, 194, 194);
+    }
+
+html {
+    overflow-x: hidden;
+}
+
+
+.tableRow {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+}
+
+
+    .tableRow td:first-child {
+        display: flex;
+        flex-grow: 1;
+        max-width: 25%;
+    }
+
+.tableHeaderCellFileName {
+    width: 30%;
+}
+
+.tableHeaderCellEditors {
+    width: 28%;
+}
+
+.tableHeaderCellViewers {
+    text-align: center;
+    width: 18%
+}
+
+.firstContentCellViewers {
+    margin-left: auto;
 }

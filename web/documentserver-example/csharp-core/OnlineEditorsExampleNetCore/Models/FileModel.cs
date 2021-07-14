@@ -1,19 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Routing;
 using OnlineEditorsExampleNetCore.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Nancy.Json;
-using System.Text.RegularExpressions;
-using System.Web.Helpers;
 using System.Web;
 
 namespace OnlineEditorsExampleNetCore.Models
@@ -72,7 +64,6 @@ namespace OnlineEditorsExampleNetCore.Models
         {
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
             var editorsMode = Mode ?? "edit";  // get editor mode
-            var jss = new JavaScriptSerializer();
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
@@ -171,7 +162,7 @@ namespace OnlineEditorsExampleNetCore.Models
                             }
                     }
                 };
-            return jss.Serialize(config);
+            return JsonConvert.SerializeObject(config);
         }
 
         // get the document history
@@ -255,14 +246,11 @@ namespace OnlineEditorsExampleNetCore.Models
         // get a document which will be compared with the current document
         public void GetCompareFileData(out string compareConfig)
         {
-
             // get the path to the compared file
             var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                //Path = DocManagerHelper.ContentPath
-                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                //    + "webeditor.ashx",
-                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
+                Path = "/assets",
+                Query = "fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
             // create an object with the information about the compared file
@@ -281,10 +269,7 @@ namespace OnlineEditorsExampleNetCore.Models
             // get the path to the logo image
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                Path =
-                //DocManagerHelper.ContentPath
-                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                     "wwwroot\\img\\logo.png"
+                Path = "\\img\\logo.png"
             };
 
             // create a logo config
@@ -309,11 +294,7 @@ namespace OnlineEditorsExampleNetCore.Models
             // get the path to the recipients data for mail merging
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
             {
-                //Path =
-                //    DocManagerHelper.ContentPath
-                //    + (DocManagerHelper.ContentPath.EndsWith("/") ? "" : "/")
-                //    + "webeditor.ashx",
-                Query = "type=csv"
+                Path = "/csv"
             };
 
             // create a mail merge config

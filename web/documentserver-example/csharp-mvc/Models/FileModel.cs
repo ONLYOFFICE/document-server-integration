@@ -65,11 +65,6 @@ namespace OnlineEditorsExampleMVC.Models
             get { return DocManagerHelper.GetCallback(FileName); }
         }
 
-        public string CreateUrl
-        {
-            get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
-        }
-
         public string DownloadUrl
         {
             get { return DocManagerHelper.GetDownloadUrl(FileName); }
@@ -95,6 +90,24 @@ namespace OnlineEditorsExampleMVC.Models
 
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
+
+            var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
+            var templatesImageUrl = DocManagerHelper.GetTemplateImageUrl(FileUtility.GetFileType(FileName)); // image url for templates
+            var templates = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "Blank" },
+                    { "url", createUrl },
+                },
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "With sample content" },
+                    { "url", createUrl + "&sample=true" },
+                }
+            };
 
             // specify the document config
             var config = new Dictionary<string, object>
@@ -129,7 +142,8 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                            { "reviewGroups", user.reviewGroups }
+                                            { "reviewGroups", user.reviewGroups },
+                                            { "commentGroups", user.commentGroups }
                                         }
                                 }
                             }
@@ -141,7 +155,8 @@ namespace OnlineEditorsExampleMVC.Models
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "createUrl", CreateUrl },
+                                { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
+                                { "templates", user.templates ? templates : null },
                                 {
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
@@ -241,13 +256,16 @@ namespace OnlineEditorsExampleMVC.Models
                     {
                         // get the path to the changes.json file
                         var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
-                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+                        var changesArray = (ArrayList)changes["changes"];
+                        var change = changesArray.Count > 0
+                            ? (Dictionary<string, object>)changesArray[0]
+                            : new Dictionary<string, object>();
 
                         // write information about changes to the object
-                        obj.Add("changes", changes["changes"]);
+                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
                         obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change["created"]);
-                        obj.Add("user", change["user"]);
+                        obj.Add("created", change.Count > 0  ? change["created"] : null);
+                        obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
@@ -364,6 +382,15 @@ namespace OnlineEditorsExampleMVC.Models
             }
 
             dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+        }
+
+        //get a users for mentions
+        public void GetUsersMentions(HttpRequest request, out string usersForMentions)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
         }
     }
 }

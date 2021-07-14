@@ -270,7 +270,7 @@ docManager.getStoredFiles = function () {
 
         if (!stats.isDirectory()) {  // if the element isn't a directory
             let historyPath = docManager.historyPath(storedFiles[i], userAddress);  // get the path to the file history
-            let version = 1;
+            let version = 0;
             if (historyPath != "") {  // if the history path exists
                 version = docManager.countVersion(historyPath);  // get the last file version
             }
@@ -281,7 +281,7 @@ docManager.getStoredFiles = function () {
                 name: storedFiles[i],
                 documentType: fileUtility.getFileType(storedFiles[i]),
                 canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
-                version: version
+                version: version+1
             };
 
             if (!result.length) {  // if the result array is empty
@@ -331,6 +331,20 @@ docManager.getInternalExtension = function (fileType) {
     return ".docx";  // the default value is .docx
 };
 
+docManager.getTemplateImageUrl = function (fileType) {
+    let path = docManager.getServerUrl(true);
+    if (fileType == fileUtility.fileType.word)  // for word type
+        return path + "/images/file_docx.svg";
+
+    if (fileType == fileUtility.fileType.cell)  // for cell type
+        return path + "/images/file_xlsx.svg";
+
+    if (fileType == fileUtility.fileType.slide)  // for slide type
+        return path + "/images/file_pptx.svg";
+
+    return path + "/images/file_docx.svg";  // the default value
+}
+
 // get document key
 docManager.getKey = function (fileName) {
     const userAddress = docManager.curUserHostAddress();
@@ -376,11 +390,13 @@ docManager.getHistory = function (fileName, content, keyVersion, version) {
     let oldVersion = false;
     let contentJson = null;
     if (content) {  // if content is defined
-        if (content.changes) {  // and there are some modifications in the content
+        if (content.changes && content.changes.length) {  // and there are some modifications in the content
             contentJson = content.changes[0];  // write these modifications to the json content
-        } else {
+        } else if (content.length){
             contentJson = content[0];  // otherwise, write original content to the json content
             oldVersion = true;  // and note that this is an old version
+        } else {
+            content = false;
         }
     }
 

@@ -1,16 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace OnlineEditorsExampleNetCore
 {
@@ -32,8 +27,6 @@ namespace OnlineEditorsExampleNetCore
                   .ToDictionary(x => x.Key, x => x.Value);
 
             services.AddSingleton(HostEnvironment);
-
-            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             services.AddHttpContextAccessor();
 
@@ -59,8 +52,6 @@ namespace OnlineEditorsExampleNetCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSession();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -69,8 +60,8 @@ namespace OnlineEditorsExampleNetCore
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            //app.UseMyMiddleware();
+            
+            app.UseSession();
 
             app.UseStaticFiles();
 

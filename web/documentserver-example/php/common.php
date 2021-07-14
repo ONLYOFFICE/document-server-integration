@@ -171,6 +171,17 @@ function getInternalExtension($filename) {
     return "";
 }
 
+// get image url for templates
+function getTemplateImageUrl($filename) {
+    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $path = serverPath(true) . "/css/images/";
+
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) return $path . "file_docx.svg";  // for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return $path . "file_xlsx.svg";  // for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return $path . "file_pptx.svg";  // for presentation extensions
+    return $path . "file_docx.svg";
+}
+
 // get the document type
 function getDocumentType($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
@@ -247,7 +258,7 @@ function getVersionDir($histDir, $version) {
 
 // get a number of the last file version from the history directory
 function getFileVersion($histDir) {
-    if (!file_exists($histDir) || !is_dir($histDir)) return 0;  // check if the history directory exists
+    if (!file_exists($histDir) || !is_dir($histDir)) return 1;  // check if the history directory exists
 
     $cdir = scandir($histDir);
     $ver = 1;

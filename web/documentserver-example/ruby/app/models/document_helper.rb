@@ -134,7 +134,7 @@ class DocumentHelper
     # get the last file version
     def get_file_version(hist_dir)
       if !Dir.exist?(hist_dir)
-        return 0
+        return 1
       end
 
       ver = 1
@@ -274,6 +274,23 @@ class DocumentHelper
       end
 
       ext
+    end
+
+    # get image url for templates
+    def get_template_image_url(file_type)
+      path = get_server_url(true) + "/assets/"
+      case file_type
+        when 'word'  # for word type
+          full_path = path + 'file_docx.svg'
+        when 'cell'  # .xlsx for cell type
+          full_path = path + 'file_xlsx.svg'
+        when 'slide'  # .pptx for slide type
+          full_path = path + 'file_pptx.svg'
+        else
+          full_path = path + 'file_docx.svg'  # the default value is .docx
+      end
+
+      full_path
     end
 
     # get files information
