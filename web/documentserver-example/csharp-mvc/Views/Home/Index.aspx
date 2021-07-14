@@ -182,7 +182,7 @@
                                                             var canEdir = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
                                                         %>
 
-                                                            <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
+                                                            <tr class="tableRow" title="<%= storedFile.Name %> [<%= DocManagerHelper.GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
                                                                 <td class="contentCells">
                                                                     <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
                                                                         <span><%= storedFile.Name %></span>
