@@ -18,6 +18,8 @@
 
 package com.onlyoffice.integration.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.controllers.objects.ConverterBody;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.entities.enums.DocumentType;
@@ -26,6 +28,7 @@ import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
 import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.objects.ActionObject;
+import com.onlyoffice.integration.util.objects.History;
 import com.onlyoffice.integration.util.objects.TrackManagerRequestBody;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import com.onlyoffice.integration.util.TrackManager;
@@ -54,10 +57,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class FileController {
@@ -100,6 +100,21 @@ public class FileController {
         return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
     }
 
+    private TrackManagerRequestBody ParseFromTokenToTrackManagerBody(TrackManagerRequestBody body){
+        ObjectMapper o=new ObjectMapper();
+        body.setKey(documentTokenManager.readToken(body.getToken()).getString("key"));
+        body.setStatus(documentTokenManager.readToken(body.getToken()).getInteger("status"));
+        body.setActions(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("actions"), new TypeReference<List<ActionObject>>() {}));
+        body.setUsers(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("users"), new TypeReference<List<String>>() {}));
+        body.setChangeshistory(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("changeshistory"), new TypeReference<List<History>>() {}));
+        body.setHistory(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("history"), History.class));
+        body.setChangesurl(documentTokenManager.readToken(body.getToken()).getString("changesurl"));
+        body.setForcesavetype(documentTokenManager.readToken(body.getToken()).getInteger("forcesavetype"));
+        body.setUserdata(documentTokenManager.readToken(body.getToken()).getString("userdata"));
+        body.setUrl(documentTokenManager.readToken(body.getToken()).getString("url"));
+        body.setToken(body.getToken());
+        return body;
+    }
     private ResponseEntity<Resource> downloadFile(String fileName){
         String fileLocation = documentManager.forceSavePath(fileName, null, false);
         if (fileLocation.equals("")){
@@ -310,7 +325,9 @@ public class FileController {
     public String track(@RequestParam("fileName") String fileName,
                         @RequestParam("userAddress") String userAddress,
                         @RequestBody TrackManagerRequestBody body){
-
+        if(body.getToken()!=null) {
+            body=ParseFromTokenToTrackManagerBody(body);
+        }
         try {
             JSONObject bodyCheck = trackManager.readBody(body);
         } catch (Exception e) {

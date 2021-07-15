@@ -22,6 +22,7 @@ public class History {
         this.user = user;
         this.changes=changes;
     }
+    public History(){}
 
     public User getUser() {
         return user;

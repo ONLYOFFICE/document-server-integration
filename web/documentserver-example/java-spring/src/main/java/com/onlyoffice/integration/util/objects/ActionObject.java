@@ -12,6 +12,7 @@ public class ActionObject {
         this.type = type;
     }
 
+    public ActionObject(){}
     public String getUserid() {
         return userid;
     }

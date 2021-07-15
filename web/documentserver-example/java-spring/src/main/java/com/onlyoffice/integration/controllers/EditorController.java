@@ -100,11 +100,12 @@ public class EditorController {
         if(uid!=null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getName()!=null &&u.getEmail()!=null && u.getId()!=Integer.parseInt(uid)) {
-                    usersForMentions.add(new UserForMention(u.getName(), u.getEmail()));
+                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
+                    usersForMentions.add(new UserForMention(u.getName(),u.getEmail()));
                 }
             }
         }
+
 
         if(documentTokenManager.tokenEnabled()){
             fileModel.generateToken();
@@ -112,7 +113,21 @@ public class EditorController {
             dataCompareFile.put("token", documentTokenManager.createToken(dataInsertImage));
             dataMailMergeRecipients.put("token", documentTokenManager.createToken(dataMailMergeRecipients));
         }
-
+        switch (uid){
+            case "4":
+            case "1": {
+                fileModel.getDocument().getInfo().setFavorite(null);
+                break;
+            }
+            case "2":{
+                fileModel.getDocument().getInfo().setFavorite(true);
+                break;
+            }
+            case "3":{
+                fileModel.getDocument().getInfo().setFavorite(false);
+                break;
+            }
+        }
         ObjectMapper objectMapper=new ObjectMapper();
 
         model.addAttribute("model", fileModel);
