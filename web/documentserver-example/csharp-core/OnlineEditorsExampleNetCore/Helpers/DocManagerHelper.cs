@@ -18,10 +18,12 @@ namespace OnlineEditorsExampleNetCore.Helpers
             {
                 Host = value.Request.Host.Host;
                 RequestHost = value.Request.Headers["Host"];
+                Port = value.Request.Host.Port.ToString();
             }
         }
-        private static string Host { get; set; }
+        public static string Host { get; set; }
         private static string RequestHost { get; set; }
+        private static string Port { get; set; }
 
         // get max file size
         public static long MaxFileSize
@@ -201,8 +203,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
             {
-                Path = CurUserHostAddress() + "/"
-                           + fileName,
+                Path = "/" + fileName,
                 Query = ""
             };
 
@@ -214,11 +215,11 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(true))
             {
-                Path = path,
+                Path = "/" + path,
                 Query = ""
             };
 
-            return uri.ToString();
+            return uri.ToString()/*.Replace(":" + Port, "")*/;
         }
 
         // get the server url
@@ -230,7 +231,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
             }
             else
             {
-                var uri = new UriBuilder(Host) { Query = "" }; // тут было просто Host
+                var uri = new UriBuilder(Host) { Query = "" };
                 uri = new UriBuilder(uri.Scheme + "://" + RequestHost);
                 return uri.ToString();
             }
@@ -282,6 +283,26 @@ namespace OnlineEditorsExampleNetCore.Helpers
                     return ".pptx";
                 default:
                     return ".docx";  // the default file type is .docx
+            }
+        }
+
+        // get image url for templates
+        public static string GetTemplateImageUrl(FileUtility.FileType fileType)
+        {
+            var path = new UriBuilder(GetServerUrl(true)) // templates image url in the "From Template" section
+            {
+                Path = "\\img\\"
+            };
+            switch (fileType)
+            {
+                case FileUtility.FileType.Word:  // for word file type
+                    return path + "file_docx.svg";
+                case FileUtility.FileType.Cell:  // for cell file type
+                    return path + "file_xlsx.svg";
+                case FileUtility.FileType.Slide:  // for slide file type
+                    return path + "file_pptx.svg";
+                default:
+                    return path + "file_docx.svg";  // the default value
             }
         }
 

@@ -298,7 +298,7 @@ label .checkbox {
 }
 
 .error-message {
-    background: url("img/error.svg") no-repeat scroll 4px 10px;
+    background: url("../img/error.svg") no-repeat scroll 4px 10px;
     color: #CB0000;
     display: none;
     line-height: 160%;

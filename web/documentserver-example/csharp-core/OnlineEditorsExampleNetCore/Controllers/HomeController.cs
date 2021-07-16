@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -10,6 +11,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace OnlineEditorsExampleNetCore.Controllers
 {
@@ -17,7 +20,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
     {
         private readonly IWebHostEnvironment _environment;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
         public HomeController(IWebHostEnvironment environment, IHttpContextAccessor httpContextAccessor)
         {
             _environment = environment;
@@ -114,32 +116,50 @@ namespace OnlineEditorsExampleNetCore.Controllers
         }
 
         [Route("/convert")]
-        public IActionResult Convert([FromQuery] string fileName)
+        public IActionResult Convert()
         {
             HttpContext.Response.ContentType = "text/plain";
             try
             {
-                var fileUri = DocManagerHelper.GetFileUri(fileName, true);
-                var extension = (Path.GetExtension(fileUri) ?? "").Trim('.');
+                string fileData;
+
+                using (var receiveStream = HttpContext.Request.Body)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return Json(new Dictionary<string, object>() { { "error", "1" }, { "message", "Request stream is empty" } });
+                }
+
+                var body = JsonConvert.DeserializeObject<Dictionary<string, object>>(fileData);
+
+                var fileName = Path.GetFileName(body["filename"].ToString());
+                var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
+                var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
+
+                var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
 
+                // check if the file with such an extension can be converted
                 if (DocManagerHelper.ConvertExts.Contains("." + extension)
                     && !string.IsNullOrEmpty(internalExtension))
                 {
+                    // generate document key
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
 
+                    // get the url to the converted file
                     string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(fileUri, extension, internalExtension, key, true, out newFileUri);
+                    var result = ServiceConverter.GetConvertedUri(fileUri.ToString(), extension, internalExtension, key, true, out newFileUri, filePass);
                     if (result != 100)
                     {
                         return Json(new Dictionary<string, object>() { { "step", result }, { "filename", fileName } });
                     }
 
+                    // get a file name of an internal file extension with an index if the file with such a name already exists
                     var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
-                    using (var stream = req.GetResponse().GetResponseStream())
+                    using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the converting file
                     {
                         if (stream == null) throw new Exception("Stream is null");
                         const int bufferSize = 4096;
@@ -150,27 +170,110 @@ namespace OnlineEditorsExampleNetCore.Controllers
                             int readed;
                             while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
                             {
-                                fs.Write(buffer, 0, readed);
+                                fs.Write(buffer, 0, readed);  // write bytes to the output stream
                             }
                         }
                     }
 
-                    WebEditorExtenstions.Remove(fileName);
-                    fileName = correctName;
-                    DocManagerHelper.CreateMeta(fileName, HttpContext.Request.Cookies.GetOrDefault("uid", ""), HttpContext.Request.Cookies.GetOrDefault("uname", ""));
-
+                    Remove(fileName);  // remove the original file and its history if it exists
+                    fileName = correctName;  // create meta information about the converted file with user id and name specified
+                    var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
+                    var user = Users.getUser(id);
+                    DocManagerHelper.CreateMeta(fileName, user.id, user.name);
                 }
-                return Json(new Dictionary<string, object>() { { "filename", fileName } });
+                var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
+                Redirect(Url.Action("Index", "Home"));
+                return Json(new Dictionary<string, object>() { { "filename", fileName }, { "documentType", documentType } });
             }
             catch (Exception e)
             {
                 return Json(new Dictionary<string, object>() { { "error", e.Message } });
             }
+
+            //string fileData;
+            //try
+            //{
+            //    using (var receiveStream = HttpContext.Request.Body)
+            //    using (var readStream = new StreamReader(receiveStream))
+            //    {
+            //        fileData = readStream.ReadToEnd();
+            //        if (string.IsNullOrEmpty(fileData)) return Json(new Dictionary<string, object>() { { "error", "1" }, { "message", "Request stream is empty" } });
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    return Json(new Dictionary<string, object>() { { "error", e.Message } });
+            //}
+            //var body = JsonConvert.DeserializeObject<Dictionary<string, object>>(fileData);
+
+            //var _fileName = Path.GetFileName(body["filename"].ToString());
+            //var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
+            //var fileUri = DocManagerHelper.GetDownloadUrl(_fileName);
+
+            //var extension = (Path.GetExtension(fileUri).ToLower() ?? "").Trim('.');
+            //var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(_fileName)).Trim('.');
+
+            //// check if the file with such an extension can be converted
+            //if (DocManagerHelper.ConvertExts.Contains("." + extension)
+            //    && !string.IsNullOrEmpty(internalExtension))
+            //{
+            //    // generate document key
+            //    var key = ServiceConverter.GenerateRevisionId(DocManagerHelper.GetFileUri(fileUri, true));
+
+            //    var fileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true));
+            //    fileUrl.Path = "/download";
+            //    fileUrl.Query = "fileName = " + HttpUtility.UrlEncode(_fileName) + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Request.Host.Host);
+
+            //    // get the url to the converted file
+            //    string newFileUri;
+            //    var result = ServiceConverter.GetConvertedUri(fileUrl.ToString(), extension, internalExtension, key, true, out newFileUri, filePass); ;
+            //    if (result != 100)
+            //    {
+            //        return Json(new Dictionary<string, object>() { { "step", result }, { "filename", _fileName } });
+            //    }
+
+            //    // get a file name of an internal file extension with an index if the file with such a name already exists
+            //    var fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + "." + internalExtension);
+
+            //    var req = (HttpWebRequest)WebRequest.Create(newFileUri);
+
+            //    using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the converting file
+            //    {
+            //        if (stream == null) throw new Exception("Stream is null");
+            //        const int bufferSize = 4096;
+
+            //        using (var fs = System.IO.File.Open(DocManagerHelper.StoragePath(fileName, null), FileMode.Create))
+            //        {
+            //            var buffer = new byte[bufferSize];
+            //            int readed;
+            //            while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+            //            {
+            //                fs.Write(buffer, 0, readed);  // write bytes to the output stream
+            //            }
+            //        }
+            //    }
+
+            //    // remove the original file and its history if it exists
+            //    var storagePath = DocManagerHelper.StoragePath(_fileName, null);
+            //    var histDir = DocManagerHelper.HistoryDir(storagePath);
+            //    System.IO.File.Delete(storagePath);
+            //    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+
+            //    // create meta information about the converted file with user id and name specified
+            //    _fileName = fileName;
+            //    var id = HttpContext.Request.Cookies.GetOrDefault("uid", null);
+            //    var user = Users.getUser(id);  // get the user
+            //    DocManagerHelper.CreateMeta(_fileName, user.id, user.name, null);
+            //}
+
+            //var documentType = FileUtility.GetFileType(_fileName).ToString().ToLower();
+            //Redirect(Url.Action("Index", "Home"));
+            //return Json(new Dictionary<string, object>() { { "filename", _fileName }, { "documentType", documentType } });
         }
 
         // track file changes
         [Route("/track")]
-        public IActionResult Track([FromQuery] string userAddress, [FromQuery] string fileName)
+        public async Task<IActionResult> Track([FromQuery] string userAddress, [FromQuery] string fileName)
         {
             // read request body
             var fileData = TrackManager.readBody(HttpContext);

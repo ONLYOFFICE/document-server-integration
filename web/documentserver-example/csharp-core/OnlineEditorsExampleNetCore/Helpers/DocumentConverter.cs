@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OnlineEditorsExampleNetCore.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -164,25 +166,25 @@ namespace OnlineEditorsExampleNetCore.Helpers
         {
             if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
 
-            var responseFromService = Json.Decode(jsonDocumentResponse);
+            var responseFromService = JsonConvert.DeserializeObject<ResponseFromConvert>(jsonDocumentResponse);
             if (jsonDocumentResponse == null) throw new WebException("Invalid answer format");
 
-            var errorElement = responseFromService.error;  // if an error occurs
+            var errorElement = responseFromService.Error;  // if an error occurs
             if (errorElement != null) ProcessResponseError(Convert.ToInt32(errorElement));  // then get an error message
 
             // check if the conversion is completed and save the result to a variable
-            var isEndConvert = responseFromService.endConvert;
+            var isEndConvert = responseFromService.EndConvert;
 
             int resultPercent;
             responseUri = string.Empty;
             if (isEndConvert)  // if the conversion is completed
             {
-                responseUri = responseFromService.fileUrl;  // get the file url
+                responseUri = responseFromService.FileUrl;  // get the file url
                 resultPercent = 100;
             }
             else  // if the conversion isn't completed
             {
-                resultPercent = responseFromService.percent;  // get the percentage value
+                resultPercent = responseFromService.Percent;  // get the percentage value
                 if (resultPercent >= 100) resultPercent = 99;
             }
 

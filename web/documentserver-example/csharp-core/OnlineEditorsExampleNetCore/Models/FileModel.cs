@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace OnlineEditorsExampleNetCore.Models
 {
@@ -48,11 +49,6 @@ namespace OnlineEditorsExampleNetCore.Models
             get { return DocManagerHelper.GetCallback(FileName); }
         }
 
-        public string CreateUrl
-        {
-            get { return DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName)); }
-        }
-
         public string Ext { get; set; }
         public string DownloadUrl
         {
@@ -77,6 +73,24 @@ namespace OnlineEditorsExampleNetCore.Models
 
             var actionLink = context.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : JsonConvert.SerializeObject(actionLink);  // get action data for the action link
+
+            var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
+            var templatesImageUrl = DocManagerHelper.GetTemplateImageUrl(FileUtility.GetFileType(FileName)); // image url for templates
+            var templates = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "Blank" },
+                    { "url", createUrl },
+                },
+                new Dictionary<string, string>()
+                {
+                    { "image", templatesImageUrl },
+                    { "title", "With sample content" },
+                    { "url", createUrl + "&sample=true" },
+                }
+            };
 
             // specify the document config
             var config = new Dictionary<string, object>
@@ -111,7 +125,8 @@ namespace OnlineEditorsExampleNetCore.Models
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
-                                            { "reviewGroups", user.reviewGroups }
+                                            { "reviewGroups", user.reviewGroups },
+                                            { "commentGroups", user.commentGroups }
                                         }
                                 }
                             }
@@ -123,7 +138,8 @@ namespace OnlineEditorsExampleNetCore.Models
                                 { "mode", mode },
                                 { "lang", context.Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "createUrl", CreateUrl },
+                                { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
+                                { "templates", user.templates ? templates : null },
                                 {
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
@@ -213,13 +229,16 @@ namespace OnlineEditorsExampleNetCore.Models
                     {
                         // get the path to the changes.json file
                         var changes = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
-                        var change = ((Dictionary<string, object>)((ArrayList)changes["changes"])[0]);
+                        var changesArray = (JArray)changes["changes"];
+                        var change = changesArray.Count > 0
+                            ? changesArray[0].ToObject<Dictionary<string, object>>()
+                            : new Dictionary<string, object>();
 
                         // write information about changes to the object
-                        obj.Add("changes", changes["changes"]);
+                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
                         obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change["created"]);
-                        obj.Add("user", change["user"]);
+                        obj.Add("created", change.Count > 0 ? change["created"] : null);
+                        obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
@@ -305,6 +324,14 @@ namespace OnlineEditorsExampleNetCore.Models
             };
 
             dataMailMergeRecipients = JsonConvert.SerializeObject(mailMergeConfig);
+        }
+
+        //get a users for mentions
+        public void GetUsersMentions(HttpRequest request, out string usersForMentions)
+        {
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForMentions = !user.id.Equals("uid-0") ? JsonConvert.SerializeObject(Users.getUsersForMentions(user.id)) : JsonConvert.SerializeObject(null);
         }
     }
 }

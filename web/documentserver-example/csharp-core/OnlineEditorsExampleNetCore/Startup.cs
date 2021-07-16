@@ -34,6 +34,13 @@ namespace OnlineEditorsExampleNetCore
 
             services.AddSession();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        );
+            });
+
             services.AddControllersWithViews();
 
             // If using Kestrel:
@@ -60,14 +67,14 @@ namespace OnlineEditorsExampleNetCore
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
+
             app.UseSession();
 
             app.UseStaticFiles();
 
-            app.UseCors();
-
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
