@@ -75,16 +75,6 @@ public class TrackManager {
         ObjectMapper om=new ObjectMapper();
         String bodyString =om.writeValueAsString(tr);
 
-//        try {
-//            Scanner scanner = new Scanner(request.getInputStream());
-//            scanner.useDelimiter("\\A");
-//            bodyString = scanner.hasNext() ? scanner.next() : "";
-//            scanner.close();
-//        }
-//        catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-
         if (bodyString.isEmpty()) {
             throw new Exception("{\"error\":1,\"message\":\"Request payload is empty\"}");
         }

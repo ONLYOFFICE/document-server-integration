@@ -14,9 +14,14 @@ public class TrackManagerRequestBody {
     private List<String> users;
     private List<ActionObject> actions;
     private String userdata;
+    private String lastsave;
+    private Boolean notmodified;
+
+
+    public TrackManagerRequestBody(){}
 
     public TrackManagerRequestBody(String url, String key, String changesurl, List<History> changeshistory, History history, String token,
-                                   Integer forcesavetype, Integer status, List<ActionObject> actions, List<String> users, String userdata){
+                                   Integer forcesavetype, Integer status, List<ActionObject> actions, List<String> users, String userdata, String lastsave, Boolean notmodified){
         this.actions=actions;
         this.changeshistory=changeshistory;
         this.changesurl=changesurl;
@@ -28,6 +33,8 @@ public class TrackManagerRequestBody {
         this.url=url;
         this.users=users;
         this.userdata = userdata;
+        this.lastsave = lastsave;
+        this.notmodified = notmodified;
     }
     public String getUrl() {
         return url;
@@ -115,5 +122,21 @@ public class TrackManagerRequestBody {
 
     public void setUserdata(String userdata) {
         this.userdata = userdata;
+    }
+
+    public Boolean getNotmodified() {
+        return notmodified;
+    }
+
+    public void setNotmodified(Boolean notmodified) {
+        this.notmodified = notmodified;
+    }
+
+    public String getLastsave() {
+        return lastsave;
+    }
+
+    public void setLastsave(String lastsave) {
+        this.lastsave = lastsave;
     }
 }

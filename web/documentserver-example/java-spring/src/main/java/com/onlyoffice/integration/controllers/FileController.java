@@ -100,21 +100,6 @@ public class FileController {
         return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
     }
 
-    private TrackManagerRequestBody ParseFromTokenToTrackManagerBody(TrackManagerRequestBody body){
-        ObjectMapper o=new ObjectMapper();
-        body.setKey(documentTokenManager.readToken(body.getToken()).getString("key"));
-        body.setStatus(documentTokenManager.readToken(body.getToken()).getInteger("status"));
-        body.setActions(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("actions"), new TypeReference<List<ActionObject>>() {}));
-        body.setUsers(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("users"), new TypeReference<List<String>>() {}));
-        body.setChangeshistory(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("changeshistory"), new TypeReference<List<History>>() {}));
-        body.setHistory(o.convertValue(documentTokenManager.readToken(body.getToken()).getObject("history"), History.class));
-        body.setChangesurl(documentTokenManager.readToken(body.getToken()).getString("changesurl"));
-        body.setForcesavetype(documentTokenManager.readToken(body.getToken()).getInteger("forcesavetype"));
-        body.setUserdata(documentTokenManager.readToken(body.getToken()).getString("userdata"));
-        body.setUrl(documentTokenManager.readToken(body.getToken()).getString("url"));
-        body.setToken(body.getToken());
-        return body;
-    }
     private ResponseEntity<Resource> downloadFile(String fileName){
         String fileLocation = documentManager.forceSavePath(fileName, null, false);
         if (fileLocation.equals("")){
@@ -325,11 +310,9 @@ public class FileController {
     public String track(@RequestParam("fileName") String fileName,
                         @RequestParam("userAddress") String userAddress,
                         @RequestBody TrackManagerRequestBody body){
-        if(body.getToken()!=null) {
-            body=ParseFromTokenToTrackManagerBody(body);
-        }
         try {
             JSONObject bodyCheck = trackManager.readBody(body);
+            body=new ObjectMapper().readValue(bodyCheck.toJSONString(),TrackManagerRequestBody.class);
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
