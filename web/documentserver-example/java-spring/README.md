@@ -35,8 +35,8 @@ If you want to experiment with the editor configuration, modify the [parameters]
 ### Step 3. Install the prerequisites
 To run the Java example code, install the Java version 11 appropriate for your OS and framework  **Apache Maven**:
 
-* Java (download from [the Oracle official website](https://www.java.com/en/download/manual.jsp));
-* Apache Maven (download from [the official website](https://maven.apache.org/download.cgi/)).
+* Java (download from [the Oracle official website](https://www.oracle.com/ru/java/technologies/javase-jdk11-downloads.html));
+* Apache Maven (download from [the official website](https://maven.apache.org/download.cgi)).
 
 ### Step 4. Set environment variables
 
