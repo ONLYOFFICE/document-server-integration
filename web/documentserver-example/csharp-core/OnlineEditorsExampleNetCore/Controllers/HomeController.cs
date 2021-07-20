@@ -178,7 +178,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     DocManagerHelper.CreateMeta(fileName, user.id, user.name);
                 }
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
-                Redirect(Url.Action("Index", "Home"));
                 return Json(new Dictionary<string, object>() { { "filename", fileName }, { "documentType", documentType } });
             }
             catch (Exception e)

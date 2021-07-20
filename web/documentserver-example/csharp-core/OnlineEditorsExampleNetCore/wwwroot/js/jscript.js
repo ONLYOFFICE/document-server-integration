@@ -128,7 +128,7 @@ if (typeof jQuery != "undefined") {
 
                     jq("#hiddenFileName").val(response.filename);
 
-                    if (response.step && response.step < 100) {
+                    if (typeof response.step != "undefined" && response.step < 100) {
                         checkConvert(filePass);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
