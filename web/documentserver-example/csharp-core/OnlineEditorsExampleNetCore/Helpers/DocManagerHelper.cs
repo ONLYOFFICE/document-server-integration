@@ -21,7 +21,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 Port = value.Request.Host.Port.ToString();
             }
         }
-        public static string Host { get; set; }
+        private static string Host { get; set; }
         private static string RequestHost { get; set; }
         private static string Port { get; set; }
 
@@ -219,7 +219,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 Query = ""
             };
 
-            return uri.ToString()/*.Replace(":" + Port, "")*/;
+            return uri.ToString();
         }
 
         // get the server url

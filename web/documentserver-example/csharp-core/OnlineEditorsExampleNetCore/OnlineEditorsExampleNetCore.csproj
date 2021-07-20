@@ -5,7 +5,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.7" />
+    <Content Include="192.168.1.2\new.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\AUTHORS.md" />
+    <None Include="wwwroot\assets\LICENSE" />
+    <None Include="wwwroot\assets\new\new.docx" />
+    <None Include="wwwroot\assets\new\new.pptx" />
+    <None Include="wwwroot\assets\new\new.xlsx" />
+    <None Include="wwwroot\assets\sample\csv.csv" />
+    <None Include="wwwroot\assets\sample\sample.docx" />
+    <None Include="wwwroot\assets\sample\sample.pptx" />
+    <None Include="wwwroot\assets\sample\sample.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
