@@ -65,6 +65,7 @@ header img {
 }
 
 .center {
+    position: relative;
     margin: 0 auto 0;
     width: 1152px;
 }
