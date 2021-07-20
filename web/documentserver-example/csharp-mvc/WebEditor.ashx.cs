@@ -139,7 +139,7 @@ namespace OnlineEditorsExampleMVC
                 var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
                 var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
 
-                var extension = (Path.GetExtension(fileUri).ToLower() ?? "").Trim('.');
+                var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
 
                 // check if the file with such an extension can be converted
