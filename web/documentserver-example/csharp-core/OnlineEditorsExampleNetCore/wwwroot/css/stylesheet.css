@@ -65,6 +65,7 @@ header img {
 }
 
 .center {
+    position: relative;
     margin: 0 auto 0;
     width: 1152px;
 }
@@ -616,7 +617,6 @@ footer table tr td:first-child {
 }
 
 .user-block-table {
-    height: 100%;
     padding-top: 14px;
     width: 100%;
 }
