@@ -4,6 +4,7 @@ using OnlineEditorsExampleNetCore.Helpers;
 using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace OnlineEditorsExampleNetCore
@@ -55,7 +56,7 @@ namespace OnlineEditorsExampleNetCore
         }
 
         // download data from the url to the file
-        public static void download(string filePath, HttpContext context)
+        public static async Task DownloadAsync(string filePath, HttpContext context)
         {
             var fileinf = new FileInfo(filePath);
             context.Response.Headers.Add("Content-Length", fileinf.Length.ToString());  // set headers to the response
@@ -64,7 +65,7 @@ namespace OnlineEditorsExampleNetCore
             var tmp = HttpUtility.UrlEncode(Path.GetFileName(filePath));
             tmp = tmp.Replace("+", "%20");
             context.Response.Headers.Add("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            context.Response.SendFileAsync(filePath);
+            await context.Response.SendFileAsync(filePath);
         }
     }
 }

@@ -59,7 +59,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         }
 
         [Route("/upload")]
-        public async Task<IActionResult> Upload(IFormCollection form)
+        public IActionResult Upload(IFormCollection form)
         {
             HttpContext.Response.ContentType = "text/plain";
             try
@@ -93,7 +93,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
                 using (var fs = System.IO.File.Open(savedFileName, FileMode.Create, FileAccess.ReadWrite))
                 {
-                    await httpPostedFile.CopyToAsync(fs);  // and save it
+                    httpPostedFile.CopyTo(fs);  // and save it
                 }
 
                 // get file meta information or create the default one
@@ -112,7 +112,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
         }
 
         [Route("/convert")]
-        public async Task<IActionResult> Convert()
+        public IActionResult Convert()
         {
             HttpContext.Response.ContentType = "text/plain";
             try
@@ -122,7 +122,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 using (var receiveStream = HttpContext.Request.Body)
                 using (var readStream = new StreamReader(receiveStream))
                 {
-                    fileData = await readStream.ReadToEndAsync();
+                    fileData = readStream.ReadToEnd();
                     if (string.IsNullOrEmpty(fileData)) return Json(new Dictionary<string, object>() { { "error", "1" }, { "message", "Request stream is empty" } });
                 }
 
@@ -164,9 +164,9 @@ namespace OnlineEditorsExampleNetCore.Controllers
                         {
                             var buffer = new byte[bufferSize];
                             int readed;
-                            while ((readed = await stream.ReadAsync(buffer, 0, bufferSize)) != 0)
+                            while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
                             {
-                                await fs.WriteAsync(buffer, 0, readed);  // write bytes to the output stream
+                                fs.Write(buffer, 0, readed);  // write bytes to the output stream
                             }
                         }
                     }
@@ -303,26 +303,26 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         // get sample files from the assests
         [Route("/assets")]
-        public IActionResult Assets([FromQuery] string fileName)
+        public async Task<IActionResult> Assets([FromQuery] string fileName)
         {
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstions.download(filePath, HttpContext);
+            await WebEditorExtenstions.DownloadAsync(filePath, HttpContext);
             return new EmptyResult();
         }
 
         // download a csv file
         [Route("/csv")]
-        public IActionResult GetCsv()
+        public async Task<IActionResult> GetCsv()
         {
             var fileName = "csv.csv";
             var filePath = "assets/sample/" + fileName;
-            WebEditorExtenstions.download(filePath, HttpContext);
+            await WebEditorExtenstions.DownloadAsync(filePath, HttpContext);
             return new EmptyResult();
         }
 
         // download a file
         [Route("/download")]
-        public IActionResult Download([FromQuery] string fileName, [FromQuery] string userAddress)
+        public async Task<IActionResult> Download([FromQuery] string fileName, [FromQuery] string userAddress)
         {
             try
             {
@@ -347,7 +347,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                 {
                     filePath = DocManagerHelper.StoragePath(fileName, userAddress);  // or to the original document
                 }
-                WebEditorExtenstions.download(filePath, HttpContext);
+                await WebEditorExtenstions.DownloadAsync(filePath, HttpContext);
             }
             catch (Exception)
             {
