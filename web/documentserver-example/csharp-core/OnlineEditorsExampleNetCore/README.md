@@ -24,6 +24,13 @@ If you want to experiment with the editor configuration, modify the [parameters]
 Сheck if your system meets the system requirements:
 * Microsoft .NET Core: version 3.1 (download it from the [official Microsoft website](https://dotnet.microsoft.com/download/dotnet/3.1));
 
+You can install the prerequisites using scripts:
+### For Windows
+(https://docs.microsoft.com/en-us/dotnet/core/install/windows?tabs=net50#install-with-powershell-automation)
+
+### For Linux
+(https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
+
 ## Step 4. Run your website with the editors
 1. The example listenning on http://localhost:8000, but if you want change this value, you need go to folder **Propeties** and edit path in the *launchSettings.json* file:
 ```
