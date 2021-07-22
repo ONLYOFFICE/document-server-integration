@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -12,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace OnlineEditorsExampleNetCore.Controllers
 {
@@ -40,7 +38,6 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     Mode = editorsMode,  // editor mode: edit or view
                     Type = editorsType,  // editor type: desktop, mobile, embedded
                     FileName = Path.GetFileName(fileName), // file name
-                    
             };
             return View("Editor", file);
         }
@@ -188,10 +185,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         // track file changes
         [Route("/track")]
-        public IActionResult Track([FromQuery] string userAddress, [FromQuery] string fileName)
+        public async Task<IActionResult> Track([FromQuery] string userAddress, [FromQuery] string fileName)
         {
             // read request body
-            var fileData = TrackManager.readBody(HttpContext);
+            var fileData = await TrackManager.readBodyAsync(HttpContext);
 
             var status = (WebEditorExtenstions.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
             var saved = 1;  // editing
@@ -210,14 +207,13 @@ namespace OnlineEditorsExampleNetCore.Controllers
                             {
                                 TrackManager.commandRequest("forcesave", fileData["key"].ToString());  // create a command request with the forcesave method
                             }
-
                         }
                     }
                     catch (Exception e)
                     {
                         Debug.Print(e.StackTrace);
                     }
-                    return Json(new Dictionary<string, object>() { { "error", 0 } });
+                    break;
 
                 // MustSave, Corrupted
                 case WebEditorExtenstions.TrackerStatus.MustSave:
@@ -247,8 +243,7 @@ namespace OnlineEditorsExampleNetCore.Controllers
                     }
                     return Json(new Dictionary<string, object>() { { "error", saved } });
             }
-
-            return BadRequest();
+            return Json(new Dictionary<string, object>() { { "error", 0 } });
         }
 
         // remove a file
