@@ -26,3 +26,7 @@
 	path = web/documentserver-example/ruby/public/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/csharp-core/OnlineEditorsExampleNetCore/wwwroot/assets"]
+	path = web/documentserver-example/csharp-core/OnlineEditorsExampleNetCore/wwwroot/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
