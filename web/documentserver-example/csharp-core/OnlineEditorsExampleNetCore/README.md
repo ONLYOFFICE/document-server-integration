@@ -12,12 +12,15 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ## Step 2. Download the .Net Core code for the editors integration and change base configuration
 
-Download the [.Net Core example](https://api.onlyoffice.com/editors/demopreview) from our site.
-You need to connnect the editors to your web site. Specify path to the editors installation in the *appsettings.json* file:
+Download the [.Net Core example](https://api.onlyoffice.com/editors/demopreview) from our site. Or you can clone git repository using **git** command:
+```
+git clone https://github.com/ONLYOFFICE/document-server-integration.git
+```
+You need to connect the editors to your web site. Go to the project directory and specify path to the editors installation in the *appsettings.json* file:
 ```
 "files.docservice.url.site": "https://documentserver/"
 ```
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the address of the server with the ONLYOFFICE Document Server installed.
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *FileModel.cs* file.
 
 ## Step 3. Install the prerequisites
@@ -31,17 +34,26 @@ You can install the prerequisites using scripts:
 ### For Linux
 (https://docs.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#scripted-install)
 
+Or you can install .NET Core for your OS following this instruction:
+([instruction](https://docs.microsoft.com/en-us/dotnet/core/install/linux))
+  
+
 ## Step 4. Run your website with the editors
-1. The example listenning on http://localhost:8000, but if you want change this value, you need go to folder **Propeties** and edit path in the *launchSettings.json* file:
+1. The example listening on http://localhost:8000, but if you want change this value, you need go to folder **Properties** and edit path in the *launchSettings.json* file:
 ```
 "applicationUrl": "http://localhost:8000",
 ```
-where the **http://localhost:8000** is the name of you listenning address.
+where the **http://localhost:8000** is the name of you listening address and you can change 8000 port to any available port.
+
 2. From the current folder where the example is located in your command prompt, run the following command:
-	> dotnet run
+```
+ dotnet run
+ ```
 The **dotnet run** command will build and start the app. You can stop the app at any time by selecting **Ctrl+C**.
 If you rebuild and restart the app whenever you make code changes, run the following command:
-	> dotnet watch run
+```
+dotnet watch run
+```
 You can stop the app at any time by selecting **Ctrl+C**.
 
 ## Step 5. Check accessibility
