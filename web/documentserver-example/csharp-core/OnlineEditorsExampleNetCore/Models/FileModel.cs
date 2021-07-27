@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OnlineEditorsExampleNetCore.Helpers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -178,6 +177,15 @@ namespace OnlineEditorsExampleNetCore.Models
                             }
                     }
                 };
+
+            // if the secret key to generate token exists
+            if (JwtManager.Enabled)
+            {
+                // encode the document config into a token
+                var token = JwtManager.Encode(config);
+                config.Add("token", token);
+            }
+
             return JsonConvert.SerializeObject(config);
         }
 
@@ -248,6 +256,11 @@ namespace OnlineEditorsExampleNetCore.Models
                         // write the path to the diff.zip archive with differences in this file version
                         dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(DocManagerHelper.ContentPath.Length)));
                     }
+                    if (JwtManager.Enabled)
+                    {
+                        var token = JwtManager.Encode(dataObj);
+                        dataObj.Add("token", token);
+                    }
                     hist.Add(obj);  // add object dictionary to the hist list
                     histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
                 }
@@ -278,6 +291,12 @@ namespace OnlineEditorsExampleNetCore.Models
                 { "fileType", "docx" },
                 { "url", compareFileUrl.ToString() }
             };
+
+            if (JwtManager.Enabled)  // if the secret key to generate token exists
+            {
+                var compareFileToken = JwtManager.Encode(dataCompareFile);  // encode the dataCompareFile object into the token
+                dataCompareFile.Add("token", compareFileToken);  // and add it to the dataCompareFile object
+            }
 
             compareConfig = JsonConvert.SerializeObject(dataCompareFile);
         }
@@ -322,6 +341,12 @@ namespace OnlineEditorsExampleNetCore.Models
                 { "fileType", "csv" },
                 { "url", mailMergeUrl.ToString()}
             };
+
+            if (JwtManager.Enabled)  // if the secret key to generate token exists
+            {
+                var mailmergeToken = JwtManager.Encode(mailMergeConfig);  // encode mailMergeConfig into the token
+                mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
+            }
 
             dataMailMergeRecipients = JsonConvert.SerializeObject(mailMergeConfig);
         }

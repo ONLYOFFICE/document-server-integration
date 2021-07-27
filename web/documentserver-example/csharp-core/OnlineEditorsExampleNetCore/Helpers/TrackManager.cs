@@ -6,14 +6,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
 
 namespace OnlineEditorsExampleNetCore.Helpers
 {
     public class TrackManager
     {
         // read request body
-        public static async Task<Dictionary<string, object>> readBodyAsync(HttpContext context)
+        public static Dictionary<string, object> readBody(HttpContext context)
         {
             string body;
             try
@@ -22,8 +21,8 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 using (var receiveStream = context.Request.Body)
                 using (var readStream = new StreamReader(receiveStream))
                 {
-                    body = await readStream.ReadToEndAsync();
-                    if (string.IsNullOrEmpty(body)) await context.Response.WriteAsync("{\"error\":1,\"message\":\"Request stream is empty\"}");
+                    body = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(body)) context.Response.WriteAsync("{\"error\":1,\"message\":\"Request stream is empty\"}");
                 }
             }
             catch (Exception e)
@@ -52,7 +51,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 }
                 else  // otherwise, an error occurs
                 {
-                    await context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT expected\"}");
+                    context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT expected\"}");
                 }
 
                 if (token != null && !token.Equals(""))  // invalid signature error
@@ -61,7 +60,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
                 }
                 else
                 {
-                    await context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT validation failed\"}");
+                    context.Response.WriteAsync("{\"error\":1,\"message\":\"JWT validation failed\"}");
                 }
             }
             return fileData;

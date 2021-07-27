@@ -185,10 +185,10 @@ namespace OnlineEditorsExampleNetCore.Controllers
 
         // track file changes
         [Route("/track")]
-        public async Task<IActionResult> Track([FromQuery] string userAddress, [FromQuery] string fileName)
+        public IActionResult Track([FromQuery] string userAddress, [FromQuery] string fileName)
         {
             // read request body
-            var fileData = await TrackManager.readBodyAsync(HttpContext);
+            var fileData = TrackManager.readBody(HttpContext);
 
             var status = (WebEditorExtenstions.TrackerStatus)(Int64)fileData["status"];  // get status from the request body
             var saved = 1;  // editing
