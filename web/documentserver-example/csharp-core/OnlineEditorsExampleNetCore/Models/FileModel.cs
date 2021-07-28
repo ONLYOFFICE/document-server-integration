@@ -144,7 +144,7 @@ namespace OnlineEditorsExampleNetCore.Models
                                     "user", new Dictionary<string, object>
                                         {
                                             { "id", user.id },
-                                            { "name", user.name },
+                                            { "name", user.id.Equals("uid-0") ? "" : user.name },
                                             { "group", user.group }
                                         }
                                 },
