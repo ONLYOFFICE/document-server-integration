@@ -97,7 +97,7 @@ namespace OnlineEditorsExampleNetCore.Models
             {
                 new Dictionary<string, string>()
                 {
-                    { "image", templatesImageUrl },
+                    { "image", "" },
                     { "title", "Blank" },
                     { "url", createUrl },
                 },
