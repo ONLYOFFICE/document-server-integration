@@ -44,7 +44,6 @@ public class Permission {
     private Boolean modifyFilter = true;
     private Boolean modifyContentControl = true;
     private Boolean review = true;
-    private Boolean templates = true;
     @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = SerializerFilter.class)
     private List<String> reviewGroups;
     private CommentGroup commentGroups;
@@ -71,7 +70,6 @@ public class Permission {
                     .distinct()
                     .map(group -> group.getName())
                     .collect(Collectors.toList());
-        this.templates = user.getPermissions().getTemplates() ? true : null;
         List<Group> commentViewGroups = user.getPermissions().getCommentsViewGroups();
         List<Group> commentEditGroups = user.getPermissions().getCommentsEditGroups();
         List<Group> commentRemoveGroups = user.getPermissions().getCommentsRemoveGroups();
@@ -167,11 +165,4 @@ public class Permission {
         this.commentGroups = commentGroups;
     }
 
-    public Boolean getTemplates() {
-        return templates;
-    }
-
-    public void setTemplates(Boolean templates) {
-        this.templates = templates;
-    }
 }

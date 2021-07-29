@@ -100,15 +100,15 @@ public class IndexController {
                 description_user_1, null, List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),true);
+                List.of(FilterState.NULL.toString()));
         userService.createUser("Mark Pottato", "pottato@mail.ru",
                 description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"),false);
+                List.of("group-2", ""), List.of("group-2"));
         userService.createUser("Hamish Mitchell", "mitchell@mail.ru",
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>(),false);
+                List.of("group-2"), new ArrayList<>());
         userService.createUser("Anonymous",null,description_user_0,null,
-                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),null);
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()));
 
     }
 

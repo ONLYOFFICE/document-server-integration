@@ -60,8 +60,7 @@ public class UserServices {
                            List<String> reviewGroups,
                            List<String> viewGroups,
                            List<String> editGroups,
-                           List<String> removeGroups,
-                           Boolean templates){
+                           List<String> removeGroups){
         User newUser = new User();
         newUser.setName(name);
         newUser.setEmail(email);
@@ -75,7 +74,6 @@ public class UserServices {
 
         Permission permission = permissionService
                 .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove);
-        permission.setTemplates(templates);
         newUser.setPermissions(permission);
 
         userRepository.save(newUser);

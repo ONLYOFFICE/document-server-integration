@@ -120,13 +120,14 @@
                 };
 
                 var histArray = [[${model.GetHistory()}]];
-                var history = histArray[0];
-                var historyData = histArray[1];
+                var hist = JSON.parse(histArray[0]);
+                var historyData = JSON.parse(histArray[1]);
                 var usersForMentions = [[${usersForMentions}]];
+                console.log(hist);
 
-                if (history && historyData) {
+                if (hist && historyData) {
                     config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(history);
+                        docEditor.refreshHistory(hist);
                     };
                     config.events['onRequestHistoryData'] = function (event) {
                         var ver = event.data;
