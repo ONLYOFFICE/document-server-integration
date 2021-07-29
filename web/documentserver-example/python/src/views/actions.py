@@ -145,7 +145,7 @@ def edit(request):
     createUrl = docManager.getCreateUrl(edType, request)
     templates = [
         {
-            'image': templatesImageUrl,
+            'image': '',
             'title': 'Blank',
             'url': createUrl
         },
