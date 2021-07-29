@@ -74,7 +74,7 @@ namespace OnlineEditorsExampleNetCore.Helpers
 
                 if (token != null && !token.Equals(""))  // invalid signature error
                 {
-                    fileData = (Dictionary<string, object>)JsonConvert.DeserializeObject<Dictionary<string, object>>(token)["payload"];
+                    fileData = (Dictionary<string, object>)JsonConvert.DeserializeObject<Dictionary<string, object>>(token);
                 }
                 else
                 {
