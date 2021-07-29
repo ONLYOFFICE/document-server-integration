@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.util.documentManagers;
 
+import com.onlyoffice.integration.entities.enums.DocumentType;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
 import org.json.simple.JSONObject;
@@ -89,6 +90,25 @@ public class DocumentManagerImpl implements DocumentManager {
             }
         }
         return userAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
+    }
+
+    public String getTemplateImageUrl(String fileName){
+        DocumentType fileType = fileUtility.getDocumentType(fileName);
+        String path = getServerUrl(true);
+        if(fileType.equals(DocumentType.word)){
+            return path + "/css/img/file_docx.svg";
+        } else if(fileType.equals(DocumentType.slide)){
+            return path + "/css/img/file_pptx.svg";
+        } else if(fileType.equals(DocumentType.cell)){
+            return path + "/css/img/file_xlsx.svg";
+        }
+        return path + "/css/img/file_docx.svg";
+    }
+
+    public String getCreateUrl(String fileName, Boolean sample){
+        String fileExt = fileName.substring(fileName.length() - 4);
+        String url = getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
+        return url;
     }
 
     public void createDirectory(Path path){

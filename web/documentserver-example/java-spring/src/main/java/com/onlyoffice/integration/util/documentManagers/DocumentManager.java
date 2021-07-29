@@ -49,4 +49,6 @@ public interface DocumentManager {
     public ArrayList<Map<String, Object>> getFilesInfo();
     public ArrayList<Map<String, Object>> getFilesInfo(String fileId);
     public String createDemo(String fileExt,Boolean sample,String uid,String uname) throws Exception;
+    public String getTemplateImageUrl(String fileName);
+    public String getCreateUrl(String fileName, Boolean sample);
 }

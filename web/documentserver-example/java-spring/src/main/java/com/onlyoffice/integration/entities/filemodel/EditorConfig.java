@@ -33,12 +33,15 @@ import com.onlyoffice.integration.entities.enums.Type;
 import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
 import com.onlyoffice.integration.util.fileUtilities.FileUtility;
 import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.util.objects.Template;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -57,11 +60,13 @@ public class EditorConfig {
 
     private HashMap<String, Object> actionLink = null;
     private String callbackUrl;
+    private String createUrl;
     private Customization customization;
     private Embedded embedded;
     private Language lang;
     private Mode mode;
     private User user;
+    private List<Template> templates;
 
     public void configure(com.onlyoffice.integration.entities.User user,
                           String fileName,
@@ -77,7 +82,9 @@ public class EditorConfig {
                 e.printStackTrace();
             }
         }
+        this.setTemplatesData(fileName);
         this.callbackUrl = documentManager.getCallback(fileName);
+        this.createUrl = documentManager.getCreateUrl(fileName, false);
         this.lang = lang;
         Boolean canEdit = documentManagerExts.getEditedExts().contains(fileUtility.getFileExtension(fileName));
         this.customization = applicationContext.getBean(Customization.class);
@@ -96,6 +103,12 @@ public class EditorConfig {
         Embedded embedded = applicationContext.getBean(Embedded.class);
         embedded.configure(url,url,url, ToolbarDocked.top);
         this.embedded = embedded;
+    }
+
+    private void setTemplatesData(String fileName){
+        this.templates = new ArrayList<>();
+        templates.add(new Template("", "Blank", documentManager.getCreateUrl(fileName, false)));
+        templates.add(new Template(documentManager.getTemplateImageUrl(fileName), "With sample content", documentManager.getCreateUrl(fileName, true)));
     }
 
     public HashMap<String, Object> getActionLink() {
@@ -152,5 +165,21 @@ public class EditorConfig {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getCreateUrl() {
+        return createUrl;
+    }
+
+    public void setCreateUrl(String createUrl) {
+        this.createUrl = createUrl;
+    }
+
+    public List<Template> getTemplates(){
+        return templates;
+    }
+
+    public void setTemplates(List<Template> templates){
+        this.templates = templates;
     }
 }
