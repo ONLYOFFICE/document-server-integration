@@ -644,7 +644,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var createUrl = docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
         var templates = [
             {
-                "image": templatesImageUrl,
+                "image": "",
                 "title": "Blank",
                 "url": createUrl
             },

@@ -87,7 +87,7 @@ class FileModel
     templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
     templates = [
       {
-        :image => templatesImageUrl,
+        :image => "",
         :title => "Blank",
         :url => create_url
       },

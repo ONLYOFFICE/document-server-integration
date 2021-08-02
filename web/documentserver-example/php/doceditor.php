@@ -66,7 +66,7 @@
     $createUrl = getCreateUrl($filename, $user->id, $type);
     $templates = array(
         array (
-            "image" => $templatesImageUrl,
+            "image" => "",
             "title" => "Blank",
             "url" => $createUrl
         ),

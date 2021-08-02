@@ -67,7 +67,7 @@ public class FileModel
 
         // add templates for the "Create New" from menu option
         Map<String, String> templateForBlankDocument = new HashMap<>();
-        templateForBlankDocument.put("image", templatesImageUrl);
+        templateForBlankDocument.put("image", "");
         templateForBlankDocument.put("title", "Blank");
         templateForBlankDocument.put("url", createUrl);
         templates.add(templateForBlankDocument);
