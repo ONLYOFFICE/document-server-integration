@@ -24,15 +24,15 @@ You need to connect the editors to your website. Specify the path to the editors
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\views\editor.ejs* file.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\views\editor.ejs* file.
 
 ### Step 3. Install Node.js environment
 
-Install the **node.js** environment which is going to be used to run the Node.js project. Please follow the link at the official website: https://nodejs.org/en/download/ choosing the correct version for your Windows OS (32-bit or 64-bit).
+Install the **node.js** environment which is going to be used to run the Node.js project. Please follow the link at the [official website](https://nodejs.org/en/download/) choosing the correct version for your Windows OS (32-bit or 64-bit).
 
 ### Step 4. Run the Node.js code
 
-We will run the code in Node.js runtime environment and will interact with it using the command line interface (cmd).
+We will run the code in Node.js runtime environment and will interact with it using the **command line interface (cmd)**.
 
 1. Launch the **Command Prompt** and switch to the folder with the Node.js project code, for example:
 
@@ -40,7 +40,7 @@ We will run the code in Node.js runtime environment and will interact with it us
     cd /d "C:\Node.js Example"
     ```
 
-2. Node.js comes with a package manager, **node package manager (npm)**, which is automatically installed along with Node.js. To run the Node.js code, install the project modules using the following npm command:
+2. Node.js comes with a package manager, **node package manager (npm)**, which is automatically installed along with Node.js. To run the Node.js code, install the project modules using the following *npm* command:
 
     ```
     npm install
@@ -114,13 +114,13 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano config/default.json
     ```
 
-	Edit the following lines:
+	Edit the following line:
 
     ```
     "siteUrl": "https://documentserver/"
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
 6. Run the project with Node.js:
 
