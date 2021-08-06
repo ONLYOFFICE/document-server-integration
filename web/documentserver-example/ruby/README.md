@@ -50,13 +50,13 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     nano config/application.rb
     ```
 
-	Edit the following lines:
+	Edit the following line:
 
     ```
     Rails.configuration.urlSite="https://documentserver/"
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
 6. Run the **Rails** application:
 
