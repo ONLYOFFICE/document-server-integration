@@ -16,24 +16,19 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
 @Getter
 @Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+@NoArgsConstructor
+public class Converter {
+    @JsonProperty("filename")
+    private String fileName;
+    @JsonProperty("filePass")
+    private String filePass;
 }

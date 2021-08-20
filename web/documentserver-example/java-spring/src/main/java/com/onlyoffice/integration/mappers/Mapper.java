@@ -16,24 +16,11 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.mappers;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.onlyoffice.integration.entities.AbstractEntity;
+import com.onlyoffice.integration.documentserver.models.AbstractModel;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface Mapper<E extends AbstractEntity, M extends AbstractModel> {
+   M toModel(E entity);
 }

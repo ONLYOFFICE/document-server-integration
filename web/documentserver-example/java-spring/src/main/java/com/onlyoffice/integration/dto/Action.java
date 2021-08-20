@@ -16,24 +16,18 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
 @Getter
 @Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+@AllArgsConstructor
+@NoArgsConstructor
+public class Action {
+    private String userid;
+    private com.onlyoffice.integration.documentserver.models.enums.Action type;
 }

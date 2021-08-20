@@ -16,24 +16,31 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import java.util.List;
 
-@Entity
-@Table(name = "`user`")
 @Getter
 @Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+@AllArgsConstructor
+@NoArgsConstructor
+public class Track {
+    private String url;
+    private String key;
+    private String changesurl;
+    private History history;
+    private List<History> changeshistory;
+    private String token;
+    private Integer forcesavetype;
+    private Integer status;
+    private List<String> users;
+    private List<Action> actions;
+    private String userdata;
+    private String lastsave;
+    private Boolean notmodified;
 }

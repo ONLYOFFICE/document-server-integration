@@ -16,24 +16,19 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.util.service;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
-import javax.persistence.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface ServiceConverter {
+    String getConvertedUri(String documentUri, String fromExtension,
+                                  String toExtension, String documentRevisionId,
+                                  String filePass, Boolean isAsync);
+    String generateRevisionId(String expectedKey);
+    String convertStreamToString(InputStream stream);
+    JSONObject convertStringToJSON(String jsonString);
 }

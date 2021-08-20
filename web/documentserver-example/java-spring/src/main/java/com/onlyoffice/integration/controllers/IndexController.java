@@ -18,19 +18,16 @@
 
 package com.onlyoffice.integration.controllers;
 
-import com.onlyoffice.integration.serializer.FilterState;
+import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
 import com.onlyoffice.integration.entities.*;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
-import com.onlyoffice.integration.util.fileUtilities.FileUtility;
-import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,10 +35,8 @@ import java.util.stream.Collectors;
 public class IndexController {
 
     @Autowired
-    private DocumentManager documentManager;
+    private IntegrationStorage storage;
 
-    @Autowired
-    private DocumentManagerExts documentManagerExts;
     @Autowired
     private FileUtility fileUtility;
 
@@ -60,77 +55,23 @@ public class IndexController {
     @Value("${url.editor}")
     private String urlEditor;
 
-    @PostConstruct
-    private void init(){
-        List<String> description_user_0=List.of(
-                "The name is requested when the editor is opened",
-                "Doesn’t belong to any group",
-                "Can review all the changes",
-                "Can perform all actions with comments",
-                "The file favorite state is undefined",
-                "Can't mention others in comments",
-                "Can't create new files from the editor"
-        );
-        List<String> description_user_1 = List.of(
-                "File author by default",
-                "He doesn’t belong to any of the groups",
-                "He can review all the changes",
-                "He can do everything with the comments",
-                "The file favorite state is undefined",
-                "Can create a file from a template with data from the editor"
-        );
-        List<String> description_user_2 = List.of(
-                "He belongs to Group2",
-                "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-                "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
-                "This file is favorite",
-                "Can create a file from an editor"
-        );
-        List<String> description_user_3 = List.of(
-                "He belongs to Group3",
-                "He can review only the changes made by the users from Group2",
-                "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
-                "This file isn’t favorite",
-                "He can’t copy data from the file into the clipboard",
-                "He can’t download the file",
-                "He can’t print the file",
-                "Can create a file from an editor"
-        );
-        userService.createUser("John Smith", "smith@mail.ru",
-                description_user_1, null, List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()));
-        userService.createUser("Mark Pottato", "pottato@mail.ru",
-                description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"));
-        userService.createUser("Hamish Mitchell", "mitchell@mail.ru",
-                description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>());
-        userService.createUser("Anonymous",null,description_user_0,null,
-                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()));
-
-    }
-
     @GetMapping("${url.index}")
     public String index(Model model){
-        java.io.File[] files = documentManager.getStoredFiles(null);
-
-        List<String> docTypes = Arrays.stream(files).map(
-                file -> fileUtility.getDocumentType(file.getName()).toString().toLowerCase()
-                ).collect(Collectors.toList());
-
-        List<Boolean> filesEditable = Arrays.stream(files).map(
-                file -> documentManagerExts.getEditedExts().contains(fileUtility.getFileExtension(file.getName()))
-        ).collect(Collectors.toList());
+        java.io.File[] files = storage.getStoredFiles();
+        List<String> docTypes = new ArrayList<>();
+        List<Boolean> filesEditable = new ArrayList<>();
+        List<String> versions = new ArrayList<>();
 
         List<User> users = userService.findAll();
         String tooltip = users.stream().map(user -> user.getDescriptions()).collect(Collectors.joining());
 
-        List<String> versions=new ArrayList<>();
         for(java.io.File file:files){
-            versions.add(" ["+documentManager.getFileVersion(file.getName(),null)+"]");
+            String fileName = file.getName();
+            docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());
+            filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));
+            versions.add(" ["+storage.getFileVersion(fileName)+"]");
         }
+
         model.addAttribute("versions",versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
@@ -147,8 +88,8 @@ public class IndexController {
     public HashMap<String, String> configParameters(){
         HashMap<String, String> configuration = new HashMap<>();
 
-        configuration.put("ConverExtList", String.join(",",documentManagerExts.getConvertExts()));
-        configuration.put("EditedExtList", String.join(",",documentManagerExts.getEditedExts()));
+        configuration.put("ConverExtList", String.join(",",fileUtility.getConvertExts()));
+        configuration.put("EditedExtList", String.join(",",fileUtility.getEditedExts()));
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 

@@ -16,24 +16,26 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.models.filemodel;
 
+import com.onlyoffice.integration.documentserver.models.AbstractModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
+@Component
+@Scope("prototype")
 @Getter
 @Setter
-public class User extends AbstractEntity {
+public class User extends AbstractModel {
+    private String id;
     private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+    private String group;
+
+    public void configure(int id, String name, String group){
+        this.id = "uid-"+id;
+        this.name = name;
+        this.group = group;
+    }
 }

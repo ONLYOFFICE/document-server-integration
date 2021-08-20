@@ -55,3 +55,11 @@ License File:   gson.license
 Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
 License:        Apache 2.0
 License File:   jackson-databind.license
+
+ModelMapper   - ModelMapper is an intelligent object mapping library that automatically maps objects to each other. (https://github.com/modelmapper/modelmapper)
+License:        Apache 2.0
+License File    modelmapper.license
+
+Project Lombok - Project Lombok is a java library that automatically plugs into your editor and build tools. (https://mvnrepository.com/artifact/org.projectlombok/lombok).
+License:        MIT
+License File    lombok.license

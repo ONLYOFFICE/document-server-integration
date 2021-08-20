@@ -16,24 +16,38 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.models.enums;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public enum Language {
+    en,
+    de,
+    ru,
+    pl,
+    be,
+    bg,
+    ca,
+    zh,
+    cs,
+    da,
+    nl,
+    fi,
+    fr,
+    el,
+    hu,
+    id,
+    it,
+    ja,
+    ko,
+    lv,
+    lo,
+    nb,
+    pt,
+    ro,
+    sk,
+    sl,
+    sv,
+    es,
+    tr,
+    uk,
+    vi
 }

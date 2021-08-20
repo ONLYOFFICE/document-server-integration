@@ -16,24 +16,11 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.services.configurers;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface FileConfigurer<W> extends Configurer<FileModel, W> {
+    void configure(FileModel model, W wrapper);
+    FileModel getFileModel(W wrapper);
 }

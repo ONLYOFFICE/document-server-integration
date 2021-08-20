@@ -16,24 +16,16 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.managers.jwt;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.json.simple.JSONObject;
+import org.primeframework.jwt.domain.JWT;
 
-import javax.persistence.*;
+import java.util.Map;
 
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface JwtManager {
+    boolean tokenEnabled();
+    String createToken(Map<String, Object> payloadClaims);
+    JWT readToken(String token);
+    JSONObject parseBody(String payload, String header);
 }

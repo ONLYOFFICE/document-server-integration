@@ -16,24 +16,23 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.onlyoffice.integration.documentserver.models.filemodel.User;
+import lombok.*;
 
-import javax.persistence.*;
+import java.util.List;
 
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class History {
+    @JsonProperty("serverVersion")
+    private String serverVersion;
+    private String key;
+    private Integer version;
+    private String created;
+    private User user;
+    private List<History> changes;
 }

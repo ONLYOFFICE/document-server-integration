@@ -16,24 +16,16 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.callbacks;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.onlyoffice.integration.dto.Track;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface Callback {
+    int handle(Track body, String fileName);
+    int getStatus();
+    @Autowired
+    default void selfRegistration(CallbackHandler callbackHandler){
+        callbackHandler.register(getStatus(), this);
+    }
 }

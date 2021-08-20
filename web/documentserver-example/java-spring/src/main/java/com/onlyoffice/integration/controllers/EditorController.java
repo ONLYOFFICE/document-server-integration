@@ -20,16 +20,18 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.Action;
+import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
+import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
+import com.onlyoffice.integration.documentserver.models.enums.Action;
+import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
 import com.onlyoffice.integration.entities.User;
-import com.onlyoffice.integration.controllers.objects.UserForMention;
-import com.onlyoffice.integration.entities.enums.Language;
-import com.onlyoffice.integration.entities.enums.Type;
-import com.onlyoffice.integration.entities.filemodel.FileModel;
-import com.onlyoffice.integration.services.EditorServices;
+import com.onlyoffice.integration.dto.Mentions;
+import com.onlyoffice.integration.documentserver.models.enums.Language;
+import com.onlyoffice.integration.documentserver.models.enums.Type;
+import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.util.documentManagers.DocumentManager;
-import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
+import com.onlyoffice.integration.services.configurers.FileConfigurer;
+import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -49,18 +51,24 @@ public class EditorController {
     private String docserviceApiUrl;
 
     @Autowired
-    private DocumentManager documentManager;
+    private IntegrationStorage storage;
 
     @Autowired
-    private DocumentTokenManager documentTokenManager;
+    private JwtManager jwtManager;
 
     @Autowired
     private UserServices userService;
 
     @Autowired
-    private EditorServices editorService;
+    private HistoryManager historyManager;
 
-    @GetMapping("/editor")
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private FileConfigurer<DefaultFileWrapper> fileConfigurer;
+
+    @GetMapping(path = "${url.editor}")
     public String index(@RequestParam("fileName") String fileName,
                         @RequestParam(value = "action", required = false) String actionParam,
                         @RequestParam(value = "type", required = false) String typeParam,
@@ -82,60 +90,57 @@ public class EditorController {
 
         User user = optionalUser.get();
 
-        FileModel fileModel = editorService.createConfiguration(user, fileName, actionLink, action, language, type);
+        FileModel fileModel = fileConfigurer.getFileModel(
+                DefaultFileWrapper
+                        .builder()
+                        .fileName(fileName)
+                        .type(type)
+                        .lang(language)
+                        .action(action)
+                        .user(user)
+                        .actionData(actionLink)
+                        .build()
+        );
 
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", documentManager.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("url", storage.getServerUrl(true) + "/css/img/logo.png");
 
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", documentManager.getServerUrl(true) + "/assets?name=sample.docx");
+        dataCompareFile.put("url", storage.getServerUrl(true) + "/assets?name=sample.docx");
 
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", documentManager.getServerUrl(true) + "/csv");
+        dataMailMergeRecipients.put("url", storage.getServerUrl(true) + "/csv");
 
-        List<UserForMention> usersForMentions=new ArrayList<>();
-        if(uid!=null && !uid.equals("4")) {
-            List<User> list = userService.findAll();
-            for (User u : list) {
-                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
-                    usersForMentions.add(new UserForMention(u.getName(),u.getEmail()));
-                }
-            }
+        if(jwtManager.tokenEnabled()){
+            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
+            dataCompareFile.put("token", jwtManager.createToken(dataInsertImage));
+            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
         }
-
-
-        if(documentTokenManager.tokenEnabled()){
-            fileModel.generateToken();
-            dataInsertImage.put("token", documentTokenManager.createToken(dataInsertImage));
-            dataCompareFile.put("token", documentTokenManager.createToken(dataInsertImage));
-            dataMailMergeRecipients.put("token", documentTokenManager.createToken(dataMailMergeRecipients));
-        }
-        switch (uid){
-            case "4":
-            case "1": {
-                fileModel.getDocument().getInfo().setFavorite(null);
-                break;
-            }
-            case "2":{
-                fileModel.getDocument().getInfo().setFavorite(true);
-                break;
-            }
-            case "3":{
-                fileModel.getDocument().getInfo().setFavorite(false);
-                break;
-            }
-        }
-        ObjectMapper objectMapper=new ObjectMapper();
 
         model.addAttribute("model", fileModel);
+        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
         model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);
         model.addAttribute("dataInsertImage",  objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1));
         model.addAttribute("dataCompareFile",  objectMapper.writeValueAsString(dataCompareFile));
         model.addAttribute("dataMailMergeRecipients", objectMapper.writeValueAsString(dataMailMergeRecipients));
-        model.addAttribute("usersForMentions", usersForMentions);
+        model.addAttribute("usersForMentions", getUserMentions(uid));
         return "editor.html";
+    }
+
+    private List<Mentions> getUserMentions(String uid){
+        List<Mentions> usersForMentions=new ArrayList<>();
+        if(uid!=null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
+                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));
+                }
+            }
+        }
+
+        return usersForMentions;
     }
 }

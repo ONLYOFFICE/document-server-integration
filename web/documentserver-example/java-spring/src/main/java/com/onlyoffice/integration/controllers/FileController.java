@@ -18,25 +18,19 @@
 
 package com.onlyoffice.integration.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.controllers.objects.ConverterBody;
+import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
+import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
+import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.dto.Converter;
+import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
-import com.onlyoffice.integration.entities.enums.DocumentType;
+import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.util.documentManagers.DocumentManagerExts;
-import com.onlyoffice.integration.util.documentManagers.DocumentTokenManager;
-import com.onlyoffice.integration.util.fileUtilities.FileUtility;
-import com.onlyoffice.integration.util.objects.ActionObject;
-import com.onlyoffice.integration.util.objects.History;
-import com.onlyoffice.integration.util.objects.TrackManagerRequestBody;
-import com.onlyoffice.integration.util.serviceConverter.ServiceConverter;
-import com.onlyoffice.integration.util.TrackManager;
-import com.onlyoffice.integration.util.documentManagers.DocumentManager;
+import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import org.json.simple.JSONObject;
-import org.primeframework.jwt.Verifier;
-import org.primeframework.jwt.domain.JWT;
-import org.primeframework.jwt.hmac.HMACVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -51,67 +45,48 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Controller
 public class FileController {
 
-    @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
-    private DocumentManager documentManager;
-
-    @Autowired
-    private DocumentTokenManager documentTokenManager;
-
-    @Autowired
-    private DocumentManagerExts documentManagerExts;
-    @Autowired
-    private TrackManager trackManager;
-
-    @Autowired
-    private UserServices userService;
-
-    @Autowired
-    private ServiceConverter serviceConverter;
-
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
 
-    @Value("${files.docservice.secret}")
-    private String tokenSecret;
+    @Autowired
+    private FileUtility fileUtility;
+    @Autowired
+    private DocumentManager documentManager;
+    @Autowired
+    private JwtManager jwtManager;
+    @Autowired
+    private IntegrationStorage storage;
+    @Autowired
+    private UserServices userService;
+    @Autowired
+    private CallbackHandler callbackHandler;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private ServiceConverter serviceConverter;
 
-    private String createUserMetadata(String uid, String fullFileName) throws IOException {
+    private String createUserMetadata(String uid, String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
         String fileName = fileUtility.getFileNameWithoutExtension(fullFileName);
         String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-            documentManager.createMeta(fileName,
-                    String.valueOf(user.getId()), user.getName(), null);
+            storage.createMeta(fileName,
+                    String.valueOf(user.getId()), user.getName());
         }
         return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
     }
 
     private ResponseEntity<Resource> downloadFile(String fileName){
-        String fileLocation = documentManager.forceSavePath(fileName, null, false);
-        if (fileLocation.equals("")){
-            fileLocation = documentManager.storagePath(fileName, null);
-        }
-
-        Resource resource = documentManager.loadFileAsResource(fileLocation);
-
-        String contentType = null;
-        if(contentType == null) {
-        contentType = "application/octet-stream";
-        }
+        Resource resource = storage.loadFileAsResource(fileName);
+        String contentType = "application/octet-stream";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
@@ -128,20 +103,21 @@ public class FileController {
             String fileExtension = fileUtility.getFileExtension(fullFileName);
             long fileSize = file.getSize();
             byte[] bytes = file.getBytes();
-            String directory = documentManager.filesRootPath(null);
 
-            if(documentManager.getMaxFileSize() < fileSize || fileSize <= 0){
+            if(fileUtility.getMaxFileSize() < fileSize || fileSize <= 0){
                 return "{ \"error\": \"File size is incorrect\"}";
             }
 
-            if(!documentManagerExts.getFileExts().contains(fileExtension)){
+            if(!fileUtility.getFileExts().contains(fileExtension)){
                 return "{ \"error\": \"File type is not supported\"}";
             }
 
-            Path path = fileUtility.generateFilepath(directory, fullFileName);
-            String fileName = fileUtility.getFileNameWithoutExtension(path.getFileName().toString());
+            String fileNamePath = storage.updateFile(fullFileName, bytes);
+            if (fileNamePath.isBlank()){
+                throw new IOException("Could not update a file");
+            }
 
-            Files.write(path, bytes);
+            String fileName = fileUtility.getFileNameWithoutExtension(fileNamePath);
 
             return createUserMetadata(uid, fileName+fileExtension);
         } catch (Exception e) {
@@ -152,7 +128,7 @@ public class FileController {
 
     @PostMapping(path = "${url.converter}")
     @ResponseBody
-    public String convert(@RequestBody ConverterBody body,
+    public String convert(@RequestBody Converter body,
                           @CookieValue("uid") String uid){
         String fileName = body.getFileName();
         String fileUri = documentManager.getDownloadUrl(fileName);
@@ -162,7 +138,7 @@ public class FileController {
         String internalFileExt = fileUtility.getInternalExtension(type);
 
         try{
-            if(documentManagerExts.getConvertExts().contains(fileExt)){
+            if(fileUtility.getConvertExts().contains(fileExt)){
                 String key = serviceConverter.generateRevisionId(fileUri);
                 String newFileUri = serviceConverter
                         .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
@@ -171,35 +147,22 @@ public class FileController {
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
                 }
 
-                String correctedName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName)+internalFileExt, null);
+                String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + internalFileExt;
+                String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
                 InputStream stream = connection.getInputStream();
 
-                if (stream == null)
-                {
-                    throw new Exception("Stream is null");
+                if (stream == null){
+                    connection.disconnect();
+                    throw new RuntimeException("Input stream is null");
                 }
 
-                File convertedFile = new File(documentManager.storagePath(correctedName, null));
-                try (FileOutputStream out = new FileOutputStream(convertedFile))
-                {
-                    int read;
-                    final byte[] bytes = new byte[1024];
-                    while ((read = stream.read(bytes)) != -1)
-                    {
-                        out.write(bytes, 0, read);
-                    }
-
-                    out.flush();
-                }
-
-                connection.disconnect();
-
+                storage.createFile(correctedName, stream);
                 fileName = correctedName;
             }
+
             return createUserMetadata(uid, fileName+fileExt);
         }catch (Exception e) {
             e.printStackTrace();
@@ -209,22 +172,13 @@ public class FileController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public String delete(@RequestBody ConverterBody body){
+    public String delete(@RequestBody Converter body){
         try
         {
             String fullFileName = fileUtility.getFileName(body.getFileName());
-            String fileName = fileUtility.getFileNameWithoutExtension(body.getFileName());
-            String fileLocation = URLDecoder.decode(documentManager.storagePath(fullFileName, null));
-            String historyLocation =  URLDecoder.decode(documentManager.historyDir(documentManager
-                    .storagePath(fileName, null)));
-            String convertedHistoryLocation =  URLDecoder.decode(documentManager.historyDir(documentManager
-                    .storagePath(fullFileName, null)));
+            boolean success = storage.deleteFile(fullFileName);
 
-            documentManager.deleteFilesRecursively(Paths.get(fileLocation));
-            documentManager.deleteFilesRecursively(Paths.get(historyLocation));
-            documentManager.deleteFilesRecursively(Paths.get(convertedHistoryLocation));
-
-            return "{ \"success\": true }";
+            return "{ \"success\": \""+ success +"\"}";
         }
         catch (Exception e)
         {
@@ -232,27 +186,19 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download")
+    @GetMapping(path = "${url.download}")
     public ResponseEntity<Resource> download(@RequestParam("fileName") String fileName,
                                              HttpServletRequest request){
         try{
-            if(documentTokenManager.tokenEnabled()){
+            if(jwtManager.tokenEnabled()){
                 String header = request.getHeader(documentJwtHeader == null
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
-
                 if(header != null && !header.isEmpty()){
                     String token = header.startsWith("Bearer ") ? header.substring(7) : header;
-                    try {
-                        Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
-                        JWT.getDecoder().decode(token, verifier);
-                    } catch (Exception e) {
-                        return null;
-                    }
+                    jwtManager.readToken(token);
                 }
             }
-
             return downloadFile(fileName);
-
         } catch(Exception e){
             return null;
         }
@@ -261,7 +207,8 @@ public class FileController {
     @GetMapping("/create")
     public String create(@RequestParam("fileExt") String fileExt,
                          @RequestParam(value = "sample", required = false) Optional<Boolean> isSample,
-                         @CookieValue(value = "uid", required = false) String uid, Model model){
+                         @CookieValue(value = "uid", required = false) String uid,
+                         Model model){
         Boolean sampleData=(isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
         if(fileExt!=null){
             try{
@@ -270,7 +217,7 @@ public class FileController {
                 String fileName = documentManager.createDemo(fileExt, sampleData, uid, uname);
                 return "redirect:editor?fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8);
             }catch (Exception ex){
-                model.addAttribute("error",ex.getMessage());
+                model.addAttribute("error", ex.getMessage());
                 return "error.html";
             }
         }
@@ -294,7 +241,7 @@ public class FileController {
     @GetMapping("/files")
     @ResponseBody
     public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) String fileId){
-        ArrayList<Map<String, Object>> files = null;
+        ArrayList<Map<String, Object>> files;
 
         if(fileId == null){
             files = documentManager.getFilesInfo();
@@ -305,60 +252,30 @@ public class FileController {
         return files;
     }
 
-    @PostMapping("/track")
+    @PostMapping(path = "${url.track}")
     @ResponseBody
-    public String track(@RequestParam("fileName") String fileName,
+    public String track(HttpServletRequest request,
+                        @RequestParam("fileName") String fileName,
                         @RequestParam("userAddress") String userAddress,
-                        @RequestBody TrackManagerRequestBody body){
+                        @RequestBody Track body){
         try {
-            JSONObject bodyCheck = trackManager.readBody(body);
-            body=new ObjectMapper().readValue(bodyCheck.toJSONString(),TrackManagerRequestBody.class);
+            String bodyString = objectMapper.writeValueAsString(body);
+            String header = request.getHeader(documentJwtHeader == null
+                    || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+
+            if (bodyString.isEmpty()) {
+                throw new RuntimeException("{\"error\":1,\"message\":\"Request payload is empty\"}");
+            }
+
+            JSONObject bodyCheck = jwtManager.parseBody(bodyString, header);
+            body = objectMapper.readValue(bodyCheck.toJSONString(), Track.class);
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
 
-        int status = body.getStatus();
-        int saved = 0;
+        int error = callbackHandler.handle(body, fileName);
 
-        if (status == 1) { //Editing
-            List<ActionObject> actions =  body.getActions();
-            List<String> users =  body.getUsers();
-            ActionObject action =  actions.get(0);
-            if (actions != null && action.getType().equals("0")) { //finished edit
-                String user =  action.getUserid();
-                if (users.indexOf(user) == -1) {
-                    String key = body.getKey();
-                    try {
-                        trackManager.commandRequest("forcesave", key);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        fileName = fileUtility.getFileName(fileName);
-
-        if (status == 2 || status == 3) { //MustSave, Corrupted
-            try {
-                trackManager.processSave(body, fileName, userAddress);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                saved = 1;
-            }
-
-        }
-
-        if (status == 6 || status == 7) { //MustForceSave, CorruptedForceSave
-            try {
-                trackManager.processForceSave(body, fileName, userAddress);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                saved = 1;
-            }
-        }
-
-        return"{\"error\":" + saved + "}";
+        return"{\"error\":" + error + "}";
     }
 }

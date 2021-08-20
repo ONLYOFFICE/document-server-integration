@@ -16,24 +16,12 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.managers.template;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.onlyoffice.integration.documentserver.models.filemodel.Template;
+import java.util.List;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public interface TemplateManager {
+    List<Template> createTemplates(String fileName);
+    String getTemplateImageUrl(String fileName);
 }

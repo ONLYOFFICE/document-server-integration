@@ -16,19 +16,24 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.models.filemodel;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.onlyoffice.integration.documentserver.models.AbstractModel;
+import com.onlyoffice.integration.documentserver.serializers.SerializerFilter;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
 import java.util.List;
 
-@Entity
-@Table(name = "`permission`")
+@Component
+@Scope("prototype")
 @Getter
 @Setter
-public class Permission extends AbstractEntity {
+public class Permission extends AbstractModel {
     private Boolean comment = true;
     private Boolean copy = true;
     private Boolean download = true;
@@ -38,13 +43,8 @@ public class Permission extends AbstractEntity {
     private Boolean modifyFilter = true;
     private Boolean modifyContentControl = true;
     private Boolean review = true;
-    private Boolean templates=true;
-    @ManyToMany
-    private List<Group> reviewGroups;
-    @ManyToMany
-    private List<Group> commentsViewGroups;
-    @ManyToMany
-    private List<Group> commentsEditGroups;
-    @ManyToMany
-    private List<Group> commentsRemoveGroups;
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = SerializerFilter.class)
+    private List<String> reviewGroups;
+    @Autowired
+    private CommentGroup commentGroups;
 }

@@ -16,24 +16,21 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.models.configurations;
 
+import com.onlyoffice.integration.documentserver.models.enums.ToolbarDocked;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
+@Component
+@Scope("prototype")
 @Getter
 @Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public class Embedded {
+    private String embedUrl;
+    private String saveUrl;
+    private String shareUrl;
+    private ToolbarDocked toolbarDocked;
 }

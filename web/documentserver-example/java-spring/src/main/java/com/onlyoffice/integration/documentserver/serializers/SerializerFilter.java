@@ -16,24 +16,19 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.serializers;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public class SerializerFilter {
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof List) {
+            if(((List<?>) obj).size() == 1 && ((List<?>) obj).get(0) == FilterState.NULL.toString()){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }

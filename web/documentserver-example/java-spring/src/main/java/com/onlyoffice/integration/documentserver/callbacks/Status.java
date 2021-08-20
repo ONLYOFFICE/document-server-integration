@@ -16,24 +16,19 @@
  *
  */
 
-package com.onlyoffice.integration.entities;
+package com.onlyoffice.integration.documentserver.callbacks;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.*;
-
-@Entity
-@Table(name = "`user`")
-@Getter
-@Setter
-public class User extends AbstractEntity {
-    private String name;
-    private String email;
-    @ManyToOne
-    private Group group;
-    @OneToOne
-    private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+public enum Status {
+    EDITING(1),
+    SAVE(2),
+    CORRUPTED(3),
+    MUST_FORCE_SAVE(6),
+    CORRUPTED_FORCE_SAVE(7);
+    private int code;
+    Status(int code){
+        this.code = code;
+    }
+    public int getCode(){
+        return this.code;
+    }
 }
