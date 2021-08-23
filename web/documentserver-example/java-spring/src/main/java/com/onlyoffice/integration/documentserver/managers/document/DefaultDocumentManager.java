@@ -30,7 +30,9 @@ import java.io.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,14 +89,14 @@ public class DefaultDocumentManager implements DocumentManager {
         {
             String serverPath = storage.getServerUrl(forDocumentServer);
             String hostAddress = storage.getStorageLocation();
+            String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
+                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
 
-            String filePath = serverPath + "/" + storageFolder
-                    + "/" + hostAddress + "/"
-                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
-
+            String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return filePath;
         }
-        catch (UnsupportedEncodingException e)
+        catch (UnsupportedEncodingException | UnknownHostException e)
         {
             return "";
         }
@@ -140,7 +142,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
         for(File file : storage.getStoredFiles()){
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("version", storage.getFileVersion(file.getName()));
+            map.put("version", storage.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
                     .generateRevisionId(storage.getStorageLocation() +
                             "/" + file.getName() + "/"
@@ -181,9 +183,12 @@ public class DefaultDocumentManager implements DocumentManager {
 
     //TODO: Add samples
     public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
-        String fileName=(sample ?"sample.":"new.")+fileExt;
+        String demoName=(sample ?"sample.":"new.")+fileExt;
+        String demoPath="assets" +File.separator+(sample ?"sample.":"new")+File.separator;
+        String fileName=getCorrectName(demoName);
 
-        storage.createFile(fileName);
+        InputStream stream=Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);
+        storage.createFile(fileName, stream);
         storage.createMeta(fileName,uid,uname);
 
         return fileName;

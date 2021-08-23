@@ -120,18 +120,18 @@
                 };
 
                 var histArray = [[${fileHistory}]];
-                var hist = JSON.parse(histArray[0]);
-                var historyData = JSON.parse(histArray[1]);
+                var hist = histArray[0];
+                var historyData = histArray[1];
                 var usersForMentions = [[${usersForMentions}]];
 
                 if (hist && historyData) {
                     config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(hist);
+                        docEditor.refreshHistory(JSON.parse(hist));
                     };
                     config.events['onRequestHistoryData'] = function (event) {
                         var ver = event.data;
                         var histData = historyData;
-                        docEditor.setHistoryData(histData[ver - 1]);
+                        docEditor.setHistoryData(JSON.parse(histData)[ver - 1]);
                     };
                     config.events['onRequestHistoryClose'] = function () {
                         document.location.reload();

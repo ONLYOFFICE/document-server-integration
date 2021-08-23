@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CrossOrigin("*")
 @Controller
 public class IndexController {
 
@@ -69,7 +70,7 @@ public class IndexController {
             String fileName = file.getName();
             docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());
             filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));
-            versions.add(" ["+storage.getFileVersion(fileName)+"]");
+            versions.add(" ["+storage.getFileVersion(fileName, true)+"]");
         }
 
         model.addAttribute("versions",versions);

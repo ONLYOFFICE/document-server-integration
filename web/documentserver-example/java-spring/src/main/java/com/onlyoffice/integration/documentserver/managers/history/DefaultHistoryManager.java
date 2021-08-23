@@ -57,8 +57,8 @@ public class DefaultHistoryManager implements HistoryManager {
     //TODO: Refactoring
     public String[] getHistory(Document document){
         String histDir = storage.historyDir(storage.getFileLocation(document.getTitle()));
-        if (storage.getFileVersion(histDir) > 0) {
-            Integer curVer = storage.getFileVersion(histDir);
+        if (storage.getFileVersion(histDir, false) > 0) {
+            Integer curVer = storage.getFileVersion(histDir, false);
 
             List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<>();
@@ -89,7 +89,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     dataObj.put("key", key);
                     dataObj.put("url", i == curVer ? document.getUrl() :
-                            documentManager.getFileUri(verDir + File.separator + "prev" + fileUtility.getFileExtension(document.getTitle()),true));
+                            documentManager.getFileUri(documentManager.versionDir(histDir, i , true) + File.separator + "prev" + fileUtility.getFileExtension(document.getTitle()),true));
                     dataObj.put("version", i);
 
                     if (i > 1) {

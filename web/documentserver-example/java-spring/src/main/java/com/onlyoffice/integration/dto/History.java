@@ -34,5 +34,5 @@ public class History {
     private Integer version;
     private String created;
     private User user;
-    private List<History> changes;
+    private List<ChangesHistory> changes;
 }

@@ -49,6 +49,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@CrossOrigin("*")
 @Controller
 public class FileController {
 

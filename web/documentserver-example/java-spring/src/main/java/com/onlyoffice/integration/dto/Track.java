@@ -34,7 +34,6 @@ public class Track {
     private String key;
     private String changesurl;
     private History history;
-    private List<History> changeshistory;
     private String token;
     private Integer forcesavetype;
     private Integer status;

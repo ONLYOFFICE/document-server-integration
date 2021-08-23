@@ -289,15 +289,20 @@ public class LocalIntegrationStorage implements IntegrationStorage {
         }
     }
 
-    public String historyDir(String fileName)
+    public String historyDir(String path)
     {
-        return getFileLocation(fileName) + historyPostfix;
+        return path + historyPostfix;
     }
 
-    public int getFileVersion(String historyPath)
+    public int getFileVersion(String historyPath, Boolean ifIndexPage)
     {
-        Path path = Paths.get(historyPath);
-        if (!Files.exists(path)) return 1;
+        Path path;
+        if (ifIndexPage) {
+            path = Paths.get(getStorageLocation() + historyDir(historyPath));
+        } else {
+            path = Paths.get(historyPath);
+            if (!Files.exists(path)) return 1;
+        }
 
         try (Stream<Path> stream = Files.walk(path, 1)) {
             return stream

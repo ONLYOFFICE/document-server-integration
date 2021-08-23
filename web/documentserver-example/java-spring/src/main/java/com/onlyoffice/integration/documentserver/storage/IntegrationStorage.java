@@ -42,7 +42,7 @@ public interface IntegrationStorage {
     File[] getStoredFiles();
     void createMeta(String fileName, String uid, String uname);
     String historyDir(String fileName);
-    int getFileVersion(String historyPath);
+    int getFileVersion(String historyPath, Boolean ifIndexPage);
     //TODO: Remove getForcesave
     String getForcesavePath(String fileName, Boolean create);
 }

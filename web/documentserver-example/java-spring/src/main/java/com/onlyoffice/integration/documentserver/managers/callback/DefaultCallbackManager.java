@@ -111,7 +111,7 @@ public class DefaultCallbackManager implements CallbackManager {
         storage.createDirectory(histDir);
 
         String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
-                storage.getFileVersion(histDir.toAbsolutePath().toString()), true);
+                storage.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
 
         Path ver = Paths.get(versionDir);
         Path lastVersion = Paths.get(storage.getFileLocation(fileName));
@@ -123,7 +123,10 @@ public class DefaultCallbackManager implements CallbackManager {
         downloadToFile(downloadUri, toSave);
         downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
 
-        String history = objectMapper.writeValueAsString(body.getChangeshistory());
+        JSONObject jsonChanges = new JSONObject();
+        jsonChanges.put("changes", body.getHistory().getChanges());
+        jsonChanges.put("serverVersion", body.getHistory().getServerVersion());
+        String history = objectMapper.writeValueAsString(jsonChanges);
 
         if(history==null && body.getHistory()!=null){
             history = objectMapper.writeValueAsString(body.getHistory());
