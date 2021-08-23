@@ -53,14 +53,14 @@ a:visited {
 
 header {
     background: #333333;
-    height: 72px;
+    height: 48px;
     margin: 0 auto;
     min-width: 1152px;
     width: auto;
 }
 
 header img {
-    margin: 22px 0 22px 32px;
+    margin: 10px 0 22px 32px;
 }
 
 .center {
@@ -70,7 +70,7 @@ header img {
 }
 
 .main{
-    height: calc(100% - 136px);
+    height: calc(100% - 112px);
     min-height: 536px;
 }
 
@@ -355,8 +355,10 @@ footer {
     background: #333333;
     color: #AAAAAA;
     height: 64px;
-
     width: 100%;
+	position: absolute;
+	left: 0;
+	bottom: 0;
 }
 footer > .center{
     width: 100%;
@@ -707,7 +709,7 @@ footer table tr td:first-child {
     flex-wrap: nowrap;
     flex-direction: column;
     justify-content: space-between;
-    top: 23px;
+    top: 10px;
     left: 12px;
     position: absolute;
     content: "";
