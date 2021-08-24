@@ -126,6 +126,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 )
         };
 
+        // get a user by id specified
         public static User getUser(string id)
         {
             foreach(User user in users)
@@ -135,11 +136,13 @@ namespace OnlineEditorsExampleMVC.Helpers
             return users[0];
         }
 
+        // get a list of all the users
         public static List<User> getAllUsers()
         {
             return users;
         }
 
+        // get a list of users with their names and emails for mentions
         public static List<Dictionary<string, object>> getUsersForMentions(string id)
         {
             List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
