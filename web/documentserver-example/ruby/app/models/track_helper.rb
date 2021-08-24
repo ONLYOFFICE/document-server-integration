@@ -63,6 +63,10 @@ class TrackHelper
         # file saving process
         def process_save(file_data, file_name, user_address)
             download_uri = file_data['url']
+            if (download_uri.eql?(nil))
+                saved = 1
+                return saved
+            end
             new_file_name = file_name
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
@@ -129,7 +133,11 @@ class TrackHelper
 
         # file force saving process
         def process_force_save(file_data, file_name, user_address)  
-            download_uri = file_data['url'] 
+            download_uri = file_data['url']
+            if (download_uri.eql?(nil))
+                saved = 1
+                return saved
+            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
             download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file

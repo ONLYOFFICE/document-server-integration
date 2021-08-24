@@ -118,6 +118,9 @@ public class TrackManager {
 
     // file saving process
     public static void processSave(JSONObject body, String fileName, String userAddress) throws Exception {
+        if (body.get("url") == null) {
+            throw new Exception("DownloadUrl is null");
+        }
         String downloadUri = (String) body.get("url");
         String changesUri = (String) body.get("changesurl");
         String key = (String) body.get("key");
@@ -179,7 +182,9 @@ public class TrackManager {
 
     // file force saving process
     public static void processForceSave(JSONObject body, String fileName, String userAddress) throws Exception {
-
+        if (body.get("url") == null) {
+            throw new Exception("DownloadUrl is null");
+        }
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension

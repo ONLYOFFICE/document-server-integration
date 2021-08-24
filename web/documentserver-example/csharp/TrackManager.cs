@@ -92,6 +92,9 @@ namespace OnlineEditorsExample
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
+            if (fileData["url"].Equals(null)) {
+                throw new Exception("DownloadUrl is null");
+            }
             var downloadUri = (string)fileData["url"];
             var curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
             var downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";  // get the extension of the downloaded file
@@ -166,6 +169,9 @@ namespace OnlineEditorsExample
         // file force saving process
         public static int processForceSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
+            if (fileData["url"].Equals(null)) {
+                throw new Exception("DownloadUrl is null");
+            }
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
