@@ -1,7 +1,7 @@
 <?php
     /**
      *
-     * (c) Copyright Ascensio System SIA 2020
+     * (c) Copyright Ascensio System SIA 2021
      *
      * Licensed under the Apache License, Version 2.0 (the "License");
      * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
     require_once( dirname(__FILE__) . '/config.php' );
     require_once( dirname(__FILE__) . '/common.php' );
     require_once( dirname(__FILE__) . '/functions.php' );
+    require_once( dirname(__FILE__) . '/users.php' );
 
     $user = $_GET["user"];
 ?>
@@ -36,289 +37,313 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
 
         <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
-
+        <link rel="stylesheet" type="text/css" href="css/media.css">
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+    </head>
+    <body>
+        <form id="form1">
+            <header>
+                <div class="center">
+                    <a href="">
+                        <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
+                    </a>
+                </div>
+            </header>
+            <div class="center main">
+                <table class="table-main">
+                    <tbody>
+                        <tr>
+                            <td class="left-panel section">
+                                <div class="help-block">
+                                    <span>Create new</span>
+                                    <div class="clearFix">
+                                        <div class="create-panel clearFix">
+                                            <ul class="try-editor-list clearFix">
+                                                <li>
+                                                    <a class="try-editor word reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo htmlentities($user); ?>">Document</a>
+                                                </li>
+                                                <li>
+                                                    <a class="try-editor cell reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo htmlentities($user); ?>">Spreadsheet</a>
+                                                </li>
+                                                <li>
+                                                    <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo htmlentities($user); ?>">Presentation</a>
+                                                </li>
+                                            </ul>
+                                            <label class="create-sample">
+                                                <input type="checkbox" id="createSample" class="checkbox" />With sample content
+                                            </label>
+                                        </div>
+                                        <div class="upload-panel clearFix">
+                                            <a class="file-upload">Upload file
+                                                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload&user=<?php echo htmlentities($user); ?>" />
+                                            </a>
+                                        </div>
+
+                                        <table class="user-block-table" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td valign="middle">
+                                                    <span class="select-user">Username</span>
+                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                                    </br>
+                                                    <?php foreach(getAllUsers() as $user_l) {
+                                                        $name = $user_l->name ? $user_l->name : "Anonymous";
+                                                        echo '<b>'.$name.'</b>';
+                                                        echo '<ul>';
+                                                        foreach ($user_l->descriptions as $description) {
+                                                            echo '<li>'.$description.'</li>';
+                                                        }
+                                                        echo '</ul>';
+                                                    } ?>"
+                                                    src="css/images/info.svg" />
+                                                    <select class="select-user" id="user">
+                                                        <?php foreach(getAllUsers() as $user_l) {
+                                                            $name = $user_l->name ? $user_l->name : "Anonymous";
+                                                            echo '<option value="'.$user_l->id.'">'.$name.'</option>';
+                                                        } ?>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="middle">
+                                                    <span class="select-user">Language</span>
+                                                    <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="css/images/info.svg" />
+                                                    <select class="select-user" id="language">
+                                                        <option value="en">English</option>
+                                                        <option value="be">Belarusian</option>
+                                                        <option value="bg">Bulgarian</option>
+                                                        <option value="ca">Catalan</option>
+                                                        <option value="zh">Chinese</option>
+                                                        <option value="cs">Czech</option>
+                                                        <option value="da">Danish</option>
+                                                        <option value="nl">Dutch</option>
+                                                        <option value="fi">Finnish</option>
+                                                        <option value="fr">French</option>
+                                                        <option value="de">German</option>
+                                                        <option value="el">Greek</option>
+                                                        <option value="hu">Hungarian</option>
+                                                        <option value="id">Indonesian</option>
+                                                        <option value="it">Italian</option>
+                                                        <option value="ja">Japanese</option>
+                                                        <option value="ko">Korean</option>
+                                                        <option value="lv">Latvian</option>
+                                                        <option value="lo">Lao</option>
+                                                        <option value="nb">Norwegian</option>
+                                                        <option value="pl">Polish</option>
+                                                        <option value="pt">Portuguese</option>
+                                                        <option value="ro">Romanian</option>
+                                                        <option value="ru">Russian</option>
+                                                        <option value="sk">Slovak</option>
+                                                        <option value="sl">Slovenian</option>
+                                                        <option value="sv">Swedish</option>
+                                                        <option value="es">Spanish</option>
+                                                        <option value="tr">Turkish</option>
+                                                        <option value="uk">Ukrainian</option>
+                                                        <option value="vi">Vietnamese</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="section">
+                                <div class="main-panel">
+                                    <?php
+                                        $storedFiles = getStoredFiles();
+                                        if (empty($storedFiles)) { ?>
+                                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                            <span class="portal-descr">
+                                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                            </span>
+                                    <?php
+                                        } else { ?>
+                                            <div class="stored-list">
+                                                <span class="header-list">Your documents</span>
+                                                <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                                    <thead>
+                                                    <tr>
+                                                        <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                        <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+                                                        <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+                                                        <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                        <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                                    </tr>
+                                                    </thead>
+                                                </table>
+                                                <div class="scroll-table-body">
+                                                    <table cellspacing="0" cellpadding="0" width="100%">
+                                                        <tbody>
+                                                            <?php foreach ($storedFiles as &$storeFile) {
+                                                                echo '<tr class="tableRow" title="'.$storeFile->name.' ['.getFileVersion(getHistoryDir(getStoragePath($storeFile->name))).']">';
+                                                                echo ' <td class="contentCells">';
+                                                                echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).'" target="_blank">';
+                                                                echo '   <span>'.$storeFile->name.'</span>';
+                                                                echo '  </a>';
+                                                                echo ' </td>';
+                                                                if ($storeFile->canEdit) {
+                                                                    echo ' <td class="contentCells contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=edit&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
+                                                                    echo ' </td>';
+                                                                    echo ' <td class="contentCells contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=edit&type=mobile" target="_blank">';
+                                                                    echo '   <img src="css/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
+                                                                    echo ' </td>';
+                                                                    echo ' <td class="contentCells contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=comment&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
+                                                                    echo ' </td>';
+                                                                    if ($storeFile->documentType == "word") {
+                                                                        echo ' <td class="contentCells contentCells-icon">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=review&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>';
+                                                                        echo ' </td>';
+                                                                    } else if ($storeFile->documentType == "cell") {
+                                                                        echo ' <td class="contentCells contentCells-icon">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=filter&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
+                                                                        echo ' </td>';
+                                                                    }
+                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
+                                                                       echo ' <td class="contentCells contentCells-icon contentCellsEmpty"></td>';
+                                                                    }
+                                                                    if ($storeFile->documentType == "word") {
+                                                                        echo ' <td class="contentCells contentCells-icon ">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                        echo ' </td>';
+                                                                    }
+                                                                    else{
+                                                                        echo ' <td class="contentCells contentCells-icon "></td> ';
+                                                                    }
+                                                                    if ($storeFile->documentType == "word") {
+                                                                        echo ' <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=blockcontent&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
+                                                                        echo ' </td>';
+                                                                    } else{
+                                                                       echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                    }
+                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
+                                                                        echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    }
+                                                                } else {
+                                                                    echo '<td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>';
+                                                                }
+                                                                echo ' <td class="contentCells contentCells-icon firstContentCellViewers">';
+                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).'&action=view&type=desktop" target="_blank">';
+                                                                echo '   <img src="css/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>';
+                                                                echo ' </td>';
+                                                                echo ' <td class="contentCells contentCells-icon">';
+                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).'&action=view&type=mobile" target="_blank">';
+                                                                echo '   <img src="css/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>';
+                                                                echo ' </td>';
+                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift">';
+                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).'&action=embedded&type=embedded" target="_blank">';
+                                                                echo '   <img src="css/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>';
+                                                                echo ' </td>';
+                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">';
+                                                                echo '  <a href="webeditor-ajax.php?type=download&fileName='.urlencode($storeFile->name).'">';
+                                                                echo '   <img class="icon-download" src="css/images/download.svg" alt="Download" title="Download" /></a>';
+                                                                echo ' </td>';
+                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift">';
+                                                                echo '  <a class="delete-file" data="'.$storeFile->name.'">';
+                                                                echo '   <img class="icon-delete" src="css/images/delete.svg" alt="Delete" title="Delete" /></a>';
+                                                                echo ' </td>';
+                                                                echo '</tr>';
+                                                            } ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                    <?php
+                                        } ?>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="mainProgress">
+                <div id="uploadSteps">
+                    <span id="uploadFileName" class="uploadFileName"></span>
+                    <div class="describeUpload">After these steps are completed, you can work with your document.</div>
+                    <span id="step1" class="step">1. Loading the file.</span>
+                    <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                    <br />
+                    <span id="step2" class="step">2. Conversion.</span>
+                    <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
+                    <br />
+                    <div id="blockPassword">
+                        <span class="descrFilePass">The file is password protected.</span>
+                        <br />
+                        <div>
+                            <input id="filePass" type="password"/>
+                            <div id="enterPass" class="button orange">Enter</div>
+                            <div id="skipPass" class="button gray">Skip</div>
+                        </div>
+                        <span class="errorPass"></span>
+                        <br />
+                    </div>
+                    <span id="step3" class="step">3. Loading editor scripts.</span>
+                    <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
+                    <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+                    <br />
+                    <br />
+                    <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
+                    <br />
+                    <br />
+                    <div class="error-message">
+                        <b>Upload error: </b><span></span>
+                        <br />
+                        Please select another file and try again.
+                    </div>
+                </div>
+                <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
+                <br />
+                <?php if (($GLOBALS['MODE']) != "view") { ?>
+                    <div id="beginEdit" class="button orange disable">Edit</div>
+                <?php } ?>
+                <div id="beginView" class="button gray disable">View</div>
+                <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+                <div id="cancelEdit" class="button gray">Cancel</div>
+            </div>
+
+            <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
+
+            <footer>
+                <div class="center">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation</a>
+                            </td>
+                            <td>
+                                <a href="mailto:sales@onlyoffice.com">Submit your request</a>
+                            </td>
+                            <td class="copy">
+                                &copy; Ascensio Systems SIA <?php echo date("Y") ?>. All rights reserved.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </footer>
+        </form>
 
         <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
-
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-
         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
-
         <script type="text/javascript" src="js/jquery.iframe-transport.js"></script>
-
         <script type="text/javascript" src="js/jquery.fileupload.js"></script>
-
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
-
+        <script type="text/javascript" src="js/jscript.js"></script>
         <script type="text/javascript">
             var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
             var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
         </script>
-    </head>
-    <body>
-        <form id="form1">
-        <header>
-            <a href="">
-                <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
-            </a>
-        </header>
-        <div class="main-panel">
-            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-            <br />
-            <br />
-            <span class="portal-descr">Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors. You may upload your own documents for testing using the "Upload file" button and selecting the necessary files on your PC.</span>
-
-            <table class="user-block-table" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td valign="middle" width="30%">
-                        <span class="select-user">Username:</span>
-                        <select class="select-user" id="user">
-                            <option value="0">John Smith</option>
-                            <option value="1">Mark Pottato</option>
-                            <option value="2">Hamish Mitchell</option>
-                            <option value="3">anonymous</option>
-                        </select>
-                    </td>
-                    <td valign="middle" width="70%">Select user name before opening the document; you can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</td>
-                </tr>
-                <tr>
-                    <td valign="middle" width="30%">
-                        <select class="select-user" id="language">
-                            <option value="en">English</option>
-                            <option value="be">Belarusian</option>
-                            <option value="bg">Bulgarian</option>
-                            <option value="ca">Catalan</option>
-                            <option value="zh">Chinese</option>
-                            <option value="cs">Czech</option>
-                            <option value="da">Danish</option>
-                            <option value="nl">Dutch</option>
-                            <option value="fi">Finnish</option>
-                            <option value="fr">French</option>
-                            <option value="de">German</option>
-                            <option value="el">Greek</option>
-                            <option value="hu">Hungarian</option>
-                            <option value="id">Indonesian</option>
-                            <option value="it">Italian</option>
-                            <option value="ja">Japanese</option>
-                            <option value="ko">Korean</option>
-                            <option value="lv">Latvian</option>
-                            <option value="lo">Lao</option>
-                            <option value="nb">Norwegian</option>
-                            <option value="pl">Polish</option>
-                            <option value="pt">Portuguese</option>
-                            <option value="ro">Romanian</option>
-                            <option value="ru">Russian</option>
-                            <option value="sk">Slovak</option>
-                            <option value="sl">Slovenian</option>
-                            <option value="sv">Swedish</option>
-                            <option value="es">Spanish</option>
-                            <option value="tr">Turkish</option>
-                            <option value="uk">Ukrainian</option>
-                            <option value="vi">Vietnamese</option>
-                        </select>
-                    </td>
-                    <td valign="middle" width="70%">Choose the language for ONLYOFFICE editors interface.</td>
-                </tr>
-            </table>
-            <br />
-        <br />
-
-            <div class="help-block">
-                <span>Upload your file or create new file</span>
-                <br />
-                <br />
-                <div class="clearFix">
-                    <div class="upload-panel clearFix">
-                        <a class="file-upload">Upload
-                            <br />
-                            File
-                            <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload" />
-                        </a>
-                        <br />
-                        <label class="save-original">
-                            <input type="checkbox" id="checkOriginalFormat" class="checkbox" />Keep file format
-                        </label>
-                    </div>
-                    <div class="create-panel clearFix">
-                        <ul class="try-editor-list clearFix">
-                            <li>
-                                <a class="try-editor word reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo $user; ?>">Create
-                                    <br />
-                                    Document</a>
-                            </li>
-                            <li>
-                                <a class="try-editor cell reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo $user; ?>">Create
-                                    <br />
-                                    Spreadsheet</a>
-                            </li>
-                            <li>
-                                <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo $user; ?>">Create
-                                    <br />
-                                    Presentation</a>
-                            </li>
-                        </ul>
-                        <label class="create-sample">
-                            <input type="checkbox" id="createSample" class="checkbox" />Create a file filled with sample content
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <br />
-            <br />
-
-            <div class="help-block">
-                <span>Your documents</span>
-                <br />
-                <br />
-
-                <div class="stored-list">
-                    <div id="UserFiles">  
-                        <table cellspacing="0" cellpadding="0" width="100%">
-                            <thead>
-                                <tr class="tableHeader">
-                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                    <td colspan="6" class="tableHeaderCell contentCells-shift">Editors</td>
-                                    <td colspan="3" class="tableHeaderCell">Viewers</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php $storedFiles = getStoredFiles();
-                                foreach ($storedFiles as &$storeFile) 
-                                {
-                                    echo '<tr class="tableRow" title="'.$storeFile->name.'">';
-                                    echo ' <td class="contentCells">';
-                                    echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'" target="_blank">';
-                                    echo '   <span title="'.$storeFile->name.'">'.$storeFile->name.'</span>';
-                                    echo '  </a>';
-                                    echo '  <a href="webeditor-ajax.php?type=download&name='.urlencode($storeFile->name).'">';
-                                    echo '   <img class="icon-download" src="css/images/download-24.png" alt="Download" title="Download" /></a>';
-                                    echo '  </a>';
-                                    echo '  <a class="delete-file" data="'.$storeFile->name.'">';
-                                    echo '   <img class="icon-delete" src="css/images/delete-24.png" alt="Delete" title="Delete" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/desktop-24.png" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=edit&type=mobile" target="_blank">';
-                                    echo '   <img src="css/images/mobile-24.png" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
-                                    echo '  </a>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "word") {
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=review&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/review-24.png" alt="Open in editor for review" title="Open in editor for review" /></a>';
-                                    echo '  </a>';
-                                    } else if ($storeFile->documentType == "cell") {
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=filter&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/filter-24.png" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
-                                    echo '  </a>';
-                                    }
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=comment&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/comment-24.png" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    if ($storeFile->documentType == "word") {
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=fillForms&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/fill-forms-24.png" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
-                                    echo '  </a>';
-                                    }
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-shift contentCells-icon">';
-                                    if ($storeFile->documentType == "word") {
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=blockcontent&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/block-content-24.png" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
-                                    echo '  </a>';
-                                    }
-                                    echo ' </td>';
-
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=desktop" target="_blank">';
-                                    echo '   <img src="css/images/desktop-24.png" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=view&type=mobile" target="_blank">';
-                                    echo '   <img src="css/images/mobile-24.png" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-                                    echo ' <td class="contentCells contentCells-icon">';
-                                    echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.$user.'&action=embedded&type=embedded" target="_blank">';
-                                    echo '   <img src="css/images/embeded-24.png" alt="Open in embedded mode" title="Open in embedded mode" /></a>';
-                                    echo '  </a>';
-                                    echo ' </td>';
-                                    echo '</tr>';
-                                }
-                            ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-
-            <br />
-            <br />
-            <br />
-            <div class="help-block">
-                <span>Want to learn the magic?</span>
-                <br />
-                Explore ONLYOFFICE Document Editors <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation.</a>
-            </div>
-            <br />
-            <br />
-            <br />
-            <div class="help-block">
-                <span>Any questions?</span>
-                <br />
-                Please, <a href="mailto:sales@onlyoffice.com">submit your request here</a>.
-            </div>
-        </div>
-
-        <div id="mainProgress">
-            <div id="uploadSteps">
-                <span id="step1" class="step">1. Loading the file</span>
-                <span class="step-descr">The file loading process will take some time depending on the file size, presence or absence of additional elements in it (macros, etc.) and the connection speed.</span>
-                <br />
-                <span id="step2" class="step">2. File conversion</span>
-                <span class="step-descr">The file is being converted into Office Open XML format for the document faster viewing and editing.</span>
-                <br />
-                <span id="step3" class="step">3. Loading editor scripts</span>
-                <span class="step-descr">The scripts for the editor are loaded only once and are will be cached on your computer in future. It might take some time depending on the connection speed.</span>
-                <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
-                <br />
-                <br />
-                <span class="progress-descr">Please note, that the speed of all operations greatly depends on the server and the client locations. In case they differ or are located in differernt countries/continents, there might be lack of speed and greater wait time. The best results are achieved when the server and client computers are located in one and the same place (city).</span>
-                <br />
-                <br />
-                <div class="error-message">
-                    <span></span>
-                    <br />
-                    Please select another file and try again. If you have questions please <a href="mailto:sales@onlyoffice.com">contact us.</a>
-                </div>
-            </div>
-            <iframe id="embeddedView" src="" height="345px" width="600px" frameborder="0" scrolling="no" allowtransparency></iframe>
-            <br />
-            <div id="beginEmbedded" class="button disable">Embedded view</div>
-            <div id="beginView" class="button disable">View</div>
-            
-            <?php if (($GLOBALS['MODE']) != "view") { ?>
-            <div id="beginEdit" class="button disable">Edit</div>
-            <?php } ?>
-            <div id="cancelEdit" class="button gray">Cancel</div>
-        </div>
-
-        <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
-        <footer>&copy; Ascensio Systems Inc <?php echo date("Y") ?>. All rights reserved.</footer>
-
-        <script type="text/javascript" src="js/jscript.js"></script>
-    </form>
     </body>
 </html>

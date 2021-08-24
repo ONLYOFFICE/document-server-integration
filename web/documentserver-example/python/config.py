@@ -3,9 +3,9 @@ import os
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
 
-DOC_SERV_VIEWED = [".pdf", ".djvu", ".xps"]
-DOC_SERV_EDITED = [".docx", ".xlsx", ".csv", ".pptx", ".txt"]
-DOC_SERV_CONVERT = [
+DOC_SERV_VIEWED = [".pdf", ".djvu", ".xps"]  # file extensions that can be viewed
+DOC_SERV_EDITED = [".docx", ".xlsx", ".csv", ".pptx", ".txt"]  # file extensions that can be edited
+DOC_SERV_CONVERT = [                                           # file extensions that can be converted
     ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt",
     ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm",
     ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt",
@@ -24,7 +24,7 @@ DOC_SERV_COMMAND_URL='coauthoring/CommandService.ashx'
 
 EXAMPLE_DOMAIN = None
 
-DOC_SERV_JWT_SECRET = ''
+DOC_SERV_JWT_SECRET = ''  # the secret key for generating token
 DOC_SERV_JWT_HEADER = 'Authorization'
 
 EXT_SPREADSHEET = [
@@ -48,7 +48,7 @@ EXT_DOCUMENT = [
     ".pdf", ".djvu", ".fb2", ".epub", ".xps"
 ]
 
-if os.environ.get("EXAMPLE_DOMAIN"):
+if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain
     EXAMPLE_DOMAIN = os.environ.get("EXAMPLE_DOMAIN")
-if os.environ.get("DOC_SERV"):
+if os.environ.get("DOC_SERV"):  # generates links for document server
     DOC_SERV_SITE_URL = os.environ.get("DOC_SERV")

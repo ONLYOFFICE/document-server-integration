@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2020
+ (c) Copyright Ascensio System SIA 2021
  *
  The MIT License (MIT)
 
@@ -26,20 +26,24 @@
 
 import config
 
+# get file name from the document url
 def getFileName(str):
     ind = str.rfind('/')
     return str[ind+1:]
 
+# get file name without extension from the document url
 def getFileNameWithoutExt(str):
     fn = getFileName(str)
     ind = fn.rfind('.')
     return fn[:ind]
 
+# get file extension from the document url
 def getFileExt(str):
     fn = getFileName(str)
     ind = fn.rfind('.')
     return fn[ind:].lower()
 
+# get file type
 def getFileType(str):
     ext = getFileExt(str)
     if ext in config.EXT_DOCUMENT:
@@ -49,4 +53,4 @@ def getFileType(str):
     if ext in config.EXT_PRESENTATION:
         return 'slide'
 
-    return 'word'
+    return 'word' # default file type is word

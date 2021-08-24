@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    <!--
+    *
+    * (c) Copyright Ascensio System SIA 2021
+    *
+    * Licensed under the Apache License, Version 2.0 (the "License");
+    * you may not use this file except in compliance with the License.
+    * You may obtain a copy of the License at
+    *
+    *     http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+    *
+    -->
+    <title>ONLYOFFICE Document Editors</title>
+    <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/media.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/media-wopi.css">
+</head>
+
+<body>
+    <header>
+        <div class="center">
+            <a href="">
+                <img src="images/logo.svg" alt="ONLYOFFICE" />
+            </a>
+        </div>
+    </header>
+    <div class="center main">
+        <table class="table-main">
+            <tbody>
+                <tr>
+                    <td class="left-panel section">
+                        <div class="help-block">
+                            <span>Create new</span>
+                            <div class="clearFix">
+                                <div class="create-panel clearFix">
+                                    <ul class="try-editor-list clearFix">
+                                        <li>
+                                            <a class="try-editor word reload-page" target="_blank" href="/wopi-new?fileExt=docx<%= params %>" title="Create new document">Document</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor cell reload-page" target="_blank" href="/wopi-new?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor slide reload-page" target="_blank" href="/wopi-new?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
+                                        </li>
+                                    </ul>
+                                    <label class="create-sample">
+                                        <input id="createSample" type="checkbox" class="checkbox" />With sample content
+                                    </label>
+                                </div>
+                            </div>
+
+                            <table class="user-block-table" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Username</span>
+                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
+                                            </br>
+                                            <% users.forEach(user => { %>
+                                                <b><%= user.name == null ? 'Anonymous' : user.name %></b>
+                                                <ul>
+                                                    <% user.descriptions.forEach(description => { %>
+                                                        <li><%= description %></li>
+                                                    <% }) %>
+                                                </ul>
+                                            <% }) %>"
+                                            src="images/info.svg" />
+                                            <select class="select-user" id="user">
+                                                <% users.forEach(user => { %>
+                                                    <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
+                                                <% }) %>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Language</span>
+                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
+                                            <select class="select-user" id="language">
+                                                <option value="en">English</option>
+                                                <option value="be">Belarusian</option>
+                                                <option value="bg">Bulgarian</option>
+                                                <option value="ca">Catalan</option>
+                                                <option value="zh">Chinese</option>
+                                                <option value="cs">Czech</option>
+                                                <option value="da">Danish</option>
+                                                <option value="nl">Dutch</option>
+                                                <option value="fi">Finnish</option>
+                                                <option value="fr">French</option>
+                                                <option value="de">German</option>
+                                                <option value="el">Greek</option>
+                                                <option value="hu">Hungarian</option>
+                                                <option value="id">Indonesian</option>
+                                                <option value="it">Italian</option>
+                                                <option value="ja">Japanese</option>
+                                                <option value="ko">Korean</option>
+                                                <option value="lv">Latvian</option>
+                                                <option value="lo">Lao</option>
+                                                <option value="nb">Norwegian</option>
+                                                <option value="pl">Polish</option>
+                                                <option value="pt">Portuguese</option>
+                                                <option value="ro">Romanian</option>
+                                                <option value="ru">Russian</option>
+                                                <option value="sk">Slovak</option>
+                                                <option value="sl">Slovenian</option>
+                                                <option value="sv">Swedish</option>
+                                                <option value="es">Spanish</option>
+                                                <option value="tr">Turkish</option>
+                                                <option value="uk">Ukrainian</option>
+                                                <option value="vi">Vietnamese</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="links-panel links-panel-border clearFix">
+                                <a href="/" class="">Go to Index page</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="section">
+                        <div class="main-panel">
+                            <% if (storedFiles.length <= 0)
+                            { %>
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                            </span>
+                                <%} else
+                            { %>
+                                    <div class="stored-list">
+                                        <span class="header-list">Your documents</span>
+                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                    <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift"></td>
+                                                    <td class="tableHeaderCell tableHeaderCellViewers">WOPI Actions</td>
+                                                    <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                    <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                        <div class="scroll-table-body">
+                                            <table cellspacing="0" cellpadding="0" width="100%">
+                                                <tbody>
+                                                    <% for (var i = 0; i < storedFiles.length; i++) { %>
+                                                        <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
+                                                            <td class="contentCells">
+                                                                <% if (storedFiles[i].defaultAction) { %>
+                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>">
+                                                                <%} else { %>
+                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="#">
+                                                                <% } %>
+                                                                    <span title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]"><%= storedFiles[i].name %></span>
+                                                                </a>
+                                                            </td>
+                                                            <% if (storedFiles[i].actions && storedFiles[i].actions.length > 0) { %>
+                                                                <td class="contentCells contentCells-wopi contentCells-shift">
+                                                                    <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
+                                                                        <a href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
+                                                                            <% if (storedFiles[i].actions[j].name == "edit") { %>
+                                                                                <img src="images/fill-forms-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <%} else { %>
+                                                                                <img src="images/desktop-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <% } %>
+                                                                        </a>
+                                                                    <% } %>
+                                                                </td>
+                                                            <% } %>
+                                                            <td class="contentCells contentCells-icon contentCells-shift downloadContentCells">
+                                                                <a href="wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
+                                                                    <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                                <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
+                                                                    <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                <% } %>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <div class="center">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation</a>
+                        </td>
+                        <td>
+                            <a href="mailto:sales@onlyoffice.com">Submit your request</a>
+                        </td>
+                        <td class="copy">
+                            &copy; Ascensio Systems SIA 2021. All rights reserved.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="javascripts/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="javascripts/jquery-ui.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="javascripts/jquery.dropdownToggle.js"></script>
+    <script type="text/javascript" src="javascripts/jscript.js"></script>
+</body>
+
+</html>

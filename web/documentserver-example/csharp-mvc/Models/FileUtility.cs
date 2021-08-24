@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,17 +30,19 @@ namespace OnlineEditorsExampleMVC.Models
             Slide
         }
 
+        // get file type
         public static FileType GetFileType(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (ExtsDocument.Contains(ext)) return FileType.Word;
-            if (ExtsSpreadsheet.Contains(ext)) return FileType.Cell;
-            if (ExtsPresentation.Contains(ext)) return FileType.Slide;
+            if (ExtsDocument.Contains(ext)) return FileType.Word;  // word type for document extensions
+            if (ExtsSpreadsheet.Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
+            if (ExtsPresentation.Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
 
-            return FileType.Word;
+            return FileType.Word;  // the default type is word
         }
 
+        // document extensions
         public static readonly List<string> ExtsDocument = new List<string>
             {
                 ".doc", ".docx", ".docm",
@@ -50,6 +52,7 @@ namespace OnlineEditorsExampleMVC.Models
                 ".pdf", ".djvu", ".fb2", ".epub", ".xps"
             };
 
+        // spreadsheet extensions
         public static readonly List<string> ExtsSpreadsheet = new List<string>
             {
                 ".xls", ".xlsx", ".xlsm",
@@ -57,6 +60,7 @@ namespace OnlineEditorsExampleMVC.Models
                 ".ods", ".fods", ".ots", ".csv"
             };
 
+        // presentation extensions
         public static readonly List<string> ExtsPresentation = new List<string>
             {
                 ".pps", ".ppsx", ".ppsm",

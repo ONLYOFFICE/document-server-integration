@@ -15,13 +15,16 @@
     },
     "permissions": {
         "comment": <%- editor.comment %>,
-        "download": true,
+        "copy": <%- editor.copy %>,
+        "download": <%- editor.download %>,
         "edit": <%- editor.isEdit %>,
+        "print": <%- editor.print %>,
         "fillForms": <%- editor.fillForms %>,
         "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
         "review": <%- editor.review %>,
-        "reviewGroups": <%- editor.reviewGroups %>
+        "reviewGroups": <%- editor.reviewGroups %>,
+        "commentGroups": <%- editor.commentGroups %>
     }
 },
 "editorConfig": {
@@ -29,6 +32,8 @@
     "mode": "<%- editor.mode %>",
     "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
+    "createUrl": <%- JSON.stringify(editor.createUrl) %>,
+    "templates": <%- JSON.stringify(editor.templates) %>,
     "user": {
         "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",

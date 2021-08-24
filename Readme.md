@@ -1,14 +1,18 @@
-## Document Server integration example
+## Integration examples
 
-These examples show the way to integrate [ONLYOFFICE Document Server][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby.
+Test examples are simple document management systems that can be built into your
+application for testing (please, do not use it for production without proper code
+modifications).
+
+These examples show the way to integrate [ONLYOFFICE Docs][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby.
 
 You should change `http://documentserver` to your server address in these files:
-* .Net (C# MVC) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
-* .Net (C#) - `web/documentserver-example/csharp/settings.config`
-* Java - `web/documentserver-example/java/src/main/resources/settings.properties`
-* Node.js - `web/documentserver-example/nodejs/config/default.json`
-* PHP - `web/documentserver-example/php/config.php`
-* Ruby - `web/documentserver-example/ruby/config/application.rb`
+* [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
+* [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
+* [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
+* [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
+* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php) - `web/documentserver-example/php/config.php`
+* [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/ruby) - `web/documentserver-example/ruby/config/application.rb`
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
 
@@ -80,4 +84,4 @@ If you have any problems with or questions about [ONLYOFFICE Document Server][2]
   
 ## License
 
-document-server-integration is released under the Apache-2.0 License. See the LICENSE.txt file for more information.
+document-server-integration is released under the Apache-2.0 License. See the LICENSE file for more information.

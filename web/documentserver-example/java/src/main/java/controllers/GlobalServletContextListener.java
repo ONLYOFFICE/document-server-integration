@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,14 @@ import javax.servlet.ServletContextListener;
 
 public class GlobalServletContextListener implements ServletContextListener
 {
+    // destroy ServletContextListener interface
     @Override
     public void contextDestroyed(ServletContextEvent arg0)
     {
         System.out.println("ServletContextListener destroyed");
     }
 
+    // start ServletContextListener interface
     @Override
     public void contextInitialized(ServletContextEvent arg0)
     {
@@ -45,17 +47,20 @@ public class GlobalServletContextListener implements ServletContextListener
         {
             new X509TrustManager()
             {
+                // return an array of certificates which are trusted
                 @Override
                 public java.security.cert.X509Certificate[] getAcceptedIssuers()
                 {
                     return null;
                 }
 
+                // check whether the X509 certificate chain can be validated and is trusted for client authentication
                 @Override
                 public void checkClientTrusted(X509Certificate[] certs, String authType)
                 {
                 }
 
+                // check whether the X509 certificate chain can be validated and is trusted for server authentication
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType)
                 {
@@ -67,6 +72,7 @@ public class GlobalServletContextListener implements ServletContextListener
 
         try
         {
+            // register the all-trusting trust manager for HTTPS
             sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -75,6 +81,7 @@ public class GlobalServletContextListener implements ServletContextListener
         {
         }
 
+        // create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier()
         {
             @Override
@@ -84,6 +91,7 @@ public class GlobalServletContextListener implements ServletContextListener
             }
         };
 
+        // install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
         System.out.println("ServletContextListener started");
