@@ -390,6 +390,7 @@ public class DocumentManager
         }
     }
 
+    // get url to the created file
     public static String GetCreateUrl (FileType fileType) {
         String serverPath = GetServerUrl(false);
         String fileExt = GetInternalExtension(fileType).replace(".", "");
@@ -398,6 +399,7 @@ public class DocumentManager
         return serverPath + "/EditorServlet" + query;
     }
 
+    // get url to download a file
     public static String GetDownloadUrl(String fileName) {
         String serverPath = GetServerUrl(true);
         String hostAddress = CurUserHostAddress(null);
