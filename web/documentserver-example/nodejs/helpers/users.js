@@ -90,10 +90,12 @@ function User(id, name, email, group, reviewGroups, commentGroups, favorite, den
     this.templates = templates;
 };
 
+// get a list of all the users
 users.getAllUsers = function () {
     return users;
 };
 
+// get a user by id specified
 users.getUser = function (id) {
     var result = null;
     this.forEach(user => {
@@ -104,6 +106,7 @@ users.getUser = function (id) {
     return result ? result : this[0];
 };
 
+// get a list of users with their names and emails for mentions
 users.getUsersForMentions = function (id) {
     var result = [];
     this.forEach(user => {
