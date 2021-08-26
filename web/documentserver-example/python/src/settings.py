@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+X_FRAME_OPTIONS = 'ALLOWALL'
+XS_SHARING_ALLOWED_METHODS = ['GET']
 
 # Application definition
 

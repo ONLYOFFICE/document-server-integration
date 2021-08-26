@@ -91,7 +91,6 @@
     <Content Include="App_Themes\images\word.ico" />
     <Content Include="LICENSE" />
     <Content Include="licenses\jquery.license" />
-    <Content Include="ReadMe.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +112,7 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="TrackManager.cs" />
+    <Compile Include="Users.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WebEditor.ashx.cs">
       <DependentUpon>WebEditor.ashx</DependentUpon>

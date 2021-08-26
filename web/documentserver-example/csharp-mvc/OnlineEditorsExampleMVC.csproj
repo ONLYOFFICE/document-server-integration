@@ -109,6 +109,7 @@
     <Compile Include="Helpers\DocManagerHelper.cs" />
     <Compile Include="Helpers\DocumentConverter.cs" />
     <Compile Include="Helpers\JwtManager.cs" />
+    <Compile Include="Helpers\Users.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileModel.cs" />
     <Compile Include="Models\FileUtility.cs" />
@@ -148,7 +149,6 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="LICENSE" />
-    <Content Include="ReadMe.txt" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery.blockUI.js" />

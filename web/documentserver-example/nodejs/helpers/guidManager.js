@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
  *
  */
 
+// generate 16 octet
 var s4 = function () {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 };
 
+// create uuid v4
 exports.newGuid = function () {
     return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
 };

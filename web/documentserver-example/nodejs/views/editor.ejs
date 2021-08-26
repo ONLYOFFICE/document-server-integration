@@ -8,7 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2020
+    * (c) Copyright Ascensio System SIA 2021
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -44,56 +44,57 @@
                 console.log(message);
         };
 
-        var onAppReady = function () {
+        var onAppReady = function () {  // the application is loaded into the browser
             innerAlert("Document editor ready");
         };
 
-        var onDocumentStateChange = function (event) {
+        var onDocumentStateChange = function (event) {  // the document is modified
             var title = document.title.replace(/\*$/g, "");
             document.title = title + (event.data ? "*" : "");
         };
 
-        var onMetaChange = function (event) {
+        var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
             var favorite = !!event.data.favorite;
             var title = document.title.replace(/^\☆/g, "");
             document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);
+            docEditor.setFavorite(favorite);  // change the Favorite icon state
         };
 
-        var onRequestEditRights = function () {
+        var onRequestEditRights = function () {  // the user is trying to switch the document from the viewing into the editing mode
             location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
         };
 
-        var onRequestHistory = function (event) {
+        var onRequestHistory = function (event) {  // the user is trying to show the document version history
             var historyObj = <%- JSON.stringify(history) %> || null;
 
-            docEditor.refreshHistory(
+            docEditor.refreshHistory(  // show the document version history
                 {
                     currentVersion: "<%- file.version %>",
                     history: historyObj
                 });
         };
 
-        var onRequestHistoryData = function (data) {
+        var onRequestHistoryData = function (data) {  // the user is trying to click the specific document version in the document version history
             var version = data.data;
             var historyData = <%- JSON.stringify(historyData) %> || null;
 
-            docEditor.setHistoryData(historyData[version-1]);
+            docEditor.setHistoryData(historyData[version-1]);  // send the link to the document for viewing the version history
         };
 
-        var onRequestHistoryClose = function (event){
+        var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
             document.location.reload();
         };
 
-        var onError = function (event) {
+        var onError = function (event) {  // an error or some other specific event occurs
             if (event)
                 innerAlert(event.data);
         };
 
-        var onOutdatedVersion = function (event) {
+        var onOutdatedVersion = function (event) {  // the document is opened for editing with the old document.key value
             location.reload(true);
         };
 
+        // replace the link to the document which contains a bookmark
         var replaceActionLink = function(href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&action=");
@@ -110,50 +111,73 @@
             return link;
         }
 
-        var onMakeActionLink = function (event) {
+        var onMakeActionLink = function (event) {  // the user is trying to get link for opening the document which contains a bookmark, scrolling to the bookmark position
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
-            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
         };
 
-        var onRequestInsertImage = function(event) {
-            docEditor.insertImage({
+        var onRequestInsertImage = function(event) {  // the user is trying to insert an image by clicking the Image from Storage button
+            docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
                 <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
             })
         };
 
-        var onRequestCompareFile = function() {
-            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);
+        var onRequestCompareFile = function() {  // the user is trying to select document for comparing by clicking the Document from Storage button
+            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);  // select a document for comparing
         };
 
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);
+        var onRequestMailMergeRecipients = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
+            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
+
+        var onRequestUsers = function () {
+            docEditor.setUsers({
+                "users": <%- JSON.stringify(usersForMentions) %>
+            });
+        };
+
+        var onRequestSendNotify = function(event) {
+            var actionLink = JSON.stringify(event.data.actionLink);
+            console.log("onRequestSendNotify:");
+            console.log(event.data);
+            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+        };
+
+        var events = {
+            "onAppReady": onAppReady,
+            "onDocumentStateChange": onDocumentStateChange,
+            "onRequestEditRights": onRequestEditRights,
+            "onError": onError,
+            "onRequestHistory":  onRequestHistory,
+            "onRequestHistoryData": onRequestHistoryData,
+            "onRequestHistoryClose": onRequestHistoryClose,
+            "onOutdatedVersion": onOutdatedVersion,
+            "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+        };
+
+        var config = {<%- include("config") %>, events};
 
         var connectEditor = function () {
-
-            docEditor = new DocsAPI.DocEditor("iframeEditor", {<%- include("config") %>,
-                    events: {
-                        "onAppReady": onAppReady,
-                        "onDocumentStateChange": onDocumentStateChange,
-                        'onRequestEditRights': onRequestEditRights,
-                        "onError": onError,
-                        "onRequestHistory":  onRequestHistory,
-                        "onRequestHistoryData": onRequestHistoryData,
-                        "onRequestHistoryClose": onRequestHistoryClose,
-                        "onOutdatedVersion": onOutdatedVersion,
-                        "onMakeActionLink": onMakeActionLink,
-                        "onMetaChange": onMetaChange,
-                        "onRequestInsertImage": onRequestInsertImage,
-                        "onRequestCompareFile": onRequestCompareFile,
-                        "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                    }
-            });
-
+            addMentions();
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
             fixSize();
         };
 
+        var addMentions = function () {
+            if (<%- JSON.stringify(usersForMentions) %> != null)
+            {
+                events.onRequestUsers = onRequestUsers;
+                events.onRequestSendNotify = onRequestSendNotify;
+            }
+        };
+
+        // get the editor sizes
         var fixSize = function () {
             var wrapEl = document.getElementsByClassName("form");
             if (wrapEl.length) {

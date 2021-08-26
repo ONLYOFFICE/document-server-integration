@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,18 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/jwtmanager.php' );
 
 
+// file uploading
 function DoUpload($fileUri) {
     $_fileName = GetCorrectName($fileUri);
 
+    // check if file extension is supported by the editor
     $ext = strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
     if (!in_array($ext, getFileExts()))
     {
         throw new Exception("File type is not supported");
     }
 
+    // check if the file copy operation is successful
     if(!@copy($fileUri, getStoragePath($_fileName)))
     {
         $errors= error_get_last();
@@ -52,6 +55,7 @@ function ProcessConvServResponceError($errorCode) {
     $errorMessageTemplate = "Error occurred in the document service: ";
     $errorMessage = '';
 
+    // add the error message to the error message template depending on the error code
     switch ($errorCode)
     {
         case -8:
@@ -64,7 +68,7 @@ function ProcessConvServResponceError($errorCode) {
             $errorMessage = $errorMessageTemplate . "Error database";
             break;
         case -5:
-            $errorMessage = $errorMessageTemplate . "Error unexpected guid";
+            $errorMessage = $errorMessageTemplate . "Incorrect password";
             break;
         case -4:
             $errorMessage = $errorMessageTemplate . "Error download error";
@@ -78,10 +82,10 @@ function ProcessConvServResponceError($errorCode) {
         case -1:
             $errorMessage = $errorMessageTemplate . "Error convertation unknown";
             break;
-        case 0:
+        case 0:  // if the error code is equal to 0, the error message is empty
             break;
         default:
-            $errorMessage = $errorMessageTemplate . "ErrorCode = " . $errorCode;
+            $errorMessage = $errorMessageTemplate . "ErrorCode = " . $errorCode;  // default value for the error message
             break;
     }
 
@@ -97,15 +101,15 @@ function ProcessConvServResponceError($errorCode) {
 * @return Supported key
 */
 function GenerateRevisionId($expected_key) {
-    if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);
+    if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
-    $key = substr($key, 0, min(array(strlen($key), 20)));
+    $key = substr($key, 0, min(array(strlen($key), 20)));  // the resulting key length is 20 or less
     return $key;
 }
 
 
 /**
-* Request for conversion to a service
+* Request for conversion to a service.
 *
 * @param string $document_uri            Uri for the document to convert
 * @param string $from_extension          Document extension
@@ -115,13 +119,14 @@ function GenerateRevisionId($expected_key) {
 *
 * @return Document request result of conversion
 */
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async) {
+function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass) {
     if (empty($from_extension))
     {
         $path_parts = pathinfo($document_uri);
-        $from_extension = $path_parts['extension'];
+        $from_extension = strtolower($path_parts['extension']);
     }
 
+    // if title is undefined, then replace it with a random guid
     $title = basename($document_uri);
     if (empty($title)) {
         $title = guid();
@@ -131,6 +136,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         $document_revision_id = $document_uri;
     }
 
+    // generate document token
     $document_revision_id = GenerateRevisionId($document_revision_id);
 
     $urlToConverter = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_CONVERTER_URL'];
@@ -141,9 +147,11 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         "outputtype" => trim($to_extension,'.'),
         "filetype" => trim($from_extension, '.'),
         "title" => $title,
-        "key" => $document_revision_id
+        "key" => $document_revision_id,
+        "password" => $filePass
     ];
 
+    // add header token
     $headerToken = "";
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
@@ -154,6 +162,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     $data = json_encode($arr);
 
+    // request parameters
     $opts = array('http' => array(
                 'method'  => 'POST',
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
@@ -176,7 +185,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
 
 /**
-* The method is to convert the file to the required format
+* The method is to convert the file to the required format.
 *
 * Example:
 * string convertedDocumentUri;
@@ -191,22 +200,26 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 *
 * @return The percentage of completion of conversion
 */
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri) {
+function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async);
+    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass);
     $json = json_decode($responceFromConvertService, true);
 
+    // if an error occurs, then display an error message
     $errorElement = $json["error"];
     if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($errorElement);
 
     $isEndConvert = $json["endConvert"];
     $percent = $json["percent"];
 
+    // if the conversion is completed successfully
     if ($isEndConvert != NULL && $isEndConvert == true)
     {
+        // then get the file url
         $converted_document_uri = $json["fileUrl"];
         $percent = 100;
     }
+    // otherwise, get the percentage of conversion completion
     else if ($percent >= 100)
         $percent = 99;
 
@@ -230,20 +243,24 @@ function GetResponseUri($document_response, &$response_uri) {
         $errs = "Invalid answer format";
     }
 
+    // if an error occurs, then display an error message
     $errorElement = $document_response->Error;
     if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($document_response->Error);
 
     $endConvert = $document_response->EndConvert;
     if ($endConvert != NULL && $endConvert == "") throw new Exception("Invalid answer format");
 
+    // if the conversion is completed successfully
     if ($endConvert != NULL && strtolower($endConvert) == true)
     {
         $fileUrl = $document_response->FileUrl;
         if ($fileUrl == NULL || $fileUrl == "") throw new Exception("Invalid answer format");
 
+        // get the response file url
         $response_uri = $fileUrl;
         $resultPercent = 100;
     }
+    // otherwise, get the percentage of conversion completion
     else
     {
         $percent = $document_response->Percent;

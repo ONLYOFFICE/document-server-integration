@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2020
+ (c) Copyright Ascensio System SIA 2021
  *
  The MIT License (MIT)
 
@@ -27,11 +27,14 @@
 import config
 import jwt
 
+# check if a secret key to generate token exists or not
 def isEnabled():
     return bool(config.DOC_SERV_JWT_SECRET)
 
+# encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
     return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256').decode('utf-8')
 
+# decode a token into a payload object using a secret key
 def decode(string):
     return jwt.decode(string, config.DOC_SERV_JWT_SECRET, algorithms=['HS256'])

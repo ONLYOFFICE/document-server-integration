@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
+    mustReload = false;
+
     jq(function () {
         jq('#fileupload').fileupload({
             dataType: 'json',
@@ -28,14 +30,16 @@ if (typeof jQuery != "undefined") {
                 jq(".current").removeClass("current");
                 jq("#step1").addClass("current");
                 jq("#mainProgress .error-message").hide().find("span").text("");
+                jq("#blockPassword").hide();
                 jq("#mainProgress").removeClass("embedded");
+                jq("#uploadFileName").text("");
 
                 jq.blockUI({
                     theme: true,
-                    title: "Getting ready to load the file" + "<div class=\"dialog-close\"></div>",
+                    title: "File upload" + "<div class=\"dialog-close\"></div>",
                     message: jq("#mainProgress"),
                     overlayCSS: { "background-color": "#aaa" },
-                    themedCSS: { width: "656px", top: "20%", left: "50%", marginLeft: "-328px" }
+                    themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
                 });
                 jq("#beginEdit, #beginView, #beginEmbedded").addClass("disable");
 
@@ -55,9 +59,12 @@ if (typeof jQuery != "undefined") {
                 }
 
                 jq("#hiddenFileName").val(response.filename);
+                jq("#uploadFileName").text(response.filename);
+                jq("#uploadFileName").addClass(response.documentType);
+
+                mustReload = true;
 
                 jq("#step1").addClass("done").removeClass("current");
-                jq("#step2").addClass("current");
 
                 checkConvert();
             }
@@ -67,7 +74,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function () {
+    var checkConvert = function (filePass = null) {
         if (timer != null) {
             clearTimeout(timer);
         }
@@ -75,42 +82,56 @@ if (typeof jQuery != "undefined") {
         if (!jq("#mainProgress").is(":visible")) {
             return;
         }
+        jq("#step2").addClass("current");
+        jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         if (ConverExtList.indexOf(posExt) == -1) {
+            jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
         }
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor.ashx"
-                + "?type=convert"
-                + "&filename=" + encodeURIComponent(jq("#hiddenFileName").val());
-
+            var requestAddress = "webeditor.ashx?type=convert";
             jq.ajax({
                 async: true,
                 contentType: "text/xml",
-                type: "get",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({ filename: fileName, filePass: filePass }),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
                     var response = jq.parseJSON(responseText);
                     if (response.error) {
-                        jq(".current").removeClass("current");
-                        jq(".step:not(.done)").addClass("error");
-                        jq("#mainProgress .error-message").show().find("span").text(response.error);
-                        jq('#hiddenFileName').val("");
-                        return;
+                        if (response.error.includes("Incorrect password")) {
+                            jq(".current").removeClass("current");
+                            jq("#step2").addClass("error");
+                            jq("#blockPassword").show();
+                            if (filePass) {
+                                jq("#filePass").addClass("errorInput");
+                                jq(".errorPass").text("The password is incorrect, please try again.");
+                            }
+                            return;
+                        } else {
+                            jq(".current").removeClass("current");
+                            jq(".step:not(.done)").addClass("error");
+                            jq("#mainProgress .error-message").show().find("span").text(response.error);
+                            jq('#hiddenFileName').val("");
+                            return;
+                        }
                     }
 
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step && response.step < 100) {
-                        checkConvert();
+                        checkConvert(filePass);
                     } else {
+                        jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
                 }
@@ -122,7 +143,6 @@ if (typeof jQuery != "undefined") {
         if (!jq("#mainProgress").is(":visible")) {
             return;
         }
-        jq("#step2").addClass("done").removeClass("current");
         jq("#step3").addClass("current");
 
         if (jq("#loadScripts").is(":empty")) {
@@ -173,12 +193,28 @@ if (typeof jQuery != "undefined") {
 
         userSel.on("change", function () {
             setCookie("uid", userSel.val());
-            setCookie("uname", userSel.find("option:selected").text())
         });
         langSel.on("change", function () {
             setCookie("ulang", langSel.val());
         });
     };
+
+    jq(document).on("click", "#enterPass", function () {
+        var filePass = jq("#filePass").val();
+        if (filePass) {
+            jq("#step2").removeClass("error");
+            jq("#blockPassword").hide();
+            checkConvert(filePass);
+        } else {
+            jq("#filePass").addClass("errorInput");
+            jq(".errorPass").text("Password can't be blank.");
+        }
+    });
+
+    jq(document).on("click", "#skipPass", function () {
+        jq("#blockPassword").hide();
+        loadScripts();
+    });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
@@ -198,7 +234,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.aspx?action=embedded&fileID=" + fileId;
+        var url = "doceditor.aspx?editorsType=embedded&editorsMode=embedded&fileID=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -210,6 +246,9 @@ if (typeof jQuery != "undefined") {
         jq('#hiddenFileName').val("");
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
+        if (mustReload) {
+            document.location.reload();
+        }
     });
 
     jq(document).on("click", ".try-editor", function (e) {
@@ -238,8 +277,30 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq.dropdownToggle({
-        switcherSelector: ".question",
-        dropdownID: "hint"
+    jq(".info").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
+
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
+
+        var topElement = jq("#" + id).offset().top;
+        var halfHeightElement = jq("#" + id).outerHeight() / 2;
+
+        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
+        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
+        if (heightToFooter > (halfHeightTooltip + 10)) {
+            var top = topElement + halfHeightElement - halfHeightTooltip;
+        } else {
+            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
+        }
+
+        jq("div.tooltip").css({ "top": top, "left": left + 10 });
+        jq("div.arrow").css({ "top": topElement + halfHeightElement, "left": left + 6 });
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
+        jq("div.arrow").remove();
     });
 }
