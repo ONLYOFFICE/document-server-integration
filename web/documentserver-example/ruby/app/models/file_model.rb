@@ -65,10 +65,12 @@ class FileModel
     DocumentHelper.get_callback(@file_name)
   end
 
+  # get url to the created file
   def create_url
     DocumentHelper.get_create_url(document_type)
   end
 
+  # get url to download a file
   def download_url
     DocumentHelper.get_download_url(@file_name)
   end

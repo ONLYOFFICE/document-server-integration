@@ -94,11 +94,11 @@ class Users
     ]
 
     class << self
-        def get_all_users()
+        def get_all_users()  # get a list of all the users
             @@users
         end
 
-        def get_user(id)
+        def get_user(id)  # get a user by id specified
             for user in @@users do
                 if user.id.eql?(id)
                     return user
@@ -107,7 +107,7 @@ class Users
             return @@users[0]
         end
 
-        def get_users_for_mentions(id)
+        def get_users_for_mentions(id)  # get a list of users with their names and emails for mentions
             usersData = []
             for user in @@users do
                 if (!user.id.eql?(id) && user.name != nil && user.email != nil)
