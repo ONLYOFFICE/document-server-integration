@@ -25,7 +25,7 @@
 
     .tableHeaderCellViewers {
         width: 29%;
-        text-align: end;
+        text-align: right;
     }
 
     .tableHeaderCellDownload {
@@ -208,13 +208,19 @@
     }
 
     .tableHeaderCellViewers {
-        text-align: end;
+        text-align: right;
         width: 37%;
     }
 
     .tableHeaderCellDownload {
         padding-right: 22px;
         width: 22%;
+    }
+}
+
+@media (max-width: 1080px) and (min-width: 890px) {
+    .firstContentCellViewers {
+        margin-left: auto;
     }
 }
 
@@ -225,7 +231,7 @@
 
     .tableHeaderCellEditors {
         width: 26%;
-        text-align: start;
+        text-align: left;
     }
 
     .tableHeaderCellFileName {
@@ -234,7 +240,7 @@
 
     .tableHeaderCellViewers {
         width: 27%;
-        text-align: end;
+        text-align: right;
     }
 
     .tableHeaderCellDownload {
@@ -286,13 +292,13 @@
 
     .tableHeaderCellViewers {
         width: 22%;
-        text-align: end;
+        text-align: right;
     }
 
     .tableHeaderCellDownload {
         padding-right: 4px;
         width: 20%;
-        text-align: end;
+        text-align: right;
     }
 
     .tableHeaderCellFileName {
@@ -300,7 +306,7 @@
     }
 
     .tableHeaderCellEditors {
-        text-align: start;
+        text-align: left;
         width: 31%;
     }
 
@@ -371,6 +377,8 @@
     }
 
     .copy {
+        width: 100%;
+        text-align: center;
         margin: 0;
     }
 
@@ -499,7 +507,7 @@
 
     .firstContentCellShift {
         margin-left: 1px;
-        flex-basis: 15%;
+        flex-basis: 14%;
     }
 
     .tableRow td:last-child {

@@ -375,11 +375,12 @@ footer table tr {
             align-items: center;
             align-content: center;
             flex-wrap: wrap;
-            width: 100%;
+            width: 100vw;
             height: 64px;
 }
 
 footer table td {
+	display: block;
             position: relative;
             padding-left: 32px;
 }
@@ -562,6 +563,7 @@ footer a:hover {
 }
 
 .contentCells {
+	display: block;
     border-bottom: 1px solid #EFEFEF;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
@@ -591,8 +593,7 @@ footer a:hover {
 
 .info {
     cursor: pointer;
-    padding: 3px 5px;
-    position: absolute;
+    margin: -2px 5px;
 }
 
 .tooltip {
@@ -760,5 +761,5 @@ html {
 }
 
 .firstContentCellViewers {
-    margin-left: auto;
+    margin-left: 0;
 }
