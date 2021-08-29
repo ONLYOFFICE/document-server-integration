@@ -24,43 +24,43 @@
     <RemoveDir Directories="$(To)" ContinueOnError="true" />
 
     <ItemGroup>
-      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**" />
+      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**;$(DirCSharp)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesCSharp)" DestinationFiles="@(ZipFilesCSharp->'$(NameCSharp)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameCSharp)" WorkingDirectory="$(To)" ZipFileName="$(NameCSharp).zip" />
 
     <ItemGroup>
-      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**" />
+      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**;$(DirMvc)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />
 
     <ItemGroup>
-      <ZipFilesJava Include="$(DirJava)**" />
+      <ZipFilesJava Include="$(DirJava)**" Exclude="$(DirJava)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesJava)" DestinationFiles="@(ZipFilesJava->'$(NameJava)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameJava)" WorkingDirectory="$(To)" ZipFileName="$(NameJava).zip" />
 
     <ItemGroup>
-      <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**" />
+      <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**;$(DirNodeJS)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesNodeJS)" DestinationFiles="@(ZipFilesNodeJS->'$(NameNodeJS)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameNodeJS)" WorkingDirectory="$(To)" ZipFileName="$(NameNodeJS).zip" />
 
     <ItemGroup>
-      <ZipFilesPHP Include="$(DirPHP)**" />
+      <ZipFilesPHP Include="$(DirPHP)**" Exclude="$(DirPHP)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesPHP)" DestinationFiles="@(ZipFilesPHP->'$(NamePHP)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NamePHP)" WorkingDirectory="$(To)" ZipFileName="$(NamePHP).zip" />
 
     <ItemGroup>
-      <ZipFilesRuby Include="$(DirRuby)**" />
+      <ZipFilesRuby Include="$(DirRuby)**" Exclude="$(DirRuby)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesRuby)" DestinationFiles="@(ZipFilesRuby->'$(NameRuby)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameRuby)" WorkingDirectory="$(To)" ZipFileName="$(NameRuby).zip" />
 
     <ItemGroup>
-      <ZipFilesPython Include="$(DirPython)**" />
+      <ZipFilesPython Include="$(DirPython)**" Exclude="$(DirPython)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesPython)" DestinationFiles="@(ZipFilesPython->'$(NamePython)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NamePython)" WorkingDirectory="$(To)" ZipFileName="$(NamePython).zip" />
