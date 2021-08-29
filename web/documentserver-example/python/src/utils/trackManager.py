@@ -54,6 +54,8 @@ def readBody(request):
 # file saving process
 def processSave(body, filename, usAddr):
     download = body.get('url')
+    if (download is None):
+        raise Exception("DownloadUrl is null")
     changesUri = body.get('changesurl')
     newFilename = filename
 
@@ -101,7 +103,8 @@ def processSave(body, filename, usAddr):
 # file force saving process
 def processForceSave(body, filename, usAddr):
     download = body.get('url')
-
+    if (download is None):
+        raise Exception("DownloadUrl is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
     downloadExt = fileUtils.getFileExt(download) # get the extension of the downloaded file
     newFilename = False

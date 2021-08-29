@@ -440,7 +440,14 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         }
 
         // file saving process
-        var processSave = function (downloadUri, body, fileName, userAddress, resp) {
+        var processSave = function (downloadUri, body, fileName, userAddress) {
+
+            if (!downloadUri) {
+                response.write("{\"error\":1}");
+                response.end();
+                return;
+            }
+
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
             var downloadExt = fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
             var newFileName = fileName;
@@ -517,7 +524,14 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         }
 
         // file force saving process
-        var processForceSave = function (downloadUri, body, fileName, userAddress, resp) {
+        var processForceSave = function (downloadUri, body, fileName, userAddress) {
+
+            if (!downloadUri) {
+                response.write("{\"error\":1}");
+                response.end();
+                return;
+            }
+
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = fileUtility.getFileExtension(downloadUri);
 
@@ -560,12 +574,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                 }
             }
-
         } else if (body.status == 2 || body.status == 3) { // MustSave, Corrupted
-            processSave(body.url, body, fileName, userAddress, response);  // save file
+            processSave(body.url, body, fileName, userAddress);  // save file
             return;
         } else if (body.status == 6 || body.status == 7) { // MustForceSave, CorruptedForceSave
-            processForceSave(body.url, body, fileName, userAddress, response);  // force save file
+            processForceSave(body.url, body, fileName, userAddress);  // force save file
             return;
         }
 

@@ -76,6 +76,10 @@ function readBody() {
 // file saving process
 function processSave($data, $fileName, $userAddress) {
     $downloadUri = $data["url"];
+    if ($downloadUri === null) {
+        $result["error"] = 1;
+        return $result;
+    }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
@@ -144,6 +148,10 @@ function processSave($data, $fileName, $userAddress) {
 // file force saving process
 function processForceSave($data, $fileName, $userAddress) {
     $downloadUri = $data["url"];
+    if ($downloadUri === null) {
+        $result["error"] = 1;
+        return $result;
+    }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
