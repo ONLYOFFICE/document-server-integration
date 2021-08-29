@@ -69,7 +69,7 @@
         border: none;
     }
     .tableRow td:last-child:after{
-        width: 90%;
+        width: 95%;
     }
 }
 @media (max-width: 593px){
@@ -77,6 +77,7 @@
         width: 100%;
     }
     .tableRow td:last-child:after{
+        width: 90%;
         top: 67px;
         height: 1%;
     }
