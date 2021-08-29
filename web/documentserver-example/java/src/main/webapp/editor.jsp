@@ -162,10 +162,11 @@
         <% if (usersForMentions != null) { %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({
+                docEditor.setUsers({  // set a list of users to mention in the comments
                     "users": ${usersForMentions}
                 });
             };
+            // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
                 var actionLink = JSON.stringify(event.data.actionLink);
                 console.log("onRequestSendNotify:");

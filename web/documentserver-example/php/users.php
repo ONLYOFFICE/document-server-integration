@@ -94,11 +94,13 @@ $users = [
             null, [], $descr_user_0, false)
 ];
 
+// get a list of all the users
 function getAllUsers() {
     global $users;
     return $users;
 }
 
+// get a user by id specified
 function getUser($id) {
     global $users;
     foreach ($users as $user){
@@ -110,6 +112,7 @@ function getUser($id) {
     return $users[0];
 }
 
+// get a list of users with their names and emails for mentions
 function getUsersForMentions($id) {
     global $users;
     $usersData = [];

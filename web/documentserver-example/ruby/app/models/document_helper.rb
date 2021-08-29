@@ -247,12 +247,14 @@ class DocumentHelper
 
     end
 
+    # get url to the created file
     def get_create_url(document_type)
 
       get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
 
     end
 
+    # get url to download a file
     def get_download_url(file_name)
 
       get_server_url(true) + '/download?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)

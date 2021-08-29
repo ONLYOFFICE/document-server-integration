@@ -106,6 +106,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
+            // get the path to the given file
             directory = directory + Path.GetFileName(fileName);
             if (!File.Exists(directory))
             {
@@ -264,6 +265,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             return callbackUrl.ToString();
         }
 
+        // get url to the created file
         public static string GetCreateUrl(FileUtility.FileType fileType)
         {
             var createUrl = new UriBuilder(GetServerUrl(false))
@@ -277,6 +279,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             return createUrl.ToString();
         }
 
+        // get url to download a file
         public static string GetDownloadUrl(string fileName)
         {
             var downloadUrl = new UriBuilder(GetServerUrl(true))

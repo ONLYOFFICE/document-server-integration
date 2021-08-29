@@ -86,6 +86,7 @@ namespace OnlineEditorsExample
             }
         }
 
+        // get url to the created file
         public static string getCreateUrl(String documentType, String editorsType)
         {
             var createUrl = new UriBuilder(_Default.GetServerUrl(false));
@@ -98,6 +99,7 @@ namespace OnlineEditorsExample
             return createUrl.ToString();
         }
 
+        // get url to download a file
         public static string getDownloadUrl
         {
             get
