@@ -762,7 +762,7 @@ html {
 }
 
 .firstContentCellViewers {
-    margin-left: 0;
+    margin-left: auto;
 }
 .tableHeaderCellDownload{
     width: 12%;

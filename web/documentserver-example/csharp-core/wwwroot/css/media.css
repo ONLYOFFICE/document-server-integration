@@ -235,12 +235,6 @@
     }
 }
 
-@media (max-width: 1080px) and (min-width: 890px) {
-    .firstContentCellViewers {
-        margin-left: auto;
-    }
-}
-
 @media (max-width: 986px) and (min-width: 890px) {
     .tableHeader {
         width: 75%;
