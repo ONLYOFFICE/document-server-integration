@@ -25,7 +25,7 @@ if (typeof jQuery !== "undefined") {
     jQuery.post('/config',
         function(data) {
             ConverExtList = data.ConverExtList;
-            EditedExtList = data.ConverExtList;
+            EditedExtList = data.EditedExtList;
             UrlConverter = data.UrlConverter;
             UrlEditor = data.UrlEditor;
     });
