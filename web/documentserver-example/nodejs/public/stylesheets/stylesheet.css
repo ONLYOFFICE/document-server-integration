@@ -776,7 +776,7 @@ html {
 }
 
 .firstContentCellViewers {
-    margin-left: 0;
+    margin-left: auto;
 }
 .tableHeaderCellDownload{
     padding-right: 28px;
