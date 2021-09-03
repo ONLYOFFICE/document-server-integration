@@ -75,11 +75,10 @@ public class FileController {
 
     private String createUserMetadata(String uid, String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
-        String fileName = fileUtility.getFileNameWithoutExtension(fullFileName);
         String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-            storage.createMeta(fileName,
+            storage.createMeta(fullFileName,
                     String.valueOf(user.getId()), user.getName());
         }
         return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
@@ -119,6 +118,7 @@ public class FileController {
             }
 
             String fileName = fileUtility.getFileNameWithoutExtension(fileNamePath);
+            System.out.println(fileName);
 
             return createUserMetadata(uid, fileName+fileExtension);
         } catch (Exception e) {
