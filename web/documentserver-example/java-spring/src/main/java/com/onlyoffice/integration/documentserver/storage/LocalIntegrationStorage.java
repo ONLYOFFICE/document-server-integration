@@ -175,8 +175,8 @@ public class LocalIntegrationStorage implements IntegrationStorage {
 
         Path filePath = Paths.get(getFileLocation(fileName));
         Path filePathWithoutExt = Paths.get(getStorageLocation() + filenameWithoutExt);
-        Path fileHistoryPath = Paths.get(historyDir(fileName));
-        Path fileHistoryPathWithoutExt = Paths.get(historyDir(filenameWithoutExt));
+        Path fileHistoryPath = Paths.get(getStorageLocation() + historyDir(fileName));
+        Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + historyDir(filenameWithoutExt));
 
         boolean fileDeleted = FileSystemUtils.deleteRecursively(filePath.toFile());
         boolean fileWithoutExtDeleted = FileSystemUtils.deleteRecursively(filePathWithoutExt.toFile());
