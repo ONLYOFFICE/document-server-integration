@@ -95,6 +95,9 @@ public class LocalIntegrationStorage implements IntegrationStorage {
     }
 
     public String getFileLocation(String fileName){
+        if (fileName.contains("/")) {
+            return getStorageLocation() + fileName;
+        }
         return getStorageLocation() + fileUtility.getFileName(fileName);
     }
 
