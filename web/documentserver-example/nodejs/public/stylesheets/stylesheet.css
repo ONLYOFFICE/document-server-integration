@@ -570,7 +570,6 @@ footer table tr td:first-child {
 
 .contentCells {
     display: block;
-    border-bottom: 1px solid #EFEFEF;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     padding: 4px;
@@ -590,8 +589,8 @@ footer table tr td:first-child {
 }
 
 .contentCells-wopi {
-    width: 16%;
-    text-align: center;
+    width: 18%;
+    text-align: left;
 }
 
 .contentCells-wopi a {

@@ -51,13 +51,13 @@
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
                                         <li>
-                                            <a class="try-editor word reload-page" target="_blank" href="/wopi-new?fileExt=docx<%= params %>" title="Create new document">Document</a>
+                                            <a class="try-editor word reload-page" target="_blank" href="./wopi-new?fileExt=docx<%= params %>" title="Create new document">Document</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor cell reload-page" target="_blank" href="/wopi-new?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
+                                            <a class="try-editor cell reload-page" target="_blank" href="./wopi-new?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor slide reload-page" target="_blank" href="/wopi-new?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
+                                            <a class="try-editor slide reload-page" target="_blank" href="./wopi-new?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
                                         </li>
                                     </ul>
                                     <label class="create-sample">
@@ -167,7 +167,7 @@
                                                         <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                             <td class="contentCells">
                                                                 <% if (storedFiles[i].defaultAction) { %>
-                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>">
+                                                                    <a class="stored-edit <%= storedFiles[i].documentType %>" href="./wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>">
                                                                 <%} else { %>
                                                                     <a class="stored-edit <%= storedFiles[i].documentType %>" href="#">
                                                                 <% } %>
@@ -177,18 +177,18 @@
                                                             <% if (storedFiles[i].actions && storedFiles[i].actions.length > 0) { %>
                                                                 <td class="contentCells contentCells-wopi contentCells-shift">
                                                                     <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
-                                                                        <a href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
+                                                                        <a href="./wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
                                                                             <% if (storedFiles[i].actions[j].name == "edit") { %>
-                                                                                <img src="images/fill-forms-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                                <img src="images/fill-forms.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                             <%} else { %>
-                                                                                <img src="images/desktop-24.png" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                                <img src="images/desktop.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                             <% } %>
                                                                         </a>
                                                                     <% } %>
                                                                 </td>
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon contentCells-shift downloadContentCells">
-                                                                <a href="wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
+                                                                <a href="./wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
                                                                     <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
