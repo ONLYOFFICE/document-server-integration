@@ -28,6 +28,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
@@ -126,7 +128,18 @@ public class DocumentManager
         String hostAddress = CurUserHostAddress(userAddress);  // get current user host address
         String serverPath = request.getSession().getServletContext().getRealPath("");  // get the server url
         String storagePath = ConfigManager.GetProperty("storage-folder");  // get the storage directory
-        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+        File f = new File(storagePath);
+
+        if (f.isAbsolute()) {
+            if (!f.isDirectory()) {
+                throw new SecurityException("The path to the file is specified instead of the folder");
+            } else {
+                if (!Files.isWritable(f.toPath())) {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
+                }
+            }
+        }
+        String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
 
         File file = new File(directory);
 
@@ -306,13 +319,24 @@ public class DocumentManager
         {
             String serverPath = GetServerUrl(forDocumentServer);
             String storagePath = ConfigManager.GetProperty("storage-folder");
+            File f = new File(storagePath);
             String hostAddress = CurUserHostAddress(null);
 
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            if (f.isAbsolute()) {
+                if (!f.isDirectory()) {
+                    throw new SecurityException("The path to the file is specified instead of the folder");
+                } else {
+                    filePath = GetDownloadUrl(fileName);
+                    if (!Files.isWritable(f.toPath())) {
+                        throw new SecurityException("No write permission to path: " + f.toPath());
+                    }
+                }
+            }
 
             return filePath;
         }
-        catch (UnsupportedEncodingException e)
+        catch (Exception e)
         {
             return "";
         }

@@ -20,10 +20,7 @@ package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import helpers.DocumentManager;
-import helpers.FileUtility;
-import helpers.ServiceConverter;
-import helpers.Users;
+import helpers.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -193,7 +190,12 @@ public class FileModel
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
+                        String storagePath = ConfigManager.GetProperty("storage-folder");
+                        String changesUrl = DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip");
+                        if (new File(storagePath).isAbsolute()) {
+                            changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
+                        }
+                        dataObj.put("changesUrl", changesUrl);
                     }
 
                     if (DocumentManager.TokenEnabled())

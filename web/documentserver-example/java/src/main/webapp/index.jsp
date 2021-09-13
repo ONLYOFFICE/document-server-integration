@@ -179,7 +179,7 @@
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %> [<%= version %>]">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                                     <span><%= files[i].getName() %></span>
