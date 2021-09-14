@@ -780,4 +780,17 @@ html {
 .tableHeaderCellDownload{
     padding-right: 28px;
 }
-
+.wopi-disabled {
+    border-radius: 5px;
+    padding: 10px 15px;
+    display: block;
+    position: fixed;
+    background-color: #F5F5F5;
+    width: 400px;
+    box-shadow: 0px 7px 5px rgba(85, 85, 85, 0.15);
+    color: #666666;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+}

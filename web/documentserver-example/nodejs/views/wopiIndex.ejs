@@ -138,6 +138,13 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                           <% if (!wopiEnable)
+                           { %>
+                                <div class="wopi-disabled" >
+                                    <p>Wopi disabled or "/hosting/discovery" is unavailable.</p>
+                                </div>
+                            <%}
+                           %>
                             <% if (storedFiles.length <= 0)
                             { %>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>

@@ -335,3 +335,7 @@ function getUrlVars() {
     }
     return vars;
 };
+
+setTimeout( function() {
+    document.getElementsByClassName("wopi-disabled")[0].style.display = "none";
+    }, 2000);

@@ -32,7 +32,8 @@ exports.registerRoutes = function(app) {
     app.get("/wopi", function(req, res) {
 
         // get the wopi discovery information
-        utils.getDiscoveryInfo(3);
+        let actions = utils.getDiscoveryInfo(3);
+        let wopiEnable = actions.length != 0 ? true : false;
 
         try {
             docManager.init(storageFolder, req, res);
@@ -49,7 +50,8 @@ exports.registerRoutes = function(app) {
 
             // render wopiIndex template with the parameters specified
             res.render("wopiIndex", {
-                storedFiles: files,
+                wopiEnable : wopiEnable,
+                storedFiles: wopiEnable ? files : [],
                 params: docManager.getCustomParams(),
                 users: users,
             });
