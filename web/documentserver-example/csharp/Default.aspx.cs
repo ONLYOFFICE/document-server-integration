@@ -56,7 +56,7 @@ namespace OnlineEditorsExample
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
                 ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps"
+                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
             };
 
         // get an internal file extension
