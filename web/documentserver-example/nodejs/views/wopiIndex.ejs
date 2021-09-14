@@ -128,6 +128,16 @@
                     <td class="section">
                         <div class="main-panel">
                             <div id="portal-info">
+                            <% if (!wopiEnable)
+                               { %>
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                    Before you get started with a demo sample of ONLYOFFICE Docs, please enable the WOPI protocol.
+                                    <br />Set the <b>wopi.enable</b> parameter in the Document Server configuration file to <b>true</b> and restart ONLYOFFICE Docs.
+                                </span>
+                            <% }
+                               else if (storedFiles.length <= 0)
+                               { %>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -144,6 +154,7 @@
                                         </ul>
                                     </div>
                                 <% }) %>
+                            <% } %>
                             </div>
                         <% if (storedFiles.length > 0)
                             { %>
