@@ -12,7 +12,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ## Step 2. Install the prerequisites and run the website with the editors
 
-1. Install **Ruby Version Manager (RVM)** and the latest stable **Ruby** version:
+1. Install **Ruby Version Manager (RVM)** and the stable 2.7 **Ruby** version:
 
     ```
     gpg --keyserver "hkp://keys.gnupg.net" --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
