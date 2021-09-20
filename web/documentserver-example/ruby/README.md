@@ -19,7 +19,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     ```
 
     ```
-    \curl -sSL https://get.rvm.io | bash -v stable --ruby=2.7.0
+    \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.7.0
     ```
 
 2. Download the archive with the Ruby example and unpack the archive:
