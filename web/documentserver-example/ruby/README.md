@@ -61,6 +61,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 6. Run the **Rails** application:
 
     ```
+    rails server -u webrick
     rails s -b 0.0.0.0 -p 80
     ```
 
