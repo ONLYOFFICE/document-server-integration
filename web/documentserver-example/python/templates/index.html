@@ -177,7 +177,7 @@
                                                                     </a>
                                                                 </td>
                                                             {% endif %}
-                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                            {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
@@ -198,7 +198,7 @@
                                                             {% else %}
                                                                  <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                             {% endif %}
-                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                            {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon "></td>
                                                             {% endif %}
                                                         {% else %}
