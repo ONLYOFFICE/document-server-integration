@@ -602,10 +602,16 @@ footer table tr td:first-child {
     border-radius: 5px;
     box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
     color: #666666;
-    line-height: 2.4vh;
-    max-width: 455px;
+    line-height: 160%;
+    max-width: 60vw;
     padding: 14px;
     position: absolute;
+}
+
+#user-tooltip {
+    overflow-y: overlay;
+    height: 86vh;
+    top: 30px;
 }
 
 .tooltip ul {
