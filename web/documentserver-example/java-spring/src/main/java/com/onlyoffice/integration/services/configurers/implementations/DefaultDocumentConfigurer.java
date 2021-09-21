@@ -20,7 +20,7 @@ package com.onlyoffice.integration.services.configurers.implementations;
 
 import com.onlyoffice.integration.documentserver.models.filemodel.Document;
 import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.services.configurers.DocumentConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentWrapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
@@ -41,7 +41,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     private DocumentManager documentManager;
 
     @Autowired
-    private IntegrationStorage storage;
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
     private FileUtility fileUtility;
@@ -62,9 +62,9 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.getInfo().setFavorite(rnd.nextBoolean());
 
         String key =  serviceConverter.
-                        generateRevisionId(storage.getStorageLocation()
+                        generateRevisionId(storagePathBuilder.getStorageLocation()
                         + "/" + fileName + "/"
-                        + new File(storage.getFileLocation(fileName)).lastModified());
+                        + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 
         document.setKey(key);
         document.setPermissions(permission);

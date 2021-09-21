@@ -18,7 +18,9 @@
 
 package com.onlyoffice.integration.controllers;
 
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
+import com.onlyoffice.integration.documentserver.util.Misc;
 import com.onlyoffice.integration.entities.*;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
@@ -36,10 +38,16 @@ import java.util.stream.Collectors;
 public class IndexController {
 
     @Autowired
-    private IntegrationStorage storage;
+    private FileStorageMutator storageMutator;
+
+    @Autowired
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
     private FileUtility fileUtility;
+
+    @Autowired
+    private Misc mistUtility;
 
     @Autowired
     private UserServices userService;
@@ -58,19 +66,22 @@ public class IndexController {
 
     @GetMapping("${url.index}")
     public String index(Model model){
-        java.io.File[] files = storage.getStoredFiles();
+        java.io.File[] files = storageMutator.getStoredFiles();
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
         List<String> versions = new ArrayList<>();
 
         List<User> users = userService.findAll();
-        String tooltip = users.stream().map(user -> user.getDescriptions()).collect(Collectors.joining());
+
+        String tooltip = users.stream()
+                .map(user -> mistUtility.convertUserDescriptions(user.getName(), user.getDescriptions()))
+                .collect(Collectors.joining());
 
         for(java.io.File file:files){
             String fileName = file.getName();
             docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());
             filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));
-            versions.add(" ["+storage.getFileVersion(fileName, true)+"]");
+            versions.add(" ["+storagePathBuilder.getFileVersion(fileName, true)+"]");
         }
 
         model.addAttribute("versions",versions);

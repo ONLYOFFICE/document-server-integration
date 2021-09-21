@@ -21,7 +21,7 @@ package com.onlyoffice.integration.documentserver.managers.template;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
 import com.onlyoffice.integration.documentserver.models.filemodel.Template;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +36,7 @@ public class SampleTemplateManager implements TemplateManager {
     private DocumentManager documentManager;
 
     @Autowired
-    private IntegrationStorage storage;
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
     private FileUtility fileUtility;
@@ -52,7 +52,7 @@ public class SampleTemplateManager implements TemplateManager {
 
     public String getTemplateImageUrl(String fileName){
         DocumentType fileType = fileUtility.getDocumentType(fileName);
-        String path = storage.getServerUrl(true);
+        String path = storagePathBuilder.getServerUrl(true);
         if(fileType.equals(DocumentType.word)){
             return path + "/css/img/file_docx.svg";
         } else if(fileType.equals(DocumentType.slide)){

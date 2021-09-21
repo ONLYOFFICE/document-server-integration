@@ -19,7 +19,7 @@
 package com.onlyoffice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -37,7 +37,7 @@ public class IntegrationConfiguration {
     private String storageAddress;
 
     @Autowired
-    private IntegrationStorage localStorage;
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Bean
     public ModelMapper mapper(){
@@ -57,7 +57,7 @@ public class IntegrationConfiguration {
 
     @PostConstruct
     public void init(){
-        localStorage.configure(storageAddress.isBlank() ? null : storageAddress);
+        storagePathBuilder.configure(storageAddress.isBlank() ? null : storageAddress);
     }
 
     @Bean

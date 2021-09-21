@@ -40,13 +40,6 @@ public class UserServices {
     @Autowired
     private PermissionServices permissionService;
 
-    private String convertDescriptions(String username, List<String> description){
-        String result = "<b>"+username+"</b><br/>"+description.
-                stream().map(text -> "<li>"+text+"</li>")
-                .collect(Collectors.joining());
-        return result;
-    }
-
     public List<User> findAll(){
         return userRepository.findAll();
     }
@@ -65,7 +58,7 @@ public class UserServices {
         newUser.setName(name);
         newUser.setEmail(email);
         newUser.setGroup(groupServices.createGroup(group));
-        newUser.setDescriptions(convertDescriptions(name, description));
+        newUser.setDescriptions(description);
 
         List<Group> groupsReview = groupServices.createGroups(reviewGroups);
         List<Group> commentGroupsView = groupServices.createGroups(viewGroups);

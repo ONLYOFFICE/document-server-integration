@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 //TODO: Refactoring
 @Component
 @Primary
-public class LocalIntegrationStorage implements IntegrationStorage {
+public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuilder {
 
     @Getter
     private String storageAddress;
@@ -61,12 +61,11 @@ public class LocalIntegrationStorage implements IntegrationStorage {
     @Value("${files.docservice.history.postfix}")
     private String historyPostfix;
 
-    //TODO: Get rid of HttpServletRequest
-    @Autowired
-    private HttpServletRequest request;
-
     @Autowired
     private FileUtility fileUtility;
+
+    @Autowired
+    private HttpServletRequest request;
 
     /*
         This Storage configuration method should be called whenever a new storage folder is required
@@ -77,7 +76,7 @@ public class LocalIntegrationStorage implements IntegrationStorage {
             try{
                 this.storageAddress = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e){
-                this.storageAddress = "";
+                this.storageAddress = "unknown_storage";
             }
         }
         this.storageAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
@@ -95,7 +94,7 @@ public class LocalIntegrationStorage implements IntegrationStorage {
     }
 
     public String getFileLocation(String fileName){
-        if (fileName.contains("/")) {
+        if (fileName.contains(File.separator)) {
             return getStorageLocation() + fileName;
         }
         return getStorageLocation() + fileUtility.getFileName(fileName);
@@ -110,49 +109,10 @@ public class LocalIntegrationStorage implements IntegrationStorage {
         }
     }
 
-    public boolean createFile(String fileName, InputStream stream) {
-        String fileLocation = getFileLocation(fileName);
-
-        if (Files.exists(Path.of(fileLocation))){
-            return true;
-        }
-
-        File convertedFile = new File(fileLocation);
-        try (FileOutputStream out = new FileOutputStream(convertedFile))
-        {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);
-            }
-
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean createFile(String fileName){
-        if (fileName.isBlank()) return false;
-
-        String fileLocation = getFileLocation(fileName);
-        Path filePath = Path.of(fileLocation);
-
-        if (Files.exists(filePath)) return true;
-
-        try{
-            Files.createFile(filePath);
-            return true;
-        } catch (IOException exception){
-            return false;
-        }
-    }
-
     public boolean createFile(Path path, InputStream stream){
+        if (Files.exists(path)){
+            return true;
+        }
         try {
             File file = Files.createFile(path).toFile();
             try (FileOutputStream out = new FileOutputStream(file))
@@ -178,15 +138,23 @@ public class LocalIntegrationStorage implements IntegrationStorage {
 
         Path filePath = Paths.get(getFileLocation(fileName));
         Path filePathWithoutExt = Paths.get(getStorageLocation() + filenameWithoutExt);
-        Path fileHistoryPath = Paths.get(getStorageLocation() + historyDir(fileName));
-        Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + historyDir(filenameWithoutExt));
 
         boolean fileDeleted = FileSystemUtils.deleteRecursively(filePath.toFile());
         boolean fileWithoutExtDeleted = FileSystemUtils.deleteRecursively(filePathWithoutExt.toFile());
+
+        return fileDeleted && fileWithoutExtDeleted;
+    }
+
+    public boolean deleteFileHistory(String fileName) {
+        if (fileName.isBlank()) return false;
+
+        Path fileHistoryPath = Paths.get(getStorageLocation() + getHistoryDir(fileName));
+        Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + getHistoryDir(fileUtility.getFileNameWithoutExtension(fileName)));
+
         boolean historyDeleted = FileSystemUtils.deleteRecursively(fileHistoryPath.toFile());
         boolean historyWithoutExtDeleted = FileSystemUtils.deleteRecursively(fileHistoryPathWithoutExt.toFile());
 
-        return fileDeleted && fileWithoutExtDeleted && (historyDeleted || historyWithoutExtDeleted);
+        return historyDeleted || historyWithoutExtDeleted;
     }
 
     public String updateFile(String fileName, byte[] bytes) {
@@ -266,7 +234,7 @@ public class LocalIntegrationStorage implements IntegrationStorage {
 
     @SneakyThrows
     public void createMeta(String fileName, String uid, String uname) {
-        String histDir = historyDir(getFileLocation(fileName));
+        String histDir = getHistoryDir(getFileLocation(fileName));
 
         Path path = Paths.get(histDir);
         createDirectory(path);
@@ -292,7 +260,7 @@ public class LocalIntegrationStorage implements IntegrationStorage {
         }
     }
 
-    public String historyDir(String path)
+    public String getHistoryDir(String path)
     {
         return path + historyPostfix;
     }
@@ -301,7 +269,7 @@ public class LocalIntegrationStorage implements IntegrationStorage {
     {
         Path path;
         if (ifIndexPage) {
-            path = Paths.get(getStorageLocation() + historyDir(historyPath));
+            path = Paths.get(getStorageLocation() + getHistoryDir(historyPath));
         } else {
             path = Paths.get(historyPath);
             if (!Files.exists(path)) return 1;

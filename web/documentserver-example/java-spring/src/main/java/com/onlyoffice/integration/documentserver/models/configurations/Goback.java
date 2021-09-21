@@ -18,7 +18,7 @@
 
 package com.onlyoffice.integration.documentserver.models.configurations;
 
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import javax.annotation.PostConstruct;
 public class Goback {
 
     @Autowired
-    private IntegrationStorage storage;
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Value("${url.index}")
     private String indexMapping;
@@ -43,6 +43,6 @@ public class Goback {
 
     @PostConstruct
     private void init(){
-        this.url = storage.getServerUrl(false)+indexMapping;
+        this.url = storagePathBuilder.getServerUrl(false)+indexMapping;
     }
 }

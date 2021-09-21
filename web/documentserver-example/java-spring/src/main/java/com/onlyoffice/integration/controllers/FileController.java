@@ -21,7 +21,8 @@ package com.onlyoffice.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
@@ -47,6 +48,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 
 @CrossOrigin("*")
@@ -63,7 +65,9 @@ public class FileController {
     @Autowired
     private JwtManager jwtManager;
     @Autowired
-    private IntegrationStorage storage;
+    private FileStorageMutator storageMutator;
+    @Autowired
+    private FileStoragePathBuilder storagePathBuilder;
     @Autowired
     private UserServices userService;
     @Autowired
@@ -78,14 +82,14 @@ public class FileController {
         String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-            storage.createMeta(fullFileName,
+            storageMutator.createMeta(fullFileName,
                     String.valueOf(user.getId()), user.getName());
         }
         return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
     }
 
     private ResponseEntity<Resource> downloadFile(String fileName){
-        Resource resource = storage.loadFileAsResource(fileName);
+        Resource resource = storageMutator.loadFileAsResource(fileName);
         String contentType = "application/octet-stream";
 
         return ResponseEntity.ok()
@@ -112,15 +116,14 @@ public class FileController {
                 return "{ \"error\": \"File type is not supported\"}";
             }
 
-            String fileNamePath = storage.updateFile(fullFileName, bytes);
+            String fileNamePath = storageMutator.updateFile(fullFileName, bytes);
             if (fileNamePath.isBlank()){
                 throw new IOException("Could not update a file");
             }
 
-            String fileName = fileUtility.getFileNameWithoutExtension(fileNamePath);
-            System.out.println(fileName);
+            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath) + fileExtension;
 
-            return createUserMetadata(uid, fileName+fileExtension);
+            return createUserMetadata(uid, fullFileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -160,11 +163,11 @@ public class FileController {
                     throw new RuntimeException("Input stream is null");
                 }
 
-                storage.createFile(correctedName, stream);
+                storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
                 fileName = correctedName;
             }
 
-            return createUserMetadata(uid, fileName+fileExt);
+            return createUserMetadata(uid, fileName);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,9 +180,10 @@ public class FileController {
         try
         {
             String fullFileName = fileUtility.getFileName(body.getFileName());
-            boolean success = storage.deleteFile(fullFileName);
+            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
 
-            return "{ \"success\": \""+ success +"\"}";
+            return "{ \"success\": \""+ (fileSuccess && historySuccess) +"\"}";
         }
         catch (Exception e)
         {
@@ -188,14 +192,14 @@ public class FileController {
     }
 
     @GetMapping(path = "${url.download}")
-    public ResponseEntity<Resource> download(@RequestParam("fileName") String fileName,
-                                             HttpServletRequest request){
+    public ResponseEntity<Resource> download(HttpServletRequest request,
+                                             @RequestParam("fileName") String fileName){
         try{
             if(jwtManager.tokenEnabled()){
                 String header = request.getHeader(documentJwtHeader == null
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if(header != null && !header.isEmpty()){
-                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    String token = header.replace("Bearer ", "");
                     jwtManager.readToken(token);
                 }
             }
@@ -210,12 +214,15 @@ public class FileController {
                          @RequestParam(value = "sample", required = false) Optional<Boolean> isSample,
                          @CookieValue(value = "uid", required = false) String uid,
                          Model model){
-        Boolean sampleData=(isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
-        if(fileExt!=null){
+        Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
+        if(fileExt != null){
             try{
                 Optional<User> user = userService.findUserById(Integer.parseInt(uid));
-                String uname = user.get().getName();
-                String fileName = documentManager.createDemo(fileExt, sampleData, uid, uname);
+                if (!user.isPresent()) throw new RuntimeException("Could not fine any user with id = "+uid);
+                String fileName = documentManager.createDemo(fileExt, sampleData, uid, user.get().getName());
+                if (fileName.isBlank() || fileName == null) {
+                    throw new RuntimeException("You must have forgotten to add asset files");
+                }
                 return "redirect:editor?fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8);
             }catch (Exception ex){
                 model.addAttribute("error", ex.getMessage());
@@ -228,29 +235,21 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name") String name)
     {
-        String fileName = "assets/sample/" + fileUtility.getFileName(name);
+        String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv()
     {
-        String fileName = "assets/sample/csv.csv";
+        String fileName = Path.of("assets", "sample", "csv.csv").toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/files")
     @ResponseBody
     public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) String fileId){
-        ArrayList<Map<String, Object>> files;
-
-        if(fileId == null){
-            files = documentManager.getFilesInfo();
-        } else {
-            files = documentManager.getFilesInfo(fileId);
-        }
-
-        return files;
+        return fileId == null ? documentManager.getFilesInfo() : documentManager.getFilesInfo(fileId);
     }
 
     @PostMapping(path = "${url.track}")

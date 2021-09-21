@@ -21,7 +21,8 @@ package com.onlyoffice.integration.documentserver.managers.callback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.dto.Action;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
@@ -59,7 +60,9 @@ public class DefaultCallbackManager implements CallbackManager {
     @Autowired
     private FileUtility fileUtility;
     @Autowired
-    private IntegrationStorage storage;
+    private FileStorageMutator storageMutator;
+    @Autowired
+    private FileStoragePathBuilder storagePathBuilder;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -78,7 +81,7 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        storage.createFile(path, stream);
+        storageMutator.createFile(path, stream);
     }
 
     @SneakyThrows
@@ -106,19 +109,19 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        String storagePath = storage.getFileLocation(newFileName);
-        Path histDir = Paths.get(storage.historyDir(storagePath));
-        storage.createDirectory(histDir);
+        String storagePath = storagePathBuilder.getFileLocation(newFileName);
+        Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));
+        storageMutator.createDirectory(histDir);
 
         String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
-                storage.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
+                storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
 
         Path ver = Paths.get(versionDir);
-        Path lastVersion = Paths.get(storage.getFileLocation(fileName));
+        Path lastVersion = Paths.get(storagePathBuilder.getFileLocation(fileName));
         Path toSave = Paths.get(storagePath);
 
-        storage.createDirectory(ver);
-        storage.moveFile(lastVersion,  Paths.get(versionDir + File.separator + "prev" + curExt));
+        storageMutator.createDirectory(ver);
+        storageMutator.moveFile(lastVersion,  Paths.get(versionDir + File.separator + "prev" + curExt));
 
         downloadToFile(downloadUri, toSave);
         downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
@@ -133,11 +136,11 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         if (history != null && !history.isEmpty()) {
-            storage.writeToFile(versionDir + File.separator + "changes.json", history);
+            storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
         }
 
-        storage.writeToFile(versionDir + File.separator + "key.txt", key);
-        storage.deleteFile(storage.getForcesavePath(newFileName, false));
+        storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
+        storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
     }
 
     //TODO: Replace (String method) with (Enum method)
@@ -230,19 +233,19 @@ public class DefaultCallbackManager implements CallbackManager {
             } else {
                 fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt);
             }
-            forcesavePath = storage.getFileLocation(fileName);
+            forcesavePath = storagePathBuilder.getFileLocation(fileName);
             List<Action> actions =  body.getActions();
             Action action = actions.get(0);
             String user = action.getUserid();
-            storage.createMeta(fileName, user, "Filling Form");
+            storageMutator.createMeta(fileName, user, "Filling Form");
         } else {
             if (newFileName){
                 fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
 
-            forcesavePath = storage.getForcesavePath(fileName, false);
+            forcesavePath = storagePathBuilder.getForcesavePath(fileName, false);
             if (forcesavePath.isEmpty()) {
-                forcesavePath = storage.getForcesavePath(fileName, true);
+                forcesavePath = storagePathBuilder.getForcesavePath(fileName, true);
             }
         }
 

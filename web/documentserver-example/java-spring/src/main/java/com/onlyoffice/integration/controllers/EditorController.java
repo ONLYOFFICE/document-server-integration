@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
 import com.onlyoffice.integration.documentserver.models.enums.Language;
@@ -32,6 +32,7 @@ import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.services.configurers.FileConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class EditorController {
     private String docserviceApiUrl;
 
     @Autowired
-    private IntegrationStorage storage;
+    private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
     private JwtManager jwtManager;
@@ -104,30 +105,12 @@ public class EditorController {
                         .build()
         );
 
-        Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", storage.getServerUrl(true) + "/css/img/logo.png");
-
-        Map<String, Object> dataCompareFile = new HashMap<>();
-        dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", storage.getServerUrl(true) + "/assets?name=sample.docx");
-
-        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
-        dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", storage.getServerUrl(true) + "/csv");
-
-        if(jwtManager.tokenEnabled()){
-            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
-            dataCompareFile.put("token", jwtManager.createToken(dataInsertImage));
-            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
-        }
-
         model.addAttribute("model", fileModel);
         model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
         model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);
-        model.addAttribute("dataInsertImage",  objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1));
-        model.addAttribute("dataCompareFile",  objectMapper.writeValueAsString(dataCompareFile));
-        model.addAttribute("dataMailMergeRecipients", objectMapper.writeValueAsString(dataMailMergeRecipients));
+        model.addAttribute("dataInsertImage",  getInsertImage());
+        model.addAttribute("dataCompareFile",  getCompareFile());
+        model.addAttribute("dataMailMergeRecipients", getMailMerge());
         model.addAttribute("usersForMentions", getUserMentions(uid));
         return "editor.html";
     }
@@ -144,5 +127,44 @@ public class EditorController {
         }
 
         return usersForMentions;
+    }
+
+    @SneakyThrows
+    private String getInsertImage() {
+        Map<String, Object> dataInsertImage = new HashMap<>();
+        dataInsertImage.put("fileType", "png");
+        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
+
+        if(jwtManager.tokenEnabled()){
+            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
+        }
+
+        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1);
+    }
+
+    @SneakyThrows
+    private String getCompareFile(){
+        Map<String, Object> dataCompareFile = new HashMap<>();
+        dataCompareFile.put("fileType", "docx");
+        dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
+
+        if(jwtManager.tokenEnabled()){
+            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));
+        }
+
+        return objectMapper.writeValueAsString(dataCompareFile);
+    }
+
+    @SneakyThrows
+    private String getMailMerge(){
+        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
+        dataMailMergeRecipients.put("fileType", "csv");
+        dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
+
+        if(jwtManager.tokenEnabled()){
+            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
+        }
+
+        return objectMapper.writeValueAsString(dataMailMergeRecipients);
     }
 }

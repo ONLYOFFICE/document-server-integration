@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "`user`")
@@ -34,6 +35,8 @@ public class User extends AbstractEntity {
     private Group group;
     @OneToOne
     private Permission permissions;
-    @Column(columnDefinition = "CLOB")
-    private String descriptions;
+//    @Column(columnDefinition = "CLOB")
+    @ElementCollection
+    @CollectionTable(name = "user_descriptions")
+    private List<String> descriptions;
 }

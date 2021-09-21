@@ -18,7 +18,8 @@
 
 package com.onlyoffice.integration.documentserver.managers.document;
 
-import com.onlyoffice.integration.documentserver.storage.IntegrationStorage;
+import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
+import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +43,25 @@ import java.util.*;
 @Primary
 public class DefaultDocumentManager implements DocumentManager {
 
-    @Autowired
-    private IntegrationStorage storage;
-
     @Value("${files.storage.folder}")
     private String storageFolder;
-
-    @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
-    private ServiceConverter serviceConverter;
-
     @Value("${url.track}")
     private String trackUrl;
-
     @Value("${url.download}")
     private String downloadUrl;
 
+    @Autowired
+    private FileStorageMutator storageMutator;
+    @Autowired
+    private FileStoragePathBuilder storagePathBuilder;
+    @Autowired
+    private FileUtility fileUtility;
+    @Autowired
+    private ServiceConverter serviceConverter;
+
     public String getCreateUrl(String fileName, Boolean sample){
         String fileExt = fileName.substring(fileName.length() - 4);
-        String url = storage.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
+        String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
     }
 
@@ -72,12 +71,12 @@ public class DefaultDocumentManager implements DocumentManager {
         String ext = fileUtility.getFileExtension(fileName);
         String name = baseName + ext;
 
-        Path path = Paths.get(storage.getFileLocation(name));
+        Path path = Paths.get(storagePathBuilder.getFileLocation(name));
 
         for (int i = 1; Files.exists(path); i++)
         {
             name = baseName + " (" + i + ")" + ext;
-            path = Paths.get(storage.getFileLocation(name));
+            path = Paths.get(storagePathBuilder.getFileLocation(name));
         }
 
         return name;
@@ -87,8 +86,8 @@ public class DefaultDocumentManager implements DocumentManager {
     {
         try
         {
-            String serverPath = storage.getServerUrl(forDocumentServer);
-            String hostAddress = storage.getStorageLocation();
+            String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);
+            String hostAddress = storagePathBuilder.getStorageLocation();
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
                     : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
 
@@ -104,8 +103,8 @@ public class DefaultDocumentManager implements DocumentManager {
 
     public String getCallback(String fileName)
     {
-        String serverPath = storage.getServerUrl(true);
-        String storageAddress = storage.getStorageLocation();
+        String serverPath = storagePathBuilder.getServerUrl(true);
+        String storageAddress = storagePathBuilder.getStorageLocation();
         try
         {
             String query = trackUrl+"?fileName="+
@@ -120,8 +119,8 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     public String getDownloadUrl(String fileName) {
-        String serverPath = storage.getServerUrl(true);
-        String storageAddress = storage.getStorageLocation();
+        String serverPath = storagePathBuilder.getServerUrl(true);
+        String storageAddress = storagePathBuilder.getStorageLocation();
         try
         {
             String query = downloadUrl+"?fileName="
@@ -140,13 +139,13 @@ public class DefaultDocumentManager implements DocumentManager {
     public ArrayList<Map<String, Object>> getFilesInfo(){
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
-        for(File file : storage.getStoredFiles()){
+        for(File file : storageMutator.getStoredFiles()){
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("version", storage.getFileVersion(file.getName(), false));
+            map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
-                    .generateRevisionId(storage.getStorageLocation() +
+                    .generateRevisionId(storagePathBuilder.getStorageLocation() +
                             "/" + file.getName() + "/"
-                            + Paths.get(storage.getFileLocation(file.getName()))
+                            + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));
             map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0)))
@@ -173,24 +172,26 @@ public class DefaultDocumentManager implements DocumentManager {
         return file;
     }
 
-    public String versionDir(String path, Integer version, boolean historyPath)
-    {
+    public String versionDir(String path, Integer version, boolean historyPath) {
         if (!historyPath){
-            return storage.historyDir(storage.getFileLocation(path)) + version;
+            return storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(path)) + version;
         }
         return path + File.separator + version;
     }
 
-    //TODO: Add samples
     public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
-        String demoName=(sample ?"sample.":"new.")+fileExt;
-        String demoPath="assets" +File.separator+(sample ?"sample.":"new")+File.separator;
-        String fileName=getCorrectName(demoName);
+        String demoName = getCorrectName((sample ?"sample.":"new.") + fileExt);
+        String demoPath = "assets" + File.separator + demoName;
 
-        InputStream stream=Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);
-        storage.createFile(fileName, stream);
-        storage.createMeta(fileName,uid,uname);
+        InputStream stream = Thread.currentThread()
+                                    .getContextClassLoader()
+                                    .getResourceAsStream(demoPath);
 
-        return fileName;
+        if (stream == null) return null;
+
+        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(demoName)), stream);
+        storageMutator.createMeta(demoName, uid, uname);
+
+        return demoName;
     }
 }

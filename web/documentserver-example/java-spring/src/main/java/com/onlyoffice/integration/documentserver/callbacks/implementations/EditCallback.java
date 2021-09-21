@@ -26,8 +26,6 @@ import com.onlyoffice.integration.dto.Track;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class EditCallback implements Callback {
     @Autowired
@@ -35,12 +33,10 @@ public class EditCallback implements Callback {
     @Override
     public int handle(Track body, String fileName) {
         int result = 0;
-        List<Action> actions =  body.getActions();
-        List<String> users =  body.getUsers();
-        Action action =  actions.get(0);
-        if (actions != null && action.getType().equals("0")) { //finished edit
+        Action action =  body.getActions().get(0);
+        if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums.Action.edit)) {
             String user =  action.getUserid();
-            if (users.indexOf(user) == -1) {
+            if (!body.getUsers().contains(user)) {
                 String key = body.getKey();
                 try {
                     callbackManager.commandRequest("forcesave", key);
