@@ -325,9 +325,6 @@
 }
 
 @media (max-width: 769px) {
-	.tooltip {
-		font-size: 10px;
-	}
     .tableRow td:first-child {
         max-width: 100%;
     }

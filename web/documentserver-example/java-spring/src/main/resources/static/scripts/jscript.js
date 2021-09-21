@@ -289,7 +289,16 @@ if (typeof jQuery !== "undefined") {
         });
     });
 
+	var mouseIsOverTooltip = false;
+    var hideTooltipTimeout = null;
     jq(".info").mouseover(function (event) {
+        if (hideTooltipTimeout != null) {
+            clearTimeout(hideTooltipTimeout);
+        }
+        if (document.getElementsByClassName("tooltip").length != 0) {
+            jq("div.tooltip").remove();
+            jq("div.arrow").remove();
+        }
         var target = event.target;
         var id = target.dataset.id ? target.dataset.id : target.id;
         var tooltip = target.dataset.tooltip;
@@ -309,10 +318,25 @@ if (typeof jQuery !== "undefined") {
             var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
         }
 
-        jq("div.tooltip").css({"top": top, "left": left + 10});
+        if (id == "user") {
+            jq("div.tooltip")[0].id = "user-tooltip";
+            jq("div.tooltip").css({"left": left + 10});
+        } else jq("div.tooltip").css({"top": top, "left": left + 10});
         jq("div.arrow").css({"top": topElement + halfHeightElement, "left": left + 6});
-    }).mouseout(function () {
-        jq("div.tooltip").remove();
-        jq("div.arrow").remove();
+
+        jq("div.tooltip").mouseenter(function () {
+            mouseIsOverTooltip = true;
+        }).mouseleave(function () {
+            mouseIsOverTooltip = false;
+            jq("div.tooltip").remove();
+            jq("div.arrow").remove();
+        })
+    }).mouseleave(function () {
+        hideTooltipTimeout = setTimeout(function () {
+            if (mouseIsOverTooltip == false) {
+                jq("div.tooltip").remove();
+                jq("div.arrow").remove();
+            }
+        }, 1500);
     });
 }
