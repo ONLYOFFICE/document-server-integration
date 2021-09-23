@@ -180,8 +180,9 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
-        String demoName = getCorrectName((sample ?"sample.":"new.") + fileExt);
-        String demoPath = "assets" + File.separator + demoName;
+        String demoName = (sample ?"sample.":"new." + fileExt);
+        String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;
+        String fileName = getCorrectName(demoName);
 
         InputStream stream = Thread.currentThread()
                                     .getContextClassLoader()
@@ -189,9 +190,9 @@ public class DefaultDocumentManager implements DocumentManager {
 
         if (stream == null) return null;
 
-        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(demoName)), stream);
-        storageMutator.createMeta(demoName, uid, uname);
+        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
+        storageMutator.createMeta(fileName, uid, uname);
 
-        return demoName;
+        return fileName;
     }
 }

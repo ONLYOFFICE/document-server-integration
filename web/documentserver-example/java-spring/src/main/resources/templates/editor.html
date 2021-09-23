@@ -104,6 +104,10 @@
 
                 var config = [[${model}]];
 
+                if (config.editorConfig.user.name == "Anonymous") {
+                    config.editorConfig.user.name = "";
+                }
+
                 config.width = "100%";
                 config.height = "100%";
                 config.events = {
