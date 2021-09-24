@@ -131,12 +131,14 @@ public class DocumentManager
         File f = new File(storagePath);
 
         if (f.isAbsolute()) {
-            if (!f.isDirectory()) {
-                throw new SecurityException("The path to the file is specified instead of the folder");
-            } else {
-                if (!Files.isWritable(f.toPath())) {
+            if (!f.exists()) {
+                if (Files.isWritable(Paths.get(storagePath.substring(0, storagePath.lastIndexOf(File.separator))))) {
+                    f.mkdirs();
+                } else {
                     throw new SecurityException("No write permission to path: " + f.toPath());
                 }
+            } else if (f.exists() && f.isFile()) {
+                throw new SecurityException("The path to the file is specified instead of the folder");
             }
         }
         String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
@@ -323,14 +325,10 @@ public class DocumentManager
             String hostAddress = CurUserHostAddress(null);
 
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
-            if (f.isAbsolute()) {
-                if (!f.isDirectory()) {
-                    throw new SecurityException("The path to the file is specified instead of the folder");
-                } else {
-                    filePath = GetDownloadUrl(fileName);
-                    if (!Files.isWritable(f.toPath())) {
-                        throw new SecurityException("No write permission to path: " + f.toPath());
-                    }
+            if (f.isAbsolute() && f.isFile()) {
+                filePath = GetDownloadUrl(fileName);
+                if (!Files.isWritable(f.toPath())) {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
                 }
             }
 

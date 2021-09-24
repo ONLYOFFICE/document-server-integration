@@ -35,6 +35,7 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
         <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="css/media.css">
     </head>
     <body>
         <header>

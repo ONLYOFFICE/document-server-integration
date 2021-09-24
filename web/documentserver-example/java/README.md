@@ -24,7 +24,8 @@ files.docservice.url.site=https://documentserver/
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-**storage-folder** is the path where files will created and stored, you can set an absolute path, for example **D:\\folder**. Note, use double backslash instead of single. 
+**storage-folder** is the path where files will created and stored, you can set an absolute path, for example **D:\\\\folder**.
+ Note, use double backslash as separator. 
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\src\main\webapp\editor.jsp* file.
 
@@ -173,7 +174,8 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     ```
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-	**storage-folder** is the path where files will created and stored. Note, you must have read and write permissions to folder. 
+	**storage-folder** is the path where files will created and stored.
+	 Note, you must have read and write permissions to folder. 
 	If not, please, use next command:
 	    ```
         sudo chmod -R ugo+rw /{path}
