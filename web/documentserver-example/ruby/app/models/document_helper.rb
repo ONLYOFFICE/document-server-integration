@@ -70,7 +70,7 @@ class DocumentHelper
 
     # get current user host address
     def cur_user_host_address(user_address)
-      (user_address == nil ? @@remote_ip : user_address).gsub(/[^0-9-.a-zA-Z_=]/, '_');
+      (user_address == nil ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_');
     end
 
     # get the storage path of the given file
