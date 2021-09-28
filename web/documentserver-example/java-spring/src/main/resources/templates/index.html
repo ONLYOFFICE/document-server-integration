@@ -29,11 +29,6 @@
 <body>
     <header>
         <div class="center">
-            <div class="menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
             <a href="">
                 <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
             </a>
@@ -76,8 +71,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" src="css/img/info.svg"
-                                                 th:attr="data-tooltip=${tooltip}"/>
+                                            <img class="info" src="css/img/info.svg"/>
                                             <select class="select-user" id="user">
                                                 <option th:each="user : ${users}"
                                                         th:value="${user.id}"
@@ -87,8 +81,7 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language</span>
-                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="css/img/info.svg" />
+                                            <span class="select-user">Language editors interface</span>
                                             <select class="select-user" id="language">
                                                 <option value="en" selected="selected">English</option>
                                                 <option value="be">Belarusian</option>
@@ -131,13 +124,14 @@
                 </td>
                 <td class="section">
                     <div class="main-panel">
-                        <th:block th:if="${#lists.isEmpty(files)}">
+                        <div id="portal-info" th:attr="tooltip=${tooltip}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
-                                        Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                        <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                                    </span>
-                        </th:block>
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                            <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                        </div>
                         <th:block th:if="${not #lists.isEmpty(files)}">
                             <div class="stored-list">
                                 <span class="header-list">Your documents</span>

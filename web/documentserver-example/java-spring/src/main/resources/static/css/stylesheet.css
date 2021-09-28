@@ -22,6 +22,7 @@ html {
 }
 
 body {
+    display: inline-table;
     background: #FFFFFF;
     color: #333333;
     font-family: Open Sans;
@@ -598,35 +599,6 @@ footer table tr td:first-child {
     margin: -2px 5px;
 }
 
-.tooltip {
-    background: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
-    color: #666666;
-    line-height: 160%;
-    max-width: 60vw;
-    padding: 14px;
-    position: absolute;
-}
-
-#user-tooltip {
-    overflow-y: overlay;
-    height: 86vh;
-    top: 30px;
-}
-
- .tooltip ul{
-     margin: 0;
-}
-
-.arrow{
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #FFFFFF;
-    position: absolute;
-    transform: translate(-50%, -50%);
-}
-
 .user-block-table {
     height: 100%;
     padding-top: 14px;
@@ -718,27 +690,6 @@ footer table tr td:first-child {
     word-wrap: break-word;
 }
 
-.menu {
-    cursor: pointer;
-    display: none;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: space-between;
-    top: 10px;
-    left: 12px;
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 30px;
-}
-
-.menu span {
-    content: "";
-    width: 26px;
-    height: 3px;
-    background: rgb(194, 194, 194);
-}
-
 html {
     overflow-x: hidden;
 }
@@ -778,4 +729,24 @@ html {
 }
 .tableHeaderCellRemove{
     padding-left: 10px;
+}
+
+.user-descr {
+    display: inline-table;
+    width: 30vw;
+    min-width: 200px;
+    max-width: 400px;
+}
+
+.user-descr > b {
+    margin-left: 25px;
+}
+
+#portal-info {
+    display: block;
+    width: 70vw;
+}
+
+.portal-descr:nth-child(3) {
+    margin-bottom: 20px;
 }
