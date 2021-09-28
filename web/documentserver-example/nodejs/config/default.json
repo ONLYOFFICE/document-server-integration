@@ -21,7 +21,7 @@
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
-    "viewedDocs": [".pdf", ".djvu", ".xps"],
+    "viewedDocs": [".pdf", ".djvu", ".xps", ".oxps"],
     "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".txt"],
     "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"],
     "storageFolder": "./files",
