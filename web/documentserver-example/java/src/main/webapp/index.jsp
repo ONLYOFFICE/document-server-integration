@@ -35,15 +35,11 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
         <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="css/media.css">
     </head>
     <body>
         <header>
             <div class="center">
-                <div class="menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
                 <a href="">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
@@ -85,17 +81,7 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                    </br>
-                                                    <% for (User user : Users.getAllUsers()) { %>
-                                                        <b><%= user.name == null ? "Anonymous" : user.name %></b>
-                                                        <ul>
-                                                            <% for (String description : user.descriptions) { %>
-                                                                <li><%= description %></li>
-                                                            <% } %>
-                                                        </ul>
-                                                    <% } %>"
-                                                    src="css/img/info.svg" />
+                                                    <img class="info" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
                                                             <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -105,8 +91,7 @@
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language</span>
-                                                    <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="css/img/info.svg" />
+                                                    <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
                                                         <option value="en">English</option>
                                                         <option value="be">Belarusian</option>
@@ -149,15 +134,27 @@
                         </td>
                         <td class="section">
                             <div class="main-panel">
-                                <% DocumentManager.Init(request, response); %>
-                                <% File[] files = DocumentManager.GetStoredFiles(null); %>
-                                <% if (files.length <= 0) { %>
+                                <div id="portal-info">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
-                                <% } else { %>
+                                    <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                    <% for (User user : Users.getAllUsers()) { %>
+                                        <div class="user-descr">
+                                            <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                            <ul>
+                                                <% for (String description : user.descriptions) { %>
+                                                <li><%= description %></li>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <% DocumentManager.Init(request, response); %>
+                                <% File[] files = DocumentManager.GetStoredFiles(null); %>
+                                <% if (files.length > 0)  { %>
                                     <div class="stored-list">
                                        <span class="header-list">Your documents</span>
                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
