@@ -106,6 +106,7 @@ app.get("/", function (req, res) {  // define a handler for default page
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
+            serverUrl: docManager.getServerUrl(),
         });
 
     }

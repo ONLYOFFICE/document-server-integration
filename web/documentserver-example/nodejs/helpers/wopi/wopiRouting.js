@@ -52,6 +52,7 @@ exports.registerRoutes = function(app) {
                 storedFiles: files,
                 params: docManager.getCustomParams(),
                 users: users,
+                serverUrl: docManager.getServerUrl(),
             });
 
         } catch (ex) {
@@ -68,7 +69,7 @@ exports.registerRoutes = function(app) {
 
         if (fileExt != null) {  // if the file extension exists
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, user.id, user.name);  // create demo document of the given extension
-            var redirectPath = docManager.getServerUrl() + req._parsedOriginalUrl.pathname.replace("/wopi-new", "") + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
+            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;
         }
@@ -83,7 +84,7 @@ exports.registerRoutes = function(app) {
 
             // render wopiAction template with the parameters specified
             res.render("wopiAction", {
-                actionUrl: utils.getActionUrl(docManager.getServerUrl() + req._parsedOriginalUrl.pathname.split("/wopi-action")[0], docManager.curUserHostAddress(), action, req.params['id']),
+                actionUrl: utils.getActionUrl(docManager.getServerUrl(true), docManager.curUserHostAddress(), action, req.params['id']),
                 token: "test",
                 tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
                 params: docManager.getCustomParams(),
