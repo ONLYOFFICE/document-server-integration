@@ -48,7 +48,7 @@
 
     .left-panel {
         margin-left: 48px;
-        width: 95%;
+        width: 20%;
     }
 }
 
@@ -87,9 +87,12 @@
 }
 
 @media (max-width: 1008px) {
+    #portal-info {
+        width: 65vw;
+    }
+
     .left-panel {
         margin-left: 0;
-        width: 94%;
     }
 
     .main-panel {
@@ -123,10 +126,6 @@
 
     footer {
         height: 80px;
-    }
-
-    .left-panel {
-        width: 90%;
     }
 
     .main-panel {
@@ -333,6 +332,9 @@
 
 
 @media (max-width: 593px ) {
+    #portal-info {
+        width: 50vw;
+    }
     .file-upload{
         width: 100%;
     }
@@ -345,15 +347,6 @@
 
     .scroll-table-body {
         top: 31px;
-    }
-
-    .menu {
-        display: flex;
-    }
-
-    header .center > a {
-        position: absolute;
-        left: 30px;
     }
 
     footer table tr {
