@@ -83,19 +83,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                </br>
-                                                <% foreach (User user in Users.getAllUsers())
-                                                   { %>
-                                                       <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
-                                                       <ul>
-                                                       <% foreach (string description in user.descriptions)
-                                                          { %>
-                                                              <li><%= description %></li>
-                                                       <% } %>
-                                                       </ul>
-                                                <% } %>"
-                                                src="app_themes/images/info.svg" />
+                                                <img class="info" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% foreach (User user in Users.getAllUsers())
                                                        { %>
@@ -106,8 +94,7 @@
                                         </tr>
                                         <tr>
                                             <td valign="middle">
-                                                <span class="select-user">Language</span>
-                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="app_themes/images/info.svg" />
+                                                <span class="select-user">Language editors interface</span>
                                                 <select class="select-user" id="language">
                                                     <option value="en">English</option>
                                                     <option value="be">Belarusian</option>
@@ -149,16 +136,28 @@
                         </td>
                         <td class="section">
                             <div class="main-panel">
-                            <%  var storedFiles = GetStoredFiles();
-                                if (!storedFiles.Any())
-                                { %>
+                                <div id="portal-info">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
-                            <%  }
-                                else
+                                    <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                    <% foreach (User user in Users.getAllUsers())
+                                      { %>
+                                      <div class="user-descr">
+                                       <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                           <ul>
+                                           <% foreach (string description in user.descriptions)
+                                                   { %>
+                                                       <li><%= description %></li>
+                                                <% } %>
+                                           </ul>
+                                       </div>
+                                       <% } %>
+                                </div>
+                            <%  var storedFiles = GetStoredFiles();
+                                if storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
                                         <span class="header-list">Your documents</span>
