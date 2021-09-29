@@ -57,17 +57,7 @@
                   <tr>
                     <td valign="middle">
                       <span class="select-user">Username</span>
-                      <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                      </br>
-                      <% for user in Users.get_all_users() do %>
-                        <b><%= user.name ? user.name : "Anonymous" %></b>
-                        <ul>
-                          <% for description in user.descriptions do %>
-                            <li><%= description %></li>
-                          <% end %>
-                        </ul>
-                      <% end %>"
-                      src="assets/info.svg" />
+                      <img class="info" data-id="user" src="assets/info.svg" />
                       <select class="select-user" id="user">
                         <% for user in Users.get_all_users() do %>
                           <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
@@ -77,8 +67,7 @@
                   </tr>
                   <tr>
                     <td valign="middle">
-                      <span class="select-user">Language</span>
-                      <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="assets/info.svg" />
+                      <span class="select-user">Language editors interface</span>
                       <select class="select-user" id="language">
                         <option value="en">English</option>
                         <option value="be">Belarusian</option>
@@ -121,17 +110,28 @@
         </td>
         <td class="section">
           <div class="main-panel">
-          <% 
-            DocumentHelper.init(request.remote_ip, request.base_url)
-            docs = DocumentHelper.get_stored_files(nil)
-            if docs.length <= 0 %>
+            <div id="portal-info">
               <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
               <span class="portal-descr">
                 Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                 <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
               </span>
-          <%
-            else %>
+              <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+              <% for user in Users.get_all_users() do %>
+                <div class="user-descr">
+                  <b><%= user.name ? user.name : "Anonymous" %></b>
+                  <ul>
+                    <% for description in user.descriptions do %>
+                      <li><%= description %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>"
+            </div>
+          <% 
+            DocumentHelper.init(request.remote_ip, request.base_url)
+            docs = DocumentHelper.get_stored_files(nil)
+            if docs.length > 0 %>
               <div class="stored-list">
                 <span class="header-list">Your documents</span>
                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">

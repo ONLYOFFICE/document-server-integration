@@ -32,11 +32,6 @@
 <body>
     <header>
         <div class="center">
-            <div class="menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
             <a href="">
                 <img src ="images/logo.svg" alt="ONLYOFFICE" />
             </a>
@@ -78,17 +73,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                </br>
-                                                <% users.forEach(user => { %>
-                                                    <b><%= user.name == null ? 'Anonymous' : user.name %></b>
-                                                    <ul>
-                                                        <% user.descriptions.forEach(description => { %>
-                                                            <li><%= description %></li>
-                                                        <% }) %>
-                                                    </ul>
-                                                <% }) %>"
-                                                src="images/info.svg" />
+                                                <img class="info" src="images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -98,8 +83,7 @@
                                         </tr>
                                         <tr>
                                             <td valign="middle">
-                                                <span class="select-user">Language</span>
-                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
+                                                <span class="select-user">Language editors interface</span>
                                                 <select class="select-user" id="language">
                                                     <option value="en">English</option>
                                                     <option value="be">Belarusian</option>
@@ -146,19 +130,30 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                            <% if (storedFiles.length <= 0)
-                            { %>
-                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-                            <span class="portal-descr">
-                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                            </span>
-                            <%} else
-                            { %>
-                            <div class="stored-list">
-                                <span class="header-list">Your documents</span>
-                                <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                    <thead>
+                            <div id="portal-info">
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                                <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                <% users.forEach(user => { %>
+                                    <div class="user-descr">
+                                        <b><%= user.name == null ? 'Anonymous' : user.name %></b>
+                                        <ul>
+                                            <% user.descriptions.forEach(description => { %>
+                                                <li><%= description %></li>
+                                            <% }) %>
+                                        </ul>
+                                    </div>
+                                <% }) %>
+                            </div>
+                            <%if (storedFiles.length > 0)
+                                {%>
+                                <div class="stored-list">
+                                    <span class="header-list">Your documents</span>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
                                         <tr>
                                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
                                             <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
@@ -166,11 +161,11 @@
                                             <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
                                             <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
                                         </tr>
-                                    </thead>
-                                </table>
-                                <div class="scroll-table-body">
-                                    <table cellspacing="0" cellpadding="0" width="100%">
-                                        <tbody>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
                                             <% for (var i = 0; i < storedFiles.length; i++) { %>
                                                 <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                     <td class="contentCells">
@@ -249,10 +244,10 @@
                                                     </td>
                                                 </tr>
                                             <% } %>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
                             <% } %>
                         </div>
                     </td>
