@@ -78,17 +78,17 @@ descr_user_0 = [
 ]
 
 USERS = [
-    User('uid-1', 'John Smith', 'smith@mail.ru',
+    User('uid-1', 'John Smith', 'smith@email.com',
         None, None, {},
         None, [], descr_user_1, True),
-    User('uid-2', 'Mark Pottato', 'pottato@mail.ru',
+    User('uid-2', 'Mark Pottato', 'pottato@email.com',
         'group-2', ['group-2', ''], {
             'view': "",
             'edit': ["group-2", ""],
             'remove': ["group-2"]
         },
         True, [], descr_user_2, False),
-    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru',
+    User('uid-3', 'Hamish Mitchell', 'mitchell@email.com',
         'group-3', ['group-2'], {
             'view': ["group-3", "group-2"],
             'edit': ["group-2"],

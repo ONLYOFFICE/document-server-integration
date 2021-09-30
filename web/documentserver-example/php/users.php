@@ -72,17 +72,17 @@ $descr_user_0 = [
 ];
 
 $users = [
-    new User("uid-1", "John Smith", "smith@mial.ru",
+    new User("uid-1", "John Smith", "smith@email.com",
             null, null, [],
             null, [], $descr_user_1, true),
-    new User("uid-2", "Mark Pottato", "pottato@mial.ru",
+    new User("uid-2", "Mark Pottato", "pottato@email.com",
             "group-2", ["group-2", ""], [
                 "view" => "",
                 "edit" => ["group-2", ""],
                 "remove" => ["group-2"]
             ],
             true, [], $descr_user_2, false),
-    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru",
+    new User("uid-3", "Hamish Mitchell", "mitchell@email.com",
             "group-3", ["group-2"], [
                 "view" => ["group-3", "group-2"],
                 "edit" => ["group-2"],
