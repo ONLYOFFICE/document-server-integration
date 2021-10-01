@@ -10,6 +10,8 @@
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
     <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
+    <NameSpring>$(To)Java Spring Example</NameSpring>
+    <DirSpring>$(RootDir)web\documentserver-example\java-spring\</DirSpring>
     <NameNodeJS>$(To)Node.js Example</NameNodeJS>
     <DirNodeJS>$(RootDir)web\documentserver-example\nodejs\</DirNodeJS>
     <NamePHP>$(To)PHP Example</NamePHP>
@@ -40,6 +42,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesJava)" DestinationFiles="@(ZipFilesJava->'$(NameJava)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameJava)" WorkingDirectory="$(To)" ZipFileName="$(NameJava).zip" />
+
+    <ItemGroup>
+      <ZipFilesSpring Include="$(DirSpring)**" Exclude="$(DirSpring)**\.git" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ZipFilesSpring)" DestinationFiles="@(ZipFilesSpring->'$(NameSpring)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameSpring)" WorkingDirectory="$(To)" ZipFileName="$(NameSpring).zip" />
 
     <ItemGroup>
       <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**;$(DirNodeJS)**\.git" />
