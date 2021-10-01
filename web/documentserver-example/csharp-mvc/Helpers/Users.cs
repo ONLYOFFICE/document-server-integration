@@ -69,7 +69,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-1",
                     "John Smith",
-                    "smith@mail.ru",
+                    "smith@email.com",
                     null,
                     null,
                     new Dictionary<string, object>(),
@@ -81,7 +81,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-2",
                     "Mark Pottato",
-                    "pottato@mail.ru",
+                    "pottato@email.com",
                     "group-2",
                     new List<string>() { "group-2", "" },
                     new Dictionary<string, object>()
@@ -98,7 +98,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-3",
                     "Hamish Mitchell",
-                    "mitchell@mail.ru",
+                    "mitchell@email.com",
                     "group-3",
                     new List<string>() { "group-2" },
                     new Dictionary<string,object>()
