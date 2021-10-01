@@ -67,15 +67,15 @@ public class ExampleData {
                 "He can’t print the file",
                 "Can create a file from an editor"
         );
-        userService.createUser("John Smith", "smith@email.com",
+        userService.createUser("John Smith", "smith@example.com",
                 description_user_1, null, List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()));
-        userService.createUser("Mark Pottato", "pottato@email.com",
+        userService.createUser("Mark Pottato", "pottato@example.com",
                 description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"));
-        userService.createUser("Hamish Mitchell", "mitchell@email.com",
+        userService.createUser("Hamish Mitchell", "mitchell@example.com",
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
                 List.of("group-2"), new ArrayList<>());
         userService.createUser("Anonymous",null,

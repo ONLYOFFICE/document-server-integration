@@ -68,7 +68,7 @@ namespace OnlineEditorsExample
             new User(
                     "uid-1",
                     "John Smith",
-                    "smith@email.com",
+                    "smith@example.com",
                     null,
                     null,
                     new Dictionary<string, object>(),
@@ -80,7 +80,7 @@ namespace OnlineEditorsExample
             new User(
                     "uid-2",
                     "Mark Pottato",
-                    "pottato@email.com",
+                    "pottato@example.com",
                     "group-2",
                     new List<string>() { "group-2", "" },
                     new Dictionary<string, object>()
@@ -97,7 +97,7 @@ namespace OnlineEditorsExample
             new User(
                     "uid-3",
                     "Hamish Mitchell",
-                    "mitchell@email.com",
+                    "mitchell@example.com",
                     "group-3",
                     new List<string>() { "group-2" },
                     new Dictionary<string,object>()

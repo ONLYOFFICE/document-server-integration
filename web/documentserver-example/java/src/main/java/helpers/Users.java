@@ -63,13 +63,13 @@ public class Users {
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@email.com",
+        add(new User("uid-1", "John Smith", "smith@example.com",
                 null, null, new CommentGroups(),
                 null, new ArrayList<String>(), descr_user_1, true));
-        add(new User("uid-2", "Mark Pottato", "pottato@email.com",
+        add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
                 true, new ArrayList<String>(), descr_user_2, false));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@email.com",
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
                 false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
         add(new User("uid-0", null, null,
