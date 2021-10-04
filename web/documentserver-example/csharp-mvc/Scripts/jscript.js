@@ -332,4 +332,3 @@ if (typeof jQuery != "undefined") {
         });
     }
 }
-}

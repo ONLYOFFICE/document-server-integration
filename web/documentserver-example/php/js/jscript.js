@@ -363,7 +363,6 @@ if (typeof jQuery != "undefined") {
         });
     }
 }
-}
 
 function getUrlVars() {
     var vars = [], hash;

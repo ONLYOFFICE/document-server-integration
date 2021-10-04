@@ -331,4 +331,3 @@ if (typeof jQuery != "undefined") {
         });
     }
 }
-}

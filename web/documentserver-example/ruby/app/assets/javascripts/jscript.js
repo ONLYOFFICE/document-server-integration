@@ -329,4 +329,3 @@ if (typeof jQuery != "undefined") {
         });
     }
 }
-}

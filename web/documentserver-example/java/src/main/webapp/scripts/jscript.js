@@ -330,4 +330,3 @@ if (typeof jQuery !== "undefined") {
         });
     }
 }
-}

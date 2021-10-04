@@ -337,4 +337,3 @@ if (typeof jQuery !== "undefined") {
         });
     }
 }
-}
