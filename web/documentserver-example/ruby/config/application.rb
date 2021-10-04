@@ -26,6 +26,8 @@ module OnlineEditorsExampleRuby
       end
     end
 
+    Rails.configuration.version="0.0.0"
+
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
