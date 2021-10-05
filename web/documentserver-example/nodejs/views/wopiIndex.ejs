@@ -178,7 +178,7 @@
                                                 <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                     <td class="contentCells">
                                                         <% if (storedFiles[i].defaultAction) { %>
-                                                        <a class="stored-edit <%= storedFiles[i].documentType %>" href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>">
+                                                        <a class="stored-edit <%= storedFiles[i].documentType %>" href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>" target="_blank">
                                                             <%} else { %>
                                                             <a class="stored-edit <%= storedFiles[i].documentType %>" href="#">
                                                                 <% } %>
