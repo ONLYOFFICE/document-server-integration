@@ -23,6 +23,7 @@ const docManager = require("../docManager");
 const fileUtility = require("../fileUtility");
 const config = require('config');
 const configServer = config.get('server');
+const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 const storageFolder = configServer.get("storageFolder");
 const users = require("../users");
 
@@ -31,13 +32,24 @@ exports.registerRoutes = function(app) {
     // define a handler for the default wopi page
     app.get("/wopi", function(req, res) {
 
+        docManager.init(storageFolder, req, res);
+
+        let absSiteUrl = siteUrl;
+        if (absSiteUrl.indexOf("/") === 0) {
+            let host = req.get("host");
+            let pos = host.indexOf("/", "https://".length);
+            if (pos > -1)
+            {
+                host = host.substring(0, pos);
+            }
+            absSiteUrl = docManager.getProtocol() + "://" + host + siteUrl;
+        }
+
         // get the wopi discovery information
-        let actions = utils.getDiscoveryInfo(3);
+        let actions = utils.getDiscoveryInfo(absSiteUrl, 3);
         let wopiEnable = actions.length != 0 ? true : false;
 
         try {
-            docManager.init(storageFolder, req, res);
-
             // get all the stored files
             let files = docManager.getStoredFiles();
 
