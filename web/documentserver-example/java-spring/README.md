@@ -19,7 +19,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 Download the [Java-Spring example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation, server address and port in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation, server address and port in the *\src\main\resources\application.properties* file:
 
 ```
  server.address=address
@@ -164,10 +164,10 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     ```
     cd document-server-integration/web/documentserver-example/java-spring
     ```
-4. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+4. Edit the *application.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
     ```
-    nano src/main/resources/settings.properties
+    nano src/main/resources/application.properties
     ```
 
 	Edit the following lines:
@@ -213,10 +213,10 @@ Make sure that the Document Server has access to the server with the example ins
 
 ##  For Docker
 
-1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed ([installation instructions](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx)).
+1. Edit the *application.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed ([installation instructions](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx)).
 
 	```
-	nano src/main/resources/settings.properties
+	nano src/main/resources/application.properties
 	```
 	
 2. Edit the following lines:
