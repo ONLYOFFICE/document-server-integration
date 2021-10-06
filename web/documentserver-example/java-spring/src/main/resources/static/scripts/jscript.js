@@ -302,9 +302,6 @@ if (typeof jQuery !== "undefined") {
     jq("#portal-info")[0].innerHTML += jq("#portal-info")[0].attributes.tooltip.value;
 
     var fileList = jq("tr.tableRow");
-    if (fileList.length > 0) {
-        jq("div#portal-info").hide();
-    }
 
     var mouseIsOverTooltip = false;
     var hideTooltipTimeout = null;

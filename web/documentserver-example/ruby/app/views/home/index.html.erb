@@ -109,8 +109,12 @@
           </div>
         </td>
         <td class="section">
+          <%
+            DocumentHelper.init(request.remote_ip, request.base_url)
+            docs = DocumentHelper.get_stored_files(nil)
+          %>
           <div class="main-panel">
-            <div id="portal-info">
+            <div id="portal-info" style="display: <%= docs.length > 0 ? "none" : "block" %>">
               <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
               <span class="portal-descr">
                 Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -128,10 +132,7 @@
                 </div>
               <% end %>"
             </div>
-          <% 
-            DocumentHelper.init(request.remote_ip, request.base_url)
-            docs = DocumentHelper.get_stored_files(nil)
-            if docs.length > 0 %>
+          <% if docs.length > 0 %>
               <div class="stored-list">
                 <span class="header-list">Your documents</span>
                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
