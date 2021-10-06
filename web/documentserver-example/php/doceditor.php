@@ -66,7 +66,7 @@
     $createUrl = getCreateUrl($filename, $user->id, $type);
     $templates = array(
         array (
-            "image" => $templatesImageUrl,
+            "image" => "",
             "title" => "Blank",
             "url" => $createUrl
         ),
@@ -191,6 +191,7 @@
                     . "&userAddress=" . getClientIp();
     }
 
+    // get url to the created file
     function getCreateUrl($fileName, $uid, $type) {
         $ext = trim(getInternalExtension($fileName),'.');
         return serverPath(false) . '/'
@@ -200,6 +201,7 @@
                 . "&type=" . $type;
     }
 
+    // get url to download a file
     function getDownloadUrl($fileName) {
         return serverPath(TRUE) . '/'
             . "webeditor-ajax.php"
@@ -464,10 +466,11 @@
             <?php if ($usersForMentions != null): ?>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({
+                docEditor.setUsers({  // set a list of users to mention in the comments
                     "users": <?php echo json_encode($usersForMentions) ?>
                 });
             };
+            // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
                 var actionLink = JSON.stringify(event.data.actionLink);
                 console.log("onRequestSendNotify:");

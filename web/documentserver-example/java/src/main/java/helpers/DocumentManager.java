@@ -199,7 +199,7 @@ public class DocumentManager
     {
         File dir = new File(historyPath);
 
-        if (!dir.exists()) return 0;  // if the history path doesn't exist, then the file version is 0
+        if (!dir.exists()) return 1;  // if the history path doesn't exist, then the file version is 1
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override
@@ -390,6 +390,7 @@ public class DocumentManager
         }
     }
 
+    // get url to the created file
     public static String GetCreateUrl (FileType fileType) {
         String serverPath = GetServerUrl(false);
         String fileExt = GetInternalExtension(fileType).replace(".", "");
@@ -398,6 +399,7 @@ public class DocumentManager
         return serverPath + "/EditorServlet" + query;
     }
 
+    // get url to download a file
     public static String GetDownloadUrl(String fileName) {
         String serverPath = GetServerUrl(true);
         String hostAddress = CurUserHostAddress(null);

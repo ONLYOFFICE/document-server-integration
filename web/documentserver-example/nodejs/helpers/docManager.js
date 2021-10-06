@@ -160,7 +160,7 @@ docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
 
 // get server url
 docManager.getServerUrl = function (forDocumentServer) {
-    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host"));
+    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host") + docManager.req.baseUrl);
 };
 
 // get callback url
@@ -172,6 +172,7 @@ docManager.getCallback = function (fileName) {
     return server + handler;
 };
 
+// get url to the created file
 docManager.getCreateUrl = function (docType, userid, type, lang) {
     const server = docManager.getServerUrl();
     var ext = docManager.getInternalExtension(docType).replace(".", "");
@@ -180,6 +181,7 @@ docManager.getCreateUrl = function (docType, userid, type, lang) {
     return server + handler;
 }
 
+// get url to download a file
 docManager.getDownloadUrl = function (fileName) {
     const server = docManager.getServerUrl(true);
     const hostAddress = docManager.curUserHostAddress();
@@ -258,7 +260,7 @@ docManager.changesUser = function (fileName, userAddress, version) {
     return path.join(docManager.versionPath(fileName, userAddress, version), "user.txt");
 };
 
-// get all the stored files from the folder
+// get all the stored files
 docManager.getStoredFiles = function () {
     const userAddress = docManager.curUserHostAddress();
     const directory = path.join(docManager.dir, userAddress);
@@ -270,7 +272,7 @@ docManager.getStoredFiles = function () {
 
         if (!stats.isDirectory()) {  // if the element isn't a directory
             let historyPath = docManager.historyPath(storedFiles[i], userAddress);  // get the path to the file history
-            let version = 1;
+            let version = 0;
             if (historyPath != "") {  // if the history path exists
                 version = docManager.countVersion(historyPath);  // get the last file version
             }
@@ -281,7 +283,7 @@ docManager.getStoredFiles = function () {
                 name: storedFiles[i],
                 documentType: fileUtility.getFileType(storedFiles[i]),
                 canEdit: configServer.get("editedDocs").indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
-                version: version
+                version: version+1
             };
 
             if (!result.length) {  // if the result array is empty
@@ -318,6 +320,7 @@ docManager.copyFile = function (exist, target) {
     fileSystem.writeFileSync(target, fileSystem.readFileSync(exist));
 };
 
+// get an internal extension
 docManager.getInternalExtension = function (fileType) {
     if (fileType == fileUtility.fileType.word)  // .docx for word type
         return ".docx";
@@ -331,6 +334,7 @@ docManager.getInternalExtension = function (fileType) {
     return ".docx";  // the default value is .docx
 };
 
+// get the template image url
 docManager.getTemplateImageUrl = function (fileType) {
     let path = docManager.getServerUrl(true);
     if (fileType == fileUtility.fileType.word)  // for word type

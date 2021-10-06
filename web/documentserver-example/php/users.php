@@ -72,17 +72,17 @@ $descr_user_0 = [
 ];
 
 $users = [
-    new User("uid-1", "John Smith", "smith@mial.ru",
+    new User("uid-1", "John Smith", "smith@example.com",
             null, null, [],
             null, [], $descr_user_1, true),
-    new User("uid-2", "Mark Pottato", "pottato@mial.ru",
+    new User("uid-2", "Mark Pottato", "pottato@example.com",
             "group-2", ["group-2", ""], [
                 "view" => "",
                 "edit" => ["group-2", ""],
                 "remove" => ["group-2"]
             ],
             true, [], $descr_user_2, false),
-    new User("uid-3", "Hamish Mitchell", "mitchell@mial.ru",
+    new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
             "group-3", ["group-2"], [
                 "view" => ["group-3", "group-2"],
                 "edit" => ["group-2"],
@@ -94,11 +94,13 @@ $users = [
             null, [], $descr_user_0, false)
 ];
 
+// get a list of all the users
 function getAllUsers() {
     global $users;
     return $users;
 }
 
+// get a user by id specified
 function getUser($id) {
     global $users;
     foreach ($users as $user){
@@ -110,6 +112,7 @@ function getUser($id) {
     return $users[0];
 }
 
+// get a list of users with their names and emails for mentions
 function getUsersForMentions($id) {
     global $users;
     $usersData = [];

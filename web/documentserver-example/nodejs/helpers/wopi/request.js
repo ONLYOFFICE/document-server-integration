@@ -16,6 +16,7 @@
  *
  */
 
+// request types
 const requestType = Object.freeze({
     "None": 0,
 
@@ -46,6 +47,7 @@ const requestType = Object.freeze({
     "PutUserInfo": 18,
 });
 
+// request headers
 const requestHeaders = Object.freeze({
     "RequestType": "X-WOPI-Override",
     "ItemVersion": "X-WOPI-ItemVersion",

@@ -70,7 +70,7 @@ class DocumentHelper
 
     # get current user host address
     def cur_user_host_address(user_address)
-      (user_address == nil ? @@remote_ip : user_address).gsub(/[^0-9-.a-zA-Z_=]/, '_');
+      (user_address == nil ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_');
     end
 
     # get the storage path of the given file
@@ -134,7 +134,7 @@ class DocumentHelper
     # get the last file version
     def get_file_version(hist_dir)
       if !Dir.exist?(hist_dir)
-        return 0
+        return 1
       end
 
       ver = 1
@@ -247,12 +247,14 @@ class DocumentHelper
 
     end
 
+    # get url to the created file
     def get_create_url(document_type)
 
       get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
 
     end
 
+    # get url to download a file
     def get_download_url(file_name)
 
       get_server_url(true) + '/download?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)

@@ -10,7 +10,7 @@ It is aimed at testing the editors. Please, do not use it for production without
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
+See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
 
 ### Step 2. Download the Java code for the editors integration
 
@@ -24,14 +24,14 @@ files.docservice.url.site=https://documentserver/
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\webapp\editor.jsp* file.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\src\main\webapp\editor.jsp* file.
 
 ### Step 3. Install the prerequisites
 
 To run the Java example code, install the Java version appropriate for your OS and web server **Apache Tomcat**:
 
-* Java (download from [the Oracle official website](https://www.java.com/en/download/manual.jsp));
-* Apache Tomcat (download from [the official website](http://tomcat.apache.org/)).
+* **Java** (download from [the Oracle official website](https://www.java.com/en/download/manual.jsp));
+* **Apache Tomcat** (download from [the official website](http://tomcat.apache.org/)).
 
 ### Step 4. Run Apache Tomcat
 
@@ -43,9 +43,9 @@ To run the Java example code, install the Java version appropriate for your OS a
 	C:\Program Files\Java\jdk1.8.0_65
 	```
 
-	In **Windows 7** right click **My Computer** and select **Properties**, then click **Advanced**.
+	In **Windows 7**, right click **My Computer** and select **Properties**, then click **Advanced**.
 
-	In **Windows 8** go to **Control Panel** -> **System** -> **Advanced System Settings**.
+	In **Windows 8**, go to **Control Panel** and select **System**, then click **Advanced System Settings**.
 
 	Click the **Environment Variables** button.
 
@@ -53,7 +53,7 @@ To run the Java example code, install the Java version appropriate for your OS a
 
 	In the **Variable Name** field, enter **JAVA_HOME** if you installed the **JDK** (Java Development Kit) or **JRE_HOME** if you installed the **JRE** (Java Runtime Environment).
 
-	In the **Variable Value** field, enter your **JDK** or **JRE** installation path, for example C:\Program Files\Java\jdk1.8.0_65.
+	In the **Variable Value** field, enter your **JDK** or **JRE** installation path, for example *C:\Program Files\Java\jdk1.8.0_65*.
 
 	![make-var](screenshots/make-var.png)
 
@@ -94,6 +94,7 @@ To run the Java example code, install the Java version appropriate for your OS a
 	![manager](screenshots/manager.jpg)
 
 2. Tomcat Web Application Manager will request the **username** and the **password:**
+
 	![author](screenshots/author.jpg)
    
 
@@ -106,11 +107,14 @@ To run the Java example code, install the Java version appropriate for your OS a
 	</tomcat-users>
 	```
 
-3. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the **.war** file in the Java project folder, then click **Deploy**.
+3. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the *.war* file in the Java project folder, then click **Deploy**.
+
 	![upload-app](screenshots/upload-app.jpg)
+
 	![war-file](screenshots/war-file.jpg) 
 
 4. You will see the project in the **Application List**:
+	
 	![manager-app](screenshots/manager-app.jpg) 
    
 5. Click the link with the application name to run it.
@@ -127,7 +131,7 @@ Make sure that the Document Server has access to the server with the example ins
 
 Download and install ONLYOFFICE Docs (packaged as Document Server). 
 
-See the detailed guide to learn how to install Document Server [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx). 
+See the detailed guide to learn how to [install Document Server for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx). 
 
 ### Step 2. Install the prerequisites and run the website with the editors
 
@@ -159,13 +163,13 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     nano src/main/resources/settings.properties
     ```
 
-	Edit the following lines:
+	Edit the following line:
 
     ```
     files.docservice.url.site=https://documentserver/
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
 5. Install **Maven**:
 
@@ -191,22 +195,22 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     sudo nano /var/lib/tomcat8/conf/tomcat-users.xml
     ```
 
-   Insert the line:
+   Insert the lines:
 
     ```
     <role rolename="manager-gui"/>
     <user username="USERNAME" password="PASSWORD" roles="manager-gui"/>
     ```
 
-	Where the **USERNAME** and **PASSWORD** are your own credentials data.
+	where the **USERNAME** and **PASSWORD** are your own credentials data.
 
-	Restart tomcat:
+	Restart Tomcat:
 
 	```
 	systemctl restart tomcat8
 	```
 
-9. Open the tomcat administration page in browser with the admin user credentions:
+9. Open the Tomcat administration page in browser with the admin user credentions:
 
     ```
     http://localhost:8080/manager/html
@@ -234,15 +238,15 @@ Make sure that the Document Server has access to the server with the example ins
 	nano src/main/resources/settings.properties
 	```
 	
-2. Edit the following lines:
+2. Edit the following line:
 
 	```
 	files.docservice.url.site=https://documentserver/
 	```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
-3. Run the next command in the java example directory:
+3. Run the next command in the Java example directory:
 
 	```
 	docker-compose up

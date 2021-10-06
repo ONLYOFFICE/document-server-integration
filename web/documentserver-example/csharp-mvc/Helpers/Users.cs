@@ -69,7 +69,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-1",
                     "John Smith",
-                    "smith@mail.ru",
+                    "smith@example.com",
                     null,
                     null,
                     new Dictionary<string, object>(),
@@ -81,7 +81,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-2",
                     "Mark Pottato",
-                    "pottato@mail.ru",
+                    "pottato@example.com",
                     "group-2",
                     new List<string>() { "group-2", "" },
                     new Dictionary<string, object>()
@@ -98,7 +98,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-3",
                     "Hamish Mitchell",
-                    "mitchell@mail.ru",
+                    "mitchell@example.com",
                     "group-3",
                     new List<string>() { "group-2" },
                     new Dictionary<string,object>()
@@ -126,6 +126,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 )
         };
 
+        // get a user by id specified
         public static User getUser(string id)
         {
             foreach(User user in users)
@@ -135,11 +136,13 @@ namespace OnlineEditorsExampleMVC.Helpers
             return users[0];
         }
 
+        // get a list of all the users
         public static List<User> getAllUsers()
         {
             return users;
         }
 
+        // get a list of users with their names and emails for mentions
         public static List<Dictionary<string, object>> getUsersForMentions(string id)
         {
             List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();

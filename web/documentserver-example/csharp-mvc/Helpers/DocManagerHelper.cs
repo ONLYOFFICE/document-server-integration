@@ -106,6 +106,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
+            // get the path to the given file
             directory = directory + Path.GetFileName(fileName);
             if (!File.Exists(directory))
             {
@@ -139,7 +140,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the file version by the history path
         public static int GetFileVersion(string historyPath)
         {
-            if (!Directory.Exists(historyPath)) return 0;  // if the history path doesn't exist, then the file version is 0
+            if (!Directory.Exists(historyPath)) return 1;  // if the history path doesn't exist, then the file version is 1
             return Directory.EnumerateDirectories(historyPath).Count() + 1;  // take only directories from the history folder and count them
         }
 
@@ -264,6 +265,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             return callbackUrl.ToString();
         }
 
+        // get url to the created file
         public static string GetCreateUrl(FileUtility.FileType fileType)
         {
             var createUrl = new UriBuilder(GetServerUrl(false))
@@ -277,6 +279,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             return createUrl.ToString();
         }
 
+        // get url to download a file
         public static string GetDownloadUrl(string fileName)
         {
             var downloadUrl = new UriBuilder(GetServerUrl(true))

@@ -258,7 +258,7 @@ function getVersionDir($histDir, $version) {
 
 // get a number of the last file version from the history directory
 function getFileVersion($histDir) {
-    if (!file_exists($histDir) || !is_dir($histDir)) return 0;  // check if the history directory exists
+    if (!file_exists($histDir) || !is_dir($histDir)) return 1;  // check if the history directory exists
 
     $cdir = scandir($histDir);
     $ver = 1;

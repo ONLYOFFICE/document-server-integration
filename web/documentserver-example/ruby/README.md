@@ -12,14 +12,14 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ## Step 2. Install the prerequisites and run the website with the editors
 
-1. Install **Ruby Version Manager (RVM)** and the latest stable **Ruby** version:
+1. Install **Ruby Version Manager (RVM)** and the stable 2.7 **Ruby** version:
 
     ```
     gpg --keyserver "hkp://keys.gnupg.net" --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
     ```
 
     ```
-    \curl -sSL https://get.rvm.io | bash -s stable --ruby
+    \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.7.0
     ```
 
 2. Download the archive with the Ruby example and unpack the archive:
@@ -50,13 +50,13 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     nano config/application.rb
     ```
 
-	Edit the following lines:
+	Edit the following line:
 
     ```
     Rails.configuration.urlSite="https://documentserver/"
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
 6. Run the **Rails** application:
 

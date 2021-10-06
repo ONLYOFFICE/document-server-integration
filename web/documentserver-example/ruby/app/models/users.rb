@@ -71,17 +71,17 @@ class Users
     ];
 
     @@users = [
-        User.new("uid-1", "John Smith", "smith@mail.ru",
+        User.new("uid-1", "John Smith", "smith@example.com",
                 nil, nil, {},
                 nil, [], @@descr_user_1, true),
-        User.new("uid-2", "Mark Pottato", "pottato@mail.ru",
+        User.new("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", ["group-2", ""], {
                     :view => "",
                     :edit => ["group-2", ""],
                     :remove => ["group-2"]
                 },
                 true, [], @@descr_user_2, false),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+        User.new("uid-3", "Hamish Mitchell", "mitchell@example.com",
                 "group-3", ["group-2"], {
                     :view => ["group-3", "group-2"],
                     :edit => ["group-2"],
@@ -94,11 +94,11 @@ class Users
     ]
 
     class << self
-        def get_all_users()
+        def get_all_users()  # get a list of all the users
             @@users
         end
 
-        def get_user(id)
+        def get_user(id)  # get a user by id specified
             for user in @@users do
                 if user.id.eql?(id)
                     return user
@@ -107,7 +107,7 @@ class Users
             return @@users[0]
         end
 
-        def get_users_for_mentions(id)
+        def get_users_for_mentions(id)  # get a list of users with their names and emails for mentions
             usersData = []
             for user in @@users do
                 if (!user.id.eql?(id) && user.name != nil && user.email != nil)

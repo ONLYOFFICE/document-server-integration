@@ -55,17 +55,17 @@ var descr_user_0 = [
 ];
 
 var users = [
-    new User("uid-1", "John Smith", "smith@mail.ru",
+    new User("uid-1", "John Smith", "smith@example.com",
             null, null, {},
             null, [], descr_user_1, true),
-    new User("uid-2", "Mark Pottato", "pottato@mail.ru",
+    new User("uid-2", "Mark Pottato", "pottato@example.com",
             "group-2", ["group-2", ""], {
                 view: "",
                 edit: ["group-2", ""],
                 remove: ["group-2"]
             },
             true, [], descr_user_2, false),  // own and without group
-    new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+    new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
             "group-3", ["group-2"], {
                 view: ["group-3", "group-2"],
                 edit: ["group-2"],
@@ -90,10 +90,12 @@ function User(id, name, email, group, reviewGroups, commentGroups, favorite, den
     this.templates = templates;
 };
 
+// get a list of all the users
 users.getAllUsers = function () {
     return users;
 };
 
+// get a user by id specified
 users.getUser = function (id) {
     var result = null;
     this.forEach(user => {
@@ -104,6 +106,7 @@ users.getUser = function (id) {
     return result ? result : this[0];
 };
 
+// get a list of users with their names and emails for mentions
 users.getUsersForMentions = function (id) {
     var result = [];
     this.forEach(user => {

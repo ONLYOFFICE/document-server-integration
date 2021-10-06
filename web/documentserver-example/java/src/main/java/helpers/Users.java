@@ -63,13 +63,13 @@ public class Users {
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru",
+        add(new User("uid-1", "John Smith", "smith@example.com",
                 null, null, new CommentGroups(),
                 null, new ArrayList<String>(), descr_user_1, true));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru",
+        add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
                 true, new ArrayList<String>(), descr_user_2, false));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
+        add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
                 false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
         add(new User("uid-0", null, null,
@@ -77,6 +77,7 @@ public class Users {
                 null, new ArrayList<String>(), descr_user_0, false));
     }};
 
+    // get a user by id specified
     public static User getUser (String id) {
         for (User user : users) {
             if (user.id.equals(id)) {
@@ -86,10 +87,12 @@ public class Users {
         return users.get(0);
     }
 
+    // get a list of all the users
     public static List<User> getAllUsers () {
         return users;
     }
 
+    // get a list of users with their names and emails for mentions
     public static List<Map<String, Object>> getUsersForMentions (String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
         for (User user : users) {

@@ -57,17 +57,7 @@
                   <tr>
                     <td valign="middle">
                       <span class="select-user">Username</span>
-                      <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                      </br>
-                      <% for user in Users.get_all_users() do %>
-                        <b><%= user.name ? user.name : "Anonymous" %></b>
-                        <ul>
-                          <% for description in user.descriptions do %>
-                            <li><%= description %></li>
-                          <% end %>
-                        </ul>
-                      <% end %>"
-                      src="assets/info.svg" />
+                      <img class="info" data-id="user" src="assets/info.svg" />
                       <select class="select-user" id="user">
                         <% for user in Users.get_all_users() do %>
                           <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
@@ -77,8 +67,7 @@
                   </tr>
                   <tr>
                     <td valign="middle">
-                      <span class="select-user">Language</span>
-                      <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="assets/info.svg" />
+                      <span class="select-user">Language editors interface</span>
                       <select class="select-user" id="language">
                         <option value="en">English</option>
                         <option value="be">Belarusian</option>
@@ -121,17 +110,28 @@
         </td>
         <td class="section">
           <div class="main-panel">
-          <% 
-            DocumentHelper.init(request.remote_ip, request.base_url)
-            docs = DocumentHelper.get_stored_files(nil)
-            if docs.length <= 0 %>
+            <div id="portal-info">
               <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
               <span class="portal-descr">
                 Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                 <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
               </span>
-          <%
-            else %>
+              <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+              <% for user in Users.get_all_users() do %>
+                <div class="user-descr">
+                  <b><%= user.name ? user.name : "Anonymous" %></b>
+                  <ul>
+                    <% for description in user.descriptions do %>
+                      <li><%= description %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>"
+            </div>
+          <% 
+            DocumentHelper.init(request.remote_ip, request.base_url)
+            docs = DocumentHelper.get_stored_files(nil)
+            if docs.length > 0 %>
               <div class="stored-list">
                 <span class="header-list">Your documents</span>
                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
@@ -153,10 +153,10 @@
                           editUrl = "editor?fileName=#{URI::encode(d)}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
-                          <tr class="tableRow" title="<%= d %>">
+                          <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
                             <td class="contentCells">
                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
-                                    <span title="<%= d %>"><%= d %></span>
+                                    <span><%= d %></span>
                                 </a>
                             </td>
                             <% if canEdit %>
@@ -171,39 +171,51 @@
                                   </a>
                               </td>
                               <td class="contentCells contentCells-icon">
-                                  <% if docType.eql?("word") %>
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                          <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                      </a>
-                                  <% elsif docType.eql?("cell") %>
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                          <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                      </a>
-                                  <% end %>
-                              </td>
-                              <td class="contentCells contentCells-icon">
                                   <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=comment" %>" target="_blank">
                                       <img src="assets/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                   </a>
                               </td>
-                              <td class="contentCells contentCells-icon">
-                                  <% if docType.eql?("word") %>
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                          <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                              <% if docType.eql?("word") %>
+                                 <td class="contentCells contentCells-icon">
+                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                          <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                       </a>
-                                  <% end %>
-                              </td>
-                              <td class="contentCells contentCells-shift contentCells-icon">
+                                  </td>
+                              <% elsif docType.eql?("cell") %>
+                                <td class="contentCells contentCells-icon">
+                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                        <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                    </a>
+                                </td>
+                              <% end %>
+                              <% if !docType.eql?("word") && !docType.eql?("cell")%>
+                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                              <% end %>
                                   <% if docType.eql?("word") %>
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
-                                          <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                      </a>
+                                    <td class="contentCells contentCells-icon">
+                                        <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                            <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                        </a>
+                                    </td>
+                                  <% else %>
+                                    <td class="contentCells  contentCells-icon "></td>
                                   <% end %>
-                              </td>
+                                  <% if docType.eql?("word") %>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                        <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
+                                            <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                        </a>
+                                    </td>
+                                  <% else %>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift" ></td>
+                                  <% end %>
+                                  <% if !docType.eql?("word") && !docType.eql?("cell")%>
+                                      <td class="contentCells contentCells-icon "></td>
+                                  <% end %>
                             <% else %>
-                              <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                              <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                             <% end %>
-                            <td class="contentCells contentCells-icon">
+                            <td class="contentCells contentCells-icon firstContentCellViewers">
                                 <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=view" %>" target="_blank">
                                     <img src="assets/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                 </a>
@@ -218,7 +230,7 @@
                                     <img src="assets/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                 </a>
                             </td>
-                            <td class="contentCells contentCells-shift contentCells-icon">
+                            <td class="contentCells contentCells-shift contentCells-icon downloadContentCellShift">
                               <a href="<%= "download?fileName=#{URI::encode(d)}" %>">
                                 <img class="icon-download" src="assets/download.svg" alt="Download" title="Download" />
                               </a>

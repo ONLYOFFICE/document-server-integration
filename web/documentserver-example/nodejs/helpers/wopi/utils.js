@@ -18,21 +18,21 @@
 
 const config = require("config");
 const configServer = config.get("server");
-const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 const syncRequest = require("sync-request");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
 
 var cache = null;
 
-function getDiscoveryInfo(maxTry = 1) {
+// get the wopi discovery information
+function getDiscoveryInfo(siteUrl, maxTry = 1) {
     let actions = [];
 
     if (cache) return cache;
 
     try {
         let response = syncRequest("GET", siteUrl + configServer.get("wopi.discovery"));
-        let discovery = xmlParser.parse(response.getBody().toString(), {
+        let discovery = xmlParser.parse(response.getBody().toString(), {  // create the discovery XML file with the parameters from the response
             attributeNamePrefix: "",
             ignoreAttributes: false,
             parseAttributeValue: true,
@@ -41,7 +41,7 @@ function getDiscoveryInfo(maxTry = 1) {
         for (let app of discovery["wopi-discovery"]["net-zone"].app) {
             if (!Array.isArray(app.action)) { app.action = [app.action]; }
             for (let action of app.action) {
-                actions.push({
+                actions.push({  // write all the parameters to the actions element
                     app: app.name,
                     favIconUrl: app.favIconUrl,
                     checkLicense: app.checkLicense == 'true',
@@ -67,11 +67,12 @@ function getDiscoveryInfo(maxTry = 1) {
     return actions;
 }
 
+// get actions of the specified extension
 function getActions(ext) {
-    let actions = getDiscoveryInfo();
+    let actions = getDiscoveryInfo();  // get the wopi discovery information
     let filtered = [];
 
-    for (let action of actions) {
+    for (let action of actions) {  // and filter it by the specified extention
         if (action.ext == ext) {
             filtered.push(action);
         }
@@ -80,6 +81,7 @@ function getActions(ext) {
     return filtered;
 }
 
+// get an action for the specified extension and name
 function getAction(ext, name) {
     let actions = getDiscoveryInfo();
 
@@ -92,6 +94,7 @@ function getAction(ext, name) {
     return null;
 }
 
+// get the default action for the specified extension
 function getDefaultAction(ext) {
     let actions = getDiscoveryInfo();
 
@@ -104,6 +107,7 @@ function getDefaultAction(ext) {
     return null;
 }
 
+// get the action url
 function getActionUrl(host, userAddress, action, filename) {
     return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
 }

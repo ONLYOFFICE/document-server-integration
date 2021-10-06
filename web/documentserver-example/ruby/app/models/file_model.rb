@@ -65,10 +65,12 @@ class FileModel
     DocumentHelper.get_callback(@file_name)
   end
 
+  # get url to the created file
   def create_url
     DocumentHelper.get_create_url(document_type)
   end
 
+  # get url to download a file
   def download_url
     DocumentHelper.get_download_url(@file_name)
   end
@@ -87,7 +89,7 @@ class FileModel
     templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
     templates = [
       {
-        :image => templatesImageUrl,
+        :image => "",
         :title => "Blank",
         :url => create_url
       },

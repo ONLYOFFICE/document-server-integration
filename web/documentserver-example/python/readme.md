@@ -12,7 +12,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ## Step 2. Install the prerequisites and run the website with the editors
 
-1. Python comes preinstalled on most Linux distributions, and is available as a package on all others. Python 3.9 is required. Please proceed to [official documentation](https://docs.python.org/3/using/unix.html) if you have any troubles.
+1. **Python** comes preinstalled on most Linux distributions, and is available as a package on all others. Python 3.9 is required. Please proceed to [official documentation](https://docs.python.org/3/using/unix.html) if you have any troubles.
 
 2. Download the archive with the Python example and unpack it:
 
@@ -45,15 +45,13 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     nano config.py
     ```
 
-	Edit the following lines:
+	Edit the following line:
 
     ```
     DOC_SERV_SITE_URL = 'https://documentserver/'
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-
-	And the **exampleserver** is the name of the server with the Python Example.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 
 6. Run the **Python** server:
 

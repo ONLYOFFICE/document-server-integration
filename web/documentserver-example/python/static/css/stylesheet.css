@@ -41,6 +41,7 @@ body {
     overflow-y: overlay;
     padding: 0;
     text-decoration: none;
+    overflow-x: hidden;
 }
 
 form {
@@ -61,23 +62,24 @@ a:visited {
 
 header {
     background: #333333;
-    height: 72px;
+    height: 48px;
     margin: 0 auto;
     min-width: 1152px;
     width: auto;
 }
 
 header img {
-    margin: 22px 0 22px 32px;
+    margin: 10px 0 22px 32px;
 }
 
 .center {
+    position: relative;
     margin: 0 auto 0;
     width: 1152px;
 }
 
 .main{
-    height: calc(100% - 136px);
+    height: calc(100% - 112px);
     min-height: 536px;
 }
 
@@ -362,19 +364,33 @@ footer {
     background: #333333;
     color: #AAAAAA;
     height: 64px;
-    min-width: 1152px;
-    width: auto;
+    width: 100%;
+	position: relative;
+	left: 0;
+	bottom: 0;
 }
-
+footer > .center{
+    width: 100%;
+}
 footer table {
+    width: 100%;
     border-spacing: 0;
 }
 
 footer table tr {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    width: 100vw;
     height: 64px;
 }
 
 footer table td {
+	display: block;
+    position: relative;
     padding-left: 32px;
 }
 
@@ -389,9 +405,16 @@ footer a:visited {
 footer a:hover {
     text-decoration: none;
 }
-
+footer table tr td:first-child {
+    margin-left: 14%;
+}
 .copy {
-    padding-left: 510px;
+    color: #aaaaaa;
+    width: max-content;
+    position: relative;
+    margin-left: auto;
+    margin-right: 14%;
+    /*padding-left: 510px;*/
 }
 
 .help-block {
@@ -548,6 +571,7 @@ footer a:hover {
 }
 
 .contentCells {
+	display: block;
     border-bottom: 1px solid #EFEFEF;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
@@ -577,31 +601,7 @@ footer a:hover {
 
 .info{
     cursor: pointer;
-    padding: 3px 5px;
-    position: absolute;
-}
-
-.tooltip {
-    background: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
-    color: #666666;
-    line-height: 160%;
-    max-width: 455px;
-    padding: 14px;
-    position: absolute;
-}
-
-.tooltip ul{
-    margin: 0;
-}
-
-.arrow{
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #FFFFFF;
-    position: absolute;
-    transform: translate(-50%, -50%);
+    margin: -2px 5px;
 }
 
 .user-block-table {
@@ -689,4 +689,61 @@ footer a:hover {
     line-height: 160%;
     letter-spacing: -0.02em;
     word-wrap: break-word;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+
+.tableRow {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+}
+
+
+.tableRow td:first-child {
+    display: flex;
+    flex-grow: 1;
+    max-width: 25%;
+}
+
+.tableHeaderCellFileName {
+    width: 30%;
+}
+
+.tableHeaderCellEditors {
+    width: 28%;
+}
+
+.tableHeaderCellViewers {
+    text-align: center;
+    width: 18%
+}
+
+.firstContentCellViewers {
+    margin-left: auto;
+}
+
+.user-descr {
+    display: inline-table;
+    width: 30vw;
+    min-width: 200px;
+    max-width: 400px;
+}
+
+.user-descr > b {
+    margin-left: 25px;
+}
+
+#portal-info {
+    display: block;
+    width: 70vw;
+}
+
+.portal-descr:nth-child(3) {
+    margin-bottom: 20px;
 }

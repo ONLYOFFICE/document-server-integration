@@ -35,6 +35,7 @@
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
         <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="css/media.css">
     </head>
     <body>
         <header>
@@ -80,17 +81,7 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                    </br>
-                                                    <% for (User user : Users.getAllUsers()) { %>
-                                                        <b><%= user.name == null ? "Anonymous" : user.name %></b>
-                                                        <ul>
-                                                            <% for (String description : user.descriptions) { %>
-                                                                <li><%= description %></li>
-                                                            <% } %>
-                                                        </ul>
-                                                    <% } %>"
-                                                    src="css/img/info.svg" />
+                                                    <img class="info" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
                                                             <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -100,8 +91,7 @@
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language</span>
-                                                    <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="css/img/info.svg" />
+                                                    <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
                                                         <option value="en">English</option>
                                                         <option value="be">Belarusian</option>
@@ -144,15 +134,27 @@
                         </td>
                         <td class="section">
                             <div class="main-panel">
-                                <% DocumentManager.Init(request, response); %>
-                                <% File[] files = DocumentManager.GetStoredFiles(null); %>
-                                <% if (files.length <= 0) { %>
+                                <div id="portal-info">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
-                                <% } else { %>
+                                    <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                    <% for (User user : Users.getAllUsers()) { %>
+                                        <div class="user-descr">
+                                            <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                            <ul>
+                                                <% for (String description : user.descriptions) { %>
+                                                <li><%= description %></li>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <% DocumentManager.Init(request, response); %>
+                                <% File[] files = DocumentManager.GetStoredFiles(null); %>
+                                <% if (files.length > 0)  { %>
                                     <div class="stored-list">
                                        <span class="header-list">Your documents</span>
                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
@@ -172,11 +174,12 @@
                                                     <% for (Integer i = 0; i < files.length; i++) {
                                                         String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
+                                                        String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %>">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %> [<%= version %>]">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
-                                                                    <span title="<%= files[i].getName() %>"><%= files[i].getName() %></span>
+                                                                    <span><%= files[i].getName() %></span>
                                                                 </a>
                                                             </td>
                                                             <% if (canEdit) { %>
@@ -191,39 +194,51 @@
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
-                                                                            <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                        </a>
-                                                                    <% } else if (docType.equals("cell")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
-                                                                            <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                        </a>
-                                                                    <% } %>
-                                                                </td>
-                                                                <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
                                                                         <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
                                                                 </td>
+                                                                <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                            <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                        </a>
-                                                                    <% } %>
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                                        <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-shift contentCells-icon">
-                                                                    <% if (docType.equals("word")) { %>
-                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
-                                                                            <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                                        </a>
-                                                                    <% } %>
+                                                                <% } else if (docType.equals("cell")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                                        <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
+                                                                    </a>
                                                                 </td>
+                                                                <% } %>
+                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                <% } %>
+                                                                <% if (docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
+                                                                </td>
+                                                                <% } else { %>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <% } %>
+                                                                <% if (docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                                        <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                    </a>
+                                                                </td>
+                                                                <% } else { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% } %>
+                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <% } %>
                                                             <% } else { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                            <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
-                                                            <td class="contentCells contentCells-icon">
+                                                            <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
                                                                     <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
@@ -238,7 +253,7 @@
                                                                     <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
                                                                 <a href="IndexServlet?type=download&fileName=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
                                                                     <img class="icon-download" src="css/img/download.svg" alt="Download" title="Download" />
                                                                 </a>

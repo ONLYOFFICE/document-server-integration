@@ -1,0 +1,85 @@
+.tableRow td:first-child{
+    flex-grow: 1;
+    max-width: 100%;
+}
+
+.downloadContentCells{
+    margin-left: auto;
+}
+.tableRow td:last-child:after{
+    top: 33px;
+    left: 0;
+    content: "";
+    background: #e5e5e5;
+    height: 2%;
+    position: absolute;
+    width: 100%;
+}
+
+@media (min-width: 1280px) {
+    .tableHeaderCellRemove{
+        padding-right:24px ;
+        text-align: center;
+    }
+    .tableHeaderCellDownload{
+        padding-right: 11px;
+    }
+    .tableHeaderCellViewers{
+        width: 24%;
+        text-align: center;
+    }
+    .tableHeaderCellEditors{
+        width: 20%;
+    }
+}
+
+@media (max-width: 1080px) and (min-width: 986px){
+    .tableHeaderCellRemove{
+        padding-left: 7px;
+    }
+}
+@media (max-width: 986px) and (min-width: 890px){
+    .tableHeaderCellRemove{
+        padding-left: 16px;
+    }
+    .tableHeaderCellDownload{
+        width: 20%;
+        padding-right: 0;
+    }
+    .tableHeaderCellViewers{
+        width: 24%;
+        padding-right: 0;
+    }
+}
+@media (max-width: 890px) and (min-width: 769px){
+    .tableRow td:first-child{
+        max-width: 50%;
+    }
+    .contentCells-shift{
+        padding-right: 26px;
+    }
+}
+@media (max-width: 769px) and (min-width: 593px){
+    .tableRow td:first-child{
+        max-width: 40%;
+    }
+}
+@media (max-width: 769px) {
+    .tableRow td{
+        top: 32px;
+        border: none;
+    }
+    .tableRow td:last-child:after{
+        width: 95%;
+    }
+}
+@media (max-width: 593px){
+    .tableRow td:first-child{
+        width: 100%;
+    }
+    .tableRow td:last-child:after{
+        width: 90%;
+        top: 67px;
+        height: 1%;
+    }
+}

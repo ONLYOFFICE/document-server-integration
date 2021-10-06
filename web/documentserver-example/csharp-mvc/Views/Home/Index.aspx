@@ -82,31 +82,18 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                            </br>
+                                             <img class="info" src="app_themes/images/info.svg" />
+                                             <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
                                                     <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
-                                                    <ul>
-                                                    <% foreach (string description in user.descriptions)
-                                                       { %>
-                                                            <li><%= description %></li>
-                                                    <% } %>
-                                                    </ul>
-                                            <% } %>"
-                                            src="content/images/info.svg" />
-                                            <select class="select-user" id="user">
-                                                <% foreach (User user in Users.getAllUsers())
-                                                   { %>
-                                                    <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name  %></option>
-                                                <% } %>
-                                            </select>
+                                                 <% } %>
+                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language</span>
-                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="content/images/info.svg" />
+                                            <span class="select-user">Language editors interface</span>
                                             <select class="select-user" id="language">
                                                 <option value="en">English</option>
                                                 <option value="be">Belarusian</option>
@@ -148,44 +135,55 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                            <%  var storedFiles = DocManagerHelper.GetStoredFiles();
-                                if (!storedFiles.Any())
+                            <div id="portal-info">
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                                <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                <% foreach (User user in Users.getAllUsers())
+                                  { %>
+                                  <div class="user-descr">
+                                   <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                       <ul>
+                                       <% foreach (string description in user.descriptions)
+                                               { %>
+                                                   <li><%= description %></li>
+                                            <% } %>
+                                       </ul>
+                                   </div>
+                                   <% } %>
+                            </div>
+                            <%  var storedFiles = GetStoredFiles();
+                                if storedFiles.Any())
                                 { %>
-                                    <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-                                        <span class="portal-descr">
-                                            Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                            <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                                    </span>
-                            <%  }
-                                else 
-                                { %>
-                                    <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
-                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                            <thead>
-                                                <tr>
-                                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                                    <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
-                                                    <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                                    <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                                    <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                        <div class="scroll-table-body">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
-                                                <tbody>
-                                                    <%  foreach (var storedFile in storedFiles)
-                                                        { 
-                                                            var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
-                                                            var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower(); 
-                                                            var canEdir = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
-                                                        %>
+                                <div class="stored-list">
+                                    <span class="header-list">Your documents</span>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
+                                            <tr >
+                                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+                                                <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+                                                <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
+                                            <%  foreach (var storedFile in storedFiles)
+                                                {
+                                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                    var docType = DocumentType(storedFile.Name);
+                                                    var canEdit = EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
 
-                                                            <tr class="tableRow" title="<%= storedFile.Name %>">
+                                                            <tr class="tableRow" title="<%= storedFile.Name %> [<%= DocManagerHelper.GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
                                                                 <td class="contentCells">
                                                                     <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
-                                                                        <span title="<%= storedFile.Name %>"><%= storedFile.Name %></span>
+                                                                        <span><%= storedFile.Name %></span>
                                                                     </a>
                                                                 </td>
                                                                 <% if (canEdir) { %>
@@ -200,39 +198,51 @@
                                                                         </a>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon">
-                                                                        <% if (docType == "word") { %>
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
-                                                                                <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                            </a>
-                                                                        <% } else if (docType == "cell") { %>
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
-                                                                                <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                            </a>
-                                                                        <% } %>
-                                                                    </td>
-                                                                    <td class="contentCells contentCells-icon">
                                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment" }) %>" target="_blank">
                                                                             <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                         </a>
                                                                     </td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <% if (docType == "word") { %>
+                                                                    <% if (docType == "word") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
+                                                                                <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } else if (docType == "cell") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
+                                                                                <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                            </a>
+                                                                         </td>
+                                                                    <% } %>
+                                                                    <% if (docType != "word" && docType != "cell") { %>
+                                                                        <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                                    <% } %>
+                                                                    <% if (docType == "word") { %>
+                                                                        <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
                                                                                 <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                             </a>
-                                                                        <% } %>
-                                                                    </td>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon">
-                                                                        <% if (docType == "word") { %>
+                                                                        </td>
+                                                                     <% } else { %>
+                                                                        <td class="contentCells contentCells-icon"></td>
+                                                                    <% } %>
+                                                                    <% if (docType == "word"){ %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
                                                                                 <img src="content/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                             </a>
-                                                                        <% } %>
-                                                                    </td>
+                                                                        </td>
+                                                                    <% } else { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <% } %>
+                                                                    <% if (docType != "word" && docType != "cell") { %>
+                                                                        <td class="contentCells contentCells-icon "></td>
+                                                                    <% } %>
                                                                 <% } else { %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon" colspan="6"></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                                 <% } %>
-                                                                <td class="contentCells contentCells-icon">
+                                                                <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                     <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view" }) %>" target="_blank">
                                                                         <img src="content/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                     </a>
@@ -247,7 +257,7 @@
                                                                         <img src="content/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                                <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
                                                                     <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
                                                                         <img class="icon-download" src="content/images/download.svg" alt="Download" title="Download" />
                                                                     </a>
@@ -337,7 +347,7 @@
     </footer>
 
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
-    
+
     <script language="javascript" type="text/javascript">
         var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
         var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';
