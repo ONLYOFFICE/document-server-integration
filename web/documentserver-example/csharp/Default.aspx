@@ -135,8 +135,9 @@
                             </div>
                         </td>
                         <td class="section">
+                        <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
-                                <div id="portal-info">
+                                <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "block" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -156,7 +157,7 @@
                                        </div>
                                        <% } %>
                                 </div>
-                            <%  var storedFiles = GetStoredFiles();
+                            <%
                                 if storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
