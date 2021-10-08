@@ -732,6 +732,7 @@ html {
 
 #portal-info {
     display: block;
+	max-width: 1000px;
     width: 70vw;
 }
 
