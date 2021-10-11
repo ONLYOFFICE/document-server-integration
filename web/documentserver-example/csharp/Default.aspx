@@ -158,7 +158,7 @@
                                        <% } %>
                                 </div>
                             <%
-                                if storedFiles.Any())
+                                if (storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
                                         <span class="header-list">Your documents</span>
