@@ -159,7 +159,7 @@
                                             }
                                             echo '</ul>';
                                             echo '</div>';
-                                        } ?>"
+                                        } ?>
                                     </div>
                                     <?php
                                         if (!empty($storedFiles)) { ?>
