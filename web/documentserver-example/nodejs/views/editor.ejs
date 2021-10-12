@@ -145,6 +145,25 @@
             console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
         };
 
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            }
+
+            fetch("create", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then((response) => console.log(response.json()))
+            .catch((error) => console.log(error));
+        }
+
         var config = {<%- include("config") %>,
                 events: {
                     "onAppReady": onAppReady,
@@ -166,6 +185,10 @@
         if (<%- JSON.stringify(usersForMentions) %> != null) {
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
+        }
+
+        if (config.editorConfig.createUrl) {
+            config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
         var connectEditor = function () {

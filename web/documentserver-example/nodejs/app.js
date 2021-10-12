@@ -224,6 +224,54 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     });
 });
 
+app.post("/create", function (req, res) {
+    var title = req.body.title;
+    var fileUrl = req.body.url;
+
+    try {
+        docManager.init(storageFolder, req, res);
+        docManager.storagePath(""); // mkdir if not exist
+
+        var fileName = docManager.getCorrectName(title);
+        var userAddress = docManager.curUserHostAddress();
+        docManager.historyPath(fileName, userAddress, true);
+
+        var file = syncRequest("GET", fileUrl);
+        var fileBody = file.getBody();
+
+        if (configServer.get("maxFileSize") < fileBody.length || fileBody.length <= 0) {  // check if the file size exceeds the maximum file size
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ "error": "File size is incorrect" }));
+            res.end();
+            return;
+        }
+
+        const exts = [].concat(configServer.get("viewedDocs"), configServer.get("editedDocs"), configServer.get("convertedDocs"));  // all the supported file extensions
+        const curExt = fileUtility.getFileExtension(fileName);
+
+        if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
+            res.writeHead(200, { "Content-Type": "application/json" });  // and write the error status and message to the response
+            res.write(JSON.stringify({ "error": "File type is not supported" }));
+            res.end();
+            return;
+        }
+
+        fileSystem.writeFileSync(docManager.storagePath(fileName), fileBody);
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.write(JSON.stringify({ "file" : fileName }));
+        res.end();
+
+    } catch (e) {
+        res.status(500);
+        res.write(JSON.stringify({
+            error: 1,
+            message: e.message
+        }));
+        res.end();
+    }
+});
+
 app.post("/convert", function (req, res) {  // define a handler for converting files
 
     var fileName = fileUtility.getFileName(req.body.filename);
