@@ -46,7 +46,7 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 };
 
 // get the url of the converted file
-documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null) {
+documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
 
     var title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
@@ -60,7 +60,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         filetype: fromExtension.replace(".", ""),
         title: title,
         key: documentRevisionId,
-        password: filePass
+        password: filePass,
+        region: lang,
     };
 
     var uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
