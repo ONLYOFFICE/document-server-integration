@@ -23,6 +23,7 @@ const docManager = require("../docManager");
 const fileUtility = require("../fileUtility");
 const config = require('config');
 const configServer = config.get('server');
+const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 const storageFolder = configServer.get("storageFolder");
 const users = require("../users");
 
@@ -31,12 +32,24 @@ exports.registerRoutes = function(app) {
     // define a handler for the default wopi page
     app.get("/wopi", function(req, res) {
 
+        docManager.init(storageFolder, req, res);
+
+        let absSiteUrl = siteUrl;
+        if (absSiteUrl.indexOf("/") === 0) {
+            let host = req.get("host");
+            let pos = host.indexOf("/", "https://".length);
+            if (pos > -1)
+            {
+                host = host.substring(0, pos);
+            }
+            absSiteUrl = docManager.getProtocol() + "://" + host + siteUrl;
+        }
+
         // get the wopi discovery information
-        utils.getDiscoveryInfo(3);
+        let actions = utils.getDiscoveryInfo(absSiteUrl, 3);
+        let wopiEnable = actions.length != 0 ? true : false;
 
         try {
-            docManager.init(storageFolder, req, res);
-
             // get all the stored files
             let files = docManager.getStoredFiles();
 
@@ -49,9 +62,11 @@ exports.registerRoutes = function(app) {
 
             // render wopiIndex template with the parameters specified
             res.render("wopiIndex", {
-                storedFiles: files,
+                wopiEnable : wopiEnable,
+                storedFiles: wopiEnable ? files : [],
                 params: docManager.getCustomParams(),
                 users: users,
+                serverUrl: docManager.getServerUrl(),
             });
 
         } catch (ex) {
@@ -68,7 +83,7 @@ exports.registerRoutes = function(app) {
 
         if (fileExt != null) {  // if the file extension exists
             var fileName = docManager.createDemo(!!req.query.sample, fileExt, user.id, user.name);  // create demo document of the given extension
-            var redirectPath = docManager.getServerUrl() + req._parsedOriginalUrl.pathname.replace("/wopi-new", "") + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
+            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;
         }
@@ -83,7 +98,7 @@ exports.registerRoutes = function(app) {
 
             // render wopiAction template with the parameters specified
             res.render("wopiAction", {
-                actionUrl: utils.getActionUrl(docManager.getServerUrl() + req._parsedOriginalUrl.pathname.split("/wopi-action")[0], docManager.curUserHostAddress(), action, req.params['id']),
+                actionUrl: utils.getActionUrl(docManager.getServerUrl(true), docManager.curUserHostAddress(), action, req.params['id']),
                 token: "test",
                 tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
                 params: docManager.getCustomParams(),

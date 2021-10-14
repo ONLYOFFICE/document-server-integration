@@ -18,7 +18,6 @@
 
 const config = require("config");
 const configServer = config.get("server");
-const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 const syncRequest = require("sync-request");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
@@ -26,7 +25,7 @@ const he = require("he");
 var cache = null;
 
 // get the wopi discovery information
-function getDiscoveryInfo(maxTry = 1) {
+function getDiscoveryInfo(siteUrl, maxTry = 1) {
     let actions = [];
 
     if (cache) return cache;

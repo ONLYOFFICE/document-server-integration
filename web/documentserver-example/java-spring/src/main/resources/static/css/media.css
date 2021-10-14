@@ -1,0 +1,611 @@
+@media (min-width: 1280px)  and (max-width: 1380px) {
+    .copy {
+        margin-right: 6.5%;
+    }
+
+    footer table tr td:first-child {
+        margin-left: 6.5%;
+    }
+}
+
+@media (max-width: 1280px)  and (min-width: 1080px) {
+
+    .tableRow td:first-child {
+        flex-grow: 1;
+        width: 25%;
+    }
+
+    .tableHeaderCellFileName {
+        width: 25%;
+    }
+
+    .tableHeaderCellEditors {
+        width: 13%;
+    }
+
+    .tableHeaderCellViewers {
+        width: 29%;
+        text-align: right;
+    }
+
+    .tableHeaderCellDownload {
+        width: 21%;
+        padding-right: 18px;
+    }
+
+    .tableHeaderCellRemove {
+        padding-left: 13px;
+    }
+
+    footer table tr td:first-child {
+        margin-left: 5%;
+    }
+
+    .copy {
+        margin-right: 5%;
+        padding-right: 32px;
+    }
+
+    .left-panel {
+        margin-left: 48px;
+        width: 95%;
+    }
+}
+
+@media (max-width: 1080px) {
+    .copy {
+        margin-right: 32px;
+    }
+
+    footer table tr td:first-child {
+        margin-left: 0;
+    }
+
+    .tableRow {
+        width: 90%;
+    }
+
+    .tableHeaderCellFileName {
+        width: 16%;
+    }
+
+    .tableHeaderCellEditors {
+        width: 13%;
+    }
+
+    .tableHeaderCellViewers {
+        width: 38%;
+    }
+
+    .tableHeaderCellDownload {
+        width: 23%;
+    }
+
+    .tableHeaderCellRemove {
+        padding-left: 0px;
+    }
+}
+
+@media (max-width: 1008px) {
+    #portal-info {
+        width: 60vw;
+    }
+
+    .left-panel {
+        margin-left: 0;
+        width: 94%;
+    }
+
+    .main-panel {
+        left: -1%;
+        padding: 48px 26px 24px;
+    }
+}
+
+@media (max-width: 769px) and (min-width: 593px) {
+    .contentCells-icon{
+        width: 5%;
+    }
+    .tableRow {
+        width: 55%;
+    }
+
+    .tableRow td:first-child {
+        border: none;
+        flex-grow: 1;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .scroll-table-body {
+        top: 31px;
+    }
+
+    footer {
+        height: 80px;
+    }
+
+    .left-panel {
+        width: 90%;
+    }
+
+    .main-panel {
+        left: 0;
+        padding: 48px 18px 24px;
+    }
+
+    footer table td {
+        margin-left: 0;
+        margin-right: 0;
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
+    .copy {
+        margin:auto;
+        padding-right: 3%;
+    }
+
+    footer table tr td:first-child {
+        margin-left: auto;
+        padding-left: 1%;
+        margin-right: 1.5%;
+    }
+
+    .contentCells-shift {
+        padding-right: 22px;
+    }
+}
+
+@media (max-width: 715px) {
+    .tableRow {
+        width: 45%;
+    }
+}
+@media (max-width: 670px) and (min-width: 620px){
+    /*.main-panel{*/
+    /*    width: 90%;*/
+    /*}*/
+}
+@media (max-width: 681px) and (min-width: 593px) {
+
+    .left-panel {
+        width: 69%;
+    }
+
+    .main-panel {
+        left: -6%;
+        padding: 48px 0 24px;
+    }
+
+    .help-block {
+        margin: 48px 20px 24px;
+    }
+    .file-upload{
+        width: 100%;
+    }
+    #fileupload{
+        width: 100%;
+    }
+}
+
+@media (max-width: 1080px) and (min-width: 970px) {
+    .tableHeader {
+        width: 90%;
+    }
+
+    .tableRow td:first-child {
+        flex-grow: 0;
+        width: 15%;
+    }
+
+    .tableHeaderCellFileName {
+        width: 16%;
+    }
+
+    .tableHeaderCellEditors {
+        width: 13%;
+    }
+
+    .tableHeaderCellViewers {
+        text-align: right;
+        width: 37%;
+    }
+
+    .tableHeaderCellDownload {
+        width: 22%;
+    }
+}
+
+@media (max-width: 986px) and (min-width: 890px) {
+    .tableHeader {
+        width: 75%;
+    }
+
+    .tableHeaderCellEditors {
+        width: 26%;
+        text-align: left;
+    }
+
+    .tableHeaderCellFileName {
+        width: 17%;
+    }
+
+    .tableHeaderCellViewers {
+        width: 27%;
+        text-align: right;
+    }
+
+    .tableHeaderCellDownload {
+        padding-right: 18px;
+        width: 20%;
+    }
+
+    .tableHeaderCellRemove {
+        padding-left: 0;
+    }
+
+    .tableRow {
+        width: 75%;
+    }
+
+    .tableRow td:last-child {
+        padding-right: 38px;
+    }
+
+    .tableRow td:first-child {
+        flex-grow: 0;
+        width: 15%;
+    }
+
+    .contentCells-icon {
+        width: 3%;
+    }
+}
+
+@media (max-width: 890px) and (min-width: 769px ) {
+    .left-panel{
+        width: 100%;
+    }
+    .contentCells-shift {
+        padding-right: 28px;
+    }
+
+    .main-panel {
+        width: 580px;
+    }
+
+    .tableRow {
+        width: 95%;
+    }
+
+    .tableHeader {
+        width: 95%;
+    }
+
+    .tableHeaderCellViewers {
+        width: 22%;
+        text-align: right;
+    }
+
+    .tableHeaderCellDownload {
+        padding-right: 4px;
+        width: 20%;
+        text-align: right;
+    }
+
+    .tableHeaderCellFileName {
+        width: 20%;
+    }
+
+    .tableHeaderCellEditors {
+        text-align: left;
+        width: 31%;
+    }
+
+    .tableHeaderCellViewers {
+        width: 18%;
+    }
+}
+
+@media (max-width: 890px) {
+    .tableRow td:first-child {
+        max-width: 17%;
+    }
+}
+
+.downloadContentCellShift:after {
+    bottom:0 ;
+    left: 0;
+    content: "";
+    background: #e5e5e5;
+    height: 1px;
+    position: absolute;
+    width: 100%;
+}
+
+@media (max-width: 769px) {
+    .tableRow td:first-child {
+        max-width: 100%;
+    }
+}
+
+
+@media (max-width: 593px ) {
+    #portal-info {
+        width: 50vw;
+    }
+    .file-upload{
+        width: 100%;
+    }
+    #fileupload{
+        width: 100%;
+    }
+    .tableHeader {
+        display: none;
+    }
+
+    .scroll-table-body {
+        top: 31px;
+    }
+
+    footer table tr {
+        justify-content: center;
+    }
+
+    footer table td {
+        padding-top: 16px;
+        padding-right: 32px;
+        padding-left: 32px;
+    }
+
+    footer {
+        height: 80px;
+    }
+
+    .copy {
+        width: 100%;
+        text-align: center;
+        margin: 0;
+    }
+
+    .left-panel {
+        width: 61%;
+    }
+
+    .help-block {
+        margin: 16px 10px 6px;
+    }
+
+    .main-panel {
+        left: -8%;
+        padding: 16px 0 6px;
+    }
+
+    .tableRow {
+        width: 40%;
+    }
+
+    .tableRow td {
+        border: none;
+    }
+
+    .firstContentCellShift {
+        border: none;
+        flex-basis: 10%;
+        flex-grow: 1;
+    }
+
+    .downloadContentCellShift {
+        max-width: 7%;
+        margin-right: -11px;
+        margin-left: auto;
+    }
+
+    .contentCells-icon {
+        width: 13%;
+    }
+
+    .tableRow td:last-child {
+        width: 12%;
+        padding-right: 40px;
+        border: none;
+    }
+
+    .contentCells-shift {
+        padding-right: 35px;
+    }
+
+    .downloadContentCellShift:after {
+        width: 85%;
+    }
+
+    .firstContentCellViewers {
+        margin-left: 0;
+        border-bottom: 1px solid #e5e5e5 !important;
+    }
+
+    .firstContentCellViewers ~ td {
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .tableRow td:first-child{
+        border: none;
+        width: 85%;
+    }
+    .contentCellsEmpty{
+        display: none;
+        width: 1%;
+    }
+}
+
+@media (max-width: 560px) and (min-width: 510px) {
+    .contentCells-icon {
+        width: 13%;
+    }
+
+    .downloadContentCellShift {
+        padding-right: 45px;
+        max-width: 4%;
+    }
+}
+
+@media (max-width: 510px)  and (min-width: 470px) {
+    .tableRow {
+        width: 35%;
+    }
+
+    .tableRow td:first-child{
+        width: 83%;
+    }
+    .contentCells-icon {
+        width: 13%;
+    }
+
+    .downloadContentCellShift {
+        max-width: 6%;
+        padding-right: 37px;
+    }
+
+    .firstContentCellShift {
+        flex-basis: 9%;
+    }
+
+    .tableRow td:last-child {
+        padding-right: 28px;
+    }
+}
+
+@media (max-width: 470px)  and (min-width: 420px) {
+    .tableRow {
+        width: 30%;
+    }
+    .tableRow td:first-child{
+        width: 85%;
+    }
+    .contentCells-icon {
+        width: 11%;
+    }
+
+    .downloadContentCellShift {
+        max-width: 3%;
+        padding-right: 37px;
+        padding-left: 0;
+    }
+
+    .firstContentCellShift {
+        margin-left: 1px;
+        flex-basis: 14%;
+    }
+
+    .tableRow td:last-child {
+        width: 5%;
+        padding-right: 63px;
+    }
+    .firstContentCellViewers{
+        padding-right: 2px;
+        width: 12%;
+    }
+    .contentCellsEmpty{
+        display: none;
+    }
+}
+
+@media (max-width: 420px) and (min-width: 320px) {
+    .tableRow {
+        width: 25%;
+    }
+
+    .tableRow td:last-child {
+        width: 6%;
+        padding-right: 16px;
+    }
+
+    .downloadContentCellShift {
+        max-width: 4%;
+        margin-right: -18px;
+        margin-left: -1px;
+    }
+
+    .firstContentCellShift {
+        flex-basis: 2%;
+    }
+
+    .contentCells-icon{
+        width: 10%;
+    }
+    footer table td {
+        margin: 0;
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+
+    .copy {
+        padding-right: 5px;
+        margin: 0;
+    }
+    .firstContentCellViewers{
+        padding-right: 2px;
+        width: 11%;
+    }
+}
+
+@media (max-width: 1160px) {
+    .left-panel {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 593px) {
+    .contentCellsEmpty {
+        display: none;
+    }
+}
+@media (max-width: 769px) and (min-width: 715px){
+    .tableRow{
+        width: 50%;
+    }
+}
+@media(max-width: 1080px) and (min-width: 986px){
+    .tableHeaderCellRemove{
+        padding-left: 6px;
+    }
+}
+@media (max-width: 1100px) and (min-width: 890px){
+    .main-panel > span{
+        max-width: 70%;
+    }
+}
+@media (max-width: 780px) and (min-width: 600px) {
+    .main-panel{
+        display: flex;
+        flex-direction: column;
+    }
+    .main-panel > span{
+        max-width: 45%;
+    }
+}
+@media (max-width: 600px) and (min-width: 320px) {
+    .main-panel{
+        display: flex;
+        flex-direction: column;
+    }
+}
+@media (max-width:600px) and (min-width:500px){
+    .main-panel > span{
+        max-width:35%;
+    }
+}
+@media (max-width:500px) and (min-width:400px){
+    .main-panel > span{
+        max-width:20%;
+    }
+}
+@media (max-width:400px) and (min-width:320px){
+    .main-panel > span{
+        max-width:15%;
+    }
+}

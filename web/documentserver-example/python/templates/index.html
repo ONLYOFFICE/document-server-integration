@@ -83,17 +83,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                            </br>
-                                            {% for user in users %}
-                                                <b>{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %}</b>
-                                                <ul>
-                                                    {% for description in user.descriptions %}
-                                                        <li>{{ description }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% endfor %}"
-                                            src="{% static "images/info.svg" %}" />
+                                            <img class="info" src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="user">
                                                 {% for user in users %}
                                                     <option value="{{ user.id }}">{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %} </option>
@@ -103,8 +93,7 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language</span>
-                                            <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="{% static "images/info.svg" %}" />
+                                            <span class="select-user">Language editors interface</span>
                                             <select class="select-user" id="language">
                                                 {% for key, val in languages.items %}
                                                     <option value="{{ key }}">{{ val }}</option>
@@ -118,13 +107,29 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                            {% if not files %}
-                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-                                <span class="portal-descr">
+                        {% if files %}
+                            <div id="portal-info" style="display: none">
+                        {% else %}
+                            <div id="portal-info" style="display: block">
+                        {% endif %}
+                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                            <span class="portal-descr">
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                     <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                 </span>
-                            {% else %}
+                            <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                            {% for user in users %}
+                                <div class="user-descr">
+                                    <b>{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %}</b>
+                                    <ul>
+                                        {% for description in user.descriptions %}
+                                            <li>{{ description }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+                            {% if files %}
                                 <div class="stored-list">
                                     <span class="header-list">Your documents</span>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
@@ -177,7 +182,7 @@
                                                                     </a>
                                                                 </td>
                                                             {% endif %}
-                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                            {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
@@ -198,7 +203,7 @@
                                                             {% else %}
                                                                  <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                             {% endif %}
-                                                            {% if file.type!='word' && file.type!='cell' %}
+                                                            {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon "></td>
                                                             {% endif %}
                                                         {% else %}

@@ -106,6 +106,7 @@ app.get("/", function (req, res) {  // define a handler for default page
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
+            serverUrl: docManager.getServerUrl(),
         });
 
     }
@@ -836,7 +837,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
     catch (ex) {
         console.log(ex);
         res.status(500);
-        res.render("error", { message: "Server error" });
+        res.render("error", { message: "Server error: " + ex.message });
     }
 });
 

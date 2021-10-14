@@ -356,7 +356,7 @@ footer {
     color: #AAAAAA;
     height: 64px;
     width: 100%;
-	position: absolute;
+	position: relative;
 	left: 0;
 	bottom: 0;
 }
@@ -595,29 +595,6 @@ footer table tr td:first-child {
     margin: -2px 5px;
 }
 
-.tooltip {
-    background: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
-    color: #666666;
-    line-height: 160%;
-    max-width: 455px;
-    padding: 14px;
-    position: absolute;
-}
-
-.tooltip ul{
-    margin: 0;
-}
-
-.arrow{
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #FFFFFF;
-    position: absolute;
-    transform: translate(-50%, -50%);
-}
-
 .user-block-table {
     height: 100%;
     padding-top: 14px;
@@ -704,26 +681,6 @@ footer table tr td:first-child {
     letter-spacing: -0.02em;
     word-wrap: break-word;
 }
-.menu {
-    cursor: pointer;
-    display: none;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: space-between;
-    top: 10px;
-    left: 12px;
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 30px;
-}
-
-.menu span {
-    content: "";
-    width: 26px;
-    height: 3px;
-    background: rgb(194, 194, 194);
-}
 
 html {
     overflow-x: hidden;
@@ -760,4 +717,19 @@ html {
 
 .firstContentCellViewers {
     margin-left: auto;
+}
+
+.user-descr {
+    display: inline-table;
+    width: 30vw;
+    min-width: 200px;
+    max-width: 400px;
+}
+
+.user-descr > b {
+    margin-left: 25px;
+}
+
+.portal-descr:nth-child(3) {
+    margin-bottom: 20px;
 }

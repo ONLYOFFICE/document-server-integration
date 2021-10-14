@@ -308,32 +308,56 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq(".info").mouseover(function (event) {
-        var target = event.target;
-        var id = target.dataset.id ? target.dataset.id : target.id;
-        var tooltip = target.dataset.tooltip;
-
-        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
-
-        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
-
-        var topElement = jq("#" + id).offset().top;
-        var halfHeightElement = jq("#" + id).outerHeight() / 2;
-
-        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
-        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
-        if (heightToFooter > (halfHeightTooltip + 10)) {
-            var top = topElement + halfHeightElement - halfHeightTooltip;
-        } else {
-            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
+    
+    function showUserTooltip (isMobile) {
+        if ( jq("div#portal-info").is(":hidden") ) {
+            jq("div#portal-info").show();
+            jq("div.stored-list").hide();
+        } else if (isMobile && jq("div#portal-info").is(":visible")) {
+            jq("div#portal-info").hide();
+            jq("div.stored-list").show();
         }
+    };
 
-        jq("div.tooltip").css({"top": top, "left": left + 10});
-        jq("div.arrow").css({"top": topElement + halfHeightElement, "left": left + 6});
-    }).mouseout(function () {
-        jq("div.tooltip").remove();
-        jq("div.arrow").remove();
-    });
+    var fileList = jq("tr.tableRow");
+
+    var mouseIsOverTooltip = false;
+    var hideTooltipTimeout = null;
+    if (/android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+        .test(navigator.userAgent)) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                jq(".info").on("touchend", function () {
+                    showUserTooltip(true);
+                });
+            }
+    } else {
+        jq(".info").mouseover(function (event) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                showUserTooltip(false);
+
+                jq("div#portal-info").mouseenter(function () {
+                    mouseIsOverTooltip = true;
+                }).mouseleave(function () {
+                    mouseIsOverTooltip = false;
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                })
+            }
+        }).mouseleave(function () {
+            hideTooltipTimeout = setTimeout(function () {
+                if (mouseIsOverTooltip == false && fileList.length > 0) {
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                }
+            }, 500);
+        });
+    }
 }
 
 function getUrlVars() {

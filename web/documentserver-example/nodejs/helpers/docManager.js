@@ -165,7 +165,7 @@ docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
 
 // get server url
 docManager.getServerUrl = function (forDocumentServer) {
-    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host"));
+    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host") + docManager.req.baseUrl);
 };
 
 // get callback url

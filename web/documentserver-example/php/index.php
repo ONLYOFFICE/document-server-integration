@@ -83,18 +83,7 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                    </br>
-                                                    <?php foreach(getAllUsers() as $user_l) {
-                                                        $name = $user_l->name ? $user_l->name : "Anonymous";
-                                                        echo '<b>'.$name.'</b>';
-                                                        echo '<ul>';
-                                                        foreach ($user_l->descriptions as $description) {
-                                                            echo '<li>'.$description.'</li>';
-                                                        }
-                                                        echo '</ul>';
-                                                    } ?>"
-                                                    src="css/images/info.svg" />
+                                                    <img class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <?php foreach(getAllUsers() as $user_l) {
                                                             $name = $user_l->name ? $user_l->name : "Anonymous";
@@ -105,8 +94,7 @@
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language</span>
-                                                    <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="css/images/info.svg" />
+                                                    <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
                                                         <option value="en">English</option>
                                                         <option value="be">Belarusian</option>
@@ -149,15 +137,32 @@
                             <td class="section">
                                 <div class="main-panel">
                                     <?php
-                                        $storedFiles = getStoredFiles();
-                                        if (empty($storedFiles)) { ?>
-                                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-                                            <span class="portal-descr">
-                                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                                            </span>
+                                    $storedFiles = getStoredFiles();
+                                    if (!empty($storedFiles)): ?>
+                                        <div id="portal-info" style="display: none">
+                                    <?php else: ?>
+                                        <div id="portal-info" style="display: block">
+                                    <?php endif; ?>
+                                        <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                        <span class="portal-descr">
+                                            Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                            <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                        </span>
+                                        <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                        <?php foreach(getAllUsers() as $user_l) {
+                                            $name = $user_l->name ? $user_l->name : "Anonymous";
+                                            echo '<div class="user-descr">';
+                                            echo '<b>'.$name.'</b>';
+                                            echo '<ul>';
+                                            foreach ($user_l->descriptions as $description) {
+                                                echo '<li>'.$description.'</li>';
+                                            }
+                                            echo '</ul>';
+                                            echo '</div>';
+                                        } ?>
+                                    </div>
                                     <?php
-                                        } else { ?>
+                                        if (!empty($storedFiles)) { ?>
                                             <div class="stored-list">
                                                 <span class="header-list">Your documents</span>
                                                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
