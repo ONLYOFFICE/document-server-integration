@@ -75,7 +75,8 @@ class DocumentHelper
 
     # get the storage path of the given file
     def storage_path(file_name, user_address)
-      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))  # get the path to the directory for the host address
+      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
+                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))  # get the path to the directory for the host address
 
       # create a new directory if it doesn't exist
       unless File.directory?(directory)
@@ -83,19 +84,20 @@ class DocumentHelper
       end
 
       # put the given file to this directory
-      directory.join(File.basename(file_name)).to_s
+      File.join(directory, File.basename(file_name))
     end
 
     # get the path to the forcesaved file version
     def forcesave_path(file_name, user_address, create)
-      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
+                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
 
       # the directory with host address doesn't exist
       unless File.directory?(directory)
         return ""
       end
 
-      directory = directory.join("#{File.basename(file_name)}-hist")  # get the path to the history of the given file
+      directory = File.join(directory,"#{File.basename(file_name)}-hist")  # get the path to the history of the given file
       unless File.directory?(directory)
         if create
           FileUtils.mkdir_p(directory)  # create history directory if it doesn't exist
@@ -104,7 +106,7 @@ class DocumentHelper
         end
       end
 
-      directory = directory.join(File.basename(file_name))  # get the path to the given file
+      directory = File.join(directory, File.basename(file_name))  # get the path to the given file
       unless File.file?(directory)
         if !create
           return ""
@@ -166,7 +168,8 @@ class DocumentHelper
 
     # get all the stored files from the folder
     def get_stored_files(user_address)
-      directory = Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
+                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
 
       arr = [];
 
