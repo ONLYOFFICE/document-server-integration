@@ -96,6 +96,7 @@ class HomeController < ApplicationController
       body = JSON.parse(file_data)
       
       file_name = File.basename(body["filename"])
+      lang = cookies[:ulang] ? cookies[:ulang] : "en"
       file_pass = body["filePass"] ? body["filePass"] : nil
       file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
@@ -103,7 +104,7 @@ class HomeController < ApplicationController
 
       if DocumentHelper.convert_exts.include? (extension)  # check if the file with such an extension can be converted
         key = ServiceConverter.generate_revision_id(file_uri)  # generate document key
-        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass)  # get the url of the converted file and the conversion percentage
+        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang)  # get the url of the converted file and the conversion percentage
 
         # if the conversion isn't completed, write file name and step values to the response
         if percent != 100
