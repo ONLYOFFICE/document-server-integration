@@ -30,6 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Track {
+    private String filetype;
     private String url;
     private String key;
     private String changesurl;
