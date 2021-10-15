@@ -254,7 +254,7 @@ namespace OnlineEditorsExample
         {
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = Path.GetFileName(context.Request["userAddress"]);
 
                 if (JwtManager.Enabled)
