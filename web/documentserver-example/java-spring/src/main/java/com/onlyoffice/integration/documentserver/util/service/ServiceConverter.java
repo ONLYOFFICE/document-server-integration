@@ -27,7 +27,7 @@ import java.io.InputStream;
 public interface ServiceConverter {
     String getConvertedUri(String documentUri, String fromExtension,
                                   String toExtension, String documentRevisionId,
-                                  String filePass, Boolean isAsync);
+                                  String filePass, Boolean isAsync, String lang);
     String generateRevisionId(String expectedKey);
     String convertStreamToString(InputStream stream);
     JSONObject convertStringToJSON(String jsonString);

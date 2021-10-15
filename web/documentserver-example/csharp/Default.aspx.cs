@@ -369,6 +369,7 @@ namespace OnlineEditorsExample
 
             _fileName = Path.GetFileName(body["filename"].ToString());
             var filePass = body["filePass"] != null ? body["filePass"].ToString() : null;
+            var lang = context.Request.Cookies.GetOrDefault("ulang", null);
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
             var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
@@ -389,7 +390,7 @@ namespace OnlineEditorsExample
 
                 // get the url to the converted file
                 string newFileUri;
-                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri, filePass); ;
+                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri, filePass, lang);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";

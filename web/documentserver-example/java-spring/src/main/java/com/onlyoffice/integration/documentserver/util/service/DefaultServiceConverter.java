@@ -107,7 +107,7 @@ public class DefaultServiceConverter implements ServiceConverter
 
     public String getConvertedUri(String documentUri, String fromExtension,
                                   String toExtension, String documentRevisionId,
-                                  String filePass, Boolean isAsync)
+                                  String filePass, Boolean isAsync, String lang)
     {
         fromExtension = fromExtension == null || fromExtension.isEmpty() ?
                 fileUtility.getFileExtension(documentUri) : fromExtension;
@@ -120,6 +120,7 @@ public class DefaultServiceConverter implements ServiceConverter
         documentRevisionId = generateRevisionId(documentRevisionId);  // create document token
 
         Convert body = new Convert();
+        body.setLang(lang);
         body.setUrl(documentUri);
         body.setOutputtype(toExtension.replace(".", ""));
         body.setFiletype(fromExtension.replace(".", ""));
@@ -133,6 +134,7 @@ public class DefaultServiceConverter implements ServiceConverter
         if (jwtManager.tokenEnabled())
         {
             HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("region", lang);
             map.put("url", body.getUrl());
             map.put("outputtype", body.getOutputtype());
             map.put("filetype", body.getFiletype());

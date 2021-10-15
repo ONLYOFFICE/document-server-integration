@@ -22,7 +22,7 @@ class ServiceConverter
   class << self
 
     # get the url of the converted file
-    def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass)
+    def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
 
       from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext  # get the current document extension
 
@@ -41,7 +41,8 @@ class ServiceConverter
         :filetype => from_ext.delete('.'),
         :title => title,
         :key => document_revision_id,
-        :password => file_pass
+        :password => file_pass,
+        :region => lang
       }
 
       data = nil

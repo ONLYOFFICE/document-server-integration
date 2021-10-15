@@ -196,6 +196,7 @@ function convert() {
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
+    $lang = $_COOKIE["ulang"];
     $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
@@ -218,7 +219,7 @@ function convert() {
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri, $filePass);
+            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri, $filePass, $lang);
         }
         catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();

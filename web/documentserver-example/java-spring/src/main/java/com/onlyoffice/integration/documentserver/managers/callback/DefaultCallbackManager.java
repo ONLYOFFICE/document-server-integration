@@ -97,7 +97,7 @@ public class DefaultCallbackManager implements CallbackManager {
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false);  // convert file and get url to a new file
+                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = documentManager
                             .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);  // get the correct file name if it already exists
@@ -208,7 +208,7 @@ public class DefaultCallbackManager implements CallbackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt,
-                        curExt, serviceConverter.generateRevisionId(downloadUri), null, false);  // convert file and get url to a new file
+                        curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {
