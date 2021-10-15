@@ -25,7 +25,7 @@ const he = require("he");
 var cache = null;
 
 // get the wopi discovery information
-function getDiscoveryInfo(siteUrl, maxTry = 1) {
+function getDiscoveryInfo(siteUrl) {
     let actions = [];
 
     if (cache) return cache;
@@ -55,9 +55,6 @@ function getDiscoveryInfo(siteUrl, maxTry = 1) {
             }
         }
     } catch (e) {
-        if (--maxTry > 0) {
-            setTimeout(getDiscoveryInfo, 1000, maxTry);
-        }
         return actions;
     }
 

@@ -46,7 +46,7 @@ exports.registerRoutes = function(app) {
         }
 
         // get the wopi discovery information
-        let actions = utils.getDiscoveryInfo(absSiteUrl, 3);
+        let actions = utils.getDiscoveryInfo(absSiteUrl);
         let wopiEnable = actions.length != 0 ? true : false;
 
         try {
