@@ -133,7 +133,7 @@ public class FileController {
     @PostMapping(path = "${url.converter}")
     @ResponseBody
     public String convert(@RequestBody Converter body,
-                          @CookieValue("uid") String uid){
+                          @CookieValue("uid") String uid, @CookieValue("ulang") String lang){
         String fileName = body.getFileName();
         String fileUri = documentManager.getDownloadUrl(fileName);
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
@@ -145,7 +145,7 @@ public class FileController {
             if(fileUtility.getConvertExts().contains(fileExt)){
                 String key = serviceConverter.generateRevisionId(fileUri);
                 String newFileUri = serviceConverter
-                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
+                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
 
                 if(newFileUri.isEmpty()){
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";

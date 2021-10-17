@@ -163,8 +163,8 @@ public class IndexServlet extends HttpServlet
     }
 
     // convert a file
-    private static void Convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
-    {
+    private static void Convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws UnsupportedEncodingException {
+        CookieManager cm = new CookieManager(request);
         response.setContentType("text/plain");
 
         try
@@ -178,6 +178,7 @@ public class IndexServlet extends HttpServlet
             JSONObject body = (JSONObject) parser.parse(bodyString);
 
             String fileName = FileUtility.GetFileName((String) body.get("filename"));
+            String lang = cm.getCookie("ulang");
             String filePass = body.get("filePass") != null ? (String) body.get("filePass") : null;
             String fileUri = DocumentManager.GetDownloadUrl(fileName);
             String fileExt = FileUtility.GetFileExtension(fileName);
@@ -191,7 +192,7 @@ public class IndexServlet extends HttpServlet
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
                 // get the url to the converted file
-                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
+                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
 
                 if (newFileUri.isEmpty())
                 {
@@ -234,7 +235,6 @@ public class IndexServlet extends HttpServlet
                 fileName = correctName;
 
                 // create meta information about the converted file with the user id and name specified
-                CookieManager cm = new CookieManager(request);
                 User user = Users.getUser(cm.getCookie("uid"));
 
                 DocumentManager.CreateMeta(fileName, user.id, user.name, null);

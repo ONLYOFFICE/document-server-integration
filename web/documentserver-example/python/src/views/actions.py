@@ -70,6 +70,7 @@ def convert(request):
         body = json.loads(request.body)
         filename = fileUtils.getFileName(body.get("filename"))
         filePass = body.get("filePass")
+        lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
@@ -78,7 +79,7 @@ def convert(request):
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
-            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass)  # get the url of the converted file
+            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass, lang)  # get the url of the converted file
 
             if not newUri:  # if the converter url is not received, the original file name is passed to the response
                 response.setdefault('step', '0')

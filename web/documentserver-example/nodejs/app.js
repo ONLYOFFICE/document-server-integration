@@ -228,6 +228,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
+    var lang = req.body.lang ? req.body.lang : null;
     var fileUri = docManager.getFileUri(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
@@ -301,7 +302,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
             let key = fileUri + stat.mtime.getTime();
 
             key = documentService.generateRevisionId(key);  // get document key
-            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass);  // get the url to the converted file
+            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass, lang);  // get the url to the converted file
         } else {
             writeResult(fileName, null, null);  // if the file with such an extension can't be converted, write the origin file to the result object
         }
