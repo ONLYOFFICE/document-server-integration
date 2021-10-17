@@ -157,7 +157,7 @@ function track() {
 
     // get the body of the post request and check if it is correct
     $data = readBody();
-    if ($data["error"]){
+    if (!empty($data["error"])){
         return $data;
     }
 
@@ -311,7 +311,7 @@ function csv() {
 // download a file
 function download() {
     try {
-        $fileName = basename($_GET["fileName"]);  // get the file name
+        $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
 
         if (isJwtEnabled()) {
