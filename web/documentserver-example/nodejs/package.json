@@ -28,7 +28,6 @@
     "log4js": "^6.3.0",
     "mime": "^2.4.6",
     "serve-favicon": "^2.5.0",
-    "sync-request": "^6.1.0",
     "urllib": "^2.36.1"
   },
   "license": "Apache",
