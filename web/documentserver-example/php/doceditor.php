@@ -255,7 +255,7 @@
                     $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $change ? $changes["changes"][0] : null;  // write information about changes to the object
+                    $obj["changes"] = $changes ? $changes["changes"] : null;  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
                     $obj["created"] = $change ? $change["created"] : null;
                     $obj["user"] = $change ? $change["user"] : null;
