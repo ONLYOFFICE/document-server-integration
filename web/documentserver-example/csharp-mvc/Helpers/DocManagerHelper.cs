@@ -75,7 +75,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string StoragePath(string fileName, string userAddress = null)
         {
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
             {
                 directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
             }
@@ -96,7 +96,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             // create the directory to this file version
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
             {
                 directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
             }
@@ -186,7 +186,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static List<FileInfo> GetStoredFiles()
         {
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
             {
                 directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
             }
@@ -250,8 +250,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(true))
             {
-                Path = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"]
-                : HttpRuntime.AppDomainAppVirtualPath + "/" + path,
+                Path = HttpRuntime.AppDomainAppVirtualPath + "/" + path,
                 Query = ""
             };
 

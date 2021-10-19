@@ -252,13 +252,15 @@ namespace OnlineEditorsExampleMVC.Models
 
                     dataObj.Add("key", key);
                     // write file url to the data object
-                    var prevFileUrl = i == currentVersion ? FileUri
-                        : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0]
-                            .Substring(HttpRuntime.AppDomainAppPath.Length));
-                    if (Path.IsPathRooted(storagePath))
+                    string prevFileUrl;
+                    if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
                     {
-                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetDownloadUrl(FileName) 
+                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetDownloadUrl(FileName)
                             : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                    }
+                    else {
+                       prevFileUrl = i == currentVersion ? FileUri
+                        : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length));
                     }
 
                     dataObj.Add("url", prevFileUrl);
@@ -284,9 +286,9 @@ namespace OnlineEditorsExampleMVC.Models
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = Path.IsPathRooted(storagePath) ? DocManagerHelper.GetDownloadUrl(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", "")
+                        var changesUrl = Path.IsPathRooted(storagePath) ? DocManagerHelper.GetDownloadUrl(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
                             : DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length));
-                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
+                        dataObj.Add("changesUrl", changesUrl);
                     }
                     if(JwtManager.Enabled)
                     {
