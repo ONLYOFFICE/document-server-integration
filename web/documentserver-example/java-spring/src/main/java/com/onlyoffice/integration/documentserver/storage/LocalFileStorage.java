@@ -32,9 +32,8 @@ import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -133,6 +132,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
     public boolean deleteFile(String fileName){
         if (fileName.isBlank()) return false;
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
 
         String filenameWithoutExt = fileUtility.getFileNameWithoutExtension(fileName);
 
