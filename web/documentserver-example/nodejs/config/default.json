@@ -13,7 +13,7 @@
   },
   "server": {
     "port": 3000,
-    "siteUrl": "https://documentserver/",
+    "siteUrl": "http://documentserver/",
     "wopi": {
       "discovery": "hosting/discovery"
     },
