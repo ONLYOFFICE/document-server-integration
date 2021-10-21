@@ -189,7 +189,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);
         //TODO: Add errors ENUM
-        if (!response.get("error").toString().equals("0")){
+        if (!response.get("error").toString().equals("0") && !response.get("error").toString().equals("4")){
             throw new RuntimeException(response.toJSONString());
         }
     }
