@@ -244,7 +244,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         json.put("id", uid);
         json.put("name", uname);
 
-        File meta = Files.createFile(Paths.get(histDir + File.separator + "createdInfo.json")).toFile();
+        File meta = new File(histDir + File.separator + "createdInfo.json");
         try (FileWriter writer = new FileWriter(meta)) {
             json.writeJSONString(writer);
         } catch (IOException ex){
