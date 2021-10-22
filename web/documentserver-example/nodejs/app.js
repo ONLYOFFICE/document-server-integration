@@ -753,7 +753,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             mode = "fillForms";
             canEdit = true;
         }
-        var submitForm = mode == "fillForms" && userid == "uid-1";
+        var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
         var countVersion = 1;
 
