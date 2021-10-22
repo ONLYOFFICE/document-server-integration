@@ -23,7 +23,7 @@ var descr_user_1 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can create files from templates using data from the editor",
-    "Can submit forms"
+    //"Can submit forms"
 ];
 
 var descr_user_2 = [
@@ -32,7 +32,7 @@ var descr_user_2 = [
     "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
     "This file is marked as favorite",
     "Can create new files from the editor",
-    "Can’t submit forms"
+    //"Can’t submit forms"
 ];
 
 var descr_user_3 = [
@@ -44,7 +44,7 @@ var descr_user_3 = [
     "Can’t download the file",
     "Can’t print the file",
     "Can create new files from the editor",
-    "Can’t submit forms"
+    //"Can’t submit forms"
 ];
 
 var descr_user_0 = [
@@ -55,7 +55,7 @@ var descr_user_0 = [
     "The file favorite state is undefined",
     "Can't mention others in comments",
     "Can't create new files from the editor",
-    "Can’t submit forms"
+    //"Can’t submit forms"
 ];
 
 var users = [
