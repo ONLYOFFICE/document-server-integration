@@ -219,7 +219,10 @@
                                                         <% } %>
                                                     <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
-                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
+                                                        </td>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
