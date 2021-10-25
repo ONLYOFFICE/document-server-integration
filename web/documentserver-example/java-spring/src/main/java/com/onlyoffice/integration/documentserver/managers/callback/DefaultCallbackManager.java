@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -81,7 +82,11 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        storageMutator.createFile(path, stream);
+        if (!Files.exists(path)){
+            storageMutator.createFile(path, stream);
+        } else {
+            Files.write(path, stream.readAllBytes());
+        }
     }
 
     @SneakyThrows

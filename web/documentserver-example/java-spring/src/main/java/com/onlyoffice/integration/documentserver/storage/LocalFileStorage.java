@@ -136,8 +136,8 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
         String filenameWithoutExt = fileUtility.getFileNameWithoutExtension(fileName);
 
-        Path filePath = Paths.get(getFileLocation(fileName));
-        Path filePathWithoutExt = Paths.get(getStorageLocation() + filenameWithoutExt);
+        Path filePath = fileName.contains(File.separator) ? Paths.get(fileName) : Paths.get(getFileLocation(fileName));
+        Path filePathWithoutExt = fileName.contains(File.separator) ? Paths.get(filenameWithoutExt) : Paths.get(getStorageLocation() + filenameWithoutExt);
 
         boolean fileDeleted = FileSystemUtils.deleteRecursively(filePath.toFile());
         boolean fileWithoutExtDeleted = FileSystemUtils.deleteRecursively(filePathWithoutExt.toFile());
