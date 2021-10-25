@@ -753,7 +753,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
-        if ((mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
+        if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
             mode = "fillForms";
             canEdit = true;
         }
