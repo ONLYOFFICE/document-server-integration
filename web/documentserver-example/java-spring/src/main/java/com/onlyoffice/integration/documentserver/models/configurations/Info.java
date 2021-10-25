@@ -23,10 +23,20 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 @Scope("prototype")
 @Getter
 @Setter
 public class Info {
+    private String owner = "Me";
     private Boolean favorite = null;
+    private String uploaded = getDate();
+
+    private String getDate() {
+        Date date = new Date();
+        return date.toString().replace(date.toString().substring(date.toString()
+                .indexOf(String.valueOf(date.getDay())), date.toString().length() - 4), "");
+    }
 }
