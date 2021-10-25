@@ -211,7 +211,14 @@
                                                         <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
                                                             <td class="contentCells contentCells-icon "></td>
                                                         <% } %>
-                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                        <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                    <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                            </td>
+                                                        <% } else {%>
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                        <%}%>
                                                     <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
