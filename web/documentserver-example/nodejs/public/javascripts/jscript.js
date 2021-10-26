@@ -102,7 +102,7 @@ if (typeof jQuery != "undefined") {
     
     var timer = null;
     var checkConvert = function (filePass) {
-        filePass = null;
+        filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
         }
