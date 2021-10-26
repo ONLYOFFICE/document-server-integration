@@ -227,7 +227,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.aspx?action=view&fileID=" + fileId;
+        var url = "doceditor.aspx?editorsMode=view&fileID=" + fileId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
