@@ -33,26 +33,30 @@ function getDiscoveryInfo(siteUrl) {
 
     try {
         urllib.request(urlModule.parse(siteUrl + configServer.get("wopi.discovery")), {method: "GET"}, (err, data) => {
-            let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
-                attributeNamePrefix: "",
-                ignoreAttributes: false,
-                parseAttributeValue: true,
-                attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
-            });
-            for (let app of discovery["wopi-discovery"]["net-zone"].app) {
-                if (!Array.isArray(app.action)) { app.action = [app.action]; }
-                for (let action of app.action) {
-                    actions.push({  // write all the parameters to the actions element
-                        app: app.name,
-                        favIconUrl: app.favIconUrl,
-                        checkLicense: app.checkLicense == 'true',
-                        name: action.name,
-                        ext: action.ext || "",
-                        progid: action.progid || "",
-                        isDefault: action.default ? true : false,
-                        urlsrc: action.urlsrc,
-                        requires: action.requires || ""
-                    });
+            if (data) {
+                let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
+                    attributeNamePrefix: "",
+                    ignoreAttributes: false,
+                    parseAttributeValue: true,
+                    attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
+                });
+                for (let app of discovery["wopi-discovery"]["net-zone"].app) {
+                    if (!Array.isArray(app.action)) {
+                        app.action = [app.action];
+                    }
+                    for (let action of app.action) {
+                        actions.push({  // write all the parameters to the actions element
+                            app: app.name,
+                            favIconUrl: app.favIconUrl,
+                            checkLicense: app.checkLicense == 'true',
+                            name: action.name,
+                            ext: action.ext || "",
+                            progid: action.progid || "",
+                            isDefault: action.default ? true : false,
+                            urlsrc: action.urlsrc,
+                            requires: action.requires || ""
+                        });
+                    }
                 }
             }
         });
