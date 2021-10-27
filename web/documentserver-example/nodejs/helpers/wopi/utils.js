@@ -26,12 +26,26 @@ const he = require("he");
 var cache = null;
 
 // get the wopi discovery information
-function getDiscoveryInfo(siteUrl) {
+async function getDiscoveryInfo(siteUrl) {
     let actions = [];
 
     if (cache) return cache;
 
     try {
+        actions = requestDiscovery(siteUrl);
+    } catch (e) {
+        return actions;
+    }
+
+    cache = actions;
+    setTimeout(() => cache = null, 1000 * 60 * 60); // 1 hour
+
+    return actions;
+}
+
+async function requestDiscovery(siteUrl) {
+    return new Promise((resolve, reject) => {
+        var actions = [];
         urllib.request(urlModule.parse(siteUrl + configServer.get("wopi.discovery")), {method: "GET"}, (err, data) => {
             if (data) {
                 let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
@@ -59,20 +73,14 @@ function getDiscoveryInfo(siteUrl) {
                     }
                 }
             }
+            resolve(actions);
         });
-    } catch (e) {
-        return actions;
-    }
-
-    cache = actions;
-    setTimeout(() => cache = null, 1000 * 60 * 60); // 1 hour
-
-    return actions;
+    })
 }
 
 // get actions of the specified extension
-function getActions(ext) {
-    let actions = getDiscoveryInfo();  // get the wopi discovery information
+async function getActions(ext) {
+    let actions = await getDiscoveryInfo();  // get the wopi discovery information
     let filtered = [];
 
     for (let action of actions) {  // and filter it by the specified extention
@@ -85,8 +93,8 @@ function getActions(ext) {
 }
 
 // get an action for the specified extension and name
-function getAction(ext, name) {
-    let actions = getDiscoveryInfo();
+async function getAction(ext, name) {
+    let actions = await getDiscoveryInfo();
 
     for (let action of actions) {
         if (action.ext == ext && action.name == name) {
@@ -98,8 +106,8 @@ function getAction(ext, name) {
 }
 
 // get the default action for the specified extension
-function getDefaultAction(ext) {
-    let actions = getDiscoveryInfo();
+async function getDefaultAction(ext) {
+    let actions = await getDiscoveryInfo();
 
     for (let action of actions) {
         if (action.ext == ext && action.isDefault) {

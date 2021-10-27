@@ -30,7 +30,7 @@ const users = require("../users");
 exports.registerRoutes = function(app) {
 
     // define a handler for the default wopi page
-    app.get("/wopi", function(req, res) {
+    app.get("/wopi", async function(req, res) {
 
         docManager.init(storageFolder, req, res);
 
@@ -46,7 +46,7 @@ exports.registerRoutes = function(app) {
         }
 
         // get the wopi discovery information
-        let actions = utils.getDiscoveryInfo(absSiteUrl);
+        let actions = await utils.getDiscoveryInfo(absSiteUrl);
         let wopiEnable = actions.length != 0 ? true : false;
 
         try {
@@ -56,8 +56,8 @@ exports.registerRoutes = function(app) {
             // run through all the files and write the corresponding information to each file
             for (var file of files) {
                 let ext = fileUtility.getFileExtension(file.name, true);  // get an extension of each file
-                file.actions = utils.getActions(ext);  // get actions of the specified extension
-                file.defaultAction = utils.getDefaultAction(ext);  // get the default action of the specified extension
+                file.actions = await utils.getActions(ext);  // get actions of the specified extension
+                file.defaultAction = await utils.getDefaultAction(ext);  // get the default action of the specified extension
             }
 
             // render wopiIndex template with the parameters specified
@@ -89,12 +89,12 @@ exports.registerRoutes = function(app) {
         }
     });
     // define a handler for getting wopi action information by its id
-    app.get("/wopi-action/:id", function(req, res) {
+    app.get("/wopi-action/:id", async function(req, res) {
         try {
             docManager.init(storageFolder, req, res);
 
             // get an action for the specified extension and name
-            let action = utils.getAction(fileUtility.getFileExtension(req.params['id'], true), req.query["action"]);
+            let action = await utils.getAction(fileUtility.getFileExtension(req.params['id'], true), req.query["action"]);
 
             // render wopiAction template with the parameters specified
             res.render("wopiAction", {
