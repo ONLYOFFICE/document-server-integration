@@ -24,7 +24,6 @@ const favicon = require("serve-favicon");
 const bodyParser = require("body-parser");
 const fileSystem = require("fs");
 const formidable = require("formidable");
-const syncRequest = require("sync-request");
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
@@ -44,6 +43,7 @@ const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHea
 const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
+const urllib = require("urllib");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -275,8 +275,9 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
             var correctName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + internalFileExt);  // get the file name with a new extension
 
-            var file = syncRequest("GET", newFileUri);
-            fileSystem.writeFileSync(docManager.storagePath(correctName), file.getBody());  // write a file with a new extension, but with the content from the origin file
+            urllib.request(newFileUri, {method: "GET"},function(err, data) {
+                fileSystem.writeFileSync(docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
+            });
 
             fileSystem.unlinkSync(docManager.storagePath(fileName));  // remove file with the origin extension
 
@@ -407,8 +408,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var downloadZip = body.changesurl;
                 if (downloadZip) {
                     var path_changes = docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
-                    var diffZip = syncRequest("GET", downloadZip);
-                    fileSystem.writeFileSync(path_changes, diffZip.getBody());  // write the document version differences to the archive
+                    urllib.request(downloadZip, {method: "GET"},function(err, data) {
+                        fileSystem.writeFileSync(path_changes, data);  // write the document version differences to the archive
+                    });
                 }
 
                 var changeshistory = body.changeshistory || JSON.stringify(body.history);
@@ -423,8 +425,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(storagePath, file.getBody());
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
+                    fileSystem.writeFileSync(storagePath, data);
+                });
 
                 var forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file
                 if (forcesavePath != "") {  // if this path is empty
@@ -508,8 +511,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                 }
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(forcesavePath, file.getBody());
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
+                    fileSystem.writeFileSync(forcesavePath, data);
+                });
 
                 if (isSubmitForm) {
                     var uid =body.actions[0].userid

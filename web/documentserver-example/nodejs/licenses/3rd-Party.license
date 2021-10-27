@@ -64,10 +64,6 @@ serve-favicon - Node.js middleware for serving a favicon. (https://github.com/ex
 License:        MIT
 License File:   serve-favicon.license
 
-sync-request  - Make synchronous web requests with cross-platform support. (https://github.com/ForbesLindesay/sync-request/blob/master/LICENSE)
-License:        MIT
-License File:   sync-request.license
-
 urllib        - Request HTTP URLs in a complex world — basic and digest authentication, redirections, cookies, timeout and more. (https://github.com/node-modules/urllib/blob/master/LICENSE)
 License:        MIT
 License File:   urllib.license

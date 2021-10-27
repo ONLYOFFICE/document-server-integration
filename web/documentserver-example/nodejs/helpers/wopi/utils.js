@@ -18,42 +18,21 @@
 
 const config = require("config");
 const configServer = config.get("server");
-const syncRequest = require("sync-request");
+var urlModule = require("url");
+var urllib = require("urllib");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
 
 var cache = null;
 
 // get the wopi discovery information
-function getDiscoveryInfo(siteUrl) {
+async function getDiscoveryInfo(siteUrl) {
     let actions = [];
 
     if (cache) return cache;
 
     try {
-        let response = syncRequest("GET", siteUrl + configServer.get("wopi.discovery"));
-        let discovery = xmlParser.parse(response.getBody().toString(), {  // create the discovery XML file with the parameters from the response
-            attributeNamePrefix: "",
-            ignoreAttributes: false,
-            parseAttributeValue: true,
-            attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
-        });
-        for (let app of discovery["wopi-discovery"]["net-zone"].app) {
-            if (!Array.isArray(app.action)) { app.action = [app.action]; }
-            for (let action of app.action) {
-                actions.push({  // write all the parameters to the actions element
-                    app: app.name,
-                    favIconUrl: app.favIconUrl,
-                    checkLicense: app.checkLicense == 'true',
-                    name: action.name,
-                    ext: action.ext || "",
-                    progid: action.progid || "",
-                    isDefault: action.default ? true : false,
-                    urlsrc: action.urlsrc,
-                    requires: action.requires || ""
-                });
-            }
-        }
+        actions = requestDiscovery(siteUrl);
     } catch (e) {
         return actions;
     }
@@ -64,9 +43,44 @@ function getDiscoveryInfo(siteUrl) {
     return actions;
 }
 
+async function requestDiscovery(siteUrl) {
+    return new Promise((resolve, reject) => {
+        var actions = [];
+        urllib.request(urlModule.parse(siteUrl + configServer.get("wopi.discovery")), {method: "GET"}, (err, data) => {
+            if (data) {
+                let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
+                    attributeNamePrefix: "",
+                    ignoreAttributes: false,
+                    parseAttributeValue: true,
+                    attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
+                });
+                for (let app of discovery["wopi-discovery"]["net-zone"].app) {
+                    if (!Array.isArray(app.action)) {
+                        app.action = [app.action];
+                    }
+                    for (let action of app.action) {
+                        actions.push({  // write all the parameters to the actions element
+                            app: app.name,
+                            favIconUrl: app.favIconUrl,
+                            checkLicense: app.checkLicense == 'true',
+                            name: action.name,
+                            ext: action.ext || "",
+                            progid: action.progid || "",
+                            isDefault: action.default ? true : false,
+                            urlsrc: action.urlsrc,
+                            requires: action.requires || ""
+                        });
+                    }
+                }
+            }
+            resolve(actions);
+        });
+    })
+}
+
 // get actions of the specified extension
-function getActions(ext) {
-    let actions = getDiscoveryInfo();  // get the wopi discovery information
+async function getActions(ext) {
+    let actions = await getDiscoveryInfo();  // get the wopi discovery information
     let filtered = [];
 
     for (let action of actions) {  // and filter it by the specified extention
@@ -79,8 +93,8 @@ function getActions(ext) {
 }
 
 // get an action for the specified extension and name
-function getAction(ext, name) {
-    let actions = getDiscoveryInfo();
+async function getAction(ext, name) {
+    let actions = await getDiscoveryInfo();
 
     for (let action of actions) {
         if (action.ext == ext && action.name == name) {
@@ -92,8 +106,8 @@ function getAction(ext, name) {
 }
 
 // get the default action for the specified extension
-function getDefaultAction(ext) {
-    let actions = getDiscoveryInfo();
+async function getDefaultAction(ext) {
+    let actions = await getDiscoveryInfo();
 
     for (let action of actions) {
         if (action.ext == ext && action.isDefault) {
