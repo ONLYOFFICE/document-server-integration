@@ -31,6 +31,7 @@ import java.util.List;
 public class User extends AbstractEntity {
     private String name;
     private String email;
+    private Boolean favorite;
     @ManyToOne
     private Group group;
     @OneToOne

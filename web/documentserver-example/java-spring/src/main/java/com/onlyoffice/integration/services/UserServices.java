@@ -53,12 +53,13 @@ public class UserServices {
                            List<String> reviewGroups,
                            List<String> viewGroups,
                            List<String> editGroups,
-                           List<String> removeGroups){
+                           List<String> removeGroups, Boolean favoriteDoc){
         User newUser = new User();
         newUser.setName(name);
         newUser.setEmail(email);
         newUser.setGroup(groupServices.createGroup(group));
         newUser.setDescriptions(description);
+        newUser.setFavorite(favoriteDoc);
 
         List<Group> groupsReview = groupServices.createGroups(reviewGroups);
         List<Group> commentGroupsView = groupServices.createGroups(viewGroups);
