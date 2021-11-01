@@ -23,7 +23,9 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Component
 @Scope("prototype")
@@ -35,8 +37,7 @@ public class Info {
     private String uploaded = getDate();
 
     private String getDate() {
-        Date date = new Date();
-        return date.toString().replace(date.toString().substring(date.toString()
-                .indexOf(String.valueOf(date.getDay())), date.toString().length() - 4), "");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+        return simpleDateFormat.format(new Date());
     }
 }
