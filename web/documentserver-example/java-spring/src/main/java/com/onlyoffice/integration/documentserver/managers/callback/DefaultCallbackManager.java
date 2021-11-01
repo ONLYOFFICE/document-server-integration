@@ -111,37 +111,40 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String storagePath = storagePathBuilder.getFileLocation(newFileName);
-        Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));
-        storageMutator.createDirectory(histDir);
-
-        String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
-                storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
-
-        Path ver = Paths.get(versionDir);
         Path lastVersion = Paths.get(storagePathBuilder.getFileLocation(fileName));
-        Path toSave = Paths.get(storagePath);
 
-        storageMutator.createDirectory(ver);
-        storageMutator.moveFile(lastVersion,  Paths.get(versionDir + File.separator + "prev" + curExt));
+        if (lastVersion.toFile().exists()) {
+            Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));
+            storageMutator.createDirectory(histDir);
 
-        downloadToFile(downloadUri, toSave);
-        downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
+            String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
+                    storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
 
-        JSONObject jsonChanges = new JSONObject();
-        jsonChanges.put("changes", body.getHistory().getChanges());
-        jsonChanges.put("serverVersion", body.getHistory().getServerVersion());
-        String history = objectMapper.writeValueAsString(jsonChanges);
+            Path ver = Paths.get(versionDir);
+            Path toSave = Paths.get(storagePath);
 
-        if(history==null && body.getHistory()!=null){
-            history = objectMapper.writeValueAsString(body.getHistory());
+            storageMutator.createDirectory(ver);
+            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));
+
+            downloadToFile(downloadUri, toSave);
+            downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
+
+            JSONObject jsonChanges = new JSONObject();
+            jsonChanges.put("changes", body.getHistory().getChanges());
+            jsonChanges.put("serverVersion", body.getHistory().getServerVersion());
+            String history = objectMapper.writeValueAsString(jsonChanges);
+
+            if (history == null && body.getHistory() != null) {
+                history = objectMapper.writeValueAsString(body.getHistory());
+            }
+
+            if (history != null && !history.isEmpty()) {
+                storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
+            }
+
+            storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
+            storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
         }
-
-        if (history != null && !history.isEmpty()) {
-            storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
-        }
-
-        storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
-        storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
     }
 
     //TODO: Replace (String method) with (Enum method)
