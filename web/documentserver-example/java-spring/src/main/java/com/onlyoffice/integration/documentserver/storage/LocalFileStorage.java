@@ -131,8 +131,8 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     public boolean deleteFile(String fileName){
-        if (fileName.isBlank()) return false;
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        if (fileName.isBlank()) return false;
 
         String filenameWithoutExt = fileUtility.getFileNameWithoutExtension(fileName);
 
@@ -146,8 +146,8 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     public boolean deleteFileHistory(String fileName) {
-        if (fileName.isBlank()) return false;
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        if (fileName.isBlank()) return false;
 
         Path fileHistoryPath = Paths.get(getStorageLocation() + getHistoryDir(fileName));
         Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + getHistoryDir(fileUtility.getFileNameWithoutExtension(fileName)));
