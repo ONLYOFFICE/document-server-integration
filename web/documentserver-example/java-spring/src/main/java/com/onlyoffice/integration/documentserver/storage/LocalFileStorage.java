@@ -253,6 +253,20 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         }
     }
 
+    public boolean createOrUpdateFile(Path path, InputStream stream) {
+        if (!Files.exists(path)){
+            return createFile(path, stream);
+        } else {
+            try {
+                Files.write(path, stream.readAllBytes());
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     public String getServerUrl(Boolean forDocumentServer) {
         if (forDocumentServer && !docserviceUrlExample.equals("")) {
             return docserviceUrlExample;

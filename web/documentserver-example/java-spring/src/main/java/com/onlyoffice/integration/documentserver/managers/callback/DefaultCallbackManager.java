@@ -82,11 +82,7 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        if (!Files.exists(path)){
-            storageMutator.createFile(path, stream);
-        } else {
-            Files.write(path, stream.readAllBytes());
-        }
+        storageMutator.createOrUpdateFile(path, stream);
     }
 
     @SneakyThrows
