@@ -73,10 +73,11 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
             config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));
         }
         String fileName = wrapper.getFileName();
+        boolean userIsAnon = wrapper.getUser().getName().equals("Anonymous");
 
-        config.setTemplates(templateManager.createTemplates(fileName));
+        config.setTemplates(userIsAnon ? null : templateManager.createTemplates(fileName));
         config.setCallbackUrl(documentManager.getCallback(fileName));
-        config.setCreateUrl(documentManager.getCreateUrl(fileName, false));
+        config.setCreateUrl(userIsAnon ? null : documentManager.getCreateUrl(fileName, false));
         config.setLang(wrapper.getLang());
         Boolean canEdit = fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName));
         Action action = wrapper.getAction();
