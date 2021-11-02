@@ -45,7 +45,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    DocumentHelper.get_file_uri(@file_name, false)
+    File.absolute_path?(Rails.configuration.storagePath) ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
   end
 
   # get document type from its name (word, cell or slide)
