@@ -51,7 +51,6 @@ public class FileModel
         document = new Document();
         document.title = fileName;
         document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
-        document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -91,11 +90,11 @@ public class FileModel
         // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
-        changeType(mode, type, user);
+        changeType(mode, type, user, fileName);
     }
 
     // change the document type
-    public void changeType(String _mode, String _type, User user)
+    public void changeType(String _mode, String _type, User user, String fileName)
     {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
@@ -110,12 +109,12 @@ public class FileModel
         // set document permissions
         document.permissions = new Permissions(mode, type, canEdit, user);
 
-        if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
+        if (type.equals("embedded")) InitDesktop(fileName);  // set parameters for the embedded document
     }
 
-    public void InitDesktop()
+    public void InitDesktop(String fileName)
     {
-        editorConfig.InitDesktop(document.urlUser);
+        editorConfig.InitDesktop(DocumentManager.GetFileUri(fileName, false));
     }
 
     // generate document token
@@ -242,7 +241,6 @@ public class FileModel
     {
         public String title;
         public String url;
-        public String urlUser;
         public String fileType;
         public String key;
         public Info info;
