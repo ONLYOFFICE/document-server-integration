@@ -123,8 +123,9 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
+    var isEmbedded = req.query.dmode;
 
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -691,7 +692,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getDownloadUrl(fileName);
-        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
+        var urlUser = path.isAbsolute(storageFolder) ? docManager.getDownloadUrl(fileName) + "&dmode=emb" : docManager.getlocalFileUri(fileName, 0, false);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
