@@ -41,7 +41,7 @@ namespace OnlineEditorsExample
         // get url to the original file for Document Server
         public static string FileUriUser
         {
-            get { return _Default.FileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? getDownloadUrl(FileName) + "&dmode=emb" : _Default.FileUri(FileName, false); }
         }
 
         protected string Key
