@@ -371,8 +371,9 @@ namespace OnlineEditorsExampleMVC
                 var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] 
                     : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = context.Request["userAddress"];
+                var isEmbedded = context.Request["dmode"];
 
-                if (JwtManager.Enabled)
+                if (JwtManager.Enabled && isEmbedded == null)
                 {
                     string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 

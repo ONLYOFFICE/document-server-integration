@@ -43,7 +43,7 @@ namespace OnlineEditorsExampleMVC.Models
         // get file url for user
         public string FileUriUser
         {
-            get { return DocManagerHelper.GetFileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? DownloadUrl + "&dmode=emb" : DocManagerHelper.GetFileUri(FileName, false); }
         }
 
         public string FileName { get; set; }  // file name
