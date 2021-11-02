@@ -32,7 +32,7 @@ async function getDiscoveryInfo(siteUrl) {
     if (cache) return cache;
 
     try {
-        actions = requestDiscovery(siteUrl);
+        actions = await requestDiscovery(siteUrl);
     } catch (e) {
         return actions;
     }
@@ -54,22 +54,24 @@ async function requestDiscovery(siteUrl) {
                     parseAttributeValue: true,
                     attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
                 });
-                for (let app of discovery["wopi-discovery"]["net-zone"].app) {
-                    if (!Array.isArray(app.action)) {
-                        app.action = [app.action];
-                    }
-                    for (let action of app.action) {
-                        actions.push({  // write all the parameters to the actions element
-                            app: app.name,
-                            favIconUrl: app.favIconUrl,
-                            checkLicense: app.checkLicense == 'true',
-                            name: action.name,
-                            ext: action.ext || "",
-                            progid: action.progid || "",
-                            isDefault: action.default ? true : false,
-                            urlsrc: action.urlsrc,
-                            requires: action.requires || ""
-                        });
+                if (discovery["wopi-discovery"]) {
+                    for (let app of discovery["wopi-discovery"]["net-zone"].app) {
+                        if (!Array.isArray(app.action)) {
+                            app.action = [app.action];
+                        }
+                        for (let action of app.action) {
+                            actions.push({  // write all the parameters to the actions element
+                                app: app.name,
+                                favIconUrl: app.favIconUrl,
+                                checkLicense: app.checkLicense == 'true',
+                                name: action.name,
+                                ext: action.ext || "",
+                                progid: action.progid || "",
+                                isDefault: action.default ? true : false,
+                                urlsrc: action.urlsrc,
+                                requires: action.requires || ""
+                            });
+                        }
                     }
                 }
             }
