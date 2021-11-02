@@ -158,7 +158,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     docManager.storagePath(""); // mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();  // get the path to the user host
-    const uploadDir = path.join(storageFolder, userIp);
+    const uploadDir = path.isAbsolute(storageFolder) ? storageFolder : path.join(storageFolder, userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');  // and create directory for temporary files if it doesn't exist
     docManager.createDirectory(uploadDirTmp);
 
