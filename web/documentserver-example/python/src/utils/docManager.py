@@ -160,7 +160,7 @@ def getRootFolder(req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    directory = config.STORAGE_PATH if os.path.isabs(config.STORAGE_PATH) else os.path.join(config.STORAGE_PATH, curAdr)
 
     if not os.path.exists(directory): # if such a directory does not exist, make it
         os.makedirs(directory)
