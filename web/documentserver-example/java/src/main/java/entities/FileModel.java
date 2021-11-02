@@ -114,7 +114,7 @@ public class FileModel
 
     public void InitDesktop(String fileName)
     {
-        editorConfig.InitDesktop(DocumentManager.GetFileUri(fileName, false));
+        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName) + "&dmode=emb");
     }
 
     // generate document token

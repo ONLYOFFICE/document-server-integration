@@ -394,8 +394,9 @@ public class IndexServlet extends HttpServlet
         try {
             String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
+            String isEmbedded = request.getParameter("dmode");
 
-            if (DocumentManager.TokenEnabled()) {
+            if (DocumentManager.TokenEnabled() && isEmbedded == null) {
 
                 String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
