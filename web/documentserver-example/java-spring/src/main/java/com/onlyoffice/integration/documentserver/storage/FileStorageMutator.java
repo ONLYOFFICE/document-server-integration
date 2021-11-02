@@ -17,4 +17,5 @@ public interface FileStorageMutator {
     Resource loadFileAsResource(String fileName);
     File[] getStoredFiles();
     void createMeta(String fileName, String uid, String uname);
+    boolean createOrUpdateFile(Path path, InputStream stream);
 }

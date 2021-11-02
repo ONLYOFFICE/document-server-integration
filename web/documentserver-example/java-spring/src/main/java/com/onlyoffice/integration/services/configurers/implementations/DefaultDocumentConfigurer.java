@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Random;
 
 @Service
 @Primary
@@ -49,8 +48,6 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     @Autowired
     private ServiceConverter serviceConverter;
 
-    private Random rnd = new Random();
-
     public void configure(Document document, DefaultDocumentWrapper wrapper){
         String fileName = wrapper.getFileName();
         Permission permission = wrapper.getPermission();
@@ -59,7 +56,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setUrl(documentManager.getDownloadUrl(fileName));
         document.setUrlUser(documentManager.getFileUri(fileName, false));
         document.setFileType(fileUtility.getInternalExtension(fileUtility.getDocumentType(fileName)).replace(".",""));
-        document.getInfo().setFavorite(rnd.nextBoolean());
+        document.getInfo().setFavorite(wrapper.getFavorite());
 
         String key =  serviceConverter.
                         generateRevisionId(storagePathBuilder.getStorageLocation()

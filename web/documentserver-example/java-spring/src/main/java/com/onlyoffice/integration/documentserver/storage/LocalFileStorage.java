@@ -32,9 +32,8 @@ import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -132,12 +131,13 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     public boolean deleteFile(String fileName){
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         if (fileName.isBlank()) return false;
 
         String filenameWithoutExt = fileUtility.getFileNameWithoutExtension(fileName);
 
-        Path filePath = Paths.get(getFileLocation(fileName));
-        Path filePathWithoutExt = Paths.get(getStorageLocation() + filenameWithoutExt);
+        Path filePath = fileName.contains(File.separator) ? Paths.get(fileName) : Paths.get(getFileLocation(fileName));
+        Path filePathWithoutExt = fileName.contains(File.separator) ? Paths.get(filenameWithoutExt) : Paths.get(getStorageLocation() + filenameWithoutExt);
 
         boolean fileDeleted = FileSystemUtils.deleteRecursively(filePath.toFile());
         boolean fileWithoutExtDeleted = FileSystemUtils.deleteRecursively(filePathWithoutExt.toFile());
@@ -146,6 +146,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     public boolean deleteFileHistory(String fileName) {
+        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         if (fileName.isBlank()) return false;
 
         Path fileHistoryPath = Paths.get(getStorageLocation() + getHistoryDir(fileName));
@@ -244,12 +245,26 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         json.put("id", uid);
         json.put("name", uname);
 
-        File meta = Files.createFile(Paths.get(histDir + File.separator + "createdInfo.json")).toFile();
+        File meta = new File(histDir + File.separator + "createdInfo.json");
         try (FileWriter writer = new FileWriter(meta)) {
             json.writeJSONString(writer);
         } catch (IOException ex){
             ex.printStackTrace();
         }
+    }
+
+    public boolean createOrUpdateFile(Path path, InputStream stream) {
+        if (!Files.exists(path)){
+            return createFile(path, stream);
+        } else {
+            try {
+                Files.write(path, stream.readAllBytes());
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     public String getServerUrl(Boolean forDocumentServer) {

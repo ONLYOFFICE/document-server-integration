@@ -27,4 +27,5 @@ import lombok.Getter;
 public class DefaultDocumentWrapper {
     private Permission permission;
     private String fileName;
+    private Boolean favorite;
 }
