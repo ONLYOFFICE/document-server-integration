@@ -52,7 +52,7 @@
     }
 
     $fileuri = FileUri($filename, true);
-    $fileuriUser = FileUri($filename);
+    $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
