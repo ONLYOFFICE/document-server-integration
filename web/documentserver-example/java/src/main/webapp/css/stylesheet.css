@@ -71,6 +71,7 @@ header img {
 }
 
 .main{
+    display: table;
     height: calc(100% - 112px);
     min-height: 536px;
 }
