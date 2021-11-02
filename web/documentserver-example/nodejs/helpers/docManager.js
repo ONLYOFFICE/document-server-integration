@@ -156,11 +156,26 @@ docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
         return url;
     }
     return url + "-history/" + version;  // return history path to the specified file version
-};  
+};
 
 // get server url
 docManager.getServerUrl = function (forDocumentServer) {
-    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : (docManager.getProtocol() + "://" + docManager.req.get("host") + docManager.req.baseUrl);
+    return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : docManager.getServerPath();
+};
+
+// get server address from the request
+docManager.getServerPath = function () {
+   return docManager.getServerHost() + (docManager.req.headers["x-forwarded-path"] || docManager.req.baseUrl);
+};
+
+// get host address from the request
+docManager.getServerHost = function () {
+    return docManager.getProtocol() + "://" + (docManager.req.headers["x-forwarded-host"] || docManager.req.headers["host"]);
+};
+
+// get protocol from the request
+docManager.getProtocol = function () {
+    return docManager.req.headers["x-forwarded-proto"] || docManager.req.protocol;
 };
 
 // get callback url
@@ -300,11 +315,6 @@ docManager.getStoredFiles = function () {
         }
     }
     return result;
-};
-
-// get protocol from the request
-docManager.getProtocol = function () {
-    return docManager.req.headers["x-forwarded-proto"] || docManager.req.protocol;
 };
 
 // get current user host address
