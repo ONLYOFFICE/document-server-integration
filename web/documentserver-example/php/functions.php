@@ -119,7 +119,7 @@ function GenerateRevisionId($expected_key) {
 *
 * @return Document request result of conversion
 */
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass) {
+function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
     if (empty($from_extension))
     {
         $path_parts = pathinfo($document_uri);
@@ -148,7 +148,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         "filetype" => trim($from_extension, '.'),
         "title" => $title,
         "key" => $document_revision_id,
-        "password" => $filePass
+        "password" => $filePass,
+        "region" => $lang
     ];
 
     // add header token
@@ -200,9 +201,9 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 *
 * @return The percentage of completion of conversion
 */
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass) {
+function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass);
+    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang);
     $json = json_decode($responceFromConvertService, true);
 
     // if an error occurs, then display an error message

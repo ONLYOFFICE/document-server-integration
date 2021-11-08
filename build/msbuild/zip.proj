@@ -4,9 +4,9 @@
   <PropertyGroup>
     <To Condition=" '$(To)' == '' ">..\deploy\</To>
     <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
-    <NameCSharp>$(To).Net (C#) Example</NameCSharp>
+    <NameCSharp>$(To)DotNet (Csharp) Example</NameCSharp>
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
-    <NameMvc>$(To).Net (C# MVC) Example</NameMvc>
+    <NameMvc>$(To)DotNet (Csharp MVC) Example</NameMvc>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
     <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>

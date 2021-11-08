@@ -74,7 +74,8 @@ if (typeof jQuery != "undefined") {
     });
     
     var timer = null;
-    var checkConvert = function (filePass = null) {
+    var checkConvert = function (filePass) {
+        filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
         }
@@ -286,10 +287,6 @@ if (typeof jQuery != "undefined") {
     };
 
     var fileList = jq("tr.tableRow");
-    if (fileList.length > 0) {
-        console.log(jq("div#portal-info").is(":visible"));
-        jq("div#portal-info").hide();
-    }
 
     var mouseIsOverTooltip = false;
     var hideTooltipTimeout = null;

@@ -102,7 +102,7 @@ if (typeof jQuery != "undefined") {
     
     var timer = null;
     var checkConvert = function (filePass) {
-        filePass = null;
+        filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
         }
@@ -129,7 +129,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass},
+                data: {filename: fileName, filePass: filePass, lang: language},
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -308,10 +308,6 @@ if (typeof jQuery != "undefined") {
     };
 
     var fileList = jq("tr.tableRow");
-    if (fileList.length > 0) {
-        console.log(jq("div#portal-info").is(":visible"));
-        jq("div#portal-info").hide();
-    }
 
     var mouseIsOverTooltip = false;
     var hideTooltipTimeout = null;

@@ -45,6 +45,7 @@ public class ServiceConverter
 
     public static class ConvertBody
     {
+        public String region;
         public String url;
         public String outputtype;
         public String filetype;
@@ -72,7 +73,7 @@ public class ServiceConverter
     }
 
     // get the url of the converted file
-    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync) throws Exception
+    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync, String lang) throws Exception
     {
         // check if the fromExtension parameter is defined; if not, get it from the document url
         fromExtension = fromExtension == null || fromExtension.isEmpty() ? FileUtility.GetFileExtension(documentUri) : fromExtension;
@@ -87,6 +88,7 @@ public class ServiceConverter
 
         // write all the necessary parameters to the body object
         ConvertBody body = new ConvertBody();
+        body.region = lang;
         body.url = documentUri;
         body.outputtype = toExtension.replace(".", "");
         body.filetype = fromExtension.replace(".", "");
@@ -100,6 +102,7 @@ public class ServiceConverter
         if (DocumentManager.TokenEnabled())
         {
             HashMap<String, Object> map = new HashMap<String, Object>();
+            map.put("region", lang);
             map.put("url", body.url);
             map.put("outputtype", body.outputtype);
             map.put("filetype", body.filetype);

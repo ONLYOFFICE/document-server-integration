@@ -86,7 +86,7 @@
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
-                                                    <option><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
+                                                    <option value=<%= user.id %> ><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
                                                  <% } %>
                                              </select>
                                         </td>
@@ -159,25 +159,25 @@
                             <%
                                 if (storedFiles.Any())
                                 { %>
-                                    <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
-                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                            <thead>
-                                                <tr>
-                                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                                    <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
-                                                    <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                                    <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                                    <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                        <div class="scroll-table-body">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
-                                                <tbody>
-                                                    <%  foreach (var storedFile in storedFiles)
-                                                        { 
-                                                            var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                <div class="stored-list">
+                                    <span class="header-list">Your documents</span>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+                                                <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+                                                <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
+                                            <% foreach (var storedFile in storedFiles)
+                                               {
+                                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
                                                             var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower(); 
                                                             var canEdit = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
                                                         %>

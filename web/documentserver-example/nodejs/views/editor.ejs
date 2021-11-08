@@ -145,36 +145,32 @@
             console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
         };
 
-        var events = {
-            "onAppReady": onAppReady,
-            "onDocumentStateChange": onDocumentStateChange,
-            "onRequestEditRights": onRequestEditRights,
-            "onError": onError,
-            "onRequestHistory":  onRequestHistory,
-            "onRequestHistoryData": onRequestHistoryData,
-            "onRequestHistoryClose": onRequestHistoryClose,
-            "onOutdatedVersion": onOutdatedVersion,
-            "onMakeActionLink": onMakeActionLink,
-            "onMetaChange": onMetaChange,
-            "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-        };
+        var config = {<%- include("config") %>,
+                events: {
+                    "onAppReady": onAppReady,
+                    "onDocumentStateChange": onDocumentStateChange,
+                    "onRequestEditRights": onRequestEditRights,
+                    "onError": onError,
+                    "onRequestHistory":  onRequestHistory,
+                    "onRequestHistoryData": onRequestHistoryData,
+                    "onRequestHistoryClose": onRequestHistoryClose,
+                    "onOutdatedVersion": onOutdatedVersion,
+                    "onMakeActionLink": onMakeActionLink,
+                    "onMetaChange": onMetaChange,
+                    "onRequestInsertImage": onRequestInsertImage,
+                    "onRequestCompareFile": onRequestCompareFile,
+                    "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                }
+            };
 
-        var config = {<%- include("config") %>, events: events};
+        if (<%- JSON.stringify(usersForMentions) %> != null) {
+            config.events.onRequestUsers = onRequestUsers;
+            config.events.onRequestSendNotify = onRequestSendNotify;
+        }
 
         var connectEditor = function () {
-            addMentions();
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
             fixSize();
-        };
-
-        var addMentions = function () {
-            if (<%- JSON.stringify(usersForMentions) %> != null)
-            {
-                events.onRequestUsers = onRequestUsers;
-                events.onRequestSendNotify = onRequestSendNotify;
-            }
         };
 
         // get the editor sizes

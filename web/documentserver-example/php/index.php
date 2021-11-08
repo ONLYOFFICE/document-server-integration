@@ -136,7 +136,13 @@
                             </td>
                             <td class="section">
                                 <div class="main-panel">
-                                    <div id="portal-info">
+                                    <?php
+                                    $storedFiles = getStoredFiles();
+                                    if (!empty($storedFiles)): ?>
+                                        <div id="portal-info" style="display: none">
+                                    <?php else: ?>
+                                        <div id="portal-info" style="display: block">
+                                    <?php endif; ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
                                             Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -153,10 +159,9 @@
                                             }
                                             echo '</ul>';
                                             echo '</div>';
-                                        } ?>"
+                                        } ?>
                                     </div>
                                     <?php
-                                        $storedFiles = getStoredFiles();
                                         if (!empty($storedFiles)) { ?>
                                             <div class="stored-list">
                                                 <span class="header-list">Your documents</span>

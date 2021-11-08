@@ -31,7 +31,7 @@ import config
 from . import fileUtils, jwtManager
 
 # convert file and give url to a new file
-def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None):
+def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
     if not fromExt: # check if the extension from the request matches the real file extension
         fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
 
@@ -43,7 +43,8 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None):
         'filetype': fromExt.replace('.', ''),
         'title': title,
         'key': docKey,
-        'password': filePass
+        'password': filePass,
+        'region': lang
     }
 
     headers={'accept': 'application/json'}

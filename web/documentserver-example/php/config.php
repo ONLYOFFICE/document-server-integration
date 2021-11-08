@@ -13,7 +13,7 @@ $GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
 
-$GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
+$GLOBALS['DOC_SERV_SITE_URL'] = "http://documentserver/";
 
 $GLOBALS['DOC_SERV_CONVERTER_URL'] = "ConvertService.ashx";
 $GLOBALS['DOC_SERV_API_URL'] = "web-apps/apps/api/documents/api.js";

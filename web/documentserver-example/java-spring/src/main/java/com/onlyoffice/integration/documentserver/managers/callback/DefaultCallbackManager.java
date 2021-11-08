@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -81,7 +82,7 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        storageMutator.createFile(path, stream);
+        storageMutator.createOrUpdateFile(path, stream);
     }
 
     @SneakyThrows
@@ -97,7 +98,7 @@ public class DefaultCallbackManager implements CallbackManager {
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false);  // convert file and get url to a new file
+                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = documentManager
                             .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);  // get the correct file name if it already exists
@@ -110,37 +111,40 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String storagePath = storagePathBuilder.getFileLocation(newFileName);
-        Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));
-        storageMutator.createDirectory(histDir);
-
-        String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
-                storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
-
-        Path ver = Paths.get(versionDir);
         Path lastVersion = Paths.get(storagePathBuilder.getFileLocation(fileName));
-        Path toSave = Paths.get(storagePath);
 
-        storageMutator.createDirectory(ver);
-        storageMutator.moveFile(lastVersion,  Paths.get(versionDir + File.separator + "prev" + curExt));
+        if (lastVersion.toFile().exists()) {
+            Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));
+            storageMutator.createDirectory(histDir);
 
-        downloadToFile(downloadUri, toSave);
-        downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
+            String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),
+                    storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
 
-        JSONObject jsonChanges = new JSONObject();
-        jsonChanges.put("changes", body.getHistory().getChanges());
-        jsonChanges.put("serverVersion", body.getHistory().getServerVersion());
-        String history = objectMapper.writeValueAsString(jsonChanges);
+            Path ver = Paths.get(versionDir);
+            Path toSave = Paths.get(storagePath);
 
-        if(history==null && body.getHistory()!=null){
-            history = objectMapper.writeValueAsString(body.getHistory());
+            storageMutator.createDirectory(ver);
+            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));
+
+            downloadToFile(downloadUri, toSave);
+            downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));
+
+            JSONObject jsonChanges = new JSONObject();
+            jsonChanges.put("changes", body.getHistory().getChanges());
+            jsonChanges.put("serverVersion", body.getHistory().getServerVersion());
+            String history = objectMapper.writeValueAsString(jsonChanges);
+
+            if (history == null && body.getHistory() != null) {
+                history = objectMapper.writeValueAsString(body.getHistory());
+            }
+
+            if (history != null && !history.isEmpty()) {
+                storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
+            }
+
+            storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
+            storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
         }
-
-        if (history != null && !history.isEmpty()) {
-            storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
-        }
-
-        storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
-        storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
     }
 
     //TODO: Replace (String method) with (Enum method)
@@ -189,8 +193,15 @@ public class DefaultCallbackManager implements CallbackManager {
 
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);
         //TODO: Add errors ENUM
-        if (!response.get("error").toString().equals("0")){
-            throw new RuntimeException(response.toJSONString());
+        String responseCode = response.get("error").toString();
+        switch(responseCode) {
+            case "0":
+            case "4": {
+                break;
+            }
+            default: {
+                throw new RuntimeException(response.toJSONString());
+            }
         }
     }
 
@@ -208,7 +219,7 @@ public class DefaultCallbackManager implements CallbackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt,
-                        curExt, serviceConverter.generateRevisionId(downloadUri), null, false);  // convert file and get url to a new file
+                        curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {

@@ -36,4 +36,5 @@ public class Convert {
     private String filePass;
     private Boolean async;
     private String token;
+    private String lang;
 }
