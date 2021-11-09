@@ -94,6 +94,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
                     + File.separator + this.storageAddress
                     + File.separator;
         }
+        if (!Files.exists(Paths.get(directory))) {
+            createDirectory(Paths.get(directory));
+        }
 
         return directory;
     }

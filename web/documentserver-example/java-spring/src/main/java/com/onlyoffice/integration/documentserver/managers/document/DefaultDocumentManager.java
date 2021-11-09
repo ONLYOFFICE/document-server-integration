@@ -185,7 +185,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
-        String demoName = (sample ?"sample.":"new." + fileExt);
+        String demoName = (sample ?"sample.":"new.") + fileExt;
         String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;
         String fileName = getCorrectName(demoName);
 
