@@ -74,7 +74,8 @@ if (typeof jQuery != "undefined") {
     });
     
     var timer = null;
-    var checkConvert = function (filePass = null) {
+    var checkConvert = function (filePass) {
+        filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
         }

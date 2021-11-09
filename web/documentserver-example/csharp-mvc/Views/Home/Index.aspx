@@ -86,7 +86,7 @@
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
-                                                    <option><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
+                                                    <option value=<%= user.id %> ><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
                                                  <% } %>
                                              </select>
                                         </td>

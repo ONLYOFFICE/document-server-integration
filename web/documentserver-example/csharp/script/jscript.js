@@ -74,7 +74,8 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (filePass = null) {
+    var checkConvert = function (filePass) {
+		filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
         }
@@ -226,7 +227,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.aspx?action=view&fileID=" + fileId;
+        var url = "doceditor.aspx?editorsMode=view&fileID=" + fileId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();

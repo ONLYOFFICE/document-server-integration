@@ -77,6 +77,7 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
                     .builder()
                     .fileName(fileName)
                     .permission(userPermissions)
+                    .favorite(wrapper.getUser().getFavorite())
                     .build();
 
             defaultDocumentConfigurer.configure(fileModel.getDocument(), documentWrapper);

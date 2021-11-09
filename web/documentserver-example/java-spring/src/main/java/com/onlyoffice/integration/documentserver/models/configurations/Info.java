@@ -23,10 +23,21 @@ import lombok.Setter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 @Component
 @Scope("prototype")
 @Getter
 @Setter
 public class Info {
+    private String owner = "Me";
     private Boolean favorite = null;
+    private String uploaded = getDate();
+
+    private String getDate() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+        return simpleDateFormat.format(new Date());
+    }
 }
