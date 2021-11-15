@@ -78,7 +78,7 @@ namespace OnlineEditorsExample
             }
             catch (Exception e)
             {
-                context.Response.Write("{ \"error\": \"" + 1 + "\", \"documentType\": \"" + e.Message + "\"}");
+                context.Response.Write("{ \"error\": \"" + 1 + "\", \"message\": \"" + e.Message + "\"}");
             }
         }
 

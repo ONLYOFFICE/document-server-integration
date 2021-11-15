@@ -333,9 +333,11 @@
 
         var docEditor;
 
-        var innerAlert = function (message) {
+        var innerAlert = function (message, inEditor) {
             if (console && console.log)
                 console.log(message);
+            if (inEditor && docEditor)
+                docEditor.showMessage(message);
         };
 
         // the application is loaded into the browser
@@ -415,6 +417,23 @@
             docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
         };
 
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=saveas");
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                innerAlert(JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf("{"))).file, true);
+            }
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -477,6 +496,10 @@
                 innerAlert("onRequestSendNotify: " + data);
             };
             <?php endif; ?>
+
+            if (config.editorConfig.createUrl) {
+                config.events.onRequestSaveAs = onRequestSaveAs;
+            };
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

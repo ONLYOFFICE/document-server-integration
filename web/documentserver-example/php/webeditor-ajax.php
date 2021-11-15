@@ -87,11 +87,52 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         case "files":
             $response_array = files();
             die (json_encode($response_array));
+        case "saveas":
+            $response_array = saveas();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
             die(json_encode($response_array));
     }
+}
+
+// save copy as...
+function saveas() {
+   try {
+       $result;
+       $post = json_decode(file_get_contents('php://input'), true);
+       $fileurl = $post["url"];
+       $title = $post["title"];
+       $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
+       $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD']);
+       $filename = GetCorrectName($title);
+
+       if (!in_array("." . $extension, $allexts)) {
+           $result["error"] = "File type is not supported";
+           return $result;
+       }
+       $headers = get_headers($fileurl, 1);
+       $content_length = $headers["Content-Length"];
+       $data = file_get_contents(str_replace(" ","%20",$fileurl));
+
+       if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
+           $result["error"] = "File size is incorrect";
+           return $result;
+       }
+
+       file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
+       $user = getUser($_GET["user"]);
+       createMeta($filename, $user->id, $user->name);  // and create meta data for this file
+
+       $result["file"] = $filename;
+       return $result;
+   } catch (Exception $e) {
+       sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
+       $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
+       return $result;
+   }
 }
 
 // uploading a file
@@ -107,7 +148,7 @@ function upload() {
     $tmp = $_FILES['files']['tmp_name'];
 
     // if the temporary name doesn't exist, then an error occurs
-    if (empty(tmp)) {
+    if (empty($tmp)) {
         $result["error"] = 'No file sent';
         return $result;
     }
@@ -157,7 +198,7 @@ function track() {
 
     // get the body of the post request and check if it is correct
     $data = readBody();
-    if ($data["error"]){
+    if (!empty($data["error"])){
         return $data;
     }
 
