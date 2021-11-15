@@ -355,7 +355,7 @@ namespace OnlineEditorsExample
                 using (var readStream = new StreamReader(receiveStream))
                 {
                     fileData = readStream.ReadToEnd();
-                    if (string.IsNullOrEmpty(fileData)) return "{\"error\":1,\"message\":\"Request stream is empty\"}";
+                    if (string.IsNullOrEmpty(fileData)) return "{\"error\":\"Request stream is empty\"}";
                 }
             }
             catch (Exception e)
@@ -374,7 +374,7 @@ namespace OnlineEditorsExample
 
             if (!allExt.Contains(extension))
             {
-                return "{\"error\":1,\"message\":\"File type is not supported\"}";
+                return "{\"error\":\"File type is not supported\"}";
             }
             
             var req = (HttpWebRequest)WebRequest.Create(fileUrl);
@@ -390,7 +390,7 @@ namespace OnlineEditorsExample
                 
                 if (stream == null || req.GetResponse().ContentLength <= 0 || req.GetResponse().ContentLength > MaxFileSize)
                 {
-                    return "{\"error\":1,\"message\":\"File size is incorrect\"}";
+                    return "{\"error\": \"File size is incorrect\"}";
                 }
                 const int bufferSize = 4096;
             
@@ -409,7 +409,7 @@ namespace OnlineEditorsExample
             var user = Users.getUser(id);  // get the user
             DocEditor.CreateMeta(fileName, user.id, user.name, null);
 
-            return "{ \"file\": \"" + fileName + "\"}";
+            return "{\"file\": \"" + fileName + "\"}";
         }
 
         // converting a file

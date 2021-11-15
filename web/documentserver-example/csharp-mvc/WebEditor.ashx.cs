@@ -82,7 +82,7 @@ namespace OnlineEditorsExampleMVC
                     using (var readStream = new StreamReader(receiveStream))
                     {
                         fileData = readStream.ReadToEnd();
-                        if (string.IsNullOrEmpty(fileData)) context.Response.Write("{\"error\":1,\"message\":\"Request stream is empty\"}");
+                        if (string.IsNullOrEmpty(fileData)) context.Response.Write("{\"error\":\"Request stream is empty\"}");
                     }
                 }
                 catch (Exception e)
@@ -104,7 +104,7 @@ namespace OnlineEditorsExampleMVC
     
                 if (!allExt.Contains(extension))
                 { 
-                    context.Response.Write("{\"error\":1,\"message\":\"File type is not supported\"}");
+                    context.Response.Write("{\"error\":\"File type is not supported\"}");
                 }
                 
                 var req = (HttpWebRequest)WebRequest.Create(fileUrl);
@@ -114,7 +114,7 @@ namespace OnlineEditorsExampleMVC
                     
                     if (stream == null || req.GetResponse().ContentLength <= 0 || req.GetResponse().ContentLength > DocManagerHelper.MaxFileSize)
                     {
-                        context.Response.Write("{\"error\":1,\"message\":\"File size is incorrect\"}");
+                        context.Response.Write("{\"error\": \"File size is incorrect\"}");
                     }
                     const int bufferSize = 4096;
                 
@@ -137,7 +137,7 @@ namespace OnlineEditorsExampleMVC
             }
             catch (Exception e)
             {
-                context.Response.Write("{ \"error\": \"" + 1 + "\", \"documentType\": \"" + e.Message + "\"}");
+                context.Response.Write("{ \"error\": \"" + 1 + "\", \"message\": \"" + e.Message + "\"}");
             }
         }
 
