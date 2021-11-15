@@ -23,6 +23,7 @@
  SOFTWARE.
 
 """
+import requests
 
 import config
 import json
@@ -112,6 +113,37 @@ def createNew(request):
 
     except Exception as e:
         response.setdefault('error', e.args[0])
+
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+# save file as...
+def saveAs(request):
+    response ={}
+
+    try:
+        body = json.loads(request.body)
+        saveAsFileUrl = body.get('url')
+        title = body.get('title')
+
+        filename = docManager.getCorrectName(title, request)
+        path = docManager.getStoragePath(filename, request)
+        resp = requests.get(saveAsFileUrl)
+
+        if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+            response.setdefault('error', 'File size is incorrect')
+            raise Exception('File size is incorrect')
+
+        curExt = fileUtils.getFileExt(filename)
+        if not docManager.isSupportedExt(curExt):  # check if the file extension is supported by the document manager
+            response.setdefault('error', 'File type is not supported')
+            raise Exception('File type is not supported')
+
+        docManager.saveFileFromUri(saveAsFileUrl, path, request, True)  # save the file from the new url in the storage directory
+
+        response.setdefault('file', filename)
+    except Exception as e:
+        response.setdefault('error', 1)
+        response.setdefault('message', e.args[0])
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
