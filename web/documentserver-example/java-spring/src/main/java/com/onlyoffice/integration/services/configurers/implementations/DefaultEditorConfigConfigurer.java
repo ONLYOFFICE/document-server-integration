@@ -83,7 +83,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
         Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
         Action action = wrapper.getAction();
 
-        if ((action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
+        if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
             canEdit = true;
             action = Action.fillForms;
         }
