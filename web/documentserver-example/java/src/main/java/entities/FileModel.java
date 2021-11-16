@@ -30,6 +30,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FileModel
@@ -282,7 +283,14 @@ public class FileModel
     // the Favorite icon state
     public class Info
     {
+        public String owner = "Me";
         public Boolean favorite;
+        public String uploaded = getDate();
+
+        private String getDate() {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+            return simpleDateFormat.format(new Date());
+        }
     }
     // the editor config parameters
     public class EditorConfig
