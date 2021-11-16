@@ -234,8 +234,16 @@
                                                                     <% if (docType != "word" && docType != "cell") { %>
                                                                         <td class="contentCells contentCells-icon "></td>
                                                                     <% } %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                                                <% }else if (isFillFormDoc) { %>
+                                                                    <% if (isFillFormDoc) { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } else { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                        <% } %>
+                                                                <% } else if (isFillFormDoc) { %>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>

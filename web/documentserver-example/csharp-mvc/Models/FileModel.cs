@@ -84,7 +84,7 @@ namespace OnlineEditorsExampleMVC.Models
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }
