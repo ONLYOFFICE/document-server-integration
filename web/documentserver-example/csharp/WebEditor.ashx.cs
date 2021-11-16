@@ -62,6 +62,23 @@ namespace OnlineEditorsExample
                 case "files":
                     Files(context);
                     break;
+                case "saveas":
+                    SaveAs(context);
+                    break;
+            }
+        }
+
+        private static void SaveAs(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            try
+            {
+                var result = _Default.DoSaveAs(context);
+                context.Response.Write(result);
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + 1 + "\", \"message\": \"" + e.Message + "\"}");
             }
         }
 

@@ -346,6 +346,72 @@ namespace OnlineEditorsExample
             return _fileName;
         }
 
+        public static string DoSaveAs(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return "{\"error\":\"Request stream is empty\"}";
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var fileUrl = (string) body["url"];
+            var title = (string) body["title"];
+            var fileName = GetCorrectName(title);
+            var extension = "." + (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
+
+            var allExt = ConvertExts.Concat(EditedExts).Concat(ViewedExts).ToArray();
+
+            if (!allExt.Contains(extension))
+            {
+                return "{\"error\":\"File type is not supported\"}";
+            }
+            
+            var req = (HttpWebRequest)WebRequest.Create(fileUrl);
+            
+            // hack. http://ubuntuforums.org/showthread.php?t=1841740
+            if (IsMono)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+            }
+            
+            using (var stream = req.GetResponse().GetResponseStream())
+            {
+                
+                if (stream == null || req.GetResponse().ContentLength <= 0 || req.GetResponse().ContentLength > MaxFileSize)
+                {
+                    return "{\"error\": \"File size is incorrect\"}";
+                }
+                const int bufferSize = 4096;
+            
+                using (var fs = File.Open(StoragePath(fileName, null), FileMode.Create))
+                {
+                    var buffer = new byte[bufferSize];
+                    int readed;
+                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                    {
+                        fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                    }
+                }
+            }
+                
+            var id = context.Request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);  // get the user
+            DocEditor.CreateMeta(fileName, user.id, user.name, null);
+
+            return "{\"file\": \"" + fileName + "\"}";
+        }
+
         // converting a file
         public static string DoConvert(HttpContext context)
         {

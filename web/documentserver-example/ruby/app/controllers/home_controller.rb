@@ -265,4 +265,46 @@ class HomeController < ApplicationController
       render plain: '{ "error": "File not found"}'
     end
   end
+
+  # Save Copy as...
+  def saveas
+    begin
+      body = JSON.parse(request.body.read)
+      file_url = body["url"]
+      title = body["title"]
+      file_name = DocumentHelper.get_correct_name(title, nil)
+      extension = File.extname(file_name).downcase
+      all_exts = DocumentHelper.convert_exts + DocumentHelper.edited_exts + DocumentHelper.viewed_exts
+
+      unless all_exts.include?(extension)
+        render plain: '{"error": "File type is not supported"}'
+      end
+
+      uri = URI.parse(file_url)  # create the request url
+      http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+
+      if file_url.start_with?('https')
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+      end
+      req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
+      res = http.request(req)
+      data = res.body
+
+      if data.size <= 0 || data.size > Rails.configuration.fileSizeMax
+        render plain: '{"error": "File size is incorrect"}'
+      end
+
+      File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
+        file.write(data)
+      end
+      user = Users.get_user(cookies[:uid])
+      DocumentHelper.create_meta(file_name, user.id, user.name, nil)  # create meta data of the new file
+
+      render plain: '{"file" : "' + file_name + '"}'
+    rescue => ex
+      render plain: '{"error":1, "message": "' + ex.message + '"}'
+      return
+    end
+  end
 end

@@ -39,9 +39,11 @@
 
         var docEditor;
 
-        var innerAlert = function (message) {
+        var innerAlert = function (message, inEditor) {
             if (console && console.log)
                 console.log(message);
+            if (inEditor && docEditor)
+                docEditor.showMessage(message);
         };
 
         var onAppReady = function () {  // the application is loaded into the browser
@@ -144,6 +146,23 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "create");
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                innerAlert(JSON.parse(xhr.responseText).file, true);
+            }
+        }
+
         var config = {<%- include("config") %>,
                 events: {
                     "onAppReady": onAppReady,
@@ -165,6 +184,10 @@
         if (<%- JSON.stringify(usersForMentions) %> != null) {
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
+        }
+
+        if (config.editorConfig.createUrl) {
+            config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
         var connectEditor = function () {

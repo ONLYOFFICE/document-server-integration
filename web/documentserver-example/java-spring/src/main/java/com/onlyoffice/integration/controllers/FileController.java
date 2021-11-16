@@ -58,6 +58,9 @@ public class FileController {
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
 
+    @Value("${filesize-max}")
+    private String filesizeMax;
+
     @Autowired
     private FileUtility fileUtility;
     @Autowired
@@ -277,5 +280,36 @@ public class FileController {
         int error = callbackHandler.handle(body, fileName);
 
         return"{\"error\":" + error + "}";
+    }
+
+    @PostMapping("/saveas")
+    @ResponseBody
+    public String saveAs(@RequestBody JSONObject body, @CookieValue("uid") String uid) {
+        String title = (String) body.get("title");
+        String saveAsFileUrl = (String) body.get("url");
+
+        try {
+            String fileName = documentManager.getCorrectName(title);
+            String curExt = fileUtility.getFileExtension(fileName);
+
+            if (!fileUtility.getFileExts().contains(curExt)) {
+                return "{\"error\":\"File type is not supported\"}";
+            }
+
+            URL url = new URL(saveAsFileUrl);
+            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+            InputStream stream = connection.getInputStream();
+
+            if (Integer.parseInt(filesizeMax) < stream.available() || stream.available() <= 0) {
+                return "{\"error\":\"File size is incorrect\"}";
+            }
+            storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
+            createUserMetadata(uid, fileName);
+
+            return "{\"file\":  \"" + fileName + "\"}";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+        }
     }
 }
