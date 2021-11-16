@@ -215,7 +215,11 @@
                                             </th:block>
                                             <th:block th:if="${isFillFormDoc[iState.index] and not filesEditable[iState.index]}">
                                                 <td class="contentCells contentCells-icon "></td>
-                                                <td class="contentCells contentCells-icon "></td>
+                                                <td class="contentCells contentCells-icon">
+                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='fillForms')}" target="_blank">
+                                                        <img src="css/img/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
+                                                    </a>
+                                                </td>
                                                 <td class="contentCells contentCells-icon "></td>
                                                 <td class="contentCells contentCells-icon "></td>
                                                 <td class="contentCells contentCells-icon "></td>
