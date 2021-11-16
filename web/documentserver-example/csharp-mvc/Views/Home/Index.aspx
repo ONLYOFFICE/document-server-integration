@@ -245,7 +245,11 @@
                                                                         <% } %>
                                                                 <% } else if (isFillFormDoc) { %>
                                                                     <td class="contentCells contentCells-icon "></td>
-                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                           <img src="content/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                       </a>
+                                                                    </td>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>
