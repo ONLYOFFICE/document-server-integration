@@ -227,7 +227,15 @@
                                                                 <% if (!docType.equals("cell") && !docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
+                                                                <% if (isFillFormDoc) { %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
+                                                                </td>
+                                                                <% } else { %>
                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% }%>
                                                                 <% } else if (isFillFormDoc) {%>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-icon">

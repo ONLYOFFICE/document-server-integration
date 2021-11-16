@@ -109,7 +109,7 @@ public class FileModel
         // check if the Submit form button is displayed or not
         editorConfig.customization.submitForm = mode.equals("fillForms") && user.id.equals("uid-1") && false;
 
-        if ((mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
