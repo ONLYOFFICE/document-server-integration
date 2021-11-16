@@ -32,7 +32,7 @@ module OnlineEditorsExampleRuby
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
 
-    Rails.configuration.fillDocs=".oform"
+    Rails.configuration.fillDocs=".oform|.docx"
     Rails.configuration.viewedDocs=".pdf|.djvu|.xps|.oxps"
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.txt"
     Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
