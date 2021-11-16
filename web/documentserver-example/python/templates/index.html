@@ -208,7 +208,11 @@
                                                             {% endif %}
                                                         {% elif file.isFillFormDoc %}
                                                             <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                </a>
+                                                            </td>
                                                             <td class="contentCells contentCells-icon"></td>
                                                             <td class="contentCells contentCells-icon"></td>
                                                             <td class="contentCells contentCells-icon"></td>
