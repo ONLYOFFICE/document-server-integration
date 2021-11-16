@@ -358,6 +358,7 @@
         <script type="text/javascript" src="scripts/jscript.js"></script>
 
         <script language="javascript" type="text/javascript">
+            var FillExtList = "<%= String.join(",", DocumentManager.GetFillExts()) %>";
             var ConverExtList = "<%= String.join(",", DocumentManager.GetConvertExts()) %>";
             var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
