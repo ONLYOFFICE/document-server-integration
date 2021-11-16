@@ -341,6 +341,7 @@
 <%= javascript_include_tag "application" %>
 
 <script language="javascript" type="text/javascript">
+    var FillExtList = '<%= DocumentHelper.fill_forms_exts.join"," %>';
     var ConvertExtList = '<%= DocumentHelper.convert_exts.join(",") %>';
     var EditedExtList = '<%= DocumentHelper.edited_exts.join(",") %>';
     var UrlConverter = '<%= convert_path %>';
