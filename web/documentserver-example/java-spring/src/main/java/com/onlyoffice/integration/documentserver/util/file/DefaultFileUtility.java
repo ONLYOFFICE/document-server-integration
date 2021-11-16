@@ -46,12 +46,15 @@ public class DefaultFileUtility implements FileUtility {
     @Value("${files.docservice.convert-docs}")
     private String docserviceConvertDocs;
 
+    @Value("${files.docservice.fillforms-docs}")
+    private String docserviceFillDocs;
+
     private List<String> ExtsDocument = Arrays.asList(
                             ".doc", ".docx", ".docm",
                             ".dot", ".dotx", ".dotm",
                             ".odt", ".fodt", ".ott", ".rtf", ".txt",
                             ".html", ".htm", ".mht", ".xml",
-                            ".pdf", ".djvu", ".fb2", ".epub", ".xps");
+                            ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oform");
 
     private List<String> ExtsSpreadsheet = Arrays.asList(
                             ".xls", ".xlsx", ".xlsm",
@@ -118,6 +121,11 @@ public class DefaultFileUtility implements FileUtility {
         return ".docx";
     }
 
+    public List<String> getFillExts()
+    {
+        return Arrays.asList(docserviceFillDocs.split("\\|"));
+    }
+
     public List<String> getViewedExts()
     {
         return Arrays.asList(docserviceViewedDocs.split("\\|"));
@@ -139,6 +147,7 @@ public class DefaultFileUtility implements FileUtility {
         res.addAll(getViewedExts());
         res.addAll(getEditedExts());
         res.addAll(getConvertExts());
+        res.addAll(getFillExts());
 
         return res;
     }
