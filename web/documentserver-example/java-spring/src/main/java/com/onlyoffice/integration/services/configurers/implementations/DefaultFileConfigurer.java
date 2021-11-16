@@ -56,16 +56,16 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
     @Autowired
     private DefaultEditorConfigConfigurer defaultEditorConfigConfigurer;
 
-    public void configure(FileModel fileModel, DefaultFileWrapper wrapper){
-        if (fileModel != null){
-            String fileName = wrapper.getFileName();
-            Action action = wrapper.getAction();
+    public void configure(FileModel fileModel, DefaultFileWrapper wrapper){  // define the file configurer
+        if (fileModel != null){  // check if the file model is specified
+            String fileName = wrapper.getFileName();  // get the fileName parameter from the file wrapper
+            Action action = wrapper.getAction();  // get the action parameter from the file wrapper
 
-            DocumentType documentType = fileUtility.getDocumentType(fileName);
-            fileModel.setDocumentType(documentType);
-            fileModel.setType(wrapper.getType());
+            DocumentType documentType = fileUtility.getDocumentType(fileName);  // get the document type of the specified file
+            fileModel.setDocumentType(documentType);  // set the document type to the file model
+            fileModel.setType(wrapper.getType());  // set the platform type to the file model
 
-            Permission userPermissions = mapper.toModel(wrapper.getUser().getPermissions());
+            Permission userPermissions = mapper.toModel(wrapper.getUser().getPermissions());  // convert the permission entity to the model
 
             String fileExt = fileUtility.getFileExtension(wrapper.getFileName());
             Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
@@ -75,15 +75,15 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
             }
             wrapper.setCanEdit(canEdit);
 
-            DefaultDocumentWrapper documentWrapper = DefaultDocumentWrapper
+            DefaultDocumentWrapper documentWrapper = DefaultDocumentWrapper  // define the document wrapper
                     .builder()
                     .fileName(fileName)
                     .permission(updatePermissions(userPermissions, action, canEdit))
                     .favorite(wrapper.getUser().getFavorite())
                     .build();
 
-            defaultDocumentConfigurer.configure(fileModel.getDocument(), documentWrapper);
-            defaultEditorConfigConfigurer.configure(fileModel.getEditorConfig(), wrapper);
+            defaultDocumentConfigurer.configure(fileModel.getDocument(), documentWrapper);  // define the document configurer
+            defaultEditorConfigConfigurer.configure(fileModel.getEditorConfig(), wrapper);  // define the editorConfig configurer
 
             Map<String, Object> map = new HashMap<>();
             map.put("type", fileModel.getType());
@@ -91,14 +91,14 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
             map.put("document", fileModel.getDocument());
             map.put("editorConfig", fileModel.getEditorConfig());
 
-            fileModel.setToken(jwtManager.createToken(map));
+            fileModel.setToken(jwtManager.createToken(map));  // create a token and set it to the file model
         }
     }
 
     @Override
-    public FileModel getFileModel(DefaultFileWrapper wrapper) {
+    public FileModel getFileModel(DefaultFileWrapper wrapper) {  // get file model
         FileModel fileModel = fileModelObjectFactory.getObject();
-        configure(fileModel, wrapper);
+        configure(fileModel, wrapper);  // and configure it
         return fileModel;
     }
 

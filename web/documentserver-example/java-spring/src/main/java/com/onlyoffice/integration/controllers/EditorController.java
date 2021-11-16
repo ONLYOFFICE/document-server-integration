@@ -72,6 +72,7 @@ public class EditorController {
     private FileConfigurer<DefaultFileWrapper> fileConfigurer;
 
     @GetMapping(path = "${url.editor}")
+    // process request to open the editor page
     public String index(@RequestParam("fileName") String fileName,
                         @RequestParam(value = "action", required = false) String actionParam,
                         @RequestParam(value = "type", required = false) String typeParam,
@@ -89,10 +90,12 @@ public class EditorController {
 
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
+        // if the user is not present, return the ONLYOFFICE start page
         if(!optionalUser.isPresent()) return "index.html";
 
         User user = optionalUser.get();
 
+        // get file model with the default file parameters
         FileModel fileModel = fileConfigurer.getFileModel(
                 DefaultFileWrapper
                         .builder()
@@ -105,23 +108,24 @@ public class EditorController {
                         .build()
         );
 
-        model.addAttribute("model", fileModel);
-        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
-        model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);
-        model.addAttribute("dataInsertImage",  getInsertImage());
-        model.addAttribute("dataCompareFile",  getCompareFile());
-        model.addAttribute("dataMailMergeRecipients", getMailMerge());
-        model.addAttribute("usersForMentions", getUserMentions(uid));
+        // add attributes to the specified model
+        model.addAttribute("model", fileModel);  // add file model with the default parameters to the original model
+        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));  // get file history and add it to the model
+        model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
+        model.addAttribute("dataInsertImage",  getInsertImage());  // get an image and add it to the model
+        model.addAttribute("dataCompareFile",  getCompareFile());  // get a document for comparison and add it to the model
+        model.addAttribute("dataMailMergeRecipients", getMailMerge());  // get recipients data for mail merging and add it to the model
+        model.addAttribute("usersForMentions", getUserMentions(uid));  // get user data for mentions and add it to the model
         return "editor.html";
     }
 
-    private List<Mentions> getUserMentions(String uid){
+    private List<Mentions> getUserMentions(String uid){  // get user data for mentions
         List<Mentions> usersForMentions=new ArrayList<>();
         if(uid!=null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
                 if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
-                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));
+                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));  // user data includes user names and emails
                 }
             }
         }
@@ -130,26 +134,28 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getInsertImage() {
+    private String getInsertImage() {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
 
+        // check if the document token is enabled
         if(jwtManager.tokenEnabled()){
-            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
+            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
         }
 
         return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1);
     }
 
     @SneakyThrows
-    private String getCompareFile(){
+    private String getCompareFile(){  // get a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
 
+        // check if the document token is enabled
         if(jwtManager.tokenEnabled()){
-            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));
+            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
         }
 
         return objectMapper.writeValueAsString(dataCompareFile);
@@ -157,12 +163,13 @@ public class EditorController {
 
     @SneakyThrows
     private String getMailMerge(){
-        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
+        Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
 
+        // check if the document token is enabled
         if(jwtManager.tokenEnabled()){
-            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
+            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 
         return objectMapper.writeValueAsString(dataMailMergeRecipients);
