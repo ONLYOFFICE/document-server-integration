@@ -230,7 +230,11 @@
                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                                 <% } else if (isFillFormDoc) {%>
                                                                 <td class="contentCells contentCells-icon "></td>
-                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=fillForms" target="_blank">
+                                                                        <img src="css/img/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
+                                                                    </a>
+                                                                </td>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-icon "></td>
