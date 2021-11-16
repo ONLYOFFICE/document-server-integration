@@ -33,6 +33,6 @@ public class DefaultCustomizationConfigurer implements CustomizationConfigurer<D
     public void configure(Customization customization, DefaultCustomizationWrapper wrapper){
         Action action = wrapper.getAction();
         User user = wrapper.getUser();
-        customization.setSubmitForm(action.equals(Action.fillForms) && user.getId() == 1);
+        customization.setSubmitForm(action.equals(Action.fillForms) && user.getId() == 1 && false);
     }
 }
