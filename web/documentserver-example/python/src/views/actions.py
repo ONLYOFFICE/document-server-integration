@@ -130,7 +130,7 @@ def edit(request):
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (edMode == 'edit' or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
         edMode = 'fillForms'
         canEdit = True
     submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
