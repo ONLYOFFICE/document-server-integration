@@ -107,7 +107,7 @@ public class FileModel
         String fileExt = FileUtility.GetFileExtension(document.title);
         Boolean canEdit = DocumentManager.GetEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.customization.submitForm = mode.equals("fillForms") && user.id.equals("uid-1");
+        editorConfig.customization.submitForm = mode.equals("fillForms") && user.id.equals("uid-1") && false;
 
         if ((mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
             canEdit = true;
