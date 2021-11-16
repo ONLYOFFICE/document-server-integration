@@ -151,6 +151,7 @@
                     <tbody>
                       <% 
                         docs.each { |d|
+                          isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
                           editUrl = "editor?fileName=#{URI::encode(d)}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
@@ -194,25 +195,28 @@
                               <% end %>
                                   <% if docType.eql?("word") %>
                                     <td class="contentCells contentCells-icon">
-                                        <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                            <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                        </a>
-                                    </td>
-                                  <% else %>
-                                    <td class="contentCells  contentCells-icon "></td>
-                                  <% end %>
-                                  <% if docType.eql?("word") %>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                             <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>
                                     </td>
                                   <% else %>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift" ></td>
+                                    <td class="contentCells contentCells-icon"></td>
                                   <% end %>
                                   <% if !docType.eql?("word") && !docType.eql?("cell")%>
                                       <td class="contentCells contentCells-icon "></td>
                                   <% end %>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                  <% elsif isFillFormDoc %>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                        <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                      </a>
+                                    </td>
                             <% else %>
                               <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                             <% end %>

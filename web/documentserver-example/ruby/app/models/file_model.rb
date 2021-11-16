@@ -84,7 +84,11 @@ class FileModel
   def get_config
     editorsmode = @mode ? @mode : "edit"  # mode: view/edit/review/comment/fillForms/embedded
     canEdit = DocumentHelper.edited_exts.include?(file_ext)  # check if the document can be edited
-    submitForm = canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("fillForms"))  # the Submit form button state
+    if (editorsmode.eql?("edit") || editorsmode.eql?("fillForms")) && DocumentHelper.fill_forms_exts.include?(file_ext)
+      editorsmode = "fillForms"
+      canEdit = true
+    end
+    submitForm = editorsmode.eql?("fillForms") && @user.id.eql?("uid-1")  # the Submit form button state
     mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
     templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
     templates = [
