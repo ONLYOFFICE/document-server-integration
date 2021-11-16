@@ -335,6 +335,7 @@
     <script type="text/javascript" src="{% static "js/jscript.js" %}"></script>
 
     <script type="text/javascript">
+        var FillExtList = {{ fillExt | safe }};
         var ConverExtList = {{ convExt | safe }};
         var EditedExtList = {{ editExt | safe }};
         var UrlConverter = "convert";
