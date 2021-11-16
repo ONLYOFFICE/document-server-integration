@@ -187,15 +187,6 @@
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% else %}
-                                                                <td class="contentCells contentCells-icon "></td>
-                                                            {% endif %}
-                                                            {% if file.type == 'word' %}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
                                                                         <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
@@ -206,6 +197,18 @@
                                                             {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon "></td>
                                                             {% endif %}
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                        {% elif file.isFillFormDoc %}
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                </a>
+                                                            </td>
                                                         {% else %}
                                                             <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                         {% endif %}
