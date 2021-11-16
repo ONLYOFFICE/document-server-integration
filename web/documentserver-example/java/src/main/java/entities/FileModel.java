@@ -104,9 +104,15 @@ public class FileModel
         if (_type != null) type = _type;
 
         // check if the file with such an extension can be edited
-        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(document.title));
+        String fileExt = FileUtility.GetFileExtension(document.title);
+        Boolean canEdit = DocumentManager.GetEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.customization.submitForm = canEdit && (mode.equals("edit") || mode.equals("fillForms"));
+        editorConfig.customization.submitForm = mode.equals("fillForms") && user.id.equals("uid-1");
+
+        if ((mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
+            canEdit = true;
+            mode = "fillForms";
+        }
         // set the mode parameter: change it to view if the document can't be edited
         editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
 

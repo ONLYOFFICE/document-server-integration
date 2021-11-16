@@ -172,6 +172,7 @@
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <% for (Integer i = 0; i < files.length; i++) {
+                                                        Boolean isFillFormDoc = DocumentManager.GetFillExts().contains(FileUtility.GetFileExtension(files[i].getName()).toLowerCase());
                                                         String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
@@ -216,25 +217,27 @@
                                                                 <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                                <% } else { %>
-                                                                <td class="contentCells contentCells-icon "></td>
-                                                                <% } %>
-                                                                <% if (docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
                                                                         <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
                                                                 </td>
                                                                 <% } else { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <td class="contentCells contentCells-icon"></td>
                                                                 <% } %>
                                                                 <% if (!docType.equals("cell") && !docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% } else if (isFillFormDoc) {%>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-icon "></td>
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
                                                             <% } else { %>
                                                             <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
