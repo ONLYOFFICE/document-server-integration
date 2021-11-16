@@ -49,7 +49,7 @@ namespace OnlineEditorsExampleMVC.Models
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
                 ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
+                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
             };
 
         // spreadsheet extensions

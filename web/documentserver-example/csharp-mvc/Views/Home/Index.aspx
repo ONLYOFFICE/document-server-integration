@@ -178,8 +178,10 @@
                                             <% foreach (var storedFile in storedFiles)
                                                {
                                                     var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
-                                                            var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower(); 
-                                                            var canEdit = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
+                                                            var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
+                                                            var ext = Path.GetExtension(storedFile.Name).ToLower();
+                                                            var canEdit = DocManagerHelper.EditedExts.Contains(ext);
+                                                            var isFillFormDoc = DocManagerHelper.FillFormExts.Contains(ext);
                                                         %>
 
                                                             <tr class="tableRow" title="<%= storedFile.Name %> [<%= DocManagerHelper.GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
@@ -222,15 +224,6 @@
                                                                     <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
-                                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                            </a>
-                                                                        </td>
-                                                                     <% } else { %>
-                                                                        <td class="contentCells contentCells-icon"></td>
-                                                                    <% } %>
-                                                                    <% if (docType == "word"){ %>
-                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
                                                                                 <img src="content/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                             </a>
@@ -241,6 +234,18 @@
                                                                     <% if (docType != "word" && docType != "cell") { %>
                                                                         <td class="contentCells contentCells-icon "></td>
                                                                     <% } %>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% }else if (isFillFormDoc) { %>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                           <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                       </a>
+                                                                    </td>
                                                                 <% } else { %>
                                                                     <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                                 <% } %>
