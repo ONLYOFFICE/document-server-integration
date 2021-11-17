@@ -80,6 +80,7 @@
     <Content Include="App_Themes\images\embeded.svg" />
     <Content Include="App_Themes\images\error.svg" />
     <Content Include="App_Themes\images\file_docx.svg" />
+    <Content Include="App_Themes\images\file_docxf.svg" />
     <Content Include="App_Themes\images\file_pptx.svg" />
     <Content Include="App_Themes\images\file_upload.svg" />
     <Content Include="App_Themes\images\file_xlsx.svg" />

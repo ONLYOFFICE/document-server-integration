@@ -67,6 +67,9 @@
                                             <li>
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
+                                            <li>
+                                                <a class="try-editor form" data-type="docxf">Master form</a>
+                                            </li>
                                         </ul>
                                         <label class="create-sample">
                                             <input id="createSample" class="checkbox" type="checkbox" />With sample content

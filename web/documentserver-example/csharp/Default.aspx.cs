@@ -375,7 +375,7 @@ namespace OnlineEditorsExample
             var fileName = GetCorrectName(title);
             var extension = "." + (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
 
-            var allExt = ConvertExts.Concat(EditedExts).Concat(ViewedExts).ToArray();
+            var allExt = ConvertExts.Concat(EditedExts).Concat(ViewedExts).Concat(FillFormsExts).ToArray();
 
             if (!allExt.Contains(extension))
             {
