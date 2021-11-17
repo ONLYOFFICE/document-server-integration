@@ -359,6 +359,7 @@
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
         <script type="text/javascript" src="js/jscript.js"></script>
         <script type="text/javascript">
+            var FillFormsExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_FILLFORMS"]) ?>';
             var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
             var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
         </script>
