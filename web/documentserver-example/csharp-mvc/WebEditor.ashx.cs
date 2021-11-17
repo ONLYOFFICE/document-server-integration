@@ -100,6 +100,7 @@ namespace OnlineEditorsExampleMVC
                 var allExt = DocManagerHelper.ConvertExts
                     .Concat(DocManagerHelper.EditedExts)
                     .Concat(DocManagerHelper.ViewedExts)
+                    .Concat(DocManagerHelper.FillFormExts)
                     .ToArray();
     
                 if (!allExt.Contains(extension))
