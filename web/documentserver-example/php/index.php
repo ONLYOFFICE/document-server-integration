@@ -224,7 +224,14 @@
                                                                     if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
-                                                                    echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                    if ($storeFile->isFillFormDoc) {
+                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                        echo ' </td>';
+                                                                    } else {
+                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                    }
                                                                  } else if ($storeFile->isFillFormDoc) {
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';

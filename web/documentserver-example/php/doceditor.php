@@ -59,7 +59,7 @@
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
     $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
-    if (($editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
+    if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
         $editorsMode = "fillForms";
         $canEdit = true;
     }
