@@ -63,7 +63,7 @@
         $editorsMode = "fillForms";
         $canEdit = true;
     }
-    $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1";  // check if the Submit form button is displayed or not
+    $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;  // check if the Submit form button is displayed or not
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
