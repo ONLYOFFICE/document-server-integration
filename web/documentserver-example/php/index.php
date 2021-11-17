@@ -234,7 +234,10 @@
                                                                     }
                                                                  } else if ($storeFile->isFillFormDoc) {
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
-                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>';
+                                                                    echo ' </td>';
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
