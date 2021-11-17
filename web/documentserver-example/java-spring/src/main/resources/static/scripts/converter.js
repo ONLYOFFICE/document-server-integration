@@ -20,10 +20,12 @@ var ConverExtList;
 var EditedExtList;
 var UrlConverter;
 var UrlEditor;
+var FillExtList;
 
 if (typeof jQuery !== "undefined") {
     jQuery.post('/config',
         function(data) {
+            FillExtList = data.FillExtList;
             ConverExtList = data.ConverExtList;
             EditedExtList = data.EditedExtList;
             UrlConverter = data.UrlConverter;

@@ -90,6 +90,7 @@
     <Content Include="App_Themes\images\icon_xlsx.svg" />
     <Content Include="App_Themes\images\info.svg" />
     <Content Include="App_Themes\images\logo.svg" />
+    <Content Include="App_Themes\images\mobile-fill-forms.svg" />
     <Content Include="App_Themes\images\mobile.svg" />
     <Content Include="App_Themes\images\notdone.svg" />
     <Content Include="App_Themes\images\review.svg" />

@@ -56,9 +56,14 @@
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
+    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
-    $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
-    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");  // check if the Submit form button is displayed or not
+    $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
+    if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
+        $editorsMode = "fillForms";
+        $canEdit = true;
+    }
+    $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;  // check if the Submit form button is displayed or not
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
@@ -333,9 +338,11 @@
 
         var docEditor;
 
-        var innerAlert = function (message) {
+        var innerAlert = function (message, inEditor) {
             if (console && console.log)
                 console.log(message);
+            if (inEditor && docEditor)
+                docEditor.showMessage(message);
         };
 
         // the application is loaded into the browser
@@ -415,6 +422,23 @@
             docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
         };
 
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=saveas");
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                innerAlert(JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf("{"))).file, true);
+            }
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -472,12 +496,15 @@
             };
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
-                var actionLink = JSON.stringify(event.data.actionLink);
-                console.log("onRequestSendNotify:");
-                console.log(event.data);
-                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+                event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+                var data = JSON.stringify(event.data);
+                innerAlert("onRequestSendNotify: " + data);
             };
             <?php endif; ?>
+
+            if (config.editorConfig.createUrl) {
+                config.events.onRequestSaveAs = onRequestSaveAs;
+            };
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

@@ -73,18 +73,24 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
             config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));
         }
         String fileName = wrapper.getFileName();
+        String fileExt = fileUtility.getFileExtension(fileName);
         boolean userIsAnon = wrapper.getUser().getName().equals("Anonymous");
 
         config.setTemplates(userIsAnon ? null : templateManager.createTemplates(fileName));
         config.setCallbackUrl(documentManager.getCallback(fileName));
         config.setCreateUrl(userIsAnon ? null : documentManager.getCreateUrl(fileName, false));
         config.setLang(wrapper.getLang());
-        Boolean canEdit = fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName));
+        Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
         Action action = wrapper.getAction();
+
+        if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
+            canEdit = true;
+            action = Action.fillForms;
+        }
 
         defaultCustomizationConfigurer.configure(config.getCustomization(), DefaultCustomizationWrapper.builder()
                 .action(action)
-                .canEdit(canEdit)
+                .user(wrapper.getUser())
                 .build());
         config.setMode(canEdit && !action.equals(Action.view) ? Mode.edit : Mode.view);
         config.setUser(mapper.toModel(wrapper.getUser()));

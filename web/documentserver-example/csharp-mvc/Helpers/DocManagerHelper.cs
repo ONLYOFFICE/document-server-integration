@@ -44,13 +44,18 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get all the supported file extensions
         public static List<string> FileExts
         {
-            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).Concat(FillFormExts).ToList(); }
         }
 
         // get file extensions that can be viewed
         public static List<string> ViewedExts
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+        }
+
+        public static List<string> FillFormExts
+        {
+            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // get file extensions that can be edited

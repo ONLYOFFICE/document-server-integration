@@ -38,7 +38,15 @@ class DocumentHelper
 
     # all the supported file extensions
     def file_exts
-      [].concat(viewed_exts).concat(edited_exts).concat(convert_exts)
+      [].concat(viewed_exts).concat(edited_exts).concat(convert_exts).concat(fill_forms_exts)
+    end
+
+    def fill_forms_exts
+      if Rails.configuration.fillDocs.empty?
+        []
+      else
+        Rails.configuration.fillDocs.split("|")
+      end
     end
 
     # file extensions that can be viewed

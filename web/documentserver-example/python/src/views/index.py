@@ -39,6 +39,7 @@ def default(request):  # default parameters that will be passed to the template
         'preloadurl': config.DOC_SERV_SITE_URL + config.DOC_SERV_PRELOADER_URL,
         'editExt': json.dumps(config.DOC_SERV_EDITED),  # file extensions that can be edited
         'convExt': json.dumps(config.DOC_SERV_CONVERT),  # file extensions that can be converted
-        'files': docManager.getStoredFiles(request)  # information about stored files
+        'files': docManager.getStoredFiles(request),  # information about stored files
+        'fillExt': json.dumps(config.DOC_SERV_FILLFORMS)
     }
     return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format

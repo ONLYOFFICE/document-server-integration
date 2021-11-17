@@ -5,6 +5,7 @@ VERSION = '1.0.0'
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
 
+DOC_SERV_FILLFORMS = [".oform", ".docx"]
 DOC_SERV_VIEWED = [".pdf", ".djvu", ".xps", ".oxps"]  # file extensions that can be viewed
 DOC_SERV_EDITED = [".docx", ".xlsx", ".csv", ".pptx", ".txt"]  # file extensions that can be edited
 DOC_SERV_CONVERT = [                                           # file extensions that can be converted
@@ -47,7 +48,7 @@ EXT_DOCUMENT = [
     ".dot", ".dotx", ".dotm",
     ".odt", ".fodt", ".ott", ".rtf", ".txt",
     ".html", ".htm", ".mht", ".xml",
-    ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
+    ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
 ]
 
 if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain
