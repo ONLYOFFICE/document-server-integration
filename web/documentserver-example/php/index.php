@@ -215,24 +215,26 @@
                                                                     }
                                                                     if ($storeFile->documentType == "word") {
                                                                         echo ' <td class="contentCells contentCells-icon ">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
-                                                                        echo ' </td>';
-                                                                    }
-                                                                    else{
-                                                                        echo ' <td class="contentCells contentCells-icon "></td> ';
-                                                                    }
-                                                                    if ($storeFile->documentType == "word") {
-                                                                        echo ' <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">';
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=blockcontent&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                                                         echo ' </td>';
                                                                     } else{
-                                                                       echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                       echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
                                                                     if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
+                                                                    echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                 } else if ($storeFile->isFillFormDoc) {
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                    echo ' </td>';
                                                                 } else {
                                                                     echo '<td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>';
                                                                 }

@@ -107,7 +107,7 @@ function upload() {
     $tmp = $_FILES['files']['tmp_name'];
 
     // if the temporary name doesn't exist, then an error occurs
-    if (empty(tmp)) {
+    if (empty($tmp)) {
         $result["error"] = 'No file sent';
         return $result;
     }
