@@ -80,13 +80,8 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
         config.setCallbackUrl(documentManager.getCallback(fileName));
         config.setCreateUrl(userIsAnon ? null : documentManager.getCreateUrl(fileName, false));
         config.setLang(wrapper.getLang());
-        Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
+        Boolean canEdit = wrapper.getCanEdit();
         Action action = wrapper.getAction();
-
-        if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
-            canEdit = true;
-            action = Action.fillForms;
-        }
 
         defaultCustomizationConfigurer.configure(config.getCustomization(), DefaultCustomizationWrapper.builder()
                 .action(action)

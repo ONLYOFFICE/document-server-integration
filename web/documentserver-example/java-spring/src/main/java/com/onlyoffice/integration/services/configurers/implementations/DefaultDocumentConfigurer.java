@@ -55,7 +55,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setTitle(fileName);
         document.setUrl(documentManager.getDownloadUrl(fileName));
         document.setUrlUser(documentManager.getFileUri(fileName, false));
-        document.setFileType(fileUtility.getInternalExtension(fileUtility.getDocumentType(fileName)).replace(".",""));
+        document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));
         document.getInfo().setFavorite(wrapper.getFavorite());
 
         String key =  serviceConverter.
