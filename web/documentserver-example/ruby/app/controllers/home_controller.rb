@@ -257,7 +257,7 @@ class HomeController < ApplicationController
 
       # add headers to the response to specify the page parameters
       response.headers['Content-Length'] = File.size(file_path).to_s
-      response.headers['Content-Type'] = MimeMagic.by_path(file_path).type
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
       send_file file_path, :x_sendfile => true
@@ -274,10 +274,11 @@ class HomeController < ApplicationController
       title = body["title"]
       file_name = DocumentHelper.get_correct_name(title, nil)
       extension = File.extname(file_name).downcase
-      all_exts = DocumentHelper.convert_exts + DocumentHelper.edited_exts + DocumentHelper.viewed_exts
+      all_exts = DocumentHelper.convert_exts + DocumentHelper.edited_exts + DocumentHelper.viewed_exts + DocumentHelper.fill_forms_exts
 
       unless all_exts.include?(extension)
         render plain: '{"error": "File type is not supported"}'
+        return
       end
 
       uri = URI.parse(file_url)  # create the request url
@@ -293,6 +294,7 @@ class HomeController < ApplicationController
 
       if data.size <= 0 || data.size > Rails.configuration.fileSizeMax
         render plain: '{"error": "File size is incorrect"}'
+        return
       end
 
       File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
@@ -302,6 +304,7 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)  # create meta data of the new file
 
       render plain: '{"file" : "' + file_name + '"}'
+      return
     rescue => ex
       render plain: '{"error":1, "message": "' + ex.message + '"}'
       return

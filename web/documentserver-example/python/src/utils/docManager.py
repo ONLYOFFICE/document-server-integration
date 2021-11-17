@@ -97,7 +97,8 @@ def getInternalExtension(fileType):
     mapping = {
         'word': '.docx',
         'cell': '.xlsx',
-        'slide': '.pptx'
+        'slide': '.pptx',
+        'docxf': '.docxf'
     }
 
     return mapping.get(fileType, '.docx') # the default file type is .docx

@@ -148,7 +148,6 @@ namespace OnlineEditorsExample
             var editorsMode = Request.GetOrDefault("editorsMode", "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
-            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
 
             var id = Request.Cookies.GetOrDefault("uid", null);
@@ -159,6 +158,7 @@ namespace OnlineEditorsExample
                 canEdit = true;
             }            
             var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
 
@@ -521,6 +521,9 @@ namespace OnlineEditorsExample
                     break;
                 case "slide":
                     ext = ".pptx";  // .pptx for slide document type
+                    break;
+                case "docxf":
+                    ext = ".docxf";
                     break;
                 default:
                     return;

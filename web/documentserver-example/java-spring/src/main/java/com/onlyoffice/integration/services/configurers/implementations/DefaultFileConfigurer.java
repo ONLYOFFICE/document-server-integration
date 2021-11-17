@@ -66,17 +66,19 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
             fileModel.setType(wrapper.getType());
 
             Permission userPermissions = mapper.toModel(wrapper.getUser().getPermissions());
-            userPermissions.setComment(
-                    !action.equals(Action.view)
-                            && !action.equals(Action.fillForms)
-                            && !action.equals(Action.embedded)
-                            && !action.equals(Action.blockcontent)
-            );
+
+            String fileExt = fileUtility.getFileExtension(wrapper.getFileName());
+            Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
+            if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
+                canEdit = true;
+                wrapper.setAction(Action.fillForms);
+            }
+            wrapper.setCanEdit(canEdit);
 
             DefaultDocumentWrapper documentWrapper = DefaultDocumentWrapper
                     .builder()
                     .fileName(fileName)
-                    .permission(userPermissions)
+                    .permission(updatePermissions(userPermissions, action, canEdit))
                     .favorite(wrapper.getUser().getFavorite())
                     .build();
 
@@ -98,5 +100,32 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
         FileModel fileModel = fileModelObjectFactory.getObject();
         configure(fileModel, wrapper);
         return fileModel;
+    }
+
+    private Permission updatePermissions(Permission userPermissions, Action action, Boolean canEdit) {
+        userPermissions.setComment(
+                !action.equals(Action.view)
+                        && !action.equals(Action.fillForms)
+                        && !action.equals(Action.embedded)
+                        && !action.equals(Action.blockcontent)
+        );
+
+        userPermissions.setFillForms(
+                !action.equals(Action.view)
+                        && !action.equals(Action.comment)
+                        && !action.equals(Action.embedded)
+                        && !action.equals(Action.blockcontent)
+        );
+
+        userPermissions.setReview(canEdit &&
+                (action.equals(Action.review) || action.equals(Action.edit)));
+
+        userPermissions.setEdit(canEdit &&
+                (action.equals(Action.view)
+                || action.equals(Action.edit)
+                || action.equals(Action.filter)
+                || action.equals(Action.blockcontent)));
+
+        return userPermissions;
     }
 }

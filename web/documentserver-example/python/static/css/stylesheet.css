@@ -165,6 +165,10 @@ label .checkbox {
     background-image: url("../images/file_pptx.svg");
 }
 
+.try-editor.form {
+    background-image: url("../images/file_docxf.svg");
+}
+
 .create-sample {
     color: #666666;
     line-height: 24px;

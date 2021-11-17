@@ -106,7 +106,7 @@ function saveas() {
        $fileurl = $post["url"];
        $title = $post["title"];
        $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
-       $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD']);
+       $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
        $filename = GetCorrectName($title);
 
        if (!in_array("." . $extension, $allexts)) {
