@@ -30,6 +30,7 @@ public interface FileUtility {
     String getFileExtension(String url);
     String getInternalExtension(DocumentType type);
     List<String> getFileExts();
+    List<String> getFillExts();
     List<String> getViewedExts();
     List<String> getEditedExts();
     List<String> getConvertExts();

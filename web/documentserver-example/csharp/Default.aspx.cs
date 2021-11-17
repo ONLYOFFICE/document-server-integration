@@ -56,7 +56,7 @@ namespace OnlineEditorsExample
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
                 ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
+                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
             };
 
         // get an internal file extension
@@ -107,13 +107,18 @@ namespace OnlineEditorsExample
         // get all the supported file extensions
         private static List<string> FileExts
         {
-            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).Concat(FillFormsExts).ToList(); }
         }
 
         // file extensions that can be viewed
         private static List<string> ViewedExts
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+        }
+        
+        public static List<string> FillFormsExts
+        {
+            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // file extensions that can be edited

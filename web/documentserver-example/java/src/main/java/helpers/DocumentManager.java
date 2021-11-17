@@ -74,8 +74,14 @@ public class DocumentManager
         res.addAll(GetViewedExts());
         res.addAll(GetEditedExts());
         res.addAll(GetConvertExts());
+        res.addAll(GetFillExts());
 
         return res;
+    }
+
+    public static List<String> GetFillExts() {
+        String exts = ConfigManager.GetProperty("files.docservice.fill-docs");
+        return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be viewed
