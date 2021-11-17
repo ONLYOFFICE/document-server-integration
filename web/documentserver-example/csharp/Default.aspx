@@ -230,12 +230,20 @@
                                                                         </a>
                                                                     </td>
                                                                 <% } else{%>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <td class="contentCells contentCells-icon"></td>
                                                                 <%} %>
                                                                 <%if (docType != "word" && docType != "cell"){%>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
+                                                                    <% if (isFillFormDoc) { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                                <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            </a>
+                                                                        </td>
+                                                                <% } else { %>
                                                                     <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% } %>
                                                                 <% } else if (isFillFormDoc) { %>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>
