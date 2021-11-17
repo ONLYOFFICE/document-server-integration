@@ -247,7 +247,7 @@
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon">
                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "fillForms" }) %>" target="_blank">
-                                                                           <img src="content/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                           <img src="content/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
                                                                        </a>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon "></td>
