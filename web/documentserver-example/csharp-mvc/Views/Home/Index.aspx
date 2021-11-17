@@ -229,7 +229,7 @@
                                                                             </a>
                                                                         </td>
                                                                     <% } else { %>
-                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                        <td class="contentCells contentCells-icon"></td>
                                                                     <% } %>
                                                                     <% if (docType != "word" && docType != "cell") { %>
                                                                         <td class="contentCells contentCells-icon "></td>
