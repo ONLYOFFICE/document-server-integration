@@ -22,13 +22,12 @@ Download the [Java-Spring example](https://api.onlyoffice.com/editors/demoprevie
 To connect the editors to your website, specify the path to the editors installation, server address and port in the *\src\main\resources\application.properties* file:
 
 ```
- server.address=address
  server.port=port
  files.docservice.url.site=https://documentserver/
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-**address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
+**port** is the any available port.   
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\resources\editor.html* file.
 
@@ -173,13 +172,12 @@ See the detailed guide to learn how to install Document Server [for Linux](https
 	Edit the following lines:
 
     ```
-    server.address=address
     server.port=port
     files.docservice.url.site=https://documentserver/
     ```
 
 	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-	**address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
+	**port** is the any available port.   
 
 5. Install **Maven**:
 
