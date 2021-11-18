@@ -35,17 +35,17 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EditorConfig {
-    private HashMap<String, Object> actionLink = null;
-    private String callbackUrl;
-    private String createUrl;
+public class EditorConfig {  // the parameters pertaining to the editor interface: opening mode (viewer or editor), interface language, additional buttons, etc.
+    private HashMap<String, Object> actionLink = null;  // the data which contains the information about the action in the document that will be scrolled to
+    private String callbackUrl;  // the absolute URL to the document storage service
+    private String createUrl;  // the absolute URL of the document where it will be created and available after creation
     @Autowired
-    private Customization customization;
+    private Customization customization;  // the parameters which allow to customize the editor interface so that it looked like your other products (if there are any) and change the presence or absence of the additional buttons, links, change logos and editor owner details
     @Autowired
-    private Embedded embedded;
-    private Language lang;
-    private Mode mode;
+    private Embedded embedded;  // the parameters which allow to change the settings which define the behavior of the buttons in the embedded mode
+    private Language lang;  // the editor interface language
+    private Mode mode;  // the editor opening mode
     @Autowired
-    private User user;
-    private List<Template> templates;
+    private User user;  // the user currently viewing or editing the document
+    private List<Template> templates;  // the presence or absence of the templates in the <b>Create New...</b> menu option
 }
