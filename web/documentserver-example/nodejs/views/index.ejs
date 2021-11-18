@@ -56,6 +56,9 @@
                                         <li>
                                             <a class="try-editor slide reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
                                         </li>
+                                        <li>
+                                            <a class="try-editor form reload-page" target="_blank" href="editor?fileExt=docxf<%= params %>" title="Create new master form">Master form</a>
+                                        </li>
                                     </ul>
                                     <label class="create-sample">
                                         <input id="createSample" type="checkbox" class="checkbox" />With sample content
@@ -202,23 +205,36 @@
                                                         <% } %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                                    <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
-                                                            </td>
-                                                        <% } else { %>
-                                                            <td class="contentCells contentCells-icon "></td>
-                                                        <% } %>
-                                                        <% if (storedFiles[i].documentType == "word") { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                 <a href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                     <img src="images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>
                                                             </td>
                                                         <% } else { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         <% } %>
                                                         <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
                                                             <td class="contentCells contentCells-icon "></td>
+                                                        <% } %>
+                                                        <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                    <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                            </td>
+                                                        <% } else {%>
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                         <%}%>
+                                                    <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"">
+                                                            <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                        </td>
                                                     <% } else { %>
                                                         <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                     <% } %>
@@ -331,6 +347,7 @@
     <script type="text/javascript">
         var ConverExtList = "<%= convertExts %>";
         var EditedExtList = "<%= editedExts %>";
+        var FilledExtList = "<%= fillExts %>";
         var UrlConverter = "convert";
         var UrlEditor = "editor";
     </script>

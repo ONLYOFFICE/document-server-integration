@@ -70,6 +70,7 @@ public class IndexController {
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
         List<String> versions = new ArrayList<>();
+        List<Boolean> isFillFormDoc = new ArrayList<>();
 
         List<User> users = userService.findAll();
 
@@ -82,8 +83,10 @@ public class IndexController {
             docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());
             filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));
             versions.add(" ["+storagePathBuilder.getFileVersion(fileName, true)+"]");
+            isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
         }
 
+        model.addAttribute("isFillFormDoc", isFillFormDoc);
         model.addAttribute("versions",versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
@@ -100,6 +103,7 @@ public class IndexController {
     public HashMap<String, String> configParameters(){
         HashMap<String, String> configuration = new HashMap<>();
 
+        configuration.put("FillExtList", String.join(",", fileUtility.getFillExts()));
         configuration.put("ConverExtList", String.join(",",fileUtility.getConvertExts()));
         configuration.put("EditedExtList", String.join(",",fileUtility.getEditedExts()));
         configuration.put("UrlConverter", urlConverter);

@@ -40,6 +40,9 @@
                       <li>
                         <a class="try-editor slide" data-type="pptx">Presentation</a>
                       </li>
+                      <li>
+                        <a class="try-editor form" data-type="docxf">Master form</a>
+                      </li>
                   </ul>
                   <label class="create-sample">
                       <input id="createSample" class="checkbox" type="checkbox" />With sample content
@@ -151,6 +154,7 @@
                     <tbody>
                       <% 
                         docs.each { |d|
+                          isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
                           editUrl = "editor?fileName=#{URI::encode(d)}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
@@ -194,25 +198,40 @@
                               <% end %>
                                   <% if docType.eql?("word") %>
                                     <td class="contentCells contentCells-icon">
-                                        <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                            <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                        </a>
-                                    </td>
-                                  <% else %>
-                                    <td class="contentCells  contentCells-icon "></td>
-                                  <% end %>
-                                  <% if docType.eql?("word") %>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                             <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                         </a>
                                     </td>
                                   <% else %>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift" ></td>
+                                    <td class="contentCells contentCells-icon"></td>
                                   <% end %>
                                   <% if !docType.eql?("word") && !docType.eql?("cell")%>
                                       <td class="contentCells contentCells-icon "></td>
                                   <% end %>
+                                  <% if isFillFormDoc%>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                        <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                      </a>
+                                    </td>
+                                  <% else %>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                  <% end %>
+                                  <% elsif isFillFormDoc %>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon">
+                                      <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
+                                        <img src="assets/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
+                                      </a>
+                                    </td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-icon"></td>
+                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                        <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                      </a>
+                                    </td>
                             <% else %>
                               <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                             <% end %>
@@ -325,6 +344,7 @@
 <%= javascript_include_tag "application" %>
 
 <script language="javascript" type="text/javascript">
+    var FillExtList = '<%= DocumentHelper.fill_forms_exts.join"," %>';
     var ConvertExtList = '<%= DocumentHelper.convert_exts.join(",") %>';
     var EditedExtList = '<%= DocumentHelper.edited_exts.join(",") %>';
     var UrlConverter = '<%= convert_path %>';

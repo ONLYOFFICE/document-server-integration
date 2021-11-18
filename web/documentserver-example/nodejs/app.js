@@ -103,6 +103,7 @@ app.get("/", function (req, res) {  // define a handler for default page
             preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
             convertExts: configServer.get('convertedDocs').join(","),
             editedExts: configServer.get('editedDocs').join(","),
+            fillExts: configServer.get("fillDocs").join(","),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
@@ -196,7 +197,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
             return;
         }
 
-        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));  // all the supported file extensions
+        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'), configServer.get("fillDocs"));  // all the supported file extensions
         const curExt = fileUtility.getFileExtension(file.name);
         const documentType = fileUtility.getFileType(file.name);
 
@@ -223,6 +224,54 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
             res.end();
         });
     });
+});
+
+app.post("/create", function (req, res) {
+    var title = req.body.title;
+    var fileUrl = req.body.url;
+
+    try {
+        docManager.init(storageFolder, req, res);
+        docManager.storagePath(""); // mkdir if not exist
+
+        var fileName = docManager.getCorrectName(title);
+        var userAddress = docManager.curUserHostAddress();
+        docManager.historyPath(fileName, userAddress, true);
+
+        urllib.request(fileUrl, {method: "GET"},function(err, data) {
+            if (configServer.get("maxFileSize") < data.length || data.length <= 0) {  // check if the file size exceeds the maximum file size
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.write(JSON.stringify({ "error": "File size is incorrect" }));
+                res.end();
+                return;
+            }
+
+            const exts = [].concat(configServer.get("viewedDocs"), configServer.get("editedDocs"), configServer.get("convertedDocs"), configServer.get("fillDocs"));  // all the supported file extensions
+            const curExt = fileUtility.getFileExtension(fileName);
+
+            if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
+                res.writeHead(200, { "Content-Type": "application/json" });  // and write the error status and message to the response
+                res.write(JSON.stringify({ "error": "File type is not supported" }));
+                res.end();
+                return;
+            }
+
+            fileSystem.writeFileSync(docManager.storagePath(fileName), data);
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ "file" : fileName }));
+            res.end();
+
+        });
+
+    } catch (e) {
+        res.status(500);
+        res.write(JSON.stringify({
+            error: 1,
+            message: e.message
+        }));
+        res.end();
+    }
 });
 
 app.post("/convert", function (req, res) {  // define a handler for converting files
@@ -687,6 +736,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             res.redirect(redirectPath);
             return;
         }
+        fileExt = fileUtility.getFileExtension(fileName);
 
         var userAddress = docManager.curUserHostAddress();
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
@@ -703,8 +753,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
             }
 
-        var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;  // check if this file can be edited
-        var submitForm = canEdit && (mode == "edit" || mode == "fillForms");
+        var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
+        if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
+            mode = "fillForms";
+            canEdit = true;
+        }
+        var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
         var countVersion = 1;
 
@@ -728,7 +782,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 var historyD = {
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
                 };
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
