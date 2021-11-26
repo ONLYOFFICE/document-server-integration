@@ -144,7 +144,7 @@
                                     if (!empty($storedFiles)): ?>
                                         <div id="portal-info" style="display: none">
                                     <?php else: ?>
-                                        <div id="portal-info" style="display: block">
+                                        <div id="portal-info" style="display: table-cell">
                                     <?php endif; ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">

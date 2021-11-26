@@ -139,7 +139,7 @@
                     <td class="section">
                         <div class="main-panel">
                             <% var storedFiles = DocManagerHelper.GetStoredFiles(); %>
-                            <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "block" %>">
+                            <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.

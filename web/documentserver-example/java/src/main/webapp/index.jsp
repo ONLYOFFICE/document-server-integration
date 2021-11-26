@@ -139,7 +139,7 @@
                             <% DocumentManager.Init(request, response); %>
                             <% File[] files = DocumentManager.GetStoredFiles(null); %>
                             <div class="main-panel">
-                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "block" %>">
+                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
