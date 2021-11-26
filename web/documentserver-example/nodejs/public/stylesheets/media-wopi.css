@@ -79,7 +79,7 @@
     }
     .tableRow td:last-child:after{
         width: 90%;
-        top: 67px;
+        top: 65px;
         height: 1%;
     }
 }
