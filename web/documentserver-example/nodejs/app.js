@@ -101,9 +101,9 @@ app.get("/", function (req, res) {  // define a handler for default page
 
         res.render("index", {  // render index template with the parameters specified
             preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-            convertExts: configServer.get('convertedDocs').join(","),
-            editedExts: configServer.get('editedDocs').join(","),
-            fillExts: configServer.get("fillDocs").join(","),
+            convertExts: configServer.get('convertedDocs'),
+            editedExts: configServer.get('editedDocs'),
+            fillExts: configServer.get("fillDocs"),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
