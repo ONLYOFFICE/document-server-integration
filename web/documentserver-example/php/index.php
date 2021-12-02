@@ -213,9 +213,6 @@
                                                                         echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                                                         echo ' </td>';
                                                                     }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
-                                                                       echo ' <td class="contentCells contentCells-icon contentCellsEmpty"></td>';
-                                                                    }
                                                                     if ($storeFile->documentType == "word") {
                                                                         echo ' <td class="contentCells contentCells-icon ">';
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=blockcontent&type=desktop" target="_blank">';

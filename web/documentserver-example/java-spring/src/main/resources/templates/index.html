@@ -189,9 +189,6 @@
                                                             </a>
                                                         </td>
                                                     </div>
-                                                <div th:if="${docTypes[iState.index]} eq 'slide'">
-                                                    <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                                                </div>
                                                     <div th:if="${docTypes[iState.index]} eq 'word'">
                                                         <td class="contentCells contentCells-icon">
                                                             <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='blockcontent')}" target="_blank">

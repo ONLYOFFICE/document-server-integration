@@ -223,9 +223,6 @@
                                                                         </a>
                                                                     </td>
                                                                 <% } %>
-                                                                <%if (docType != "word" && docType != "cell") { %>
-                                                                    <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                                                                <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">

@@ -193,9 +193,6 @@
                                     </a>
                                 </td>
                               <% end %>
-                              <% if !docType.eql?("word") && !docType.eql?("cell")%>
-                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                              <% end %>
                                   <% if docType.eql?("word") %>
                                     <td class="contentCells contentCells-icon">
                                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
