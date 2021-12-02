@@ -69,7 +69,7 @@
                                                     <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo htmlentities($user); ?>">Presentation</a>
                                                 </li>
                                                 <li>
-                                                    <a class="try-editor form reload-page" target="_blank" href="doceditor.php?fileExt=docxf&user=<?php echo htmlentities($user); ?>">Master form</a>
+                                                    <a class="try-editor form reload-page" target="_blank" href="doceditor.php?fileExt=docxf&user=<?php echo htmlentities($user); ?>">Form template</a>
                                                 </li>
                                             </ul>
                                             <label class="create-sample">
