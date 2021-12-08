@@ -354,7 +354,8 @@ namespace OnlineEditorsExample
                             });
                         }
                     }
-
+                    var ext = Path.GetExtension(FileName).ToLower();
+                    dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
                     dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));  // write file url to the data object
                     dataObj.Add("version", i);
@@ -375,6 +376,7 @@ namespace OnlineEditorsExample
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
+                            { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
                             { "url", prev["url"] },
                         });
