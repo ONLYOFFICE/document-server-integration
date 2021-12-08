@@ -210,6 +210,13 @@
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
             };
+
+            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
+                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
+                return;
+            }
+
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
 
             fixSize();
