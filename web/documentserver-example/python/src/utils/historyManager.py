@@ -176,6 +176,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
 
                 obj['key'] = key
                 obj['version'] = i
+                dataObj['fileType'] = fileUtils.getFileExt(filename)[1:]
                 dataObj['key'] = key
                 dataObj['version'] = i
 
@@ -201,6 +202,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
 
                     prev = histData[str(i - 2)] # get the history data from the previous file version
                     prevInfo = { # write key and url information about previous file version
+                        'fileType': prev['fileType'],
                         'key': prev['key'],
                         'url': prev['url']
                     }
