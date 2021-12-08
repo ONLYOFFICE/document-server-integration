@@ -245,8 +245,10 @@
                     ];
                 }
 
+                $fileExe = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+                $dataObj["fileType"] = str_replace(".","",$fileExe);
                 $dataObj["key"] = $key;
                 $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
                 $dataObj["version"] = $i;
@@ -262,6 +264,7 @@
 
                     $prev = $histData[$i - 2];  // get the history data from the previous file version
                     $dataObj["previous"] = [  // write information about previous file version to the data object
+                        "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
