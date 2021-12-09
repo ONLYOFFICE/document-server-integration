@@ -28,6 +28,16 @@ Check that your system meets the requirements:
 * **Microsoft .NET Framework**: version 4.5 (download it from the [official Microsoft website](https://www.microsoft.com/en-US/download/details.aspx?id=30653));
 * **Internet Information Services**: version 7 or later.
 
+Configure the IIS components for the server to work correctly:
+1.	Open Windows features:
+
+	**Start** -> **Control Panel** -> **Programs** -> **Programs and Features** -> **Turn Windows features on or off**
+
+2. In the opened window, find **Internet Information Services** and choose all the necessary features. To do this, open the **World Wide Web Services** list and check the following components:
+* **Application Development Features**: .NET Extensibility 4.8, ASP.NET 4.8, ISAPI Extensions, ISAPI Filters,
+* **Common HTTP Features**: Default Document,
+* **Security**: Request Filtering.
+
 ## Step 4. Run your website with the editors
 1. Run the Internet Information Service (IIS) Manager:
 
