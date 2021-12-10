@@ -245,10 +245,10 @@
                     ];
                 }
 
-                $fileExe = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+                $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
-                $dataObj["fileType"] = str_replace(".","",$fileExe);
+                $dataObj["fileType"] = $fileExe;
                 $dataObj["key"] = $key;
                 $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
                 $dataObj["version"] = $i;
