@@ -79,6 +79,26 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.get("/files/*/new.*-history/*/prev.*", function(req, res, next) { // .../new.*-history/*/*
+
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+        var authorization = req.get(cfgSignatureAuthorizationHeader);
+        if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+            try {
+                var decoded = jwt.verify(token, cfgSignatureSecret);
+            } catch (err) {
+                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+                res.sendStatus(403);
+                return;
+            }
+        }else {
+            res.sendStatus(403);
+            return;
+        }
+    }
+    next();
+});
+
 app.use(express.static(path.join(__dirname, "public")));  // public directory
 if (config.has('server.static')) {  // check if there are static files such as .js, .css files, images, samples and process them
   const staticContent = config.get('server.static');
