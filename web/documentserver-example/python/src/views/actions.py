@@ -381,3 +381,30 @@ def download(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
+
+def static(request):
+    try:
+        if (jwtManager.isEnabled()):
+            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+            token = request.headers.get(jwtHeader)
+            if token:
+                token = token[len('Bearer '):]
+                try:
+                    body = jwtManager.decode(token)
+                except Exception:
+                    return HttpResponse('JWT validation failed', status=403)
+            else:
+                return HttpResponse('JWT validation failed', status=403)
+
+        filepath = request.path.replace('/static','app_data')
+        filename = fileUtils.getFileName(filepath)
+
+        response = FileResponse(open(filepath, 'rb'))
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        response['X-Sendfile'] = filename
+
+        return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
