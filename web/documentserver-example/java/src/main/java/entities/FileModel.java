@@ -1,39 +1,37 @@
 /**
- *
  * (c) Copyright Ascensio System SIA 2021
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import helpers.ConfigManager;
 import helpers.DocumentManager;
 import helpers.FileUtility;
 import helpers.ServiceConverter;
-import helpers.Users;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.util.*;
 
-public class FileModel
-{
+public class FileModel {
     public String type = "desktop";
     public String mode = "edit";
     public String documentType;
@@ -42,8 +40,7 @@ public class FileModel
     public String token;
 
     // create file model
-    public FileModel(String fileName, String lang, String actionData, User user)
-    {
+    public FileModel(String fileName, String lang, String actionData, User user) {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();  // remove extra spaces in the file name
 
@@ -80,7 +77,7 @@ public class FileModel
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
-        
+
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
         editorConfig.createUrl = !user.id.equals("uid-0") ? createUrl : null;
@@ -97,9 +94,14 @@ public class FileModel
         changeType(mode, type, user);
     }
 
+    // turn java objects into json strings
+    public static String Serialize(FileModel model) {
+        Gson gson = new Gson();
+        return gson.toJson(model);
+    }
+
     // change the document type
-    public void changeType(String _mode, String _type, User user)
-    {
+    public void changeType(String _mode, String _type, User user) {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
 
@@ -122,14 +124,12 @@ public class FileModel
         if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
     }
 
-    public void InitDesktop()
-    {
+    public void InitDesktop() {
         editorConfig.InitDesktop(document.urlUser);
     }
 
     // generate document token
-    public void BuildToken()
-    {
+    public void BuildToken() {
         // write all the necessary document parameters to the map
         Map<String, Object> map = new HashMap<>();
         map.put("type", type);
@@ -142,10 +142,10 @@ public class FileModel
     }
 
     // get document history
-    public String[] GetHistory()
-    {
+    public String[] GetHistory() {
         JSONParser parser = new JSONParser();
         String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));  // get history directory
+
         if (DocumentManager.GetFileVersion(histDir) > 0) {
             Integer curVer = DocumentManager.GetFileVersion(histDir);  // get current file version if it is greater than 0
 
@@ -167,7 +167,7 @@ public class FileModel
                     obj.put("version", i);
 
                     if (i == 1) {  // check if the version number is equal to 1
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));  // get file with meta data
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator + i + File.separator + "changes.json"));  // get file with meta data
                         JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
                         // write meta information to the object (user information and creation date)
@@ -199,18 +199,18 @@ public class FileModel
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
+                        dataObj.put("changesUrl", ConfigManager.GetProperty("files.docservice.url.example") + "/IndexServlet?version=" + i + "&histDir=" + URLEncoder.encode(histDir) + "&type=zip");
+                        // dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
                     }
-
-                    if (DocumentManager.TokenEnabled())
-                    {
+                    if (DocumentManager.TokenEnabled()) {
                         dataObj.put("token", DocumentManager.CreateToken(dataObj));
                     }
 
                     hist.add(obj);
                     histData.put(Integer.toString(i - 1), dataObj);
 
-                } catch (Exception ex) { }
+                } catch (Exception ex) {
+                }
             }
 
             // write history information about the current file version to the history object
@@ -219,17 +219,16 @@ public class FileModel
             histObj.put("history", hist);
 
             Gson gson = new Gson();
-            return new String[] { gson.toJson(histObj), gson.toJson(histData) };
+            return new String[]{gson.toJson(histObj), gson.toJson(histData)};
         }
-        return new String[] { "", "" };
+        return new String[]{"", ""};
     }
 
     // read a file
     private String readFileToEnd(File file) {
         String output = "";
         try {
-            try(FileInputStream is = new FileInputStream(file))
-            {
+            try (FileInputStream is = new FileInputStream(file)) {
                 Scanner scanner = new Scanner(is);  // read data from the source
                 scanner.useDelimiter("\\A");
                 while (scanner.hasNext()) {
@@ -237,13 +236,13 @@ public class FileModel
                 }
                 scanner.close();
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
         return output;
     }
 
     // the document parameters
-    public class Document
-    {
+    public class Document {
         public String title;
         public String url;
         public String urlUser;
@@ -254,8 +253,7 @@ public class FileModel
     }
 
     // the permissions parameters
-    public class Permissions
-    {
+    public class Permissions {
         public Boolean comment;
         public Boolean сopy;
         public Boolean download;
@@ -269,8 +267,7 @@ public class FileModel
         public CommentGroups commentGroups;
 
         // defines what can be done with a document
-        public Permissions(String mode, String type, Boolean canEdit, User user)
-        {
+        public Permissions(String mode, String type, Boolean canEdit, User user) {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
             сopy = !user.deniedPermissions.contains("сopy");
             download = !user.deniedPermissions.contains("download");
@@ -286,13 +283,12 @@ public class FileModel
     }
 
     // the Favorite icon state
-    public class Info
-    {
+    public class Info {
         public Boolean favorite;
     }
+
     // the editor config parameters
-    public class EditorConfig
-    {
+    public class EditorConfig {
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
@@ -303,20 +299,19 @@ public class FileModel
         public Customization customization;
         public Embedded embedded;
 
-        public EditorConfig(String actionData)
-        {
+        public EditorConfig(String actionData) {
             // get the action in the document that will be scrolled to (bookmark or comment)
             if (actionData != null) {
                 Gson gson = new Gson();
-                actionLink = gson.fromJson(actionData, new TypeToken<HashMap<String, Object>>() { }.getType());
+                actionLink = gson.fromJson(actionData, new TypeToken<HashMap<String, Object>>() {
+                }.getType());
             }
             user = new User();
             customization = new Customization();
         }
 
         // set parameters for the embedded document
-        public void InitDesktop(String url)
-        {
+        public void InitDesktop(String url) {
             embedded = new Embedded();
             embedded.saveUrl = url;  // the absolute URL that will allow the document to be saved onto the user personal computer
             embedded.embedUrl = url;  // the absolute URL to the document serving as a source file for the document embedded into the web page
@@ -325,47 +320,34 @@ public class FileModel
         }
 
         // default user parameters (id, name and group)
-        public class User
-        {
+        public class User {
             public String id;
             public String name;
             public String group;
         }
 
         // customization parameters
-        public class Customization
-        {
+        public class Customization {
             public Goback goback;
             public Boolean forcesave;
             public Boolean submitForm;
 
-            public Customization()
-            {
+            public Customization() {
                 forcesave = false;
                 goback = new Goback();
             }
 
-            public class Goback
-            {
+            public class Goback {
                 public String url;
             }
         }
 
         // parameters for embedded document
-        public class Embedded
-        {
+        public class Embedded {
             public String saveUrl;
             public String embedUrl;
             public String shareUrl;
             public String toolbarDocked;
         }
-    }
-
-
-    // turn java objects into json strings
-    public static String Serialize(FileModel model)
-    {
-        Gson gson = new Gson();
-        return gson.toJson(model);
     }
 }

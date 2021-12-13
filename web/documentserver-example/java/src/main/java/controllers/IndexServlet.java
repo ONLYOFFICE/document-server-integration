@@ -23,6 +23,7 @@ import entities.User;
 import helpers.*;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -92,6 +93,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "saveas":
                 SaveAs(request, response, writer);
+                break;
+            case "zip":
+                DownloadZipFile(request, response, writer);
                 break;
         }
     }
@@ -505,6 +509,53 @@ public class IndexServlet extends HttpServlet
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+    private static void DownloadZipFile(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+        try {
+            String histDir = request.getParameter("histDir");
+            int version = Integer.parseInt(request.getParameter("version"));
+
+
+            if (DocumentManager.TokenEnabled()) {
+
+                String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
+                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                if (header != null && !header.isEmpty()) {
+                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    try {
+                        Verifier verifier = HMACVerifier.newVerifier(DocumentManager.GetTokenSecret());
+                        JWT jwt = JWT.getDecoder().decode(token, verifier);
+                    } catch (Exception e) {
+                        response.sendError(403, "JWT validation failed");
+                        return;
+                    }
+                } else {
+                    response.sendError(403, "JWT validation failed");
+                    return;
+
+                }
+            }
+            String zipPath = DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, version - 1) + File.separator + "diff.zip");
+
+            zipDownload(response,zipPath,writer);
+        } catch (Exception e) {
+            writer.write("{ \"error\": \"ZipFile not found\"}");
+        }
+    }
+
+    private static void zipDownload(HttpServletResponse response, String urlPath ,PrintWriter writer) throws IOException {
+        response.setContentType("application/zip");
+        response.addHeader("Content-Disposition", "attachment; filename=diff.zip");
+        URL url = new URL(urlPath);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        InputStream in = connection.getInputStream();
+        PrintWriter responseWriter = writer;
+        int bytes;
+        while ((bytes = in.read()) != -1) {
+            responseWriter.write(bytes);
         }
     }
 
