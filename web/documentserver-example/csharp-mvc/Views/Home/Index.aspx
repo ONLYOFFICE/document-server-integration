@@ -222,9 +222,6 @@
                                                                             </a>
                                                                          </td>
                                                                     <% } %>
-                                                                    <% if (docType != "word" && docType != "cell") { %>
-                                                                        <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                                                                    <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
