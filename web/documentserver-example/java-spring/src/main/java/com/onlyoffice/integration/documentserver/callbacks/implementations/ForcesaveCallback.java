@@ -30,10 +30,10 @@ public class ForcesaveCallback implements Callback {
     @Autowired
     private CallbackManager callbackManager;
     @Override
-    public int handle(Track body, String fileName) {
+    public int handle(Track body, String fileName) {  // handle the callback when the force saving request is performed
         int result = 0;
         try {
-            callbackManager.processForceSave(body, fileName);
+            callbackManager.processForceSave(body, fileName);  // file force saving process
         } catch (Exception ex) {
             ex.printStackTrace();
             result = 1;
@@ -42,7 +42,7 @@ public class ForcesaveCallback implements Callback {
     }
 
     @Override
-    public int getStatus() {
-        return Status.MUST_FORCE_SAVE.getCode();
+    public int getStatus() {  // get document status
+        return Status.MUST_FORCE_SAVE.getCode();  // return status 6 - document is being edited, but the current document state is saved
     }
 }

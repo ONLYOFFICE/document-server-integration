@@ -27,7 +27,8 @@ To connect the editors to your website, specify the path to the editors installa
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-**port** is the any available port.   
+**port** is the any available port. Where **files.storage** is the path where files will created and stored(by default is the project folder), you can set an absolute path.
+Note, on Windows OS use double backslash as separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\resources\editor.html* file.
 
@@ -177,7 +178,8 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     ```
 
 	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-	**port** is the any available port.   
+	**port** is the any available port. Where **files.storage** is the path where files will created and stored(by default is the project folder), you can set an absolute path.
+   
 
 5. Install **Maven**:
 

@@ -20,6 +20,7 @@ package com.onlyoffice.integration.services.configurers.implementations;
 
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.models.configurations.Customization;
+import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.configurers.CustomizationConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultCustomizationWrapper;
 import org.springframework.context.annotation.Primary;
@@ -29,9 +30,9 @@ import org.springframework.stereotype.Service;
 @Primary
 public class DefaultCustomizationConfigurer implements CustomizationConfigurer<DefaultCustomizationWrapper> {
     @Override
-    public void configure(Customization customization, DefaultCustomizationWrapper wrapper){
-        Action action = wrapper.getAction();
-        Boolean canEdit = wrapper.getCanEdit();
-        customization.setSubmitForm(canEdit && (action.equals(Action.edit) || action.equals(Action.fillForms)));
+    public void configure(Customization customization, DefaultCustomizationWrapper wrapper) {  // define the customization configurer
+        Action action = wrapper.getAction();  // get the action parameter from the customization wrapper
+        User user = wrapper.getUser();
+        customization.setSubmitForm(action.equals(Action.fillForms) && user.getId() == 1 && false);  // set the submitForm parameter to the customization config
     }
 }

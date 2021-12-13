@@ -20,10 +20,7 @@ package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import helpers.DocumentManager;
-import helpers.FileUtility;
-import helpers.ServiceConverter;
-import helpers.Users;
+import helpers.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -55,7 +52,6 @@ public class FileModel
         document = new Document();
         document.title = fileName;
         document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
-        document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -95,31 +91,37 @@ public class FileModel
         // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
-        changeType(mode, type, user);
+        changeType(mode, type, user, fileName);
     }
 
     // change the document type
-    public void changeType(String _mode, String _type, User user)
+    public void changeType(String _mode, String _type, User user, String fileName)
     {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
 
         // check if the file with such an extension can be edited
-        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(document.title));
+        String fileExt = FileUtility.GetFileExtension(document.title);
+        Boolean canEdit = DocumentManager.GetEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.customization.submitForm = canEdit && (mode.equals("edit") || mode.equals("fillForms"));
+        editorConfig.customization.submitForm = mode.equals("fillForms") && user.id.equals("uid-1") && false;
+
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
+            canEdit = true;
+            mode = "fillForms";
+        }
         // set the mode parameter: change it to view if the document can't be edited
         editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
 
         // set document permissions
         document.permissions = new Permissions(mode, type, canEdit, user);
 
-        if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
+        if (type.equals("embedded")) InitDesktop(fileName);  // set parameters for the embedded document
     }
 
-    public void InitDesktop()
+    public void InitDesktop(String fileName)
     {
-        editorConfig.InitDesktop(document.urlUser);
+        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName) + "&dmode=emb");
     }
 
     // generate document token
@@ -194,7 +196,12 @@ public class FileModel
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
+                        String storagePath = ConfigManager.GetProperty("storage-folder");
+                        String changesUrl = DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip");
+                        if (new File(storagePath).isAbsolute()) {
+                            changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
+                        }
+                        dataObj.put("changesUrl", changesUrl);
                     }
 
                     if (DocumentManager.TokenEnabled())
@@ -241,7 +248,6 @@ public class FileModel
     {
         public String title;
         public String url;
-        public String urlUser;
         public String fileType;
         public String key;
         public Info info;

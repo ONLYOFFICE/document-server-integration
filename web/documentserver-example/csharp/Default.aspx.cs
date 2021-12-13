@@ -56,7 +56,7 @@ namespace OnlineEditorsExample
                 ".dot", ".dotx", ".dotm",
                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
                 ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
+                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
             };
 
         // get an internal file extension
@@ -78,7 +78,9 @@ namespace OnlineEditorsExample
         {
             get
             {
-                return
+                return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? 
+                    WebConfigurationManager.AppSettings["storage-path"] + "/"
+                    :
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + WebConfigurationManager.AppSettings["storage-path"]
@@ -107,13 +109,18 @@ namespace OnlineEditorsExample
         // get all the supported file extensions
         private static List<string> FileExts
         {
-            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).Concat(FillFormsExts).ToList(); }
         }
 
         // file extensions that can be viewed
         private static List<string> ViewedExts
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+        }
+        
+        public static List<string> FillFormsExts
+        {
+            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // file extensions that can be edited
@@ -139,18 +146,36 @@ namespace OnlineEditorsExample
         // get the storage path of the given file
         public static string StoragePath(string fileName, string userAddress)
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);  // if the file directory doesn't exist, make it
             }
-            return directory + Path.GetFileName(fileName);
+            return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
         }
 
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))  // the directory with host address doesn't exist
             {
                 return "";
@@ -370,7 +395,7 @@ namespace OnlineEditorsExample
             var fileName = GetCorrectName(title);
             var extension = "." + (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
 
-            var allExt = ConvertExts.Concat(EditedExts).Concat(ViewedExts).ToArray();
+            var allExt = ConvertExts.Concat(EditedExts).Concat(ViewedExts).Concat(FillFormsExts).ToArray();
 
             if (!allExt.Contains(extension))
             {
@@ -523,7 +548,16 @@ namespace OnlineEditorsExample
         // get all the stored files from the folder
         protected static List<FileInfo> GetStoredFiles()
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            }
+            
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);  // read the user host directory contents

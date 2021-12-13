@@ -52,13 +52,18 @@
     }
 
     $fileuri = FileUri($filename, true);
-    $fileuriUser = FileUri($filename);
+    $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
+    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
     $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
-    $canEdit = in_array(strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
-    $submitForm = $canEdit && ($editorsMode == "edit" || $editorsMode == "fillForms");  // check if the Submit form button is displayed or not
+    $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
+    if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
+        $editorsMode = "fillForms";
+        $canEdit = true;
+    }
+    $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;  // check if the Submit form button is displayed or not
     $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
     $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
@@ -212,6 +217,7 @@
 
     // get document history
     function getHistory($filename, $filetype, $docKey, $fileuri) {
+        $storagePath = $GLOBALS['STORAGE_PATH'];
         $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
         if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
@@ -242,15 +248,19 @@
 
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+                $prevFileUrl = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
+                if (realpath($storagePath) === $storagePath) {
+                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getDownloadUrl($prevFileName);
+                }
                 $dataObj["key"] = $key;
-                $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
+                $dataObj["url"] = $prevFileUrl;  // write file url to the data object
                 $dataObj["version"] = $i;
 
                 if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
                     $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $change ? $changes["changes"][0] : null;  // write information about changes to the object
+                    $obj["changes"] = $changes ? $changes["changes"] : null;  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
                     $obj["created"] = $change ? $change["created"] : null;
                     $obj["user"] = $change ? $change["user"] : null;
@@ -260,11 +270,12 @@
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
-                    $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
+                    $changesPath = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
+                    $changesPath = substr($changesPath, strlen(getStoragePath("")));
 
                     // write the path to the diff.zip archive with differences in this file version
-                    $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
+                    $changesUrl = realpath($storagePath) === $storagePath ? getDownloadUrl($changesPath) : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesPath)) ;
+                    $dataObj["changesUrl"] = $changesUrl;
                 }
 
                 if (isJwtEnabled()) {
@@ -500,6 +511,12 @@
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
             };
+
+            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
+                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
+                return;
+            }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

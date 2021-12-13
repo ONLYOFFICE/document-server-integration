@@ -97,6 +97,10 @@ header img {
     width: 896px;
 }
 
+#portal-info {
+    max-width: 65vw;
+}
+
 .portal-name {
     color: #FF6F3D;
     font-size: 24px;
@@ -155,6 +159,10 @@ label .checkbox {
 
 .try-editor.slide {
     background-image: url("../images/file_pptx.svg");
+}
+
+.try-editor.form {
+    background-image: url("../images/file_docxf.svg");
 }
 
 .create-sample {
@@ -590,6 +598,7 @@ footer table tr td:first-child {
 }
 
 .contentCells-wopi {
+    height: 25px;
     width: 18%;
     text-align: left;
 }

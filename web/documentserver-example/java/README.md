@@ -19,10 +19,13 @@ Download the [Java example](https://api.onlyoffice.com/editors/demopreview) from
 To connect the editors to your website, specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
 
 ```
+storage-folder = app_data
 files.docservice.url.site=https://documentserver/
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+**storage-folder** is the path where files will created and stored, you can set an absolute path, for example **D:\\\\folder**.
+ Note, use double backslash as separator. 
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\src\main\webapp\editor.jsp* file.
 
@@ -166,10 +169,17 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 	Edit the following line:
 
     ```
+    storage-folder = app_data
     files.docservice.url.site=https://documentserver/
     ```
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	**storage-folder** is the path where files will created and stored.
+	 Note, you must have read and write permissions to folder. 
+	If not, please, use next command:
+	    ```
+        sudo chmod -R ugo+rw /{path}
+        ```
 
 5. Install **Maven**:
 

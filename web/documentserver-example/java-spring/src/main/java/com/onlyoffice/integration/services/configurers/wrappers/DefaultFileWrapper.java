@@ -24,9 +24,11 @@ import com.onlyoffice.integration.documentserver.models.enums.Language;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
+@Setter
 public class DefaultFileWrapper {
     private String fileName;
     private Type type;
@@ -34,4 +36,5 @@ public class DefaultFileWrapper {
     private Language lang;
     private Action action;
     private String actionData;
+    private Boolean canEdit;
 }

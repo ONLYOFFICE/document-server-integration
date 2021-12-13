@@ -48,10 +48,12 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 	Edit the following line:
 
     ```
+	STORAGE_PATH = 'app_data'
     DOC_SERV_SITE_URL = 'https://documentserver/'
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed. Where the **app_data** is the path where files will created and stored, you can set an absolute path.
+	Note, on Windows OS use double backslash as separator.
 
 6. Run the **Python** server:
 
@@ -62,7 +64,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 7. See the result in your browser using the address:
 
     ```
-    http://localhost
+    http://localhost:8000
     ```
 
 ## Step 3. Check accessibility

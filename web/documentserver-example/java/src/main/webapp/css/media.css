@@ -48,7 +48,6 @@
 
     .left-panel {
         margin-left: 48px;
-        width: 20%;
     }
 }
 
@@ -87,10 +86,6 @@
 }
 
 @media (max-width: 1008px) {
-    #portal-info {
-        width: 65vw;
-    }
-
     .left-panel {
         margin-left: 0;
     }
@@ -161,16 +156,7 @@
         width: 45%;
     }
 }
-@media (max-width: 670px) and (min-width: 620px){
-    .main-panel{
-        width: 90%;
-    }
-}
 @media (max-width: 681px) and (min-width: 593px) {
-
-    .left-panel {
-        width: 10%;
-    }
 
     .main-panel {
         left: 2%;
@@ -264,9 +250,6 @@
 }
 
 @media (max-width: 890px) and (min-width: 769px ) {
-    .left-panel{
-        width: 20%;
-    }
     .contentCells-shift {
         padding-right: 28px;
     }
@@ -312,6 +295,9 @@
     .tableRow td:first-child {
         max-width: 17%;
     }
+    #portal-info {
+        max-width: 60vw;
+    }
 }
 
 .downloadContentCellShift:after {
@@ -327,6 +313,9 @@
 @media (max-width: 769px) {
     .tableRow td:first-child {
         max-width: 100%;
+    }
+    .left-panel {
+        width: min-content;
     }
 }
 
@@ -367,10 +356,6 @@
         width: 100%;
         text-align: center;
         margin: 0;
-    }
-
-    .left-panel {
-        width: 10%;
     }
 
     .help-block {

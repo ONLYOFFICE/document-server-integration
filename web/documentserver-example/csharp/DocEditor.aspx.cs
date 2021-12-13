@@ -41,7 +41,7 @@ namespace OnlineEditorsExample
         // get url to the original file for Document Server
         public static string FileUriUser
         {
-            get { return _Default.FileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? getDownloadUrl(FileName) + "&dmode=emb" : _Default.FileUri(FileName, false); }
         }
 
         protected string Key
@@ -100,20 +100,17 @@ namespace OnlineEditorsExample
         }
 
         // get url to download a file
-        public static string getDownloadUrl
+        public static string getDownloadUrl(string fileName)
         {
-            get
-            {
-                var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
+            var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
                 downloadUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
                 downloadUrl.Query = "type=download"
-                                    + "&fileName=" + HttpUtility.UrlEncode(FileName)
+                                    + "&fileName=" + HttpUtility.UrlEncode(fileName)
                                     + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
                 return downloadUrl.ToString();
-            }
         }
 
         // loading a page
@@ -148,12 +145,17 @@ namespace OnlineEditorsExample
             var editorsMode = Request.GetOrDefault("editorsMode", "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
-            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
-            var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or hidden
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
 
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
+            
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && _Default.FillFormsExts.Contains(ext)) {
+                editorsMode = "fillForms";
+                canEdit = true;
+            }            
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
 
@@ -190,7 +192,7 @@ namespace OnlineEditorsExample
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                { "url", getDownloadUrl },
+                                { "url", getDownloadUrl(FileName) },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -313,6 +315,7 @@ namespace OnlineEditorsExample
         // get the document history
         private void GetHistory(out Dictionary<string, object> history, out Dictionary<string, object> historyData)
         {
+            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
             var jss = new JavaScriptSerializer();
             var histDir = _Default.HistoryDir(_Default.StoragePath(FileName, null));
 
@@ -351,7 +354,13 @@ namespace OnlineEditorsExample
                     }
 
                     dataObj.Add("key", key);
-                    dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));  // write file url to the data object
+                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]);
+                    if (Path.IsPathRooted(storagePath))
+                    {
+                        prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                    }
+
+                    dataObj.Add("url", prevFileUrl);  // write file url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -374,7 +383,9 @@ namespace OnlineEditorsExample
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
+                        var changesUrl = Path.IsPathRooted(storagePath) ? getDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
+                            : MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip"));
+                        dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)
                     {
@@ -498,7 +509,8 @@ namespace OnlineEditorsExample
         // create the public url
         private string MakePublicUrl(string fullPath)
         {
-            var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
+            var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"] 
+                : HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
         }
 
@@ -516,6 +528,9 @@ namespace OnlineEditorsExample
                     break;
                 case "slide":
                     ext = ".pptx";  // .pptx for slide document type
+                    break;
+                case "docxf":
+                    ext = ".docxf";
                     break;
                 default:
                     return;

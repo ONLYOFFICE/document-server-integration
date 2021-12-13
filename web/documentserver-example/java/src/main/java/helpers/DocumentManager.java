@@ -74,8 +74,14 @@ public class DocumentManager
         res.addAll(GetViewedExts());
         res.addAll(GetEditedExts());
         res.addAll(GetConvertExts());
+        res.addAll(GetFillExts());
 
         return res;
+    }
+
+    public static List<String> GetFillExts() {
+        String exts = ConfigManager.GetProperty("files.docservice.fill-docs");
+        return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be viewed
@@ -124,7 +130,20 @@ public class DocumentManager
         String hostAddress = CurUserHostAddress(userAddress);  // get current user host address
         String serverPath = request.getSession().getServletContext().getRealPath("");  // get the server url
         String storagePath = ConfigManager.GetProperty("storage-folder");  // get the storage directory
-        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+        File f = new File(storagePath);
+
+        if (f.isAbsolute()) {
+            if (!f.exists()) {
+                if (Files.isWritable(Paths.get(storagePath.substring(0, storagePath.lastIndexOf(File.separator))))) {
+                    f.mkdirs();
+                } else {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
+                }
+            } else if (f.exists() && f.isFile()) {
+                throw new SecurityException("The path to the file is specified instead of the folder");
+            }
+        }
+        String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
 
         File file = new File(directory);
 
@@ -314,13 +333,20 @@ public class DocumentManager
         {
             String serverPath = GetServerUrl(forDocumentServer);
             String storagePath = ConfigManager.GetProperty("storage-folder");
+            File f = new File(storagePath);
             String hostAddress = CurUserHostAddress(null);
 
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            if (f.isAbsolute() && f.isFile()) {
+                filePath = GetDownloadUrl(fileName);
+                if (!Files.isWritable(f.toPath())) {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
+                }
+            }
 
             return filePath;
         }
-        catch (UnsupportedEncodingException e)
+        catch (Exception e)
         {
             return "";
         }

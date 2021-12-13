@@ -154,14 +154,18 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getFileUri(filename, False, request)
+    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
-    submitForm = canEdit & ((edMode == 'edit') | (edMode == 'fillForms'))  # if the Submit form button is displayed or hidden
+
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
+        edMode = 'fillForms'
+        canEdit = True
+    submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
@@ -357,8 +361,9 @@ def download(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled()):
+        if (jwtManager.isEnabled() and isEmbedded == None):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:

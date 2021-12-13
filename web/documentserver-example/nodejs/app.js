@@ -101,8 +101,9 @@ app.get("/", function (req, res) {  // define a handler for default page
 
         res.render("index", {  // render index template with the parameters specified
             preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-            convertExts: configServer.get('convertedDocs').join(","),
-            editedExts: configServer.get('editedDocs').join(","),
+            convertExts: configServer.get('convertedDocs'),
+            editedExts: configServer.get('editedDocs'),
+            fillExts: configServer.get("fillDocs"),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
@@ -123,8 +124,9 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
+    var isEmbedded = req.query.dmode;
 
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -158,7 +160,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     docManager.storagePath(""); // mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();  // get the path to the user host
-    const uploadDir = path.join(storageFolder, userIp);
+    const uploadDir = path.isAbsolute(storageFolder) ? storageFolder : path.join(storageFolder, userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');  // and create directory for temporary files if it doesn't exist
     docManager.createDirectory(uploadDirTmp);
 
@@ -195,7 +197,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
             return;
         }
 
-        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));  // all the supported file extensions
+        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'), configServer.get("fillDocs"));  // all the supported file extensions
         const curExt = fileUtility.getFileExtension(file.name);
         const documentType = fileUtility.getFileType(file.name);
 
@@ -244,7 +246,7 @@ app.post("/create", function (req, res) {
                 return;
             }
 
-            const exts = [].concat(configServer.get("viewedDocs"), configServer.get("editedDocs"), configServer.get("convertedDocs"));  // all the supported file extensions
+            const exts = [].concat(configServer.get("viewedDocs"), configServer.get("editedDocs"), configServer.get("convertedDocs"), configServer.get("fillDocs"));  // all the supported file extensions
             const curExt = fileUtility.getFileExtension(fileName);
 
             if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
@@ -734,6 +736,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             res.redirect(redirectPath);
             return;
         }
+        fileExt = fileUtility.getFileExtension(fileName);
 
         var userAddress = docManager.curUserHostAddress();
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
@@ -743,15 +746,19 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getDownloadUrl(fileName);
-        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
+        var urlUser = path.isAbsolute(storageFolder) ? docManager.getDownloadUrl(fileName) + "&dmode=emb" : docManager.getlocalFileUri(fileName, 0, false);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
                 type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
             }
 
-        var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;  // check if this file can be edited
-        var submitForm = canEdit && (mode == "edit" || mode == "fillForms");
+        var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
+        if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
+            mode = "fillForms";
+            canEdit = true;
+        }
+        var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
         var countVersion = 1;
 
@@ -775,7 +782,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 var historyD = {
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
                 };
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -783,7 +790,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    historyD.changesUrl = docManager.getlocalFileUri(fileName, i-1) + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    let changesUrl = docManager.getlocalFileUri(fileName, i-1);
+                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);

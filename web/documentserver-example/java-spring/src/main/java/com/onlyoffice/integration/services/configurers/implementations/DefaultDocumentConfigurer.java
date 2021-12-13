@@ -48,22 +48,22 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     @Autowired
     private ServiceConverter serviceConverter;
 
-    public void configure(Document document, DefaultDocumentWrapper wrapper){
-        String fileName = wrapper.getFileName();
-        Permission permission = wrapper.getPermission();
+    public void configure(Document document, DefaultDocumentWrapper wrapper){  // define the document configurer
+        String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
+        Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
 
-        document.setTitle(fileName);
-        document.setUrl(documentManager.getDownloadUrl(fileName));
-        document.setUrlUser(documentManager.getFileUri(fileName, false));
-        document.setFileType(fileUtility.getInternalExtension(fileUtility.getDocumentType(fileName)).replace(".",""));
-        document.getInfo().setFavorite(wrapper.getFavorite());
+        document.setTitle(fileName);  // set the title to the document config
+        document.setUrl(documentManager.getDownloadUrl(fileName));  // set the URL to download a file to the document config
+        document.setUrlUser(documentManager.getFileUri(fileName, false));  // set the file URL to the document config
+        document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));  // set the file type to the document config
+        document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
-        String key =  serviceConverter.
+        String key =  serviceConverter.  // get the document key
                         generateRevisionId(storagePathBuilder.getStorageLocation()
                         + "/" + fileName + "/"
                         + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 
-        document.setKey(key);
-        document.setPermissions(permission);
+        document.setKey(key);  // set the key to the document config
+        document.setPermissions(permission);  // set the permission parameters to the document config
     }
 }

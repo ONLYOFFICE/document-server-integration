@@ -198,7 +198,8 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (EditedExtList.indexOf(posExt) != -1) {
+        if (EditedExtList.indexOf(posExt) != -1
+            || FilledExtList.indexOf(posExt) != -1) {
             jq("#beginEdit").removeClass("disable");
         }
     };

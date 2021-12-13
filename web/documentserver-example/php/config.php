@@ -1,13 +1,14 @@
 <?php
 
-$GLOBALS['version'] = "1.0.0";
+$GLOBALS['version'] = "1.1.0";
 
 $GLOBALS['FILE_SIZE_MAX'] = 5242880;
 $GLOBALS['STORAGE_PATH'] = "";
 $GLOBALS['ALONE'] = FALSE;
 
+$GLOBALS['DOC_SERV_FILLFORMS'] = array(".oform", ".docx");
 $GLOBALS['DOC_SERV_VIEWD'] = array(".pdf", ".djvu", ".xps", ".oxps");
-$GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".xlsx", ".csv", ".pptx", ".txt");
+$GLOBALS['DOC_SERV_EDITED'] = array(".docx", ".xlsx", ".csv", ".pptx", ".txt", ".docxf");
 $GLOBALS['DOC_SERV_CONVERT'] = array(".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2");
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
@@ -41,7 +42,7 @@ $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
                                  ".dot", ".dotx", ".dotm",
                                  ".odt", ".fodt", ".ott", ".rtf", ".txt",
                                  ".html", ".htm", ".mht", ".xml",
-                                 ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps");
+                                 ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform");
 
 
 ?>

@@ -68,6 +68,9 @@
                                                 <li>
                                                     <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo htmlentities($user); ?>">Presentation</a>
                                                 </li>
+                                                <li>
+                                                    <a class="try-editor form reload-page" target="_blank" href="doceditor.php?fileExt=docxf&user=<?php echo htmlentities($user); ?>">Form template</a>
+                                                </li>
                                             </ul>
                                             <label class="create-sample">
                                                 <input type="checkbox" id="createSample" class="checkbox" />With sample content
@@ -141,7 +144,7 @@
                                     if (!empty($storedFiles)): ?>
                                         <div id="portal-info" style="display: none">
                                     <?php else: ?>
-                                        <div id="portal-info" style="display: block">
+                                        <div id="portal-info" style="display: table-cell">
                                     <?php endif; ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
@@ -210,29 +213,38 @@
                                                                         echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                                                         echo ' </td>';
                                                                     }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
-                                                                       echo ' <td class="contentCells contentCells-icon contentCellsEmpty"></td>';
-                                                                    }
                                                                     if ($storeFile->documentType == "word") {
                                                                         echo ' <td class="contentCells contentCells-icon ">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
-                                                                        echo ' </td>';
-                                                                    }
-                                                                    else{
-                                                                        echo ' <td class="contentCells contentCells-icon "></td> ';
-                                                                    }
-                                                                    if ($storeFile->documentType == "word") {
-                                                                        echo ' <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">';
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=blockcontent&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                                                         echo ' </td>';
                                                                     } else{
-                                                                       echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                       echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
                                                                     if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
+                                                                    if ($storeFile->isFillFormDoc) {
+                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
+                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                        echo ' </td>';
+                                                                    } else {
+                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                    }
+                                                                 } else if ($storeFile->isFillFormDoc) {
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>';
+                                                                    echo ' </td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
+                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=fillForms&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                    echo ' </td>';
                                                                 } else {
                                                                     echo '<td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>';
                                                                 }
@@ -347,6 +359,7 @@
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
         <script type="text/javascript" src="js/jscript.js"></script>
         <script type="text/javascript">
+            var FillFormsExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_FILLFORMS"]) ?>';
             var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
             var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
         </script>

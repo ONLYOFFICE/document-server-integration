@@ -200,7 +200,15 @@ function getScheme() {
 // get the storage path of the given file
 function getStoragePath($fileName, $userAddress = NULL) {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
-    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
+        mkdir($storagePath);
+    }
+
+    if (realpath($storagePath) === $storagePath) {
+        $directory = $storagePath;
+    } else {
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    }
 
     if ($storagePath != "")
     {
@@ -212,20 +220,27 @@ function getStoragePath($fileName, $userAddress = NULL) {
         }
     }
 
-    $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    if (realpath($storagePath) !== $storagePath) {
+        $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    }
 
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     } 
     sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
-    return $directory . basename($fileName);
+    return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
 }
 
 // get the path to the forcesaved file version
 function getForcesavePath($fileName, $userAddress, $create) {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+
     // create the directory to this file version
-    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    if (realpath($storagePath) === $storagePath) {
+        $directory = $storagePath . DIRECTORY_SEPARATOR;
+    } else {
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+    }
 
     if (!is_dir($directory)) return "";
 
@@ -233,8 +248,9 @@ function getForcesavePath($fileName, $userAddress, $create) {
     $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
     if (!$create && !is_dir($directory))  return "";
 
-    mkdir($directory);
-
+    if (!file_exists($directory) && !is_dir($directory)) {
+        mkdir($directory);
+    }
     $directory = $directory . $fileName;
     if (!$create && !file_exists($directory)) return "";
 
@@ -275,7 +291,15 @@ function getFileVersion($histDir) {
 // get all the stored files from the folder
 function getStoredFiles() {
     $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
-    $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
+        mkdir($storagePath);
+    }
+
+    if (realpath($storagePath) === $storagePath) {
+        $directory = $storagePath;
+    } else {
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    }
 
     // get the storage path and check if it exists
     $result = array();
@@ -288,7 +312,9 @@ function getStoredFiles() {
         }
     }
 
-    $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
+    if (realpath($storagePath) !== $storagePath) {
+        $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
+    }
 
     if (!file_exists($directory) && !is_dir($directory)) {
         return $result;
@@ -299,11 +325,13 @@ function getStoredFiles() {
     foreach($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName,array(".", ".."))) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
+                $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) array(  // and write the file to the result
                         "name" => $fileName,
                         "documentType" => getDocumentType($fileName),
-                        "canEdit" => in_array(strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED'])
+                        "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
+                        "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
                     );
             }
         }
@@ -318,7 +346,11 @@ function getVirtualPath($forDocumentServer) {
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
 
-    $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
+    if (realpath($storagePath) === $storagePath) {
+        $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . '/';
+    } else {
+        $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
+    }
     sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
     return $virtPath;
 }
@@ -379,7 +411,7 @@ function getFileInfo($fileId){
 
 // get all the supported file extensions
 function getFileExts() {
-    return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
+    return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_FILLFORMS']);
 }
 
 // get the correct file name if such a name already exists

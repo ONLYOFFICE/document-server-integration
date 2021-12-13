@@ -44,13 +44,18 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get all the supported file extensions
         public static List<string> FileExts
         {
-            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).Concat(FillFormExts).ToList(); }
         }
 
         // get file extensions that can be viewed
         public static List<string> ViewedExts
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+        }
+
+        public static List<string> FillFormExts
+        {
+            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
 
         // get file extensions that can be edited
@@ -74,19 +79,37 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the storage path of the file
         public static string StoragePath(string fileName, string userAddress = null)
         {
-            var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + Path.GetFileName(fileName);
+            return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
         }
 
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
             // create the directory to this file version
-            var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))
             {
                 return "";
@@ -167,7 +190,16 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get all the stored files from the user host address
         public static List<FileInfo> GetStoredFiles()
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            }
+            
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
@@ -223,8 +255,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(true))
             {
-                Path = HttpRuntime.AppDomainAppVirtualPath + "/"
-                           + path,
+                Path = HttpRuntime.AppDomainAppVirtualPath + "/" + path,
                 Query = ""
             };
 

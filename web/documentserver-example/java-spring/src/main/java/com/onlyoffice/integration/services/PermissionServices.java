@@ -32,24 +32,26 @@ public class PermissionServices {
     @Autowired
     private PermissionRepository permissionRepository;
 
+    // create permissions with the specified parameters
     public Permission createPermission(List<Group> reviewGroups,
                                        List<Group> commentViewGroups,
                                        List<Group> commentEditGroups,
                                        List<Group> commentRemoveGroups){
 
         Permission permission = new Permission();
-        permission.setReviewGroups(reviewGroups);
-        permission.setCommentsViewGroups(commentViewGroups);
-        permission.setCommentsEditGroups(commentEditGroups);
-        permission.setCommentsRemoveGroups(commentRemoveGroups);
+        permission.setReviewGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
+        permission.setCommentsViewGroups(commentViewGroups);  // defines the groups whose comments the user can view
+        permission.setCommentsEditGroups(commentEditGroups);  // defines the groups whose comments the user can edit
+        permission.setCommentsRemoveGroups(commentRemoveGroups);  // defines the groups whose comments the user can remove
 
-        permissionRepository.save(permission);
+        permissionRepository.save(permission);  // save new permissions
 
         return permission;
     }
 
+    // update permissions
     public Permission updatePermission(Permission newPermission){
-        permissionRepository.save(newPermission);
+        permissionRepository.save(newPermission);  // save new permissions
 
         return newPermission;
     }

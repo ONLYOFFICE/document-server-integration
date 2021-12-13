@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Helpers;
@@ -42,7 +43,7 @@ namespace OnlineEditorsExampleMVC.Models
         // get file url for user
         public string FileUriUser
         {
-            get { return DocManagerHelper.GetFileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? DownloadUrl + "&dmode=emb" : DocManagerHelper.GetFileUri(FileName, false); }
         }
 
         public string FileName { get; set; }  // file name
@@ -79,11 +80,16 @@ namespace OnlineEditorsExampleMVC.Models
             var editorsMode = Mode ?? "edit";  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
-            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
-            var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or not
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
+            
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
+                editorsMode = "fillForms";
+                canEdit = true;
+            }
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or not
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
             bool? favorite = user.favorite;
@@ -209,7 +215,8 @@ namespace OnlineEditorsExampleMVC.Models
 
         // get the document history
         public void GetHistory(out string history, out string historyData)
-        {
+        {            
+            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
             var jss = new JavaScriptSerializer();
             var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
 
@@ -250,7 +257,18 @@ namespace OnlineEditorsExampleMVC.Models
 
                     dataObj.Add("key", key);
                     // write file url to the data object
-                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
+                    string prevFileUrl;
+                    if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
+                    {
+                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetDownloadUrl(FileName)
+                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                    }
+                    else {
+                       prevFileUrl = i == currentVersion ? FileUri
+                        : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length));
+                    }
+
+                    dataObj.Add("url", prevFileUrl);
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -273,7 +291,9 @@ namespace OnlineEditorsExampleMVC.Models
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
+                        var changesUrl = Path.IsPathRooted(storagePath) ? DocManagerHelper.GetDownloadUrl(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
+                            : DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length));
+                        dataObj.Add("changesUrl", changesUrl);
                     }
                     if(JwtManager.Enabled)
                     {
