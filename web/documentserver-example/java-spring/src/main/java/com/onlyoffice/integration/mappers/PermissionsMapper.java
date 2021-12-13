@@ -39,15 +39,15 @@ public class PermissionsMapper extends AbstractMapper<Permission, com.onlyoffice
     }
 
     @PostConstruct
-    public void configure() {
-        mapper.createTypeMap(Permission.class, com.onlyoffice.integration.documentserver.models.filemodel.Permission.class)
-                .setPostConverter(modelConverter());
+    public void configure() {  // configure the permission mapper
+        mapper.createTypeMap(Permission.class, com.onlyoffice.integration.documentserver.models.filemodel.Permission.class)  // create the type map
+                .setPostConverter(modelConverter());  // and apply the post converter to it
     }
 
     @Override
-    void handleSpecificFields(Permission source, com.onlyoffice.integration.documentserver.models.filemodel.Permission destination) {
-        destination.setReviewGroups(source.getReviewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));
-        destination.setCommentGroups(
+    void handleSpecificFields(Permission source, com.onlyoffice.integration.documentserver.models.filemodel.Permission destination) {  // handle specific permission fields
+        destination.setReviewGroups(source.getReviewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));  // set the reviewGroups parameter
+        destination.setCommentGroups(  // set the commentGroups parameter
                 new CommentGroup(
                         source.getCommentsViewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),
                         source.getCommentsEditGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),

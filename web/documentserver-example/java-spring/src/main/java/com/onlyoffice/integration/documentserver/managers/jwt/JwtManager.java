@@ -23,9 +23,10 @@ import org.primeframework.jwt.domain.JWT;
 
 import java.util.Map;
 
+// specify the jwt manager functions
 public interface JwtManager {
-    boolean tokenEnabled();
-    String createToken(Map<String, Object> payloadClaims);
-    JWT readToken(String token);
-    JSONObject parseBody(String payload, String header);
+    boolean tokenEnabled();  // check if the token is enabled
+    String createToken(Map<String, Object> payloadClaims);  // create document token
+    JWT readToken(String token);  // read document token
+    JSONObject parseBody(String payload, String header);  // parse the body
 }

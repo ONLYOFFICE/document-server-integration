@@ -24,7 +24,6 @@ const favicon = require("serve-favicon");
 const bodyParser = require("body-parser");
 const fileSystem = require("fs");
 const formidable = require("formidable");
-const syncRequest = require("sync-request");
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
@@ -44,6 +43,7 @@ const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHea
 const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
+const urllib = require("urllib");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -101,8 +101,9 @@ app.get("/", function (req, res) {  // define a handler for default page
 
         res.render("index", {  // render index template with the parameters specified
             preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-            convertExts: configServer.get('convertedDocs').join(","),
-            editedExts: configServer.get('editedDocs').join(","),
+            convertExts: configServer.get('convertedDocs'),
+            editedExts: configServer.get('editedDocs'),
+            fillExts: configServer.get("fillDocs"),
             storedFiles: docManager.getStoredFiles(),
             params: docManager.getCustomParams(),
             users: users,
@@ -195,7 +196,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
             return;
         }
 
-        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'));  // all the supported file extensions
+        const exts = [].concat(configServer.get('viewedDocs'), configServer.get('editedDocs'), configServer.get('convertedDocs'), configServer.get("fillDocs"));  // all the supported file extensions
         const curExt = fileUtility.getFileExtension(file.name);
         const documentType = fileUtility.getFileType(file.name);
 
@@ -224,10 +225,59 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     });
 });
 
+app.post("/create", function (req, res) {
+    var title = req.body.title;
+    var fileUrl = req.body.url;
+
+    try {
+        docManager.init(storageFolder, req, res);
+        docManager.storagePath(""); // mkdir if not exist
+
+        var fileName = docManager.getCorrectName(title);
+        var userAddress = docManager.curUserHostAddress();
+        docManager.historyPath(fileName, userAddress, true);
+
+        urllib.request(fileUrl, {method: "GET"},function(err, data) {
+            if (configServer.get("maxFileSize") < data.length || data.length <= 0) {  // check if the file size exceeds the maximum file size
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.write(JSON.stringify({ "error": "File size is incorrect" }));
+                res.end();
+                return;
+            }
+
+            const exts = [].concat(configServer.get("viewedDocs"), configServer.get("editedDocs"), configServer.get("convertedDocs"), configServer.get("fillDocs"));  // all the supported file extensions
+            const curExt = fileUtility.getFileExtension(fileName);
+
+            if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
+                res.writeHead(200, { "Content-Type": "application/json" });  // and write the error status and message to the response
+                res.write(JSON.stringify({ "error": "File type is not supported" }));
+                res.end();
+                return;
+            }
+
+            fileSystem.writeFileSync(docManager.storagePath(fileName), data);
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ "file" : fileName }));
+            res.end();
+
+        });
+
+    } catch (e) {
+        res.status(500);
+        res.write(JSON.stringify({
+            error: 1,
+            message: e.message
+        }));
+        res.end();
+    }
+});
+
 app.post("/convert", function (req, res) {  // define a handler for converting files
 
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
+    var lang = req.body.lang ? req.body.lang : null;
     var fileUri = docManager.getFileUri(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
@@ -274,8 +324,9 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
             var correctName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + internalFileExt);  // get the file name with a new extension
 
-            var file = syncRequest("GET", newFileUri);
-            fileSystem.writeFileSync(docManager.storagePath(correctName), file.getBody());  // write a file with a new extension, but with the content from the origin file
+            urllib.request(newFileUri, {method: "GET"},function(err, data) {
+                fileSystem.writeFileSync(docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
+            });
 
             fileSystem.unlinkSync(docManager.storagePath(fileName));  // remove file with the origin extension
 
@@ -301,7 +352,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
             let key = fileUri + stat.mtime.getTime();
 
             key = documentService.generateRevisionId(key);  // get document key
-            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass);  // get the url to the converted file
+            documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass, lang);  // get the url to the converted file
         } else {
             writeResult(fileName, null, null);  // if the file with such an extension can't be converted, write the origin file to the result object
         }
@@ -406,8 +457,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var downloadZip = body.changesurl;
                 if (downloadZip) {
                     var path_changes = docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
-                    var diffZip = syncRequest("GET", downloadZip);
-                    fileSystem.writeFileSync(path_changes, diffZip.getBody());  // write the document version differences to the archive
+                    urllib.request(downloadZip, {method: "GET"},function(err, data) {
+                        fileSystem.writeFileSync(path_changes, data);  // write the document version differences to the archive
+                    });
                 }
 
                 var changeshistory = body.changeshistory || JSON.stringify(body.history);
@@ -422,8 +474,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(storagePath, file.getBody());
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
+                    fileSystem.writeFileSync(storagePath, data);
+                });
 
                 var forcesavePath = docManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file
                 if (forcesavePath != "") {  // if this path is empty
@@ -507,8 +560,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                 }
 
-                var file = syncRequest("GET", downloadUri);
-                fileSystem.writeFileSync(forcesavePath, file.getBody());
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
+                    fileSystem.writeFileSync(forcesavePath, data);
+                });
 
                 if (isSubmitForm) {
                     var uid =body.actions[0].userid
@@ -681,6 +735,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             res.redirect(redirectPath);
             return;
         }
+        fileExt = fileUtility.getFileExtension(fileName);
 
         var userAddress = docManager.curUserHostAddress();
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
@@ -697,8 +752,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
             }
 
-        var canEdit = configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(fileName)) != -1;  // check if this file can be edited
-        var submitForm = canEdit && (mode == "edit" || mode == "fillForms");
+        var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
+        if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
+            mode = "fillForms";
+            canEdit = true;
+        }
+        var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
         var countVersion = 1;
 
@@ -722,7 +781,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 var historyD = {
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileUtility.getFileExtension(fileName)),
+                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
                 };
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -836,7 +895,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
     catch (ex) {
         console.log(ex);
         res.status(500);
-        res.render("error", { message: "Server error" });
+        res.render("error", { message: "Server error: " + ex.message });
     }
 });
 

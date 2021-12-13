@@ -73,6 +73,9 @@ LANGUAGES = {
     'vi': 'Vietnamese'
 }
 
+def isCanFillForms(ext):
+    return ext in config.DOC_SERV_FILLFORMS
+
 # check if the file extension can be viewed
 def isCanView(ext):
     return ext in config.DOC_SERV_VIEWED
@@ -87,14 +90,15 @@ def isCanConvert(ext):
 
 # check if the file extension is supported by the editor (it can be viewed or edited or converted)
 def isSupportedExt(ext):
-    return isCanView(ext) | isCanEdit(ext) | isCanConvert(ext)
+    return isCanView(ext) | isCanEdit(ext) | isCanConvert(ext) | isCanFillForms(ext)
 
 # get internal extension for a given file type
 def getInternalExtension(fileType):
     mapping = {
         'word': '.docx',
         'cell': '.xlsx',
-        'slide': '.pptx'
+        'slide': '.pptx',
+        'docxf': '.docxf'
     }
 
     return mapping.get(fileType, '.docx') # the default file type is .docx
@@ -208,7 +212,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({'version':historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
+            fileInfos.append({'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)),'version':historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
 
     return fileInfos
 

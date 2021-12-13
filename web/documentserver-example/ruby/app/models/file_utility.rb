@@ -18,7 +18,7 @@ class FileUtility
 
   
   # the document extension list
-  @@exts_document = %w(.doc .docx .docm .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps .oxps)
+  @@exts_document = %w(.doc .docx .docm .oform .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps .oxps)
 
   # the spreadsheet extension list
   @@exts_spreadsheet = %w(.xls .xlsx .xlsm .xlt .xltx .xltm .ods .fods .ots .csv)

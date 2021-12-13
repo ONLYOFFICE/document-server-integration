@@ -157,6 +157,10 @@ label .checkbox {
     background-image: url("file_pptx.svg");
 }
 
+.try-editor.form {
+  background-image: url("file_docxf.svg");
+}
+
 .create-sample {
     color: #666666;
     line-height: 24px;
@@ -729,11 +733,6 @@ html {
 
 .user-descr > b {
     margin-left: 25px;
-}
-
-#portal-info {
-    display: block;
-    width: 70vw;
 }
 
 .portal-descr:nth-child(3) {

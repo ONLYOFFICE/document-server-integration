@@ -31,15 +31,15 @@ public class EditCallback implements Callback {
     @Autowired
     private CallbackManager callbackManager;
     @Override
-    public int handle(Track body, String fileName) {
+    public int handle(Track body, String fileName) {  // handle the callback when the document is being edited
         int result = 0;
-        Action action =  body.getActions().get(0);
-        if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums.Action.edit)) {
-            String user =  action.getUserid();
-            if (!body.getUsers().contains(user)) {
-                String key = body.getKey();
+        Action action =  body.getActions().get(0);  // get the user ID who is editing the document
+        if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums.Action.edit)) {  // if this value is not equal to the user ID
+            String user =  action.getUserid();  // get user ID
+            if (!body.getUsers().contains(user)) {  // if this user is not specified in the body
+                String key = body.getKey();  // get document key
                 try {
-                    callbackManager.commandRequest("forcesave", key);
+                    callbackManager.commandRequest("forcesave", key);  // create a command request to forcibly save the document being edited without closing it
                 } catch (Exception e) {
                     e.printStackTrace();
                     result = 1;
@@ -50,7 +50,7 @@ public class EditCallback implements Callback {
     }
 
     @Override
-    public int getStatus() {
-        return Status.EDITING.getCode();
+    public int getStatus() {  // get document status
+        return Status.EDITING.getCode();  // return status 1 - document is being edited
     }
 }

@@ -21,14 +21,15 @@ package com.onlyoffice.integration.documentserver.managers.document;
 import java.util.ArrayList;
 import java.util.Map;
 
+// specify the document manager functions
 public interface DocumentManager {
-    String getCorrectName(String fileName);
-    String getFileUri(String fileName, Boolean forDocumentServer);
-    String getCallback(String fileName);
-    String getDownloadUrl(String fileName);
-    ArrayList<Map<String, Object>> getFilesInfo();
-    ArrayList<Map<String, Object>> getFilesInfo(String fileId);
-    String versionDir(String path, Integer version, boolean historyPath);
-    String createDemo(String fileExt,Boolean sample,String uid,String uname) throws Exception;
-    String getCreateUrl(String fileName, Boolean sample);
+    String getCorrectName(String fileName);  // get a file name with an index if the file with such a name already exists
+    String getFileUri(String fileName, Boolean forDocumentServer);  // get file URL
+    String getCallback(String fileName);  // get the callback URL
+    String getDownloadUrl(String fileName);  // get URL to download a file
+    ArrayList<Map<String, Object>> getFilesInfo();  // get file information
+    ArrayList<Map<String, Object>> getFilesInfo(String fileId);  // get file information by its ID
+    String versionDir(String path, Integer version, boolean historyPath);  // get the path to the file version by the history path and file version
+    String createDemo(String fileExt,Boolean sample,String uid,String uname) throws Exception;  // create demo document
+    String getCreateUrl(String fileName, Boolean sample);  // get URL to the created file
 }

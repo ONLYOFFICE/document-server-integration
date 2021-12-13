@@ -67,6 +67,9 @@
                                         <li>
                                             <a class="try-editor slide reload-page" target="_blank" data-type="slide">Presentation</a>
                                         </li>
+                                        <li>
+                                            <a class="try-editor form reload-page" target="_blank" data-type="docxf">Form template</a>
+                                        </li>
                                     </ul>
                                     <label class="create-sample">
                                         <input type="checkbox" id="createSample" class="checkbox" />With sample content
@@ -107,7 +110,11 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                        <div id="portal-info">
+                        {% if files %}
+                            <div id="portal-info" style="display: none">
+                        {% else %}
+                            <div id="portal-info" style="display: block">
+                        {% endif %}
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -183,25 +190,40 @@
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% else %}
-                                                                <td class="contentCells contentCells-icon "></td>
-                                                            {% endif %}
-                                                            {% if file.type == 'word' %}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
                                                                         <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
                                                                 </td>
                                                             {% else %}
-                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                 <td class="contentCells contentCells-icon"></td>
                                                             {% endif %}
                                                             {% if file.type == 'slide' %}
                                                                 <td class="contentCells contentCells-icon "></td>
                                                             {% endif %}
+                                                            {% if file.isFillFormDoc %}
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                                                        <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
+                                                                </td>
+                                                            {% else %}
+                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                            {% endif %}
+                                                        {% elif file.isFillFormDoc %}
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                </a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                </a>
+                                                            </td>
                                                         {% else %}
                                                             <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                         {% endif %}
@@ -316,6 +338,7 @@
     <script type="text/javascript" src="{% static "js/jscript.js" %}"></script>
 
     <script type="text/javascript">
+        var FillExtList = {{ fillExt | safe }};
         var ConverExtList = {{ convExt | safe }};
         var EditedExtList = {{ editExt | safe }};
         var UrlConverter = "convert";

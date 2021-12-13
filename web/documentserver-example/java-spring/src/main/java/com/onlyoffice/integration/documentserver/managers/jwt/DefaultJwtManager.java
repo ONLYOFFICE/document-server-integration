@@ -42,56 +42,62 @@ public class DefaultJwtManager implements JwtManager {
     @Autowired
     private JSONParser parser;
 
+    // create document token
     public String createToken(Map<String, Object> payloadClaims) {
         try {
+            // build a HMAC signer using a SHA-256 hash
             Signer signer = HMACSigner.newSHA256Signer(tokenSecret);
             JWT jwt = new JWT();
-            for (String key : payloadClaims.keySet()) {
-                jwt.addClaim(key, payloadClaims.get(key));
+            for (String key : payloadClaims.keySet()) {  // run through all the keys from the payload
+                jwt.addClaim(key, payloadClaims.get(key));  // and write each claim to the jwt
             }
-            return JWT.getEncoder().encode(jwt, signer);
+            return JWT.getEncoder().encode(jwt, signer);  // sign and encode the JWT to a JSON string representation
         } catch (Exception e) {
             return "";
         }
     }
 
+    // check if the token is enabled
     public boolean tokenEnabled() {
         return tokenSecret != null && !tokenSecret.isEmpty();
     }
 
+    // read document token
     public JWT readToken(String token) {
         try {
+            // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
-            return JWT.getDecoder().decode(token, verifier);
+            return JWT.getDecoder().decode(token, verifier);  // verify and decode the encoded string JWT to a rich object
         } catch (Exception exception) {
             return null;
         }
     }
 
+    // parse the body
     public JSONObject parseBody(String payload, String header) {
         JSONObject body;
         try {
-            Object obj = parser.parse(payload);
+            Object obj = parser.parse(payload);  // get body parameters by parsing the payload
             body = (JSONObject) obj;
         } catch (Exception ex) {
             throw new RuntimeException("{\"error\":1,\"message\":\"JSON Parsing error\"}");
         }
-        if (tokenEnabled()) {
-            String token = (String) body.get("token");
-            if (token == null) {
-                if (header != null && !header.isBlank()) {
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;
+        if (tokenEnabled()) {  // check if the token is enabled
+            String token = (String) body.get("token");  // get token from the body
+            if (token == null) {  // if token is empty
+                if (header != null && !header.isBlank()) {  // and the header is defined
+                    token = header.startsWith("Bearer ") ? header.substring(7) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
                 }
             }
             if (token == null || token.isBlank()) {
                 throw new RuntimeException("{\"error\":1,\"message\":\"JWT expected\"}");
             }
 
-            JWT jwt = readToken(token);
+            JWT jwt = readToken(token);  // read token
             if (jwt == null) {
                 throw new RuntimeException("{\"error\":1,\"message\":\"JWT validation failed\"}");
             }
-            if (jwt.getObject("payload") != null) {
+            if (jwt.getObject("payload") != null) {  // get payload from the token and check if it is not empty
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> jwtPayload =
                             (LinkedHashMap<String, Object>)jwt.getObject("payload");

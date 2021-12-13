@@ -40,36 +40,40 @@ public class UserServices {
     @Autowired
     private PermissionServices permissionService;
 
+    // get a list of all users
     public List<User> findAll(){
         return userRepository.findAll();
     }
 
+    // get a user by their ID
     public Optional<User> findUserById(Integer id){
         return userRepository.findById(id);
     }
 
+    // create a user with the specified parameters
     public User createUser(String name, String email,
                            List<String> description, String group,
                            List<String> reviewGroups,
                            List<String> viewGroups,
                            List<String> editGroups,
-                           List<String> removeGroups){
+                           List<String> removeGroups, Boolean favoriteDoc){
         User newUser = new User();
-        newUser.setName(name);
-        newUser.setEmail(email);
-        newUser.setGroup(groupServices.createGroup(group));
-        newUser.setDescriptions(description);
+        newUser.setName(name);  // set the user name
+        newUser.setEmail(email);  // set the user email
+        newUser.setGroup(groupServices.createGroup(group));  // set the user group
+        newUser.setDescriptions(description);  // set the user description
+        newUser.setFavorite(favoriteDoc);  // specify if the user has the favorite documents or not
 
-        List<Group> groupsReview = groupServices.createGroups(reviewGroups);
-        List<Group> commentGroupsView = groupServices.createGroups(viewGroups);
-        List<Group> commentGroupsEdit = groupServices.createGroups(editGroups);
-        List<Group> commentGroupsRemove = groupServices.createGroups(removeGroups);
+        List<Group> groupsReview = groupServices.createGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
+        List<Group> commentGroupsView = groupServices.createGroups(viewGroups);  // defines the groups whose comments the user can view
+        List<Group> commentGroupsEdit = groupServices.createGroups(editGroups);  // defines the groups whose comments the user can edit
+        List<Group> commentGroupsRemove = groupServices.createGroups(removeGroups);  // defines the groups whose comments the user can remove
 
         Permission permission = permissionService
-                .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove);
+                .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove);  // specify permissions for the current user
         newUser.setPermissions(permission);
 
-        userRepository.save(newUser);
+        userRepository.save(newUser); // save a new user
 
         return newUser;
     }

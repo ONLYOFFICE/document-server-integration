@@ -24,11 +24,13 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+// specify the converter service functions
 public interface ServiceConverter {
-    String getConvertedUri(String documentUri, String fromExtension,
+    String getConvertedUri(String documentUri, String fromExtension,  // get the URL to the converted file
                                   String toExtension, String documentRevisionId,
-                                  String filePass, Boolean isAsync);
-    String generateRevisionId(String expectedKey);
-    String convertStreamToString(InputStream stream);
-    JSONObject convertStringToJSON(String jsonString);
+                                  String filePass, Boolean isAsync, String lang);
+    String generateRevisionId(String expectedKey);  // generate document key
+    String convertStreamToString(InputStream stream);  // convert stream to string
+    JSONObject convertStringToJSON(String jsonString);  // convert string to json
 }

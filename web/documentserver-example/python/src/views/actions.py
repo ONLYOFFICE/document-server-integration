@@ -23,6 +23,7 @@
  SOFTWARE.
 
 """
+import requests
 
 import config
 import json
@@ -70,6 +71,7 @@ def convert(request):
         body = json.loads(request.body)
         filename = fileUtils.getFileName(body.get("filename"))
         filePass = body.get("filePass")
+        lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename,request)
         fileExt = fileUtils.getFileExt(filename)
         fileType = fileUtils.getFileType(filename)
@@ -78,7 +80,7 @@ def convert(request):
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
-            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass)  # get the url of the converted file
+            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass, lang)  # get the url of the converted file
 
             if not newUri:  # if the converter url is not received, the original file name is passed to the response
                 response.setdefault('step', '0')
@@ -114,6 +116,37 @@ def createNew(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+# save file as...
+def saveAs(request):
+    response ={}
+
+    try:
+        body = json.loads(request.body)
+        saveAsFileUrl = body.get('url')
+        title = body.get('title')
+
+        filename = docManager.getCorrectName(title, request)
+        path = docManager.getStoragePath(filename, request)
+        resp = requests.get(saveAsFileUrl)
+
+        if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+            response.setdefault('error', 'File size is incorrect')
+            raise Exception('File size is incorrect')
+
+        curExt = fileUtils.getFileExt(filename)
+        if not docManager.isSupportedExt(curExt):  # check if the file extension is supported by the document manager
+            response.setdefault('error', 'File type is not supported')
+            raise Exception('File type is not supported')
+
+        docManager.saveFileFromUri(saveAsFileUrl, path, request, True)  # save the file from the new url in the storage directory
+
+        response.setdefault('file', filename)
+    except Exception as e:
+        response.setdefault('error', 1)
+        response.setdefault('message', e.args[0])
+
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
@@ -128,7 +161,11 @@ def edit(request):
 
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
-    submitForm = canEdit & ((edMode == 'edit') | (edMode == 'fillForms'))  # if the Submit form button is displayed or hidden
+
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
+        edMode = 'fillForms'
+        canEdit = True
+    submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     edType = request.GET.get('type') if request.GET.get('type') else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)

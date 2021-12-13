@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 @Getter
 @Setter
-public class Logo {
+public class Logo {  // the image file at the top left corner of the Editor header
     @Value("${logo.image}")
-    private String image;
+    private String image;  // the path to the image file used to show in common work mode
     @Value("${logo.imageEmbedded}")
-    private String imageEmbedded;
+    private String imageEmbedded;  // the path to the image file used to show in the embedded mode
     @Value("${logo.url}")
-    private String url;
+    private String url;  // the absolute URL which will be used when someone clicks the logo image
 }

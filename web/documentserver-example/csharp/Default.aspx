@@ -67,6 +67,9 @@
                                             <li>
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
+                                            <li>
+                                                <a class="try-editor form" data-type="docxf">Form template</a>
+                                            </li>
                                         </ul>
                                         <label class="create-sample">
                                             <input id="createSample" class="checkbox" type="checkbox" />With sample content
@@ -135,8 +138,9 @@
                             </div>
                         </td>
                         <td class="section">
+                        <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
-                                <div id="portal-info">
+                                <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "block" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -156,8 +160,8 @@
                                        </div>
                                        <% } %>
                                 </div>
-                            <%  var storedFiles = GetStoredFiles();
-                                if storedFiles.Any())
+                            <%
+                                if (storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
                                         <span class="header-list">Your documents</span>
@@ -178,8 +182,10 @@
                                                 <%  foreach (var storedFile in storedFiles)
                                                     {
                                                         var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                        var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
-                                                        var canEdit = EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
+                                                        var canEdit = EditedExts.Contains(ext);
+                                                        var isFillFormDoc = FillFormsExts.Contains(ext);
                                                         %>
 
                                                         <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
@@ -222,25 +228,40 @@
                                                                 <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                        <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                                <% } else { %>
-                                                                    <td class="contentCells contentCells-icon"></td>
-                                                                <% } %>
-                                                                <% if (docType == "word") { %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                                                             <img src="app_themes/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                         </a>
                                                                     </td>
                                                                 <% } else{%>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <td class="contentCells contentCells-icon"></td>
                                                                 <%} %>
                                                                 <%if (docType != "word" && docType != "cell"){%>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
+                                                                    <% if (isFillFormDoc) { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                                <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            </a>
+                                                                        </td>
+                                                                <% } else { %>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% } %>
+                                                                <% } else if (isFillFormDoc) { %>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
+                                                                           <img src="app_themes/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                            <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        </a>
+                                                                    </td>
                                                             <% } else { %>
                                                                 <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
@@ -357,6 +378,7 @@
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
     <script language="javascript" type="text/javascript">
+        var FillFormExtList = '<%= string.Join(",", FillFormsExts.ToArray()) %>';
         var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
         var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
     </script>

@@ -40,6 +40,7 @@ import entities.FileType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACVerifier;
@@ -89,6 +90,47 @@ public class IndexServlet extends HttpServlet
             case "files":
                 Files(request, response, writer);
                 break;
+            case "saveas":
+                SaveAs(request, response, writer);
+                break;
+        }
+    }
+
+    private static void SaveAs(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+        response.setContentType("text/plain");
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            CookieManager cm = new CookieManager(request);
+            User user = Users.getUser(cm.getCookie("uid"));
+
+            String title = (String) body.get("title");
+            String saveAsFileUrl = (String) body.get("url");
+            int filesizeMax = Integer.parseInt(ConfigManager.GetProperty("filesize-max"));
+
+            URL url = new URL(saveAsFileUrl);
+            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+            InputStream stream = connection.getInputStream();
+
+            if (filesizeMax < stream.available() || stream.available() <= 0) {
+                writer.write( "{\"error\":\"File size is incorrect\"}");
+            }
+
+            String fileName = DocumentManager.GetCorrectName(title, null);
+            DocumentManager.CreateFile(Paths.get(DocumentManager.StoragePath(fileName, null)), stream);
+
+            DocumentManager.CreateMeta(fileName, user.id, user.name, null);
+
+            writer.write( "{\"file\":  \"" + fileName + "\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
         }
     }
 
@@ -163,8 +205,8 @@ public class IndexServlet extends HttpServlet
     }
 
     // convert a file
-    private static void Convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
-    {
+    private static void Convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws UnsupportedEncodingException {
+        CookieManager cm = new CookieManager(request);
         response.setContentType("text/plain");
 
         try
@@ -178,6 +220,7 @@ public class IndexServlet extends HttpServlet
             JSONObject body = (JSONObject) parser.parse(bodyString);
 
             String fileName = FileUtility.GetFileName((String) body.get("filename"));
+            String lang = cm.getCookie("ulang");
             String filePass = body.get("filePass") != null ? (String) body.get("filePass") : null;
             String fileUri = DocumentManager.GetDownloadUrl(fileName);
             String fileExt = FileUtility.GetFileExtension(fileName);
@@ -191,7 +234,7 @@ public class IndexServlet extends HttpServlet
                 String key = ServiceConverter.GenerateRevisionId(fileUri);
 
                 // get the url to the converted file
-                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true);
+                String newFileUri = ServiceConverter.GetConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
 
                 if (newFileUri.isEmpty())
                 {
@@ -234,7 +277,6 @@ public class IndexServlet extends HttpServlet
                 fileName = correctName;
 
                 // create meta information about the converted file with the user id and name specified
-                CookieManager cm = new CookieManager(request);
                 User user = Users.getUser(cm.getCookie("uid"));
 
                 DocumentManager.CreateMeta(fileName, user.id, user.name, null);

@@ -65,6 +65,9 @@
                                         <li>
                                             <a class="try-editor slide" data-type="pptx">Presentation</a>
                                         </li>
+                                        <li>
+                                            <a class="try-editor form" data-type="docxf">Form template</a>
+                                        </li>
                                     </ul>
                                     <label class="create-sample">
                                         <input id="createSample" class="checkbox" type="checkbox" />With sample content
@@ -86,7 +89,7 @@
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
-                                                    <option><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
+                                                    <option value=<%= user.id %> ><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
                                                  <% } %>
                                              </select>
                                         </td>
@@ -159,27 +162,29 @@
                             <%
                                 if (storedFiles.Any())
                                 { %>
-                                    <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
-                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                            <thead>
-                                                <tr>
-                                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                                    <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
-                                                    <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                                    <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                                    <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                        <div class="scroll-table-body">
-                                            <table cellspacing="0" cellpadding="0" width="100%">
-                                                <tbody>
-                                                    <%  foreach (var storedFile in storedFiles)
-                                                        { 
-                                                            var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
-                                                            var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower(); 
-                                                            var canEdit = DocManagerHelper.EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
+                                <div class="stored-list">
+                                    <span class="header-list">Your documents</span>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+                                                <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+                                                <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
+                                            <% foreach (var storedFile in storedFiles)
+                                               {
+                                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                            var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
+                                                            var ext = Path.GetExtension(storedFile.Name).ToLower();
+                                                            var canEdit = DocManagerHelper.EditedExts.Contains(ext);
+                                                            var isFillFormDoc = DocManagerHelper.FillFormExts.Contains(ext);
                                                         %>
 
                                                             <tr class="tableRow" title="<%= storedFile.Name %> [<%= DocManagerHelper.GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
@@ -222,25 +227,40 @@
                                                                     <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
-                                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                            </a>
-                                                                        </td>
-                                                                     <% } else { %>
-                                                                        <td class="contentCells contentCells-icon"></td>
-                                                                    <% } %>
-                                                                    <% if (docType == "word"){ %>
-                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
                                                                                 <img src="content/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                             </a>
                                                                         </td>
                                                                     <% } else { %>
-                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                        <td class="contentCells contentCells-icon"></td>
                                                                     <% } %>
                                                                     <% if (docType != "word" && docType != "cell") { %>
                                                                         <td class="contentCells contentCells-icon "></td>
                                                                     <% } %>
+                                                                    <% if (isFillFormDoc) { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } else { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                        <% } %>
+                                                                <% } else if (isFillFormDoc) { %>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                           <img src="content/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                       </a>
+                                                                    </td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                           <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                       </a>
+                                                                    </td>
                                                                 <% } else { %>
                                                                     <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                                 <% } %>
@@ -351,6 +371,7 @@
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
 
     <script language="javascript" type="text/javascript">
+        var FillExtList = '<%= string.Join(",", DocManagerHelper.FillFormExts.ToArray()) %>';
         var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
         var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';
         var UrlConverter = '<%= Url.Content("~/webeditor.ashx?type=convert") %>';

@@ -82,7 +82,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                                           string documentRevisionId,
                                           bool isAsync,
                                           out string convertedDocumentUri,
-                                          string filePass = null)
+                                          string filePass = null,
+                                          string lang = null)
         {
             convertedDocumentUri = string.Empty;
 
@@ -114,7 +115,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                 { "outputtype", toExtension.Trim('.') },
                 { "title", title },
                 { "url", documentUri },
-                { "password", filePass }
+                { "password", filePass },
+                { "region", lang }
             };
 
             if (JwtManager.Enabled)

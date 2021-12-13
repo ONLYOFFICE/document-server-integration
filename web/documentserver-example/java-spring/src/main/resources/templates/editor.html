@@ -31,32 +31,40 @@
         <script th:inline="javascript">
                 var docEditor;
 
-                var innerAlert = function (message) {
+                var innerAlert = function (message, inEditor) {
                     if (console && console.log)
                         console.log(message);
+                    if (inEditor && docEditor)
+                        docEditor.showMessage(message);
                 };
 
+                // the application is loaded into the browser
                 var onAppReady = function () {
                     innerAlert("Document editor ready");
                 };
 
+                // the document is modified
                 var onDocumentStateChange = function (event) {
                     var title = document.title.replace(/\*$/g, "");
                     document.title = title + (event.data ? "*" : "");
                 };
 
+                // the user is trying to switch the document from the viewing into the editing mode
                 var onRequestEditRights = function () {
-                    location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
+                    location.href = location.href.replace(RegExp("\&?action=view\&?", "i"), "");
                 };
 
+                // an error or some other specific event occurs
                 var onError = function (event) {
                     if (event) innerAlert(event.data);
                 };
 
+                // the document is opened for editing with the old document.key value
                 var onOutdatedVersion = function (event) {
                     location.reload(true);
                 };
 
+                // replace the link to the document which contains a bookmark
                 var replaceActionLink = function(href, linkParam) {
                     var link;
                     var actionIndex = href.indexOf("&actionLink=");
@@ -73,12 +81,14 @@
                     return link;
                 }
 
+                // the user is trying to get link for opening the document which contains a bookmark, scrolling to the bookmark position
                 var onMakeActionLink = function (event) {
                     var actionData = event.data;
                     var linkParam = JSON.stringify(actionData);
                     docEditor.setActionLink(replaceActionLink(location.href, linkParam));
                 };
 
+                // the meta information of the document is changed via the meta command
                 var onMetaChange = function (event) {
                     var favorite = !!event.data.favorite;
                     var title = document.title.replace(/^\☆/g, "");
@@ -89,15 +99,18 @@
 
                 var dataInsertImage = [[${dataInsertImage}]];
 
+                // the user is trying to insert an image by clicking the Image from Storage button
                 var onRequestInsertImage = function(event) {
                     const temp = Object.assign({}, {"c": event.data.c}, dataInsertImage);
                     docEditor.insertImage(temp);
                 };
 
+                // the user is trying to select document for comparing by clicking the Document from Storage button
                 var onRequestCompareFile = function() {
                     docEditor.setRevisedFile([[${dataCompareFile}]]);
                 };
 
+                // the user is trying to select recipients data by clicking the Mail merge button
                 var onRequestMailMergeRecipients = function (event) {
                     docEditor.setMailMergeRecipients([[${dataMailMergeRecipients}]]);
                 };
@@ -107,6 +120,23 @@
                 if (config.editorConfig.user.name == "Anonymous") {
                     config.editorConfig.user.name = "";
                 }
+
+                var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+                    var title = event.data.title;
+                    var url = event.data.url;
+                    var data = {
+                        title: title,
+                        url: url
+                    };
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "saveas");
+                    xhr.setRequestHeader( 'Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(data));
+                    xhr.onload = function () {
+                        innerAlert(xhr.responseText);
+                        innerAlert(JSON.parse(xhr.responseText).file, true);
+                    }
+                };
 
                 config.width = "100%";
                 config.height = "100%";
@@ -129,36 +159,48 @@
                 var usersForMentions = [[${usersForMentions}]];
 
                 if (hist && historyData) {
+                    // the user is trying to show the document version history
                     config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(JSON.parse(hist));
+                        docEditor.refreshHistory(JSON.parse(hist));  // show the document version history
                     };
+                    // the user is trying to click the specific document version in the document version history
                     config.events['onRequestHistoryData'] = function (event) {
                         var ver = event.data;
                         var histData = historyData;
-                        docEditor.setHistoryData(JSON.parse(histData)[ver - 1]);
+                        docEditor.setHistoryData(JSON.parse(histData)[ver - 1]);  // send the link to the document for viewing the version history
                     };
+                    // the user is trying to go back to the document from viewing the document version history
                     config.events['onRequestHistoryClose'] = function () {
                         document.location.reload();
                     };
                 }
 
                 if(usersForMentions){
+                    // add mentions for not anonymous users
                     config.events['onRequestUsers'] = function () {
-                        docEditor.setUsers({
+                        docEditor.setUsers({  // set a list of users to mention in the comments
                             "users": usersForMentions
                         });
                     };
+                    // the user is mentioned in a comment
                     config.events['onRequestSendNotify'] = function (event) {
-                        var actionLink = JSON.stringify(event.data.actionLink);
-                        var replaceLink =replaceActionLink(location.href, actionLink);
-                        docEditor.setActionLink(replaceLink);
-                        console.log("onRequestSendNotify:");
-                        console.log(event.data);
-                        console.log("Link to comment: " + replaceLink);
+                        event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+                        var data = JSON.stringify(event.data);
+                        innerAlert("onRequestSendNotify: " + data);
                     };
                 }
 
+                if (config.editorConfig.createUrl) {
+                    config.events.onRequestSaveAs = onRequestSaveAs;
+                };
+
                 var сonnectEditor = function () {
+                    if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
+                        && DocsAPI.DocEditor.version().split(".")[0] < 7) {
+                        innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
+                        return;
+                    }
+
                     docEditor = new DocsAPI.DocEditor("iframeEditor", config);
                 };
 

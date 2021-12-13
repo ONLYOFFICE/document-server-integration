@@ -18,16 +18,14 @@
 
 package helpers;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
@@ -76,8 +74,14 @@ public class DocumentManager
         res.addAll(GetViewedExts());
         res.addAll(GetEditedExts());
         res.addAll(GetConvertExts());
+        res.addAll(GetFillExts());
 
         return res;
+    }
+
+    public static List<String> GetFillExts() {
+        String exts = ConfigManager.GetProperty("files.docservice.fill-docs");
+        return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be viewed
@@ -279,24 +283,34 @@ public class DocumentManager
 
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);  // get the input file stream
 
-        File file = new File(StoragePath(fileName, null));
-
-        try (FileOutputStream out = new FileOutputStream(file))
-        {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);  // write bytes to the output stream
-            }
-            // force write data to the output stream that can be cached in the current thread
-            out.flush();
-        }
+        CreateFile(Paths.get(StoragePath(fileName, null)), stream);
 
         // create meta information of the demo file
         CreateMeta(fileName, user.id, user.name, null);
 
         return fileName;
+    }
+
+    public static boolean CreateFile(Path path, InputStream stream) {
+        if (Files.exists(path)){
+            return true;
+        }
+        try {
+            File file = Files.createFile(path).toFile();
+            try (FileOutputStream out = new FileOutputStream(file))
+            {
+                int read;
+                final byte[] bytes = new byte[1024];
+                while ((read = stream.read(bytes)) != -1)
+                {
+                    out.write(bytes, 0, read);
+                }
+                out.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // get file url

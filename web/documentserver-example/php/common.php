@@ -299,11 +299,13 @@ function getStoredFiles() {
     foreach($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName,array(".", ".."))) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
+                $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) array(  // and write the file to the result
                         "name" => $fileName,
                         "documentType" => getDocumentType($fileName),
-                        "canEdit" => in_array(strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION)), $GLOBALS['DOC_SERV_EDITED'])
+                        "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
+                        "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
                     );
             }
         }
@@ -379,7 +381,7 @@ function getFileInfo($fileId){
 
 // get all the supported file extensions
 function getFileExts() {
-    return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT']);
+    return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_FILLFORMS']);
 }
 
 // get the correct file name if such a name already exists
