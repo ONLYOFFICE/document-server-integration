@@ -594,6 +594,7 @@ footer table tr td:first-child {
 }
 
 .contentCells-wopi {
+    height: 25px;
     width: 18%;
     text-align: left;
 }

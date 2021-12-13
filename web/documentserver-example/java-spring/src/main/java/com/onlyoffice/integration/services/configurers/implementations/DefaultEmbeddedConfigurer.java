@@ -35,13 +35,13 @@ public class DefaultEmbeddedConfigurer implements EmbeddedConfigurer<DefaultEmbe
     @Autowired
     private DocumentManager documentManager;
 
-    public void configure(Embedded embedded, DefaultEmbeddedWrapper wrapper){
-        if(wrapper.getType().equals(Type.embedded)) {
-            String url = documentManager.getFileUri(wrapper.getFileName(), false);
-            embedded.setEmbedUrl(url);
-            embedded.setSaveUrl(url);
-            embedded.setShareUrl(url);
-            embedded.setToolbarDocked(ToolbarDocked.top);
+    public void configure(Embedded embedded, DefaultEmbeddedWrapper wrapper){  // define the embedded configurer
+        if(wrapper.getType().equals(Type.embedded)) {  // check if the type from the embedded wrapper is embedded
+            String url = documentManager.getFileUri(wrapper.getFileName(), false);  // get file URL of the specified file
+            embedded.setEmbedUrl(url);  // set the embedURL parameter to the embedded config (the absolute URL to the document serving as a source file for the document embedded into the web page)
+            embedded.setSaveUrl(url);  // set the saveURL parameter to the embedded config (the absolute URL that will allow the document to be saved onto the user personal computer)
+            embedded.setShareUrl(url);  // set the shareURL parameter to the embedded config (the absolute URL that will allow other users to share this document)
+            embedded.setToolbarDocked(ToolbarDocked.top);  // set the top toolbarDocked parameter to the embedded config (the place for the embedded viewer toolbar, can be either top or bottom)
         };
     }
 }

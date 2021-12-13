@@ -20,8 +20,8 @@ package com.onlyoffice.integration.documentserver.managers.callback;
 
 import com.onlyoffice.integration.dto.Track;
 
-public interface CallbackManager {
-    void processSave(Track body, String fileName);
-    void commandRequest(String method, String key);
-    void processForceSave(Track body, String fileName);
+public interface CallbackManager {  // specify the callback manager functions
+    void processSave(Track body, String fileName);  // file saving process
+    void commandRequest(String method, String key);  // create a command request
+    void processForceSave(Track body, String fileName);  // file force saving process
 }

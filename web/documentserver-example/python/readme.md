@@ -64,7 +64,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 7. See the result in your browser using the address:
 
     ```
-    http://localhost
+    http://localhost:8000
     ```
 
 ## Step 3. Check accessibility
