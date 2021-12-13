@@ -19,10 +19,14 @@ Download the [Node.js example](https://api.onlyoffice.com/editors/demopreview) f
 You need to connect the editors to your website. Specify the path to the editors installation in the *config/default.json* file:
 
 ```
+"storageFolder": "./files"
+"storagePath": "/files"
 "siteUrl": "https://documentserver/"
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+**storageFolder** and **storagePath** is the path where files will created and stored, you can set an absolute path, for example **D:\\\\folder**.
+Note, use double backslash as separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\views\editor.ejs* file.
 
@@ -117,10 +121,18 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 	Edit the following line:
 
     ```
+    "storageFolder": "./files"
+    "storagePath": "/files"
     "siteUrl": "https://documentserver/"
     ```
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+   **storageFolder** and **storagePath** is the path where files will created and stored.
+   Note, you must have read and write permissions to folder.
+   If not, please, use next command:
+   ```
+   sudo chmod -R ugo+rw /{path}
+   ```
 
 6. Run the project with Node.js:
 

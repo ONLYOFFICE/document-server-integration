@@ -16,9 +16,10 @@ Download the [.Net (C#) example](https://api.onlyoffice.com/editors/demopreview)
 
 Connect the editors to your website by specifying the path to the editors installation in the *settings.config* file:
 ```
+<add key="storage-path" value=""/>
 <add key="files.docservice.url.site" value="https://documentserver/" />
 ```
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed. Where **storage_path** is the path where files will created and stored, you can set an absolute path.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *DocEditor.aspx* file.
 

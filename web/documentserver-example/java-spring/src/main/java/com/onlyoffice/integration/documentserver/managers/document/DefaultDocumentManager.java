@@ -45,6 +45,8 @@ public class DefaultDocumentManager implements DocumentManager {
 
     @Value("${files.storage.folder}")
     private String storageFolder;
+    @Value("${files.storage}")
+    private String filesStorage;
     @Value("${url.track}")
     private String trackUrl;
     @Value("${url.download}")
@@ -93,6 +95,9 @@ public class DefaultDocumentManager implements DocumentManager {
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
                     : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
+            if (!filesStorage.isEmpty() && filePathDownload.contains(filesStorage)) {
+                filePathDownload = filePathDownload.substring(filesStorage.length() + 1);
+            }
 
             String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());

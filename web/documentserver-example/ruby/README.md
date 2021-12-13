@@ -53,10 +53,13 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 	Edit the following line:
 
     ```
+    Rails.configuration.storagePath="app_data"
     Rails.configuration.urlSite="https://documentserver/"
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+    where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed. Where the **app_data**
+    is the path where files will created and stored, you can set an absolute path.
+    Note, on Windows OS use double backslash as separator.
 
 6. Run the **Rails** application:
 
