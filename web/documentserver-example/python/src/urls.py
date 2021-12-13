@@ -24,7 +24,7 @@
 
 """
 
-from django.urls import path
+from django.urls import path, re_path
 
 from src.views import index, actions
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -40,7 +40,9 @@ urlpatterns = [
     path('remove', actions.remove),
     path('csv', actions.csv),
     path('files', actions.files),
-    path('saveas', actions.saveAs)
+    path('saveas', actions.saveAs),
+#    re_path(r'^static', actions.static) for any files
+    re_path(r'^static/.{1,99}/new.\D+-hist/\d+/prev.\D+', actions.static) 
 ]
 
 urlpatterns += staticfiles_urlpatterns()
