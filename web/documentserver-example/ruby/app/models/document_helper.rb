@@ -237,8 +237,9 @@ class DocumentHelper
 
     # get path url
     def get_path_uri(path)
-      uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
-
+      # uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
+      # for redirection to my link
+      uri = get_server_url(true) + '/history/' + cur_user_host_address(nil) + '/' + path
       return uri
     end
     
