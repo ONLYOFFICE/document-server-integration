@@ -149,6 +149,34 @@ class HomeController < ApplicationController
 
   end
 
+  # downloading a history file from public
+  def downloadhistory
+    begin
+      dataurl = request.original_url.split('/')
+
+      file_path = Rails.root.join('public', Rails.configuration.storagePath, dataurl[4], dataurl[5], dataurl[6], dataurl[7])
+
+      if JwtHelper.is_enabled
+        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        if request.headers[jwtHeader]
+          hdr = request.headers[jwtHeader]
+          hdr.slice!(0, "Bearer ".length)
+          token = JwtHelper.decode(hdr)
+          if !token || token.eql?("")
+            render plain: "JWT validation failed", :status => 403
+            return
+          end
+        else
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
+      end
+      send_file file_path, :x_sendfile => true
+    rescue => ex
+      render plain: '{ "error": "File not found"}'
+    end
+  end
+
   # tracking file changes
   def track
     file_data = TrackHelper.read_body(request)  # read the request body
