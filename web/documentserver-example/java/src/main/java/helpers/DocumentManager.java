@@ -150,6 +150,23 @@ public class DocumentManager
         String directory = FilesRootPath(userAddress);
         return directory + FileUtility.GetFileName(fileName);
     }
+    // get the path to history file
+    public static String HistoryPath(String fileName, String userAddress, String version, String file)
+    {
+        String hostAddress = CurUserHostAddress(userAddress);
+        String serverPath = request.getSession().getServletContext().getRealPath("");
+        String storagePath = ConfigManager.GetProperty("storage-folder");
+
+        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+
+        if (file == null | file == "") {
+            file = "prev"+fileName.substring(fileName.lastIndexOf("."));
+        }
+
+        directory = directory + fileName + "-hist" + File.separator + version + File.separator + file;
+
+        return directory;
+    }
 
     // get the path to the forcesaved file version
     public static String ForcesavePath(String fileName, String userAddress, Boolean create)
