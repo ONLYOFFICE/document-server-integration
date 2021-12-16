@@ -50,16 +50,14 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     nano config/application.rb
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
     Rails.configuration.storagePath="app_data"
     Rails.configuration.urlSite="https://documentserver/"
     ```
 
-    where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed. Where the **app_data**
-    is the path where files will created and stored, you can set an absolute path.
-    Note, on Windows OS use double backslash as separator.
+    where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storagePath** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 6. Run the **Rails** application:
 

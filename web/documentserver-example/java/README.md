@@ -16,16 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [Java example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *\src\main\resources\settings.properties* file:
 
 ```
 storage-folder = app_data
 files.docservice.url.site=https://documentserver/
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-**storage-folder** is the path where files will created and stored, you can set an absolute path, for example **D:\\\\folder**.
- Note, use double backslash as separator. 
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\src\main\webapp\editor.jsp* file.
 
@@ -166,20 +164,17 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano src/main/resources/settings.properties
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
     storage-folder = app_data
     files.docservice.url.site=https://documentserver/
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-	**storage-folder** is the path where files will created and stored.
-	 Note, you must have read and write permissions to folder. 
-	If not, please, use next command:
-	    ```
-        sudo chmod -R ugo+rw /{path}
-        ```
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored. Please note that you must have read and write permissions to the folder. If you do not have them, please use the next command:
+	```
+	sudo chmod -R ugo+rw /{path}
+	```
 
 5. Install **Maven**:
 
@@ -248,13 +243,14 @@ Make sure that the Document Server has access to the server with the example ins
 	nano src/main/resources/settings.properties
 	```
 	
-2. Edit the following line:
+2. Edit the following lines:
 
 	```
+	storage-folder = app_data
 	files.docservice.url.site=https://documentserver/
 	```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored.
 
 3. Run the next command in the Java example directory:
 
