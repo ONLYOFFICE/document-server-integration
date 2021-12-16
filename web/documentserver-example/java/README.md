@@ -107,18 +107,22 @@ To run the Java example code, install the Java version appropriate for your OS a
 		<user username="tomcat" password="tomcat" roles="manager-gui"/>
 	</tomcat-users>
 	```
-
-3. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the *.war* file in the Java project folder, then click **Deploy**.
+3. Build the project using the following commands
+	```
+	mvn clean
+	mvn package
+	```
+4. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the *.war* file in the Java project folder, then click **Deploy**.
 
 	![upload-app](screenshots/upload-app.jpg)
 
 	![war-file](screenshots/war-file.jpg) 
 
-4. You will see the project in the **Application List**:
+5. You will see the project in the **Application List**:
 	
 	![manager-app](screenshots/manager-app.jpg) 
    
-5. Click the link with the application name to run it.
+6. Click the link with the application name to run it.
 
 ### Step 6. Check accessibility
 
