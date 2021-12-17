@@ -160,8 +160,9 @@ public class DocumentManager
     // get the storage path of the file
     public static String StoragePath(String fileName, String userAddress)
     {
+        File storage = new File(ConfigManager.GetProperty("storage-folder"));
         String directory = FilesRootPath(userAddress);
-        return directory + FileUtility.GetFileName(fileName);
+        return directory + (storage.isAbsolute() ? fileName :FileUtility.GetFileName(fileName));
     }
 
     // get the path to the forcesaved file version

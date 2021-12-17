@@ -434,7 +434,8 @@ public class IndexServlet extends HttpServlet
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         try {
-            String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
+            File storage = new File(ConfigManager.GetProperty("storage-folder"));
+            String fileName = storage.isAbsolute() ? request.getParameter("fileName") : FileUtility.GetFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
             String isEmbedded = request.getParameter("dmode");
 
