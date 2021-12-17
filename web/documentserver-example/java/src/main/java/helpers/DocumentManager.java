@@ -466,6 +466,23 @@ public class DocumentManager
         }
     }
 
+    // get url to download a file to History prev.*
+    public static String GetDownloadHistoryUrl(String fileName, String version, String file) {
+        String serverPath = GetServerUrl(true);
+        String hostAddress = CurUserHostAddress(null);
+        try
+        {
+            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            query = query + "&ver=" + URLEncoder.encode(version, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+            return serverPath + "/IndexServlet" + query;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
+        }
+    }
+
     // get an editor internal extension
     public static String GetInternalExtension(FileType fileType)
     {
