@@ -152,9 +152,14 @@ docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
     const serverPath = docManager.getServerUrl(forDocumentServer);
     const hostAddress = docManager.curUserHostAddress();
     let url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);  // get full url address to the file
-    if (path.isAbsolute(configServer.get("storageFolder"))) {
+    if (path.isAbsolute(configServer.get("storageFolder")) && version) {
         let separator = configServer.get("storagePath").includes("/") ? "/" : "\\";
-        url = docManager.getDownloadUrl(fileName + "-history" + separator + version + separator + "diff.zip");
+        let historyFile = null;
+        if (fileName.indexOf("/") != -1) {
+            historyFile = (separator + fileName.split("/")[1]);
+            fileName = fileName.split("/")[0];
+        }
+        url = docManager.getDownloadUrl(fileName + "-history" + separator + version + (historyFile != null ? historyFile : ""));
         return url;
     }
     if (!version) {
@@ -212,7 +217,7 @@ docManager.getDownloadUrl = function (fileName) {
 
 // get the storage path of the given file
 docManager.storagePath = function (fileName, userAddress) {
-    fileName = fileUtility.getFileName(fileName);  // get the file name with extension
+    fileName = path.isAbsolute(docManager.dir) ? fileName : fileUtility.getFileName(fileName);  // get the file name with extension
     const directory = path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, docManager.curUserHostAddress(userAddress));  // get the path to the directory for the host address
     this.createDirectory(directory);  // create a new directory if it doesn't exist
     return path.join(directory, fileName);  // put the given file to this directory

@@ -122,7 +122,7 @@ app.get("/", function (req, res) {  // define a handler for default page
 app.get("/download", function(req, res) {  // define a handler for downloading files
     docManager.init(storageFolder, req, res);
 
-    var fileName = fileUtility.getFileName(req.query.fileName);
+    var fileName = path.isAbsolute(configServer.get("storageFolder")) ? req.query.fileName : fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
     var isEmbedded = req.query.dmode;
 
@@ -140,9 +140,9 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
         }
     }
 
-    var path = docManager.forcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
-    if (path == "") {
-        path = docManager.storagePath(fileName, userAddress);  // or to the original document
+    var filePath = docManager.forcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
+    if (filePath == "") {
+        filePath = docManager.storagePath(fileName, userAddress);  // or to the original document
     }
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);  // add headers to the response to specify the page parameters
@@ -150,7 +150,7 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(fileName));
 
-    var filestream = fileSystem.createReadStream(path);
+    var filestream = fileSystem.createReadStream(filePath);
     filestream.pipe(res);  // send file information to the response by streams
 });
 
@@ -784,6 +784,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     key: keyVersion,
                     url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
                 };
+                if (path.isAbsolute(configServer.get("storageFolder")) && i != countVersion) {
+                    historyD.url = (docManager.getlocalFileUri(fileName + "/prev" + fileExt, i, true));
+                }
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
                     historyD.previous = {  // write information about previous file version
@@ -791,7 +794,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         url: historyData[i-2].url,
                     };
                     let changesUrl = docManager.getlocalFileUri(fileName, i-1);
-                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    historyD.changesUrl = path.isAbsolute(configServer.get("storageFolder")) ? docManager.getlocalFileUri(fileName + "/diff.zip", i-1) : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);
