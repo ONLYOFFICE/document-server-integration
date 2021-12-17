@@ -28,22 +28,20 @@
     $user = getUser($_GET["user"]);
 
     // get the file url and upload it
-    $externalUrl = $_GET["fileUrl"];
-    if (!empty($externalUrl))
+    if (!empty($_GET["fileUrl"]))
     {
-        $filename = DoUpload($externalUrl);
+        $filename = DoUpload($_GET["fileUrl"]);
     }
     // if the file url doesn't exist, get file name and file extension
     else
     {
         $filename = basename($_GET["fileID"]);
     }
-    $createExt = $_GET["fileExt"];
 
-    if (!empty($createExt))
+    if (!empty($_GET["fileExt"]))
     {
         // and get demo file name by the extension
-        $filename = tryGetDefaultByType($createExt, $user);
+        $filename = tryGetDefaultByType($_GET["fileExt"], $user);
 
         // create the demo file url
         $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
@@ -157,7 +155,7 @@
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
-    
+
     // users data for mentions
     $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
