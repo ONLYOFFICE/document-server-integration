@@ -138,13 +138,15 @@ def readFile(path):
 def getPrevUri(filename, ver, ext, req):
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/prev{ext}'
+    prevUri =  docManager.getDownloadUrl(f'{filename}-hist/{ver}/prev.{ext}', req) if os.path.isabs(config.STORAGE_PATH) else f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/prev{ext}'
+    return prevUri
 
 # get the url to a file archive with changes of the given file version
 def getZipUri(filename, ver, req):
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
+    zipUri = docManager.getDownloadUrl(f'{filename}-hist/{ver}/diff.zip', req) if os.path.isabs(config.STORAGE_PATH) else f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
+    return zipUri
 
 # get the meta data of the file
 def getMeta(storagePath):

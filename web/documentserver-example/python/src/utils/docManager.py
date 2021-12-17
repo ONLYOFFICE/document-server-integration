@@ -174,8 +174,8 @@ def getRootFolder(req):
 # get the file path
 def getStoragePath(filename, req):
     directory = getRootFolder(req)
-
-    return os.path.join(directory, fileUtils.getFileName(filename))
+    filePath =  filename if os.path.isabs(config.STORAGE_PATH) else fileUtils.getFileName(filename)
+    return os.path.join(directory, filePath)
 
 # get the path to the forcesaved file version
 def getForcesavePath(filename, req, create):

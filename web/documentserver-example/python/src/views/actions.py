@@ -359,7 +359,7 @@ def csv(request):
 # download a file
 def download(request):
     try:
-        fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        fileName = request.GET['fileName'] if os.path.isabs(config.STORAGE_PATH) else fileUtils.getFileName(request.GET['fileName'])  # get the file name
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
         isEmbedded = request.GET.get('dmode')
 
