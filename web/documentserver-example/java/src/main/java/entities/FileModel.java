@@ -180,7 +180,7 @@ public class FileModel
 
                     dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i.toString(), "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
