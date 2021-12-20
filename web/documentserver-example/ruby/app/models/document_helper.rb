@@ -83,7 +83,8 @@ class DocumentHelper
 
     # get the storage path of the given file
     def storage_path(file_name, user_address)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
+      storage_path_is_abs = File.absolute_path?(Rails.configuration.storagePath)
+      directory = storage_path_is_abs ? Rails.configuration.storagePath
                     : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))  # get the path to the directory for the host address
 
       # create a new directory if it doesn't exist
@@ -92,7 +93,7 @@ class DocumentHelper
       end
 
       # put the given file to this directory
-      File.join(directory, File.basename(file_name))
+      File.join(directory, (storage_path_is_abs ? file_name : File.basename(file_name)))
     end
 
     # get the path to the forcesaved file version

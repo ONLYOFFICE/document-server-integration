@@ -234,7 +234,7 @@ class HomeController < ApplicationController
   # downloading a file
   def download
     begin
-      file_name = File.basename(params[:fileName])
+      file_name = File.absolute_path?(Rails.configuration.storagePath) ? params[:fileName] : File.basename(params[:fileName])
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 

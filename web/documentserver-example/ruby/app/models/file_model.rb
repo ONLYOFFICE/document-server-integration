@@ -169,6 +169,7 @@ class FileModel
     file_ext = File.extname(file_name).downcase
     doc_key = key()
     doc_uri = file_uri()
+    storage_path_is_abs = File.absolute_path?(Rails.configuration.storagePath)
 
     hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil))  # get the path to the file history
     cur_ver = DocumentHelper.get_file_version(hist_dir)  # get the file version
@@ -211,6 +212,9 @@ class FileModel
         dataObj["key"] = cur_key
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
         dataObj["version"] = i
+        if storage_path_is_abs
+          dataObj["url"] = i == cur_ver ? DocumentHelper.get_download_url(file_name) : DocumentHelper.get_download_url(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
+        end
 
         if (i > 1)  # check if the version number is greater than 1
           changes = nil
@@ -234,7 +238,8 @@ class FileModel
           }
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+          changes_url = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+          dataObj["changesUrl"] = storage_path_is_abs ? DocumentHelper.get_download_url(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip")) : changes_url
         end
 
         if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
