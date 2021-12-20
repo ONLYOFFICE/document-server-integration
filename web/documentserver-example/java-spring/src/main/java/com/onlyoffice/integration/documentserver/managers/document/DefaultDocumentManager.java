@@ -109,6 +109,27 @@ public class DefaultDocumentManager implements DocumentManager {
         }
     }
 
+    // get file URL
+    public String getHistoryFileUri(String fileName, String version, String file, Boolean forDocumentServer)
+    {
+        try
+        {
+            String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
+            String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
+            String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
+                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
+                    
+            String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
+                + "&ver=" + version + "&file="+file
+                + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            return filePath;
+        }
+        catch (UnsupportedEncodingException | UnknownHostException e)
+        {
+            return "";
+        }
+    }
+
     // get the callback URL
     public String getCallback(String fileName)
     {

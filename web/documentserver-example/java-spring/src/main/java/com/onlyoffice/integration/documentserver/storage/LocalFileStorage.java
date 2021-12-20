@@ -246,6 +246,20 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return null;
     }
 
+    public Resource loadFileAsResourceHistory(String fileName,String version,String file){
+
+        String fileLocation = getStorageLocation() + fileName + "-hist" + File.separator + version + File.separator + file;  // get it by the file name
+        
+        try {
+            Path filePath = Paths.get(fileLocation);  // get the path to the file location
+            Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
+            if(resource.exists()) return resource;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // get a collection of all the stored files
     public File[] getStoredFiles()
     {

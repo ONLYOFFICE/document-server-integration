@@ -89,9 +89,9 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl() :
-                        documentManager.getFileUri(documentManager.versionDir(histDir, i, true) + File.separator + "prev" + fileUtility.getFileExtension(document.getTitle()), true));
+                        documentManager.getHistoryFileUri(document.getTitle(), i.toString(), "prev" + fileUtility.getFileExtension(document.getTitle()), true));
                 dataObj.put("version", i);
-
+                
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
                     JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(documentManager.versionDir(histDir, i - 1, true) + File.separator + "changes.json")));
