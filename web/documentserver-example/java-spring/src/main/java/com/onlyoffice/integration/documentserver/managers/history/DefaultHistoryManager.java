@@ -28,10 +28,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.util.*;
 
 //TODO: Rebuild completely
@@ -109,8 +111,10 @@ public class DefaultHistoryManager implements HistoryManager {
                     prevInfo.put("url", prev.get("url"));
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
-                    dataObj.put("changesUrl", documentManager.getFileUri(documentManager.versionDir(histDir, i - 1, true) + File.separator + "diff.zip", true));
+                    //dataObj.put("changesUrl", documentManager.getFileUri(documentManager.versionDir(histDir, i - 1, true) + File.separator + "diff.zip", true));
+                    dataObj.put("changesUrl", storagePathBuilder.getServerUrl(false)+"/zip?histDir="+URLEncoder.encode(histDir)+"&version="+i);
                 }
+
 
                 if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
 
