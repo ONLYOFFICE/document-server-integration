@@ -354,7 +354,7 @@ namespace OnlineEditorsExample
                     }
 
                     dataObj.Add("key", key);
-                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]);
+                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(), "prev" + ext);
                     if (Path.IsPathRooted(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
@@ -512,6 +512,20 @@ namespace OnlineEditorsExample
             var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"] 
                 : HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+        }
+
+
+        // create the public history url
+        private string MakePublicHistoryUrl(string filename, string version, string file)
+        {
+            var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
+                fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
+                +"&ver=" + version + "&file="+ file +
+                "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+            return fileUrl.ToString();
         }
 
         // create demo document

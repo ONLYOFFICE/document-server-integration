@@ -44,6 +44,9 @@ namespace OnlineEditorsExample
                 case "download":
                     Download(context);
                     break;
+                case "downloadhistory":
+                    DownloadHistory(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -321,6 +324,52 @@ namespace OnlineEditorsExample
         public bool IsReusable
         {
             get { return false; }
+        }
+
+        //  download a file
+        //  http://192.168.0.102:8000/webeditor.ashx?type=download&fileName=new.docx&userAddress=192.168.0.102
+        //  http://192.168.0.102:8000/192.168.0.102/new.docx-hist/1/prev.docx
+
+        //  http://192.168.0.102:8000/webeditor.ashx?type=downloadhistory&fileName=new.docx&ver=1&file=prev.docx&userAddress=192.168.0.102
+        private static void DownloadHistory(HttpContext context)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = Path.GetFileName(context.Request["userAddress"]);
+                var version = Path.GetFileName(context.Request["ver"]);
+                var file = Path.GetFileName(context.Request["file"]);
+
+                if (JwtManager.Enabled)
+                {
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                    if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                        string token = JwtManager.Decode(headerToken);
+
+                        if (token == null || token.Equals(""))
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.Write("JWT validation failed");
+                            return;
+                        }
+                    }else {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+
+                var filePath = _Default.HistoryPath(fileName, userAddress, version, file);  // get the path to the force saved document version
+                
+                download(filePath, context);
+            }
+            catch (Exception)
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+            }
         }
     }
 }
