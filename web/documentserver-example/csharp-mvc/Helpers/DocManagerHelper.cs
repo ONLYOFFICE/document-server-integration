@@ -96,6 +96,14 @@ namespace OnlineEditorsExampleMVC.Helpers
             return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
         }
 
+        // get the path to the history file version
+        public static string HistoryPath(string fileName, string userAddress, string version, string file)
+        {
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\" + version + "\\" + file;
+            return directory;
+        }
+
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
@@ -308,6 +316,24 @@ namespace OnlineEditorsExampleMVC.Helpers
                 Query = "fileExt=" + DocManagerHelper.GetInternalExtension(fileType).Trim('.')
             };
             return createUrl.ToString();
+        }
+
+        // create the public history url
+        public static string GetHistoryDownloadUrl(string filename, string version, string file)
+        {
+            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=downloadhistory"
+                        + "&fileName=" + HttpUtility.UrlEncode(filename)
+                        + "&ver=" + version
+                        + "&file="+ file
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+            };
+            return downloadUrl.ToString();
         }
 
         // get url to download a file
