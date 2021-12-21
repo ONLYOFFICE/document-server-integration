@@ -357,7 +357,7 @@ namespace OnlineEditorsExample
                     var ext = Path.GetExtension(FileName).ToLower();
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
-                    dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));  // write file url to the data object
+                    dataObj.Add("url", i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(),"prev"+ext));  // write file url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -507,6 +507,20 @@ namespace OnlineEditorsExample
         {
             var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+        }
+
+
+        // create the public history url
+        private string MakePublicHistoryUrl(string filename, string version, string file)
+        {
+            var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
+                fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
+                +"&ver=" + version + "&file="+ file +
+                "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+            return fileUrl.ToString();
         }
 
         // create demo document

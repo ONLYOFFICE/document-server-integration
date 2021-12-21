@@ -152,6 +152,13 @@ namespace OnlineEditorsExample
             return directory + Path.GetFileName(fileName);
         }
 
+        // get the path to the history file version
+        public static string HistoryPath(string fileName, string userAddress, string version, string file)
+        {
+            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            directory = directory + Path.GetFileName(fileName) + "-hist" + "\\" + version + "\\" + file;
+            return directory;
+        }
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
