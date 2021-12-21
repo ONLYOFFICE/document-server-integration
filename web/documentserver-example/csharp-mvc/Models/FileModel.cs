@@ -256,7 +256,7 @@ namespace OnlineEditorsExampleMVC.Models
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
                     // write file url to the data object
-                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
+                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetHistoryDownloadUrl(FileName,i.ToString(),"prev"+ext));
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
