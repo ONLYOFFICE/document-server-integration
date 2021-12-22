@@ -157,7 +157,7 @@
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
-    
+
     // users data for mentions
     $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
@@ -214,6 +214,12 @@
             . "&fileName=" . urlencode($fileName)
             . "&userAddress=" . getClientIp();
     }
+    function getZipDownloadUri($changesURI) {
+        return serverPath(TRUE) . '/'
+            . "webeditor-ajax.php"
+            . "?type=zip"
+            . "&file=" . urlencode($changesURI);
+    }
 
     // get document history
     function getHistory($filename, $filetype, $docKey, $fileuri) {
@@ -265,11 +271,13 @@
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
+
                     $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
-                    $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
+                    //$changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
                     // write the path to the diff.zip archive with differences in this file version
-                    $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
+                    //$dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
+                    $dataObj["changesUrl"] = getZipDownloadUri($changesUrl);
                 }
 
                 if (isJwtEnabled()) {
