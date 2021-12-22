@@ -260,7 +260,7 @@ namespace OnlineEditorsExampleMVC.Models
                     string prevFileUrl;
                     if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
                     {
-                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetDownloadUrl(FileName)
+                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName,i.ToString(), "prev" + ext)
                             : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
                     }
                     else {
