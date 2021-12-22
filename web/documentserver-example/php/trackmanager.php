@@ -123,7 +123,7 @@ function processSave($data, $fileName, $userAddress) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
         }
 
-        $histData = $data["changeshistory"];
+        $histData = empty($data["changeshistory"]) ? null : $data["changeshistory"];
         if (empty($histData)) {
             $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
         }

@@ -363,7 +363,6 @@ function download()
     try {
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
-
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
@@ -390,11 +389,11 @@ function download()
 // download the specified file
 function downloadFile($filePath)
 {
+
     if (file_exists($filePath)) {
         if (ob_get_level()) {
             ob_end_clean();
         }
-
         // write headers to the response object
         @header('Content-Length: ' . filesize($filePath));
         @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . urldecode(basename($filePath)));
@@ -413,7 +412,7 @@ function downloadFile($filePath)
 function zipDownload()
 {
     try {
-        $file = basename($_GET["file"]);  // get the file path
+        $file = $_GET["file"];
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
@@ -427,10 +426,10 @@ function zipDownload()
                 die("Invalid JWT signature");
             }
         }
-        downloadFile($file);
+        downloadFile(getStoragePath($file));
     } catch (Exception $e){
 
-}
+    }
 
 }
 
