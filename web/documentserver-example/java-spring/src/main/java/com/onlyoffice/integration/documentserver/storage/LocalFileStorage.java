@@ -85,10 +85,18 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     // get the storage directory
     public String getStorageLocation(){
         String serverPath = System.getProperty("user.dir");  // get the path to the server
-        String directory = serverPath  // create the storage directory
-                + File.separator + storageFolder
-                + File.separator + this.storageAddress
-                + File.separator;
+        String directory;  // create the storage directory
+        if (Paths.get(this.storageAddress).isAbsolute()) {
+            directory = this.storageAddress + File.separator;
+        } else {
+            directory = serverPath
+                    + File.separator + storageFolder
+                    + File.separator + this.storageAddress
+                    + File.separator;
+        }
+        if (!Files.exists(Paths.get(directory))) {
+            createDirectory(Paths.get(directory));
+        }
 
         return directory;
     }

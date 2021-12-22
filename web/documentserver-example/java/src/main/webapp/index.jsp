@@ -139,7 +139,7 @@
                             <% DocumentManager.Init(request, response); %>
                             <% File[] files = DocumentManager.GetStoredFiles(null); %>
                             <div class="main-panel">
-                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "block" %>">
+                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -180,7 +180,7 @@
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %> [<%= version %>]">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                                     <span><%= files[i].getName() %></span>
@@ -214,9 +214,6 @@
                                                                         <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
                                                                     </a>
                                                                 </td>
-                                                                <% } %>
-                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                                 <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">

@@ -264,8 +264,9 @@ class HomeController < ApplicationController
     begin
       file_name = File.basename(params[:fileName])
       user_address = params[:userAddress]
+      isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled
+      if JwtHelper.is_enabled && isEmbedded == nil
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]

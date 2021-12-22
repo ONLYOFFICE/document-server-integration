@@ -16,13 +16,15 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [Node.js example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-You need to connect the editors to your website. Specify the path to the editors installation in the *config/default.json* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config/default.json* file:
 
 ```
+"storageFolder": "./files"
+"storagePath": "/files"
 "siteUrl": "https://documentserver/"
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed, the **storageFolder** and **storagePath** are the paths where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\views\editor.ejs* file.
 
@@ -114,13 +116,18 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano config/default.json
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
+    "storageFolder": "./files"
+    "storagePath": "/files"
     "siteUrl": "https://documentserver/"
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed, the **storageFolder** and **storagePath** are the paths where files will be created and stored. Please note that you must have read and write permissions to the folder. If you do not have them, please use the next command:
+   ```
+   sudo chmod -R ugo+rw /{path}
+   ```
 
 6. Run the project with Node.js:
 

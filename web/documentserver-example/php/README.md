@@ -16,13 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [PHP example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-You need to connect the editors to your website. Specify the path to the editors installation in the *config.php* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.php* file:
 
 ```
+$GLOBALS['STORAGE_PATH'] = "";
 $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *doceditor.php* file.
 
@@ -147,13 +148,14 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano config.php
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
+    $GLOBALS['STORAGE_PATH'] = "";
     $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
 
 5. Set permission for site:
 

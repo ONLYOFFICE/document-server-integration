@@ -144,7 +144,7 @@
                                     if (!empty($storedFiles)): ?>
                                         <div id="portal-info" style="display: none">
                                     <?php else: ?>
-                                        <div id="portal-info" style="display: block">
+                                        <div id="portal-info" style="display: table-cell">
                                     <?php endif; ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
@@ -212,9 +212,6 @@
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=filter&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                                                         echo ' </td>';
-                                                                    }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
-                                                                       echo ' <td class="contentCells contentCells-icon contentCellsEmpty"></td>';
                                                                     }
                                                                     if ($storeFile->documentType == "word") {
                                                                         echo ' <td class="contentCells contentCells-icon ">';
