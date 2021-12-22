@@ -504,7 +504,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
+            var downloadExt = body.document.fileType;//fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -538,7 +538,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         // callback file force saving process
         var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
-                var downloadExt = fileUtility.getFileExtension(downloadUri);
+                var downloadExt = body.document.fileType;
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
@@ -589,7 +589,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = fileUtility.getFileExtension(downloadUri);
+            var downloadExt = body.document.fileType;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
