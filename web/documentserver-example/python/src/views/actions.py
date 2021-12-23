@@ -383,9 +383,15 @@ def download(request):
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
 
-def static(request):
+# download a history file
+def downloadhistory(request):
     try:
-        if (jwtManager.isEnabled()):
+        fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        file = fileUtils.getFileName(request.GET['file'])
+        version = fileUtils.getFileName(request.GET['ver'])
+        isEmbedded = request.GET.get('dmode')
+
+        if (jwtManager.isEnabled() and isEmbedded == None):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
@@ -397,13 +403,9 @@ def static(request):
             else:
                 return HttpResponse('JWT validation failed', status=403)
 
-        filepath = request.path.replace('/static','app_data')
-        filename = fileUtils.getFileName(filepath)
+        filePath = os.path.join(config.STORAGE_PATH, request.META['REMOTE_ADDR'], f'{fileName}-hist', version, file)
 
-        response = FileResponse(open(filepath, 'rb'))
-        response['Content-Disposition'] = 'attachment; filename='+filename
-        response['X-Sendfile'] = filename
-
+        response = docManager.download(filePath)  # download this file
         return response
     except Exception:
         response = {}
