@@ -33,6 +33,7 @@ urlpatterns = [
     path('', index.default),
     path('upload', actions.upload),
     path('download', actions.download),
+    path('downloadhistory', actions.downloadhistory),
     path('convert', actions.convert),
     path('create', actions.createNew),
     path('edit', actions.edit),
@@ -41,8 +42,6 @@ urlpatterns = [
     path('csv', actions.csv),
     path('files', actions.files),
     path('saveas', actions.saveAs),
-#    re_path(r'^static', actions.static) for any files
-    re_path(r'^static/.{1,99}/new.\D+-hist/\d+/prev.\D+', actions.static) 
 ]
 
 urlpatterns += staticfiles_urlpatterns()
