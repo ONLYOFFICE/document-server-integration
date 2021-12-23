@@ -234,7 +234,7 @@ class FileModel
           }
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+          dataObj["changesUrl"] = DocumentHelper.get_zip_url(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
         end
 
         if JwtHelper.is_enabled  # check if a secret key to generate token exists or not

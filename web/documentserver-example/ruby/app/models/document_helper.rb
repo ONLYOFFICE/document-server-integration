@@ -91,7 +91,7 @@ class DocumentHelper
       end
 
       # put the given file to this directory
-      directory.join(File.basename(file_name)).to_s
+            directory.join(file_name.end_with?("diff.zip") ? file_name : File.basename(file_name)).to_s
     end
 
     # get the path to the forcesaved file version
@@ -238,14 +238,14 @@ class DocumentHelper
 
       return uri
     end
-    
+
     # get server url
     def get_server_url(for_document_server)
       if for_document_server && !Rails.configuration.urlExample.empty?
         return Rails.configuration.urlExample
       else
         return @@base_url
-      end 
+      end
     end
 
     # get callback url
@@ -266,6 +266,13 @@ class DocumentHelper
     def get_download_url(file_name)
 
       get_server_url(true) + '/download?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+
+    end
+
+    # get url to download a file
+    def get_zip_url(file_path)
+
+      get_server_url(true) + '/zip?filePath=' + URI::encode(file_path)+ '&userAddress=' + cur_user_host_address(nil)
 
     end
 
@@ -318,7 +325,7 @@ class DocumentHelper
           "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
           "pureContentLength" => File.size(directory),
           "title" => fileName,
-          "updated" => File.mtime(directory) 
+          "updated" => File.mtime(directory)
         }
 
         if file_id == nil  # if file id is undefined
