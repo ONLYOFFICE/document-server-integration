@@ -70,7 +70,7 @@ class TrackHelper
             new_file_name = file_name
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
+            download_ext = file_data['fileType']  # get the extension of the downloaded file
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
             if (!cur_ext.eql?(download_ext))
@@ -140,7 +140,7 @@ class TrackHelper
             end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
+            download_ext = file_data['fileType']  # get the extension of the downloaded file
             new_file_name = false
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
