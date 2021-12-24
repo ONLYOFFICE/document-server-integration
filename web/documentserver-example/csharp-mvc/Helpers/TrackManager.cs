@@ -95,7 +95,13 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
             var downloadUri = (string)fileData["url"];
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            string downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";  // get the extension of the downloaded file
+            string downloadExt = "."+(string)fileData["filetype"];  // get the extension of the downloaded file
+
+            // TODO [Delete in version 7.0 or higher]
+            if (downloadExt == null) {
+                downloadExt = Path.GetExtension(downloadUri).ToLower() ?? ""; // Support for versions below 7.0
+            }
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -167,7 +173,13 @@ namespace OnlineEditorsExampleMVC.Helpers
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            string downloadExt = Path.GetExtension(downloadUri).ToLower();  // get the extension of the downloaded file
+            string downloadExt = "."+(string)fileData["filetype"];  // get the extension of the downloaded file
+
+            // TODO [Delete in version 7.0 or higher]
+            if (downloadExt == null) {
+                downloadExt = Path.GetExtension(downloadUri).ToLower(); // Support for versions below 7.0
+            }
+
             Boolean newFileName = false;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
