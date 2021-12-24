@@ -94,7 +94,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String newFileName = fileName;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = fileUtility.getFileExtension(downloadUri);  // get an extension of the downloaded file
+        String downloadExt = "."+body.getFiletype(); // get an extension of the downloaded file
 
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -212,7 +212,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = fileUtility.getFileExtension(downloadUri);  // get an extension of the downloaded file
+        String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
