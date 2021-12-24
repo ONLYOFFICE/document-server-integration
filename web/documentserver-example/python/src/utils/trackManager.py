@@ -60,7 +60,7 @@ def processSave(body, filename, usAddr):
     newFilename = filename
 
     curExt = fileUtils.getFileExt(filename) # get current file extension
-    downloadExt = body.get('fileType') # get the extension of the downloaded file
+    downloadExt = "."+body.get('filetype') # get the extension of the downloaded file
 
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
