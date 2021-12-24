@@ -127,7 +127,7 @@ public class TrackManager {
         String newFileName = fileName;
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = FileUtility.GetFileExtension(downloadUri);  // get the extension of the downloaded file
+        String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
@@ -188,7 +188,7 @@ public class TrackManager {
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = FileUtility.GetFileExtension(downloadUri);  // get the extension of the downloaded file
+        String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
