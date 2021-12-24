@@ -504,7 +504,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = body.document.fileType;//fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
+            var downloadExt = body.document.filetype;//fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -589,7 +589,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = body.document.fileType;
+            var downloadExt = body.document.filetype;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
