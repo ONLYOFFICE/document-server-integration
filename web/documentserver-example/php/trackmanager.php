@@ -82,7 +82,7 @@ function processSave($data, $fileName, $userAddress) {
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
     $newFileName = $fileName;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -154,7 +154,7 @@ function processForceSave($data, $fileName, $userAddress) {
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
     $newFileName = false;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
