@@ -65,6 +65,10 @@ namespace OnlineEditorsExample
                 case "saveas":
                     SaveAs(context);
                     break;
+                case "zip":
+                    DiffZipDownload(context);
+                    break;
+                
             }
         }
 
@@ -316,7 +320,40 @@ namespace OnlineEditorsExample
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
             context.Response.TransmitFile(filePath);
         }
+        
+        
+        private static void DiffZipDownload(HttpContext context)
+        {
+            var fileName = Path.GetFileName(context.Request["fileName"]);
+            var userAddress = Path.GetFileName(context.Request["userAddress"]);
+            if (JwtManager.Enabled)
+            {
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
+                if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                    string token = JwtManager.Decode(headerToken);
+
+                    if (token == null || token.Equals(""))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Response.Write("JWT validation failed");
+                    return;
+                }
+            }
+            stribg filePath = _Default.StoragePath(fileName, userAddress);
+            download(filePath, context);
+        }
+        
+        
         public bool IsReusable
         {
             get { return false; }
