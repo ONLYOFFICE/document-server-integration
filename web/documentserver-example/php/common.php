@@ -38,12 +38,12 @@ function guid() {
         $charid = strtoupper(md5(uniqid(rand(), true)));
         $hyphen = chr(45);  // "-"
         $uuid = chr(123)  // "{"
-            .substr($charid, 0, 8).$hyphen
-            .substr($charid, 8, 4).$hyphen
-            .substr($charid,12, 4).$hyphen
-            .substr($charid,16, 4).$hyphen
-            .substr($charid,20,12)
-            .chr(125);  // "}"
+                .substr($charid, 0, 8).$hyphen
+                .substr($charid, 8, 4).$hyphen
+                .substr($charid,12, 4).$hyphen
+                .substr($charid,16, 4).$hyphen
+                .substr($charid,20,12)
+                .chr(125);  // "}"
         return $uuid;
     }
 }
@@ -129,12 +129,12 @@ if(!function_exists('mime_content_type')) {
 function getClientIp() {
     $ipaddress =
         getenv('HTTP_CLIENT_IP')?:
-            getenv('HTTP_X_FORWARDED_FOR')?:
-                getenv('HTTP_X_FORWARDED')?:
-                    getenv('HTTP_FORWARDED_FOR')?:
-                        getenv('HTTP_FORWARDED')?:
-                            getenv('REMOTE_ADDR')?:
-                                'Storage';
+        getenv('HTTP_X_FORWARDED_FOR')?:
+        getenv('HTTP_X_FORWARDED')?:
+        getenv('HTTP_FORWARDED_FOR')?:
+        getenv('HTTP_FORWARDED')?:
+        getenv('REMOTE_ADDR')?:
+        'Storage';
 
     $ipaddress = preg_replace("/[^0-9a-zA-Z.=]/", "_", $ipaddress);
 
@@ -226,7 +226,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
 
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
-    }
+    } 
     sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
     return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . (strpos($fileName, DIRECTORY_SEPARATOR) || strpos($fileName, '\\') ? $fileName : basename($fileName));
 }
@@ -328,11 +328,11 @@ function getStoredFiles() {
                 $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) array(  // and write the file to the result
-                    "name" => $fileName,
-                    "documentType" => getDocumentType($fileName),
-                    "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
-                    "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
-                );
+                        "name" => $fileName,
+                        "documentType" => getDocumentType($fileName),
+                        "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
+                        "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+                    );
             }
         }
     }

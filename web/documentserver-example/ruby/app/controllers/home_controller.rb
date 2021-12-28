@@ -266,6 +266,37 @@ class HomeController < ApplicationController
       render plain: '{ "error": "File not found"}'
     end
   end
+def zipDownload
+    begin
+      file_name = params[:filePath]
+      user_address = params[:userAddress]
+      isEmbedded = params[:dmode]
+
+      if JwtHelper.is_enabled && isEmbedded == nil
+        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        if request.headers[jwtHeader]
+            hdr = request.headers[jwtHeader]
+            hdr.slice!(0, "Bearer ".length)
+            token = JwtHelper.decode(hdr)
+            if !token || token.eql?("")
+              render plain: "JWT validation failed", :status => 403
+              return
+            end
+        else
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
+      end
+      file_path = DocumentHelper.storage_path(file_name, user_address)  # or to the original document
+      # add headers to the response to specify the page parameters
+      response.headers['Content-Type'] = "application/zip"
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8 diff.zip"
+
+      send_file file_path, :x_sendfile => true
+    rescue => ex
+      render plain: '{ "error": "File not found"}'
+    end
+  end
 
   # Save Copy as...
   def saveas

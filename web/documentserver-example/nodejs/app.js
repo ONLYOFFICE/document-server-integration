@@ -49,8 +49,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 String.prototype.hashCode = function () {
-    const len = this.length;
-    let ret = 0;
+	const len = this.length;
+	let ret = 0;
     for (let i = 0; i < len; i++) {
         ret = (31 * ret + this.charCodeAt(i)) << 0;
     }
@@ -81,17 +81,17 @@ app.use(function (req, res, next) {
 
 app.use(express.static(path.join(__dirname, "public")));  // public directory
 if (config.has('server.static')) {  // check if there are static files such as .js, .css files, images, samples and process them
-    const staticContent = config.get('server.static');
-    for (let i = 0; i < staticContent.length; ++i) {
-        const staticContentElem = staticContent[i];
-        app.use(staticContentElem['name'], express.static(staticContentElem['path'], staticContentElem['options']));
-    }
+  const staticContent = config.get('server.static');
+  for (let i = 0; i < staticContent.length; ++i) {
+    const staticContentElem = staticContent[i];
+    app.use(staticContentElem['name'], express.static(staticContentElem['path'], staticContentElem['options']));
+  }
 }
 app.use(favicon(__dirname + "/public/images/favicon.ico"));  // use favicon
 
 
 app.use(bodyParser.json());  // connect middleware that parses json
-app.use(bodyParser.urlencoded({extended: false}));  // connect middleware that parses urlencoded bodies
+app.use(bodyParser.urlencoded({ extended: false }));  // connect middleware that parses urlencoded bodies
 
 
 app.get("/", function (req, res) {  // define a handler for default page
@@ -110,15 +110,16 @@ app.get("/", function (req, res) {  // define a handler for default page
             serverUrl: docManager.getServerUrl(),
         });
 
-    } catch (ex) {
+    }
+    catch (ex) {
         console.log(ex);  // display error message in the console
         res.status(500);  // write status parameter to the response
-        res.render("error", {message: "Server error"});  // render error template with the message parameter specified
+        res.render("error", { message: "Server error" });  // render error template with the message parameter specified
         return;
     }
 });
 
-app.get("/download", function (req, res) {  // define a handler for downloading files
+app.get("/download", function(req, res) {  // define a handler for downloading files
     docManager.init(storageFolder, req, res);
 
     var fileName = fileUtility.getFileName(req.query.fileName);
@@ -196,18 +197,18 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     form.maxFileSize = configServer.get("maxFileSize");
 
     form.parse(req, function (err, fields, files) {  // parse this form 
-        if (err) {  // if an error occurs
-            docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-            res.writeHead(200, {"Content-Type": "text/plain"});  // and write the error status and message to the response
-            res.write("{ \"error\": \"" + err.message + "\"}");
-            res.end();
-            return;
-        }
+    	if (err) {  // if an error occurs
+			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+			res.writeHead(200, { "Content-Type": "text/plain" });  // and write the error status and message to the response
+			res.write("{ \"error\": \"" + err.message + "\"}");
+			res.end();
+			return;
+		}
 
         const file = files.uploadedFile;
 
         if (file == undefined) {  // if file parameter is undefined
-            res.writeHead(200, {"Content-Type": "text/plain"});  // write the error status and message to the response
+            res.writeHead(200, { "Content-Type": "text/plain" });  // write the error status and message to the response
             res.write("{ \"error\": \"Uploaded file not found\"}");
             res.end();
             return;
@@ -216,8 +217,8 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
         file.name = docManager.getCorrectName(file.name);
 
         if (configServer.get('maxFileSize') < file.size || file.size <= 0) {  // check if the file size exceeds the maximum file size
-            docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-            res.writeHead(200, {"Content-Type": "text/plain"});
+			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+            res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File size is incorrect\"}");
             res.end();
             return;
@@ -228,16 +229,16 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
         const documentType = fileUtility.getFileType(file.name);
 
         if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
-            docManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
-            res.writeHead(200, {"Content-Type": "text/plain"});  // and write the error status and message to the response
+			docManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
+            res.writeHead(200, { "Content-Type": "text/plain" });  // and write the error status and message to the response
             res.write("{ \"error\": \"File type is not supported\"}");
             res.end();
             return;
         }
 
         fileSystem.rename(file.path, uploadDir + "/" + file.name, function (err) {  // rename a file
-            docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-            res.writeHead(200, {"Content-Type": "text/plain"});
+			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+            res.writeHead(200, { "Content-Type": "text/plain" });
             if (err) {  // if an error occurs
                 res.write("{ \"error\": \"" + err + "\"}");  // write an error message to the response
             } else {
@@ -264,10 +265,10 @@ app.post("/create", function (req, res) {
         var userAddress = docManager.curUserHostAddress();
         docManager.historyPath(fileName, userAddress, true);
 
-        urllib.request(fileUrl, {method: "GET"}, function (err, data) {
+        urllib.request(fileUrl, {method: "GET"},function(err, data) {
             if (configServer.get("maxFileSize") < data.length || data.length <= 0) {  // check if the file size exceeds the maximum file size
-                res.writeHead(200, {"Content-Type": "application/json"});
-                res.write(JSON.stringify({"error": "File size is incorrect"}));
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.write(JSON.stringify({ "error": "File size is incorrect" }));
                 res.end();
                 return;
             }
@@ -277,15 +278,15 @@ app.post("/create", function (req, res) {
 
             if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
                 res.writeHead(200, {"Content-Type": "application/json"});  // and write the error status and message to the response
-                res.write(JSON.stringify({"error": "File type is not supported"}));
+                res.write(JSON.stringify({ "error": "File type is not supported" }));
                 res.end();
                 return;
             }
 
             fileSystem.writeFileSync(docManager.storagePath(fileName), data);
 
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.write(JSON.stringify({"file": fileName}));
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.write(JSON.stringify({ "file" : fileName }));
             res.end();
 
         });
@@ -351,7 +352,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
             var correctName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + internalFileExt);  // get the file name with a new extension
 
-            urllib.request(newFileUri, {method: "GET"}, function (err, data) {
+            urllib.request(newFileUri, {method: "GET"},function(err, data) {
                 fileSystem.writeFileSync(docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
             });
 
@@ -389,9 +390,9 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     }
 });
 
-app.get("/files", function (req, res) {  // define a handler for getting files information
+app.get("/files", function(req, res) {  // define a handler for getting files information
     try {
-        docManager.init(storageFolder, req, res);
+        docManager.init(storageFolder, req, res); 
         const filesInDirectoryInfo = docManager.getFilesInfo();  // get the information about the files from the storage path
         res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(filesInDirectoryInfo));  // transform files information into the json string
@@ -402,7 +403,7 @@ app.get("/files", function (req, res) {  // define a handler for getting files i
     res.end();
 });
 
-app.get("/files/file/:fileId", function (req, res) {  // define a handler for getting file information by its id
+app.get("/files/file/:fileId", function(req, res) {  // define a handler for getting file information by its id
     try {
         docManager.init(storageFolder, req, res);
         const fileId = req.params.fileId;
@@ -418,20 +419,20 @@ app.get("/files/file/:fileId", function (req, res) {  // define a handler for ge
 
 app.delete("/file", function (req, res) {  // define a handler for removing file
     try {
-        docManager.init(storageFolder, req, res);
+    	docManager.init(storageFolder, req, res);
         let fileName = req.query.filename;
         if (fileName) {  // if the file name is defined
-            fileName = fileUtility.getFileName(fileName);  // get its part without an extension
+			fileName = fileUtility.getFileName(fileName);  // get its part without an extension
 
-            const filePath = docManager.storagePath(fileName);  // get the path to this file
-            fileSystem.unlinkSync(filePath);  // and delete it
+			const filePath = docManager.storagePath(fileName);  // get the path to this file
+			fileSystem.unlinkSync(filePath);  // and delete it
 
-            const userAddress = docManager.curUserHostAddress();
-            const historyPath = docManager.historyPath(fileName, userAddress, true);
-            docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
-        } else {
-            docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
-        }
+			const userAddress = docManager.curUserHostAddress();
+			const historyPath = docManager.historyPath(fileName, userAddress, true);
+			docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+		} else {
+			docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
+		}
 
         res.write("{\"success\":true}");
     } catch (ex) {
@@ -443,7 +444,7 @@ app.delete("/file", function (req, res) {  // define a handler for removing file
 
 app.get("/csv", function (req, res) {  // define a handler for downloading csv files
     var fileName = "csv.csv";
-    var csvPath = path.join(__dirname, "public", "assets", "sample", fileName);
+    var csvPath = path.join(__dirname, "public", "assets",  "sample", fileName);
 
     res.setHeader("Content-Length", fileSystem.statSync(csvPath).size);  // add headers to the response to specify the page parameters
     res.setHeader("Content-Type", mime.getType(csvPath));
@@ -484,7 +485,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var downloadZip = body.changesurl;
                 if (downloadZip) {
                     var path_changes = docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
-                    urllib.request(downloadZip, {method: "GET"}, function (err, data) {
+                    urllib.request(downloadZip, {method: "GET"},function(err, data) {
                         fileSystem.writeFileSync(path_changes, data);  // write the document version differences to the archive
                     });
                 }
@@ -501,7 +502,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
 
-                urllib.request(downloadUri, {method: "GET"}, function (err, data) {
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
                     fileSystem.writeFileSync(storagePath, data);
                 });
 
@@ -562,14 +563,14 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         };
 
         // callback file force saving process
-        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false) {
+        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
                 var downloadExt = fileUtility.getFileExtension(downloadUri);
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
                     // new file
-                    if (newFileName) {
+                    if (newFileName){
                         fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + "-form" + downloadExt, userAddress);
                     } else {
                         var ext = fileUtility.getFileExtension(fileName);
@@ -577,7 +578,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                     var forcesavePath = docManager.storagePath(fileName, userAddress);
                 } else {
-                    if (newFileName) {
+                    if (newFileName){
                         fileName = docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                     }
                     // create forcesave path if it doesn't exist
@@ -587,12 +588,12 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                 }
 
-                urllib.request(downloadUri, {method: "GET"}, function (err, data) {
+                urllib.request(downloadUri, {method: "GET"},function(err, data) {
                     fileSystem.writeFileSync(forcesavePath, data);
                 });
 
                 if (isSubmitForm) {
-                    var uid = body.actions[0].userid
+                    var uid =body.actions[0].userid
                     docManager.saveFileData(fileName, uid, "Filling Form", userAddress);
                 }
             } catch (ex) {
@@ -641,7 +642,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     console.log(ex);
                 }
             }
-            callbackProcessForceSave(downloadUri, body, fileName, userAddress, false);
+            callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
         };
 
         if (body.status == 1) { // editing
@@ -766,7 +767,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         var userAddress = docManager.curUserHostAddress();
         if (!docManager.existsSync(docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
-            throw {
+            throw { 
                 "message": "File not found: " + fileName  // display error message
             };
         }
@@ -776,8 +777,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
-            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
-        }
+                type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+            }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
@@ -821,7 +822,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 }
 
                 historyData.push(historyD);
-
+                
                 if (i < countVersion) {
                     var changesFile = docManager.changesPath(fileName, userAddress, i);  // get the path to the file with document changes
                     changes = docManager.getChanges(changesFile);  // get changes made in the file
@@ -904,25 +905,26 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         };
 
         if (cfgSignatureEnable) {
-            app.render('config', argss, function (err, html) {  // render a config template with the parameters specified
+            app.render('config', argss, function(err, html){  // render a config template with the parameters specified
                 if (err) {
                     console.log(err);
                 } else {
                     // sign token with given data using signature secret
-                    argss.editor.token = jwt.sign(JSON.parse("{" + html + "}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+                    argss.editor.token = jwt.sign(JSON.parse("{"+html+"}"), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataInsertImage.token = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataCompareFile.token = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                     argss.dataMailMergeRecipients.token = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
                 }
                 res.render("editor", argss);  // render the editor template with the parameters specified
-            });
+              });
         } else {
-            res.render("editor", argss);
+              res.render("editor", argss);
         }
-    } catch (ex) {
+    }
+    catch (ex) {
         console.log(ex);
         res.status(500);
-        res.render("error", {message: "Server error: " + ex.message});
+        res.render("error", { message: "Server error: " + ex.message });
     }
 });
 

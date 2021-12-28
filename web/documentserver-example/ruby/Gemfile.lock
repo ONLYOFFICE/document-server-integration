@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/mimemagicrb/mimemagic.git
+  revision: 01f92d86d15d85cfd0f20dabd025dcbd36a8a60f
+  ref: 01f92d86d15d85cfd0f20dabd025dcbd36a8a60f
+  specs:
+    mimemagic (0.3.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -95,9 +102,6 @@ GEM
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
     method_source (1.0.0)
-    mimemagic (0.3.10)
-      nokogiri (~> 1)
-      rake
     mini_mime (1.0.2)
     mini_portile2 (2.6.1)
     minitest (5.14.2)
@@ -186,6 +190,7 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
+    webrick (1.7.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -201,6 +206,7 @@ DEPENDENCIES
   coffee-rails (~> 5.0.0)
   jbuilder (~> 2.9.1)
   jquery-rails
+  mimemagic!
   rack-cors
   rails (= 6.0.3.5)
   sass-rails (~> 6.0)
@@ -211,6 +217,7 @@ DEPENDENCIES
   uglifier (>= 4.2.0)
   uuid
   web-console (~> 2.0)
+  webrick
 
 BUNDLED WITH
    2.1.4

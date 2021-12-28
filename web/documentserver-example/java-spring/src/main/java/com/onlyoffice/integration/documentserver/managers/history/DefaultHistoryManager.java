@@ -115,7 +115,6 @@ public class DefaultHistoryManager implements HistoryManager {
                     dataObj.put("changesUrl", storagePathBuilder.getServerUrl(false)+"/zip?histDir="+URLEncoder.encode(histDir)+"&version="+i);
                 }
 
-
                 if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
 
                 hist.add(obj);

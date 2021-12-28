@@ -1,17 +1,19 @@
 /**
+ *
  * (c) Copyright Ascensio System SIA 2021
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package entities;
@@ -29,7 +31,8 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FileModel {
+public class FileModel
+{
     public String type = "desktop";
     public String mode = "edit";
     public String documentType;
@@ -38,7 +41,8 @@ public class FileModel {
     public String token;
 
     // create file model
-    public FileModel(String fileName, String lang, String actionData, User user) {
+    public FileModel(String fileName, String lang, String actionData, User user)
+    {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();  // remove extra spaces in the file name
 
@@ -91,12 +95,6 @@ public class FileModel {
         changeType(mode, type, user, fileName);
     }
 
-    // turn java objects into json strings
-    public static String Serialize(FileModel model) {
-        Gson gson = new Gson();
-        return gson.toJson(model);
-    }
-
     // change the document type
     public void changeType(String _mode, String _type, User user, String fileName)
     {
@@ -128,7 +126,8 @@ public class FileModel {
     }
 
     // generate document token
-    public void BuildToken() {
+    public void BuildToken()
+    {
         // write all the necessary document parameters to the map
         Map<String, Object> map = new HashMap<>();
         map.put("type", type);
@@ -141,7 +140,8 @@ public class FileModel {
     }
 
     // get document history
-    public String[] GetHistory() {
+    public String[] GetHistory()
+    {
         JSONParser parser = new JSONParser();
         String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));  // get history directory
 
@@ -212,8 +212,7 @@ public class FileModel {
                     hist.add(obj);
                     histData.put(Integer.toString(i - 1), dataObj);
 
-                } catch (Exception ex) {
-                }
+                } catch (Exception ex) { }
             }
 
             // write history information about the current file version to the history object
@@ -222,16 +221,17 @@ public class FileModel {
             histObj.put("history", hist);
 
             Gson gson = new Gson();
-            return new String[]{gson.toJson(histObj), gson.toJson(histData)};
+            return new String[] { gson.toJson(histObj), gson.toJson(histData) };
         }
-        return new String[]{"", ""};
+        return new String[] { "", "" };
     }
 
     // read a file
     private String readFileToEnd(File file) {
         String output = "";
         try {
-            try (FileInputStream is = new FileInputStream(file)) {
+            try(FileInputStream is = new FileInputStream(file))
+            {
                 Scanner scanner = new Scanner(is);  // read data from the source
                 scanner.useDelimiter("\\A");
                 while (scanner.hasNext()) {
@@ -239,13 +239,13 @@ public class FileModel {
                 }
                 scanner.close();
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
         return output;
     }
 
     // the document parameters
-    public class Document {
+    public class Document
+    {
         public String title;
         public String url;
         public String fileType;
@@ -358,5 +358,13 @@ public class FileModel {
             public String shareUrl;
             public String toolbarDocked;
         }
+    }
+
+
+    // turn java objects into json strings
+    public static String Serialize(FileModel model)
+    {
+        Gson gson = new Gson();
+        return gson.toJson(model);
     }
 }

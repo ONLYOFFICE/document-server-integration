@@ -145,7 +145,6 @@ def getZipUri(filename, ver, req):
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}/zip?host={host}&curAdr={curAdr}&filename={filename}&ver={ver}'
-    #return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
 
 # get the meta data of the file
 def getMeta(storagePath):
