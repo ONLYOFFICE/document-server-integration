@@ -324,8 +324,7 @@ namespace OnlineEditorsExample
         
         private static void DiffZipDownload(HttpContext context)
         {
-            var fileName = Path.GetFileName(context.Request["fileName"]);
-            var userAddress = Path.GetFileName(context.Request["userAddress"]);
+            var fileName = context.Request["fileName"];
             if (JwtManager.Enabled)
             {
                 string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
@@ -334,7 +333,6 @@ namespace OnlineEditorsExample
                 {
                     var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
                     string token = JwtManager.Decode(headerToken);
-
                     if (token == null || token.Equals(""))
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
@@ -349,8 +347,10 @@ namespace OnlineEditorsExample
                     return;
                 }
             }
-            stribg filePath = _Default.StoragePath(fileName, userAddress);
-            download(filePath, context);
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + "diff.zip");
+            context.Response.AddHeader("Content-Type","application/zip");
+            context.Response.TransmitFile(fileName);
+            
         }
         
         

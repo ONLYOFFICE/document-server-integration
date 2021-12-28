@@ -115,19 +115,18 @@ namespace OnlineEditorsExample
                 return downloadUrl.ToString();
             }
         }
-        public static string getZipDownloadUrl(string zipPath)
+        public static string GetZipDownloadUrl(string fileName)
         {
+            var ZipDownloadUrl = new UriBuilder(_Default.GetServerUrl(true))
             {
-                var zipDownloadUrl = new UriBuilder(_Default.GetServerUrl(true));
-                zipDownloadUrl.Path =
+                Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx";
-                ZipdownloadUrl.Query = "type=zip"
-                                    + "&fileName=" + HttpUtility.UrlEncode(zipPath)
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
-                return ZipdownloadUrl.ToString();
-            }
+                    + "webeditor.ashx",
+                Query = "type=zip"
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+            };
+            return ZipDownloadUrl.ToString();
         }
 
         // loading a page
@@ -394,7 +393,7 @@ namespace OnlineEditorsExample
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         //dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
-                        dataObj.Add("changesUrl", getZipDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
+                        dataObj.Add("changesUrl", GetZipDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
                     }
                     if (JwtManager.Enabled)
                     {
