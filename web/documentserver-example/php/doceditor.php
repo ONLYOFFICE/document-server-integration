@@ -49,7 +49,7 @@ if (!empty($_GET["fileExt"]))
 }
 
 $fileuri = FileUri($filename, true);
-$fileuriUser = FileUri($filename);
+$fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
 $docKey = getDocEditorKey($filename);
 $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -220,6 +220,7 @@ function getZipDownloadUri($changesURI) {
 
 // get document history
 function getHistory($filename, $filetype, $docKey, $fileuri) {
+    $storagePath = $GLOBALS['STORAGE_PATH'];
     $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
     if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
@@ -250,8 +251,12 @@ function getHistory($filename, $filetype, $docKey, $fileuri) {
 
             $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
             $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+            $prevFileUrl = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
+            if (realpath($storagePath) === $storagePath) {
+                $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getDownloadUrl($prevFileName);
+            }
             $dataObj["key"] = $key;
-            $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
+            $dataObj["url"] = $prevFileUrl;  // write file url to the data object
             $dataObj["version"] = $i;
 
             if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
@@ -268,12 +273,12 @@ function getHistory($filename, $filetype, $docKey, $fileuri) {
                     "key" => $prev["key"],
                     "url" => $prev["url"]
                 ];
-
-                $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
-                $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
+                $changesPath = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
+                $changesPath = substr($changesPath, strlen(getStoragePath("")));
 
                 // write the path to the diff.zip archive with differences in this file version
-                $dataObj["changesUrl"] = getZipDownloadUri($changesUrl);
+                $changesUrl = realpath($storagePath) === $storagePath ? getDownloadUrl($changesPath) : getZipDownloadUri($changesUrl);
+                $dataObj["changesUrl"] = $changesUrl;
             }
 
             if (isJwtEnabled()) {

@@ -19,16 +19,15 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 Download the [Java-Spring example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation, server address and port in the *\src\main\resources\application.properties* file:
+To connect the editors to your website, specify the path to the editors installation, server port and the path to the storage folder in the *\src\main\resources\application.properties* file:
 
 ```
- server.address=address
+ files.storage=
  server.port=port
  files.docservice.url.site=https://documentserver/
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-**address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
+where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *\src\main\resources\editor.html* file.
 
@@ -112,8 +111,6 @@ To run the Java example code, install the Java version 11 appropriate for your O
      ```
      http://server.address:server.port/
      ```
-    
-
 
 ### Step 6. Check accessibility
 
@@ -173,13 +170,13 @@ See the detailed guide to learn how to install Document Server [for Linux](https
 	Edit the following lines:
 
     ```
-    server.address=address
+    files.storage=
     server.port=port
     files.docservice.url.site=https://documentserver/
     ```
 
-	Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-	**address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
+	where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path.
+   
 
 5. Install **Maven**:
 
@@ -204,7 +201,6 @@ See the detailed guide to learn how to install Document Server [for Linux](https
      ```
   
 
-
 ### Step 3. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
@@ -222,13 +218,12 @@ Make sure that the Document Server has access to the server with the example ins
 2. Edit the following lines:
 
    ```
-   server.address=address
+   files.storage=
    server.port=port
    files.docservice.url.site=https://documentserver/
    ```
     
-    Where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
-    **address** is the address of the server or comment this line to use localhost, **port** is the any available port.   
+    where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path.
 
 3. Run the next command in the java example directory:
 

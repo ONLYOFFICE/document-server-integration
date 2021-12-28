@@ -79,7 +79,7 @@ descr_user_0 = [
 
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
-        None, None, {},
+        '', None, {},
         None, [], descr_user_1, True),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
         'group-2', ['group-2', ''], {
@@ -96,7 +96,7 @@ USERS = [
         },
         False, ["copy", "download", "print"], descr_user_3, False),
     User('uid-0', None, None,
-        None, None, {},
+        '', None, {},
         None, [], descr_user_0, False)
 ]
 

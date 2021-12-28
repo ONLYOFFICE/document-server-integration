@@ -228,8 +228,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
         mkdir($directory);
     }
     sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
-    return $directory . (strpos($fileName, DIRECTORY_SEPARATOR) || strpos($fileName, '\\') ? $fileName : basename($fileName));
-//    return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
+    return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . (strpos($fileName, DIRECTORY_SEPARATOR) || strpos($fileName, '\\') ? $fileName : basename($fileName));
 }
 
 // get the path to the forcesaved file version

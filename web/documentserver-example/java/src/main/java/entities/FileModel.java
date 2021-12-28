@@ -18,10 +18,7 @@ package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import helpers.ConfigManager;
-import helpers.DocumentManager;
-import helpers.FileUtility;
-import helpers.ServiceConverter;
+import helpers.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,6 +26,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FileModel {
@@ -51,7 +49,6 @@ public class FileModel {
         document = new Document();
         document.title = fileName;
         document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
-        document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -91,7 +88,7 @@ public class FileModel {
         // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
-        changeType(mode, type, user);
+        changeType(mode, type, user, fileName);
     }
 
     // turn java objects into json strings
@@ -101,7 +98,8 @@ public class FileModel {
     }
 
     // change the document type
-    public void changeType(String _mode, String _type, User user) {
+    public void changeType(String _mode, String _type, User user, String fileName)
+    {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
 
@@ -121,11 +119,12 @@ public class FileModel {
         // set document permissions
         document.permissions = new Permissions(mode, type, canEdit, user);
 
-        if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
+        if (type.equals("embedded")) InitDesktop(fileName);  // set parameters for the embedded document
     }
 
-    public void InitDesktop() {
-        editorConfig.InitDesktop(document.urlUser);
+    public void InitDesktop(String fileName)
+    {
+        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName) + "&dmode=emb");
     }
 
     // generate document token
@@ -199,8 +198,12 @@ public class FileModel {
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.put("changesUrl", ConfigManager.GetProperty("files.docservice.url.example") + "/IndexServlet?version=" + i + "&histDir=" + URLEncoder.encode(histDir) + "&type=zip");
-                        // dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
+                        String storagePath = ConfigManager.GetProperty("storage-folder");
+                        String changesUrl = ConfigManager.GetProperty("files.docservice.url.example") + "/IndexServlet?version=" + i + "&histDir=" + URLEncoder.encode(histDir) + "&type=zip";
+                        if (new File(storagePath).isAbsolute()) {
+                            changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
+                        }
+                        dataObj.put("changesUrl", changesUrl);
                     }
                     if (DocumentManager.TokenEnabled()) {
                         dataObj.put("token", DocumentManager.CreateToken(dataObj));
@@ -245,7 +248,6 @@ public class FileModel {
     public class Document {
         public String title;
         public String url;
-        public String urlUser;
         public String fileType;
         public String key;
         public Info info;
@@ -284,7 +286,14 @@ public class FileModel {
 
     // the Favorite icon state
     public class Info {
+        public String owner = "Me";
         public Boolean favorite;
+        public String uploaded = getDate();
+
+        private String getDate() {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+            return simpleDateFormat.format(new Date());
+        }
     }
 
     // the editor config parameters

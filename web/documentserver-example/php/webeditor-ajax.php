@@ -361,9 +361,11 @@ function csv()
 function download()
 {
     try {
-        $fileName = basename($_GET["fileName"]);  // get the file name
+        $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
-        if (isJwtEnabled()) {
+        $isEmbedded = $_GET["&dmode"];
+
+        if (isJwtEnabled() && $isEmbedded == null) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));

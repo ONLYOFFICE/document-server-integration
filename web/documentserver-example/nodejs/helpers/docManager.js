@@ -151,7 +151,12 @@ docManager.getFileUri = function (fileName) {
 docManager.getlocalFileUri = function (fileName, version, forDocumentServer) {
     const serverPath = docManager.getServerUrl(forDocumentServer);
     const hostAddress = docManager.curUserHostAddress();
-    const url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);  // get full url address to the file
+    let url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);  // get full url address to the file
+    if (path.isAbsolute(configServer.get("storageFolder"))) {
+        let separator = configServer.get("storagePath").includes("/") ? "/" : "\\";
+        url = docManager.getDownloadUrl(fileName + "-history" + separator + version + separator + "diff.zip");
+        return url;
+    }
     if (!version) {
         return url;
     }
@@ -208,14 +213,14 @@ docManager.getDownloadUrl = function (fileName) {
 // get the storage path of the given file
 docManager.storagePath = function (fileName, userAddress) {
     fileName = fileUtility.getFileName(fileName);  // get the file name with extension
-    const directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));  // get the path to the directory for the host address
+    const directory = path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, docManager.curUserHostAddress(userAddress));  // get the path to the directory for the host address
     this.createDirectory(directory);  // create a new directory if it doesn't exist
     return path.join(directory, fileName);  // put the given file to this directory
 };
 
 // get the path to the forcesaved file version
 docManager.forcesavePath = function (fileName, userAddress, create) {
-    let directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
+    let directory = path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
     if (!this.existsSync(directory)) {  // the directory with host address doesn't exist
         return "";
     }
@@ -233,7 +238,7 @@ docManager.forcesavePath = function (fileName, userAddress, create) {
 
 // create the path to the file history
 docManager.historyPath = function (fileName, userAddress, create) {
-    let directory = path.join(docManager.dir, docManager.curUserHostAddress(userAddress));
+    let directory =  path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, userAddress);
     if (!this.existsSync(directory)) {
         return "";
     }
@@ -278,7 +283,7 @@ docManager.changesUser = function (fileName, userAddress, version) {
 // get all the stored files
 docManager.getStoredFiles = function () {
     const userAddress = docManager.curUserHostAddress();
-    const directory = path.join(docManager.dir, userAddress);
+    const directory = path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, userAddress);
     this.createDirectory(directory);
     const result = [];
     const storedFiles = fileSystem.readdirSync(directory);  // read the user host directory contents
@@ -451,7 +456,7 @@ docManager.cleanFolderRecursive = function (folder, me) {
 // get files information
 docManager.getFilesInfo = function (fileId) {
     const userAddress = docManager.curUserHostAddress();
-    const directory = path.join(docManager.dir, userAddress);
+    const directory = path.isAbsolute(docManager.dir) ? docManager.dir : path.join(docManager.dir, userAddress);
     const filesInDirectory = this.getStoredFiles();  // get all the stored files from the folder
     let responseArray = [];
     let responseObject;

@@ -113,7 +113,7 @@
                         {% if files %}
                             <div id="portal-info" style="display: none">
                         {% else %}
-                            <div id="portal-info" style="display: block">
+                            <div id="portal-info" style="display: table-cell">
                         {% endif %}
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
@@ -184,9 +184,6 @@
                                                                         <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                     </a>
                                                                 </td>
-                                                            {% endif %}
-                                                            {% if file.type == 'slide' %}
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">

@@ -30,6 +30,7 @@ html {
 }
 
 body {
+    display: inline-table;
     background: #FFFFFF;
     color: #333333;
     font-family: Open Sans;
@@ -79,6 +80,7 @@ header img {
 }
 
 .main{
+    display: table;
     height: calc(100% - 112px);
     min-height: 536px;
 }
@@ -103,6 +105,10 @@ header img {
     padding: 48px 32px 24px;
     position: relative;
     width: 896px;
+}
+
+#portal-info {
+    max-width: 65vw;
 }
 
 .portal-name {
