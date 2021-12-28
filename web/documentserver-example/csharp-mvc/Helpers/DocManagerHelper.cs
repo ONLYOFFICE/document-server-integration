@@ -299,6 +299,20 @@ namespace OnlineEditorsExampleMVC.Helpers
             };
             return downloadUrl.ToString();
         }
+        
+        public static string GetZipDownloadUrl(string fileName)
+        {
+            var ZipDownloadUrl = new UriBuilder(GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=zip"
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+            };
+            return ZipDownloadUrl.ToString();
+        }
 
         // get an editor internal extension
         public static string GetInternalExtension(FileUtility.FileType fileType)

@@ -67,6 +67,9 @@ namespace OnlineEditorsExampleMVC
                 case "saveas":
                     SaveAs(context);
                     break;
+                case "zip":
+                    ZipDownload(context);
+                    break;
             }
         }
 
@@ -488,6 +491,37 @@ namespace OnlineEditorsExampleMVC
             context.Response.TransmitFile(filePath);
         }
 
+        private static void ZipDownload(HttpContext context)
+        {
+            var fileName = context.Request["fileName"];
+            if (JwtManager.Enabled)
+            {
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                    string token = JwtManager.Decode(headerToken);
+                    if (token == null || token.Equals(""))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Response.Write("JWT validation failed");
+                    return;
+                }
+            }
+            context.Response.AddHeader("Content-Type","application/zip");
+            context.Response.TransmitFile(fileName);
+            
+        }
+        
+        
         public bool IsReusable
         {
             get { return false; }
