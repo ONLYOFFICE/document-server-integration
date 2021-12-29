@@ -729,7 +729,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var commentGroups = user.commentGroups;
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
 
             // get the redirect path
             var redirectPath = docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();

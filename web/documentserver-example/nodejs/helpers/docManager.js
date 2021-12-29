@@ -102,12 +102,31 @@ docManager.getCorrectName = function (fileName, userAddress) {
     return name;
 };
 
+// delete a file with its history
+docManager.fileRemove = function (fileName) {
+    var path = docManager.storagePath(fileName);
+    docManager.cleanFolderRecursive(path+"-history\\",true)
+    fileSystem.unlinkSync(path);
+}
+
+// create a zero-size file
+docManager.fileSizeZero = function (fileName) {
+    var path = docManager.storagePath(fileName);
+    var fh = fileSystem.openSync(path, 'w');
+    fileSystem.closeSync(fh);
+}
+
 // create demo document
-docManager.createDemo = function (isSample, fileExt, userid, username) {
+docManager.createDemo = function (isSample, fileExt, userid, username, wopi) {
+
     const demoName = (isSample ? "sample" : "new") + "." + fileExt;
     const fileName = docManager.getCorrectName(demoName);  // get the correct file name if such a name already exists
 
-    docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));   // copy sample document of a necessary extension to the storage path
+    if (wopi){
+        docManager.fileSizeZero(fileName)
+    } else {
+        docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));   // copy sample document of a necessary extension to the storage path
+    }
 
     docManager.saveFileData(fileName, userid, username);  // save file data to the file
 

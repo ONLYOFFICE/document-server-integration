@@ -84,11 +84,10 @@ exports.registerRoutes = function(app) {
     // define a handler for creating a new wopi editing session
     app.get("/wopi-new", function(req, res) {
         var fileExt = req.query.fileExt;  // get the file extension from the request
-        var user = users.getUser(req.query.userid);  // get a user by the id
 
         if (fileExt != null) {  // if the file extension exists
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, user.id, user.name);  // create demo document of the given extension
-            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
+            var fileName = docManager.getCorrectName("new."+fileExt)
+            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=editnew" + docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;
         }
@@ -98,8 +97,27 @@ exports.registerRoutes = function(app) {
         try {
             docManager.init(storageFolder, req, res);
 
+            var fileName = docManager.getCorrectName(req.params['id'])
+            var fileExt = fileUtility.getFileExtension(fileName, true);  // get the file extension from the request
+            var user = users.getUser(req.query.userid);  // get a user by the id
+
             // get an action for the specified extension and name
-            let action = await utils.getAction(fileUtility.getFileExtension(req.params['id'], true), req.query["action"]);
+            let action = await utils.getAction(fileExt, req.query["action"]);
+
+            if (action != null && req.query["action"] == "editnew") { 
+                if (req.params['id'] != fileName){
+                    docManager.fileRemove(req.params['id'], req.host);
+                    fileName = docManager.getCorrectName(req.params['id']);
+                    //fileName = docManager.getCorrectName("del."+fileExt);   // 
+                    docManager.fileSizeZero(fileName);
+                    docManager.saveFileData(fileName, user.id, user.name);
+                    //var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
+                    //res.redirect(redirectPath);
+                    //return;
+                }
+                docManager.fileSizeZero(fileName);
+                docManager.saveFileData(fileName, user.id, user.name);
+            }
 
             // render wopiAction template with the parameters specified
             res.render("wopiAction", {
