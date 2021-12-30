@@ -102,6 +102,21 @@ docManager.getCorrectName = function (fileName, userAddress) {
     return name;
 };
 
+// processes a request editnew
+docManager.RequestEditnew = function (req, fileName, user) {
+    if (req.params['id'] != fileName){  // processes a repeated request editnew
+        docManager.fileRemove(req.params['id'], req.host);
+        fileName = docManager.getCorrectName(req.params['id']);
+
+        docManager.fileSizeZero(fileName);
+        docManager.saveFileData(fileName, user.id, user.name);
+    }
+    docManager.fileSizeZero(fileName);
+    docManager.saveFileData(fileName, user.id, user.name);
+
+    return fileName;
+}
+
 // delete a file with its history
 docManager.fileRemove = function (fileName) {
     var path = docManager.storagePath(fileName);

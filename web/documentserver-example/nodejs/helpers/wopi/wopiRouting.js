@@ -104,19 +104,8 @@ exports.registerRoutes = function(app) {
             // get an action for the specified extension and name
             let action = await utils.getAction(fileExt, req.query["action"]);
 
-            if (action != null && req.query["action"] == "editnew") { 
-                if (req.params['id'] != fileName){
-                    docManager.fileRemove(req.params['id'], req.host);
-                    fileName = docManager.getCorrectName(req.params['id']);
-                    //fileName = docManager.getCorrectName("del."+fileExt);   // 
-                    docManager.fileSizeZero(fileName);
-                    docManager.saveFileData(fileName, user.id, user.name);
-                    //var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
-                    //res.redirect(redirectPath);
-                    //return;
-                }
-                docManager.fileSizeZero(fileName);
-                docManager.saveFileData(fileName, user.id, user.name);
+            if (action != null && req.query["action"] == "editnew") {
+                fileName = docManager.RequestEditnew(req, fileName, user);
             }
 
             // render wopiAction template with the parameters specified
