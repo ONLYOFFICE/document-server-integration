@@ -72,6 +72,7 @@ exports.registerRoutes = function(app) {
                 params: docManager.getCustomParams(),
                 users: users,
                 serverUrl: docManager.getServerUrl(),
+                preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
             });
 
         } catch (ex) {
@@ -140,4 +141,11 @@ exports.registerRoutes = function(app) {
         .all(tokenValidator.isValidToken)
         .get(filesController.fileRequestHandler)
         .post(filesController.fileRequestHandler);
+
+    // define a handler for upload files
+    app.route('/wopi/upload')
+        .all(tokenValidator.isValidToken)
+        .get(filesController.fileRequestHandler)
+        .post(filesController.fileRequestHandler);
+        
 };

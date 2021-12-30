@@ -69,6 +69,12 @@
                                 </div>
                             </div>
 
+                            <div class="upload-panel clearFix">
+                                <a class="file-upload">Upload file
+                                    <input type="file" id="fileupload" name="uploadedFile" data-url="upload?<%= params %>" />
+                                </a>
+                            </div>
+
                             <table class="user-block-table" cellspacing="0" cellpadding="0">
                                 <tbody>
                                     <tr>
@@ -222,6 +228,50 @@
             </tbody>
         </table>
     </div>
+
+    <div id="mainProgress">
+        <div id="uploadSteps">
+            <span id="uploadFileName" class="uploadFileName"></span>
+            <div class="describeUpload">After these steps are completed, you can work with your document.</div>
+            <span id="step1" class="step">1. Loading the file.</span>
+            <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <br />
+            <span id="step2" class="step">2. Conversion.</span>
+            <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
+            <br />
+            <div id="blockPassword">
+                <span class="descrFilePass">The file is password protected.</span>
+                <br />
+                <div>
+                    <input id="filePass" type="password"/>
+                    <div id="enterPass" class="button orange">Enter</div>
+                    <div id="skipPass" class="button gray">Skip</div>
+                </div>
+                <span class="errorPass"></span>
+                <br />
+            </div>
+            <span id="step3" class="step">3. Loading editor scripts.</span>
+            <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            <br />
+            <br />
+            <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
+            <br />
+            <br />
+            <div class="error-message">
+                <b>Upload error: </b><span></span>
+                <br />
+                Please select another file and try again.
+            </div>
+        </div>
+        <br />
+        <div id="beginEdit" class="button orange disable">Edit</div>
+        <div id="beginView" class="button gray disable">View</div>
+        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+        <div id="cancelEdit" class="button gray">Cancel</div>
+    </div>
+
+    <span id="loadScripts" data-docs="<%= preloaderUrl %>"></span>
 
     <footer>
         <div class="center">
