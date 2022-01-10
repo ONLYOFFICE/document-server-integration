@@ -96,6 +96,9 @@ public class DefaultCallbackManager implements CallbackManager {
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "."+body.getFiletype(); // get an extension of the downloaded file
 
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
             try {
@@ -213,6 +216,10 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+        
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
