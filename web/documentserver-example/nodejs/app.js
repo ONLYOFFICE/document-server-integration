@@ -504,7 +504,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = body.document.filetype;//fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
+            var downloadExt = body.document.filetype;   // get the extension of the downloaded file
+
+            // TODO [Delete in version 7.0 or higher]
+            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -539,6 +543,10 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
                 var downloadExt = body.document.fileType;
+
+                /// TODO [Delete in version 7.0 or higher]
+                if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
@@ -590,6 +598,9 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
 
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = body.document.filetype;
+
+            // TODO [Delete in version 7.0 or higher]
+            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
