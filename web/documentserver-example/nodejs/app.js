@@ -780,6 +780,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 history.push(docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
 
                 var historyD = {
+                    fileType: fileUtility.getFileExtension(fileName).slice(1),
                     version: i,
                     key: keyVersion,
                     url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
@@ -787,6 +788,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
                     historyD.previous = {  // write information about previous file version
+                        fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };

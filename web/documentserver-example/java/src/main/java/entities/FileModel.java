@@ -175,6 +175,7 @@ public class FileModel
                         obj.put("user", user);
                     }
 
+                    dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
                     dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
@@ -192,6 +193,7 @@ public class FileModel
 
                         Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
+                        prevInfo.put("fileType", prev.get("fileType"));
                         prevInfo.put("key", prev.get("key"));  // write key and url information about previous file version
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
