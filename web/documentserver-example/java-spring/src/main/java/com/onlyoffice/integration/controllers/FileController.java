@@ -32,6 +32,7 @@ import com.onlyoffice.integration.services.UserServices;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -222,7 +223,7 @@ public class FileController {
     }
 
     @GetMapping("/zip")
-    public ResponseEntity zipDownload(HttpServletRequest request, @RequestParam("histDir") String histDir, @RequestParam("version") int version) {
+    public ResponseEntity zipDownload(HttpServletRequest request, @RequestParam("fileName") String fileName, @RequestParam("version") int version) {
         try {
             // check if a token is enabled or not
             if (jwtManager.tokenEnabled()) {
@@ -233,8 +234,9 @@ public class FileController {
                     jwtManager.readToken(token);  // read the token
                 } else return ResponseEntity.status(HttpStatus.FORBIDDEN).body("JWT validation failed");
             }
-            String diffZipUri = documentManager.getFileUri(documentManager.versionDir(histDir, version - 1, true) + File.separator + "diff.zip", true);
-            Resource resource = new UrlResource(diffZipUri);
+            //String diffZipUri = documentManager.getFileUri(documentManager.versionDir(histDir, version - 1, true) + File.separator + "diff.zip", true);
+            String diffPath = documentManager.versionDir(storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(fileName)),version-1,true)+File.separator+"diff.zip";
+            Resource resource = new FileSystemResource(diffPath);
             String contentType = "application/zip";
             return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
         } catch (Exception e) {

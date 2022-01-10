@@ -199,7 +199,7 @@ public class FileModel
                         // write the path to the diff.zip archive with differences in this file version
                         String storagePath = ConfigManager.GetProperty("storage-folder");
                         //String changesUrl = DocumentManager.GetServerUrl(false) + "/IndexServlet?version=" + i + "&histDir=" + URLEncoder.encode(histDir) + "&type=zip";
-                        String changesUrl = DocumentManager.GetServerUrl(false) + "/IndexServlet?version=" + (i - 1) + "&fileName=" + URLEncoder.encode(document.title) + "&type=zip";
+                        String changesUrl = DocumentManager.GetServerUrl(true) + "/IndexServlet?version=" + (i - 1) + "&fileName=" + URLEncoder.encode(document.title) + "&type=zip";
                         if (new File(storagePath).isAbsolute()) {
                             changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
                         }

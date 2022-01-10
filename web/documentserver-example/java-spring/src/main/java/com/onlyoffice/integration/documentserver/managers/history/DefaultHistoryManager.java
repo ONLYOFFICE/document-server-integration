@@ -112,7 +112,7 @@ public class DefaultHistoryManager implements HistoryManager {
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
                     //dataObj.put("changesUrl", documentManager.getFileUri(documentManager.versionDir(histDir, i - 1, true) + File.separator + "diff.zip", true));
-                    dataObj.put("changesUrl", storagePathBuilder.getServerUrl(false)+"/zip?histDir="+URLEncoder.encode(histDir)+"&version="+i);
+                    dataObj.put("changesUrl", storagePathBuilder.getServerUrl(true)+"/zip?fileName="+URLEncoder.encode(document.getTitle())+"&version="+i);
                 }
 
                 if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
