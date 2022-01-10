@@ -254,6 +254,7 @@ namespace OnlineEditorsExampleMVC.Models
                             });
                         }
                     }
+
                     var ext = Path.GetExtension(FileName).ToLower();
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);

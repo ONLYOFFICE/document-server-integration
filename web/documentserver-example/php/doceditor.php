@@ -246,16 +246,19 @@
                     ];
                 }
 
+
                 $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+                $dataObj["fileType"] = $fileExe;
+                $dataObj["key"] = $key;
+
                 $prevFileUrl = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
                 if (realpath($storagePath) === $storagePath) {
                     $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getDownloadUrl($prevFileName);
                 }
-              
-                $dataObj["fileType"] = $fileExe;
-                $dataObj["key"] = $key;
+
                 $dataObj["url"] = $prevFileUrl;  // write file url to the data object
                 $dataObj["version"] = $i;
 
