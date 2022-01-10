@@ -273,9 +273,9 @@ class DocumentHelper
     end
 
     # get url to download a file
-    def get_zip_url(file_path)
+    def get_zip_url(file_name,ver)
 
-      get_server_url(true) + '/zip?filePath=' + URI::encode(file_path)+ '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/zip?fileName=' + URI::encode(file_name)+ '&ver=' + ver.to_s + '&userAddress=' + cur_user_host_address(nil)
 
     end
 

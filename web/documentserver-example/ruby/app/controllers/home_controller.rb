@@ -268,8 +268,9 @@ class HomeController < ApplicationController
   end
 def zipDownload
     begin
-      file_name = params[:filePath]
+      file_name = params[:fileName]
       user_address = params[:userAddress]
+      version = params[:ver]
       isEmbedded = params[:dmode]
 
       if JwtHelper.is_enabled && isEmbedded == nil
@@ -287,7 +288,9 @@ def zipDownload
           return
         end
       end
-      file_path = DocumentHelper.storage_path(file_name, user_address)  # or to the original document
+      diffFile = File.join("#{file_name}-hist", version.to_s, "diff.zip")
+
+      file_path = DocumentHelper.storage_path(diffFile, user_address)  # or to the original document
       # add headers to the response to specify the page parameters
       response.headers['Content-Type'] = "application/zip"
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8 diff.zip"
