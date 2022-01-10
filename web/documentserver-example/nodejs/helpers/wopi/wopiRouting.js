@@ -73,6 +73,9 @@ exports.registerRoutes = function(app) {
                 users: users,
                 serverUrl: docManager.getServerUrl(),
                 preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
+                convertExts: configServer.get('convertedDocs'),
+                editedExts: configServer.get('editedDocs'),
+                fillExts: configServer.get("fillDocs"),
             });
 
         } catch (ex) {
