@@ -105,11 +105,8 @@ docManager.getCorrectName = function (fileName, userAddress) {
 // processes a request editnew
 docManager.RequestEditnew = function (req, fileName, user) {
     if (req.params['id'] != fileName){  // processes a repeated request editnew
-        docManager.fileRemove(req.params['id'], req.host);
+        docManager.fileRemove(req.params['id']);
         fileName = docManager.getCorrectName(req.params['id']);
-
-        docManager.fileSizeZero(fileName);
-        docManager.saveFileData(fileName, user.id, user.name);
     }
     docManager.fileSizeZero(fileName);
     docManager.saveFileData(fileName, user.id, user.name);
@@ -119,9 +116,12 @@ docManager.RequestEditnew = function (req, fileName, user) {
 
 // delete a file with its history
 docManager.fileRemove = function (fileName) {
-    var path = docManager.storagePath(fileName);
-    docManager.cleanFolderRecursive(path+"-history\\",true)
-    fileSystem.unlinkSync(path);
+    const filePath = docManager.storagePath(fileName);  // get the path to this file
+    fileSystem.unlinkSync(filePath);  // and delete it
+
+    const userAddress = docManager.curUserHostAddress();
+    const historyPath = docManager.historyPath(fileName, userAddress, true);
+    docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
 }
 
 // create a zero-size file
@@ -137,11 +137,7 @@ docManager.createDemo = function (isSample, fileExt, userid, username, wopi) {
     const demoName = (isSample ? "sample" : "new") + "." + fileExt;
     const fileName = docManager.getCorrectName(demoName);  // get the correct file name if such a name already exists
 
-    if (wopi){
-        docManager.fileSizeZero(fileName)
-    } else {
-        docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));   // copy sample document of a necessary extension to the storage path
-    }
+    docManager.copyFile(path.join(__dirname, "..","public", "assets", isSample ? "sample" : "new", demoName), docManager.storagePath(fileName));   // copy sample document of a necessary extension to the storage path
 
     docManager.saveFileData(fileName, userid, username);  // save file data to the file
 

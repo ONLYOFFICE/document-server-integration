@@ -191,17 +191,15 @@
                                                     <% if (storedFiles[i].actions && storedFiles[i].actions.length > 0) { %>
                                                         <td class="contentCells contentCells-wopi contentCells-shift">
                                                             <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
-                                                                <a href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
-                                                                    <% if (storedFiles[i].actions[j].name == "edit") { %>
-                                                                        <img src="images/fill-forms.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
-                                                                    <%} else { %>
-                                                                        <% if (storedFiles[i].actions[j].name == "editnew") { %>
-                                                                            
+                                                                <% if (storedFiles[i].actions[j].name != "editnew") { %>
+                                                                    <a href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
+                                                                        <% if (storedFiles[i].actions[j].name == "edit") { %>
+                                                                            <img src="images/fill-forms.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                         <%} else { %>
                                                                             <img src="images/desktop.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                         <% } %>
-                                                                    <% } %>
-                                                                </a>
+                                                                    </a>
+                                                                <% } %>  
                                                             <% } %>
                                                         </td>
                                                     <% } %>

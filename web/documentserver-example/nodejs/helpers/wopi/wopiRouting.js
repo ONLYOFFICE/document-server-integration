@@ -86,7 +86,7 @@ exports.registerRoutes = function(app) {
         var fileExt = req.query.fileExt;  // get the file extension from the request
 
         if (fileExt != null) {  // if the file extension exists
-            var fileName = docManager.getCorrectName("new."+fileExt)
+            var fileName = docManager.getCorrectName("new." + fileExt)
             var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=editnew" + docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;

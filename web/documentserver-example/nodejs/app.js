@@ -397,12 +397,7 @@ app.delete("/file", function (req, res) {  // define a handler for removing file
         if (fileName) {  // if the file name is defined
 			fileName = fileUtility.getFileName(fileName);  // get its part without an extension
 
-			const filePath = docManager.storagePath(fileName);  // get the path to this file
-			fileSystem.unlinkSync(filePath);  // and delete it
-
-			const userAddress = docManager.curUserHostAddress();
-			const historyPath = docManager.historyPath(fileName, userAddress, true);
-			docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+			docManager.fileRemove(fileName); // delete file and his history
 		} else {
 			docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
 		}
