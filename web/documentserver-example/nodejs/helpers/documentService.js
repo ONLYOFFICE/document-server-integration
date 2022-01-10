@@ -205,7 +205,7 @@ documentService.checkJwtHeader = function (req) {
     try {
       decoded = jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
     } catch (err) {
-        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)  // print debug information to the console
+        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);  // print debug information to the console
     }
   }
   return decoded;
@@ -231,7 +231,7 @@ documentService.readToken = function (token) {
     try {
         return jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
     } catch (err) {
-        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+        console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);
     }
     return null;
 };
