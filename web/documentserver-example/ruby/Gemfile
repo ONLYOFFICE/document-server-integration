@@ -46,3 +46,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'uuid'
 
 gem 'rack-cors'
+
+gem 'webrick'

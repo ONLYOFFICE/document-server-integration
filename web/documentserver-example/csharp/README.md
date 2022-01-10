@@ -14,11 +14,12 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 Download the [.Net (C#) example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-Connect the editors to your website by specifying the path to the editors installation in the *settings.config* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *settings.config* file:
 ```
+<add key="storage-path" value=""/>
 <add key="files.docservice.url.site" value="https://documentserver/" />
 ```
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-path** is the path where files will be created and stored. You can set an absolute path.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *DocEditor.aspx* file.
 
@@ -27,6 +28,16 @@ If you want to experiment with the editor configuration, modify the [parameters]
 Check that your system meets the requirements:
 * **Microsoft .NET Framework**: version 4.5 (download it from the [official Microsoft website](https://www.microsoft.com/en-US/download/details.aspx?id=30653));
 * **Internet Information Services**: version 7 or later.
+
+Configure the IIS components for the server to work correctly:
+1.	Open Windows features:
+
+	**Start** -> **Control Panel** -> **Programs** -> **Programs and Features** -> **Turn Windows features on or off**
+
+2. In the opened window, find **Internet Information Services** and choose all the necessary features. To do this, open the **World Wide Web Services** list and check the following components:
+* **Application Development Features**: .NET Extensibility 4.8, ASP.NET 4.8, ISAPI Extensions, ISAPI Filters,
+* **Common HTTP Features**: Default Document,
+* **Security**: Request Filtering.
 
 ## Step 4. Run your website with the editors
 1. Run the Internet Information Service (IIS) Manager:

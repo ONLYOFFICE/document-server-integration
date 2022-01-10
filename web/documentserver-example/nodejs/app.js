@@ -124,8 +124,9 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
+    var isEmbedded = req.query.dmode;
 
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -159,7 +160,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     docManager.storagePath(""); // mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();  // get the path to the user host
-    const uploadDir = path.join(storageFolder, userIp);
+    const uploadDir = path.isAbsolute(storageFolder) ? storageFolder : path.join(storageFolder, userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');  // and create directory for temporary files if it doesn't exist
     docManager.createDirectory(uploadDirTmp);
 
@@ -745,7 +746,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getDownloadUrl(fileName);
-        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
+        var urlUser = path.isAbsolute(storageFolder) ? docManager.getDownloadUrl(fileName) + "&dmode=emb" : docManager.getlocalFileUri(fileName, 0, false);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
@@ -791,7 +792,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    historyD.changesUrl = docManager.getlocalFileUri(fileName, i-1) + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    let changesUrl = docManager.getlocalFileUri(fileName, i-1);
+                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);
