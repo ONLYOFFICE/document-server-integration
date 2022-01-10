@@ -266,7 +266,7 @@ namespace OnlineEditorsExampleMVC.Models
                     }
                     else {
                        prevFileUrl = i == currentVersion ? FileUri
-                        : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length));
+                        : DocManagerHelper.GetHistoryDownloadUrl(FileName,i.ToString(), "prev" + ext);
                     }
 
                     dataObj.Add("url", prevFileUrl);

@@ -355,14 +355,12 @@ namespace OnlineEditorsExample
                     var ext = Path.GetExtension(FileName).ToLower();
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
-                    
                     // write file url to the data object
-                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(),"prev"+ext);
+                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(), "prev" + ext);
                     if (Path.IsPathRooted(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
                     }
-
                     dataObj.Add("url", prevFileUrl);  // write file url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)

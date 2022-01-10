@@ -326,11 +326,6 @@ namespace OnlineEditorsExample
             get { return false; }
         }
 
-        //  download a file
-        //  http://192.168.0.102:8000/webeditor.ashx?type=download&fileName=new.docx&userAddress=192.168.0.102
-        //  http://192.168.0.102:8000/192.168.0.102/new.docx-hist/1/prev.docx
-
-        //  http://192.168.0.102:8000/webeditor.ashx?type=downloadhistory&fileName=new.docx&ver=1&file=prev.docx&userAddress=192.168.0.102
         private static void DownloadHistory(HttpContext context)
         {
             try
