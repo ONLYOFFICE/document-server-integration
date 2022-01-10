@@ -514,10 +514,8 @@ public class IndexServlet extends HttpServlet
     }
     private static void DownloadZipFile(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
         try {
-            String histDir = request.getParameter("histDir");
+            String fileName = request.getParameter("fileName");
             int version = Integer.parseInt(request.getParameter("version"));
-
-
             if (DocumentManager.TokenEnabled()) {
 
                 String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
@@ -538,25 +536,11 @@ public class IndexServlet extends HttpServlet
 
                 }
             }
-            String zipPath = DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, version - 1) + File.separator + "diff.zip");
-
-            zipDownload(response,zipPath,writer);
+            String versionDir = DocumentManager.VersionDir(DocumentManager.HistoryDir(DocumentManager.StoragePath(fileName, null)),version);
+            String zipPath = versionDir + File.separator + "diff.zip";
+            download(zipPath,response,writer);
         } catch (Exception e) {
             writer.write("{ \"error\": \"ZipFile not found\"}");
-        }
-    }
-
-    private static void zipDownload(HttpServletResponse response, String urlPath ,PrintWriter writer) throws IOException {
-        response.setContentType("application/zip");
-        response.addHeader("Content-Disposition", "attachment; filename=diff.zip");
-        URL url = new URL(urlPath);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        InputStream in = connection.getInputStream();
-        PrintWriter responseWriter = writer;
-        int bytes;
-        while ((bytes = in.read()) != -1) {
-            responseWriter.write(bytes);
         }
     }
 
