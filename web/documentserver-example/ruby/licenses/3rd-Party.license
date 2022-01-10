@@ -71,7 +71,3 @@ License File:   uuid.license
 web-console   - A debugging tool for your Ruby on Rails applications. (https://github.com/rails/web-console/blob/master/MIT-LICENSE)
 License:        MIT
 License File:   web-console.license
-
-mimemagic     - А library to detect the mime type of a file by extension or by content. (https://github.com/mimemagicrb/mimemagic/blob/master/LICENSE)
-License:        MIT
-License File:   mimemagic.license
