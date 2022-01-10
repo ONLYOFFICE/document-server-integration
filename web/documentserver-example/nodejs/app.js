@@ -133,7 +133,7 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
             try {
                 var decoded = jwt.verify(token, cfgSignatureSecret);
             } catch (err) {
-                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);
                 res.sendStatus(403);
                 return;
             }
@@ -162,7 +162,7 @@ app.get("/zip", function (req, res) {
             try {
                 var decoded = jwt.verify(token, cfgSignatureSecret);
             } catch (err) {
-                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);
                 res.sendStatus(403);
                 return;
             }
@@ -171,14 +171,15 @@ app.get("/zip", function (req, res) {
             return;
         }
     }
-    const path = req.query.path
+
+    const path = req.query.path;
     res.writeHead(200, {
         "Content-Type": "application/zip",
         "filename": "diff.zip"
-    })
-    let filestream = fileSystem.createReadStream(path)
-    filestream.pipe(res)
+    });
 
+    let filestream = fileSystem.createReadStream(path);
+    filestream.pipe(res);
 })
 
 app.post("/upload", function (req, res) {  // define a handler for uploading files
