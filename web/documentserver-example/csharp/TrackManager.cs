@@ -97,10 +97,14 @@ namespace OnlineEditorsExample
             }
             var downloadUri = (string)fileData["url"];
             var curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            var downloadExt = "."+(string)fileData["filetype"]; // get the extension of the downloaded file
 
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == null) {
+            try
+            {
+                var downloadExt = "."+(string)fileData["filetype"]; // get the extension of the downloaded file
+            }
+            catch (System.Exception)
+            {   
+                // TODO [Delete in version 7.0 or higher]
                 downloadExt = Path.GetExtension(downloadUri).ToLower() ?? ""; // Support for versions below 7.0
             }
 
@@ -181,10 +185,14 @@ namespace OnlineEditorsExample
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            string downloadExt = "."+(string)fileData["filetype"];  // get the extension of the downloaded file
-
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == null) {
+            
+            try
+            {
+                var downloadExt = "."+(string)fileData["filetype"]; // get the extension of the downloaded file
+            }
+            catch (System.Exception)
+            {   
+                // TODO [Delete in version 7.0 or higher]
                 downloadExt = Path.GetExtension(downloadUri).ToLower(); // Support for versions below 7.0
             }
 
