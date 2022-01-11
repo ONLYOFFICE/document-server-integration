@@ -155,6 +155,7 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 });
 
 app.get("/zip", function (req, res) {
+    docManager.init(storageFolder, req, res);
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
@@ -172,13 +173,16 @@ app.get("/zip", function (req, res) {
         }
     }
 
-    const path = req.query.path;
+    const fileName = req.query.fileName;
+    const ver = req.query.ver;
+    const curAddress = docManager.curUserHostAddress();
+    const diffPath = docManager.diffPath(fileName, curAddress ,ver);
     res.writeHead(200, {
         "Content-Type": "application/zip",
         "filename": "diff.zip"
     });
 
-    let filestream = fileSystem.createReadStream(path);
+    let filestream = fileSystem.createReadStream(diffPath);
     filestream.pipe(res);
 })
 
@@ -818,8 +822,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i - 2].key,
                         url: historyData[i - 2].url,
                     };
-                    let changesUrl = `${docManager.getServerUrl(false)}/zip?path=${encodeURIComponent(diffFilePath)}`;
-                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    let changesUrl = `${docManager.getServerUrl(false)}/zip?fileName=${encodeURIComponent(fileName)}&ver=${i-1}`;
+                    historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);
