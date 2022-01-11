@@ -409,7 +409,8 @@ function downloadFile($filePath) {
 function zipDownload()
 {
     try {
-        $file = $_GET["file"];
+        $version = $_GET["ver"];
+        $fileName = $_GET["fileName"];
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
@@ -423,7 +424,10 @@ function zipDownload()
                 die("Invalid JWT signature");
             }
         }
-        downloadFile(getStoragePath($file));
+        $histDir = getHistoryDir(getStoragePath($fileName));
+        $changesPath = getVersionDir($histDir, $version) . DIRECTORY_SEPARATOR . "diff.zip";
+        $changesPath = substr($changesPath, strlen(getStoragePath("")));
+        downloadFile(getStoragePath($changesPath));
     } catch (Exception $e){
 
     }

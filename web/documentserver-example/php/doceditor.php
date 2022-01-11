@@ -214,11 +214,11 @@
             . "&fileName=" . urlencode($fileName)
             . "&userAddress=" . getClientIp();
     }
-    function getZipDownloadUri($changesURI) {
+    function getZipDownloadUri($fileName, $version) {
         return serverPath(TRUE) . '/'
             . "webeditor-ajax.php"
             . "?type=zip"
-            . "&file=" . urlencode($changesURI);
+            . "&ver=" . $version . "&fileName=" .  urlencode($fileName);
     }
 
     // get document history
@@ -280,7 +280,7 @@
                     $changesPath = substr($changesPath, strlen(getStoragePath("")));
 
                     // write the path to the diff.zip archive with differences in this file version
-                    $changesUrl = realpath($storagePath) === $storagePath ? getDownloadUrl($changesPath) : getZipDownloadUri($changesPath);
+                    $changesUrl = realpath($storagePath) === $storagePath ? getDownloadUrl($changesPath) : getZipDownloadUri($filename,$i-1);
                     $dataObj["changesUrl"] = $changesUrl;
                 }
 
