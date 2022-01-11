@@ -112,7 +112,7 @@ namespace OnlineEditorsExample
                                     + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
                 return downloadUrl.ToString();
         }
-        public static string GetZipDownloadUrl(string fileName)
+        public static string GetZipDownloadUrl(string fileName , int version)
         {
             var ZipDownloadUrl = new UriBuilder(_Default.GetServerUrl(true))
             {
@@ -121,7 +121,8 @@ namespace OnlineEditorsExample
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
                 Query = "type=zip"
-                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName) 
+                        + "&ver=" + version
             };
             return ZipDownloadUrl.ToString();
         }
@@ -397,7 +398,7 @@ namespace OnlineEditorsExample
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = Path.IsPathRooted(storagePath) ? getDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
-                            : GetZipDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip"));
+                            : GetZipDownloadUrl(FileName,i-1);
                         dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)

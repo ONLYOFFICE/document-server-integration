@@ -326,6 +326,7 @@ namespace OnlineEditorsExample
         private static void DiffZipDownload(HttpContext context)
         {
             var fileName = context.Request["fileName"];
+            int version = System.Convert.ToInt32(context.Request["ver"]);
             if (JwtManager.Enabled)
             {
                 string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
@@ -348,9 +349,11 @@ namespace OnlineEditorsExample
                     return;
                 }
             }
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
+            var diffPath = Path.Combine(_Default.VersionDir(histDir, version), "diff.zip");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + "diff.zip");
             context.Response.AddHeader("Content-Type","application/zip");
-            context.Response.TransmitFile(fileName);
+            context.Response.TransmitFile(diffPath);
             
         }
         
