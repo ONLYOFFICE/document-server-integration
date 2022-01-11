@@ -70,7 +70,7 @@ if (typeof jQuery != "undefined") {
                     overlayCSS: { "background-color": "#aaa" },
                     themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
                 });
-                jq("#beginEdit, #beginView, #beginEmbedded").addClass("disable");
+                jq("#beginEdit, #beginView, #beginEmbedded, #beginWopiEdit, #beginWopiView").addClass("disable");
 
                 data.submit();
             },
@@ -192,7 +192,7 @@ if (typeof jQuery != "undefined") {
             return;
         }
         jq("#step3").addClass("done").removeClass("current");
-        jq("#beginView, #beginEmbedded").removeClass("disable");
+        jq("#beginView, #beginEmbedded, #beginWopiView").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf('.');
@@ -200,7 +200,7 @@ if (typeof jQuery != "undefined") {
 
         if (EditedExtList.indexOf(posExt) != -1
             || FilledExtList.indexOf(posExt) != -1) {
-            jq("#beginEdit").removeClass("disable");
+            jq("#beginEdit, #beginWopiEdit").removeClass("disable");
         }
     };
 
@@ -219,6 +219,24 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", "#skipPass", function () {
         jq("#blockPassword").hide();
         loadScripts();
+    });
+
+    jq(document).on("click", "#beginWopiEdit:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
+        var url = UrlEditor + "/" + fileId + "?action=edit";
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        document.location.reload();
+    });
+
+    jq(document).on("click", "#beginWopiView:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
+        var url = UrlEditor + "/" + fileId + "?action=view";
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
