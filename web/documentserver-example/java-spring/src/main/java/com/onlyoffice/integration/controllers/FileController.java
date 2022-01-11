@@ -49,7 +49,9 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @CrossOrigin("*")
@@ -237,8 +239,8 @@ public class FileController {
             //String diffZipUri = documentManager.getFileUri(documentManager.versionDir(histDir, version - 1, true) + File.separator + "diff.zip", true);
             String diffPath = documentManager.versionDir(storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(fileName)),version-1,true)+File.separator+"diff.zip";
             Resource resource = new FileSystemResource(diffPath);
-            String contentType = "application/zip";
-            return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+            String contentType = Files.probeContentType(Paths.get(diffPath));
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("JWT validation failed");
         }
