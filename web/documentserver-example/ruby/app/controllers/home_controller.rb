@@ -292,8 +292,9 @@ def zipDownload
 
       file_path = DocumentHelper.storage_path(diffFile, user_address)  # or to the original document
       # add headers to the response to specify the page parameters
-      response.headers['Content-Type'] = "application/zip"
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8 diff.zip"
+      response.headers['Content-Length'] = File.size(file_path).to_s
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
 
       send_file file_path, :x_sendfile => true
     rescue => ex
