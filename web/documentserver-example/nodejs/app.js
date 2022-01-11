@@ -177,10 +177,11 @@ app.get("/zip", function (req, res) {
     const ver = req.query.ver;
     const curAddress = docManager.curUserHostAddress();
     const diffPath = docManager.diffPath(fileName, curAddress ,ver);
-    res.writeHead(200, {
-        "Content-Type": "application/zip",
-        "filename": "diff.zip"
-    });
+    res.setHeader("Content-Length", fileSystem.statSync(diffPath).size);  // add headers to the response to specify the page parameters
+    res.setHeader("Content-Type", mime.getType(diffPath));
+
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent("diff.zip"));
+
 
     let filestream = fileSystem.createReadStream(diffPath);
     filestream.pipe(res);
