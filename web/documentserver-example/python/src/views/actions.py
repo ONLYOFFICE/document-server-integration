@@ -401,6 +401,4 @@ def zip_file_download(request):
     fileName = os.path.join(f'{request.GET.get("filename")}-hist',request.GET.get("ver"),'diff.zip')
     zipPath = docManager.getStoragePath(fileName,request)
     response = docManager.download(zipPath)
-    response['Content-Disposition'] = 'attachment; filename=diff.zip'
-    response['Content-Type'] = 'application/x-zip'
     return response
