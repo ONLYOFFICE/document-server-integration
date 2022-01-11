@@ -326,7 +326,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             return downloadUrl.ToString();
         }
         
-        public static string GetZipDownloadUrl(string fileName)
+        public static string GetZipDownloadUrl(string fileName , int version)
         {
             var ZipDownloadUrl = new UriBuilder(GetServerUrl(true))
             {
@@ -335,7 +335,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx",
                 Query = "type=zip"
-                        + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&fileName=" + HttpUtility.UrlEncode(fileName) 
+                        + "&ver=" + version
             };
             return ZipDownloadUrl.ToString();
         }
