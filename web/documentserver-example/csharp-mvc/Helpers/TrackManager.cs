@@ -95,16 +95,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
             var downloadUri = (string)fileData["url"];
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            
-            try
-            {
-                var downloadExt = "."+(string)fileData["filetype"]; // get the extension of the downloaded file
-            }
-            catch (System.Exception)
-            {   
-                // TODO [Delete in version 7.0 or higher]
-                downloadExt = Path.GetExtension(downloadUri).ToLower() ?? ""; // Support for versions below 7.0
-            }
+                                                                                                    // TODO [Delete in version 7.0 or higher]
+            var downloadExt = fileData.ContainsKey("filetype") ? "."+(string)fileData["filetype"]: Path.GetExtension(downloadUri).ToLower() ?? "";
+                                                                                                    // Support for versions below 7.0
 
             var newFileName = fileName;
 
@@ -177,16 +170,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            
-            try
-            {
-                var downloadExt = "."+(string)fileData["filetype"]; // get the extension of the downloaded file
-            }
-            catch (System.Exception)
-            {   
-                // TODO [Delete in version 7.0 or higher]
-                downloadExt = Path.GetExtension(downloadUri).ToLower(); // Support for versions below 7.0
-            }
+                                                                                                    // TODO [Delete in version 7.0 or higher]
+            var downloadExt = fileData.ContainsKey("filetype") ? "."+(string)fileData["filetype"]: Path.GetExtension(downloadUri).ToLower();
+                                                                                                    // Support for versions below 7.0
 
             Boolean newFileName = false;
 
