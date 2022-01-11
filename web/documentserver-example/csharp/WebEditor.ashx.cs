@@ -352,7 +352,7 @@ namespace OnlineEditorsExample
             var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
             var diffPath = Path.Combine(_Default.VersionDir(histDir, version), "diff.zip");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + "diff.zip");
-            context.Response.AddHeader("Content-Type","application/zip");
+            context.Response.AddHeader("Content-Type",MimeMapping.GetMimeMapping(diffPath));
             context.Response.TransmitFile(diffPath);
             
         }

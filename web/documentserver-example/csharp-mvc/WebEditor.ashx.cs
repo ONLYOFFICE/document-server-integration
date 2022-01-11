@@ -522,7 +522,7 @@ namespace OnlineEditorsExampleMVC
             var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
             var diffPath = Path.Combine(DocManagerHelper.VersionDir(histDir, version), "diff.zip");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + "diff.zip");
-            context.Response.AddHeader("Content-Type","application/zip");
+            context.Response.AddHeader("Content-Type",MimeMapping.GetMimeMapping(diffPath));
             context.Response.TransmitFile(diffPath);
             
         }
