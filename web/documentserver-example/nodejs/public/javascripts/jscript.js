@@ -70,7 +70,7 @@ if (typeof jQuery != "undefined") {
                     overlayCSS: { "background-color": "#aaa" },
                     themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
                 });
-                jq("#beginEdit, #beginView, #beginEmbedded, #beginWopiEdit, #beginWopiView").addClass("disable");
+                jq("#beginEdit, #beginView, #beginEmbedded").addClass("disable");
 
                 data.submit();
             },
@@ -192,7 +192,7 @@ if (typeof jQuery != "undefined") {
             return;
         }
         jq("#step3").addClass("done").removeClass("current");
-        jq("#beginView, #beginEmbedded, #beginWopiView").removeClass("disable");
+        jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf('.');
@@ -200,7 +200,7 @@ if (typeof jQuery != "undefined") {
 
         if (EditedExtList.indexOf(posExt) != -1
             || FilledExtList.indexOf(posExt) != -1) {
-            jq("#beginEdit, #beginWopiEdit").removeClass("disable");
+            jq("#beginEdit").removeClass("disable");
         }
     };
 
@@ -221,27 +221,13 @@ if (typeof jQuery != "undefined") {
         loadScripts();
     });
 
-    jq(document).on("click", "#beginWopiEdit:not(.disable)", function () {
-        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "/" + fileId + "?action=edit";
-        window.open(url, "_blank");
-        jq('#hiddenFileName').val("");
-        jq.unblockUI();
-        document.location.reload();
-    });
-
-    jq(document).on("click", "#beginWopiView:not(.disable)", function () {
-        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "/" + fileId + "?action=view";
-        window.open(url, "_blank");
-        jq('#hiddenFileName').val("");
-        jq.unblockUI();
-        document.location.reload();
-    });
-
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=edit";
+        }else{
+            var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -250,7 +236,11 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=view";
+        }else{
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
