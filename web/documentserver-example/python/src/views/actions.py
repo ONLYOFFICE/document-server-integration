@@ -398,9 +398,9 @@ def zip_file_download(request):
                 return HttpResponse('JWT validation failed', status=403)
         else:
             return HttpResponse('JWT validation failed', status=403)
-    urlFromDownload = f'{request.GET.get("host")}{settings.STATIC_URL}{request.GET.get("curAdr")}/{request.GET.get("filename")}-hist/{request.GET.get("ver")}/diff.zip'
-    r = requests.get(urlFromDownload, stream=True)
-    response = HttpResponse(r , content_type = 'application/zip')
+    fileName = os.path.join(f'{request.GET.get("filename")}-hist',request.GET.get("ver"),'diff.zip')
+    zipPath = docManager.getStoragePath(fileName,request)
+    response = docManager.download(zipPath)
     response['Content-Disposition'] = 'attachment; filename=diff.zip'
     response['Content-Type'] = 'application/x-zip'
     return response

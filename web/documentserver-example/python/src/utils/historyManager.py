@@ -143,8 +143,7 @@ def getPrevUri(filename, ver, ext, req):
 # get the url to a file archive with changes of the given file version
 def getZipUri(filename, ver, req):
     host = docManager.getServerUrl(True, req)
-    curAdr = req.META['REMOTE_ADDR']
-    return f'{host}/zip?host={host}&curAdr={curAdr}&filename={filename}&ver={ver}'
+    return f'{host}/zip?filename={filename}&ver={ver}'
 
 # get the meta data of the file
 def getMeta(storagePath):
