@@ -152,9 +152,11 @@ class HomeController < ApplicationController
   # downloading a history file from public
   def downloadhistory
     begin
-      dataurl = request.original_url.split('/')
-
-      file_path = Rails.root.join('public', Rails.configuration.storagePath, dataurl[4], dataurl[5], dataurl[6], dataurl[7])
+      file_name = File.basename(params[:fileName])
+      user_address = params[:userAddress]
+      version = params[:ver]
+      file = params[:file]
+      isEmbedded = params[:dmode]
 
       if JwtHelper.is_enabled
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
@@ -171,6 +173,15 @@ class HomeController < ApplicationController
           return
         end
       end
+      hist_path = DocumentHelper.storage_path(file_name, user_address) + "-hist" # or to the original document
+
+      file_path = File.join(hist_path, version, file)
+
+      # add headers to the response to specify the page parameters
+      response.headers['Content-Length'] = File.size(file_path).to_s
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
       send_file file_path, :x_sendfile => true
     rescue => ex
       render plain: '{ "error": "File not found"}'

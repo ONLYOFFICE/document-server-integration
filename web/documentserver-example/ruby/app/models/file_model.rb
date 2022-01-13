@@ -210,7 +210,7 @@ class FileModel
         # get the history data from the previous file version and write key and url information about it
         dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
-        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
+        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i.to_s, "prev#{file_ext}")
         dataObj["version"] = i
 
         if (i > 1)  # check if the version number is greater than 1
@@ -236,7 +236,7 @@ class FileModel
           }
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+          dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, (i - 1).to_s, "diff.zip")
         end
 
         if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
