@@ -173,24 +173,26 @@ app.get("/history", function (req, res) {
         }
     }
 
-    const fileName = req.query.fileName;
-    const ver = req.query.ver;
-    const file = req.query.file;
+    var fileName = req.query.fileName;
+    var userAddress = docManager.curUserHostAddress();
+    var ver = req.query.ver;
+    var file = req.query.file;
 
-    if (file.includes("diff")){
-        var Path = docManager.getlocalFileUri(fileName, ver, true) + "/diff.zip";
-        res.redirect(Path)
-        return;
-    }
-    else if (file.includes("prev")){
-        var Path = docManager.getlocalFileUri(fileName, ver, true) + "/prev" + fileUtility.getFileExtension(fileName);
-        res.redirect(Path)
-        return;
-    }
-    else {
+    if (file.includes("diff")) {
+        var Path = docManager.diffPath(fileName, userAddress, ver);
+    } else if (file.includes("prev")) {
+        var Path = docManager.prevFilePath(fileName, userAddress, ver);
+    } else {
         res.sendStatus(403);
         return;
     }
+
+    res.setHeader("Content-Length", fileSystem.statSync(Path).size);  // add headers to the response to specify the page parameters
+    res.setHeader("Content-Type", mime.getType(Path));
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(file));
+
+    var filestream = fileSystem.createReadStream(Path);
+    filestream.pipe(res);  // send file information to the response by streams
 })
 
 app.post("/upload", function (req, res) {  // define a handler for uploading files
@@ -822,15 +824,15 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     fileType: fileExt,
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (`${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev&ver=${i}`),
-                }; //docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt
+                    url: i == countVersion ? url : (`${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev.${fileExt}&ver=${i}`),
+                };
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
                     historyD.previous = {  // write information about previous file version
                         fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = `${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff&ver=${i-1}`;
+                    let changesUrl = `${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
