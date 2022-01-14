@@ -504,10 +504,10 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = body.document.filetype;   // get the extension of the downloaded file
+            var downloadExt = body.document.filetype; // get the extension of the downloaded file
 
             // TODO [Delete in version 7.0 or higher]
-            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
 
             var newFileName = fileName;
 

@@ -85,7 +85,7 @@ function processSave($data, $fileName, $userAddress) {
     $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
 
     // TODO [Delete in version 7.0 or higher]
-    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));    // Support for versions below 7.0
+    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION)); // Support for versions below 7.0
 
     $newFileName = $fileName;
 
