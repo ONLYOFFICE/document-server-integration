@@ -257,11 +257,8 @@ function putFile(wopi, req, res, userHost) {
 // return information about the file properties, access rights and editor settings
 function checkFileInfo(wopi, req, res, userHost) {
     let userAddress = docManager.curUserHostAddress(userHost);
-    let historyPath = docManager.historyPath(wopi.id, userAddress);  // get the path to the file history
-    let version = 1;
-    if (historyPath != "") {  // if it isn't empty
-        version = docManager.countVersion(historyPath) + 1;  // get a number of a new file version
-    }
+    let version = docManager.getKey(wopi.id);
+    
     let path = docManager.storagePath(wopi.id, userAddress);
 
     let user = users.getUser(req.query.userid);
