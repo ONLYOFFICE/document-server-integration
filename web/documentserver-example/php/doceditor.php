@@ -206,6 +206,16 @@
                 . "&type=" . $type;
     }
 
+    function getHistoryDownloadUrl($fileName, $version, $file) {
+        return serverPath(TRUE) . '/'
+            . "webeditor-ajax.php"
+            . "?type=history"
+            . "&fileName=" . urlencode($fileName)
+            . "&ver=" . $version
+            . "&file=" . urlencode($file)
+            . "&userAddress=" . getClientIp();
+    }
+
     // get url to download a file
     function getDownloadUrl($fileName) {
         return serverPath(TRUE) . '/'
@@ -254,9 +264,9 @@
                 $dataObj["fileType"] = $fileExe;
                 $dataObj["key"] = $key;
 
-                $prevFileUrl = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));
+                $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if (realpath($storagePath) === $storagePath) {
-                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getDownloadUrl($prevFileName);
+                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 }
 
                 $dataObj["url"] = $prevFileUrl;  // write file url to the data object
@@ -277,12 +287,10 @@
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesPath = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
-                    $changesPath = substr($changesPath, strlen(getStoragePath("")));
 
                     // write the path to the diff.zip archive with differences in this file version
-                    $changesUrl = realpath($storagePath) === $storagePath ? getDownloadUrl($changesPath) : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesPath)) ;
-                    $dataObj["changesUrl"] = $changesUrl;
+                    $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+
                 }
 
                 if (isJwtEnabled()) {

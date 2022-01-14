@@ -61,16 +61,13 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
             die (json_encode($response_array));
         case "download":
-            $file = $_GET["fileName"];
-            if ($file = "/prev.\w+/"){
-                $response_array = downloadHistory();
-                $response_array['status'] = 'success';
-                die (json_encode($response_array));
-            } else {
-                $response_array = download();
-                $response_array['status'] = 'success';
-                die (json_encode($response_array));
-            }
+            $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
+        case "history":
+            $response_array = historyDownload();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
@@ -358,10 +355,13 @@ function csv() {
 }
 
 // download a file from history
-function downloadHistory() {
+function historyDownload() {
     try {
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
+
+        $ver = $_GET["ver"];
+        $file = $_GET["file"];
 
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
@@ -377,10 +377,10 @@ function downloadHistory() {
             }
         }
 
-        $filePath = getForcesavePath($fileName, $userAddress, false);  // get the path to the forcesaved file version
-        if ($filePath == "") {
-            $filePath = getStoragePath($fileName, $userAddress);  // get file from the storage directory
-        }
+        $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
+
+        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;;
+
         downloadFile($filePath);  // download this file
     } catch (Exception $e) {
         sendlog("Download ".$e->getMessage(), "webedior-ajax.log");
