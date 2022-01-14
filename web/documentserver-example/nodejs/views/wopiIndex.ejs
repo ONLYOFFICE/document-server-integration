@@ -63,9 +63,6 @@
                                             <a class="try-editor form reload-page" target="_blank" href="<%= serverUrl %>/wopi-new?fileExt=docxf<%= params %>" title="Create new form template">Form template</a>
                                         </li>
                                     </ul>
-                                    <label class="create-sample">
-                                        <input id="createSample" type="checkbox" class="checkbox" />With sample content
-                                    </label>
                                 </div>
                             </div>
 
@@ -147,16 +144,6 @@
                                     <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                 </span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
-                                <% users.forEach(user => { %>
-                                    <div class="user-descr">
-                                        <b><%= user.name == null ? 'Anonymous' : user.name %></b>
-                                        <ul>
-                                            <% user.descriptions.forEach(description => { %>
-                                                <li><%= description %></li>
-                                            <% }) %>
-                                        </ul>
-                                    </div>
-                                <% }) %>
                             <% } %>
                             </div>
                         <% if (storedFiles.length > 0)
