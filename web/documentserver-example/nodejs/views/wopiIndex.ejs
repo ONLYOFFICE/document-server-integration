@@ -130,7 +130,7 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                            <div id="portal-info">
+                            <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                             <% if (!wopiEnable)
                                { %>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
@@ -139,7 +139,7 @@
                                     <br />Set the <b>wopi.enable</b> parameter in the Document Server configuration file to <b>true</b> and restart ONLYOFFICE Docs.
                                 </span>
                             <% }
-                               else if (storedFiles.length <= 0)
+                               else
                                { %>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
