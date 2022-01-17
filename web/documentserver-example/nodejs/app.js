@@ -397,12 +397,7 @@ app.delete("/file", function (req, res) {  // define a handler for removing file
         if (fileName) {  // if the file name is defined
 			fileName = fileUtility.getFileName(fileName);  // get its part without an extension
 
-			const filePath = docManager.storagePath(fileName);  // get the path to this file
-			fileSystem.unlinkSync(filePath);  // and delete it
-
-			const userAddress = docManager.curUserHostAddress();
-			const historyPath = docManager.historyPath(fileName, userAddress, true);
-			docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+			docManager.fileRemove(fileName); // delete file and his history
 		} else {
 			docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
 		}
@@ -740,7 +735,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var commentGroups = user.commentGroups;
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
 
             // get the redirect path
             var redirectPath = docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();
