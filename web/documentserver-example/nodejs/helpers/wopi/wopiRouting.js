@@ -53,6 +53,14 @@ exports.registerRoutes = function(app) {
         // get the wopi discovery information
         let actions = await utils.getDiscoveryInfo(absSiteUrl);
         let wopiEnable = actions.length != 0 ? true : false;
+        let docsExtEdit = [];    // Supported extensions for WOPI
+
+        actions.forEach(el => {
+            if (el.name == "edit") docsExtEdit.push("."+el.ext);
+        });
+        
+        let editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
+        let fillExts = configServer.get("fillDocs").filter(i => docsExtEdit.includes(i));
 
         try {
             // get all the stored files
@@ -74,8 +82,8 @@ exports.registerRoutes = function(app) {
                 serverUrl: docManager.getServerUrl(),
                 preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
                 convertExts: configServer.get('convertedDocs'),
-                editedExts: configServer.get('editedDocs'),
-                fillExts: configServer.get("fillDocs"),
+                editedExts: editedExts,
+                fillExts: fillExts,
             });
 
         } catch (ex) {

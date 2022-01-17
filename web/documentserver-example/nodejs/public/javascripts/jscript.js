@@ -194,12 +194,33 @@ if (typeof jQuery != "undefined") {
         jq("#step3").addClass("done").removeClass("current");
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
+        // To check the Fano condition with letters for any strings (One word is the beginning of another)
+        var superWords = ['.docxf'];
+        var EEL = EditedExtList;
+        var FEL = FilledExtList;
+
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (EditedExtList.indexOf(posExt) != -1
-            || FilledExtList.indexOf(posExt) != -1) {
+        if (String(superWords).indexOf(posExt) != -1 ){
+            superWords.forEach(el => {
+                if (el.includes(posExt) && el != posExt) {
+                    if (EEL.includes(el)) {
+                        let start = EEL.indexOf(el);
+                        let end = start + el.length;
+                        EEL = EEL.slice(0,start-1) + EEL.slice(end);
+                    }
+                    if (FEL.includes(el)) {
+                        let start = FEL.indexOf(el);
+                        let end = start + el.length;
+                        FEL = FEL.slice(0,start-1) + FEL.slice(end);
+                    }
+                }
+            });
+        }
+
+        if (EEL.indexOf(posExt) != -1 || FEL.indexOf(posExt) != -1) {
             jq("#beginEdit").removeClass("disable");
         }
     };
