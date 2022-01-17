@@ -44,4 +44,6 @@ public class Customization {  // the parameters which allow to customize the edi
     private Boolean hideRightMenu = false;  // if the right menu is displayed or hidden on first loading
     private Boolean hideRulers = false;  // if the editor rulers are displayed or hidden
     private Boolean submitForm = false;  // if the Submit form button is displayed or hidden
+    private Boolean about = true;
+    private Boolean feedback =true;
 }

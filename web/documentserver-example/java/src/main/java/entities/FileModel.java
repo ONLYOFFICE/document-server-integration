@@ -348,9 +348,17 @@ public class FileModel
             public Goback goback;
             public Boolean forcesave;
             public Boolean submitForm;
+            public Boolean about;
+            public Boolean chat;
+            public Boolean comments;
+            public Boolean feedback;
 
             public Customization()
             {
+                about = true;
+                chat = true;
+                comments = true;
+                feedback = true;
                 forcesave = false;
                 goback = new Goback();
             }
