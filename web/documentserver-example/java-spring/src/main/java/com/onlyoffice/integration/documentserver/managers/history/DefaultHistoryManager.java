@@ -87,6 +87,7 @@ public class DefaultHistoryManager implements HistoryManager {
                     obj.put("user", user);
                 }
 
+                dataObj.put("fileType", fileUtility.getFileExtension(document.getTitle()).replace(".", ""));
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl() :
                         documentManager.getFileUri(documentManager.versionDir(histDir, i, true) + File.separator + "prev" + fileUtility.getFileExtension(document.getTitle()), true));
@@ -105,6 +106,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                     Map<String, Object> prevInfo = new HashMap<String, Object>();
+                    prevInfo.put("fileType", prev.get("fileType"));
                     prevInfo.put("key", prev.get("key"));  // write key and URL information about previous file version
                     prevInfo.put("url", prev.get("url"));
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object

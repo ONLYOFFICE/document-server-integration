@@ -208,6 +208,7 @@ class FileModel
         end
 
         # get the history data from the previous file version and write key and url information about it
+        dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
         dataObj["version"] = i
@@ -229,6 +230,7 @@ class FileModel
 
           prev = histData[(i - 2).to_s]  # get the history data from the previous file version
           dataObj["previous"] = {  # write key and url information about previous file version
+            :fileType => prev["fileType"],
             :key => prev["key"],
             :url => prev["url"]
           }
