@@ -357,7 +357,7 @@ namespace OnlineEditorsExample
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
                     // write file url to the data object
-                    var prevFileUrl =  i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(), "prev" + ext);
+                    var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(), "prev" + ext);
                     if (Path.IsPathRooted(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
@@ -387,7 +387,7 @@ namespace OnlineEditorsExample
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = Path.IsPathRooted(storagePath) ? getDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
-                            : MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip"));
+                            : MakePublicHistoryUrl(FileName,(i-1).ToString(), "diff.zip");
                         dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)
