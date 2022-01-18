@@ -71,13 +71,10 @@ public class IndexServlet extends HttpServlet
                 Upload(request, response, writer);
                 break;
             case "download":
-                String ver = request.getParameter("ver");
-
-                if (ver == null | ver == "") {
-                    Download(request, response, writer);
-                } else {
-                    DownloadHistory(request, response, writer);
-                }
+                Download(request, response, writer);
+                break;
+            case "downloadhistory":
+                DownloadHistory(request, response, writer);
                 break;
             case "convert":
                 Convert(request, response, writer);

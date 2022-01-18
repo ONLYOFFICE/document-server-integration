@@ -472,7 +472,7 @@ public class DocumentManager
         String hostAddress = CurUserHostAddress(null);
         try
         {
-            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             query = query + "&ver=" + URLEncoder.encode(version, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
