@@ -438,12 +438,7 @@ app.delete("/file", function (req, res) {  // define a handler for removing file
         if (fileName) {  // if the file name is defined
 			fileName = fileUtility.getFileName(fileName);  // get its part without an extension
 
-			const filePath = docManager.storagePath(fileName);  // get the path to this file
-			fileSystem.unlinkSync(filePath);  // and delete it
-
-			const userAddress = docManager.curUserHostAddress();
-			const historyPath = docManager.historyPath(fileName, userAddress, true);
-			docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+			docManager.fileRemove(fileName); // delete file and his history
 		} else {
 			docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
 		}
@@ -545,7 +540,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
+            var downloadExt = body.document.filetype; // get the extension of the downloaded file
+
+            // TODO [Delete in version 7.0 or higher]
+            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -579,7 +578,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         // callback file force saving process
         var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
-                var downloadExt = fileUtility.getFileExtension(downloadUri);
+                var downloadExt = body.document.fileType;
+
+                /// TODO [Delete in version 7.0 or higher]
+                if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
@@ -630,7 +633,10 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = fileUtility.getFileExtension(downloadUri);
+            var downloadExt = body.document.filetype;
+
+            // TODO [Delete in version 7.0 or higher]
+            if (!downloadExt) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
@@ -770,7 +776,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var commentGroups = user.commentGroups;
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
 
             // get the redirect path
             var redirectPath = docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();

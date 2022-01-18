@@ -102,8 +102,38 @@ docManager.getCorrectName = function (fileName, userAddress) {
     return name;
 };
 
+// processes a request editnew
+docManager.RequestEditnew = function (req, fileName, user) {
+    if (req.params['id'] != fileName){  // processes a repeated request editnew
+        docManager.fileRemove(req.params['id']);
+        fileName = docManager.getCorrectName(req.params['id']);
+    }
+    docManager.fileSizeZero(fileName);
+    docManager.saveFileData(fileName, user.id, user.name);
+
+    return fileName;
+}
+
+// delete a file with its history
+docManager.fileRemove = function (fileName) {
+    const filePath = docManager.storagePath(fileName);  // get the path to this file
+    fileSystem.unlinkSync(filePath);  // and delete it
+
+    const userAddress = docManager.curUserHostAddress();
+    const historyPath = docManager.historyPath(fileName, userAddress, true);
+    docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+}
+
+// create a zero-size file
+docManager.fileSizeZero = function (fileName) {
+    var path = docManager.storagePath(fileName);
+    var fh = fileSystem.openSync(path, 'w');
+    fileSystem.closeSync(fh);
+}
+
 // create demo document
-docManager.createDemo = function (isSample, fileExt, userid, username) {
+docManager.createDemo = function (isSample, fileExt, userid, username, wopi) {
+
     const demoName = (isSample ? "sample" : "new") + "." + fileExt;
     const fileName = docManager.getCorrectName(demoName);  // get the correct file name if such a name already exists
 
