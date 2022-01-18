@@ -493,6 +493,41 @@ namespace OnlineEditorsExampleMVC
             context.Response.TransmitFile(filePath);
         }
 
+        private static void ZipDownload(HttpContext context)
+        {
+            var fileName = context.Request["fileName"];
+            int version = System.Convert.ToInt32(context.Request["ver"]);
+            if (JwtManager.Enabled)
+            {
+                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                    string token = JwtManager.Decode(headerToken);
+                    if (token == null || token.Equals(""))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    context.Response.Write("JWT validation failed");
+                    return;
+                }
+            }
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+            var diffPath = Path.Combine(DocManagerHelper.VersionDir(histDir, version), "diff.zip");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + "diff.zip");
+            context.Response.AddHeader("Content-Type",MimeMapping.GetMimeMapping(diffPath));
+            context.Response.TransmitFile(diffPath);
+            
+        }
+        
+        
         public bool IsReusable
         {
             get { return false; }
@@ -504,8 +539,7 @@ namespace OnlineEditorsExampleMVC
             try
             {
                 var fileName = Path.GetFileName(context.Request["fileName"]);
-                var userAddress = Path.GetFileName(context.Request["userAddress"]);
-                var version = Path.GetFileName(context.Request["ver"]);
+                var version = System.Convert.ToInt32(context.Request["ver"]);
                 var file = Path.GetFileName(context.Request["file"]);
 
                 if (JwtManager.Enabled)
@@ -529,9 +563,9 @@ namespace OnlineEditorsExampleMVC
                         return;
                     }
                 }
+                var histPath = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+                var filePath = Path.Combine(DocManagerHelper.VersionDir(histPath, version), file);  // get the path to document version
 
-                var filePath = DocManagerHelper.HistoryPath(fileName, userAddress, version, file);  // get the path to the force saved document version
-                
                 download(filePath, context);
             }
             catch (Exception)
