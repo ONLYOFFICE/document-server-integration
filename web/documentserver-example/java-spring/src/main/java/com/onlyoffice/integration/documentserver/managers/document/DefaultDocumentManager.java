@@ -110,7 +110,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file URL
-    public String getHistoryFileUri(String fileName, String version, String file, Boolean forDocumentServer)
+    public String getHistoryFileUrl(String fileName, String version, String file, Boolean forDocumentServer)
     {
         try
         {

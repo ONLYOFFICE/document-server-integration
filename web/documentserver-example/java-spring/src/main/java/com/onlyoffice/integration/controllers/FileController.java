@@ -214,7 +214,7 @@ public class FileController {
         }
     }
 
-    @GetMapping(path = "${url.downloadhistory}")
+    @GetMapping("/downloadhistory")
     public ResponseEntity<Resource> downloadHistory(HttpServletRequest request,// download a file
                                              @RequestParam("fileName") String fileName,
                                              @RequestParam("ver") String version,

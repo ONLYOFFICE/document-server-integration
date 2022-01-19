@@ -90,7 +90,7 @@ public class DefaultHistoryManager implements HistoryManager {
                 dataObj.put("fileType", fileUtility.getFileExtension(document.getTitle()).replace(".", ""));
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl() :
-                        documentManager.getHistoryFileUri(document.getTitle(), i.toString(), "prev" + fileUtility.getFileExtension(document.getTitle()), true));
+                        documentManager.getHistoryFileUrl(document.getTitle(), i.toString(), "prev" + fileUtility.getFileExtension(document.getTitle()), true));
                 dataObj.put("version", i);
                 
                 if (i > 1) {  //check if the version number is greater than 1
@@ -111,7 +111,8 @@ public class DefaultHistoryManager implements HistoryManager {
                     prevInfo.put("url", prev.get("url"));
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
-                    dataObj.put("changesUrl", documentManager.getFileUri(documentManager.versionDir(histDir, i - 1, true) + File.separator + "diff.zip", true));
+                    Integer verdiff = i-1;
+                    dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff.toString(), "diff.zip", true));
                 }
 
                 if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
