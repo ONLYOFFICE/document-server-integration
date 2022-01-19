@@ -198,10 +198,10 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        var checkEdited = EditedExtList.split(",").find(i => i == posExt);
-        var checkFilled = FilledExtList.split(",").find(i => i == posExt);
+        var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});
+        var checkFilled = FilledExtList.split(",").filter(function(ext) { return ext == posExt;});
 
-        if (checkEdited != undefined || checkFilled != undefined) {
+        if (checkEdited != "" || checkFilled != "") {
             jq("#beginEdit").removeClass("disable");
         }
     };
