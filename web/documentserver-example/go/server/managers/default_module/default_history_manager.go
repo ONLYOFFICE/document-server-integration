@@ -93,12 +93,12 @@ func (hm DefaultHistoryManager) fetch_next_history_entry(remote_address string, 
 
 	var history_set managers.HistorySet
 
-	url := hm.StorageManager.GenerateFileUri(filename, remote_address, managers.FileMeta{
+	url := hm.StorageManager.GeneratePublicFileUri(filename, remote_address, managers.FileMeta{
 		Version:         version,
 		DestinationPath: "prev" + utils.GetFileExt(filename),
 	})
 
-	changes_url := hm.StorageManager.GenerateFileUri(filename, remote_address, managers.FileMeta{
+	changes_url := hm.StorageManager.GeneratePublicFileUri(filename, remote_address, managers.FileMeta{
 		Version:         version,
 		DestinationPath: "diff.zip",
 	})
@@ -106,7 +106,7 @@ func (hm DefaultHistoryManager) fetch_next_history_entry(remote_address string, 
 	if version > 1 {
 		prev_hist_path := path.Join(storage_path, filename+ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1))
 		prev_key := hm.read_history_file_key(prev_hist_path)
-		prev_url := hm.StorageManager.GenerateFileUri(filename, remote_address, managers.FileMeta{
+		prev_url := hm.StorageManager.GeneratePublicFileUri(filename, remote_address, managers.FileMeta{
 			Version:         version - 1,
 			DestinationPath: "prev" + utils.GetFileExt(filename),
 		})
@@ -169,7 +169,7 @@ func (hm DefaultHistoryManager) GetHistory(filename string, remote_address strin
 
 	curr_set := managers.HistorySet{
 		Key:     hm.StorageManager.GenerateFileHash(filename, remote_address),
-		Url:     hm.StorageManager.GenerateFileUri(filename, remote_address, managers.FileMeta{}),
+		Url:     hm.StorageManager.GeneratePublicFileUri(filename, remote_address, managers.FileMeta{}),
 		Version: version,
 	}
 

@@ -28,6 +28,7 @@ type ServerEndpointsHandler interface {
 	Remove(w http.ResponseWriter, r *http.Request)
 	Upload(w http.ResponseWriter, r *http.Request)
 	Download(w http.ResponseWriter, r *http.Request)
+	History(w http.ResponseWriter, r *http.Request)
 	Convert(w http.ResponseWriter, r *http.Request)
 	Callback(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)

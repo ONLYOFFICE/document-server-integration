@@ -43,6 +43,7 @@ type StorageManager interface {
 	GetStoredFiles(storage_address string) []models.Document
 	GenerateFileHash(file_name string, storage_address string) string
 	GenerateFileUri(original_filename string, storage_address string, meta FileMeta) string
+	GeneratePublicFileUri(original_filename string, storage_address string, meta FileMeta) string
 	GenerateVersionedFilename(filename string, storage_address string) string
 	CreateFile(stream io.Reader, path string) error
 	CreateDirectory(path string) error

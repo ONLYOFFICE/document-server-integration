@@ -144,6 +144,31 @@ func (sm DefaultStorageManager) GenerateFileUri(original_filename string, remote
 	)
 }
 
+func (sm DefaultStorageManager) GeneratePublicFileUri(original_filename string, remote_address string, meta managers.FileMeta) string {
+	remote_address = sanitize_remote_address(remote_address)
+	if (managers.FileMeta{}) == meta {
+		sm.logger.Debugf("Generating file %s uri", original_filename)
+		return fmt.Sprintf(
+			"%s://%s:%s/download?%s",
+			sm.config.ServerProtocol,
+			sm.config.ServerHost,
+			sm.config.ServerPort,
+			"fileName="+original_filename,
+		)
+	}
+	sm.logger.Debugf("Generating file %s uri", meta.DestinationPath)
+
+	return fmt.Sprintf(
+		"%s://%s:%s/history?%s&%s&%s",
+		sm.config.ServerProtocol,
+		sm.config.ServerHost,
+		sm.config.ServerPort,
+		"fileName="+original_filename,
+		"file="+meta.DestinationPath,
+		"ver="+fmt.Sprint(meta.Version),
+	)
+}
+
 func (sm DefaultStorageManager) GenerateVersionedFilename(filename string, remote_address string) string {
 	basename := utils.GetFileNameWithoutExt(filename)
 	ext := utils.GetFileExt(filename)

@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -185,6 +186,36 @@ func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *htt
 		return
 	}
 
+	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
+}
+
+func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http.Request) {
+	filename := r.URL.Query().Get("fileName")
+	file := r.URL.Query().Get("file")
+	version, err := strconv.Atoi(r.URL.Query().Get("ver"))
+	if err != nil {
+		panic(err)
+	}
+
+	srv.logger.Debugf("A new download call (%s)", filename)
+
+	if filename == "" {
+		sendDocumentServerRespose(w, true)
+		return
+	}
+
+	fileUrl := srv.StorageManager.GenerateFileUri(filename, r.RemoteAddr, managers.FileMeta{
+		Version:         version,
+		DestinationPath: file,
+	})
+	fmt.Println(fileUrl)
+
+	if fileUrl == "" {
+		sendDocumentServerRespose(w, true)
+		return
+	}
+
+	fmt.Println(file, " - ", version)
 	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
 }
 
