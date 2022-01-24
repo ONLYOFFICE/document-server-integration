@@ -109,11 +109,10 @@ def processForceSave(body, filename, usAddr):
     if (download is None):
         raise Exception("DownloadUrl is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
-    downloadExt = "." + body.get('fileType') # get the extension of the downloaded file
-
-    # Todo [Delete in version 7.0 or higher]
-    if (downloadExt == None): 
-        downloadExt = fileUtils.getFileExt(download)    # Support for versions below 7.0
+    
+                                             # Todo [Delete here in version 7.0 or higher]
+    downloadExt = "." + body.get('filetype') if (body.get('filetype') != None) else fileUtils.getFileExt(download)  # get the extension of the downloaded file
+                                             # Support for versions below 7.0
 
     newFilename = False
 
