@@ -260,8 +260,9 @@ function checkFileInfo(wopi, req, res, userHost) {
     let version = docManager.getKey(wopi.id);
     
     let path = docManager.storagePath(wopi.id, userAddress);
-
-    let user = users.getUser(req.query.userid);
+    // add wopi query
+    var query = new URLSearchParams(wopi.accessToken);
+    let user = users.getUser(query.get("userid"));
 
     // create the file information object
     let fileInfo = {
