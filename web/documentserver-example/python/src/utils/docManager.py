@@ -170,6 +170,20 @@ def getRootFolder(req):
         os.makedirs(directory)
 
     return directory
+# get the file history path
+def getHistoryPath(filename, userAddress, file, version, req):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
+    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    if not os.path.exists(directory): # the directory with host address doesn't exist
+        filePath = os.path.join(getRootFolder(req), f'{filename}-hist', version, file)
+    else:
+        filePath = os.path.join(directory, f'{filename}-hist', version, file)
+
+    return filePath
 
 # get the file path
 def getStoragePath(filename, req):
@@ -316,5 +330,5 @@ def download(filePath):
     response = FileResponse(open(filePath, 'rb'), True) # write headers to the response object
     response['Content-Length'] =  os.path.getsize(filePath)
     response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
-    response['Content-Type'] = magic.from_file(filePath, mime=True)
+    response['Content-Type'] = 'applicationoctet-stream'
     return response

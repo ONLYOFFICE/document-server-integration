@@ -387,6 +387,7 @@ def download(request):
 def downloadhistory(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
         file = fileUtils.getFileName(request.GET['file'])
         version = fileUtils.getFileName(request.GET['ver'])
         isEmbedded = request.GET.get('dmode')
@@ -403,7 +404,7 @@ def downloadhistory(request):
             else:
                 return HttpResponse('JWT validation failed', status=403)
 
-        filePath = os.path.join(config.STORAGE_PATH, request.META['REMOTE_ADDR'], f'{fileName}-hist', version, file)
+        filePath = docManager.getHistoryPath(fileName, userAddress, file, version, request)
 
         response = docManager.download(filePath)  # download this file
         return response
