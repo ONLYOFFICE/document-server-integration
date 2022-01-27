@@ -138,7 +138,7 @@ namespace OnlineEditorsExample
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
             var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
-            var saved = 1;  // editing
+            var saved = 0;  // editing
             switch (status)
             {
                 case TrackerStatus.Editing:
