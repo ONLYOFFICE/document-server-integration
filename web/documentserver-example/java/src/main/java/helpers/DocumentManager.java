@@ -169,11 +169,9 @@ public class DocumentManager
         String hostAddress = CurUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.GetProperty("storage-folder");
-
         String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
-
-        if (file == null | file == "") {
-            file = "prev"+fileName.substring(fileName.lastIndexOf("."));
+        if (new File(storagePath).isAbsolute()) {
+            directory = FilesRootPath(userAddress);
         }
 
         directory = directory + fileName + "-hist" + File.separator + version + File.separator + file;
@@ -467,13 +465,13 @@ public class DocumentManager
     }
 
     // get url to download a file to History prev.*
-    public static String GetDownloadHistoryUrl(String fileName, String version, String file) {
+    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file) {
         String serverPath = GetServerUrl(true);
         String hostAddress = CurUserHostAddress(null);
         try
         {
             String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-            query = query + "&ver=" + URLEncoder.encode(version, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
+            query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
         }

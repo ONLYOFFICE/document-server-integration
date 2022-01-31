@@ -177,7 +177,7 @@ public class FileModel
 
                     dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i.toString(), "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
@@ -198,13 +198,8 @@ public class FileModel
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        String storagePath = ConfigManager.GetProperty("storage-folder");
-
                         Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff.toString(), "prev" + FileUtility.GetFileExtension(document.title));
-                        if (new File(storagePath).isAbsolute()) {
-                            changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
-                        }
+                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip");
                         dataObj.put("changesUrl", changesUrl);
                     }
 
