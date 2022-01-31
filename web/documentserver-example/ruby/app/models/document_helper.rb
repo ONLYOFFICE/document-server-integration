@@ -238,7 +238,7 @@ class DocumentHelper
     # get history path url
     def get_historypath_uri(file_name,version,file)
       # for redirection to my link
-      uri = get_server_url(true) + '/downloadhistory/?fileName=' + URI::encode(file_name) + '&ver='+ URI::encode(version) + '&file='+ URI::encode(file) + '&userAddress=' + cur_user_host_address(nil)
+      uri = get_server_url(true) + '/downloadhistory/?fileName=' + URI::encode(file_name) + '&ver='+ version.to_s + '&file='+ URI::encode(file) + '&userAddress=' + cur_user_host_address(nil)
       return uri
     end
     
