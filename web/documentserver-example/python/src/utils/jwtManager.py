@@ -26,6 +26,7 @@
 
 import config
 import jwt
+import platform
 
 # check if a secret key to generate token exists or not
 def isEnabled():
@@ -33,7 +34,10 @@ def isEnabled():
 
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
-    return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256').decode('utf-8')
+    jwtEncode = jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256')
+
+    if platform.system() != "Linux": return jwtEncode.decode('utf-8')
+    return jwtEncode
 
 # decode a token into a payload object using a secret key
 def decode(string):
