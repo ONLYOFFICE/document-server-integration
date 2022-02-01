@@ -386,8 +386,7 @@ namespace OnlineEditorsExample
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = Path.IsPathRooted(storagePath) ? getDownloadUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip").Replace(storagePath + "\\", ""))
-                            : MakePublicHistoryUrl(FileName,(i-1).ToString(), "diff.zip");
+                        var changesUrl = MakePublicHistoryUrl(FileName,(i-1).ToString(), "diff.zip");
                         dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)
