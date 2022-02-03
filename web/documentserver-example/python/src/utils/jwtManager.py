@@ -26,7 +26,6 @@
 
 import config
 import jwt
-import platform
 
 # check if a secret key to generate token exists or not
 def isEnabled():
