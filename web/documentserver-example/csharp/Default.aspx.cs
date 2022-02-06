@@ -35,7 +35,7 @@ namespace OnlineEditorsExample
         // the spreadsheet extension list
         public static readonly List<string> ExtsSpreadsheet = new List<string>
             {
-                ".xls", ".xlsx", ".xlsm",
+                ".xls", ".xlsx", ".xlsm", ".xlsb",
                 ".xlt", ".xltx", ".xltm",
                 ".ods", ".fods", ".ots", ".csv"
             };
