@@ -713,7 +713,16 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         var userid = user.id;
         var name = user.name;
-        var actionData = req.query.action ? req.query.action : "null";
+
+        var actionData = "null";
+        if (req.query.action){
+            try {
+                actionData = JSON.stringify(JSON.parse(req.query.action)); 
+            }
+            catch (ex) {
+                console.log(ex);
+            }
+        }
 
         var templatesImageUrl = docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
         var createUrl = docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
