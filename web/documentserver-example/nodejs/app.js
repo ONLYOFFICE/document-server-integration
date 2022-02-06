@@ -763,10 +763,14 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var url = docManager.getDownloadUrl(fileName);
         var urlUser = path.isAbsolute(storageFolder) ? docManager.getDownloadUrl(fileName) + "&dmode=emb" : docManager.getlocalFileUri(fileName, 0, false);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
+
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
-                type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
-            }
+            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+        } else if (type != "mobile"
+            && type != "embedded") {
+                type = "desktop";
+        }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
