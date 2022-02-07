@@ -187,9 +187,9 @@
                                                                 <% if (storedFiles[i].actions[j].name != "editnew") { %>
                                                                     <a href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
                                                                         <% if (storedFiles[i].actions[j].name == "edit") { %>
-                                                                            <img src="images/fill-forms.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <img src="images/editor.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                         <%} else { %>
-                                                                            <img src="images/desktop.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
+                                                                            <img src="images/view.svg" alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                         <% } %>
                                                                     </a>
                                                                 <% } %>  
