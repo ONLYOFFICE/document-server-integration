@@ -1,8 +1,7 @@
 ## Integration examples
 
 Test examples are simple document management systems that can be built into your
-application for testing (please, do not use it for production without proper code
-modifications).
+application for testing. Do NOT use these integration examples on your own server without proper code modifications! In case you enabled any of the test examples, disable it before going for production.
 
 These examples show the way to integrate [ONLYOFFICE Docs][2] into your own website or application using one of the programming languages. The package contains examples written in .Net (C# MVC), .Net (C#), Java, Node.js, PHP and Ruby.
 
