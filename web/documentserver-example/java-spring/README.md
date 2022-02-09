@@ -1,17 +1,18 @@
 ## Overview
 
 This example will help you integrate ONLYOFFICE Docs into your web application written in Java 
-with Spring Boot. 
+with Spring Boot.
 
 Spring Boot has a lot of functionality, but its most significant features are: dependency management, 
 auto-configuration, and built-in servlet containers.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
+
 ## For Windows
 
 ### Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
 
@@ -64,11 +65,11 @@ To run the Java example code, install the Java version 11 appropriate for your O
 	```
 	echo %JAVA_HOME%
 	```
-	
+
 2. Set the **MAVEN_HOME** environment variable:
-    
+
     Unzip the downloaded archive with the maven to any directory, it will be something like this:
-    	
+
     ```
     C:\apache-maven-3.8.1
    ```
@@ -86,7 +87,7 @@ To run the Java example code, install the Java version 11 appropriate for your O
 
 	Add C:\apache-maven-3.8.1\bin to the PATH system variable:
 	In system variables, find PATH, clicks on the Edit... button. In “Edit environment variable” dialog, clicks on the New button and add this C:\apache-maven-3.8.1\bin
-	
+
 	Check if the variable created successfully by **echo** command in the **Command Prompt**:
 
 	```
@@ -148,8 +149,8 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     ```
     git clone https://github.com/ONLYOFFICE/document-server-integration.git
     ```
-    
-   
+
+
 3. Change the current directory for the project directory:
 
     a) from archive
@@ -189,13 +190,13 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     ```
     mvn package
     ```
- 
+
  7. Start Java-Spring example:
      ```
      ./mvnw spring-boot:run
      ```
  8. Open your browser using **server.address** and **server.port**:
- 
+
      ```
      http://server.address:server.port/
      ```
@@ -222,7 +223,7 @@ Make sure that the Document Server has access to the server with the example ins
    server.port=port
    files.docservice.url.site=https://documentserver/
    ```
-    
+
     where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path.
 
 3. Run the next command in the java example directory:
@@ -231,7 +232,7 @@ Make sure that the Document Server has access to the server with the example ins
 	docker-compose up
 	```
 4. Open your browser using **server.address** and **server.port**:
-    
+
       ```
       http://server.address:server.port/
       ```

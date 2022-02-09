@@ -2,11 +2,11 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application written in .Net (C# MVC).
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications. 
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
 
@@ -43,26 +43,26 @@ Configure the IIS components for the server to work correctly:
 
 	**Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
 2. Add your website in the IIS Manager.
-	
+
 	On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
 
 	![add](screenshots/add.png)
 3. In the **Add Website** dialog box specify the name of the folder with the .Net (C# MVC) project in the **Site name** box.
-	
+
 	Specify the path to the folder with your project in the **Physical Path** box.
-	
+
 	Specify the unique value used only for this website in the **Port** box.
-	
+
 	![sitename](screenshots/sitename.png)
 4. Check for the .NET platform version specified in IIS Manager for you website. Choose **v4.0.** version.
 	
 	**Application Pools** -> right-click the platform name -> **Set application Pool defaults** -> **.NET CLR version**
-	
+
 	![platform](screenshots/platform.png)
 5. Browse your website with the IIS Manager:
 
 	Right-click the site -> **Manage Website** -> **Browse**
-	
+
 	![browse](screenshots/browse.png)
 
 ## Step 5. Check accessibility
