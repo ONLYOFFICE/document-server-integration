@@ -225,7 +225,8 @@ def edit(request):
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
                 'reviewGroups': user.reviewGroups,
-                'commentGroups': user.commentGroups
+                'commentGroups': user.commentGroups,
+                'userInfoGroups': user.userInfoGroups
             }
         },
         'editorConfig': {
