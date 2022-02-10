@@ -220,7 +220,8 @@ namespace OnlineEditorsExample
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
                                             { "reviewGroups", user.reviewGroups },
-                                            { "commentGroups", user.commentGroups }
+                                            { "commentGroups", user.commentGroups },
+                                            { "userInfoGroups", user.userInfoGroups }
                                         }
                                 }
                             }
