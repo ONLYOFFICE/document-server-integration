@@ -31,8 +31,9 @@ public class User {
     public List<String> deniedPermissions;
     public List<String> descriptions;
     public Boolean templates;
+    public List<String> userInfoGroups;
 
-    public User(String id, String name, String email, String group, List<String> reviewGroups, CommentGroups commentGroups,
+    public User(String id, String name, String email, String group, List<String> reviewGroups, CommentGroups commentGroups, List<String> userInfoGroups,
                 Boolean favorite, List<String> deniedPermissions, List<String> descriptions, Boolean templates) {
         this.id = id;
         this.name = name;
@@ -44,5 +45,6 @@ public class User {
         this.deniedPermissions = deniedPermissions;
         this.descriptions = descriptions;
         this.templates = templates;
+        this.userInfoGroups = userInfoGroups;
     }
 }
