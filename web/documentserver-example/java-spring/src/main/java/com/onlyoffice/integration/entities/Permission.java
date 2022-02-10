@@ -47,4 +47,6 @@ public class Permission extends AbstractEntity {
     private List<Group> commentsEditGroups;
     @ManyToMany
     private List<Group> commentsRemoveGroups;
+    @ManyToMany
+    private List<Group> userInfoGroups;
 }
