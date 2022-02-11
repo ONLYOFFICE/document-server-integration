@@ -139,12 +139,13 @@
                     <td class="section">
                         <div class="main-panel">
                             <% var storedFiles = DocManagerHelper.GetStoredFiles(); %>
-                            <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "block" %>">
+                            <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                     <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                 </span>
+                                <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% foreach (User user in Users.getAllUsers())
                                   { %>
@@ -221,9 +222,6 @@
                                                                                 <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                             </a>
                                                                          </td>
-                                                                    <% } %>
-                                                                    <% if (docType != "word" && docType != "cell") { %>
-                                                                        <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                                     <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">

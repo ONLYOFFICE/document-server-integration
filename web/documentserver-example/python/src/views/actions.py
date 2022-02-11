@@ -154,7 +154,7 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getFileUri(filename, False, request)
+    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
@@ -168,7 +168,8 @@ def edit(request):
     submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
-    edType = request.GET.get('type') if request.GET.get('type') else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
+    types = ['desktop', 'mobile', 'embedded']
+    edType = request.GET.get('type') if request.GET.get('type') in types else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
     lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'  # get the editor language (the default language is English)
 
     storagePath = docManager.getStoragePath(filename, request)
@@ -362,8 +363,9 @@ def download(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled()):
+        if (jwtManager.isEnabled() and isEmbedded == None):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:

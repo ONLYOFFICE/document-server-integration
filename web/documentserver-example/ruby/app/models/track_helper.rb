@@ -68,9 +68,14 @@ class TrackHelper
                 return saved
             end
             new_file_name = file_name
+            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+
+            # TODO [Delete in version 7.0 or higher]
+            if (download_ext == ".")
+                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
+            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
             if (!cur_ext.eql?(download_ext))
@@ -138,9 +143,15 @@ class TrackHelper
                 saved = 1
                 return saved
             end
+            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+
+            # TODO [Delete in version 7.0 or higher]
+            if (download_ext == ".")
+                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
+            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
+
             new_file_name = false
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal

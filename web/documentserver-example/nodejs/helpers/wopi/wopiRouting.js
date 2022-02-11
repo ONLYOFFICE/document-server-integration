@@ -53,6 +53,14 @@ exports.registerRoutes = function(app) {
         // get the wopi discovery information
         let actions = await utils.getDiscoveryInfo(absSiteUrl);
         let wopiEnable = actions.length != 0 ? true : false;
+        let docsExtEdit = [];    // Supported extensions for WOPI
+
+        actions.forEach(el => {
+            if (el.name == "edit") docsExtEdit.push("."+el.ext);
+        });
+        
+        let editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
+        let fillExts = configServer.get("fillDocs").filter(i => docsExtEdit.includes(i));
 
         try {
             // get all the stored files
@@ -72,6 +80,10 @@ exports.registerRoutes = function(app) {
                 params: docManager.getCustomParams(),
                 users: users,
                 serverUrl: docManager.getServerUrl(),
+                preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
+                convertExts: configServer.get('convertedDocs'),
+                editedExts: editedExts,
+                fillExts: fillExts,
             });
 
         } catch (ex) {
@@ -84,11 +96,10 @@ exports.registerRoutes = function(app) {
     // define a handler for creating a new wopi editing session
     app.get("/wopi-new", function(req, res) {
         var fileExt = req.query.fileExt;  // get the file extension from the request
-        var user = users.getUser(req.query.userid);  // get a user by the id
 
         if (fileExt != null) {  // if the file extension exists
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, user.id, user.name);  // create demo document of the given extension
-            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=edit" + docManager.getCustomParams();  // get the redirect path
+            var fileName = docManager.getCorrectName("new." + fileExt)
+            var redirectPath = docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=editnew" + docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;
         }
@@ -98,8 +109,16 @@ exports.registerRoutes = function(app) {
         try {
             docManager.init(storageFolder, req, res);
 
+            var fileName = docManager.getCorrectName(req.params['id'])
+            var fileExt = fileUtility.getFileExtension(fileName, true);  // get the file extension from the request
+            var user = users.getUser(req.query.userid);  // get a user by the id
+
             // get an action for the specified extension and name
-            let action = await utils.getAction(fileUtility.getFileExtension(req.params['id'], true), req.query["action"]);
+            let action = await utils.getAction(fileExt, req.query["action"]);
+
+            if (action != null && req.query["action"] == "editnew") {
+                fileName = docManager.RequestEditnew(req, fileName, user);
+            }
 
             // render wopiAction template with the parameters specified
             res.render("wopiAction", {
@@ -140,4 +159,11 @@ exports.registerRoutes = function(app) {
         .all(tokenValidator.isValidToken)
         .get(filesController.fileRequestHandler)
         .post(filesController.fileRequestHandler);
+
+    // define a handler for upload files
+    app.route('/wopi/upload')
+        .all(tokenValidator.isValidToken)
+        .get(filesController.fileRequestHandler)
+        .post(filesController.fileRequestHandler);
+        
 };

@@ -78,7 +78,7 @@ $descr_user_0 = [
 
 $users = [
     new User("uid-1", "John Smith", "smith@example.com",
-            null, null, [], null,
+            "", null, [], null,
             null, [], $descr_user_1, true),
     new User("uid-2", "Mark Pottato", "pottato@example.com",
             "group-2", ["group-2", ""], [
@@ -97,7 +97,7 @@ $users = [
             ["group-2"],
             false, ["copy", "download", "print"], $descr_user_3, false),
     new User("uid-0", null, null,
-            null, null, [], [],
+            "", null, [], [],
             null, [], $descr_user_0, false)
 ];
 

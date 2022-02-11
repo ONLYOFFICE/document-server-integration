@@ -2,7 +2,7 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application written in Python.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## Step 1. Install ONLYOFFICE Docs
 
@@ -45,13 +45,14 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
     nano config.py
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
+	STORAGE_PATH = 'app_data'
     DOC_SERV_SITE_URL = 'https://documentserver/'
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 6. Run the **Python** server:
 

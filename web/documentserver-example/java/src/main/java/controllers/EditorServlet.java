@@ -72,7 +72,7 @@ public class EditorServlet extends HttpServlet
         // create file model (get all the necessary parameters from cookies)
         FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user);
         // change type parameter if needed
-        file.changeType(request.getParameter("mode"), request.getParameter("type"), user);
+        file.changeType(request.getParameter("mode"), request.getParameter("type"), user, fileName);
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();

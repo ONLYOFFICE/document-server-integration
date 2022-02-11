@@ -72,7 +72,7 @@ public class ExampleData {
                 "Can see the information about Group2 users"
         );
         userService.createUser("John Smith", "smith@example.com",  // create user 1 with the specified parameters
-                description_user_1, null, List.of(FilterState.NULL.toString()),
+                description_user_1, "", List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
@@ -85,7 +85,7 @@ public class ExampleData {
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
                 List.of("group-2"), new ArrayList<>(), List.of("group-2"), false);
         userService.createUser("Anonymous",null,  // create user 0 with the specified parameters
-                description_user_0,null, List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                description_user_0,"", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), new ArrayList<>(),null);
     }
 }

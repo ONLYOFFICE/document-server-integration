@@ -124,8 +124,9 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
+    var isEmbedded = req.query.dmode;
 
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) { 
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -159,7 +160,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     docManager.storagePath(""); // mkdir if not exist
 
     const userIp = docManager.curUserHostAddress();  // get the path to the user host
-    const uploadDir = path.join(storageFolder, userIp);
+    const uploadDir = path.isAbsolute(storageFolder) ? storageFolder : path.join(storageFolder, userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');  // and create directory for temporary files if it doesn't exist
     docManager.createDirectory(uploadDirTmp);
 
@@ -396,12 +397,7 @@ app.delete("/file", function (req, res) {  // define a handler for removing file
         if (fileName) {  // if the file name is defined
 			fileName = fileUtility.getFileName(fileName);  // get its part without an extension
 
-			const filePath = docManager.storagePath(fileName);  // get the path to this file
-			fileSystem.unlinkSync(filePath);  // and delete it
-
-			const userAddress = docManager.curUserHostAddress();
-			const historyPath = docManager.historyPath(fileName, userAddress, true);
-			docManager.cleanFolderRecursive(historyPath, true);  // clean all the files from the history folder
+			docManager.fileRemove(fileName); // delete file and his history
 		} else {
 			docManager.cleanFolderRecursive(docManager.storagePath(''), false);  // if the file name is undefined, clean the storage folder
 		}
@@ -503,7 +499,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = fileUtility.getFileExtension(downloadUri);  // get the extension of the downloaded file
+            var downloadExt = "." + body.filetype; // get the extension of the downloaded file
+
+            // TODO [Delete in version 7.0 or higher]
+            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -537,7 +537,11 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         // callback file force saving process
         var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
-                var downloadExt = fileUtility.getFileExtension(downloadUri);
+                var downloadExt = "." + body.fileType;
+
+                /// TODO [Delete in version 7.0 or higher]
+                if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
@@ -588,7 +592,10 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             }
 
             var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = fileUtility.getFileExtension(downloadUri);
+            var downloadExt = "." + body.filetype;
+
+            // TODO [Delete in version 7.0 or higher]
+            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
@@ -706,7 +713,16 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         var userid = user.id;
         var name = user.name;
-        var actionData = req.query.action ? req.query.action : "null";
+
+        var actionData = "null";
+        if (req.query.action){
+            try {
+                actionData = JSON.stringify(JSON.parse(req.query.action)); 
+            }
+            catch (ex) {
+                console.log(ex);
+            }
+        }
 
         var templatesImageUrl = docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
         var createUrl = docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
@@ -729,7 +745,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var userInfoGroups = user.userInfoGroups;
 
         if (fileExt != null) {
-            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name);  // create demo document of a given extension
+            var fileName = docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
 
             // get the redirect path
             var redirectPath = docManager.getServerUrl() + "/editor?fileName=" + encodeURIComponent(fileName) + docManager.getCustomParams();
@@ -746,12 +762,16 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = docManager.getKey(fileName);
         var url = docManager.getDownloadUrl(fileName);
-        var urlUser = docManager.getlocalFileUri(fileName, 0, false)
+        var urlUser = path.isAbsolute(storageFolder) ? docManager.getDownloadUrl(fileName) + "&dmode=emb" : docManager.getlocalFileUri(fileName, 0, false);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
+
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
-                type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
-            }
+            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+        } else if (type != "mobile"
+            && type != "embedded") {
+                type = "desktop";
+        }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
@@ -780,6 +800,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 history.push(docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
 
                 var historyD = {
+                    fileType: fileUtility.getFileExtension(fileName).slice(1),
                     version: i,
                     key: keyVersion,
                     url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
@@ -787,10 +808,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
                     historyD.previous = {  // write information about previous file version
+                        fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    historyD.changesUrl = docManager.getlocalFileUri(fileName, i-1) + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    let changesUrl = docManager.getlocalFileUri(fileName, i-1);
+                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);

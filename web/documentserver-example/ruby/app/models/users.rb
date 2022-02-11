@@ -77,7 +77,7 @@ class Users
 
     @@users = [
         User.new("uid-1", "John Smith", "smith@example.com",
-                nil, nil, {}, nil,
+                "", nil, {}, nil,
                 nil, [], @@descr_user_1, true),
         User.new("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", ["group-2", ""], {
@@ -96,7 +96,7 @@ class Users
                  ["group-2"],
                 false, ["copy", "download", "print"], @@descr_user_3, false),
         User.new("uid-0", nil, nil,
-                nil, nil, {}, [],
+                "", nil, {}, [],
                 nil, [], @@descr_user_0, false)
     ]
 

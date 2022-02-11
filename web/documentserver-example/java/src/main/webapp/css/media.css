@@ -86,10 +86,6 @@
 }
 
 @media (max-width: 1008px) {
-    #portal-info {
-        width: 65vw;
-    }
-
     .left-panel {
         margin-left: 0;
     }
@@ -298,6 +294,9 @@
 @media (max-width: 890px) {
     .tableRow td:first-child {
         max-width: 17%;
+    }
+    #portal-info {
+        max-width: 60vw;
     }
 }
 
