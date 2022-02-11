@@ -241,7 +241,7 @@ class DocumentHelper
       uri = get_server_url(true) + '/downloadhistory/?fileName=' + URI::encode(file_name) + '&ver='+ version.to_s + '&file='+ URI::encode(file) + '&userAddress=' + cur_user_host_address(nil)
       return uri
     end
-    
+
     # get server url
     def get_server_url(for_document_server)
       if for_document_server && !Rails.configuration.urlExample.empty?

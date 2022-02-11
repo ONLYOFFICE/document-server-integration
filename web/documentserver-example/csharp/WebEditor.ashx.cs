@@ -138,7 +138,7 @@ namespace OnlineEditorsExample
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
             var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
-            var saved = 0;  // editing
+            var saved = 0;
             switch (status)
             {
                 case TrackerStatus.Editing:
@@ -194,7 +194,7 @@ namespace OnlineEditorsExample
                     context.Response.Write("{\"error\":" + saved + "}");
                     return;
             }
-            context.Response.Write("{\"error\":0}");
+            context.Response.Write("{\"error\":" + saved + "}");
         }
 
         // remove a file
@@ -350,7 +350,9 @@ namespace OnlineEditorsExample
                             context.Response.Write("JWT validation failed");
                             return;
                         }
-                    }else {
+                    }
+                    else
+                    {
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         context.Response.Write("JWT validation failed");
                         return;
@@ -358,7 +360,7 @@ namespace OnlineEditorsExample
                 }
 
                 var filePath = _Default.HistoryPath(fileName, userAddress, version, file);  // get the path to the force saved document version
-                
+
                 download(filePath, context);
             }
             catch (Exception)

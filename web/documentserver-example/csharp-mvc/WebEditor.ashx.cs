@@ -303,7 +303,7 @@ namespace OnlineEditorsExampleMVC
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
             var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
-            var saved = 0;  // editing
+            var saved = 0;
             switch (status)
             {
                 case TrackerStatus.Editing:
@@ -360,7 +360,7 @@ namespace OnlineEditorsExampleMVC
                     return;
             }
 
-            context.Response.Write("{\"error\":0}");
+            context.Response.Write("{\"error\":" + saved + "}");
         }
 
         // remove a file
@@ -522,7 +522,9 @@ namespace OnlineEditorsExampleMVC
                             context.Response.Write("JWT validation failed");
                             return;
                         }
-                    }else {
+                    }
+                    else
+                    {
                         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         context.Response.Write("JWT validation failed");
                         return;

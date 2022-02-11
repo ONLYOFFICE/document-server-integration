@@ -163,6 +163,7 @@ public class DocumentManager
         String directory = FilesRootPath(userAddress);
         return directory + FileUtility.GetFileName(fileName);
     }
+
     // get the path to history file
     public static String HistoryPath(String fileName, String userAddress, String version, String file)
     {

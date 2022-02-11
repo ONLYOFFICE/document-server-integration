@@ -436,7 +436,7 @@ public class IndexServlet extends HttpServlet
 
     // download a file from history
     private static void DownloadHistory(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
-    {   
+    {
         try {
             if (DocumentManager.TokenEnabled()) {
 
@@ -463,7 +463,7 @@ public class IndexServlet extends HttpServlet
 
             String ver = request.getParameter("ver");  //  Document version
             String file = request.getParameter("file"); //   File. If not defined, then Prev.*
-           
+
             String filePath = DocumentManager.HistoryPath(fileName, userAddress, ver, file);
 
             download(filePath, response, writer);

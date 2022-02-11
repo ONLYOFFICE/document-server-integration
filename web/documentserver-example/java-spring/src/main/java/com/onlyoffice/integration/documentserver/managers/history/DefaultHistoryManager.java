@@ -92,7 +92,7 @@ public class DefaultHistoryManager implements HistoryManager {
                 dataObj.put("url", i == curVer ? document.getUrl() :
                         documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
                 dataObj.put("version", i);
-                
+
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
                     JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(documentManager.versionDir(histDir, i - 1, true) + File.separator + "changes.json")));
@@ -111,7 +111,7 @@ public class DefaultHistoryManager implements HistoryManager {
                     prevInfo.put("url", prev.get("url"));
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
-                    Integer verdiff = i-1;
+                    Integer verdiff = i - 1;
                     dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 

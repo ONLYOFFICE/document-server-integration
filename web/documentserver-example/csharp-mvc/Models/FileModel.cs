@@ -263,12 +263,12 @@ namespace OnlineEditorsExampleMVC.Models
                     string prevFileUrl;
                     if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
                     {
-                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName,i.ToString(),"prev"+ext)
+                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext)
                             : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
                     }
                     else {
                        prevFileUrl = i == currentVersion ? FileUri
-                        : DocManagerHelper.GetHistoryDownloadUrl(FileName,i.ToString(), "prev" + ext);
+                        : DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext);
                     }
 
                     dataObj.Add("url", prevFileUrl);
@@ -295,7 +295,7 @@ namespace OnlineEditorsExampleMVC.Models
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(FileName,(i-1).ToString(), "diff.zip");
+                        var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(FileName, (i - 1).ToString(), "diff.zip");
                         dataObj.Add("changesUrl", changesUrl);
                     }
                     if(JwtManager.Enabled)

@@ -358,11 +358,12 @@ namespace OnlineEditorsExample
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
                     // write file url to the data object
-                    var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName,i.ToString(), "prev" + ext);
+                    var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext);
                     if (Path.IsPathRooted(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
                     }
+
                     dataObj.Add("url", prevFileUrl);  // write file url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
@@ -387,7 +388,7 @@ namespace OnlineEditorsExample
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = MakePublicHistoryUrl(FileName,(i-1).ToString(), "diff.zip");
+                        var changesUrl = MakePublicHistoryUrl(FileName, (i - 1).ToString(), "diff.zip");
                         dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)
@@ -522,12 +523,12 @@ namespace OnlineEditorsExample
         private string MakePublicHistoryUrl(string filename, string version, string file)
         {
             var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
-                fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
-                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "webeditor.ashx";
-                fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
-                +"&ver=" + version + "&file="+ file +
-                "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+            fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
+                + "&ver=" + version + "&file=" + file
+                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
             return fileUrl.ToString();
         }
 

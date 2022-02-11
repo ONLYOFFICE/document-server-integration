@@ -183,7 +183,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                             'name': meta['uname']
                         }
                     
-                dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev"+fileUtils.getFileExt(filename), req) # write file url to the data object
+                dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req) # write file url to the data object
 
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 

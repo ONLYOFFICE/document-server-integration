@@ -170,6 +170,7 @@ def getRootFolder(req):
         os.makedirs(directory)
 
     return directory
+
 # get the file history path
 def getHistoryPath(filename, userAddress, file, version, req):
     if isinstance(req, str):
