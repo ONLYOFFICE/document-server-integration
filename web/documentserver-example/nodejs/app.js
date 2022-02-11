@@ -174,7 +174,7 @@ app.get("/history", function (req, res) {
     }
 
     var fileName = req.query.fileName;
-    var userAddress = docManager.curUserHostAddress();
+    var userAddress = req.query.useraddress;
     var ver = req.query.ver;
     var file = req.query.file;
 
@@ -839,20 +839,21 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     keyVersion = key;
                 }
                 history.push(docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
-                var fileExt = fileUtility.getFileExtension(fileName).slice(1);
+
                 var historyD = {
-                    fileType: fileExt,
+                    fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (`${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev.${fileExt}&ver=${i}`),
+                    url: i == countVersion ? url : (`${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
                 };
+
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
                     historyD.previous = {  // write information about previous file version
                         fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = `${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}`;
+                    let changesUrl = `${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
