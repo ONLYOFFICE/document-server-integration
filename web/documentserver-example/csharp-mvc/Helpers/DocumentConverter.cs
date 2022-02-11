@@ -164,8 +164,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// <param name="expectedKey">Expected key</param>
         /// <returns>Supported key</returns>
         public static string GenerateRevisionId(string expectedKey)
-        {   
-            expectedKey += DateTime.Now.GetHashCode(); // add time for unique key
+        {
             // if the expected key length is greater than 20, it is hashed and a fixed length value is stored in the string format 
             if (expectedKey.Length > 20) expectedKey = expectedKey.GetHashCode().ToString();
             var key = Regex.Replace(expectedKey, "[^0-9-.a-zA-Z_=]", "_");
