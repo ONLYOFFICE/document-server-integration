@@ -371,7 +371,7 @@ function historyDownload() {
                     http_response_code(403);
                     die("Invalid JWT signature");
                 }
-            }else{
+            } else {
                 http_response_code(403);
                 die("Invalid JWT signature");
             }
