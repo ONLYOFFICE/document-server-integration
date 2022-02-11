@@ -128,7 +128,8 @@ class FileModel
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
           :reviewGroups => @user.reviewGroups,
-          :commentGroups => @user.commentGroups
+          :commentGroups => @user.commentGroups,
+          :userInfoGroups => @user.userInfoGroups
         }
       },
       :editorConfig => {

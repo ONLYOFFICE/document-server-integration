@@ -40,7 +40,8 @@ public class ExampleData {
                 "Can perform all actions with comments",
                 "The file favorite state is undefined",
                 "Can't mention others in comments",
-                "Can't create new files from the editor"
+                "Can't create new files from the editor",
+                "Can’t see anyone’s information"
         );
         List<String> description_user_1 = List.of(  // the description for user 1
                 "File author by default",
@@ -48,14 +49,16 @@ public class ExampleData {
                 "He can review all the changes",
                 "He can do everything with the comments",
                 "The file favorite state is undefined",
-                "Can create a file from a template with data from the editor"
+                "Can create a file from a template with data from the editor",
+                "Can see the information about all users"
         );
         List<String> description_user_2 = List.of(  // the description for user 2
                 "He belongs to Group2",
                 "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
                 "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
                 "This file is favorite",
-                "Can create a file from an editor"
+                "Can create a file from an editor",
+                "Can see the information about users from Group2 and users who don’t belong to any group"
         );
         List<String> description_user_3 = List.of(  // the description for user 3
                 "He belongs to Group3",
@@ -65,21 +68,24 @@ public class ExampleData {
                 "He can’t copy data from the file into the clipboard",
                 "He can’t download the file",
                 "He can’t print the file",
-                "Can create a file from an editor"
+                "Can create a file from an editor",
+                "Can see the information about Group2 users"
         );
         userService.createUser("John Smith", "smith@example.com",  // create user 1 with the specified parameters
                 description_user_1, "", List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null);
+                List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()),
+                null);
         userService.createUser("Mark Pottato", "pottato@example.com",  // create user 2 with the specified parameters
                 description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"), true);
+                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true);
         userService.createUser("Hamish Mitchell", "mitchell@example.com",  // create user 3 with the specified parameters
                 description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>(), false);
+                List.of("group-2"), new ArrayList<>(), List.of("group-2"), false);
         userService.createUser("Anonymous",null,  // create user 0 with the specified parameters
                 description_user_0,"", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), null);
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), new ArrayList<>(),null);
     }
 }
