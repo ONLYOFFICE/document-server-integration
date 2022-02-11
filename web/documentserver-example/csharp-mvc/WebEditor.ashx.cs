@@ -504,6 +504,7 @@ namespace OnlineEditorsExampleMVC
             try
             {
                 var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = Path.GetFileName(context.Request["userAddress"]);
                 var version = System.Convert.ToInt32(context.Request["ver"]);
                 var file = Path.GetFileName(context.Request["file"]);
 
@@ -530,7 +531,7 @@ namespace OnlineEditorsExampleMVC
                         return;
                     }
                 }
-                var histPath = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+                var histPath = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, userAddress));
                 var filePath = Path.Combine(DocManagerHelper.VersionDir(histPath, version), file);  // get the path to document version
 
                 download(filePath, context);

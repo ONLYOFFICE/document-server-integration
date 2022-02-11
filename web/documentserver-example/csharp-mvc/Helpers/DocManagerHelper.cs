@@ -321,6 +321,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=downloadhistory"
                         + "&fileName=" + HttpUtility.UrlEncode(filename)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
                         + "&ver=" + version
                         + "&file="+ file
             };
