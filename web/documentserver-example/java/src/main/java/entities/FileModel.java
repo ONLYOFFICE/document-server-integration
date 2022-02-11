@@ -267,6 +267,7 @@ public class FileModel
         public Boolean review;
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
+        public List<String> userInfoGroups;
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -282,6 +283,7 @@ public class FileModel
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;
+            userInfoGroups = user.userInfoGroups;
         }
     }
 

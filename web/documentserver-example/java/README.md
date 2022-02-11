@@ -1,14 +1,14 @@
 ## Overview
 
-This example will help you integrate ONLYOFFICE Docs into your web application written in Java. 
+This example will help you integrate ONLYOFFICE Docs into your web application written in Java.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## For Windows
 
 ### Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
 
@@ -97,7 +97,7 @@ To run the Java example code, install the Java version appropriate for your OS a
 2. Tomcat Web Application Manager will request the **username** and the **password:**
 
 	![author](screenshots/author.jpg)
-   
+
 
 	Specify user data in *tomcat-users.xml* file in the Apache Tomcat installation folder. Define the **manager-gui** user role, specify the **user name** and **password** values:
 
@@ -119,9 +119,9 @@ To run the Java example code, install the Java version appropriate for your OS a
 	![war-file](screenshots/war-file.jpg) 
 
 5. You will see the project in the **Application List**:
-	
+
 	![manager-app](screenshots/manager-app.jpg) 
-   
+
 6. Click the link with the application name to run it.
 
 ### Step 6. Check accessibility

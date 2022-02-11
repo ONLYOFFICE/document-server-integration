@@ -2,13 +2,13 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application on Node.js.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications. 
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## For Windows
 
 ### Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx).
 

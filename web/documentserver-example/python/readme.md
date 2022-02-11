@@ -2,7 +2,7 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application written in Python.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## Step 1. Install ONLYOFFICE Docs
 

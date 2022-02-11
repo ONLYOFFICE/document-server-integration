@@ -58,7 +58,7 @@ docManager.init = function (dir, req, res) {
 
 // get the language from the request
 docManager.getLang = function () {
-    if (docManager.req.query.lang) {
+    if (new RegExp("^[a-z]{2}(-[A-Z]{2})?$", "i").test(docManager.req.query.lang)) {
         return docManager.req.query.lang;
     } else {  // the default language value is English
         return "en"

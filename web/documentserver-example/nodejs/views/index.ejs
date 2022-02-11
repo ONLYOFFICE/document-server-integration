@@ -139,6 +139,7 @@
                                     Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                     <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                 </span>
+                                <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% users.forEach(user => { %>
                                     <div class="user-descr">
@@ -182,10 +183,6 @@
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
-                                                        </td>
-                                                        <td class="contentCells contentCells-icon">
                                                             <a href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
@@ -212,25 +209,29 @@
                                                             <td class="contentCells contentCells-icon "></td>
                                                         <% } %>
                                                         <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                            <td class="contentCells contentCells-icon">
                                                                 <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                     <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                                             </td>
                                                         <% } else {%>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         <%}%>
+                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                            <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
+                                                        </td>
                                                     <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
-                                                        </td>
-                                                        <td class="contentCells contentCells-icon "></td>
-                                                        <td class="contentCells contentCells-icon "></td>
-                                                        <td class="contentCells contentCells-icon "></td>
-                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"">
                                                             <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                 <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                            <a href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
                                                         </td>
                                                     <% } else { %>
                                                         <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
