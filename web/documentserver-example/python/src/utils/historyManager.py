@@ -226,6 +226,6 @@ class CorsHeaderMiddleware:
 
     def __call__(self, request):
         resp = self.get_response(request)
-        if request.path.endswith('.zip'):
-            resp['Access-Control-Allow-Origin'] = '*'
+        if request.path == '/downloadhistory':
+            resp['Access-Control-Allow-Origin'] = config.DOC_SERV_SITE_URL[0:-1]
         return resp
