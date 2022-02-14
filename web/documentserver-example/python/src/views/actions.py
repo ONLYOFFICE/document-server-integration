@@ -406,7 +406,7 @@ def downloadhistory(request):
             else:
                 return HttpResponse('JWT validation failed', status=403)
 
-        filePath = docManager.getHistoryPath(fileName, userAddress, file, version, request)
+        filePath = docManager.getHistoryPath(fileName, file, version, userAddress)
 
         response = docManager.download(filePath)  # download this file
         return response

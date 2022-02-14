@@ -172,7 +172,7 @@ def getRootFolder(req):
     return directory
 
 # get the file history path
-def getHistoryPath(filename, userAddress, file, version, req):
+def getHistoryPath(filename, file, version, req):
     if isinstance(req, str):
         curAdr = req
     else:
