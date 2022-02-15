@@ -25,6 +25,7 @@ import java.util.Map;
 public interface DocumentManager {
     String getCorrectName(String fileName);  // get a file name with an index if the file with such a name already exists
     String getFileUri(String fileName, Boolean forDocumentServer);  // get file URL
+    String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer);  // get file URL
     String getCallback(String fileName);  // get the callback URL
     String getDownloadUrl(String fileName);  // get URL to download a file
     ArrayList<Map<String, Object>> getFilesInfo();  // get file information

@@ -310,6 +310,24 @@ namespace OnlineEditorsExampleMVC.Helpers
             return createUrl.ToString();
         }
 
+        // create the public history url
+        public static string GetHistoryDownloadUrl(string filename, string version, string file)
+        {
+            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=downloadhistory"
+                        + "&fileName=" + HttpUtility.UrlEncode(filename)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&ver=" + version
+                        + "&file="+ file
+            };
+            return downloadUrl.ToString();
+        }
+
         // get url to download a file
         public static string GetDownloadUrl(string fileName)
         {

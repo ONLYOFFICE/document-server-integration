@@ -24,7 +24,7 @@
 
 """
 
-from django.urls import path
+from django.urls import path, re_path
 
 from src.views import index, actions
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -33,6 +33,7 @@ urlpatterns = [
     path('', index.default),
     path('upload', actions.upload),
     path('download', actions.download),
+    path('downloadhistory', actions.downloadhistory),
     path('convert', actions.convert),
     path('create', actions.createNew),
     path('edit', actions.edit),

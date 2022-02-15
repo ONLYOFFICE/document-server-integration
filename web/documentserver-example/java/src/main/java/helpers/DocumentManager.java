@@ -164,6 +164,22 @@ public class DocumentManager
         return directory + FileUtility.GetFileName(fileName);
     }
 
+    // get the path to history file
+    public static String HistoryPath(String fileName, String userAddress, String version, String file)
+    {
+        String hostAddress = CurUserHostAddress(userAddress);
+        String serverPath = request.getSession().getServletContext().getRealPath("");
+        String storagePath = ConfigManager.GetProperty("storage-folder");
+        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+        if (new File(storagePath).isAbsolute()) {
+            directory = FilesRootPath(userAddress);
+        }
+
+        directory = directory + fileName + "-hist" + File.separator + version + File.separator + file;
+
+        return directory;
+    }
+
     // get the path to the forcesaved file version
     public static String ForcesavePath(String fileName, String userAddress, Boolean create)
     {
@@ -440,6 +456,23 @@ public class DocumentManager
         try
         {
             String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+            return serverPath + "/IndexServlet" + query;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
+        }
+    }
+
+    // get url to download a file to History prev.*
+    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file) {
+        String serverPath = GetServerUrl(true);
+        String hostAddress = CurUserHostAddress(null);
+        try
+        {
+            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
         }

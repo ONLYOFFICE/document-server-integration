@@ -134,17 +134,11 @@ def readFile(path):
     with io.open(path, 'r') as stream:
         return stream.read()
 
-# get the url to the previous file version with a given extension
-def getPrevUri(filename, ver, ext, req):
+# get the url to the history file version with a given extension
+def getPublicHistUri(filename, ver, file, req):
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/prev{ext}'
-
-# get the url to a file archive with changes of the given file version
-def getZipUri(filename, ver, req):
-    host = docManager.getServerUrl(True, req)
-    curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
+    return f'{host}/downloadhistory?fileName={filename}&ver={ver}&file={file}&userAddress={curAdr}'
 
 # get the meta data of the file
 def getMeta(storagePath):
@@ -189,7 +183,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                             'name': meta['uname']
                         }
                     
-                dataObj['url'] = docUrl if i == version else getPrevUri(filename, i, fileUtils.getFileExt(filename), req) # write file url to the data object
+                dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req) # write file url to the data object
 
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
@@ -207,7 +201,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                         'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo # write information about previous file version to the data object
-                    dataObj['changesUrl'] = getZipUri(filename, i - 1, req) # write the path to the diff.zip archive with differences in this file version
+                    dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req) # write the path to the diff.zip archive with differences in this file version
 
                 if jwtManager.isEnabled():
                     dataObj['token'] = jwtManager.encode(dataObj) 
@@ -232,6 +226,6 @@ class CorsHeaderMiddleware:
 
     def __call__(self, request):
         resp = self.get_response(request)
-        if request.path.endswith('.zip'):
-            resp['Access-Control-Allow-Origin'] = '*'
+        if request.path == '/downloadhistory':
+            resp['Access-Control-Allow-Origin'] = config.DOC_SERV_SITE_URL[0:-1]
         return resp

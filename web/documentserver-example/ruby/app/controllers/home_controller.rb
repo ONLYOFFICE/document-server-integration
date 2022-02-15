@@ -149,6 +149,45 @@ class HomeController < ApplicationController
 
   end
 
+  # downloading a history file from public
+  def downloadhistory
+    begin
+      file_name = File.basename(params[:fileName])
+      user_address = params[:userAddress]
+      version = params[:ver]
+      file = params[:file]
+      isEmbedded = params[:dmode]
+
+      if JwtHelper.is_enabled
+        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        if request.headers[jwtHeader]
+          hdr = request.headers[jwtHeader]
+          hdr.slice!(0, "Bearer ".length)
+          token = JwtHelper.decode(hdr)
+          if !token || token.eql?("")
+            render plain: "JWT validation failed", :status => 403
+            return
+          end
+        else
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
+      end
+      hist_path = DocumentHelper.storage_path(file_name, user_address) + "-hist" # or to the original document
+
+      file_path = File.join(hist_path, version, file)
+
+      # add headers to the response to specify the page parameters
+      response.headers['Content-Length'] = File.size(file_path).to_s
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
+      send_file file_path, :x_sendfile => true
+    rescue => ex
+      render plain: '{ "error": "File not found"}'
+    end
+  end
+
   # tracking file changes
   def track
     file_data = TrackHelper.read_body(request)  # read the request body

@@ -384,3 +384,33 @@ def download(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
+
+# download a history file
+def downloadhistory(request):
+    try:
+        fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        file = fileUtils.getFileName(request.GET['file'])
+        version = fileUtils.getFileName(request.GET['ver'])
+        isEmbedded = request.GET.get('dmode')
+
+        if (jwtManager.isEnabled() and isEmbedded == None):
+            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+            token = request.headers.get(jwtHeader)
+            if token:
+                token = token[len('Bearer '):]
+                try:
+                    body = jwtManager.decode(token)
+                except Exception:
+                    return HttpResponse('JWT validation failed', status=403)
+            else:
+                return HttpResponse('JWT validation failed', status=403)
+
+        filePath = docManager.getHistoryPath(fileName, file, version, userAddress)
+
+        response = docManager.download(filePath)  # download this file
+        return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)

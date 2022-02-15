@@ -171,6 +171,21 @@ def getRootFolder(req):
 
     return directory
 
+# get the file history path
+def getHistoryPath(filename, file, version, req):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
+    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    if not os.path.exists(directory): # the directory with host address doesn't exist
+        filePath = os.path.join(getRootFolder(req), f'{filename}-hist', version, file)
+    else:
+        filePath = os.path.join(directory, f'{filename}-hist', version, file)
+
+    return filePath
+
 # get the file path
 def getStoragePath(filename, req):
     directory = getRootFolder(req)

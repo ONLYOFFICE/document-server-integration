@@ -154,6 +154,47 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
     filestream.pipe(res);  // send file information to the response by streams
 });
 
+app.get("/history", function (req, res) {
+    docManager.init(storageFolder, req, res);
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        var authorization = req.get(cfgSignatureAuthorizationHeader);
+        if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+            var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+            try {
+                var decoded = jwt.verify(token, cfgSignatureSecret);
+            } catch (err) {
+                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);
+                res.sendStatus(403);
+                return;
+            }
+        } else {
+            res.sendStatus(403);
+            return;
+        }
+    }
+
+    var fileName = req.query.fileName;
+    var userAddress = req.query.useraddress;
+    var ver = req.query.ver;
+    var file = req.query.file;
+
+    if (file.includes("diff")) {
+        var Path = docManager.diffPath(fileName, userAddress, ver);
+    } else if (file.includes("prev")) {
+        var Path = docManager.prevFilePath(fileName, userAddress, ver);
+    } else {
+        res.sendStatus(403);
+        return;
+    }
+
+    res.setHeader("Content-Length", fileSystem.statSync(Path).size);  // add headers to the response to specify the page parameters
+    res.setHeader("Content-Type", mime.getType(Path));
+    res.setHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + encodeURIComponent(file));
+
+    var filestream = fileSystem.createReadStream(Path);
+    filestream.pipe(res);  // send file information to the response by streams
+})
+
 app.post("/upload", function (req, res) {  // define a handler for uploading files
 
     docManager.init(storageFolder, req, res);
@@ -800,10 +841,10 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 history.push(docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
 
                 var historyD = {
-                    fileType: fileUtility.getFileExtension(fileName).slice(1),
+                    fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (docManager.getlocalFileUri(fileName, i, true) + "/prev" + fileExt),
+                    url: i == countVersion ? url : (`${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
                 };
 
                 if (i > 1 && docManager.existsSync(docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -812,8 +853,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = docManager.getlocalFileUri(fileName, i-1);
-                    historyD.changesUrl = changesUrl.includes("diff.zip") ? changesUrl : changesUrl + "/diff.zip";  // get the path to the diff.zip file and write it to the history object
+                    let changesUrl = `${docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+                    historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
                 historyData.push(historyD);

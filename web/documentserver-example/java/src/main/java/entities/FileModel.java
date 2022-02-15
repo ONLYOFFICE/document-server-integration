@@ -164,7 +164,7 @@ public class FileModel
                     obj.put("version", i);
 
                     if (i == 1) {  // check if the version number is equal to 1
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));  // get file with meta data
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json")); // get file with meta data
                         JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
                         // write meta information to the object (user information and creation date)
@@ -177,7 +177,7 @@ public class FileModel
 
                     dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
@@ -198,11 +198,8 @@ public class FileModel
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        String storagePath = ConfigManager.GetProperty("storage-folder");
-                        String changesUrl = DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip");
-                        if (new File(storagePath).isAbsolute()) {
-                            changesUrl = DocumentManager.GetDownloadUrl((DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip").replace(storagePath, ""));
-                        }
+                        Integer verdiff = i - 1;
+                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip");
                         dataObj.put("changesUrl", changesUrl);
                     }
 

@@ -235,13 +235,13 @@ class DocumentHelper
       return uri
     end
 
-    # get path url
-    def get_path_uri(path)
-      uri = get_server_url(true) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + path
-
+    # get history path url
+    def get_historypath_uri(file_name,version,file)
+      # for redirection to my link
+      uri = get_server_url(true) + '/downloadhistory/?fileName=' + URI::encode(file_name) + '&ver='+ version.to_s + '&file='+ URI::encode(file) + '&userAddress=' + cur_user_host_address(nil)
       return uri
     end
-    
+
     # get server url
     def get_server_url(for_document_server)
       if for_document_server && !Rails.configuration.urlExample.empty?

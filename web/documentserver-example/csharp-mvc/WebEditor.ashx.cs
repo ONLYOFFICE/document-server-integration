@@ -46,6 +46,9 @@ namespace OnlineEditorsExampleMVC
                 case "download":
                     Download(context);
                     break;
+                case "downloadhistory":
+                    DownloadHistory(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -300,7 +303,7 @@ namespace OnlineEditorsExampleMVC
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
             var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
-            var saved = 1;  // editing
+            var saved = 0;
             switch (status)
             {
                 case TrackerStatus.Editing:
@@ -357,7 +360,7 @@ namespace OnlineEditorsExampleMVC
                     return;
             }
 
-            context.Response.Write("{\"error\":0}");
+            context.Response.Write("{\"error\":" + saved + "}");
         }
 
         // remove a file
@@ -493,6 +496,50 @@ namespace OnlineEditorsExampleMVC
         public bool IsReusable
         {
             get { return false; }
+        }
+
+        // download a history file
+        private static void DownloadHistory(HttpContext context)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = Path.GetFileName(context.Request["userAddress"]);
+                var version = System.Convert.ToInt32(context.Request["ver"]);
+                var file = Path.GetFileName(context.Request["file"]);
+
+                if (JwtManager.Enabled)
+                {
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                    if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                        string token = JwtManager.Decode(headerToken);
+
+                        if (token == null || token.Equals(""))
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.Write("JWT validation failed");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+                var histPath = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, userAddress));
+                var filePath = Path.Combine(DocManagerHelper.VersionDir(histPath, version), file);  // get the path to document version
+
+                download(filePath, context);
+            }
+            catch (Exception)
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+            }
         }
     }
 }

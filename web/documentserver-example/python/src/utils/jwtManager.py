@@ -33,7 +33,7 @@ def isEnabled():
 
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
-    return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256').decode('utf-8')
+    return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256')
 
 # decode a token into a payload object using a secret key
 def decode(string):

@@ -64,6 +64,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array = download();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "history":
+            $response_array = historyDownload();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
@@ -348,6 +352,41 @@ function csv() {
     $fileName =  "csv.csv";
     $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
+}
+
+// download a file from history
+function historyDownload() {
+    try {
+        $fileName = basename($_GET["fileName"]);  // get the file name
+        $userAddress = $_GET["userAddress"];
+
+        $ver = $_GET["ver"];
+        $file = $_GET["file"];
+
+        if (isJwtEnabled()) {
+            $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+            if (!empty(apache_request_headers()[$jwtHeader])) {
+                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                if (empty($token)) {
+                    http_response_code(403);
+                    die("Invalid JWT signature");
+                }
+            } else {
+                http_response_code(403);
+                die("Invalid JWT signature");
+            }
+        }
+
+        $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
+
+        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;;
+
+        downloadFile($filePath);  // download this file
+    } catch (Exception $e) {
+        sendlog("Download ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: File not found";
+        return $result;
+    }
 }
 
 // download a file
