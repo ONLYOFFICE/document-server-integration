@@ -47,7 +47,7 @@ namespace OnlineEditorsExample
         {
             "Belongs to Group3",
             "Can review changes made by Group2 users",
-            "Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users",
+            "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
             "This file isn’t marked as favorite",
             "Can’t copy data from the file to clipboard",
             "Can’t download the file",
