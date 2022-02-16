@@ -212,7 +212,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
 
     form.parse(req, function (err, fields, files) {  // parse this form 
     	if (err) {  // if an error occurs
-			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
 			res.writeHead(200, { "Content-Type": "text/plain" });  // and write the error status and message to the response
 			res.write("{ \"error\": \"" + err.message + "\"}");
 			res.end();
@@ -231,7 +231,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
         file.name = req.docManager.getCorrectName(file.name);
 
         if (configServer.get('maxFileSize') < file.size || file.size <= 0) {  // check if the file size exceeds the maximum file size
-			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
             res.writeHead(200, { "Content-Type": "text/plain" });
             res.write("{ \"error\": \"File size is incorrect\"}");
             res.end();
@@ -243,7 +243,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
         const documentType = fileUtility.getFileType(file.name);
 
         if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
-			docManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
+			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
             res.writeHead(200, { "Content-Type": "text/plain" });  // and write the error status and message to the response
             res.write("{ \"error\": \"File type is not supported\"}");
             res.end();
@@ -251,7 +251,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
         }
 
         fileSystem.rename(file.path, uploadDir + "/" + file.name, function (err) {  // rename a file
-			docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
+			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
             res.writeHead(200, { "Content-Type": "text/plain" });
             if (err) {  // if an error occurs
                 res.write("{ \"error\": \"" + err + "\"}");  // write an error message to the response
