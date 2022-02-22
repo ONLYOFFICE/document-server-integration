@@ -21,7 +21,6 @@ const path = require("path");
 const fileSystem = require("fs");
 const fileUtility = require("./fileUtility");
 const documentService = require("./documentService");
-const cacheManager = require("./cacheManager");
 const guidManager = require("./guidManager");
 const configServer = require('config').get('server');
 const storageConfigFolder = configServer.get("storageFolder");
