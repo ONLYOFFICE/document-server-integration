@@ -820,6 +820,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             mode = "fillForms";
             canEdit = true;
         }
+        if (!canEdit && mode == "edit") {
+            mode = "view";
+        }
         var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
         var countVersion = 1;
@@ -909,7 +912,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 copy: !user.deniedPermissions.includes("copy"),
                 download: !user.deniedPermissions.includes("download"),
                 print: !user.deniedPermissions.includes("print"),
-                mode: canEdit && mode != "view" ? "edit" : "view",
+                mode: mode != "view" ? "edit" : "view",
                 canBackToFolder: type != "embedded",
                 backUrl: req.docManager.getServerUrl() + "/",
                 curUserHostAddress: req.docManager.curUserHostAddress(),
