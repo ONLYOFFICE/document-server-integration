@@ -19,7 +19,6 @@
 const reqConsts = require('./request');
 const fileUtility = require("../fileUtility");
 const lockManager = require("./lockManager");
-const utils = require("./utils");
 const fileSystem = require("fs");
 const mime = require("mime");
 const path = require("path");
