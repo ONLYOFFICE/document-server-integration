@@ -24,7 +24,6 @@ const fileUtility = require("../fileUtility");
 const config = require('config');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
-const storageFolder = configServer.get("storageFolder");
 const users = require("../users");
 
 exports.registerRoutes = function(app) {
@@ -58,7 +57,7 @@ exports.registerRoutes = function(app) {
         actions.forEach(el => {
             if (el.name == "edit") docsExtEdit.push("."+el.ext);
         });
-        
+
         let editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
         let fillExts = configServer.get("fillDocs").filter(i => docsExtEdit.includes(i));
 
@@ -100,8 +99,8 @@ exports.registerRoutes = function(app) {
         req.docManager = new docManager(req, res);
 
         if (fileExt != null) {  // if the file extension exists
-            var fileName = docManareq.docManagerger.getCorrectName("new." + fileExt)
-            var redirectPath = req.docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=editnew" + docManager.getCustomParams();  // get the redirect path
+            var fileName = req.docManager.getCorrectName("new." + fileExt)
+            var redirectPath = req.docManager.getServerUrl(true) + "/wopi-action/" + encodeURIComponent(fileName) + "?action=editnew" + req.docManager.getCustomParams();  // get the redirect path
             res.redirect(redirectPath);
             return;
         }
@@ -167,5 +166,5 @@ exports.registerRoutes = function(app) {
         .all(tokenValidator.isValidToken)
         .get(filesController.fileRequestHandler)
         .post(filesController.fileRequestHandler);
-        
+
 };

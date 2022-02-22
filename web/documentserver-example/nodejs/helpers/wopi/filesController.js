@@ -17,7 +17,6 @@
  */
 
 const reqConsts = require('./request');
-const docManager = require("../docManager");
 const fileUtility = require("../fileUtility");
 const lockManager = require("./lockManager");
 const utils = require("./utils");
