@@ -105,8 +105,8 @@ function parseWopiRequest(req) {
 function lock(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = docManager.curUserHostAddress(userHost);  // get current user host address
-    let filePath = docManager.storagePath(wopi.id, userAddress);  // get the storage path of the given file
+    let userAddress = req.docManager.curUserHostAddress(userHost);  // get current user host address
+    let filePath = req.docManager.storagePath(wopi.id, userAddress);  // get the storage path of the given file
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => lock
@@ -125,8 +125,8 @@ function lock(wopi, req, res, userHost) {
 
 // retrieve a lock on a file
 function getLock(wopi, req, res, userHost) {
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let filePath = docManager.storagePath(wopi.id, userAddress);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     // get the lock of the specified file and set it as the X-WOPI-Lock header
     res.setHeader(reqConsts.requestHeaders.lock, lockManager.getLock(filePath));
@@ -137,8 +137,8 @@ function getLock(wopi, req, res, userHost) {
 function refreshLock(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let filePath = docManager.storagePath(wopi.id, userAddress);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -157,8 +157,8 @@ function refreshLock(wopi, req, res, userHost) {
 function unlock(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let filePath = docManager.storagePath(wopi.id, userAddress);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -178,8 +178,8 @@ function unlockAndRelock(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
     let oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()];  // get the X-WOPI-OldLock header
 
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let filePath = docManager.storagePath(wopi.id, userAddress);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -196,9 +196,9 @@ function unlockAndRelock(wopi, req, res, userHost) {
 
 // request a message to retrieve a file
 function getFile(wopi, req, res, userHost) {
-    let userAddress = docManager.curUserHostAddress(userHost);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
 
-    let path = docManager.storagePath(wopi.id, userAddress);
+    let path = req.docManager.storagePath(wopi.id, userAddress);
 
     res.setHeader("Content-Length", fileSystem.statSync(path).size);
     res.setHeader("Content-Type", mime.getType(path));
@@ -213,8 +213,8 @@ function getFile(wopi, req, res, userHost) {
 function putFile(wopi, req, res, userHost) {
     let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let storagePath = docManager.storagePath(wopi.id, userAddress);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let storagePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(storagePath)) {
         // ToDo: if body length is 0 bytes => handle document creation
@@ -224,20 +224,20 @@ function putFile(wopi, req, res, userHost) {
     } else if (lockManager.getLock(storagePath) == requestLock) {
         // lock matches current lock => put file
         if (req.body) {
-            var historyPath = docManager.historyPath(wopi.id, userAddress);  // get the path to the file history
+            var historyPath = req.docManager.historyPath(wopi.id, userAddress);  // get the path to the file history
             if (historyPath == "") {  // if it is empty
-                historyPath = docManager.historyPath(wopi.id, userAddress, true);  // create it
-                docManager.createDirectory(historyPath);  // and create a new directory for the history
+                historyPath = req.docManager.historyPath(wopi.id, userAddress, true);  // create it
+                req.docManager.createDirectory(historyPath);  // and create a new directory for the history
             }
 
-            var count_version = docManager.countVersion(historyPath);  // get the last file version
+            var count_version = req.docManager.countVersion(historyPath);  // get the last file version
             version = count_version + 1;  // get a number of a new file version
             res.setHeader(reqConsts.requestHeaders.ItemVersion, version + 1);  // set the X-WOPI-ItemVersion header
-            var versionPath = docManager.versionPath(wopi.id, userAddress, version);  // get the path to the specified file version
-            docManager.createDirectory(versionPath);  // and create a new directory for the specified version
+            var versionPath = req.docManager.versionPath(wopi.id, userAddress, version);  // get the path to the specified file version
+            req.docManager.createDirectory(versionPath);  // and create a new directory for the specified version
 
             var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(wopi.id));  // get the path to the previous file version
-            fileSystem.renameSync(docManager.storagePath(wopi.id, userAddress), path_prev);  // synchronously rename the given file as the previous file version
+            fileSystem.renameSync(req.docManager.storagePath(wopi.id, userAddress), path_prev);  // synchronously rename the given file as the previous file version
 
             let filestream = fileSystem.createWriteStream(storagePath);
             req.pipe(filestream);
@@ -256,10 +256,10 @@ function putFile(wopi, req, res, userHost) {
 
 // return information about the file properties, access rights and editor settings
 function checkFileInfo(wopi, req, res, userHost) {
-    let userAddress = docManager.curUserHostAddress(userHost);
-    let version = docManager.getKey(wopi.id);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let version = req.docManager.getKey(wopi.id);
     
-    let path = docManager.storagePath(wopi.id, userAddress);
+    let path = req.docManager.storagePath(wopi.id, userAddress);
     // add wopi query
     var query = new URLSearchParams(wopi.accessToken);
     let user = users.getUser(query.get("userid"));
@@ -267,7 +267,7 @@ function checkFileInfo(wopi, req, res, userHost) {
     // create the file information object
     let fileInfo = {
         "BaseFileName": wopi.id,
-        "OwnerId": docManager.getFileData(wopi.id, userAddress)[1],
+        "OwnerId": req.docManager.getFileData(wopi.id, userAddress)[1],
         "Size": fileSystem.statSync(path).size,
         "UserId": user.id,
         "UserFriendlyName": user.name,
