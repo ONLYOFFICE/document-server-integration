@@ -17,11 +17,9 @@
  */
 
 // get all the necessary values and modules
-var path = require("path");
 var urlModule = require("url");
 var urllib = require("urllib");
 var jwt = require("jsonwebtoken");
-var jwa = require("jwa");
 var fileUtility = require("./fileUtility");
 var guidManager = require("./guidManager");
 var configServer = require('config').get('server');
