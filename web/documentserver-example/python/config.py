@@ -10,7 +10,7 @@ DOC_SERV_VIEWED = [".pdf", ".djvu", ".xps", ".oxps"]  # file extensions that can
 DOC_SERV_EDITED = [".docx", ".xlsx", ".csv", ".pptx", ".txt", ".docxf"]  # file extensions that can be edited
 DOC_SERV_CONVERT = [                                           # file extensions that can be converted
     ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt",
-    ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm",
+    ".fodt", ".ott", ".xlsm", ".xlsb", ".xls", ".xltx", ".xltm",
     ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt",
     ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot",
     ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"
@@ -31,7 +31,7 @@ DOC_SERV_JWT_SECRET = ''  # the secret key for generating token
 DOC_SERV_JWT_HEADER = 'Authorization'
 
 EXT_SPREADSHEET = [
-    ".xls", ".xlsx", ".xlsm",
+    ".xls", ".xlsx", ".xlsm", ".xlsb",
     ".xlt", ".xltx", ".xltm",
     ".ods", ".fods", ".ots", ".csv"
 ]

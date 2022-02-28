@@ -29,7 +29,8 @@ namespace OnlineEditorsExample
             "Can review all the changes",
             "Can perform all actions with comments",
             "The file favorite state is undefined",
-            "Can create files from templates using data from the editor"
+            "Can create files from templates using data from the editor",
+            "Can see the information about all users"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -38,19 +39,21 @@ namespace OnlineEditorsExample
             "Can review only his own changes or changes made by users with no group",
             "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
             "This file is marked as favorite",
-            "Can create new files from the editor"
+            "Can create new files from the editor",
+            "Can see the information about users from Group2 and users who don’t belong to any group"
         };
 
         static List<string> descr_user_3 = new List<string>()
         {
             "Belongs to Group3",
             "Can review changes made by Group2 users",
-            "Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users",
+            "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
             "This file isn’t marked as favorite",
             "Can’t copy data from the file to clipboard",
             "Can’t download the file",
             "Can’t print the file",
-            "Can create new files from the editor"
+            "Can create new files from the editor",
+            "Can see the information about Group2 users"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -61,7 +64,8 @@ namespace OnlineEditorsExample
             "Can perform all actions with comments",
             "The file favorite state is undefined",
             "Can't mention others in comments",
-            "Can't create new files from the editor"
+            "Can't create new files from the editor",
+            "Can’t see anyone’s information"
         };
 
         private static List<User> users = new List<User>() {
@@ -69,9 +73,10 @@ namespace OnlineEditorsExample
                     "uid-1",
                     "John Smith",
                     "smith@example.com",
-                    null,
+                    "",
                     null,
                     new Dictionary<string, object>(),
+                    null,
                     null,
                     new List<string>(),
                     descr_user_1,
@@ -89,6 +94,7 @@ namespace OnlineEditorsExample
                         { "edit", new List<string>() { "group-2", "" } },
                         { "remove", new List<string>() { "group-2" } }
                     },
+                    new List<string>() { "group-2", "" },
                     true,
                     new List<string>(),
                     descr_user_2,
@@ -106,6 +112,7 @@ namespace OnlineEditorsExample
                         { "edit", new List<string>() { "group-2" } },
                         { "remove", new List<string>() { } }
                     },
+                    new List<string>() { "group-2" },
                     false,
                     new List<string>() { "copy", "download", "print" },
                     descr_user_3,
@@ -115,9 +122,10 @@ namespace OnlineEditorsExample
                     "uid-0",
                     null,
                     null,
-                    null,
+                    "",
                     null,
                     new Dictionary<string, object>(),
+                    new List<string>(),
                     null,
                     new List<string>(),
                     descr_user_0,
@@ -173,8 +181,9 @@ namespace OnlineEditorsExample
         public List<string> deniedPermissions;
         public List<string> descriptions;
         public bool templates;
+        public List<string> userInfoGroups;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
         {
             this.id = id;
             this.name = name;
@@ -186,6 +195,7 @@ namespace OnlineEditorsExample
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
             this.templates = templates;
+            this.userInfoGroups = userInfoGroups;
         }
     }
 }

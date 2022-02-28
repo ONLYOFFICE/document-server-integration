@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.models.configurations;
 
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -30,8 +29,6 @@ import javax.annotation.PostConstruct;
 
 @Component
 @Scope("prototype")
-@Getter
-@Setter
 public class Goback {  // the settings for the Open file location menu button and upper right corner button
 
     @Autowired
@@ -39,10 +36,12 @@ public class Goback {  // the settings for the Open file location menu button an
 
     @Value("${url.index}")
     private String indexMapping;
+
+    @Getter
     private String url;  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
 
     @PostConstruct
-    private void init(){
-        this.url = storagePathBuilder.getServerUrl(false)+indexMapping;
+    private void init() {
+        this.url = storagePathBuilder.getServerUrl(false) + indexMapping;
     }
 }

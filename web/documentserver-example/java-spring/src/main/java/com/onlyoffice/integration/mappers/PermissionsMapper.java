@@ -54,5 +54,6 @@ public class PermissionsMapper extends AbstractMapper<Permission, com.onlyoffice
                         source.getCommentsRemoveGroups().stream().map(g -> g.getName()).collect(Collectors.toList())
                 )
         );
+        destination.setUserInfoGroups(source.getUserInfoGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));
     }
 }

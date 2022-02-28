@@ -104,6 +104,18 @@ public class FileController {
                 .body(resource);
     }
 
+    // download data from the specified history file
+    private ResponseEntity<Resource> downloadFileHistory(String fileName, String version, String file){
+        Resource resource = storageMutator.loadFileAsResourceHistory(fileName,version,file);  // load the specified file as a resource
+        String contentType = "application/octet-stream";
+
+        // create a response with the content type, header and body with the file data
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
     @PostMapping("/upload")
     @ResponseBody
     public String upload(@RequestParam("file") MultipartFile file,  // upload a file
@@ -199,6 +211,29 @@ public class FileController {
         catch (Exception e)
         {
             return "{ \"error\": \"" + e.getMessage() + "\"}";  // if the operation of file deleting is unsuccessful, an error occurs
+        }
+    }
+
+    @GetMapping("/downloadhistory")
+    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request,// download a file
+                                             @RequestParam("fileName") String fileName,
+                                             @RequestParam("ver") String version,
+                                             @RequestParam("file") String file){ // history file
+        try{
+            // check if a token is enabled or not
+            if(jwtManager.tokenEnabled()){
+                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
+                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                if(header != null && !header.isEmpty()){
+                    String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
+                    jwtManager.readToken(token);  // read the token
+                }else {
+                    return null;
+                }
+            }
+            return downloadFileHistory(fileName,version,file);  // download data from the specified file
+        } catch(Exception e){
+            return null;
         }
     }
 

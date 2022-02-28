@@ -130,7 +130,20 @@ public class DocumentManager
         String hostAddress = CurUserHostAddress(userAddress);  // get current user host address
         String serverPath = request.getSession().getServletContext().getRealPath("");  // get the server url
         String storagePath = ConfigManager.GetProperty("storage-folder");  // get the storage directory
-        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+        File f = new File(storagePath);
+
+        if (f.isAbsolute()) {
+            if (!f.exists()) {
+                if (Files.isWritable(Paths.get(storagePath.substring(0, storagePath.lastIndexOf(File.separator))))) {
+                    f.mkdirs();
+                } else {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
+                }
+            } else if (f.exists() && f.isFile()) {
+                throw new SecurityException("The path to the file is specified instead of the folder");
+            }
+        }
+        String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
 
         File file = new File(directory);
 
@@ -149,6 +162,22 @@ public class DocumentManager
     {
         String directory = FilesRootPath(userAddress);
         return directory + FileUtility.GetFileName(fileName);
+    }
+
+    // get the path to history file
+    public static String HistoryPath(String fileName, String userAddress, String version, String file)
+    {
+        String hostAddress = CurUserHostAddress(userAddress);
+        String serverPath = request.getSession().getServletContext().getRealPath("");
+        String storagePath = ConfigManager.GetProperty("storage-folder");
+        String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
+        if (new File(storagePath).isAbsolute()) {
+            directory = FilesRootPath(userAddress);
+        }
+
+        directory = directory + fileName + "-hist" + File.separator + version + File.separator + file;
+
+        return directory;
     }
 
     // get the path to the forcesaved file version
@@ -320,13 +349,20 @@ public class DocumentManager
         {
             String serverPath = GetServerUrl(forDocumentServer);
             String storagePath = ConfigManager.GetProperty("storage-folder");
+            File f = new File(storagePath);
             String hostAddress = CurUserHostAddress(null);
 
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            if (f.isAbsolute() && f.isFile()) {
+                filePath = GetDownloadUrl(fileName);
+                if (!Files.isWritable(f.toPath())) {
+                    throw new SecurityException("No write permission to path: " + f.toPath());
+                }
+            }
 
             return filePath;
         }
-        catch (UnsupportedEncodingException e)
+        catch (Exception e)
         {
             return "";
         }
@@ -420,6 +456,23 @@ public class DocumentManager
         try
         {
             String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+
+            return serverPath + "/IndexServlet" + query;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
+        }
+    }
+
+    // get url to download a file to History prev.*
+    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file) {
+        String serverPath = GetServerUrl(true);
+        String hostAddress = CurUserHostAddress(null);
+        try
+        {
+            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
         }

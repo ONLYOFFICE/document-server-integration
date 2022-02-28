@@ -144,13 +144,14 @@
                                     if (!empty($storedFiles)): ?>
                                         <div id="portal-info" style="display: none">
                                     <?php else: ?>
-                                        <div id="portal-info" style="display: block">
+                                        <div id="portal-info" style="display: table-cell">
                                     <?php endif; ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
                                             Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                             <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                         </span>
+                                        <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                         <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                         <?php foreach(getAllUsers() as $user_l) {
                                             $name = $user_l->name ? $user_l->name : "Anonymous";
@@ -212,9 +213,6 @@
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . '&action=filter&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
                                                                         echo ' </td>';
-                                                                    }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
-                                                                       echo ' <td class="contentCells contentCells-icon contentCellsEmpty"></td>';
                                                                     }
                                                                     if ($storeFile->documentType == "word") {
                                                                         echo ' <td class="contentCells contentCells-icon ">';

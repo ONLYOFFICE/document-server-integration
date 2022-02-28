@@ -36,13 +36,15 @@ public class PermissionServices {
     public Permission createPermission(List<Group> reviewGroups,
                                        List<Group> commentViewGroups,
                                        List<Group> commentEditGroups,
-                                       List<Group> commentRemoveGroups){
+                                       List<Group> commentRemoveGroups,
+                                       List<Group> userInfoGroups){
 
         Permission permission = new Permission();
         permission.setReviewGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
         permission.setCommentsViewGroups(commentViewGroups);  // defines the groups whose comments the user can view
         permission.setCommentsEditGroups(commentEditGroups);  // defines the groups whose comments the user can edit
         permission.setCommentsRemoveGroups(commentRemoveGroups);  // defines the groups whose comments the user can remove
+        permission.setUserInfoGroups(userInfoGroups);
 
         permissionRepository.save(permission);  // save new permissions
 

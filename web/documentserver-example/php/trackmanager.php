@@ -82,7 +82,11 @@ function processSave($data, $fileName, $userAddress) {
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
+
+    // TODO [Delete in version 7.0 or higher]
+    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION)); // Support for versions below 7.0
+
     $newFileName = $fileName;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -123,7 +127,7 @@ function processSave($data, $fileName, $userAddress) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
         }
 
-        $histData = $data["changeshistory"];
+        $histData = empty($data["changeshistory"]) ? null : $data["changeshistory"];
         if (empty($histData)) {
             $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
         }
@@ -154,7 +158,11 @@ function processForceSave($data, $fileName, $userAddress) {
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
+
+    // TODO [Delete in version 7.0 or higher]
+    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));    // Support for versions below 7.0
+    
     $newFileName = false;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal

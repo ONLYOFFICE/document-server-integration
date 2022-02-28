@@ -2,13 +2,13 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application written in PHP.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## For Windows
 
 ### Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx?from=api_php_example).
 
@@ -16,13 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [PHP example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-You need to connect the editors to your website. Specify the path to the editors installation in the *config.php* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.php* file:
 
 ```
+$GLOBALS['STORAGE_PATH'] = "";
 $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *doceditor.php* file.
 
@@ -49,11 +50,11 @@ You can use any web server capable of running PHP code to run the example. We wi
 	You need to register the installed PHP version in IIS using PHP Manager.
 
 	Double-click **PHP Manager** to open it, click the **Register new PHP version** task and specify the full path to the main PHP executable file location. For example: *C:\Program Files\PHP\php-cgi.exe*.
-	
+
 	![php-version-1](screenshots/php-version-1.jpg)
 
 	After clicking **OK**, the new **PHP version** will be registered with IIS and will become active.
-	
+
 	![php-version-2](screenshots/php-version-2.jpg)
 
 2. Configure IIS to handle PHP requests.
@@ -82,7 +83,7 @@ You can use any web server capable of running PHP code to run the example. We wi
 1. Add your website in the IIS Manager.
 
 	On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
-	
+
 	![add](screenshots/add.png)  
 
 2. In the **Add Website** dialog box, specify the name of the folder with the PHP project in the **Site name** box.
@@ -90,13 +91,13 @@ You can use any web server capable of running PHP code to run the example. We wi
 	Specify the path to the folder with your project in the **Physical path** box.
 
 	Specify the unique value used only for this website in the **Port** box.
-	
+
 	![php-add](screenshots/php-add.png)  
 
 3. Browse your website with the IIS manager:
 
    Right-click the site -> **Manage Website** -> **Browse**
-   
+
    ![browse](screenshots/browse.png) 
 
 ### Step 6. Check accessibility
@@ -147,13 +148,14 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano config.php
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
+    $GLOBALS['STORAGE_PATH'] = "";
     $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
 
 5. Set permission for site:
 

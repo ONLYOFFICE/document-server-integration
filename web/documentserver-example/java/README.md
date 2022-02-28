@@ -1,14 +1,14 @@
 ## Overview
 
-This example will help you integrate ONLYOFFICE Docs into your web application written in Java. 
+This example will help you integrate ONLYOFFICE Docs into your web application written in Java.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications.
+**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
 
 ## For Windows
 
 ### Step 1. Install ONLYOFFICE Docs
 
-Download and install ONLYOFFICE Docs (packaged as Document Server). 
+Download and install ONLYOFFICE Docs (packaged as Document Server).
 
 See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx). 
 
@@ -16,13 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [Java example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *\src\main\resources\settings.properties* file:
 
 ```
+storage-folder = app_data
 files.docservice.url.site=https://documentserver/
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\src\main\webapp\editor.jsp* file.
 
@@ -96,7 +97,7 @@ To run the Java example code, install the Java version appropriate for your OS a
 2. Tomcat Web Application Manager will request the **username** and the **password:**
 
 	![author](screenshots/author.jpg)
-   
+
 
 	Specify user data in *tomcat-users.xml* file in the Apache Tomcat installation folder. Define the **manager-gui** user role, specify the **user name** and **password** values:
 
@@ -106,18 +107,22 @@ To run the Java example code, install the Java version appropriate for your OS a
 		<user username="tomcat" password="tomcat" roles="manager-gui"/>
 	</tomcat-users>
 	```
-
-3. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the *.war* file in the Java project folder, then click **Deploy**.
+3. Build the project using the following commands
+	```
+	mvn clean
+	mvn package
+	```
+4. Upload the Java project in Tomcat Web Application Manager. For that click **Choose File** in the **WAR file to deploy** section and find the *.war* file in the Java project folder, then click **Deploy**.
 
 	![upload-app](screenshots/upload-app.jpg)
 
 	![war-file](screenshots/war-file.jpg) 
 
-4. You will see the project in the **Application List**:
-	
+5. You will see the project in the **Application List**:
+
 	![manager-app](screenshots/manager-app.jpg) 
-   
-5. Click the link with the application name to run it.
+
+6. Click the link with the application name to run it.
 
 ### Step 6. Check accessibility
 
@@ -163,13 +168,17 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano src/main/resources/settings.properties
     ```
 
-	Edit the following line:
+	Edit the following lines:
 
     ```
+    storage-folder = app_data
     files.docservice.url.site=https://documentserver/
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored. Please note that you must have read and write permissions to the folder. If you do not have them, please use the next command:
+	```
+	sudo chmod -R ugo+rw /{path}
+	```
 
 5. Install **Maven**:
 
@@ -238,13 +247,14 @@ Make sure that the Document Server has access to the server with the example ins
 	nano src/main/resources/settings.properties
 	```
 	
-2. Edit the following line:
+2. Edit the following lines:
 
 	```
+	storage-folder = app_data
 	files.docservice.url.site=https://documentserver/
 	```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored.
 
 3. Run the next command in the Java example directory:
 

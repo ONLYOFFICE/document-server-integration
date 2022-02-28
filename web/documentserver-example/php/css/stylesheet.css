@@ -22,6 +22,7 @@ html {
 }
 
 body {
+    display: inline-table;
     background: #FFFFFF;
     color: #333333;
     font-family: Open Sans;
@@ -70,6 +71,7 @@ header img {
 }
 
 .main{
+    display: table;
     height: calc(100% - 112px);
     min-height: 536px;
 }
@@ -94,6 +96,10 @@ header img {
     padding: 48px 32px 24px;
     position: relative;
     width: 896px;
+}
+
+#portal-info {
+    max-width: 65vw;
 }
 
 .portal-name {
@@ -728,12 +734,9 @@ html {
     width: 30vw;
     min-width: 200px;
     max-width: 400px;
+    margin-top: 20px;
 }
 
 .user-descr > b {
     margin-left: 25px;
-}
-
-.portal-descr:nth-child(3) {
-    margin-bottom: 20px;
 }

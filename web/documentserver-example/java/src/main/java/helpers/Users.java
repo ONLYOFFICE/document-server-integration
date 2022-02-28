@@ -31,6 +31,7 @@ public class Users {
         add("Can perform all actions with comments");
         add("The file favorite state is undefined");
         add("Can create files from templates using data from the editor");
+        add("Can see the information about all users");
     }};
 
     static List<String> descr_user_2 = new ArrayList<String>() {{
@@ -39,17 +40,19 @@ public class Users {
         add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
         add("This file is marked as favorite");
         add("Can create new files from the editor");
+        add("Can see the information about users from Group2 and users who don’t belong to any group");
     }};
 
     static List<String> descr_user_3 = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
-        add("Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users");
+        add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
         add("This file isn’t marked as favorite");
         add("Can’t copy data from the file to clipboard");
         add("Can’t download the file");
         add("Can’t print the file");
         add("Can create new files from the editor");
+        add("Can see the information about Group2 users");
     }};
 
     static List<String> descr_user_0 = new ArrayList<String>() {{
@@ -60,20 +63,21 @@ public class Users {
         add("The file favorite state is undefined");
         add("Can't mention others in comments");
         add("Can't create new files from the editor");
+        add("Can’t see anyone’s information");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
-                null, null, new CommentGroups(),
+                "", null, new CommentGroups(), null,
                 null, new ArrayList<String>(), descr_user_1, true));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
-                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
+                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descr_user_2, false));
         add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
-                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
+                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()), Arrays.asList("group-2"),
                 false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
         add(new User("uid-0", null, null,
-                null, null, new CommentGroups(),
+                "", null, new CommentGroups(), new ArrayList<String>(),
                 null, new ArrayList<String>(), descr_user_0, false));
     }};
 

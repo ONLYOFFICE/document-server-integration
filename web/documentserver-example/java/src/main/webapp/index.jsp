@@ -139,12 +139,13 @@
                             <% DocumentManager.Init(request, response); %>
                             <% File[] files = DocumentManager.GetStoredFiles(null); %>
                             <div class="main-panel">
-                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "block" %>">
+                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
+                                    <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
                                         <div class="user-descr">
@@ -180,7 +181,7 @@
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %> [<%= version %>]">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                                     <span><%= files[i].getName() %></span>
@@ -214,9 +215,6 @@
                                                                         <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
                                                                     </a>
                                                                 </td>
-                                                                <% } %>
-                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                                 <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">

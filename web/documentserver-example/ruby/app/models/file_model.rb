@@ -45,7 +45,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    DocumentHelper.get_file_uri(@file_name, false)
+    File.absolute_path?(Rails.configuration.storagePath) ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
   end
 
   # get document type from its name (word, cell or slide)
@@ -128,7 +128,8 @@ class FileModel
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
           :reviewGroups => @user.reviewGroups,
-          :commentGroups => @user.commentGroups
+          :commentGroups => @user.commentGroups,
+          :userInfoGroups => @user.userInfoGroups
         }
       },
       :editorConfig => {
@@ -208,8 +209,9 @@ class FileModel
         end
 
         # get the history data from the previous file version and write key and url information about it
+        dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
-        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_path_uri(File.join("#{file_name}-hist", i.to_s, "prev#{file_ext}"))
+        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         dataObj["version"] = i
 
         if (i > 1)  # check if the version number is greater than 1
@@ -229,12 +231,13 @@ class FileModel
 
           prev = histData[(i - 2).to_s]  # get the history data from the previous file version
           dataObj["previous"] = {  # write key and url information about previous file version
+            :fileType => prev["fileType"],
             :key => prev["key"],
             :url => prev["url"]
           }
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_path_uri(File.join("#{file_name}-hist", (i - 1).to_s, "diff.zip"))
+          dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, i - 1, "diff.zip")
         end
 
         if JwtHelper.is_enabled  # check if a secret key to generate token exists or not

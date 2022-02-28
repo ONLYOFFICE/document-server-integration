@@ -35,7 +35,7 @@ namespace OnlineEditorsExample
         // the spreadsheet extension list
         public static readonly List<string> ExtsSpreadsheet = new List<string>
             {
-                ".xls", ".xlsx", ".xlsm",
+                ".xls", ".xlsx", ".xlsm", ".xlsb",
                 ".xlt", ".xltx", ".xltm",
                 ".ods", ".fods", ".ots", ".csv"
             };
@@ -78,7 +78,9 @@ namespace OnlineEditorsExample
         {
             get
             {
-                return
+                return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? 
+                    WebConfigurationManager.AppSettings["storage-path"] + "/"
+                    :
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + WebConfigurationManager.AppSettings["storage-path"]
@@ -144,18 +146,52 @@ namespace OnlineEditorsExample
         // get the storage path of the given file
         public static string StoragePath(string fileName, string userAddress)
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);  // if the file directory doesn't exist, make it
             }
-            return directory + Path.GetFileName(fileName);
+            return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
+        }
+
+        // get the path to the history file version
+        public static string HistoryPath(string fileName, string userAddress, string version, string file)
+        {
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            var filepath = directory + Path.GetFileName(fileName) + "-hist" + "\\" + version + "\\" + file;
+            return filepath;
         }
 
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))  // the directory with host address doesn't exist
             {
                 return "";
@@ -528,7 +564,16 @@ namespace OnlineEditorsExample
         // get all the stored files from the folder
         protected static List<FileInfo> GetStoredFiles()
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            var directory = "";
+            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            }
+            
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);  // read the user host directory contents

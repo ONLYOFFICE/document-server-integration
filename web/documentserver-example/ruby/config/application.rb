@@ -35,7 +35,7 @@ module OnlineEditorsExampleRuby
     Rails.configuration.fillDocs=".oform|.docx"
     Rails.configuration.viewedDocs=".pdf|.djvu|.xps|.oxps"
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.txt|.docxf"
-    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
+    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xlsb|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
 
     Rails.configuration.urlSite="http://documentserver/"
     Rails.configuration.urlConverter="ConvertService.ashx"
