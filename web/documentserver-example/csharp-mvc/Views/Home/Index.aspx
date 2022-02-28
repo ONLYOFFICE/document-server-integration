@@ -326,9 +326,7 @@
             <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
             <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
             <br />
-            <br />
             <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-            <br />
             <br />
             <div class="error-message">
                 <b>Upload error: </b><span></span>
@@ -338,10 +336,12 @@
         </div>
         <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
         <br />
-        <div id="beginEdit" class="button orange disable">Edit</div>
-        <div id="beginView" class="button gray disable">View</div>
-        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-        <div id="cancelEdit" class="button gray">Cancel</div>
+        <div class="buttonsMobile">
+            <div id="beginEdit" class="button orange disable">Edit</div>
+            <div id="beginView" class="button gray disable">View</div>
+            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+            <div id="cancelEdit" class="button gray">Cancel</div>
+        </div>
     </div>
 
     <span id="loadScripts" data-docs="<%= WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"] %>"></span>
