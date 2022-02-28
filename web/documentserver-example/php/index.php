@@ -289,7 +289,7 @@
                     <span id="uploadFileName" class="uploadFileName"></span>
                     <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                     <span id="step1" class="step">1. Loading the file.</span>
-                    <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                    <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>       
                     <br />
                     <span id="step2" class="step">2. Conversion.</span>
                     <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -309,9 +309,9 @@
                     <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                     <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                     <br />
-                    <br />
+                    <!-- <br /> -->
                     <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-                    <br />
+                    <!-- <br /> -->
                     <br />
                     <div class="error-message">
                         <b>Upload error: </b><span></span>
@@ -321,12 +321,14 @@
                 </div>
                 <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
                 <br />
-                <?php if (($GLOBALS['MODE']) != "view") { ?>
-                    <div id="beginEdit" class="button orange disable">Edit</div>
-                <?php } ?>
-                <div id="beginView" class="button gray disable">View</div>
-                <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-                <div id="cancelEdit" class="button gray">Cancel</div>
+                <div class="buttonsMobile">
+                    <?php if (($GLOBALS['MODE']) != "view") { ?>
+                        <div id="beginEdit" class="button orange disable"><div>Edit</div></div>
+                    <?php } ?>
+                    <div id="beginView" class="button gray disable">View</div>
+                    <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+                    <div id="cancelEdit" class="button gray">Cancel</div>
+                </div>
             </div>
 
             <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
