@@ -22,7 +22,7 @@
 }
 
 body {
-    display: inline-table;
+    display: block;
     background: #FFFFFF;
     color: #333333;
     font-family: Open Sans;
