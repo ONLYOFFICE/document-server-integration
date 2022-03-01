@@ -30,6 +30,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width" />
         <title>ONLYOFFICE Document Editors</title>
 
         <link rel="icon" href="./favicon.ico" type="image/x-icon" />
