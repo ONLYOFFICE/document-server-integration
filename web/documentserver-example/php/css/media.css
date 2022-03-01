@@ -439,7 +439,6 @@
 /* Mobile Upload*/
     .blockUI.blockMsg.blockPage.ui-dialog.ui-widget.ui-corner-all.ui-widget-content.ui-draggable {
         width: 344px !important;
-        height: 542px;
         box-shadow: 0px 7px 15px rgba(85, 85, 85, 0.1);
         border-radius: 2px;
         top: 15% !important;
@@ -454,7 +453,7 @@
         padding: 0 !important;
     }
     #mainProgress {
-        margin: 24px 16px 30px !important;
+        margin: 24px 16px 0 !important;
     }
     .blockTitle {
         padding: 10px 10px 6px 16px !important;
