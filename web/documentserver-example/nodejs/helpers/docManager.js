@@ -231,17 +231,21 @@ docManager.prototype.getDownloadUrl = function (fileName) {
     return server + handler;
 };
 
+docManager.prototype.storageRootPath = function (userAddress) {
+    return path.join(storageConfigFolder, this.curUserHostAddress(userAddress));  // get the path to the directory for the host address
+}
+
 // get the storage path of the given file
 docManager.prototype.storagePath = function (fileName, userAddress) {
     fileName = fileUtility.getFileName(fileName);  // get the file name with extension
-    const directory = path.isAbsolute(storageConfigFolder) ? storageConfigFolder : path.join(storageConfigFolder, this.curUserHostAddress(userAddress));  // get the path to the directory for the host address
+    const directory = this.storageRootPath(userAddress);
     this.createDirectory(directory);  // create a new directory if it doesn't exist
     return path.join(directory, fileName);  // put the given file to this directory
 };
 
 // get the path to the forcesaved file version
 docManager.prototype.forcesavePath = function (fileName, userAddress, create) {
-    let directory = path.isAbsolute(storageConfigFolder) ? storageConfigFolder : path.join(storageConfigFolder, this.curUserHostAddress(userAddress));
+    let directory = this.storageRootPath(userAddress);
     if (!this.existsSync(directory)) {  // the directory with host address doesn't exist
         return "";
     }
@@ -259,7 +263,7 @@ docManager.prototype.forcesavePath = function (fileName, userAddress, create) {
 
 // create the path to the file history
 docManager.prototype.historyPath = function (fileName, userAddress, create) {
-    let directory =  path.isAbsolute(storageConfigFolder) ? storageConfigFolder : path.join(storageConfigFolder, userAddress);
+    let directory =  this.storageRootPath(userAddress);
     if (!this.existsSync(directory)) {
         return "";
     }
@@ -304,7 +308,7 @@ docManager.prototype.changesUser = function (fileName, userAddress, version) {
 // get all the stored files
 docManager.prototype.getStoredFiles = function () {
     const userAddress = this.curUserHostAddress();
-    const directory = path.isAbsolute(storageConfigFolder) ? storageConfigFolder : path.join(storageConfigFolder, userAddress);
+    const directory = this.storageRootPath(userAddress);
     this.createDirectory(directory);
     const result = [];
     const storedFiles = fileSystem.readdirSync(directory);  // read the user host directory contents
@@ -477,7 +481,7 @@ docManager.prototype.cleanFolderRecursive = function (folder, me) {
 // get files information
 docManager.prototype.getFilesInfo = function (fileId) {
     const userAddress = this.curUserHostAddress();
-    const directory = path.isAbsolute(storageConfigFolder) ? storageConfigFolder : path.join(storageConfigFolder, userAddress);
+    const directory = this.storageRootPath(userAddress);
     const filesInDirectory = this.getStoredFiles();  // get all the stored files from the folder
     let responseArray = [];
     let responseObject;
