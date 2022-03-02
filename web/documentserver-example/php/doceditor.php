@@ -119,7 +119,7 @@
             "createUrl" => $user->id != "uid-0" ? $createUrl : null,
             "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document
-                "id" => $user->id,
+                "id" => $user->id != "uid-0" ? $user->id : null,
                 "name" => $user->name,
                 "group" => $user->group
             ],
@@ -203,7 +203,7 @@
         return serverPath(false) . '/'
                 . "doceditor.php"
                 . "?fileExt=" . $ext
-                . "&user=" . $uid
+                . "&user=" . $uid 
                 . "&type=" . $type;
     }
 

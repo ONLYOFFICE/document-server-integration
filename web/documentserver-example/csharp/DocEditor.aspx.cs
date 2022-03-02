@@ -236,7 +236,7 @@ namespace OnlineEditorsExample
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", user.id },
+                                            { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
                                             { "group", user.group }
                                         }

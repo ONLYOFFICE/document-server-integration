@@ -917,7 +917,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 backUrl: req.docManager.getServerUrl() + "/",
                 curUserHostAddress: req.docManager.curUserHostAddress(),
                 lang: lang,
-                userid: userid,
+                userid: userid != "uid-0" ? userid : null,
                 name: name,
                 userGroup: userGroup,
                 reviewGroups: JSON.stringify(reviewGroups),

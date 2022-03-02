@@ -85,7 +85,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
 
         defaultCustomizationConfigurer.configure(config.getCustomization(), DefaultCustomizationWrapper.builder()  // define the customization configurer
                 .action(action)
-                .user(wrapper.getUser())
+                .user(userIsAnon ? null : wrapper.getUser())
                 .build());
         config.setMode(canEdit && !action.equals(Action.view) ? Mode.edit : Mode.view);
         config.setUser(mapper.toModel(wrapper.getUser()));
