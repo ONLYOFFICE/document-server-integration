@@ -445,9 +445,8 @@
         width: 344px !important;
         box-shadow: 0px 7px 15px rgba(85, 85, 85, 0.1);
         border-radius: 2px;
-        top: 15% !important;
-        left: 15% !important;
-        margin-left: 0 !important;
+        top: 10% !important;
+        margin-left: -172px !important;
     }
 
     .ui-dialog .ui-dialog-titlebar {
