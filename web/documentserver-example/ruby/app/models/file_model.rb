@@ -140,7 +140,7 @@ class FileModel
         :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
-          :id => @user.id,
+          :id => !@user.id.eql?("uid-0") ? @user.id : nil,
           :name => @user.name,
           :group => @user.group
         },

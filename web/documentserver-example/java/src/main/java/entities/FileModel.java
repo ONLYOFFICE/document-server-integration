@@ -84,7 +84,7 @@ public class FileModel
         editorConfig.templates = user.templates ? templates : null;
 
         // write user information to the config (id, name and group)
-        editorConfig.user.id = user.id;
+        editorConfig.user.id = !user.id.equals("uid-0") ? user.id : null;
         editorConfig.user.name = user.name;
         editorConfig.user.group = user.group;
 

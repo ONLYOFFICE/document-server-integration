@@ -238,7 +238,7 @@ def edit(request):
             'createUrl' : createUrl if user.id !='uid-0' else None,
             'templates' : templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
-                'id': user.id,
+                'id': user.id if user.id !='uid-0' else None,
                 'name': user.name,
                 'group': user.group
             },
