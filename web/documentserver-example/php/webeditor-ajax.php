@@ -95,6 +95,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array = saveas();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "rename":
+            $response_array = renamefile();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -450,6 +454,14 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
+}
+
+// rename...
+function renamefile() {
+    $post = json_decode(file_get_contents('php://input'), true);
+    $newfilename = $post["filename"];
+    $result["newfilename"] = $newfilename;
+    return $result;   
 }
 
 ?>

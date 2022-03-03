@@ -461,6 +461,17 @@
             }
         };
 
+        var onRequestRename = function(event) {
+            var filename = event.data;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=rename");
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify({filename : filename}));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
         var сonnectEditor = function () {
 
             <?php
@@ -485,6 +496,7 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+                "onRequestRename": onRequestRename
             };
 
             <?php
