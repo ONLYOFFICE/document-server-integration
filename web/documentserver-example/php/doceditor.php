@@ -423,6 +423,7 @@
             if(event.data.title) {
                 var title = event.data.title;
                 document.title = title;
+                console.log(event.data);
             }
             else {
                 var favorite = !!event.data.favorite;

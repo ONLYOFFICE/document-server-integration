@@ -465,13 +465,25 @@ function renamefile() {
 
     $arr = ['c' => 'meta', 'key' => $dockey, 'meta' => ['title' => $newfilename]];
 
+    // add header token
+    $headerToken = "";
+    $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+
+    if (isJwtEnabled()) {
+        $headerToken = jwtEncode([ "payload" => $arr ]);
+        $arr["token"] = jwtEncode($arr);
+    }
+
+    $data = json_encode($arr);
+
     // request parameters
     $opts = array('http' => array(
         'method'  => 'POST',
         'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-        'header'=> "Content-type: application/json\r\n" . 
-                    "Accept: application/json\r\n",
-        'content' => json_encode($arr)
+        'header'=> "Content-type: application/json\r\n" .
+                    "Accept: application/json\r\n" .
+                    (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
+        'content' => $data
         )
     );
     $context = stream_context_create($opts);
