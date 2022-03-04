@@ -97,7 +97,6 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             die (json_encode($response_array));
         case "rename":
             $response_array = renamefile();
-            $response_array['status'] = 'success';
             die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
@@ -459,9 +458,25 @@ function delTree($dir) {
 // rename...
 function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
-    $newfilename = $post["filename"];
-    $result["newfilename"] = $newfilename;
-    return $result;   
+    $newfilename = $post["newfilename"];
+    $dockey = $post["dockey"];
+
+    $urlToRename = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
+
+    $arr = ['c' => 'meta', 'key' => $dockey, 'meta' => ['title' => $newfilename]];
+
+    // request parameters
+    $opts = array('http' => array(
+        'method'  => 'POST',
+        'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
+        'header'=> "Content-type: application/json\r\n" . 
+                    "Accept: application/json\r\n",
+        'content' => json_encode($arr)
+        )
+    );
+    $context = stream_context_create($opts);
+    $response_data = file_get_contents($urlToRename, FALSE, $context);
+    return $response_data;
 }
 
 ?>

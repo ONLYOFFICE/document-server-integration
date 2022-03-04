@@ -420,10 +420,17 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if(event.data.title) {
+                var title = event.data.title;
+                document.title = title;
+            }
+            else {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+           
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -462,11 +469,16 @@
         };
 
         var onRequestRename = function(event) {
-            var filename = event.data;
+            var newfilename = event.data;
+            var config = <?php echo json_encode($config) ?>;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor-ajax.php?type=rename");
             xhr.setRequestHeader( 'Content-Type', 'application/json');
-            xhr.send(JSON.stringify({filename : filename}));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
             }
