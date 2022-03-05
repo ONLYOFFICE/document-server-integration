@@ -173,11 +173,6 @@ docManager.prototype.getlocalFileUri = function (fileName, version, forDocumentS
     const serverPath = this.getServerUrl(forDocumentServer);
     const hostAddress = this.curUserHostAddress();
     let url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);  // get full url address to the file
-    if (path.isAbsolute(storageConfigFolder)) {
-        let separator = configServer.get("storagePath").includes("/") ? "/" : "\\";
-        url = this.getDownloadUrl(fileName + "-history" + separator + version + separator + "diff.zip");
-        return url;
-    }
     if (!version) {
         return url;
     }
