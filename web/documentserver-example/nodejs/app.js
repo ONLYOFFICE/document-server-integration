@@ -346,6 +346,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     };
 
     var callback = function (err, data) {
+
         if (err) {  // if an error occurs
             if (err.name === "ConnectionTimeoutError" || err.name === "ResponseTimeoutError") {  // check what type of error it is
                 writeResult(fileName, 0, null);  // despite the timeout errors, write the file to the result object
@@ -967,6 +968,39 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         res.status(500);
         res.render("error", { message: "Server error: " + ex.message });
     }
+});
+
+app.post("/rename", function (req, res) { //define a handler for renaming file
+
+    var newfilename = req.body.newfilename;
+    var dockey = req.body.dockey;
+    var urlModule = require("url");
+
+    var params = {  // create a parameter object with command method and the document key value in it
+        c: "meta",
+        key: dockey,
+        meta: {
+            title: newfilename
+        }
+    };
+
+    var uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
+    var headers = {  // create a headers object
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    };
+    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+        params.token = documentService.getToken(params);
+    }
+
+    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(urlModule.parse(uri),
+        {
+            method: "POST",
+            headers: headers,
+            data: params
+        });
 });
 
 wopiApp.registerRoutes(app);
