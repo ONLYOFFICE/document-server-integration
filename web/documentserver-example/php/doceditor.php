@@ -469,7 +469,7 @@
             }
         };
 
-        var onRequestRename = function(event) {
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
             var newfilename = event.data;
             var config = <?php echo json_encode($config) ?>;
             var data = {

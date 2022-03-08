@@ -110,10 +110,17 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if(event.data.title) { //renaming file
+                var title = event.data.title;
+                document.title = title;
+                console.log(event.data);
+            }
+            else {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -153,6 +160,22 @@
             }
         };
 
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            var newfilename = event.data;
+            config = {{ cfg | safe }}
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "rename");
+            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -169,6 +192,7 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                "onRequestRename": onRequestRename,
             };
 
             {% if history and historyData %}
