@@ -518,7 +518,7 @@
             };
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
                 var data = JSON.stringify(event.data);
                 innerAlert("onRequestSendNotify: " + data);
             };
