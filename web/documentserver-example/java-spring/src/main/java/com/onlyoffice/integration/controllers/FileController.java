@@ -61,6 +61,12 @@ public class FileController {
     @Value("${filesize-max}")
     private String filesizeMax;
 
+    @Value("${files.docservice.url.site}")
+    private String docserviceUrlSite;
+
+    @Value("${files.docservice.url.command}")
+    private String docserviceUrlCommand;
+
     @Autowired
     private FileUtility fileUtility;
     @Autowired
@@ -355,5 +361,69 @@ public class FileController {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
+    }
+
+    @PostMapping("/rename")
+    @ResponseBody
+    public String rename(@RequestBody JSONObject body) {
+
+        String newfilename = (String) body.get("newfilename");
+        String dockey = (String) body.get("dockey");
+        String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
+
+        try {
+            URL url = new URL(DocumentCommandUrl);
+            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+    
+            HashMap<String, Object> params = new HashMap<>();
+            HashMap<String, Object> title = new HashMap<>();
+    
+            title.put("title", newfilename);
+    
+            params.put("c", "meta");
+            params.put("key", dockey);
+            params.put("meta", title);
+
+            String headerToken;
+            if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
+            {
+                Map<String, Object> payloadMap = new HashMap<>();
+                payloadMap.put("payload", params);
+                headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token
+                connection.setRequestProperty(documentJwtHeader.equals("") ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);  // add a header Authorization with a header token and Authorization prefix in it
+
+                String token = jwtManager.createToken(params);  // encode a payload object into a body token
+                params.put("token", token);
+            }
+
+            String bodyString = objectMapper.writeValueAsString(params);
+
+            byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
+    
+            connection.setRequestMethod("POST");  // set the request method
+            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
+            connection.setDoOutput(true);  // set the doOutput field to true
+            connection.connect();
+            
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(bodyByte);  // write bytes to the output stream
+            }
+
+            InputStream stream = connection.getInputStream();  // get input stream
+
+            if (stream == null) throw new RuntimeException("Could not get an answer");
+
+            String jsonString = serviceConverter.convertStreamToString(stream);  // convert stream to json string
+            connection.disconnect();
+    
+            JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
+
+            return "result: " + response.toJSONString();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+        
     }
 }
