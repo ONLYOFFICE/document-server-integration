@@ -420,18 +420,14 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            if(event.data.title) {
-                var title = event.data.title;
-                document.title = title;
-                console.log(event.data);
-            }
-            else {
+            if (event.data.favorite) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
                 document.title = (favorite ? "☆" : "") + title;
                 docEditor.setFavorite(favorite);  // change the Favorite icon state
             }
-           
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -461,7 +457,7 @@
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor-ajax.php?type=saveas");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
@@ -470,15 +466,17 @@
         };
 
         var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
             var newfilename = event.data;
-            var config = <?php echo json_encode($config) ?>;
             var data = {
                 newfilename: newfilename,
-                dockey: config.document.key,
+                dockey: "<?php echo $docKey ?>",
             };
+
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor-ajax.php?type=rename");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);

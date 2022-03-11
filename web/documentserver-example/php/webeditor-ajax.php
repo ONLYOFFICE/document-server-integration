@@ -488,7 +488,7 @@ function renamefile() {
     );
     $context = stream_context_create($opts);
     $response_data = file_get_contents($urlToRename, FALSE, $context);
-    return $response_data;
+    return array("result" => $response_data);
 }
 
 ?>
