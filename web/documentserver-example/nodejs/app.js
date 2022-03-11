@@ -1000,7 +1000,15 @@ app.post("/rename", function (req, res) { //define a handler for renaming file
             method: "POST",
             headers: headers,
             data: params
+        }, function(err, data, result) {
+            res.writeHead(200, {"Content-Type": "application/json" });
+            res.write(JSON.stringify({ "result": result }));
+            res.end();
         });
+
+    // res.writeHead(200, {"Content-Type": "application/json" });
+    // res.write(JSON.stringify({ "result": res }));
+    // res.end();
 });
 
 wopiApp.registerRoutes(app);

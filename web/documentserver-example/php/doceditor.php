@@ -359,6 +359,7 @@
     <script type="text/javascript">
 
         var docEditor;
+        var config;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -471,7 +472,7 @@
             var newfilename = event.data;
             var data = {
                 newfilename: newfilename,
-                dockey: "<?php echo $docKey ?>",
+                dockey: config.document.key,
             };
 
             let xhr = new XMLHttpRequest();
@@ -491,7 +492,7 @@
                 }
             ?>
 
-            var config = <?php echo json_encode($config) ?>;
+            config = <?php echo json_encode($config) ?>;
 
             config.width = "100%";
             config.height = "100%";

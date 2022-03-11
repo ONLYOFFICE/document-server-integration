@@ -388,8 +388,6 @@ class HomeController < ApplicationController
       rescue => ex
           raise ex.message
       end
-
-      json_data = JSON.parse(data)  # convert the response body into the json format
-      return json_data
+      render plain: '{ "result" : "' + data + '"}'
     end
 end

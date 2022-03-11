@@ -149,7 +149,6 @@ def saveAs(request):
 
 # rename file
 def rename(request):
-    response = {}
     body = trackManager.readBody(request)
     newfilename = body['newfilename']
     dockey = body['dockey']
@@ -173,11 +172,9 @@ def rename(request):
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
 
-    requests.post(documentCommandUrl, json=payload, headers=headers)
-        
-    response.setdefault('newfilename', newfilename)
+    response = requests.post(documentCommandUrl, json=payload, headers=headers)
 
-    return HttpResponse(json.dumps(response), content_type='application/json')
+    return HttpResponse(json.dumps(response.json()), content_type='application/json')
 
 # edit a file
 def edit(request):
