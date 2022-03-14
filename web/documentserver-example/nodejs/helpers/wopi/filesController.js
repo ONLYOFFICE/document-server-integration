@@ -23,6 +23,7 @@ const fileSystem = require("fs");
 const mime = require("mime");
 const path = require("path");
 const users = require("../users");
+const docManager = require("../docManager");
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
@@ -289,6 +290,7 @@ function returnLockMismatch(res, lock, reason) {
 
 exports.fileRequestHandler = (req, res) => {
     let userAddress = null;
+    req.docManager = new docManager(req, res);
     if (req.params['id'].includes("@")) {  // if there is the "@" sign in the id parameter
         let split = req.params['id'].split("@");  // split this parameter by "@"
         req.params['id'] = split[0];  // rewrite id with the first part of the split parameter
