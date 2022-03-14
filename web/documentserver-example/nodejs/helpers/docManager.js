@@ -385,8 +385,8 @@ docManager.prototype.getTemplateImageUrl = function (fileType) {
 }
 
 // get document key
-docManager.prototype.getKey = function (fileName) {
-    const userAddress = this.curUserHostAddress();
+docManager.prototype.getKey = function (fileName, userAddress) {
+    userAddress = userAddress || this.curUserHostAddress();
     let key = userAddress + this.getlocalFileUri(fileName);  // get document key by adding local file url to the current user host address
 
     let historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history

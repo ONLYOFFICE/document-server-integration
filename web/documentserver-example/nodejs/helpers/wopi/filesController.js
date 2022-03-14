@@ -256,8 +256,8 @@ function putFile(wopi, req, res, userHost) {
 // return information about the file properties, access rights and editor settings
 function checkFileInfo(wopi, req, res, userHost) {
     let userAddress = req.docManager.curUserHostAddress(userHost);
-    let version = req.docManager.getKey(wopi.id);
-    
+    let version = req.docManager.getKey(wopi.id, userAddress);
+
     let path = req.docManager.storagePath(wopi.id, userAddress);
     // add wopi query
     var query = new URLSearchParams(wopi.accessToken);
@@ -312,5 +312,5 @@ exports.fileRequestHandler = (req, res) => {
         return;
     }
 
-    action(wopiData, req, res);
+    action(wopiData, req, res, userAddress);
 }
