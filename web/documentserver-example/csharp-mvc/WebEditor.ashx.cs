@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -69,6 +70,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "saveas":
                     SaveAs(context);
+                    break;
+                case "rename":
+                    Rename(context);
                     break;
             }
         }
@@ -539,6 +543,76 @@ namespace OnlineEditorsExampleMVC
             catch (Exception)
             {
                 context.Response.Write("{ \"error\": \"File not found!\"}");
+            }
+        }
+
+        // rename a file
+        private static void Rename(HttpContext context)
+        {
+            // read request body
+            var fileData = TrackManager.readBody(context);  
+
+            var newfilename = (string) fileData["newfilename"];
+            var dockey = (string) fileData["dockey"];
+
+            try
+            {
+                var jss = new JavaScriptSerializer();
+
+                string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
+
+                var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                var body = new Dictionary<string, object>() {
+                    { "c", "meta" },
+                    { "key", dockey },
+                    { "meta", new Dictionary<string, object>() {{"title", newfilename}} }
+                };
+
+                // check if a secret key to generate token exists or not
+                if (JwtManager.Enabled)
+                {
+                    var payload = new Dictionary<string, object>
+                        {
+                            { "payload", body }
+                        };
+
+                    var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
+                    var bodyToken = JwtManager.Encode(body);  // encode body into a body token
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                    request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
+
+                    body.Add("token", bodyToken);
+                }
+
+                var bytes = Encoding.UTF8.GetBytes(new JavaScriptSerializer().Serialize(body));
+                request.ContentLength = bytes.Length;
+                using (var requestStream = request.GetRequestStream())
+                {
+                    // write bytes to the output stream
+                    requestStream.Write(bytes, 0, bytes.Length);
+                }
+
+                string dataResponse;
+                using (var response = request.GetResponse())  // get the response
+                using (var stream = response.GetResponseStream())
+                {
+                    if (stream == null) throw new Exception("Response is null");
+
+                    using (var reader = new StreamReader(stream))
+                    {
+                        dataResponse = reader.ReadToEnd();  // and read it
+                    }
+                }
+
+                var result = "{\"result\": \"" + dataResponse + "\"}";
+                context.Response.Write(result);
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + 1 + "\", \"message\": \"" + e.Message + "\"}");
             }
         }
     }
