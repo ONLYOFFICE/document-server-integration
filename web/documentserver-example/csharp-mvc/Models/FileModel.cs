@@ -199,7 +199,7 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "url", url.Action("Index", "Home") }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                                                     }
                                             }
-                                        }                                     
+                                        }
                                 }
                             }
                     }
