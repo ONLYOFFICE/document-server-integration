@@ -974,37 +974,11 @@ app.post("/rename", function (req, res) { //define a handler for renaming file
 
     var newfilename = req.body.newfilename;
     var dockey = req.body.dockey;
-    var urlModule = require("url");
+    var result;
 
-    var params = {  // create a parameter object with command method and the document key value in it
-        c: "meta",
-        key: dockey,
-        meta: {
-            title: newfilename
-        }
-    };
-
-    var uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
-    var headers = {  // create a headers object
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    };
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + documentService.fillJwtByUrl(uri, params);
-        params.token = documentService.getToken(params);
-    }
-
-    //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
-    urllib.request(urlModule.parse(uri),
-        {
-            method: "POST",
-            headers: headers,
-            data: params
-        }, function(err, data, result) {
-            res.writeHead(200, {"Content-Type": "application/json" });
-            res.write(JSON.stringify({ "result": result }));
-            res.end();
-        });
+    documentService.commandRequest("meta", dockey, newfilename, result);
+    res.writeHead(200, {"Content-Type": "application/json" });
+    res.write(JSON.stringify({ "result": result }));
 });
 
 wopiApp.registerRoutes(app);
