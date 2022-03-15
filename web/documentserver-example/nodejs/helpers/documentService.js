@@ -168,24 +168,16 @@ documentService.getResponseUri = function (json) {
 };
 
 // create a command request
-documentService.commandRequest = function (method, documentRevisionId, newfilename = null, callback) {
-    var params = {};
+documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
 
-    if(method!=="meta") {
-        documentRevisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
-        params = {  // create a parameter object with command method and the document key value in it
-            c: method,
-            key: documentRevisionId
-        };
-    }
-    else {
-        params = {  // create a parameter object with command method and the document key value in it
-            c: method,
-            key: documentRevisionId,
-            meta: {
-                title: newfilename
-            }
-        };
+    documentRevisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
+    params = {  // create a parameter object with command method and the document key value in it
+        c: method,
+        key: documentRevisionId
+    };
+
+    if (meta) {
+        params.meta = meta;
     }
 
     var uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
