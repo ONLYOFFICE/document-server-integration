@@ -550,22 +550,36 @@ namespace OnlineEditorsExampleMVC
         private static void Rename(HttpContext context)
         {
             // read request body
-            var fileData = TrackManager.readBody(context);  
+            context.Response.ContentType = "text/plain";
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) context.Response.Write("{\"error\":\"Request stream is empty\"}");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
 
-            var newfilename = (string) fileData["newfilename"];
-            var dockey = (string) fileData["dockey"];
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var newfilename = (string) body["newfilename"];
+            var dockey = (string) body["dockey"]; 
 
             try
             {
-                var jss = new JavaScriptSerializer();
-
                 string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
                 var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
                 request.Method = "POST";
                 request.ContentType = "application/json";
 
-                var body = new Dictionary<string, object>() {
+                body = new Dictionary<string, object>() {
                     { "c", "meta" },
                     { "key", dockey },
                     { "meta", new Dictionary<string, object>() {{"title", newfilename}} }

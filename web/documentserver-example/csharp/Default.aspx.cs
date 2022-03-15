@@ -618,9 +618,27 @@ namespace OnlineEditorsExample
             return files;
         }
 
-         public static string DoRename(String newfilename, String dockey)
+         public static string DoRename(HttpContext context)
         {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return "{\"error\":\"Request stream is empty\"}";
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
             var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var newfilename = (string) body["newfilename"];
+            var dockey = (string) body["dockey"];
 
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
@@ -628,7 +646,7 @@ namespace OnlineEditorsExample
             request.Method = "POST";
             request.ContentType = "application/json";
 
-            var body = new Dictionary<string, object>() {
+            body = new Dictionary<string, object>() {
                 { "c", "meta" },
                 { "key", dockey },
                 { "meta", new Dictionary<string, object>() {{"title", newfilename}} }
