@@ -154,27 +154,11 @@ def rename(request):
     body = json.loads(request.body)
     newfilename = body['newfilename']
     dockey = body['dockey']
+    meta = {'title': newfilename}
 
-    documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
+    trackManager.commandRequest('meta', dockey, meta)
 
-    payload = {
-        'c': 'meta',
-        'key': dockey,
-        'meta': {
-            'title': newfilename
-        }
-    }
-
-    headers={'accept': 'application/json'}
-
-    if jwtManager.isEnabled(): # check if a secret key to generate token exists or not
-        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
-        headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
-        headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
-
-        payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-
-    response.setdefault('result', requests.post(documentCommandUrl, json=payload, headers=headers).json())
+    response.setdefault('result', trackManager.commandRequest('meta', dockey, meta).json())
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 

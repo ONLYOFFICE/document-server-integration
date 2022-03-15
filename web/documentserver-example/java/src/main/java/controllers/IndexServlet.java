@@ -561,9 +561,6 @@ public class IndexServlet extends HttpServlet
 
     // rename a file
     private static void Rename(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
-        response.setContentType("text/plain");
-        String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
-
         try {
             Scanner scanner = new Scanner(request.getInputStream());
             scanner.useDelimiter("\\A");
@@ -575,60 +572,8 @@ public class IndexServlet extends HttpServlet
 
             String newfilename = (String) body.get("newfilename");
             String dockey = (String) body.get("dockey");
-
-            String DocumentCommandUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.command");
-
-            URL url = new URL(DocumentCommandUrl);
-            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-            
-            HashMap<String, Object> params = new HashMap<>();
-            HashMap<String, Object> title = new HashMap<>();
     
-            title.put("title", newfilename);
-    
-            params.put("c", "meta");
-            params.put("key", dockey);
-            params.put("meta", title);
-
-            String headerToken = "";
-            if (DocumentManager.TokenEnabled())  // check if a secret key to generate token exists or not
-            {
-                Map<String, Object> payloadMap = new HashMap<String, Object>();
-                payloadMap.put("payload", params);
-                headerToken = DocumentManager.CreateToken(payloadMap);  // encode a payload object into a header token
-
-                // add a header Authorization with a header token and Authorization prefix in it
-                connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
-
-                String token = DocumentManager.CreateToken(params);  // encode a payload object into a body token
-                params.put("token", token);
-            }
-
-            Gson gson = new Gson();
-            bodyString = gson.toJson(params);
-
-            byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
-
-            connection.setRequestMethod("POST");  // set the request method
-            connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
-            connection.setDoOutput(true); // set the doOutput field to true
-            connection.connect();
-
-            try (OutputStream os = connection.getOutputStream()) {
-                os.write(bodyByte);  // write bytes to the output stream
-            }
-
-            InputStream stream = connection.getInputStream();;  // get input stream
-
-            if (stream == null)
-                throw new Exception("Could not get an answer");
-
-            String jsonString = ServiceConverter.ConvertStreamToString(stream);  // convert stream to json string
-            connection.disconnect();
-
-            JSONObject res = ServiceConverter.ConvertStringToJSON(jsonString);  // convert json string to json object
-
-            writer.write("{ \"result\" : \"" + res + "\"}");
+            TrackManager.commandRequest(newfilename, dockey);
             
         } catch (Exception e) {
             e.printStackTrace();

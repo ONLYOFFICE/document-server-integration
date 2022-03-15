@@ -460,35 +460,12 @@ function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
     $dockey = $post["dockey"];
+    $meta = ["title" => $newfilename];
 
-    $urlToRename = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
+    $commandRequest = commandRequest("meta", $dockey, $meta);  // create a command request with the forcasave method
+    sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
 
-    $arr = ['c' => 'meta', 'key' => $dockey, 'meta' => ['title' => $newfilename]];
-
-    // add header token
-    $headerToken = "";
-    $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
-
-    if (isJwtEnabled()) {
-        $headerToken = jwtEncode([ "payload" => $arr ]);
-        $arr["token"] = jwtEncode($arr);
-    }
-
-    $data = json_encode($arr);
-
-    // request parameters
-    $opts = array('http' => array(
-        'method'  => 'POST',
-        'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-        'header'=> "Content-type: application/json\r\n" .
-                    "Accept: application/json\r\n" .
-                    (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
-        'content' => $data
-        )
-    );
-    $context = stream_context_create($opts);
-    $response_data = file_get_contents($urlToRename, FALSE, $context);
-    return array("result" => $response_data);
+    return array("result" => $commandRequest);
 }
 
 ?>
