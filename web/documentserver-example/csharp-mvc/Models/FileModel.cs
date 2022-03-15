@@ -188,6 +188,8 @@ namespace OnlineEditorsExampleMVC.Models
                                     "customization", new Dictionary<string, object>
                                         {
                                             { "about", true },  // the About section display
+                                            { "chat", true },
+                                            { "comments", true },
                                             { "feedback", true },  // the Feedback & Support menu button display
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
@@ -197,7 +199,7 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "url", url.Action("Index", "Home") }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                                                     }
                                             }
-                                        }
+                                        }                                     
                                 }
                             }
                     }
