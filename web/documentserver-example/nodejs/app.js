@@ -990,7 +990,7 @@ app.post("/rename", function (req, res) { //define a handler for renaming file
         'Accept': 'application/json'
     };
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + documentService.fillJwtByUrl(uri, params);
         params.token = documentService.getToken(params);
     }
 
@@ -1005,10 +1005,6 @@ app.post("/rename", function (req, res) { //define a handler for renaming file
             res.write(JSON.stringify({ "result": result }));
             res.end();
         });
-
-    // res.writeHead(200, {"Content-Type": "application/json" });
-    // res.write(JSON.stringify({ "result": res }));
-    // res.end();
 });
 
 wopiApp.registerRoutes(app);
