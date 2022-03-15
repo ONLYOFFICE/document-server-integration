@@ -375,15 +375,11 @@ namespace OnlineEditorsExample
         // rename a file
         private static void Rename(HttpContext context)
         {
-            // read request body
-            var fileData = TrackManager.readBody(context);  
-
-            var newfilename = (string) fileData["newfilename"];
-            var dockey = (string) fileData["dockey"];
-
+            context.Response.ContentType = "text/plain";
+            
             try
             {
-                var result = _Default.DoRename(newfilename, dockey);
+                var result = _Default.DoRename(context);
                 context.Response.Write(result);
             }
             catch (Exception e)
