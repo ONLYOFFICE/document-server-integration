@@ -356,38 +356,11 @@ class HomeController < ApplicationController
       body = JSON.parse(request.body.read)
       dockey = body["dockey"]
       newfilename = body["newfilename"]
-
-      document_command_url = Rails.configuration.urlSite + Rails.configuration.commandUrl  # get the document command url
-
-      payload = {
-          :c => 'meta',
-          :key => dockey,
-          :meta => {
-            :title => newfilename
-          }
+      meta = {
+        :title => newfilename
       }
-
-      data = nil
-      begin
-
-          uri = URI.parse(document_command_url)  # parse the document command url
-          http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
-
-          req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
-          req.add_field("Content-Type", "application/json")  # set headers
-
-          if JwtHelper.is_enabled  # if the signature is enabled
-              payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
-              jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get signature authorization header
-              req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
-          end
-
-          req.body = payload.to_json   # convert the payload object into the json format
-          res = http.request(req)  # get the response
-          data = res.body  # and take its body
-      rescue => ex
-          raise ex.message
-      end
-      render plain: '{ "result" : "' + data + '"}'
+      
+      json_data = TrackHelper.command_request("meta", dockey, meta)
+      render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
     end
 end
