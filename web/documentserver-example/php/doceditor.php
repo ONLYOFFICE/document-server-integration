@@ -131,7 +131,6 @@
             ],
             "customization" => [  // the parameters for the editor interface
                 "about" => true,  // the About section display
-                "chat" => true,
                 "comments" => true,
                 "feedback" => true,  // the Feedback & Support menu button display
                 "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
