@@ -160,8 +160,18 @@ public class DefaultCallbackManager implements CallbackManager {
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<>();
-        params.put("c", method);
-        params.put("key", key);
+
+        if (method == "forcesave") {
+            params.put("c", method);
+            params.put("key", key);
+        } else {
+            HashMap<String, Object> meta = new HashMap<>();
+            meta.put("title", method);
+
+            params.put("c", "meta");
+            params.put("key", key);
+            params.put("meta", meta);
+        }
 
         String headerToken;
         if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
