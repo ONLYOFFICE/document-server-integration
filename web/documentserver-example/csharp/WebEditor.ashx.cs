@@ -375,17 +375,29 @@ namespace OnlineEditorsExample
         // rename a file
         private static void Rename(HttpContext context)
         {
-            context.Response.ContentType = "text/plain";
-            
+           string fileData;
             try
             {
-                var result = _Default.DoRename(context);
-                context.Response.Write(result);
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
             }
             catch (Exception e)
             {
-                context.Response.Write("{ \"error\": \"" + 1 + "\", \"message\": \"" + e.Message + "\"}");
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
             }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var newFileName = (string) body["newfilename"];
+            var docKey = (string) body["dockey"];
+            var meta =  new Dictionary<string, object>() {
+                { "title", newFileName }
+            };  
+            TrackManager.commandRequest("meta", docKey, meta);
         }
     }
 }

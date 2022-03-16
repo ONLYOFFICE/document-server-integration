@@ -258,7 +258,7 @@ namespace OnlineEditorsExample
         }
 
         // create a command request
-        public static void commandRequest(string method, string key)
+        public static void commandRequest(string method, string key, object meta = null)
         {
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
@@ -270,6 +270,11 @@ namespace OnlineEditorsExample
                 { "c", method },
                 { "key", key }
             };
+
+            if (meta != null)
+            {
+                body.Add("meta", meta);
+            }
 
             // check if a secret key to generate token exists or not
             if (JwtManager.Enabled)
