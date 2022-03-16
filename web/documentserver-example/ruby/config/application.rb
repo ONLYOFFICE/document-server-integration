@@ -48,5 +48,41 @@ module OnlineEditorsExampleRuby
     Rails.configuration.jwtSecret = ""
     Rails.configuration.header="Authorization"
 
+    Rails.configuration.languages={
+      'en' => 'English',
+      'be' => 'Belarusian',
+      'bg' => 'Bulgarian',
+      'ca' => 'Catalan',
+      'zh' => 'Chinese',
+      'cs' => 'Czech',
+      'da' => 'Danish',
+      'nl' => 'Dutch',
+      'fi' => 'Finnish',
+      'fr' => 'French',
+      'de' => 'German',
+      'el' => 'Greek',
+      'hu' => 'Hungarian',
+      'id' => 'Indonesian',
+      'it' => 'Italian',
+      'ja' => 'Japanese',
+      'ko' => 'Korean',
+      'lv' => 'Latvian',
+      'lo' => 'Lao',
+      'nb' => 'Norwegian',
+      'pl' => 'Polish',
+      'pt' => 'Portuguese',
+      'ro' => 'Romanian',
+      'ru' => 'Russian',
+      'sk' => 'Slovak',
+      'sl' => 'Slovenian',
+      'es' => 'Spanish',
+      'sv' => 'Swedish',
+      'tr' => 'Turkish',
+      'uk' => 'Ukrainian',
+      'vi' => 'Vietnamese',
+      'az' => 'Azerbaijani',
+      'gl' => 'Galego'
+    }
+
   end
 end
