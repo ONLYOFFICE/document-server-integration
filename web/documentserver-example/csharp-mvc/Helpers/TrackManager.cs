@@ -76,7 +76,9 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 if (token != null && !token.Equals(""))  // invalid signature error
                 {
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
+                    fileData = jss.Deserialize<Dictionary<string, object>>(token);
+                    if (fileData.ContainsKey("payload"))
+                        fileData = (Dictionary<string, object>)fileData["payload"];
                 }
                 else
                 {
