@@ -64,6 +64,9 @@ public class IndexController {
     @Value("${url.editor}")
     private String urlEditor;
 
+    @Value("${files.docservice.languages}")
+    private String langs;
+
     @GetMapping("${url.index}")
     public String index(Model model){
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
@@ -71,6 +74,14 @@ public class IndexController {
         List<Boolean> filesEditable = new ArrayList<>();
         List<String> versions = new ArrayList<>();
         List<Boolean> isFillFormDoc = new ArrayList<>();
+        List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
+
+        Map<String, String> languages = new HashMap<>();
+
+        langsAndKeys.forEach((str) -> {
+            String[] couple = str.split(":");
+            languages.put(couple[0], couple[1]);
+        });
 
         List<User> users = userService.findAll();  // get a list of all the users
 
@@ -95,6 +106,7 @@ public class IndexController {
         model.addAttribute("datadocs", docserviceSite+docservicePreloader);
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
+        model.addAttribute("languages", languages);
 
         return "index.html";
     }
