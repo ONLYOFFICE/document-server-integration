@@ -346,7 +346,6 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     };
 
     var callback = function (err, data) {
-
         if (err) {  // if an error occurs
             if (err.name === "ConnectionTimeoutError" || err.name === "ResponseTimeoutError") {  // check what type of error it is
                 writeResult(fileName, 0, null);  // despite the timeout errors, write the file to the result object
@@ -981,7 +980,7 @@ app.post("/rename", function (req, res) { //define a handler for renaming file
         res.write(JSON.stringify({ "result": ress }));
         res.end();
     };
-    
+
     documentService.commandRequest("meta", dockey, meta, result);
 });
 

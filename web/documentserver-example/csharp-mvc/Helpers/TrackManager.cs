@@ -258,7 +258,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             if (meta != null) 
             {
-                body.Add("meta", meta);   
+                body.Add("meta", meta);
             }
 
             // check if a secret key to generate token exists or not

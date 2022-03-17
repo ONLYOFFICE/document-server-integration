@@ -396,7 +396,7 @@ namespace OnlineEditorsExample
             var docKey = (string) body["dockey"];
             var meta =  new Dictionary<string, object>() {
                 { "title", newFileName }
-            };  
+            };
             TrackManager.commandRequest("meta", docKey, meta);
         }
     }

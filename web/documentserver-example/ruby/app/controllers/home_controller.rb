@@ -359,7 +359,7 @@ class HomeController < ApplicationController
       meta = {
         :title => newfilename
       }
-      
+
       json_data = TrackHelper.command_request("meta", dockey, meta)
       render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
     end

@@ -284,7 +284,7 @@ public class TrackManager {
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
-        
+
         if (method == "forcesave") {
             params.put("c", method);
             params.put("key", key);

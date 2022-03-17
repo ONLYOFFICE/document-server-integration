@@ -572,9 +572,9 @@ public class IndexServlet extends HttpServlet
 
             String newfilename = (String) body.get("newfilename");
             String dockey = (String) body.get("dockey");
-    
+
             TrackManager.commandRequest(newfilename, dockey);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
