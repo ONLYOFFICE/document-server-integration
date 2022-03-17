@@ -131,6 +131,7 @@
             ],
             "customization" => [  // the parameters for the editor interface
                 "about" => true,  // the About section display
+                "comments" => true,
                 "feedback" => true,  // the Feedback & Support menu button display
                 "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
                 "submitForm" => $submitForm,  // if the Submit form button is displayed or not

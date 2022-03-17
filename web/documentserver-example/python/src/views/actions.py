@@ -250,6 +250,7 @@ def edit(request):
             },
             'customization': {  # the parameters for the editor interface
                 'about': True,  # the About section display
+                'comments': True,  
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not

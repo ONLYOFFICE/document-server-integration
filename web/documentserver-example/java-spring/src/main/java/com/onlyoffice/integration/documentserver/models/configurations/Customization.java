@@ -34,7 +34,6 @@ public class Customization {  // the parameters which allow to customize the edi
     @Autowired
     private Goback goback;  // the settings for the Open file location menu button and upper right corner button
     private Boolean autosave = true;  // if the Autosave menu option is enabled or disabled
-    private Boolean chat = true;  // if the Chat menu button is displayed or hidden
     private Boolean comments = true;  // if the Comments menu button is displayed or hidden
     private Boolean compactHeader = false;  // if the additional action buttons are displayed in the upper part of the editor window header next to the logo (false) or in the toolbar (true)
     private Boolean compactToolbar = false;  // if the top toolbar type displayed is full (false) or compact (true)
