@@ -277,23 +277,17 @@ public class TrackManager {
     }
 
     // create a command request
-    public static void commandRequest(String method, String key) throws Exception {
+    public static void commandRequest(String method, String key, HashMap meta) throws Exception {
         String DocumentCommandUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.command");
 
         URL url = new URL(DocumentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("c", method);
+        params.put("key", key);
 
-        if (method == "forcesave") {
-            params.put("c", method);
-            params.put("key", key);
-        } else {
-            HashMap<String, Object> meta = new HashMap<>();
-            meta.put("title", method);
-
-            params.put("c", "meta");
-            params.put("key", key);
+        if (meta != null) {
             params.put("meta", meta);
         }
 
@@ -324,7 +318,7 @@ public class TrackManager {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(bodyByte);  // write bytes to the output stream
         }
-        InputStream stream = connection.getInputStream();;  // get input stream
+        InputStream stream = connection.getInputStream();  // get input stream
 
         if (stream == null)
             throw new Exception("Could not get an answer");

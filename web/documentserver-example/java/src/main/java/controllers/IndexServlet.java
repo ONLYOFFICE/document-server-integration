@@ -329,7 +329,7 @@ public class IndexServlet extends HttpServlet
                 if (users.indexOf(user) == -1) {
                     String key = (String) body.get("key");
                     try {
-                        TrackManager.commandRequest("forcesave", key);  // create a command request with the forcesave method
+                        TrackManager.commandRequest("forcesave", key, null);  // create a command request with the forcesave method
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -573,7 +573,10 @@ public class IndexServlet extends HttpServlet
             String newfilename = (String) body.get("newfilename");
             String dockey = (String) body.get("dockey");
 
-            TrackManager.commandRequest(newfilename, dockey);
+            HashMap<String, String> meta = new HashMap<>();
+            meta.put("title", newfilename);
+
+            TrackManager.commandRequest("meta", dockey, meta);
 
         } catch (Exception e) {
             e.printStackTrace();
