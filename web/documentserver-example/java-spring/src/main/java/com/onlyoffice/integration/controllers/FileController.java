@@ -372,13 +372,15 @@ public class FileController {
         String newfilename = (String) body.get("newfilename");
         String dockey = (String) body.get("dockey");
 
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("title", newfilename);
+
         try {
-            callbackManager.commandRequest(newfilename, dockey);
+            callbackManager.commandRequest("meta", dockey, meta);
             return "result ok";
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
-
     }
 }
