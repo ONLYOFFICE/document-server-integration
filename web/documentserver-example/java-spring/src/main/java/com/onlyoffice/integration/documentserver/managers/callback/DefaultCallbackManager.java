@@ -153,15 +153,19 @@ public class DefaultCallbackManager implements CallbackManager {
 
     //TODO: Replace (String method) with (Enum method)
     @SneakyThrows
-    public void commandRequest(String method, String key) {  // create a command request
+    public void commandRequest(String method, String key, HashMap meta) {  // create a command request
         String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
         URL url = new URL(DocumentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("c", method);
         params.put("key", key);
+
+        if (meta != null) {
+            params.put("meta", meta);
+        }
 
         String headerToken;
         if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not

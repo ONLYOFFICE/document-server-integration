@@ -118,7 +118,7 @@ def createNew(request):
 
 # save file as...
 def saveAs(request):
-    response ={}
+    response = {}
 
     try:
         body = json.loads(request.body)
@@ -144,6 +144,21 @@ def saveAs(request):
     except Exception as e:
         response.setdefault('error', 1)
         response.setdefault('message', e.args[0])
+
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+# rename file
+def rename(request):
+    response = {}
+
+    body = json.loads(request.body)
+    newfilename = body['newfilename']
+    dockey = body['dockey']
+    meta = {'title': newfilename}
+
+    trackManager.commandRequest('meta', dockey, meta)
+
+    response.setdefault('result', trackManager.commandRequest('meta', dockey, meta).json())
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 

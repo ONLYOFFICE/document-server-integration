@@ -29,6 +29,8 @@ import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +38,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
 import entities.FileType;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,6 +48,7 @@ import org.json.simple.parser.ParseException;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACVerifier;
+
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
@@ -96,6 +101,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "saveas":
                 SaveAs(request, response, writer);
+                break;
+            case "rename":
+                Rename(request, response, writer);
                 break;
         }
     }
@@ -321,7 +329,7 @@ public class IndexServlet extends HttpServlet
                 if (users.indexOf(user) == -1) {
                     String key = (String) body.get("key");
                     try {
-                        TrackManager.commandRequest("forcesave", key);  // create a command request with the forcesave method
+                        TrackManager.commandRequest("forcesave", key, null);  // create a command request with the forcesave method
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -550,6 +558,32 @@ public class IndexServlet extends HttpServlet
             }
         }
     }
+
+    // rename a file
+    private static void Rename(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            String newfilename = (String) body.get("newfilename");
+            String dockey = (String) body.get("dockey");
+
+            HashMap<String, String> meta = new HashMap<>();
+            meta.put("title", newfilename);
+
+            TrackManager.commandRequest("meta", dockey, meta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+        }
+    }
+
 
     // process get request
     @Override

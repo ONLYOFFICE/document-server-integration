@@ -226,13 +226,16 @@ function processForceSave($data, $fileName, $userAddress) {
 }
 
 // create a command request
-function commandRequest($method, $key){
+function commandRequest($method, $key, $meta = null){
     $documentCommandUrl = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
 
     $arr = [
         "c" => $method,
         "key" => $key
     ];
+
+    if($meta)
+        $arr["meta"] = $meta;
 
     $headerToken = "";
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];

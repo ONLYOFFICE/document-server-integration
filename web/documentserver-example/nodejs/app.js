@@ -969,6 +969,21 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
     }
 });
 
+app.post("/rename", function (req, res) { //define a handler for renaming file
+
+    var newfilename = req.body.newfilename;
+    var dockey = req.body.dockey;
+    var meta = {title: newfilename};
+
+    var result = function(err, data, ress) {
+        res.writeHead(200, {"Content-Type": "application/json" });
+        res.write(JSON.stringify({ "result": ress }));
+        res.end();
+    };
+
+    documentService.commandRequest("meta", dockey, meta, result);
+});
+
 wopiApp.registerRoutes(app);
 
 // "Not found" error with 404 status

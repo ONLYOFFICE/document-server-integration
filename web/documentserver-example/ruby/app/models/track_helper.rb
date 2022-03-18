@@ -206,14 +206,18 @@ class TrackHelper
         end
 
         # send the command request
-        def command_request(method, key)
+        def command_request(method, key, meta = nil)
             document_command_url = Rails.configuration.urlSite + Rails.configuration.commandUrl  # get the document command url
 
             # create a payload object with the method and key
             payload = {
                 :c => method,
                 :key => key
-              }
+            }
+
+            if (meta != nil)
+                payload.merge!({:meta => meta})
+            end
 
             data = nil
             begin
