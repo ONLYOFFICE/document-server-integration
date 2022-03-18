@@ -509,13 +509,7 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
-                "onRequestRename": onRequestRename
             };
-
-            // prevent file renaming for anonymous users
-            <?php if ($usersForMentions === null): ?> 
-                config.events['onRequestRename'] = onRequestRename;
-            <?php endif; ?>
 
             <?php
                 $out = getHistory($filename, $filetype, $docKey, $fileuri);
@@ -552,6 +546,8 @@
                 var data = JSON.stringify(event.data);
                 innerAlert("onRequestSendNotify: " + data);
             };
+            // prevent file renaming for anonymous users
+            config.events['onRequestRename'] = onRequestRename;
             <?php endif; ?>
 
             if (config.editorConfig.createUrl) {
