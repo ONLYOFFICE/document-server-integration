@@ -95,6 +95,9 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array = saveas();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
+        case "rename":
+            $response_array = renamefile();
+            die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -450,6 +453,19 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
+}
+
+// rename...
+function renamefile() {
+    $post = json_decode(file_get_contents('php://input'), true);
+    $newfilename = $post["newfilename"];
+    $dockey = $post["dockey"];
+    $meta = ["title" => $newfilename];
+
+    $commandRequest = commandRequest("meta", $dockey, $meta);  // create a command request with the forcasave method
+    sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
+
+    return array("result" => $commandRequest);
 }
 
 ?>

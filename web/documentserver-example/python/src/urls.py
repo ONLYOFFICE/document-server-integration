@@ -41,7 +41,8 @@ urlpatterns = [
     path('remove', actions.remove),
     path('csv', actions.csv),
     path('files', actions.files),
-    path('saveas', actions.saveAs)
+    path('saveas', actions.saveAs),
+    path('rename', actions.rename)
 ]
 
 urlpatterns += staticfiles_urlpatterns()

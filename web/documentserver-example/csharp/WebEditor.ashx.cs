@@ -68,6 +68,9 @@ namespace OnlineEditorsExample
                 case "saveas":
                     SaveAs(context);
                     break;
+                case "rename":
+                    Rename(context);
+                    break;
             }
         }
 
@@ -367,6 +370,34 @@ namespace OnlineEditorsExample
             {
                 context.Response.Write("{ \"error\": \"File not found!\"}");
             }
+        }
+
+        // rename a file
+        private static void Rename(HttpContext context)
+        {
+           string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var newFileName = (string) body["newfilename"];
+            var docKey = (string) body["dockey"];
+            var meta =  new Dictionary<string, object>() {
+                { "title", newFileName }
+            };
+            TrackManager.commandRequest("meta", docKey, meta);
         }
     }
 }

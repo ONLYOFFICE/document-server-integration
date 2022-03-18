@@ -23,6 +23,7 @@ const fileSystem = require("fs");
 const mime = require("mime");
 const path = require("path");
 const users = require("../users");
+const docManager = require("../docManager");
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
@@ -255,8 +256,8 @@ function putFile(wopi, req, res, userHost) {
 // return information about the file properties, access rights and editor settings
 function checkFileInfo(wopi, req, res, userHost) {
     let userAddress = req.docManager.curUserHostAddress(userHost);
-    let version = req.docManager.getKey(wopi.id);
-    
+    let version = req.docManager.getKey(wopi.id, userAddress);
+
     let path = req.docManager.storagePath(wopi.id, userAddress);
     // add wopi query
     var query = new URLSearchParams(wopi.accessToken);
@@ -289,6 +290,7 @@ function returnLockMismatch(res, lock, reason) {
 
 exports.fileRequestHandler = (req, res) => {
     let userAddress = null;
+    req.docManager = new docManager(req, res);
     if (req.params['id'].includes("@")) {  // if there is the "@" sign in the id parameter
         let split = req.params['id'].split("@");  // split this parameter by "@"
         req.params['id'] = split[0];  // rewrite id with the first part of the split parameter
@@ -310,5 +312,5 @@ exports.fileRequestHandler = (req, res) => {
         return;
     }
 
-    action(wopiData, req, res);
+    action(wopiData, req, res, userAddress);
 }

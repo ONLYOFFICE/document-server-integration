@@ -39,7 +39,7 @@ public class EditCallback implements Callback {
             if (!body.getUsers().contains(user)) {  // if this user is not specified in the body
                 String key = body.getKey();  // get document key
                 try {
-                    callbackManager.commandRequest("forcesave", key);  // create a command request to forcibly save the document being edited without closing it
+                    callbackManager.commandRequest("forcesave", key, null);  // create a command request to forcibly save the document being edited without closing it
                 } catch (Exception e) {
                     e.printStackTrace();
                     result = 1;

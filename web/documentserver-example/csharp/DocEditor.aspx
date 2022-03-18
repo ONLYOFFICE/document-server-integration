@@ -64,6 +64,7 @@
     <script type="text/javascript" language="javascript">
 
         var docEditor;
+        var config;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -125,10 +126,14 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -158,7 +163,7 @@
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor.ashx?type=saveas");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
@@ -166,7 +171,25 @@
             }
         };
 
-        var config = <%= DocConfig %>;
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor.ashx?type=rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
+        config = <%= DocConfig %>;
 
         config.width = "100%";
         config.height = "100%";
@@ -182,6 +205,7 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestRename": onRequestRename
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
@@ -209,7 +233,7 @@
         };
         // the user is mentioned in a comment
         config.events['onRequestSendNotify'] = function (event) {
-            event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
             var data = JSON.stringify(event.data);
             innerAlert("onRequestSendNotify: " + data);
         };

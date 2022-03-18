@@ -350,4 +350,17 @@ class HomeController < ApplicationController
       return
     end
   end
+
+    # Rename...
+    def rename
+      body = JSON.parse(request.body.read)
+      dockey = body["dockey"]
+      newfilename = body["newfilename"]
+      meta = {
+        :title => newfilename
+      }
+
+      json_data = TrackHelper.command_request("meta", dockey, meta)
+      render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    end
 end

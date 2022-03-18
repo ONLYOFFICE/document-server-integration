@@ -201,7 +201,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     req.docManager.storagePath(""); // mkdir if not exist
 
     const userIp = req.docManager.curUserHostAddress();  // get the path to the user host
-    const uploadDir = path.isAbsolute(storageFolder) ? storageFolder : path.join(storageFolder, userIp);
+    const uploadDir = req.docManager.storageRootPath(userIp);
     const uploadDirTmp = path.join(uploadDir, 'tmp');  // and create directory for temporary files if it doesn't exist
     req.docManager.createDirectory(uploadDirTmp);
 
@@ -967,6 +967,21 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         res.status(500);
         res.render("error", { message: "Server error: " + ex.message });
     }
+});
+
+app.post("/rename", function (req, res) { //define a handler for renaming file
+
+    var newfilename = req.body.newfilename;
+    var dockey = req.body.dockey;
+    var meta = {title: newfilename};
+
+    var result = function(err, data, ress) {
+        res.writeHead(200, {"Content-Type": "application/json" });
+        res.write(JSON.stringify({ "result": ress }));
+        res.end();
+    };
+
+    documentService.commandRequest("meta", dockey, meta, result);
 });
 
 wopiApp.registerRoutes(app);

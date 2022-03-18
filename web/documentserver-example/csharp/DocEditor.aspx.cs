@@ -256,6 +256,7 @@ namespace OnlineEditorsExample
                                     "customization", new Dictionary<string, object>
                                         {
                                             { "about", true },  // the About section display
+                                            { "comments", true },
                                             { "feedback", true },  // the Feedback & Support menu button display
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not

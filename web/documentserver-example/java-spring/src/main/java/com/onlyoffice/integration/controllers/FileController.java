@@ -31,6 +31,7 @@ import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
+import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +62,12 @@ public class FileController {
     @Value("${filesize-max}")
     private String filesizeMax;
 
+    @Value("${files.docservice.url.site}")
+    private String docserviceUrlSite;
+
+    @Value("${files.docservice.url.command}")
+    private String docserviceUrlCommand;
+
     @Autowired
     private FileUtility fileUtility;
     @Autowired
@@ -79,6 +86,8 @@ public class FileController {
     private ObjectMapper objectMapper;
     @Autowired
     private ServiceConverter serviceConverter;
+    @Autowired
+    private CallbackManager callbackManager;
 
     // create user metadata
     private String createUserMetadata(String uid, String fullFileName) {
@@ -354,6 +363,24 @@ public class FileController {
         } catch (IOException e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+        }
+    }
+
+    @PostMapping("/rename")
+    @ResponseBody
+    public String rename(@RequestBody JSONObject body) {
+        String newfilename = (String) body.get("newfilename");
+        String dockey = (String) body.get("dockey");
+
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("title", newfilename);
+
+        try {
+            callbackManager.commandRequest("meta", dockey, meta);
+            return "result ok";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
 }

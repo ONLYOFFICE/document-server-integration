@@ -151,8 +151,14 @@ class FileModel
           :toolbarDocked => "top"  # the place for the embedded viewer toolbar (top or bottom)
         },
         :customization => {  # the parameters for the editor interface
+          :about => true,  # the About section display
+          :comments => true,  
+          :feedback => true,  # the Feedback & Support menu button display
           :forcesave => false,  # adding the request for the forced file saving to the callback handler
-          :submitForm => submitForm  # the Submit form button state
+          :submitForm => submitForm,  # the Submit form button state
+          :goback => {
+            :url => DocumentHelper.get_server_url(true)
+          },
         }
       }
     }

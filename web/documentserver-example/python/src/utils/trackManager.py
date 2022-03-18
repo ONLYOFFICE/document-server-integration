@@ -25,6 +25,7 @@
 """
 
 
+from asyncio.windows_events import NULL
 import config
 import requests
 import os
@@ -150,13 +151,17 @@ def processForceSave(body, filename, usAddr):
     return
 
 # create a command request
-def commandRequest(method, key):
+def commandRequest(method, key, meta = None):
     documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
 
     payload = {
         'c': method,
         'key': key
     }
+
+    if (meta): 
+        payload.meta = meta
+
 
     headers={'accept': 'application/json'}
 
@@ -168,6 +173,9 @@ def commandRequest(method, key):
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
         
     response = requests.post(documentCommandUrl, json=payload, headers=headers)
+
+    if (meta): 
+        return response
 
     return
 
