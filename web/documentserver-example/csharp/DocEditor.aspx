@@ -205,7 +205,6 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestRename": onRequestRename
         };
 
         <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
@@ -237,6 +236,8 @@
             var data = JSON.stringify(event.data);
             innerAlert("onRequestSendNotify: " + data);
         };
+        // prevent file renaming for anonymous users
+        config.events['onRequestRename'] = onRequestRename;
         <% } %>
         
         if (config.editorConfig.createUrl) {
