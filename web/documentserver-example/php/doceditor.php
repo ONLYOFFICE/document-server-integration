@@ -487,6 +487,11 @@
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
             };
 
+            // prevent file renaming for anonymous users
+            <?php if ($usersForMentions === null): ?> 
+                config.events['onRequestRename'] = onRequestRename;
+            <?php endif; ?>
+
             <?php
                 $out = getHistory($filename, $filetype, $docKey, $fileuri);
                 $history = $out[0];
