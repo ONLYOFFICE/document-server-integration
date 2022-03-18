@@ -200,13 +200,13 @@
                     "onRequestInsertImage": onRequestInsertImage,
                     "onRequestCompareFile": onRequestCompareFile,
                     "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                    "onRequestRename": onRequestRename
                 }
             };
 
         if (<%- JSON.stringify(usersForMentions) %> != null) {
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
+            config.events.onRequestRename = onRequestRename;
         }
 
         if (config.editorConfig.createUrl) {
