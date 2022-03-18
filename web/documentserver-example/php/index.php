@@ -101,7 +101,7 @@
                                                     <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
                                                         <?php foreach ($GLOBALS['LANGUAGES'] as $key => $language) { ?>
-                                                            <option value=" <?=$key?> "> <?=$language?> </option>
+                                                            <option value="<?=$key?>"><?=$language?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </td>
