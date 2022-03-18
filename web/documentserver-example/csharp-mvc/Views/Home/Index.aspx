@@ -4,6 +4,7 @@
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
 <%@ Import Namespace="OnlineEditorsExampleMVC.Models" %>
+<%@ Import Namespace="System.Collections.Generic" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -89,7 +90,7 @@
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
-                                                    <option value=<%= user.id %> ><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
+                                                    <option value="<%= user.id %>"><%= user.name.IsEmpty() ? "Anonymous" : user.name %></option>
                                                  <% } %>
                                              </select>
                                         </td>
@@ -98,37 +99,11 @@
                                         <td valign="middle">
                                             <span class="select-user">Language editors interface</span>
                                             <select class="select-user" id="language">
-                                                <option value="en">English</option>
-                                                <option value="be">Belarusian</option>
-                                                <option value="bg">Bulgarian</option>
-                                                <option value="ca">Catalan</option>
-                                                <option value="zh">Chinese</option>
-                                                <option value="cs">Czech</option>
-                                                <option value="da">Danish</option>
-                                                <option value="nl">Dutch</option>
-                                                <option value="fi">Finnish</option>
-                                                <option value="fr">French</option>
-                                                <option value="de">German</option>
-                                                <option value="el">Greek</option>
-                                                <option value="hu">Hungarian</option>
-                                                <option value="id">Indonesian</option>
-                                                <option value="it">Italian</option>
-                                                <option value="ja">Japanese</option>
-                                                <option value="ko">Korean</option>
-                                                <option value="lv">Latvian</option>
-                                                <option value="lo">Lao</option>
-                                                <option value="nb">Norwegian</option>
-                                                <option value="pl">Polish</option>
-                                                <option value="pt">Portuguese</option>
-                                                <option value="ro">Romanian</option>
-                                                <option value="ru">Russian</option>
-                                                <option value="sk">Slovak</option>
-                                                <option value="sl">Slovenian</option>
-                                                <option value="sv">Swedish</option>
-                                                <option value="es">Spanish</option>
-                                                <option value="tr">Turkish</option>
-                                                <option value="uk">Ukrainian</option>
-                                                <option value="vi">Vietnamese</option>
+                                                <% Dictionary<string, string> languages = DocManagerHelper.GetLanguages(); 
+                                                foreach (var lang in languages)
+                                                    { %>
+                                                        <option value="<%= lang.Key %>"><%= lang.Value %></option>
+                                                    <% } %>
                                             </select>
                                         </td>
                                     </tr>
