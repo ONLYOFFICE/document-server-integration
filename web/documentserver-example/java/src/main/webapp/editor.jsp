@@ -184,24 +184,23 @@
             String usersForMentions = (String) request.getAttribute("usersForMentions");
         %>
 
-        <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<%= history %>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <%= historyData %>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-        <% } %>
-
         <% if (usersForMentions != null) { %>
+            <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
+                // the user is trying to show the document version history
+                config.events['onRequestHistory'] = function () {
+                    docEditor.refreshHistory(<%= history %>);  // show the document version history
+                };
+                // the user is trying to click the specific document version in the document version history
+                config.events['onRequestHistoryData'] = function (event) {
+                    var ver = event.data;
+                    var histData = <%= historyData %>;
+                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                };
+                // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+            <% } %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments
