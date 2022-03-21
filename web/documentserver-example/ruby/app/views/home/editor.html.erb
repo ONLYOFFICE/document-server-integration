@@ -173,7 +173,8 @@
         <%
             history = @file.get_history
             usersMentions = @file.get_users_mentions
-            if usersMentions %>
+            
+            if usersMentions
                 if history %>
                 // the user is trying to show the document version history
                 config.events['onRequestHistory'] = function () {

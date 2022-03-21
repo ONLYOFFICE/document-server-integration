@@ -180,7 +180,7 @@
                 var historyData = histArray[1];
                 var usersForMentions = [[${usersForMentions}]];
 
-                if(usersForMentions){
+                if(usersForMentions.length > 0){
                     if (hist && historyData) {
                         // the user is trying to show the document version history
                         config.events['onRequestHistory'] = function () {
