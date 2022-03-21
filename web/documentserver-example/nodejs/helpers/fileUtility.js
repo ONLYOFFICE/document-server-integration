@@ -22,7 +22,9 @@ var fileUtility = {};
 fileUtility.getFileName = function (url, withoutExtension) {
     if (!url) return "";
 
-    var parts = url.split("/");
+    var parts = url.split("\\");
+    parts = parts.pop();
+    parts = parts.split("/");
     var fileName = parts.pop();  // get the file name from the last part of the url
     fileName = fileName.split("?")[0];
 
