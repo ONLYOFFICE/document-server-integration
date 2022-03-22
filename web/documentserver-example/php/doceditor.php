@@ -516,24 +516,24 @@
                 $history = $out[0];
                 $historyData = $out[1];
             ?>
-            <?php if ($history != null && $historyData != null): ?>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            <?php endif; ?>
 
             <?php if ($usersForMentions != null): ?>
+                <?php if ($history != null && $historyData != null): ?>
+                // the user is trying to show the document version history
+                config.events['onRequestHistory'] = function () {
+                    docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
+                };
+                // the user is trying to click the specific document version in the document version history
+                config.events['onRequestHistoryData'] = function (event) {
+                    var ver = event.data;
+                    var histData = <?php echo json_encode($historyData) ?>;
+                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                };
+                // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+                <?php endif; ?>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments

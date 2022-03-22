@@ -191,9 +191,6 @@
                     "onDocumentStateChange": onDocumentStateChange,
                     "onRequestEditRights": onRequestEditRights,
                     "onError": onError,
-                    "onRequestHistory":  onRequestHistory,
-                    "onRequestHistoryData": onRequestHistoryData,
-                    "onRequestHistoryClose": onRequestHistoryClose,
                     "onOutdatedVersion": onOutdatedVersion,
                     "onMakeActionLink": onMakeActionLink,
                     "onMetaChange": onMetaChange,
@@ -204,6 +201,9 @@
             };
 
         if (<%- JSON.stringify(usersForMentions) %> != null) {
+            config.events.onRequestHistory = onRequestHistory;
+            config.events.onRequestHistoryData = onRequestHistoryData;
+            config.events.onRequestHistoryClose = onRequestHistoryClose;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestRename = onRequestRename;
