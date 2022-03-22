@@ -51,6 +51,42 @@ EXT_DOCUMENT = [
     ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
 ]
 
+LANGUAGES = {
+    'en': 'English',
+    'be': 'Belarusian',
+    'bg': 'Bulgarian',
+    'ca': 'Catalan',
+    'zh': 'Chinese',
+    'cs': 'Czech',
+    'da': 'Danish',
+    'nl': 'Dutch',
+    'fi': 'Finnish',
+    'fr': 'French',
+    'de': 'German',
+    'el': 'Greek',
+    'hu': 'Hungarian',
+    'id': 'Indonesian',
+    'it': 'Italian',
+    'ja': 'Japanese',
+    'ko': 'Korean',
+    'lv': 'Latvian',
+    'lo': 'Lao',
+    'nb': 'Norwegian',
+    'pl': 'Polish',
+    'pt': 'Portuguese',
+    'ro': 'Romanian',
+    'ru': 'Russian',
+    'sk': 'Slovak',
+    'sl': 'Slovenian',
+    'es': 'Spanish',
+    'sv': 'Swedish',
+    'tr': 'Turkish',
+    'uk': 'Ukrainian',
+    'vi': 'Vietnamese',
+    'az': 'Azerbaijani',
+    'gl': 'Galego'
+}
+
 if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain
     EXAMPLE_DOMAIN = os.environ.get("EXAMPLE_DOMAIN")
 if os.environ.get("DOC_SERV"):  # generates links for document server

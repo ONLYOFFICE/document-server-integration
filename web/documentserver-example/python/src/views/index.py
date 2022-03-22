@@ -35,7 +35,7 @@ from src.utils import docManager
 def default(request):  # default parameters that will be passed to the template
     context = {
         'users': users.USERS,
-        'languages': docManager.LANGUAGES,
+        'languages': config.LANGUAGES,
         'preloadurl': config.DOC_SERV_SITE_URL + config.DOC_SERV_PRELOADER_URL,
         'editExt': json.dumps(config.DOC_SERV_EDITED),  # file extensions that can be edited
         'convExt': json.dumps(config.DOC_SERV_CONVERT),  # file extensions that can be converted

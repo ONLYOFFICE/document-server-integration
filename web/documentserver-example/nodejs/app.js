@@ -108,6 +108,7 @@ app.get("/", function (req, res) {  // define a handler for default page
             params: req.docManager.getCustomParams(),
             users: users,
             serverUrl: req.docManager.getServerUrl(),
+            languages: configServer.get('languages'),
         });
 
     }

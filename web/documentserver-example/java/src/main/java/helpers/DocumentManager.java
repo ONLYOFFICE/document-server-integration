@@ -568,4 +568,19 @@ public class DocumentManager
     {
         return ConfigManager.GetProperty("files.docservice.secret");
     }
+
+    // get languages
+    public static Map<String, String> GetLanguages()
+    {
+        String langs = ConfigManager.GetProperty("files.docservice.languages");
+        List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
+
+        Map<String, String> languages = new HashMap<>();
+
+        langsAndKeys.forEach((str) -> {
+            String[] couple = str.split(":");
+            languages.put(couple[0], couple[1]);
+        });
+        return languages;
+    }
 }
