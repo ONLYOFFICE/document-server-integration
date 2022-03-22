@@ -201,12 +201,16 @@
             };
 
         if (<%- JSON.stringify(usersForMentions) %> != null) {
-            config.events.onRequestHistory = onRequestHistory;
-            config.events.onRequestHistoryData = onRequestHistoryData;
-            config.events.onRequestHistoryClose = onRequestHistoryClose;
+
+            if (<%- JSON.stringify(editor.userid) %> != null) {
+                config.events.onRequestHistory = onRequestHistory;
+                config.events.onRequestHistoryData = onRequestHistoryData;
+                config.events.onRequestHistoryClose = onRequestHistoryClose;
+                config.events.onRequestRename = onRequestRename;
+            }
+
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
-            config.events.onRequestRename = onRequestRename;
         }
 
         if (config.editorConfig.createUrl) {
