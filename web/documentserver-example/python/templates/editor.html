@@ -191,7 +191,6 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                "onRequestRename": onRequestRename,
             };
 
             {% if history and historyData %}
@@ -227,6 +226,8 @@
                     var data = JSON.stringify(event.data);
                     innerAlert("onRequestSendNotify: " + data);
                 };
+                // prevent file renaming for anonymous users
+                config.events['onRequestRename'] = onRequestRename;
 
             {% endif %}
 

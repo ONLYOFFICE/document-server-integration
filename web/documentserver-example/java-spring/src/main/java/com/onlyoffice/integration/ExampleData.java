@@ -41,7 +41,8 @@ public class ExampleData {
                 "The file favorite state is undefined",
                 "Can't mention others in comments",
                 "Can't create new files from the editor",
-                "Can’t see anyone’s information"
+                "Can’t see anyone’s information",
+                "Can't rename files from the editor"
         );
         List<String> description_user_1 = List.of(  // the description for user 1
                 "File author by default",
