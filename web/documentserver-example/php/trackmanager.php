@@ -255,7 +255,9 @@ function commandRequest($method, $key, $meta = null){
     ));
 
     if (substr($documentCommandUrl, 0, strlen("https")) === "https") {
-        $opts['ssl'] = array( 'verify_peer'   => FALSE );
+        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
+            $opts['ssl'] = array( 'verify_peer' => FALSE, 'verify_peer_name' => FALSE );
+        }
     }
 
     $context = stream_context_create($opts);
