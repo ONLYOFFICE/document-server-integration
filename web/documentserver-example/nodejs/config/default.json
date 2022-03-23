@@ -44,7 +44,8 @@
         "authorizationHeaderPrefix": "Bearer ",
         "secret": "secret",
         "expiresIn": "5m"
-    }
+    },
+    "verify_peer_off": true
   },
   "plugins": {
     "pluginsData": []
