@@ -179,7 +179,7 @@
                 var historyData = histArray[1];
                 var usersForMentions = [[${usersForMentions}]];
 
-                if(usersForMentions.length > 0){
+                if(config.editorConfig.user.id != 4){
                     if (hist && historyData) {
                         // the user is trying to show the document version history
                         config.events['onRequestHistory'] = function () {
