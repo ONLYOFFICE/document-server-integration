@@ -171,24 +171,24 @@
 
         <%
             history = @file.get_history
-            usersMentions = @file.get_users_mentions
+            usersMentions = @file.get_users_mentions %>
             
-            if usersMentions
-                if history %>
-                // the user is trying to show the document version history
-                config.events['onRequestHistory'] = function () {
-                    docEditor.refreshHistory(<%= raw history[:hist].to_json %>);  // show the document version history
-                };
-                // the user is trying to click the specific document version in the document version history
-                config.events['onRequestHistoryData'] = function (event) {
-                    var ver = event.data;
-                    var histData = <%= raw history[:histData].to_json %>;
-                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                // the user is trying to go back to the document from viewing the document version history
-                config.events['onRequestHistoryClose'] = function () {
-                    document.location.reload();
-                };
+            if (config.editorConfig.user.id) {
+                <% if history %>
+                    // the user is trying to show the document version history
+                    config.events['onRequestHistory'] = function () {
+                        docEditor.refreshHistory(<%= raw history[:hist].to_json %>);  // show the document version history
+                    };
+                    // the user is trying to click the specific document version in the document version history
+                    config.events['onRequestHistoryData'] = function (event) {
+                        var ver = event.data;
+                        var histData = <%= raw history[:histData].to_json %>;
+                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                    };
+                    // the user is trying to go back to the document from viewing the document version history
+                    config.events['onRequestHistoryClose'] = function () {
+                        document.location.reload();
+                    };
                 <% end %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
@@ -204,8 +204,7 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
-            <% end
-        %>
+        }
 
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
