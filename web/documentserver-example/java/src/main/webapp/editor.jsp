@@ -183,7 +183,7 @@
             String usersForMentions = (String) request.getAttribute("usersForMentions");
         %>
 
-        <% if (usersForMentions != null) { %>
+        if (config.editorConfig.user.id) {
             <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
                 // the user is trying to show the document version history
                 config.events['onRequestHistory'] = function () {
@@ -203,7 +203,7 @@
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": ${usersForMentions}
+                    "users": <%=usersForMentions%>
                 });
             };
             // the user is mentioned in a comment
@@ -214,7 +214,7 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
-        <% } %>
+        }
 
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
