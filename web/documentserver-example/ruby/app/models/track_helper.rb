@@ -227,7 +227,9 @@ class TrackHelper
 
                 if document_command_url.start_with?('https')  # check if the documnent command url starts with https
                     http.use_ssl = true
-                    http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+                    if Rails.configuration.verify_peer_off == TRUE
+                        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+                    end
                 end
 
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
@@ -257,7 +259,9 @@ class TrackHelper
 
             if uristr.start_with?('https')  # check if the documnent command url starts with https
               http.use_ssl = true
-              http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+              if Rails.configuration.verify_peer_off == TRUE
+                http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+              end
             end
 
             req = Net::HTTP::Get.new(uri)

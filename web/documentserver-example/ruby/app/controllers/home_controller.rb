@@ -120,7 +120,9 @@ class HomeController < ApplicationController
 
         if new_file_uri.start_with?('https')
           http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+          if Rails.configuration.verify_peer_off == TRUE
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+          end
         end
 
         req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
@@ -326,7 +328,9 @@ class HomeController < ApplicationController
 
       if file_url.start_with?('https')
         http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+        if Rails.configuration.verify_peer_off == TRUE
+          http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+        end
       end
       req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
       res = http.request(req)
