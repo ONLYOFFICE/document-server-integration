@@ -195,7 +195,7 @@
 
             
 
-            {% if usersForMentions %}
+            if (config.editorConfig.user.id) {
             
                 {% if history and historyData %}
 
@@ -231,7 +231,7 @@
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
 
-            {% endif %}
+            }
 
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
