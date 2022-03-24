@@ -131,9 +131,9 @@ namespace OnlineEditorsExample
             }
 
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
+            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
 
             var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
@@ -212,9 +212,9 @@ namespace OnlineEditorsExample
             }
 
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
+            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
 
             string forcesavePath = "";
@@ -262,6 +262,11 @@ namespace OnlineEditorsExample
         // create a command request
         public static void commandRequest(string method, string key, object meta = null)
         {
+            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
+                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            }
+            
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
@@ -282,9 +287,9 @@ namespace OnlineEditorsExample
             if (JwtManager.Enabled)
             {
                 var payload = new Dictionary<string, object>
-                    {
-                        { "payload", body }
-                    };
+                {
+                    { "payload", body }
+                };
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token

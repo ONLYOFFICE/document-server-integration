@@ -354,9 +354,9 @@ namespace OnlineEditorsExample
             try
             {
                 // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                if (IsMono)
-                {
+                if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                     ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 }
 
                 using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the uploading file
@@ -421,9 +421,9 @@ namespace OnlineEditorsExample
             var req = (HttpWebRequest)WebRequest.Create(fileUrl);
             
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (IsMono)
-            {
+            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
             
             using (var stream = req.GetResponse().GetResponseStream())
@@ -509,9 +509,9 @@ namespace OnlineEditorsExample
                 var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
                 // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                if (IsMono)
-                {
+                if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                     ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 }
 
                 using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the converting file

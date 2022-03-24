@@ -146,9 +146,9 @@ namespace ASC.Api.DocumentConverter
             }
 
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
+            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
 
             string dataResponse;
