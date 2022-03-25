@@ -127,7 +127,7 @@ def saveAs(request):
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
-        resp = requests.get(saveAsFileUrl)
+        resp = requests.get(saveAsFileUrl, verify = config.DOC_SERV_VERIFY_PEER)
 
         if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             response.setdefault('error', 'File size is incorrect')
