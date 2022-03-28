@@ -117,11 +117,7 @@ namespace OnlineEditorsExampleMVC
                 
                 var req = (HttpWebRequest)WebRequest.Create(fileUrl);
     
-                // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                    ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-                }
+                DocManagerHelper.VerifySSL();
 
                 using (var stream = req.GetResponse().GetResponseStream())
                 {
@@ -161,11 +157,7 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                    ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-                }
+                DocManagerHelper.VerifySSL();
                 
                 var httpPostedFile = context.Request.Files[0];
                 string fileName;
@@ -266,11 +258,7 @@ namespace OnlineEditorsExampleMVC
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
-                    // hack. http://ubuntuforums.org/showthread.php?t=1841740
-                    if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                        ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-                    }
+                    DocManagerHelper.VerifySSL();
 
                     using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the converting file
                     {
@@ -592,6 +580,7 @@ namespace OnlineEditorsExampleMVC
                 { "title", newFileName }
             };
             TrackManager.commandRequest("meta", docKey, meta);
+            context.Response.Write("{ \"result\": \"OK\"}");
         }
     }
 }

@@ -128,11 +128,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            DocManagerHelper.VerifySSL();
 
             var storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
@@ -209,11 +205,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            DocManagerHelper.VerifySSL();
             
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
@@ -259,11 +251,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // create a command request
         public static void commandRequest(string method, string key, object meta = null)
         {
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            DocManagerHelper.VerifySSL();
 
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
