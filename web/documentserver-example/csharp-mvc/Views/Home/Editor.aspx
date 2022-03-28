@@ -219,14 +219,17 @@
                     document.location.reload();
                 };
             <% } %>
+
             // add mentions for not anonymous users
-            <% if (!string.IsNullOrEmpty(usersForMentions)) { %>
+            <% if (!string.IsNullOrEmpty(usersForMentions))
+            { %>
                 config.events['onRequestUsers'] = function () {
                     docEditor.setUsers({  // set a list of users to mention in the comments
-                        "users":  <%= usersForMentions %>
+                        "users": <%= usersForMentions %>
                     });
                 };
-            <%  } %>
+            <% } %>
+
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
                 event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
@@ -235,8 +238,8 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
-        } 
-        
+        }
+
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
         };

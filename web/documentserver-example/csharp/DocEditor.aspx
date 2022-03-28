@@ -208,7 +208,8 @@
         };
 
         if (config.editorConfig.user.id) {
-            <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData)) { %>
+            <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
+            { %>
                 config.events['onRequestHistory'] = function () {  // the user is trying to show the document version history
                     docEditor.refreshHistory(<%= History %>);  // show the document version history
                 };
@@ -221,15 +222,17 @@
                     document.location.reload();
                 };
             <% } %>
+
             // add mentions for not anonymous users
-            <% if (!string.IsNullOrEmpty(UsersForMentions)) { %>
+            <% if (!string.IsNullOrEmpty(UsersForMentions))
+            { %>
                 config.events['onRequestUsers'] = function () {
                     docEditor.setUsers({  // set a list of users to mention in the comments
                         "users": <%= UsersForMentions %>
                     });
                 };
-            <%  } %>
-        
+            <% } %>
+
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
                 event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
@@ -239,7 +242,7 @@
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
         }
-        
+
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
         };
