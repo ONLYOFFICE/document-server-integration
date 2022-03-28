@@ -130,11 +130,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            _Default.VerifySSL();
 
             var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = _Default.HistoryDir(storagePath);  // get the path to the history directory
@@ -211,11 +207,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            _Default.VerifySSL();
 
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
@@ -262,10 +254,7 @@ namespace OnlineEditorsExample
         // create a command request
         public static void commandRequest(string method, string key, object meta = null)
         {
-            if(!WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("")) {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-            }
+            _Default.VerifySSL();
             
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 

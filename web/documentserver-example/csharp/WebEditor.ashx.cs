@@ -398,6 +398,7 @@ namespace OnlineEditorsExample
                 { "title", newFileName }
             };
             TrackManager.commandRequest("meta", docKey, meta);
+            context.Response.Write("{ \"result\": \"OK\"}");
         }
     }
 }
