@@ -191,20 +191,20 @@
                     "onDocumentStateChange": onDocumentStateChange,
                     "onRequestEditRights": onRequestEditRights,
                     "onError": onError,
-                    "onRequestHistory":  onRequestHistory,
-                    "onRequestHistoryData": onRequestHistoryData,
-                    "onRequestHistoryClose": onRequestHistoryClose,
                     "onOutdatedVersion": onOutdatedVersion,
                     "onMakeActionLink": onMakeActionLink,
                     "onMetaChange": onMetaChange,
                     "onRequestInsertImage": onRequestInsertImage,
                     "onRequestCompareFile": onRequestCompareFile,
                     "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                    "onRequestRename": onRequestRename
                 }
             };
 
-        if (<%- JSON.stringify(usersForMentions) %> != null) {
+        if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestHistory = onRequestHistory;
+            config.events.onRequestHistoryData = onRequestHistoryData;
+            config.events.onRequestHistoryClose = onRequestHistoryClose;
+            config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
         }

@@ -205,40 +205,44 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestRename": onRequestRename
         };
 
-        <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
-        { %>
-        config.events['onRequestHistory'] = function () {  // the user is trying to show the document version history
-            docEditor.refreshHistory(<%= History %>);  // show the document version history
-        };
-        config.events['onRequestHistoryData'] = function (event) {  // the user is trying to click the specific document version in the document version history
-            var ver = event.data;
-            var histData = <%= HistoryData %>;
-            docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-        };
-        config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
-            document.location.reload();
-        };
-        <% } %>
+        if (config.editorConfig.user.id) {
+            <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
+            { %>
+                config.events['onRequestHistory'] = function () {  // the user is trying to show the document version history
+                    docEditor.refreshHistory(<%= History %>);  // show the document version history
+                };
+                config.events['onRequestHistoryData'] = function (event) {  // the user is trying to click the specific document version in the document version history
+                    var ver = event.data;
+                    var histData = <%= HistoryData %>;
+                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                };
+                config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
+                    document.location.reload();
+                };
+            <% } %>
 
-        <% if (!string.IsNullOrEmpty(UsersForMentions))
-        { %>
-        // add mentions for not anonymous users
-        config.events['onRequestUsers'] = function () {
-            docEditor.setUsers({  // set a list of users to mention in the comments
-                "users": <%= UsersForMentions %>
-        });
-        };
-        // the user is mentioned in a comment
-        config.events['onRequestSendNotify'] = function (event) {
-            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-            var data = JSON.stringify(event.data);
-            innerAlert("onRequestSendNotify: " + data);
-        };
-        <% } %>
-        
+            // add mentions for not anonymous users
+            <% if (!string.IsNullOrEmpty(UsersForMentions))
+            { %>
+                config.events['onRequestUsers'] = function () {
+                    docEditor.setUsers({  // set a list of users to mention in the comments
+                        "users": <%= UsersForMentions %>
+                    });
+                };
+            <% } %>
+
+            // the user is mentioned in a comment
+            config.events['onRequestSendNotify'] = function (event) {
+                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+                var data = JSON.stringify(event.data);
+                innerAlert("onRequestSendNotify: " + data);
+            };
+            // prevent file renaming for anonymous users
+            config.events['onRequestRename'] = onRequestRename;
+        }
+
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
         };

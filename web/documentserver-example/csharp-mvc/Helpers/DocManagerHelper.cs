@@ -427,5 +427,17 @@ namespace OnlineEditorsExampleMVC.Helpers
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
         }
+
+        public static Dictionary<string, string> GetLanguages()
+        {
+            var languages = new Dictionary<string, string>();
+            String[] couples = (WebConfigurationManager.AppSettings["files.docservice.languages"] ?? "").Split('|');
+            foreach (string couple in couples)
+            {   
+                String[] tmp = couple.Split(':');
+                languages.Add(tmp[0],tmp[1]);
+            }
+            return languages;
+        }
     }
 }

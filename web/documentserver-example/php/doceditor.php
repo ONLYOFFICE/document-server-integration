@@ -509,7 +509,6 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
-                "onRequestRename": onRequestRename
             };
 
             <?php
@@ -517,36 +516,38 @@
                 $history = $out[0];
                 $historyData = $out[1];
             ?>
-            <?php if ($history != null && $historyData != null): ?>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            <?php endif; ?>
 
-            <?php if ($usersForMentions != null): ?>
-            // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <?php echo json_encode($usersForMentions) ?>
-                });
-            };
-            // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            <?php if ($user->id != "uid-0"): ?>
+                <?php if ($history != null && $historyData != null): ?>
+                    // the user is trying to show the document version history
+                    config.events['onRequestHistory'] = function () {
+                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
+                    };
+                    // the user is trying to click the specific document version in the document version history
+                    config.events['onRequestHistoryData'] = function (event) {
+                        var ver = event.data;
+                        var histData = <?php echo json_encode($historyData) ?>;
+                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                    };
+                    // the user is trying to go back to the document from viewing the document version history
+                    config.events['onRequestHistoryClose'] = function () {
+                        document.location.reload();
+                    };
+                <?php endif; ?>
+                // add mentions for not anonymous users
+                config.events['onRequestUsers'] = function () {
+                    docEditor.setUsers({  // set a list of users to mention in the comments
+                        "users": <?php echo json_encode($usersForMentions) ?>
+                    });
+                };
+                // the user is mentioned in a comment
+                config.events['onRequestSendNotify'] = function (event) {
+                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+                    var data = JSON.stringify(event.data);
+                    innerAlert("onRequestSendNotify: " + data);
+                };
+                // prevent file renaming for anonymous users
+                config.events['onRequestRename'] = onRequestRename;
             <?php endif; ?>
 
             if (config.editorConfig.createUrl) {

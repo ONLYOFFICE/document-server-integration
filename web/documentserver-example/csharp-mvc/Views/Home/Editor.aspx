@@ -193,47 +193,53 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestRename": onRequestRename
         };
 
         <% string hist, histData; %>
         <% Model.GetHistory(out hist, out histData); %>
-        <% if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData))
-        { %>
-        // the user is trying to show the document version history
-        config.events['onRequestHistory'] = function () {
-            docEditor.refreshHistory(<%= hist %>);  // show the document version history
-        };
-        // the user is trying to click the specific document version in the document version history
-        config.events['onRequestHistoryData'] = function (event) {
-            var ver = event.data;
-            var histData = <%= histData %>;
-            docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-        };
-        // the user is trying to go back to the document from viewing the document version history
-        config.events['onRequestHistoryClose '] = function () {
-            document.location.reload();
-        };
-        <% } %>
 
         <% string usersForMentions; %>
         <% Model.GetUsersMentions(Request, out usersForMentions); %>
-        <% if (!string.IsNullOrEmpty(usersForMentions))
-        // add mentions for not anonymous users
-        { %>
-        config.events['onRequestUsers'] = function () {
-            docEditor.setUsers({  // set a list of users to mention in the comments
-                "users": <%= usersForMentions%>
-            });
-        };
-        // the user is mentioned in a comment
-        config.events['onRequestSendNotify'] = function (event) {
-            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-            var data = JSON.stringify(event.data);
-            innerAlert("onRequestSendNotify: " + data);
-        };
-        <% } %>
-        
+
+        if (config.editorConfig.user.id) {
+            <% if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData))
+            { %>
+                // the user is trying to show the document version history
+                config.events['onRequestHistory'] = function () {
+                    docEditor.refreshHistory(<%= hist %>);  // show the document version history
+                };
+                // the user is trying to click the specific document version in the document version history
+                config.events['onRequestHistoryData'] = function (event) {
+                    var ver = event.data;
+                    var histData = <%= histData %>;
+                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                };
+                // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose '] = function () {
+                    document.location.reload();
+                };
+            <% } %>
+
+            // add mentions for not anonymous users
+            <% if (!string.IsNullOrEmpty(usersForMentions))
+            { %>
+                config.events['onRequestUsers'] = function () {
+                    docEditor.setUsers({  // set a list of users to mention in the comments
+                        "users": <%= usersForMentions %>
+                    });
+                };
+            <% } %>
+
+            // the user is mentioned in a comment
+            config.events['onRequestSendNotify'] = function (event) {
+                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+                var data = JSON.stringify(event.data);
+                innerAlert("onRequestSendNotify: " + data);
+            };
+            // prevent file renaming for anonymous users
+            config.events['onRequestRename'] = onRequestRename;
+        }
+
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
         };

@@ -4,6 +4,8 @@
 <%@page import="java.util.Calendar"%>
 <%@page import="java.io.File"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="java.util.Map"%>
 <%@page import="helpers.Users"%>
 <%@page import="entities.User"%>
 
@@ -97,37 +99,10 @@
                                                 <td valign="middle">
                                                     <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
-                                                        <option value="en">English</option>
-                                                        <option value="be">Belarusian</option>
-                                                        <option value="bg">Bulgarian</option>
-                                                        <option value="ca">Catalan</option>
-                                                        <option value="zh">Chinese</option>
-                                                        <option value="cs">Czech</option>
-                                                        <option value="da">Danish</option>
-                                                        <option value="nl">Dutch</option>
-                                                        <option value="fi">Finnish</option>
-                                                        <option value="fr">French</option>
-                                                        <option value="de">German</option>
-                                                        <option value="el">Greek</option>
-                                                        <option value="hu">Hungarian</option>
-                                                        <option value="id">Indonesian</option>
-                                                        <option value="it">Italian</option>
-                                                        <option value="ja">Japanese</option>
-                                                        <option value="ko">Korean</option>
-                                                        <option value="lv">Latvian</option>
-                                                        <option value="lo">Lao</option>
-                                                        <option value="nb">Norwegian</option>
-                                                        <option value="pl">Polish</option>
-                                                        <option value="pt">Portuguese</option>
-                                                        <option value="ro">Romanian</option>
-                                                        <option value="ru">Russian</option>
-                                                        <option value="sk">Slovak</option>
-                                                        <option value="sl">Slovenian</option>
-                                                        <option value="sv">Swedish</option>
-                                                        <option value="es">Spanish</option>
-                                                        <option value="tr">Turkish</option>
-                                                        <option value="uk">Ukrainian</option>
-                                                        <option value="vi">Vietnamese</option>
+                                                        <% Map<String, String> languages = DocumentManager.GetLanguages(); %>
+                                                        <% for (Map.Entry<String, String> language : languages.entrySet()) { %>
+                                                            <option value="<%=language.getKey()%>"><%=language.getValue()%></option>
+                                                        <% } %>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -373,7 +348,10 @@
             var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
-        </script>
 
+            document.addEventListener('DOMContentLoaded', function(){
+                document.getElementById("language").value="en";
+            });
+        </script>
     </body>
 </html>

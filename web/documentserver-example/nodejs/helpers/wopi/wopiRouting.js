@@ -83,6 +83,7 @@ exports.registerRoutes = function(app) {
                 convertExts: configServer.get('convertedDocs'),
                 editedExts: editedExts,
                 fillExts: fillExts,
+                languages: configServer.get('languages'),
             });
 
         } catch (ex) {
