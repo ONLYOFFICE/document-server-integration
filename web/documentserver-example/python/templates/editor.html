@@ -195,8 +195,8 @@
 
             
 
-            {% if usersForMentions %}
-            
+            if (config.editorConfig.user.id) {
+
                 {% if history and historyData %}
 
                     // the user is trying to show the document version history
@@ -231,7 +231,7 @@
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
 
-            {% endif %}
+            }
 
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
