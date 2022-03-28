@@ -225,12 +225,7 @@ class TrackHelper
                 uri = URI.parse(document_command_url)  # parse the document command url
                 http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-                if document_command_url.start_with?('https')  # check if the documnent command url starts with https
-                    http.use_ssl = true
-                    if Rails.configuration.verify_peer_off == TRUE
-                        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-                    end
-                end
+                DocumentHelper.verify_ssl(document_command_url, http)
 
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
                 req.add_field("Content-Type", "application/json")  # set headers
@@ -257,12 +252,7 @@ class TrackHelper
             uri = URI.parse(uristr)  # parse the url string
             http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-            if uristr.start_with?('https')  # check if the documnent command url starts with https
-              http.use_ssl = true
-              if Rails.configuration.verify_peer_off == TRUE
-                http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-              end
-            end
+            DocumentHelper.verify_ssl(uristr, http)
 
             req = Net::HTTP::Get.new(uri)
             res = http.request(req)  # get the response
