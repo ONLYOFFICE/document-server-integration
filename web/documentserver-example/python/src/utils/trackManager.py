@@ -25,7 +25,6 @@
 """
 
 
-from asyncio.windows_events import NULL
 import config
 import requests
 import os
@@ -160,7 +159,7 @@ def commandRequest(method, key, meta = None):
     }
 
     if (meta): 
-        payload.meta = meta
+        payload['meta'] = meta
 
 
     headers={'accept': 'application/json'}
@@ -171,8 +170,7 @@ def commandRequest(method, key, meta = None):
         headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-        
-    response = requests.post(documentCommandUrl, json=payload, headers=headers)
+    response = requests.post(documentCommandUrl, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER)
 
     if (meta): 
         return response

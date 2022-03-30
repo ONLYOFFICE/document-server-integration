@@ -118,10 +118,7 @@ class HomeController < ApplicationController
         uri = URI.parse(new_file_uri)  # create the request url
         http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-        if new_file_uri.start_with?('https')
-          http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-        end
+        DocumentHelper.verify_ssl(new_file_uri, http)
 
         req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
         res = http.request(req)
@@ -324,10 +321,8 @@ class HomeController < ApplicationController
       uri = URI.parse(file_url)  # create the request url
       http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-      if file_url.start_with?('https')
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-      end
+      DocumentHelper.verify_ssl(file_url, http)
+
       req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
       res = http.request(req)
       data = res.body

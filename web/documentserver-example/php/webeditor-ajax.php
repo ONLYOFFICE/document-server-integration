@@ -39,6 +39,16 @@ $_trackerStatus = array(
     7 => 'CorruptedForceSave'
 );
 
+// ignore self-signed certificate
+if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
+    stream_context_set_default( [
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+    ]);
+}
+
 // check if type value exists
 if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $response_array;

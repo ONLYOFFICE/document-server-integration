@@ -128,6 +128,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
+            DocManagerHelper.VerifySSL();
+
             var storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
             if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
@@ -203,6 +205,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
+            DocManagerHelper.VerifySSL();
+            
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
 
@@ -247,6 +251,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         // create a command request
         public static void commandRequest(string method, string key, object meta = null)
         {
+            DocManagerHelper.VerifySSL();
+
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);

@@ -44,9 +44,11 @@ const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizat
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const urllib = require("urllib");
+const verifyPeerOff = configServer.get('verify_peer_off');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
+if(verifyPeerOff) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
 
 String.prototype.hashCode = function () {
 	const len = this.length;

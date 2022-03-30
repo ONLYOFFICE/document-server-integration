@@ -48,6 +48,8 @@ module OnlineEditorsExampleRuby
     Rails.configuration.jwtSecret = ""
     Rails.configuration.header="Authorization"
 
+    Rails.configuration.verify_peer_off = "true"
+
     Rails.configuration.languages={
       'en' => 'English',
       'be' => 'Belarusian',
@@ -83,6 +85,5 @@ module OnlineEditorsExampleRuby
       'az' => 'Azerbaijani',
       'gl' => 'Galego'
     }
-
   end
 end

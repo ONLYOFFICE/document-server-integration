@@ -29,6 +29,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import helpers.*;
 
 public class GlobalServletContextListener implements ServletContextListener
 {
@@ -70,16 +71,19 @@ public class GlobalServletContextListener implements ServletContextListener
 
         SSLContext sc;
 
-        try
-        {
-            // register the all-trusting trust manager for HTTPS
-            sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        if(!ConfigManager.GetProperty("files.docservice.verify-peer-off").isEmpty()) {
+             try
+            {
+                // register the all-trusting trust manager for HTTPS
+                sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            }
+            catch (NoSuchAlgorithmException | KeyManagementException ex)
+            {
+            }
         }
-        catch (NoSuchAlgorithmException | KeyManagementException ex)
-        {
-        }
+       
 
         // create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier()

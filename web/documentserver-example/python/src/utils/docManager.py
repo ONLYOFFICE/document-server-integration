@@ -219,7 +219,7 @@ def createFileResponse(response, path, req, meta):
 
 # save file from the given url 
 def saveFileFromUri(uri, path, req = None, meta = False):
-    resp = requests.get(uri, stream=True)
+    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER)
     createFileResponse(resp, path, req, meta)
     return
 

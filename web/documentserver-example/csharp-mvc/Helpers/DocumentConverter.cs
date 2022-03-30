@@ -143,6 +143,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                 requestStream.Write(bytes, 0, bytes.Length);  // and write the serialized body object to it
             }
 
+            DocManagerHelper.VerifySSL();
+
             string dataResponse;
             using (var response = request.GetResponse())
             using (var stream = response.GetResponseStream())  // get the response stream

@@ -130,11 +130,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
             var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = _Default.HistoryDir(storagePath);  // get the path to the history directory
@@ -211,11 +207,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
@@ -262,6 +254,8 @@ namespace OnlineEditorsExample
         // create a command request
         public static void commandRequest(string method, string key, object meta = null)
         {
+            _Default.VerifySSL();
+            
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
@@ -282,9 +276,9 @@ namespace OnlineEditorsExample
             if (JwtManager.Enabled)
             {
                 var payload = new Dictionary<string, object>
-                    {
-                        { "payload", body }
-                    };
+                {
+                    { "payload", body }
+                };
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token

@@ -25,6 +25,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Models;
+using System.Net;
 
 namespace OnlineEditorsExampleMVC.Helpers
 {
@@ -416,6 +417,17 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             return files;
         }
+
+        // enable certificate ignore
+        public static void VerifySSL()
+        {
+            // hack. http://ubuntuforums.org/showthread.php?t=1841740
+            if(WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("true")) {
+                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            }
+        }
+
         public static Dictionary<string, string> GetLanguages()
         {
             var languages = new Dictionary<string, string>();

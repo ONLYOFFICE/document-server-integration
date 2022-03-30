@@ -30,14 +30,22 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 
+import com.onlyoffice.integration.documentserver.util.SSLUtils;
+
 @Configuration
 public class IntegrationConfiguration {
 
     @Value("${files.storage}")
     private String storageAddress;
 
+    @Value("${files.docservice.verify-peer-off}")
+    private String verifyPerrOff;
+
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
+
+    @Autowired
+    private SSLUtils ssl;
 
     @Bean
     public ModelMapper mapper(){  // create the model mapper
@@ -58,6 +66,17 @@ public class IntegrationConfiguration {
     @PostConstruct
     public void init(){  // initialize the storage path builder
         storagePathBuilder.configure(storageAddress.isBlank() ? null : storageAddress);
+        if(!verifyPerrOff.isEmpty()) {
+            try{
+                if(verifyPerrOff.equals("true")) {
+                    ssl.turnOffSslChecking(); //the certificate will be ignored
+                } else {
+                    ssl.turnOnSslChecking(); //the certificate will be verified
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Bean

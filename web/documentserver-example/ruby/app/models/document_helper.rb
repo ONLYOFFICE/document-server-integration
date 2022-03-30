@@ -340,7 +340,13 @@ class DocumentHelper
         return result
       end
     end
-
+    # enable ignore certificate
+    def verify_ssl(file_uri, http)
+      if file_uri.start_with?('https') && Rails.configuration.verify_peer_off.eql?('true')
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+      end
+    end
   end
 
 end

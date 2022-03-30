@@ -24,6 +24,8 @@ $GLOBALS['DOC_SERV_COMMAND_URL'] = "coauthoring/CommandService.ashx";
 $GLOBALS['DOC_SERV_JWT_SECRET'] = "";
 $GLOBALS['DOC_SERV_JWT_HEADER'] = "Authorization";
 
+$GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] = TRUE;
+
 $GLOBALS['EXAMPLE_URL'] = "";
 
 $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
