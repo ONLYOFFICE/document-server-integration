@@ -72,6 +72,7 @@ String.prototype.format = function () {
 
 
 const app = express();  // create an application object
+app.disable("x-powered-by");
 app.set("views", path.join(__dirname, "views"));  // specify the path to the main template
 app.set("view engine", "ejs");  // specify which template engine is used
 
