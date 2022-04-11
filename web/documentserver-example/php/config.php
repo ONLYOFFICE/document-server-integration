@@ -48,6 +48,7 @@ $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
 
 $GLOBALS['LANGUAGES'] = array(
     'en' => 'English',
+    'az' => 'Azerbaijani',
     'be' => 'Belarusian',
     'bg' => 'Bulgarian',
     'ca' => 'Catalan',
@@ -57,6 +58,7 @@ $GLOBALS['LANGUAGES'] = array(
     'nl' => 'Dutch',
     'fi' => 'Finnish',
     'fr' => 'French',
+    'gl' => 'Galego',
     'de' => 'German',
     'el' => 'Greek',
     'hu' => 'Hungarian',
@@ -77,8 +79,6 @@ $GLOBALS['LANGUAGES'] = array(
     'sv' => 'Swedish',
     'tr' => 'Turkish',
     'uk' => 'Ukrainian',
-    'vi' => 'Vietnamese',
-    'az' => 'Azerbaijani',
-    'gl' => 'Galego'
+    'vi' => 'Vietnamese'
 );
 ?>

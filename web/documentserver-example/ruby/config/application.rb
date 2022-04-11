@@ -52,6 +52,7 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.languages={
       'en' => 'English',
+      'az' => 'Azerbaijani',
       'be' => 'Belarusian',
       'bg' => 'Bulgarian',
       'ca' => 'Catalan',
@@ -61,6 +62,7 @@ module OnlineEditorsExampleRuby
       'nl' => 'Dutch',
       'fi' => 'Finnish',
       'fr' => 'French',
+      'gl' => 'Galego'
       'de' => 'German',
       'el' => 'Greek',
       'hu' => 'Hungarian',
@@ -81,9 +83,7 @@ module OnlineEditorsExampleRuby
       'sv' => 'Swedish',
       'tr' => 'Turkish',
       'uk' => 'Ukrainian',
-      'vi' => 'Vietnamese',
-      'az' => 'Azerbaijani',
-      'gl' => 'Galego'
+      'vi' => 'Vietnamese'
     }
   end
 end
