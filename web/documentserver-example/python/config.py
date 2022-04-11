@@ -55,6 +55,7 @@ EXT_DOCUMENT = [
 
 LANGUAGES = {
     'en': 'English',
+    'az': 'Azerbaijani',
     'be': 'Belarusian',
     'bg': 'Bulgarian',
     'ca': 'Catalan',
@@ -64,6 +65,7 @@ LANGUAGES = {
     'nl': 'Dutch',
     'fi': 'Finnish',
     'fr': 'French',
+    'gl': 'Galego',
     'de': 'German',
     'el': 'Greek',
     'hu': 'Hungarian',
@@ -84,9 +86,7 @@ LANGUAGES = {
     'sv': 'Swedish',
     'tr': 'Turkish',
     'uk': 'Ukrainian',
-    'vi': 'Vietnamese',
-    'az': 'Azerbaijani',
-    'gl': 'Galego'
+    'vi': 'Vietnamese'
 }
 
 if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain

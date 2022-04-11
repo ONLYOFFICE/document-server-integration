@@ -48,6 +48,7 @@
     "verify_peer_off": true,
     "languages": {
       "en": "English",
+      "az": "Azerbaijani",
       "be": "Belarusian",
       "bg": "Bulgarian",
       "ca": "Catalan",
@@ -57,6 +58,7 @@
       "nl": "Dutch",
       "fi": "Finnish",
       "fr": "French",
+      "gl": "Galego",
       "de": "German",
       "el": "Greek",
       "hu": "Hungarian",
@@ -77,9 +79,7 @@
       "sv": "Swedish",
       "tr": "Turkish",
       "uk": "Ukrainian",
-      "vi": "Vietnamese",
-      "az": "Azerbaijani",
-      "gl": "Galego"
+      "vi": "Vietnamese"
     }
   },
   "plugins": {
