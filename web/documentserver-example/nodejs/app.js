@@ -909,6 +909,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 templates: user.templates ? templates : null,
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
+                chat: userid != "uid-0",
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
                 fillForms: mode != "view" && mode != "comment" && mode != "embedded" && mode != "blockcontent",
                 modifyFilter: mode != "filter",
