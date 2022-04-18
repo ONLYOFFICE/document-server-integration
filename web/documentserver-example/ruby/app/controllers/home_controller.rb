@@ -118,10 +118,7 @@ class HomeController < ApplicationController
         uri = URI.parse(new_file_uri)  # create the request url
         http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-        if new_file_uri.start_with?('https')
-          http.use_ssl = true
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-        end
+        DocumentHelper.verify_ssl(new_file_uri, http)
 
         req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
         res = http.request(req)
@@ -147,6 +144,45 @@ class HomeController < ApplicationController
       render plain: '{ "error": "' + ex.message + '"}'
     end
 
+  end
+
+  # downloading a history file from public
+  def downloadhistory
+    begin
+      file_name = File.basename(params[:fileName])
+      user_address = params[:userAddress]
+      version = params[:ver]
+      file = params[:file]
+      isEmbedded = params[:dmode]
+
+      if JwtHelper.is_enabled
+        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        if request.headers[jwtHeader]
+          hdr = request.headers[jwtHeader]
+          hdr.slice!(0, "Bearer ".length)
+          token = JwtHelper.decode(hdr)
+          if !token || token.eql?("")
+            render plain: "JWT validation failed", :status => 403
+            return
+          end
+        else
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
+      end
+      hist_path = DocumentHelper.storage_path(file_name, user_address) + "-hist" # or to the original document
+
+      file_path = File.join(hist_path, version, file)
+
+      # add headers to the response to specify the page parameters
+      response.headers['Content-Length'] = File.size(file_path).to_s
+      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+
+      send_file file_path, :x_sendfile => true
+    rescue => ex
+      render plain: '{ "error": "File not found"}'
+    end
   end
 
   # tracking file changes
@@ -236,8 +272,9 @@ class HomeController < ApplicationController
     begin
       file_name = File.basename(params[:fileName])
       user_address = params[:userAddress]
+      isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled
+      if JwtHelper.is_enabled && isEmbedded == nil
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]
@@ -284,10 +321,8 @@ class HomeController < ApplicationController
       uri = URI.parse(file_url)  # create the request url
       http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-      if file_url.start_with?('https')
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-      end
+      DocumentHelper.verify_ssl(file_url, http)
+
       req = Net::HTTP::Get.new(uri.request_uri)  # create the get requets
       res = http.request(req)
       data = res.body
@@ -310,4 +345,17 @@ class HomeController < ApplicationController
       return
     end
   end
+
+    # Rename...
+    def rename
+      body = JSON.parse(request.body.read)
+      dockey = body["dockey"]
+      newfilename = body["newfilename"]
+      meta = {
+        :title => newfilename
+      }
+
+      json_data = TrackHelper.command_request("meta", dockey, meta)
+      render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    end
 end

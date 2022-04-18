@@ -47,4 +47,6 @@ public class Permission extends AbstractModel {  // the permission for the docum
     private List<String> reviewGroups;  // the groups whose changes the user can accept/reject
     @Autowired
     private CommentGroup commentGroups;  //  the groups whose comments the user can edit, remove and/or view
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = SerializerFilter.class)
+    private List<String> userInfoGroups;
 }

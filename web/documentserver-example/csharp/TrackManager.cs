@@ -78,7 +78,9 @@ namespace OnlineEditorsExample
 
                 if (token != null && !token.Equals(""))  // invalid signature error
                 {
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
+                    fileData = jss.Deserialize<Dictionary<string, object>>(token);
+                    if (fileData.ContainsKey("payload"))
+                        fileData = (Dictionary<string, object>)fileData["payload"];
                 }
                 else
                 {
@@ -97,7 +99,11 @@ namespace OnlineEditorsExample
             }
             var downloadUri = (string)fileData["url"];
             var curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            var downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";  // get the extension of the downloaded file
+
+            var downloadExt = fileData.ContainsKey("filetype")
+                ? "." + (string)fileData["filetype"]
+                : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -124,11 +130,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
             var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = _Default.HistoryDir(storagePath);  // get the path to the history directory
@@ -175,7 +177,11 @@ namespace OnlineEditorsExample
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            string downloadExt = Path.GetExtension(downloadUri).ToLower();  // get the extension of the downloaded file
+
+            var downloadExt = fileData.ContainsKey("filetype")
+                ? "." + (string)fileData["filetype"]
+                : Path.GetExtension(downloadUri).ToLower(); // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+
             Boolean newFileName = false;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -201,11 +207,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
@@ -250,8 +252,10 @@ namespace OnlineEditorsExample
         }
 
         // create a command request
-        public static void commandRequest(string method, string key)
+        public static void commandRequest(string method, string key, object meta = null)
         {
+            _Default.VerifySSL();
+            
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
@@ -263,13 +267,18 @@ namespace OnlineEditorsExample
                 { "key", key }
             };
 
+            if (meta != null)
+            {
+                body.Add("meta", meta);
+            }
+
             // check if a secret key to generate token exists or not
             if (JwtManager.Enabled)
             {
                 var payload = new Dictionary<string, object>
-                    {
-                        { "payload", body }
-                    };
+                {
+                    { "payload", body }
+                };
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token

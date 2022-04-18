@@ -41,7 +41,7 @@ namespace OnlineEditorsExample
         // get url to the original file for Document Server
         public static string FileUriUser
         {
-            get { return _Default.FileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? getDownloadUrl(FileName) + "&dmode=emb" : _Default.FileUri(FileName, false); }
         }
 
         protected string Key
@@ -100,20 +100,17 @@ namespace OnlineEditorsExample
         }
 
         // get url to download a file
-        public static string getDownloadUrl
+        public static string getDownloadUrl(string fileName)
         {
-            get
-            {
-                var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
+            var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
                 downloadUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
                 downloadUrl.Query = "type=download"
-                                    + "&fileName=" + HttpUtility.UrlEncode(FileName)
+                                    + "&fileName=" + HttpUtility.UrlEncode(fileName)
                                     + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
                 return downloadUrl.ToString();
-            }
         }
 
         // loading a page
@@ -195,7 +192,7 @@ namespace OnlineEditorsExample
                         "document", new Dictionary<string, object>
                             {
                                 { "title", FileName },
-                                { "url", getDownloadUrl },
+                                { "url", getDownloadUrl(FileName) },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -220,7 +217,8 @@ namespace OnlineEditorsExample
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
                                             { "reviewGroups", user.reviewGroups },
-                                            { "commentGroups", user.commentGroups }
+                                            { "commentGroups", user.commentGroups },
+                                            { "userInfoGroups", user.userInfoGroups }
                                         }
                                 }
                             }
@@ -238,7 +236,7 @@ namespace OnlineEditorsExample
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", user.id },
+                                            { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
                                             { "group", user.group }
                                         }
@@ -258,6 +256,7 @@ namespace OnlineEditorsExample
                                     "customization", new Dictionary<string, object>
                                         {
                                             { "about", true },  // the About section display
+                                            { "comments", true },
                                             { "feedback", true },  // the Feedback & Support menu button display
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
@@ -318,6 +317,7 @@ namespace OnlineEditorsExample
         // get the document history
         private void GetHistory(out Dictionary<string, object> history, out Dictionary<string, object> historyData)
         {
+            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
             var jss = new JavaScriptSerializer();
             var histDir = _Default.HistoryDir(_Default.StoragePath(FileName, null));
 
@@ -355,8 +355,17 @@ namespace OnlineEditorsExample
                         }
                     }
 
+                    var ext = Path.GetExtension(FileName).ToLower();
+                    dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
-                    dataObj.Add("url", i == currentVersion ? FileUri : MakePublicUrl(Directory.GetFiles(verDir, "prev.*")[0]));  // write file url to the data object
+                    // write file url to the data object
+                    var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext);
+                    if (Path.IsPathRooted(storagePath))
+                    {
+                        prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                    }
+
+                    dataObj.Add("url", prevFileUrl);  // write file url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -375,11 +384,13 @@ namespace OnlineEditorsExample
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
                         dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
+                            { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
                             { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.Add("changesUrl", MakePublicUrl(Path.Combine(_Default.VersionDir(histDir, i - 1), "diff.zip")));
+                        var changesUrl = MakePublicHistoryUrl(FileName, (i - 1).ToString(), "diff.zip");
+                        dataObj.Add("changesUrl", changesUrl);
                     }
                     if (JwtManager.Enabled)
                     {
@@ -503,8 +514,23 @@ namespace OnlineEditorsExample
         // create the public url
         private string MakePublicUrl(string fullPath)
         {
-            var root = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
+            var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"] 
+                : HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
+        }
+
+
+        // create the public history url
+        private string MakePublicHistoryUrl(string filename, string version, string file)
+        {
+            var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
+            fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
+                + "&ver=" + version + "&file=" + file
+                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+            return fileUrl.ToString();
         }
 
         // create demo document

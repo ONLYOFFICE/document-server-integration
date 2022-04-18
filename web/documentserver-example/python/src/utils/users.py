@@ -27,7 +27,7 @@
 from urllib.parse import unquote
 
 class User:
-    def __init__(self, id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions, templates):
+    def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates):
         self.id = id
         self.name = name
         self.email = email
@@ -38,6 +38,7 @@ class User:
         self.deniedPermissions = deniedPermissions
         self.descriptions = descriptions
         self.templates = templates
+        self.userInfoGroups = userInfoGroups
 
 descr_user_1 = [
     "File author by default",
@@ -45,7 +46,8 @@ descr_user_1 = [
     "Can review all the changes",
     "Can perform all actions with comments",
     "The file favorite state is undefined",
-    "Can create files from templates using data from the editor"
+    "Can create files from templates using data from the editor",
+    "Can see the information about all users"
 ]
 
 descr_user_2 = [
@@ -53,7 +55,8 @@ descr_user_2 = [
     "Can review only his own changes or changes made by users with no group",
     "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
     "This file is marked as favorite",
-    "Can create new files from the editor"
+    "Can create new files from the editor",
+    "Can see the information about users from Group2 and users who don’t belong to any group"
 ]
 
 descr_user_3 = [
@@ -64,7 +67,8 @@ descr_user_3 = [
     "Can’t copy data from the file to clipboard",
     "Can’t download the file",
     "Can’t print the file",
-    "Can create new files from the editor"
+    "Can create new files from the editor",
+    "Can see the information about Group2 users"
 ]
 
 descr_user_0 = [
@@ -74,12 +78,14 @@ descr_user_0 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can't mention others in comments",
-    "Can't create new files from the editor"
+    "Can't create new files from the editor",
+    "Can’t see anyone’s information",
+    "Can't rename files from the editor"
 ]
 
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
-        None, None, {},
+        '', None, {}, None,
         None, [], descr_user_1, True),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
         'group-2', ['group-2', ''], {
@@ -87,16 +93,17 @@ USERS = [
             'edit': ["group-2", ""],
             'remove': ["group-2"]
         },
+         ['group-2', ''],
         True, [], descr_user_2, False),
     User('uid-3', 'Hamish Mitchell', 'mitchell@example.com',
         'group-3', ['group-2'], {
             'view': ["group-3", "group-2"],
             'edit': ["group-2"],
             'remove': []
-        },
+        }, ['group-2'],
         False, ["copy", "download", "print"], descr_user_3, False),
     User('uid-0', None, None,
-        None, None, {},
+        '', None, {}, [],
         None, [], descr_user_0, False)
 ]
 

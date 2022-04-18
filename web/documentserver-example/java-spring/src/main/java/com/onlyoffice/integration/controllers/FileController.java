@@ -31,6 +31,7 @@ import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
+import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +62,12 @@ public class FileController {
     @Value("${filesize-max}")
     private String filesizeMax;
 
+    @Value("${files.docservice.url.site}")
+    private String docserviceUrlSite;
+
+    @Value("${files.docservice.url.command}")
+    private String docserviceUrlCommand;
+
     @Autowired
     private FileUtility fileUtility;
     @Autowired
@@ -79,6 +86,8 @@ public class FileController {
     private ObjectMapper objectMapper;
     @Autowired
     private ServiceConverter serviceConverter;
+    @Autowired
+    private CallbackManager callbackManager;
 
     // create user metadata
     private String createUserMetadata(String uid, String fullFileName) {
@@ -95,6 +104,18 @@ public class FileController {
     // download data from the specified file
     private ResponseEntity<Resource> downloadFile(String fileName){
         Resource resource = storageMutator.loadFileAsResource(fileName);  // load the specified file as a resource
+        String contentType = "application/octet-stream";
+
+        // create a response with the content type, header and body with the file data
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    // download data from the specified history file
+    private ResponseEntity<Resource> downloadFileHistory(String fileName, String version, String file){
+        Resource resource = storageMutator.loadFileAsResourceHistory(fileName,version,file);  // load the specified file as a resource
         String contentType = "application/octet-stream";
 
         // create a response with the content type, header and body with the file data
@@ -199,6 +220,29 @@ public class FileController {
         catch (Exception e)
         {
             return "{ \"error\": \"" + e.getMessage() + "\"}";  // if the operation of file deleting is unsuccessful, an error occurs
+        }
+    }
+
+    @GetMapping("/downloadhistory")
+    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request,// download a file
+                                             @RequestParam("fileName") String fileName,
+                                             @RequestParam("ver") String version,
+                                             @RequestParam("file") String file){ // history file
+        try{
+            // check if a token is enabled or not
+            if(jwtManager.tokenEnabled()){
+                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
+                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                if(header != null && !header.isEmpty()){
+                    String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
+                    jwtManager.readToken(token);  // read the token
+                }else {
+                    return null;
+                }
+            }
+            return downloadFileHistory(fileName,version,file);  // download data from the specified file
+        } catch(Exception e){
+            return null;
         }
     }
 
@@ -319,6 +363,24 @@ public class FileController {
         } catch (IOException e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+        }
+    }
+
+    @PostMapping("/rename")
+    @ResponseBody
+    public String rename(@RequestBody JSONObject body) {
+        String newfilename = (String) body.get("newfilename");
+        String dockey = (String) body.get("dockey");
+
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("title", newfilename);
+
+        try {
+            callbackManager.commandRequest("meta", dockey, meta);
+            return "result ok";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
     }
 }

@@ -145,11 +145,7 @@ namespace ASC.Api.DocumentConverter
                 requestStream.Write(bytes, 0, bytes.Length);  // and write the serialized body object to it
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
             string dataResponse;
             using (var response = request.GetResponse())

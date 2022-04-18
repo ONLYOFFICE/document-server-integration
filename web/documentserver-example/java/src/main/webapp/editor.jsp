@@ -36,6 +36,7 @@
         <script type="text/javascript" language="javascript">
 
         var docEditor;
+        var config;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -97,10 +98,14 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -130,7 +135,7 @@
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "IndexServlet?type=saveas");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
@@ -138,7 +143,24 @@
             }
         };
 
-        var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "IndexServlet?type=rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
+        config = JSON.parse('<%= FileModel.Serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
         config.events = {
@@ -161,37 +183,38 @@
             String usersForMentions = (String) request.getAttribute("usersForMentions");
         %>
 
-        <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<%= history %>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <%= historyData %>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-        <% } %>
-
-        <% if (usersForMentions != null) { %>
+        if (config.editorConfig.user.id) {
+            <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
+                // the user is trying to show the document version history
+                config.events['onRequestHistory'] = function () {
+                    docEditor.refreshHistory(<%= history %>);  // show the document version history
+                };
+                // the user is trying to click the specific document version in the document version history
+                config.events['onRequestHistoryData'] = function (event) {
+                    var ver = event.data;
+                    var histData = <%= historyData %>;
+                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                };
+                // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+            <% } %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": ${usersForMentions}
+                    "users": <%=usersForMentions%>
                 });
             };
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
                 var data = JSON.stringify(event.data);
                 innerAlert("onRequestSendNotify: " + data);
             };
-        <% } %>
+            // prevent file renaming for anonymous users
+            config.events['onRequestRename'] = onRequestRename;
+        }
 
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;

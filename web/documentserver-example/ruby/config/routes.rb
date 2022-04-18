@@ -7,11 +7,13 @@ Rails.application.routes.draw do
 
   match '/upload',    to: 'home#upload',    via: 'post'
   match '/download',    to: 'home#download',    via: 'get'
+  match '/downloadhistory',    to: 'home#downloadhistory',    via: 'get'
   match '/convert',    to: 'home#convert',    via: 'post'
   match '/track',    to: 'home#track',    via: 'post'
   match '/csv',    to: 'home#csv',    via: 'get'
   match '/files',    to: 'home#files',    via: 'get'
   match '/saveas',    to: 'home#saveas',    via: 'post'
+  match '/rename',    to: 'home#rename',    via: 'post'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

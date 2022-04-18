@@ -94,7 +94,10 @@ public class DefaultCallbackManager implements CallbackManager {
         String newFileName = fileName;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = fileUtility.getFileExtension(downloadUri);  // get an extension of the downloaded file
+        String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
+
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt != "." + null) downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
 
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -150,15 +153,19 @@ public class DefaultCallbackManager implements CallbackManager {
 
     //TODO: Replace (String method) with (Enum method)
     @SneakyThrows
-    public void commandRequest(String method, String key) {  // create a command request
+    public void commandRequest(String method, String key, HashMap meta) {  // create a command request
         String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
         URL url = new URL(DocumentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
-        HashMap<String, Object> params = new HashMap<>();
+        HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("c", method);
         params.put("key", key);
+
+        if (meta != null) {
+            params.put("meta", meta);
+        }
 
         String headerToken;
         if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
@@ -212,7 +219,11 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = fileUtility.getFileExtension(downloadUri);  // get an extension of the downloaded file
+        String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+        
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal

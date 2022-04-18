@@ -39,40 +39,6 @@ from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src import settings
 from . import fileUtils, historyManager
 
-LANGUAGES = {
-    'en': 'English',
-    'be': 'Belarusian',
-    'bg': 'Bulgarian',
-    'ca': 'Catalan',
-    'zh': 'Chinese',
-    'cs': 'Czech',
-    'da': 'Danish',
-    'nl': 'Dutch',
-    'fi': 'Finnish',
-    'fr': 'French',
-    'de': 'German',
-    'el': 'Greek',
-    'hu': 'Hungarian',
-    'id': 'Indonesian',
-    'it': 'Italian',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'lv': 'Latvian',
-    'lo': 'Lao',
-    'nb': 'Norwegian',
-    'pl': 'Polish',
-    'pt': 'Portuguese',
-    'ro': 'Romanian',
-    'ru': 'Russian',
-    'sk': 'Slovak',
-    'sl': 'Slovenian',
-    'es': 'Spanish',
-    'sv': 'Swedish',
-    'tr': 'Turkish',
-    'uk': 'Ukrainian',
-    'vi': 'Vietnamese'
-}
-
 def isCanFillForms(ext):
     return ext in config.DOC_SERV_FILLFORMS
 
@@ -164,12 +130,27 @@ def getRootFolder(req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    directory = config.STORAGE_PATH if os.path.isabs(config.STORAGE_PATH) else os.path.join(config.STORAGE_PATH, curAdr)
 
     if not os.path.exists(directory): # if such a directory does not exist, make it
         os.makedirs(directory)
 
     return directory
+
+# get the file history path
+def getHistoryPath(filename, file, version, req):
+    if isinstance(req, str):
+        curAdr = req
+    else:
+        curAdr = req.META['REMOTE_ADDR']
+
+    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    if not os.path.exists(directory): # the directory with host address doesn't exist
+        filePath = os.path.join(getRootFolder(req), f'{filename}-hist', version, file)
+    else:
+        filePath = os.path.join(directory, f'{filename}-hist', version, file)
+
+    return filePath
 
 # get the file path
 def getStoragePath(filename, req):
@@ -238,7 +219,7 @@ def createFileResponse(response, path, req, meta):
 
 # save file from the given url 
 def saveFileFromUri(uri, path, req = None, meta = False):
-    resp = requests.get(uri, stream=True)
+    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER)
     createFileResponse(resp, path, req, meta)
     return
 

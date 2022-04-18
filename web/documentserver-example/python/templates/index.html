@@ -113,13 +113,14 @@
                         {% if files %}
                             <div id="portal-info" style="display: none">
                         {% else %}
-                            <div id="portal-info" style="display: block">
+                            <div id="portal-info" style="display: table-cell">
                         {% endif %}
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
-                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                                </span>
+                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                            </span>
+                            <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                             <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                             {% for user in users %}
                                 <div class="user-descr">
@@ -184,9 +185,6 @@
                                                                         <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                     </a>
                                                                 </td>
-                                                            {% endif %}
-                                                            {% if file.type == 'slide' %}
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
@@ -291,9 +289,7 @@
             <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
             <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
             <br />
-            <br />
             <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-            <br />
             <br />
             <div class="error-message">
                 <b>Upload error: </b><span></span>
@@ -302,10 +298,12 @@
             </div>
         </div>
         <br />
-        <div id="beginEdit" class="button orange disable">Edit</div>
-        <div id="beginView" class="button gray disable">View</div>
-        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-        <div id="cancelEdit" class="button gray">Cancel</div>
+        <div class="buttonsMobile">
+            <div id="beginEdit" class="button orange disable">Edit</div>
+            <div id="beginView" class="button gray disable">View</div>
+            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+            <div id="cancelEdit" class="button gray">Cancel</div>
+        </div>
     </div>
 
     <span id="loadScripts" data-docs="{{ preloadurl }}"></span>

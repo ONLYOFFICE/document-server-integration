@@ -59,7 +59,7 @@ public class DefaultFileUtility implements FileUtility {
 
     // spreadsheet extensions
     private List<String> ExtsSpreadsheet = Arrays.asList(
-                            ".xls", ".xlsx", ".xlsm",
+                            ".xls", ".xlsx", ".xlsm", ".xlsb",
                             ".xlt", ".xltx", ".xltm",
                             ".ods", ".fods", ".ots", ".csv");
 

@@ -29,6 +29,8 @@ import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +38,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
 import entities.FileType;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,6 +48,7 @@ import org.json.simple.parser.ParseException;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACVerifier;
+
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
@@ -72,6 +77,10 @@ public class IndexServlet extends HttpServlet
                 break;
             case "download":
                 Download(request, response, writer);
+                break;
+            case "downloadhistory":
+                DownloadHistory(request, response, writer);
+                break;
             case "convert":
                 Convert(request, response, writer);
                 break;
@@ -92,6 +101,9 @@ public class IndexServlet extends HttpServlet
                 break;
             case "saveas":
                 SaveAs(request, response, writer);
+                break;
+            case "rename":
+                Rename(request, response, writer);
                 break;
         }
     }
@@ -317,7 +329,7 @@ public class IndexServlet extends HttpServlet
                 if (users.indexOf(user) == -1) {
                     String key = (String) body.get("key");
                     try {
-                        TrackManager.commandRequest("forcesave", key);  // create a command request with the forcesave method
+                        TrackManager.commandRequest("forcesave", key, null);  // create a command request with the forcesave method
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -430,14 +442,53 @@ public class IndexServlet extends HttpServlet
         download(filePath.toString(), response, writer);
     }
 
+    // download a file from history
+    private static void DownloadHistory(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+    {
+        try {
+            if (DocumentManager.TokenEnabled()) {
+
+                String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
+                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                if (header != null && !header.isEmpty()) {
+                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    try {
+                        Verifier verifier = HMACVerifier.newVerifier(DocumentManager.GetTokenSecret());
+                        JWT jwt = JWT.getDecoder().decode(token, verifier);
+                    } catch (Exception e) {
+                        response.sendError(403, "JWT validation failed");
+                        return;
+                    }
+                } else {
+                    response.sendError(403, "JWT validation failed");
+                    return;
+                }
+            }
+
+            String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
+            String userAddress = request.getParameter("userAddress");
+
+            String ver = request.getParameter("ver");  //  Document version
+            String file = request.getParameter("file"); //   File. If not defined, then Prev.*
+
+            String filePath = DocumentManager.HistoryPath(fileName, userAddress, ver, file);
+
+            download(filePath, response, writer);
+        } catch (Exception e) {
+            writer.write("{ \"error\": \"File not found\"}");
+        }
+    }
+
     // download a file
     private static void Download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
     {
         try {
             String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
+            String isEmbedded = request.getParameter("dmode");
 
-            if (DocumentManager.TokenEnabled()) {
+            if (DocumentManager.TokenEnabled() && isEmbedded == null) {
 
                 String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
@@ -507,6 +558,32 @@ public class IndexServlet extends HttpServlet
             }
         }
     }
+
+    // rename a file
+    private static void Rename(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            String newfilename = (String) body.get("newfilename");
+            String dockey = (String) body.get("dockey");
+
+            HashMap<String, String> meta = new HashMap<>();
+            meta.put("title", newfilename);
+
+            TrackManager.commandRequest("meta", dockey, meta);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+        }
+    }
+
 
     // process get request
     @Override

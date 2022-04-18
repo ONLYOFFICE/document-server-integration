@@ -49,5 +49,7 @@ public enum Language {
     es,
     tr,
     uk,
-    vi
+    vi,
+    gl,
+    az
 }

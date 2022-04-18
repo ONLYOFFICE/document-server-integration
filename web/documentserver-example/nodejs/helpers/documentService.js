@@ -17,11 +17,9 @@
  */
 
 // get all the necessary values and modules
-var path = require("path");
 var urlModule = require("url");
 var urllib = require("urllib");
 var jwt = require("jsonwebtoken");
-var jwa = require("jwa");
 var fileUtility = require("./fileUtility");
 var guidManager = require("./guidManager");
 var configServer = require('config').get('server');
@@ -170,12 +168,17 @@ documentService.getResponseUri = function (json) {
 };
 
 // create a command request
-documentService.commandRequest = function (method, documentRevisionId, callback) {
+documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
+
     documentRevisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
-    var params = {  // create a parameter object with command method and the document key value in it
+    params = {  // create a parameter object with command method and the document key value in it
         c: method,
         key: documentRevisionId
     };
+
+    if (meta) {
+        params.meta = meta;
+    }
 
     var uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
     var headers = {  // create a headers object

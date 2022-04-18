@@ -198,8 +198,10 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (EditedExtList.indexOf(posExt) != -1
-            || FilledExtList.indexOf(posExt) != -1) {
+        var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});
+        var checkFilled = FilledExtList.split(",").filter(function(ext) { return ext == posExt;});
+
+        if (checkEdited != "" || checkFilled != "") {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -223,7 +225,11 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=edit";
+        }else{
+            var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -232,7 +238,11 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=view";
+        }else{
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid;
+        }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();

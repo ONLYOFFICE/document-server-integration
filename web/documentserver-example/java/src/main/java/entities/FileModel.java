@@ -20,16 +20,14 @@ package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import helpers.DocumentManager;
-import helpers.FileUtility;
-import helpers.ServiceConverter;
-import helpers.Users;
+import helpers.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FileModel
@@ -54,7 +52,6 @@ public class FileModel
         document = new Document();
         document.title = fileName;
         document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
-        document.urlUser = DocumentManager.GetFileUri(fileName, false);
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -87,18 +84,18 @@ public class FileModel
         editorConfig.templates = user.templates ? templates : null;
 
         // write user information to the config (id, name and group)
-        editorConfig.user.id = user.id;
+        editorConfig.user.id = !user.id.equals("uid-0") ? user.id : null;
         editorConfig.user.name = user.name;
         editorConfig.user.group = user.group;
 
         // write the absolute URL to the file location
         editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
 
-        changeType(mode, type, user);
+        changeType(mode, type, user, fileName);
     }
 
     // change the document type
-    public void changeType(String _mode, String _type, User user)
+    public void changeType(String _mode, String _type, User user, String fileName)
     {
         if (_mode != null) mode = _mode;
         if (_type != null) type = _type;
@@ -119,12 +116,12 @@ public class FileModel
         // set document permissions
         document.permissions = new Permissions(mode, type, canEdit, user);
 
-        if (type.equals("embedded")) InitDesktop();  // set parameters for the embedded document
+        if (type.equals("embedded")) InitDesktop(fileName);  // set parameters for the embedded document
     }
 
-    public void InitDesktop()
+    public void InitDesktop(String fileName)
     {
-        editorConfig.InitDesktop(document.urlUser);
+        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName) + "&dmode=emb");
     }
 
     // generate document token
@@ -167,7 +164,7 @@ public class FileModel
                     obj.put("version", i);
 
                     if (i == 1) {  // check if the version number is equal to 1
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));  // get file with meta data
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json")); // get file with meta data
                         JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
                         // write meta information to the object (user information and creation date)
@@ -178,8 +175,9 @@ public class FileModel
                         obj.put("user", user);
                     }
 
+                    dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetPathUri(verDir + File.separator + "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title)));
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
@@ -195,11 +193,14 @@ public class FileModel
 
                         Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
+                        prevInfo.put("fileType", prev.get("fileType"));
                         prevInfo.put("key", prev.get("key"));  // write key and url information about previous file version
                         prevInfo.put("url", prev.get("url"));
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
-                        dataObj.put("changesUrl", DocumentManager.GetPathUri(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "diff.zip"));
+                        Integer verdiff = i - 1;
+                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip");
+                        dataObj.put("changesUrl", changesUrl);
                     }
 
                     if (DocumentManager.TokenEnabled())
@@ -246,7 +247,6 @@ public class FileModel
     {
         public String title;
         public String url;
-        public String urlUser;
         public String fileType;
         public String key;
         public Info info;
@@ -267,6 +267,7 @@ public class FileModel
         public Boolean review;
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
+        public List<String> userInfoGroups;
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -282,13 +283,21 @@ public class FileModel
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;
+            userInfoGroups = user.userInfoGroups;
         }
     }
 
     // the Favorite icon state
     public class Info
     {
+        public String owner = "Me";
         public Boolean favorite;
+        public String uploaded = getDate();
+
+        private String getDate() {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+            return simpleDateFormat.format(new Date());
+        }
     }
     // the editor config parameters
     public class EditorConfig
@@ -338,9 +347,15 @@ public class FileModel
             public Goback goback;
             public Boolean forcesave;
             public Boolean submitForm;
+            public Boolean about;
+            public Boolean comments;
+            public Boolean feedback;
 
             public Customization()
             {
+                about = true;
+                comments = true;
+                feedback = true;
                 forcesave = false;
                 goback = new Goback();
             }

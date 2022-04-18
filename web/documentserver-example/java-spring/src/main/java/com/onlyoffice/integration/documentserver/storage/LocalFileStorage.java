@@ -85,10 +85,18 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     // get the storage directory
     public String getStorageLocation(){
         String serverPath = System.getProperty("user.dir");  // get the path to the server
-        String directory = serverPath  // create the storage directory
-                + File.separator + storageFolder
-                + File.separator + this.storageAddress
-                + File.separator;
+        String directory;  // create the storage directory
+        if (Paths.get(this.storageAddress).isAbsolute()) {
+            directory = this.storageAddress + File.separator;
+        } else {
+            directory = serverPath
+                    + File.separator + storageFolder
+                    + File.separator + this.storageAddress
+                    + File.separator;
+        }
+        if (!Files.exists(Paths.get(directory))) {
+            createDirectory(Paths.get(directory));
+        }
 
         return directory;
     }
@@ -228,6 +236,20 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         if (fileLocation.isBlank()){  // if file location is empty
             fileLocation = getFileLocation(fileName);  // get it by the file name
         }
+        try {
+            Path filePath = Paths.get(fileLocation);  // get the path to the file location
+            Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
+            if(resource.exists()) return resource;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Resource loadFileAsResourceHistory(String fileName,String version,String file){
+
+        String fileLocation = getStorageLocation() + fileName + "-hist" + File.separator + version + File.separator + file;  // get it by the file name
+
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL

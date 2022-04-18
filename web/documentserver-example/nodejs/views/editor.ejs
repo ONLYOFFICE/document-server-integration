@@ -38,6 +38,7 @@
     <script type="text/javascript" language="javascript">
 
         var docEditor;
+        var config;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -56,10 +57,14 @@
         };
 
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         var onRequestEditRights = function () {  // the user is trying to switch the document from the viewing into the editing mode
@@ -141,7 +146,7 @@
         };
 
         var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
-            event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
             var data = JSON.stringify(event.data);
             innerAlert("onRequestSendNotify: " + data);
         };
@@ -155,7 +160,7 @@
             }
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "create");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
@@ -163,15 +168,29 @@
             }
         }
 
-        var config = {<%- include("config") %>,
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
+        config = {<%- include("config") %>,
                 events: {
                     "onAppReady": onAppReady,
                     "onDocumentStateChange": onDocumentStateChange,
                     "onRequestEditRights": onRequestEditRights,
                     "onError": onError,
-                    "onRequestHistory":  onRequestHistory,
-                    "onRequestHistoryData": onRequestHistoryData,
-                    "onRequestHistoryClose": onRequestHistoryClose,
                     "onOutdatedVersion": onOutdatedVersion,
                     "onMakeActionLink": onMakeActionLink,
                     "onMetaChange": onMetaChange,
@@ -181,7 +200,11 @@
                 }
             };
 
-        if (<%- JSON.stringify(usersForMentions) %> != null) {
+        if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestHistory = onRequestHistory;
+            config.events.onRequestHistoryData = onRequestHistoryData;
+            config.events.onRequestHistoryClose = onRequestHistoryClose;
+            config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
         }

@@ -127,7 +127,10 @@ public class TrackManager {
         String newFileName = fileName;
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = FileUtility.GetFileExtension(downloadUri);  // get the extension of the downloaded file
+        String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
+
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt == "." + null) downloadExt = FileUtility.GetFileExtension(downloadUri); // Support for versions below 7.0
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
@@ -188,7 +191,11 @@ public class TrackManager {
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = FileUtility.GetFileExtension(downloadUri);  // get the extension of the downloaded file
+        String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
+
+        // Todo [Delete in version 7.0 or higher]
+        if (downloadExt == "."+null) downloadExt = FileUtility.GetFileExtension(downloadUri);    // Support for versions below 7.0
+
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -270,7 +277,7 @@ public class TrackManager {
     }
 
     // create a command request
-    public static void commandRequest(String method, String key) throws Exception {
+    public static void commandRequest(String method, String key, HashMap meta) throws Exception {
         String DocumentCommandUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.command");
 
         URL url = new URL(DocumentCommandUrl);
@@ -279,6 +286,10 @@ public class TrackManager {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("c", method);
         params.put("key", key);
+
+        if (meta != null) {
+            params.put("meta", meta);
+        }
 
         String headerToken = "";
         if (DocumentManager.TokenEnabled())  // check if a secret key to generate token exists or not
@@ -307,7 +318,7 @@ public class TrackManager {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(bodyByte);  // write bytes to the output stream
         }
-        InputStream stream = connection.getInputStream();;  // get input stream
+        InputStream stream = connection.getInputStream();  // get input stream
 
         if (stream == null)
             throw new Exception("Could not get an answer");

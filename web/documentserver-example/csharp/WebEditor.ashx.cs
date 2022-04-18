@@ -44,6 +44,9 @@ namespace OnlineEditorsExample
                 case "download":
                     Download(context);
                     break;
+                case "downloadhistory":
+                    DownloadHistory(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -64,6 +67,9 @@ namespace OnlineEditorsExample
                     break;
                 case "saveas":
                     SaveAs(context);
+                    break;
+                case "rename":
+                    Rename(context);
                     break;
             }
         }
@@ -135,7 +141,7 @@ namespace OnlineEditorsExample
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
             var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
-            var saved = 1;  // editing
+            var saved = 0;
             switch (status)
             {
                 case TrackerStatus.Editing:
@@ -191,7 +197,7 @@ namespace OnlineEditorsExample
                     context.Response.Write("{\"error\":" + saved + "}");
                     return;
             }
-            context.Response.Write("{\"error\":0}");
+            context.Response.Write("{\"error\":" + saved + "}");
         }
 
         // remove a file
@@ -271,10 +277,11 @@ namespace OnlineEditorsExample
         {
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = Path.GetFileName(context.Request["userAddress"]);
+                var isEmbedded = context.Request["dmode"];
 
-                if (JwtManager.Enabled)
+                if (JwtManager.Enabled && isEmbedded == null)
                 {
                     string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
@@ -320,6 +327,78 @@ namespace OnlineEditorsExample
         public bool IsReusable
         {
             get { return false; }
+        }
+
+        private static void DownloadHistory(HttpContext context)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(context.Request["fileName"]);
+                var userAddress = Path.GetFileName(context.Request["userAddress"]);
+                var version = Path.GetFileName(context.Request["ver"]);
+                var file = Path.GetFileName(context.Request["file"]);
+
+                if (JwtManager.Enabled)
+                {
+                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+
+                    if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
+                        string token = JwtManager.Decode(headerToken);
+
+                        if (token == null || token.Equals(""))
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.Write("JWT validation failed");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
+                    }
+                }
+
+                var filePath = _Default.HistoryPath(fileName, userAddress, version, file);  // get the path to the force saved document version
+
+                download(filePath, context);
+            }
+            catch (Exception)
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+            }
+        }
+
+        // rename a file
+        private static void Rename(HttpContext context)
+        {
+           string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            var newFileName = (string) body["newfilename"];
+            var docKey = (string) body["dockey"];
+            var meta =  new Dictionary<string, object>() {
+                { "title", newFileName }
+            };
+            TrackManager.commandRequest("meta", docKey, meta);
+            context.Response.Write("{ \"result\": \"OK\"}");
         }
     }
 }

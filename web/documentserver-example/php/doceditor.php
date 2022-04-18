@@ -52,7 +52,7 @@
     }
 
     $fileuri = FileUri($filename, true);
-    $fileuriUser = FileUri($filename);
+    $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -107,7 +107,8 @@
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
                 "reviewGroups" => $user->reviewGroups,
-                "commentGroups" => $user->commentGroups
+                "commentGroups" => $user->commentGroups,
+                "userInfoGroups" => $user->userInfoGroups
             ]
         ],
         "editorConfig" => [
@@ -118,7 +119,7 @@
             "createUrl" => $user->id != "uid-0" ? $createUrl : null,
             "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document
-                "id" => $user->id,
+                "id" => $user->id != "uid-0" ? $user->id : null,
                 "name" => $user->name,
                 "group" => $user->group
             ],
@@ -130,6 +131,7 @@
             ],
             "customization" => [  // the parameters for the editor interface
                 "about" => true,  // the About section display
+                "comments" => true,
                 "feedback" => true,  // the Feedback & Support menu button display
                 "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
                 "submitForm" => $submitForm,  // if the Submit form button is displayed or not
@@ -202,8 +204,18 @@
         return serverPath(false) . '/'
                 . "doceditor.php"
                 . "?fileExt=" . $ext
-                . "&user=" . $uid
+                . "&user=" . $uid 
                 . "&type=" . $type;
+    }
+
+    function getHistoryDownloadUrl($fileName, $version, $file) {
+        return serverPath(TRUE) . '/'
+            . "webeditor-ajax.php"
+            . "?type=history"
+            . "&fileName=" . urlencode($fileName)
+            . "&ver=" . $version
+            . "&file=" . urlencode($file)
+            . "&userAddress=" . getClientIp();
     }
 
     // get url to download a file
@@ -217,6 +229,7 @@
 
     // get document history
     function getHistory($filename, $filetype, $docKey, $fileuri) {
+        $storagePath = $GLOBALS['STORAGE_PATH'];
         $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
         if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
@@ -245,31 +258,41 @@
                     ];
                 }
 
+
+                $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
                 $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
                 $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+                $dataObj["fileType"] = $fileExe;
                 $dataObj["key"] = $key;
-                $dataObj["url"] = $i == $curVer ? $fileuri : getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($prevFileName));  // write file url to the data object
+
+                $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                if (realpath($storagePath) === $storagePath) {
+                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                }
+
+                $dataObj["url"] = $prevFileUrl;  // write file url to the data object
                 $dataObj["version"] = $i;
 
                 if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
                     $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                     $change = $changes["changes"][0];
 
-                    $obj["changes"] = $change ? $changes["changes"][0] : null;  // write information about changes to the object
+                    $obj["changes"] = $changes ? $changes["changes"] : null;  // write information about changes to the object
                     $obj["serverVersion"] = $changes["serverVersion"];
                     $obj["created"] = $change ? $change["created"] : null;
                     $obj["user"] = $change ? $change["user"] : null;
 
                     $prev = $histData[$i - 2];  // get the history data from the previous file version
                     $dataObj["previous"] = [  // write information about previous file version to the data object
+                        "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
                         "url" => $prev["url"]
                     ];
-                    $changesUrl = getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "diff.zip";
-                    $changesUrl = substr($changesUrl, strlen(getStoragePath("")));
 
                     // write the path to the diff.zip archive with differences in this file version
-                    $dataObj["changesUrl"] = getVirtualPath(true) . str_replace("%5C", "/", rawurlencode($changesUrl));
+                    $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+
                 }
 
                 if (isJwtEnabled()) {
@@ -337,6 +360,7 @@
     <script type="text/javascript">
 
         var docEditor;
+        var config;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -398,10 +422,14 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -431,11 +459,29 @@
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor-ajax.php?type=saveas");
-            xhr.setRequestHeader( 'Content-Type', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
                 innerAlert(JSON.parse(xhr.responseText.substring(xhr.responseText.indexOf("{"))).file, true);
+            }
+        };
+
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
             }
         };
 
@@ -447,7 +493,7 @@
                 }
             ?>
 
-            var config = <?php echo json_encode($config) ?>;
+            config = <?php echo json_encode($config) ?>;
 
             config.width = "100%";
             config.height = "100%";
@@ -470,36 +516,38 @@
                 $history = $out[0];
                 $historyData = $out[1];
             ?>
-            <?php if ($history != null && $historyData != null): ?>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <?php echo json_encode($historyData) ?>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            <?php endif; ?>
 
-            <?php if ($usersForMentions != null): ?>
-            // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <?php echo json_encode($usersForMentions) ?>
-                });
-            };
-            // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, event.data.actionLink);
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            <?php if ($user->id != "uid-0"): ?>
+                <?php if ($history != null && $historyData != null): ?>
+                    // the user is trying to show the document version history
+                    config.events['onRequestHistory'] = function () {
+                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
+                    };
+                    // the user is trying to click the specific document version in the document version history
+                    config.events['onRequestHistoryData'] = function (event) {
+                        var ver = event.data;
+                        var histData = <?php echo json_encode($historyData) ?>;
+                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                    };
+                    // the user is trying to go back to the document from viewing the document version history
+                    config.events['onRequestHistoryClose'] = function () {
+                        document.location.reload();
+                    };
+                <?php endif; ?>
+                // add mentions for not anonymous users
+                config.events['onRequestUsers'] = function () {
+                    docEditor.setUsers({  // set a list of users to mention in the comments
+                        "users": <?php echo json_encode($usersForMentions) ?>
+                    });
+                };
+                // the user is mentioned in a comment
+                config.events['onRequestSendNotify'] = function (event) {
+                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+                    var data = JSON.stringify(event.data);
+                    innerAlert("onRequestSendNotify: " + data);
+                };
+                // prevent file renaming for anonymous users
+                config.events['onRequestRename'] = onRequestRename;
             <?php endif; ?>
 
             if (config.editorConfig.createUrl) {

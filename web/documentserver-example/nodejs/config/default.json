@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "log": {
     "appenders": [
       {
@@ -25,7 +25,7 @@
     "viewedDocs": [".pdf", ".djvu", ".xps", ".oxps"],
     "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".txt", ".docxf"],
     "fillDocs": [".docx", ".oform"],
-    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"],
+    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xlsb", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"],
     "storageFolder": "./files",
     "storagePath": "/files",
     "maxFileSize": 1073741824,
@@ -44,6 +44,42 @@
         "authorizationHeaderPrefix": "Bearer ",
         "secret": "secret",
         "expiresIn": "5m"
+    },
+    "verify_peer_off": true,
+    "languages": {
+      "en": "English",
+      "az": "Azerbaijani",
+      "be": "Belarusian",
+      "bg": "Bulgarian",
+      "ca": "Catalan",
+      "zh": "Chinese",
+      "cs": "Czech",
+      "da": "Danish",
+      "nl": "Dutch",
+      "fi": "Finnish",
+      "fr": "French",
+      "gl": "Galego",
+      "de": "German",
+      "el": "Greek",
+      "hu": "Hungarian",
+      "id": "Indonesian",
+      "it": "Italian",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "lv": "Latvian",
+      "lo": "Lao",
+      "nb": "Norwegian",
+      "pl": "Polish",
+      "pt": "Portuguese",
+      "ro": "Romanian",
+      "ru": "Russian",
+      "sk": "Slovak",
+      "sl": "Slovenian",
+      "es": "Spanish",
+      "sv": "Swedish",
+      "tr": "Turkish",
+      "uk": "Ukrainian",
+      "vi": "Vietnamese"
     }
   },
   "plugins": {

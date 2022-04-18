@@ -68,9 +68,14 @@ class TrackHelper
                 return saved
             end
             new_file_name = file_name
+            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+
+            # TODO [Delete in version 7.0 or higher]
+            if (download_ext == ".")
+                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
+            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
             if (!cur_ext.eql?(download_ext))
@@ -138,9 +143,15 @@ class TrackHelper
                 saved = 1
                 return saved
             end
+            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+
+            # TODO [Delete in version 7.0 or higher]
+            if (download_ext == ".")
+                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
+            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
-            download_ext = File.extname(download_uri).downcase  # get the extension of the downloaded file
+
             new_file_name = false
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -195,14 +206,18 @@ class TrackHelper
         end
 
         # send the command request
-        def command_request(method, key)
+        def command_request(method, key, meta = nil)
             document_command_url = Rails.configuration.urlSite + Rails.configuration.commandUrl  # get the document command url
 
             # create a payload object with the method and key
             payload = {
                 :c => method,
                 :key => key
-              }
+            }
+
+            if (meta != nil)
+                payload.merge!({:meta => meta})
+            end
 
             data = nil
             begin
@@ -210,10 +225,7 @@ class TrackHelper
                 uri = URI.parse(document_command_url)  # parse the document command url
                 http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-                if document_command_url.start_with?('https')  # check if the documnent command url starts with https
-                    http.use_ssl = true
-                    http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-                end
+                DocumentHelper.verify_ssl(document_command_url, http)
 
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
                 req.add_field("Content-Type", "application/json")  # set headers
@@ -240,10 +252,7 @@ class TrackHelper
             uri = URI.parse(uristr)  # parse the url string
             http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-            if uristr.start_with?('https')  # check if the documnent command url starts with https
-              http.use_ssl = true
-              http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-            end
+            DocumentHelper.verify_ssl(uristr, http)
 
             req = Net::HTTP::Get.new(uri)
             res = http.request(req)  # get the response

@@ -118,7 +118,7 @@ def createNew(request):
 
 # save file as...
 def saveAs(request):
-    response ={}
+    response = {}
 
     try:
         body = json.loads(request.body)
@@ -127,7 +127,7 @@ def saveAs(request):
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
-        resp = requests.get(saveAsFileUrl)
+        resp = requests.get(saveAsFileUrl, verify = config.DOC_SERV_VERIFY_PEER)
 
         if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             response.setdefault('error', 'File size is incorrect')
@@ -147,6 +147,21 @@ def saveAs(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+# rename file
+def rename(request):
+    response = {}
+
+    body = json.loads(request.body)
+    newfilename = body['newfilename']
+    dockey = body['dockey']
+    meta = {'title': newfilename}
+
+    trackManager.commandRequest('meta', dockey, meta)
+
+    response.setdefault('result', trackManager.commandRequest('meta', dockey, meta).json())
+
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
@@ -154,7 +169,7 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getFileUri(filename, False, request)
+    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
@@ -168,7 +183,8 @@ def edit(request):
     submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
-    edType = request.GET.get('type') if request.GET.get('type') else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
+    types = ['desktop', 'mobile', 'embedded']
+    edType = request.GET.get('type') if request.GET.get('type') in types else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
     lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'  # get the editor language (the default language is English)
 
     storagePath = docManager.getStoragePath(filename, request)
@@ -225,7 +241,8 @@ def edit(request):
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
                 'reviewGroups': user.reviewGroups,
-                'commentGroups': user.commentGroups
+                'commentGroups': user.commentGroups,
+                'userInfoGroups': user.userInfoGroups
             }
         },
         'editorConfig': {
@@ -236,7 +253,7 @@ def edit(request):
             'createUrl' : createUrl if user.id !='uid-0' else None,
             'templates' : templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
-                'id': user.id,
+                'id': user.id if user.id !='uid-0' else None,
                 'name': user.name,
                 'group': user.group
             },
@@ -248,6 +265,7 @@ def edit(request):
             },
             'customization': {  # the parameters for the editor interface
                 'about': True,  # the About section display
+                'comments': True,  
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
@@ -361,8 +379,9 @@ def download(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled()):
+        if (jwtManager.isEnabled() and isEmbedded == None):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
@@ -381,3 +400,33 @@ def download(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
+
+# download a history file
+def downloadhistory(request):
+    try:
+        fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
+        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        file = fileUtils.getFileName(request.GET['file'])
+        version = fileUtils.getFileName(request.GET['ver'])
+        isEmbedded = request.GET.get('dmode')
+
+        if (jwtManager.isEnabled() and isEmbedded == None):
+            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
+            token = request.headers.get(jwtHeader)
+            if token:
+                token = token[len('Bearer '):]
+                try:
+                    body = jwtManager.decode(token)
+                except Exception:
+                    return HttpResponse('JWT validation failed', status=403)
+            else:
+                return HttpResponse('JWT validation failed', status=403)
+
+        filePath = docManager.getHistoryPath(fileName, file, version, userAddress)
+
+        response = docManager.download(filePath)  # download this file
+        return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)

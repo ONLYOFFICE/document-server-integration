@@ -39,6 +39,16 @@ $_trackerStatus = array(
     7 => 'CorruptedForceSave'
 );
 
+// ignore self-signed certificate
+if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
+    stream_context_set_default( [
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+    ]);
+}
+
 // check if type value exists
 if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $response_array;
@@ -62,6 +72,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             die (json_encode($response_array));
         case "download":
             $response_array = download();
+            $response_array['status'] = 'success';
+            die (json_encode($response_array));
+        case "history":
+            $response_array = historyDownload();
             $response_array['status'] = 'success';
             die (json_encode($response_array));
         case "convert":
@@ -90,6 +104,9 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         case "saveas":
             $response_array = saveas();
             $response_array['status'] = 'success';
+            die (json_encode($response_array));
+        case "rename":
+            $response_array = renamefile();
             die (json_encode($response_array));
         default:
             $response_array['status'] = 'error';
@@ -350,13 +367,49 @@ function csv() {
     downloadFile($filePath);
 }
 
-// download a file
-function download() {
+// download a file from history
+function historyDownload() {
     try {
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
 
+        $ver = $_GET["ver"];
+        $file = $_GET["file"];
+
         if (isJwtEnabled()) {
+            $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+            if (!empty(apache_request_headers()[$jwtHeader])) {
+                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                if (empty($token)) {
+                    http_response_code(403);
+                    die("Invalid JWT signature");
+                }
+            } else {
+                http_response_code(403);
+                die("Invalid JWT signature");
+            }
+        }
+
+        $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
+
+        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;;
+
+        downloadFile($filePath);  // download this file
+    } catch (Exception $e) {
+        sendlog("Download ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: File not found";
+        return $result;
+    }
+}
+
+// download a file
+function download() {
+    try {
+        $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
+        $userAddress = $_GET["userAddress"];
+        $isEmbedded = $_GET["&dmode"];
+
+        if (isJwtEnabled() && $isEmbedded == null) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
@@ -410,6 +463,19 @@ function delTree($dir) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
+}
+
+// rename...
+function renamefile() {
+    $post = json_decode(file_get_contents('php://input'), true);
+    $newfilename = $post["newfilename"];
+    $dockey = $post["dockey"];
+    $meta = ["title" => $newfilename];
+
+    $commandRequest = commandRequest("meta", $dockey, $meta);  // create a command request with the forcasave method
+    sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
+
+    return array("result" => $commandRequest);
 }
 
 ?>

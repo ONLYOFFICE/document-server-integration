@@ -4,6 +4,8 @@
 <%@page import="java.util.Calendar"%>
 <%@page import="java.io.File"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="java.util.Map.Entry"%>
+<%@page import="java.util.Map"%>
 <%@page import="helpers.Users"%>
 <%@page import="entities.User"%>
 
@@ -13,6 +15,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width" />
         <!--
         *
         * (c) Copyright Ascensio System SIA 2021
@@ -96,37 +99,10 @@
                                                 <td valign="middle">
                                                     <span class="select-user">Language editors interface</span>
                                                     <select class="select-user" id="language">
-                                                        <option value="en">English</option>
-                                                        <option value="be">Belarusian</option>
-                                                        <option value="bg">Bulgarian</option>
-                                                        <option value="ca">Catalan</option>
-                                                        <option value="zh">Chinese</option>
-                                                        <option value="cs">Czech</option>
-                                                        <option value="da">Danish</option>
-                                                        <option value="nl">Dutch</option>
-                                                        <option value="fi">Finnish</option>
-                                                        <option value="fr">French</option>
-                                                        <option value="de">German</option>
-                                                        <option value="el">Greek</option>
-                                                        <option value="hu">Hungarian</option>
-                                                        <option value="id">Indonesian</option>
-                                                        <option value="it">Italian</option>
-                                                        <option value="ja">Japanese</option>
-                                                        <option value="ko">Korean</option>
-                                                        <option value="lv">Latvian</option>
-                                                        <option value="lo">Lao</option>
-                                                        <option value="nb">Norwegian</option>
-                                                        <option value="pl">Polish</option>
-                                                        <option value="pt">Portuguese</option>
-                                                        <option value="ro">Romanian</option>
-                                                        <option value="ru">Russian</option>
-                                                        <option value="sk">Slovak</option>
-                                                        <option value="sl">Slovenian</option>
-                                                        <option value="sv">Swedish</option>
-                                                        <option value="es">Spanish</option>
-                                                        <option value="tr">Turkish</option>
-                                                        <option value="uk">Ukrainian</option>
-                                                        <option value="vi">Vietnamese</option>
+                                                        <% Map<String, String> languages = DocumentManager.GetLanguages(); %>
+                                                        <% for (Map.Entry<String, String> language : languages.entrySet()) { %>
+                                                            <option value="<%=language.getKey()%>"><%=language.getValue()%></option>
+                                                        <% } %>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -139,12 +115,13 @@
                             <% DocumentManager.Init(request, response); %>
                             <% File[] files = DocumentManager.GetStoredFiles(null); %>
                             <div class="main-panel">
-                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "block" %>">
+                                <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
+                                    <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
                                         <div class="user-descr">
@@ -180,7 +157,7 @@
                                                         Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
                                                     %>
-                                                        <tr class="tableRow" title="<%= files[i].getName() %> [<%= version %>]">
+                                                        <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
                                                                     <span><%= files[i].getName() %></span>
@@ -214,9 +191,6 @@
                                                                         <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
                                                                     </a>
                                                                 </td>
-                                                                <% } %>
-                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                                 <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
@@ -320,9 +294,7 @@
                 <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                 <br />
-                <br />
                 <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-                <br />
                 <br />
                 <div class="error-message">
                     <b>Upload error: </b><span></span>
@@ -332,10 +304,12 @@
             </div>
             <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
-            <div id="beginEdit" class="button orange disable">Edit</div>
-            <div id="beginView" class="button gray disable">View</div>
-            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-            <div id="cancelEdit" class="button gray">Cancel</div>
+            <div class="buttonsMobile">
+                <div id="beginEdit" class="button orange disable">Edit</div>
+                <div id="beginView" class="button gray disable">View</div>
+                <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+                <div id="cancelEdit" class="button gray">Cancel</div>
+            </div>
         </div>
 
         <span id="loadScripts" data-docs="<%= ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.preloader") %>"></span>
@@ -374,7 +348,10 @@
             var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
-        </script>
 
+            document.addEventListener('DOMContentLoaded', function(){
+                document.getElementById("language").value="en";
+            });
+        </script>
     </body>
 </html>

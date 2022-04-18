@@ -87,9 +87,10 @@ public class DefaultHistoryManager implements HistoryManager {
                     obj.put("user", user);
                 }
 
+                dataObj.put("fileType", fileUtility.getFileExtension(document.getTitle()).replace(".", ""));
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl() :
-                        documentManager.getFileUri(documentManager.versionDir(histDir, i, true) + File.separator + "prev" + fileUtility.getFileExtension(document.getTitle()), true));
+                        documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
                 dataObj.put("version", i);
 
                 if (i > 1) {  //check if the version number is greater than 1
@@ -105,11 +106,13 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                     Map<String, Object> prevInfo = new HashMap<String, Object>();
+                    prevInfo.put("fileType", prev.get("fileType"));
                     prevInfo.put("key", prev.get("key"));  // write key and URL information about previous file version
                     prevInfo.put("url", prev.get("url"));
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
-                    dataObj.put("changesUrl", documentManager.getFileUri(documentManager.versionDir(histDir, i - 1, true) + File.separator + "diff.zip", true));
+                    Integer verdiff = i - 1;
+                    dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 
                 if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));

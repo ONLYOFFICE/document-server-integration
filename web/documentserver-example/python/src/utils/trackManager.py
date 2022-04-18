@@ -60,7 +60,10 @@ def processSave(body, filename, usAddr):
     newFilename = filename
 
     curExt = fileUtils.getFileExt(filename) # get current file extension
-    downloadExt = fileUtils.getFileExt(download) # get the extension of the downloaded file
+
+                                             # Todo [Delete here in version 7.0 or higher]
+    downloadExt = "." + body.get('filetype') if (body.get('filetype') != None) else fileUtils.getFileExt(download)  # get the extension of the downloaded file
+                                             # Support for versions below 7.0
 
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
@@ -106,7 +109,11 @@ def processForceSave(body, filename, usAddr):
     if (download is None):
         raise Exception("DownloadUrl is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
-    downloadExt = fileUtils.getFileExt(download) # get the extension of the downloaded file
+    
+                                             # Todo [Delete here in version 7.0 or higher]
+    downloadExt = "." + body.get('filetype') if (body.get('filetype') != None) else fileUtils.getFileExt(download)  # get the extension of the downloaded file
+                                             # Support for versions below 7.0
+
     newFilename = False
 
     # convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -143,13 +150,17 @@ def processForceSave(body, filename, usAddr):
     return
 
 # create a command request
-def commandRequest(method, key):
+def commandRequest(method, key, meta = None):
     documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
 
     payload = {
         'c': method,
         'key': key
     }
+
+    if (meta): 
+        payload['meta'] = meta
+
 
     headers={'accept': 'application/json'}
 
@@ -159,8 +170,10 @@ def commandRequest(method, key):
         headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-        
-    response = requests.post(documentCommandUrl, json=payload, headers=headers)
+    response = requests.post(documentCommandUrl, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER)
+
+    if (meta): 
+        return response
 
     return
 

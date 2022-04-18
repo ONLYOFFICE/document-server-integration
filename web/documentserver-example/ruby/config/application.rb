@@ -26,7 +26,7 @@ module OnlineEditorsExampleRuby
       end
     end
 
-    Rails.configuration.version="1.1.0"
+    Rails.configuration.version="1.2.0"
 
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
@@ -35,7 +35,7 @@ module OnlineEditorsExampleRuby
     Rails.configuration.fillDocs=".oform|.docx"
     Rails.configuration.viewedDocs=".pdf|.djvu|.xps|.oxps"
     Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.txt|.docxf"
-    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
+    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xlsb|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
 
     Rails.configuration.urlSite="http://documentserver/"
     Rails.configuration.urlConverter="ConvertService.ashx"
@@ -48,5 +48,42 @@ module OnlineEditorsExampleRuby
     Rails.configuration.jwtSecret = ""
     Rails.configuration.header="Authorization"
 
+    Rails.configuration.verify_peer_off = "true"
+
+    Rails.configuration.languages={
+      'en' => 'English',
+      'az' => 'Azerbaijani',
+      'be' => 'Belarusian',
+      'bg' => 'Bulgarian',
+      'ca' => 'Catalan',
+      'zh' => 'Chinese',
+      'cs' => 'Czech',
+      'da' => 'Danish',
+      'nl' => 'Dutch',
+      'fi' => 'Finnish',
+      'fr' => 'French',
+      'gl' => 'Galego'
+      'de' => 'German',
+      'el' => 'Greek',
+      'hu' => 'Hungarian',
+      'id' => 'Indonesian',
+      'it' => 'Italian',
+      'ja' => 'Japanese',
+      'ko' => 'Korean',
+      'lv' => 'Latvian',
+      'lo' => 'Lao',
+      'nb' => 'Norwegian',
+      'pl' => 'Polish',
+      'pt' => 'Portuguese',
+      'ro' => 'Romanian',
+      'ru' => 'Russian',
+      'sk' => 'Slovak',
+      'sl' => 'Slovenian',
+      'es' => 'Spanish',
+      'sv' => 'Swedish',
+      'tr' => 'Turkish',
+      'uk' => 'Ukrainian',
+      'vi' => 'Vietnamese'
+    }
   end
 end

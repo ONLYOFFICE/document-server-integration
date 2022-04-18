@@ -5,12 +5,14 @@
 <%@ Import Namespace="System.Linq" %>
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExample" %>
+<%@ Import Namespace="System.Collections.Generic" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
     <title>ONLYOFFICE</title>
     <!--
     *
@@ -99,37 +101,11 @@
                                             <td valign="middle">
                                                 <span class="select-user">Language editors interface</span>
                                                 <select class="select-user" id="language">
-                                                    <option value="en">English</option>
-                                                    <option value="be">Belarusian</option>
-                                                    <option value="bg">Bulgarian</option>
-                                                    <option value="ca">Catalan</option>
-                                                    <option value="zh">Chinese</option>
-                                                    <option value="cs">Czech</option>
-                                                    <option value="da">Danish</option>
-                                                    <option value="nl">Dutch</option>
-                                                    <option value="fi">Finnish</option>
-                                                    <option value="fr">French</option>
-                                                    <option value="de">German</option>
-                                                    <option value="el">Greek</option>
-                                                    <option value="hu">Hungarian</option>
-                                                    <option value="id">Indonesian</option>
-                                                    <option value="it">Italian</option>
-                                                    <option value="ja">Japanese</option>
-                                                    <option value="ko">Korean</option>
-                                                    <option value="lv">Latvian</option>
-                                                    <option value="lo">Lao</option>
-                                                    <option value="nb">Norwegian</option>
-                                                    <option value="pl">Polish</option>
-                                                    <option value="pt">Portuguese</option>
-                                                    <option value="ro">Romanian</option>
-                                                    <option value="ru">Russian</option>
-                                                    <option value="sk">Slovak</option>
-                                                    <option value="sl">Slovenian</option>
-                                                    <option value="sv">Swedish</option>
-                                                    <option value="es">Spanish</option>
-                                                    <option value="tr">Turkish</option>
-                                                    <option value="uk">Ukrainian</option>
-                                                    <option value="vi">Vietnamese</option>
+                                                    <% Dictionary<string, string> languages = GetLanguages(); 
+                                                    foreach (var lang in languages)
+                                                        { %>
+                                                            <option value="<%= lang.Key %>"><%= lang.Value %></option>
+                                                        <% } %>
                                                 </select>
                                             </td>
                                         </tr>
@@ -140,12 +116,13 @@
                         <td class="section">
                         <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
-                                <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "block" %>">
+                                <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
+                                    <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% foreach (User user in Users.getAllUsers())
                                       { %>
@@ -222,9 +199,6 @@
                                                                             <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                         </a>
                                                                     </td>
-                                                                <% } %>
-                                                                <%if (docType != "word" && docType != "cell") { %>
-                                                                    <td class="contentCells contentCells-icon contentCellsEmpty"></td>
                                                                 <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
@@ -329,9 +303,7 @@
                 <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                 <br />
-                <br />
                 <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-                <br />
                 <br />
                 <div class="error-message">
                     <b>Upload error: </b><span></span>
@@ -341,10 +313,12 @@
             </div>
             <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
-            <div id="beginEdit" class="button orange disable">Edit</div>
-            <div id="beginView" class="button gray disable">View</div>
-            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-            <div id="cancelEdit" class="button gray">Cancel</div>
+            <div class="buttonsMobile">
+                <div id="beginEdit" class="button orange disable">Edit</div>
+                <div id="beginView" class="button gray disable">View</div>
+                <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+                <div id="cancelEdit" class="button gray">Cancel</div>
+            </div>
         </div>
 
         <span id="loadScripts" data-docs="<%= UrlPreloadScripts %>"></span>
