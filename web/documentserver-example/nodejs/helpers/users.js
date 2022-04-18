@@ -60,6 +60,7 @@ var descr_user_0 = [
     "Can't create new files from the editor",
     "Can’t see anyone’s information",
     "Can't rename files from the editor",
+    "Can't view chat",
     //"Can’t submit forms"
 ];
 
