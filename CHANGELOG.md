@@ -1,5 +1,7 @@
 # Change Log
 
+- zh-TW, pt-PT
+
 ## 1.2.0
 - ruby v3.0
 - set filetype in setHistoryData
