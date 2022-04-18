@@ -1,5 +1,6 @@
 # Change Log
 
+- anonymous without chat
 - zh-TW, pt-PT
 
 ## 1.2.0
