@@ -1,5 +1,6 @@
 # Change Log
 
+- offline viewer for anonymous
 - zh-TW, pt-PT
 
 ## 1.2.0
