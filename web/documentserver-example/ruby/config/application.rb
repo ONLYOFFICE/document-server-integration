@@ -62,7 +62,7 @@ module OnlineEditorsExampleRuby
       'nl' => 'Dutch',
       'fi' => 'Finnish',
       'fr' => 'French',
-      'gl' => 'Galego'
+      'gl' => 'Galego',
       'de' => 'German',
       'el' => 'Greek',
       'hu' => 'Hungarian',
