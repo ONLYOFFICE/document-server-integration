@@ -977,6 +977,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 app.post("/rename", function (req, res) { //define a handler for renaming file
 
     var newfilename = req.body.newfilename;
+    var origExt = req.body.ext;
+    var curExt = fileUtility.getFileExtension(newfilename, true);
+    if (curExt !== origExt) {
+        newfilename += '.' + origExt;
+    }
+
     var dockey = req.body.dockey;
     var meta = {title: newfilename};
 
