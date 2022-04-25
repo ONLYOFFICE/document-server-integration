@@ -377,7 +377,7 @@ public class FileController {
         if(newfilename.indexOf(".") != -1) {
             curExt = (String) fileUtility.getFileExtension(newfilename);
         }
-        
+
         if(origExt.compareTo(curExt) != 0) {
             newfilename += origExt;
         }

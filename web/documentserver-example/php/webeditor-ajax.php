@@ -475,7 +475,7 @@ function renamefile() {
     if($origExt !== $curExt){
         $newfilename .= '.' . $origExt;
     }
-    
+
     $dockey = $post["dockey"];
     $meta = ["title" => $newfilename];
 
