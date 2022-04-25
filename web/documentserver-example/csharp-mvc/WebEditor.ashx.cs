@@ -575,7 +575,15 @@ namespace OnlineEditorsExampleMVC
             var jss = new JavaScriptSerializer();
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
             var newFileName = (string) body["newfilename"];
-            var docKey = (string) body["dockey"]; 
+            var docKey = (string) body["dockey"];
+
+            var origExt = '.' + (string) body["ext"];
+            var curExt = Path.GetExtension(newFileName).ToLower();
+
+            if (string.Compare(origExt, curExt, true) != 0)
+            {
+                newFileName += origExt;
+            }
             var meta =  new Dictionary<string, object>() {
                 { "title", newFileName }
             };

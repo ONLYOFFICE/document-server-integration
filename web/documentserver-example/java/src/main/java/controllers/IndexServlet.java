@@ -573,6 +573,17 @@ public class IndexServlet extends HttpServlet
             String newfilename = (String) body.get("newfilename");
             String dockey = (String) body.get("dockey");
 
+            String origExt = "." + (String) body.get("ext");
+            String curExt = newfilename;
+
+            if(newfilename.indexOf(".") != -1) {
+                curExt = (String) FileUtility.GetFileExtension(newfilename);
+            }
+
+            if(origExt.compareTo(curExt) != 0) {
+                newfilename += origExt;
+            }
+
             HashMap<String, String> meta = new HashMap<>();
             meta.put("title", newfilename);
 
