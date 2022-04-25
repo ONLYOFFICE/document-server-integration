@@ -469,6 +469,13 @@ function delTree($dir) {
 function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
+
+    $curExt = strtolower(array_pop(explode('.', $newfilename)));
+    $origExt = $post["ext"];
+    if($origExt !== $curExt){
+        $newfilename .= '.' . $origExt;
+    }
+    
     $dockey = $post["dockey"];
     $meta = ["title" => $newfilename];
 
