@@ -11,7 +11,13 @@ WORKDIR /var/www/onlyoffice/documentserver-example/
 COPY . /var/www/onlyoffice/documentserver-example/
 
 RUN groupadd --system --gid 1001 ds && \
-    useradd --system -g ds --home-dir /var/www/onlyoffice/documentserver-example --create-home --shell /sbin/nologin --uid 1001 ds && \
+    useradd \
+      --system \
+      -g ds \
+      --home-dir /var/www/onlyoffice/documentserver-example \
+      --create-home \
+      --shell /sbin/nologin \
+      --uid 1001 ds && \
     chown -R ds:ds /var/www/onlyoffice/documentserver-example/ && \
     mkdir -p /var/lib/onlyoffice/documentserver-example/ && \
     chown -R ds:ds /var/lib/onlyoffice/ && \
