@@ -1,4 +1,4 @@
-### This workflow setup instance then build and push images ###
+### This workflow build and push image ###
 name: Multi-arch build 
 
 on:
