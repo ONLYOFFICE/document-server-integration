@@ -38,4 +38,4 @@ jobs:
       - name: Build multiarch docs-example
         run: |
           DOCKER_TAG=$(echo ${{ steps.tag_name.outputs.SOURCE_TAG }} | sed 's/^.//')
-          docker buildx build -t onlyoffice/4testing-docs-example:$DOCKER_TAG --platform linux/amd64,linux/arm64 --push web/documentserver-example/nodejs/.
+          docker buildx build -t onlyoffice/docs-example:$DOCKER_TAG -t onlyoffice/docs-example:latest --platform linux/amd64,linux/arm64 --push web/documentserver-example/nodejs/.
