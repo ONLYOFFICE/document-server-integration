@@ -469,6 +469,56 @@ app.get("/csv", function (req, res) {  // define a handler for downloading csv f
     filestream.pipe(res);  // send file information to the response by streams
 })
 
+app.post("/reference", function (req, res) { //define a handler for renaming file
+
+    req.docManager = new docManager(req, res);
+
+    var result = function(data) {
+        res.writeHead(200, {"Content-Type": "application/json" });
+        res.write(JSON.stringify(data));
+        res.end();
+    };
+
+    var referenceData = req.body.referenceData;
+    if (!!referenceData) {
+        var instanceId = referenceData.instanceId;
+
+        if (instanceId === req.docManager.getInstanceId()) {
+            var fileKey = JSON.parse(referenceData.fileKey);
+            var userAddress = fileKey.userAddress;
+
+            if (userAddress === req.docManager.curUserHostAddress()
+                && req.docManager.existsSync(req.docManager.storagePath(fileKey.fileName, userAddress))) {
+                var fileName = fileKey.fileName;
+            }
+        }
+    }
+
+    if (!fileName && !!req.body.path) {
+        var path = fileUtility.getFileName(req.body.path);
+
+        if (req.docManager.existsSync(req.docManager.storagePath(path, userAddress))) {
+            fileName = path;
+        }
+    }
+
+    if (!fileName) {
+        result({ "error": "File is not found" });
+        return;
+    }
+
+    result({
+        fileType: fileUtility.getFileExtension(fileName).slice(1),
+        url: req.docManager.getDownloadUrl(fileName, true),
+        directUrl: req.body.directUrl ? req.docManager.getDownloadUrl(fileName) : null,
+        referenceData: {
+            fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            instanceId: req.docManager.getServerUrl()
+        },
+        path: fileName,
+    });
+});
+
 app.post("/track", async function (req, res) {  // define a handler for tracking file changes
 
     req.docManager = new docManager(req, res);
@@ -945,7 +995,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fileChoiceUrl: fileChoiceUrl,
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
-                actionData: actionData
+                actionData: actionData,
+                fileKey: userid != "uid-0" ? JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
+                instanceId: userid != "uid-0" ? req.docManager.getInstanceId() : null
             },
             history: history,
             historyData: historyData,
