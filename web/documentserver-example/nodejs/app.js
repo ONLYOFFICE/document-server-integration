@@ -469,6 +469,61 @@ app.get("/csv", function (req, res) {  // define a handler for downloading csv f
     filestream.pipe(res);  // send file information to the response by streams
 })
 
+app.post("/reference", function (req, res) { //define a handler for renaming file
+
+    req.docManager = new docManager(req, res);
+
+    var result = function(data) {
+        res.writeHead(200, {"Content-Type": "application/json" });
+        res.write(JSON.stringify(data));
+        res.end();
+    };
+
+    var referenceData = req.body.referenceData;
+    if (!!referenceData) {
+        var portalName = referenceData.portalName;
+
+        if (portalName != req.docManager.getServerUrl()) {
+            result({ "error": "You do not have access to this site" });
+            return;
+        }
+
+        var fileId = JSON.parse(referenceData.fileId);
+        var userAddress = fileId.userAddress;
+        if (userAddress != req.docManager.curUserHostAddress()) {
+            result({ "error": "You do not have access to this file" });
+            return;
+        }
+
+        var fileName = fileId.fileName;
+        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
+            result({ "error": "File is not exist" });
+            return;
+        }
+    } else if (!!req.body.path) {
+        var fileName = fileUtility.getFileName(req.body.path);
+        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
+            result({ "error": "File is not exist" });
+            return;
+        }
+    }
+
+    if (!fileName) {
+        result({ "error": "File is not found" });
+        return;
+    }
+
+    result({
+        url: req.docManager.getDownloadUrl(fileName, true),
+        directUrl: req.docManager.getDownloadUrl(fileName),
+        referenceData: {
+            fileId: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            portalName: req.docManager.getServerUrl()
+        },
+        path: fileName,
+    });
+});
+
 app.post("/track", async function (req, res) {  // define a handler for tracking file changes
 
     req.docManager = new docManager(req, res);
@@ -779,6 +834,11 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             }
         }
 
+        var referenceData = {
+            fileId: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            portalName: req.docManager.getServerUrl()
+        };
+
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
             type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
@@ -945,7 +1005,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fileChoiceUrl: fileChoiceUrl,
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
-                actionData: actionData
+                actionData: actionData,
+                referenceData: userid != "uid-0" ? referenceData : null
             },
             history: history,
             historyData: historyData,
