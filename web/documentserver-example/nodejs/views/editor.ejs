@@ -151,6 +151,20 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+            innerAlert(event.data);
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
             var title = event.data.title;
             var url = event.data.url;
@@ -209,6 +223,7 @@
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
+            config.events.onRequestReferenceData = onRequestReferenceData;
         }
 
         if (config.editorConfig.createUrl) {
