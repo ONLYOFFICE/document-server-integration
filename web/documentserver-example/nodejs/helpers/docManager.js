@@ -202,10 +202,13 @@ docManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
 }
 
 // get url to download a file
-docManager.prototype.getDownloadUrl = function (fileName) {
-    const server = this.getServerUrl(true);
-    const hostAddress = this.curUserHostAddress();
-    const handler = "/download?fileName=" + encodeURIComponent(fileName) + "&useraddress=" + encodeURIComponent(hostAddress);
+docManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
+    const server = this.getServerUrl(forDocumentServer);
+    var handler = "/download?fileName=" + encodeURIComponent(fileName);
+    if (forDocumentServer) {
+        const hostAddress = this.curUserHostAddress();
+        handler += "&useraddress=" + encodeURIComponent(hostAddress);
+    }
 
     return server + handler;
 };
