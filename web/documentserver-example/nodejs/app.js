@@ -128,9 +128,8 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
-    var isEmbedded = req.query.dmode;
 
-    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest)) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -325,7 +324,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
     var lang = req.body.lang ? req.body.lang : null;
-    var fileUri = req.docManager.getDownloadUrl(fileName);
+    var fileUri = req.docManager.getDownloadUrl(fileName, true);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
     var internalFileExt = req.docManager.getInternalExtension(fileType);
@@ -807,8 +806,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             };
         }
         var key = req.docManager.getKey(fileName);
-        var url = req.docManager.getDownloadUrl(fileName);
-        var urlUser = req.docManager.getDownloadUrl(fileName) + "&dmode=emb";
+        var url = req.docManager.getDownloadUrl(fileName, true);
+        var urlUser = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
 
         var type = req.query.type || ""; // type: embedded/mobile/desktop
