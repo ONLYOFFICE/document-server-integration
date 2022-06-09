@@ -163,22 +163,6 @@ docManager.prototype.getFileData = function (fileName, userAddress) {
     return ((fileSystem.readFileSync(history)).toString()).split(",");
 };
 
-// get url to the original file
-docManager.prototype.getFileUri = function (fileName) {
-    return this.getlocalFileUri(fileName, 0, true);
-};
-
-// get local file url
-docManager.prototype.getlocalFileUri = function (fileName, version, forDocumentServer) {
-    const serverPath = this.getServerUrl(forDocumentServer);
-    const hostAddress = this.curUserHostAddress();
-    let url = serverPath + configServer.get("storagePath") + "/" + hostAddress + "/" + encodeURIComponent(fileName);  // get full url address to the file
-    if (!version) {
-        return url;
-    }
-    return url + "-history/" + version;  // return history path to the specified file version
-};
-
 // get server url
 docManager.prototype.getServerUrl = function (forDocumentServer) {
     return (forDocumentServer && !!configServer.get("exampleUrl")) ? configServer.get("exampleUrl") : this.getServerPath();
@@ -387,7 +371,7 @@ docManager.prototype.getTemplateImageUrl = function (fileType) {
 // get document key
 docManager.prototype.getKey = function (fileName, userAddress) {
     userAddress = userAddress || this.curUserHostAddress();
-    let key = userAddress + this.getlocalFileUri(fileName);  // get document key by adding local file url to the current user host address
+    let key = userAddress + fileName;  // get document key by adding local file url to the current user host address
 
     let historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history
     if (historyPath != ""){  // if the path to the file history exists
