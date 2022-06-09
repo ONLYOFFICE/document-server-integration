@@ -852,7 +852,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
+                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -861,7 +861,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = `${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+                    let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
