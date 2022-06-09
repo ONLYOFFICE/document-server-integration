@@ -325,7 +325,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
     var lang = req.body.lang ? req.body.lang : null;
-    var fileUri = req.docManager.getFileUri(fileName);
+    var fileUri = req.docManager.getDownloadUrl(fileName);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
     var internalFileExt = req.docManager.getInternalExtension(fileType);
@@ -808,7 +808,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = req.docManager.getKey(fileName);
         var url = req.docManager.getDownloadUrl(fileName);
-        var urlUser = path.isAbsolute(storageFolder) ? req.docManager.getDownloadUrl(fileName) + "&dmode=emb" : req.docManager.getlocalFileUri(fileName, 0, false);
+        var urlUser = req.docManager.getDownloadUrl(fileName) + "&dmode=emb";
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
 
         var type = req.query.type || ""; // type: embedded/mobile/desktop
