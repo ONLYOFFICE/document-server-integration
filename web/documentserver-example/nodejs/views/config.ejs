@@ -6,6 +6,7 @@
 "document": {
     "title": "<%- file.name %>",
     "url": "<%- file.uri %>",
+    "directUrl": "<%- file.directUrl %>",
     "fileType": "<%- file.ext %>",
     "key": "<%- editor.key %>",
     "info": {
@@ -43,9 +44,9 @@
         "name": "<%- editor.name %>"
     },
     "embedded": {
-        "saveUrl": "<%- file.uriUser %>",
-        "embedUrl": "<%- file.uriUser %>",
-        "shareUrl": "<%- file.uriUser %>",
+        "saveUrl": "<%- file.directUrl %>",
+        "embedUrl": "<%- file.directUrl %>",
+        "shareUrl": "<%- file.directUrl %>",
         "toolbarDocked": "top"
     },
     "customization": {
