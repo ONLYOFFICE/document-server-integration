@@ -242,7 +242,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
                 {
-                    Path = HttpRuntime.AppDomainAppVirtualPath + "/"
+                    Path = HttpRuntime.AppDomainAppVirtualPath
                            + CurUserHostAddress() + "/"
                            + fileName,
                     Query = ""
@@ -292,7 +292,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
             };
             return callbackUrl.ToString();
         }
@@ -322,7 +322,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=downloadhistory"
                         + "&fileName=" + HttpUtility.UrlEncode(filename)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
                         + "&ver=" + version
                         + "&file="+ file
             };
@@ -340,7 +340,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
             };
             return downloadUrl.ToString();
         }
