@@ -243,6 +243,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
                 {
                     Path = HttpRuntime.AppDomainAppVirtualPath
+                           + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                            + CurUserHostAddress() + "/"
                            + fileName,
                     Query = ""
@@ -292,7 +293,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
             };
             return callbackUrl.ToString();
         }
@@ -322,7 +323,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=downloadhistory"
                         + "&fileName=" + HttpUtility.UrlEncode(filename)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
                         + "&ver=" + version
                         + "&file="+ file
             };
@@ -340,7 +341,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(':', '_'))
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
             };
             return downloadUrl.ToString();
         }
