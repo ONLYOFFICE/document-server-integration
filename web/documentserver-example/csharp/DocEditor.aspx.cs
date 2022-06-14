@@ -81,7 +81,7 @@ namespace OnlineEditorsExample
                     + "webeditor.ashx";
                 callbackUrl.Query = "type=track"
                                     + "&fileName=" + HttpUtility.UrlEncode(FileName)
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(":","_"));
+                                    + "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
                 return callbackUrl.ToString();
             }
         }
@@ -109,7 +109,7 @@ namespace OnlineEditorsExample
                     + "webeditor.ashx";
                 downloadUrl.Query = "type=download"
                                     + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(":","_"));
+                                    + "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
                 return downloadUrl.ToString();
         }
 
@@ -529,7 +529,7 @@ namespace OnlineEditorsExample
                 + "webeditor.ashx";
             fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
                 + "&ver=" + version + "&file=" + file
-                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress.Replace(":","_"));
+                + "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
             return fileUrl.ToString();
         }
 
