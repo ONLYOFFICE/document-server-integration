@@ -259,7 +259,7 @@ function convert() {
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
     // check if the file with such an extension can be converted
-    if (in_array("." + $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
+    if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $post["fileUri"];
         if ($fileUri == NULL || $fileUri == "") {
