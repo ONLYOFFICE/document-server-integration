@@ -76,6 +76,7 @@ $descr_user_0 = [
     "Can’t see anyone’s information",
     "Can't rename files from the editor",
     "Can't view chat",
+    "View file without collaboration",
 ];
 
 $users = [

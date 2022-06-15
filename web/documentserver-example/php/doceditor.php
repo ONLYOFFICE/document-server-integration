@@ -107,6 +107,7 @@
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
                 "chat" => $user->id != "uid-0",
+                "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? json_encode(["mode" => "strict", "change" => false]) : null,
                 "reviewGroups" => $user->reviewGroups,
                 "commentGroups" => $user->commentGroups,
                 "userInfoGroups" => $user->userInfoGroups
