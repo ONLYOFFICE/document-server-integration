@@ -153,6 +153,12 @@ def rename(request):
 
     body = json.loads(request.body)
     newfilename = body['newfilename']
+
+    origExt = '.' + body['ext']
+    curExt = fileUtils.getFileExt(newfilename)
+    if (origExt != curExt):
+        newfilename += origExt
+
     dockey = body['dockey']
     meta = {'title': newfilename}
 

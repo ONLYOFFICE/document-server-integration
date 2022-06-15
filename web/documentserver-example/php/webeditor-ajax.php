@@ -259,7 +259,7 @@ function convert() {
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
     // check if the file with such an extension can be converted
-    if (in_array("." + $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
+    if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $post["fileUri"];
         if ($fileUri == NULL || $fileUri == "") {
@@ -469,6 +469,13 @@ function delTree($dir) {
 function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
+
+    $curExt = strtolower(array_pop(explode('.', $newfilename)));
+    $origExt = $post["ext"];
+    if($origExt !== $curExt){
+        $newfilename .= '.' . $origExt;
+    }
+
     $dockey = $post["dockey"];
     $meta = ["title" => $newfilename];
 

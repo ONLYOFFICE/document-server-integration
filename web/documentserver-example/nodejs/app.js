@@ -128,9 +128,8 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
-    var isEmbedded = req.query.dmode;
 
-    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest)) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -325,7 +324,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
     var lang = req.body.lang ? req.body.lang : null;
-    var fileUri = req.docManager.getFileUri(fileName);
+    var fileUri = req.docManager.getDownloadUrl(fileName, true);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
     var internalFileExt = req.docManager.getInternalExtension(fileType);
@@ -807,8 +806,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             };
         }
         var key = req.docManager.getKey(fileName);
-        var url = req.docManager.getDownloadUrl(fileName);
-        var urlUser = path.isAbsolute(storageFolder) ? req.docManager.getDownloadUrl(fileName) + "&dmode=emb" : req.docManager.getlocalFileUri(fileName, 0, false);
+        var url = req.docManager.getDownloadUrl(fileName, true);
+        var urlUser = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
 
         var type = req.query.type || ""; // type: embedded/mobile/desktop
@@ -852,7 +851,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
+                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -861,7 +860,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = `${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+                    let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
@@ -910,6 +909,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
                 chat: userid != "uid-0",
+                coEditing: mode == "view" && userid == "uid-0" ? {mode: "strict", change: false} : null,
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
                 fillForms: mode != "view" && mode != "comment" && mode != "embedded" && mode != "blockcontent",
                 modifyFilter: mode != "filter",
@@ -977,6 +977,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 app.post("/rename", function (req, res) { //define a handler for renaming file
 
     var newfilename = req.body.newfilename;
+    var origExt = req.body.ext;
+    var curExt = fileUtility.getFileExtension(newfilename, true);
+    if (curExt !== origExt) {
+        newfilename += '.' + origExt;
+    }
+
     var dockey = req.body.dockey;
     var meta = {title: newfilename};
 
