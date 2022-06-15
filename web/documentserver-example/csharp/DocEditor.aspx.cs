@@ -217,6 +217,11 @@ namespace OnlineEditorsExample
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
                                             { "chat", !user.id.Equals("uid-0") },
+                                            { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? (new JavaScriptSerializer()).Serialize((object)
+                                                new Dictionary<string, object>{
+                                                    {"mode", "strict"},
+                                                    {"change", false}
+                                                }) : null },
                                             { "reviewGroups", user.reviewGroups },
                                             { "commentGroups", user.commentGroups },
                                             { "userInfoGroups", user.userInfoGroups }
