@@ -247,6 +247,7 @@ def edit(request):
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
                 'chat': user.id !='uid-0',
+                'coEditing': edMode == 'view' and user.id =='uid-0' if json.dumps({"mode": "strict", "change": False}) else None,
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups
