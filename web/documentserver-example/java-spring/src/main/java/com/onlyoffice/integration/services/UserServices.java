@@ -56,7 +56,9 @@ public class UserServices {
                            List<String> reviewGroups,
                            List<String> viewGroups,
                            List<String> editGroups,
-                           List<String> removeGroups, List<String> userInfoGroups, Boolean favoriteDoc){
+                           List<String> removeGroups, 
+                           List<String> userInfoGroups, Boolean favoriteDoc,
+                           Boolean chat){
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
@@ -71,7 +73,7 @@ public class UserServices {
         List<Group> usInfoGroups = groupServices.createGroups(userInfoGroups);
 
         Permission permission = permissionService
-                .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove, usInfoGroups);  // specify permissions for the current user
+                .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove, usInfoGroups, chat);  // specify permissions for the current user
         newUser.setPermissions(permission);
 
         userRepository.save(newUser); // save a new user
