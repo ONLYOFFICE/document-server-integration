@@ -266,9 +266,11 @@ public class FileModel
         public Boolean modifyContentControl;
         public Boolean review;
         public Boolean chat;
+        public String coEditing;
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
         public List<String> userInfoGroups;
+        public Gson gson = new Gson();
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -283,6 +285,11 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             chat = !user.id.equals("uid-0");
+            coEditing = mode.equals("view") && user.id.equals("uid-0") ? 
+                gson.toJson( new HashMap<String, Object>()  {{ 
+                    put("mode", "strict");
+                    put("change", false);
+                }}) : null;
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;
             userInfoGroups = user.userInfoGroups;
