@@ -150,6 +150,7 @@
             var data = {
                 newfilename: newfilename,
                 dockey: config.document.key,
+                ext: config.document.fileType
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "IndexServlet?type=rename");

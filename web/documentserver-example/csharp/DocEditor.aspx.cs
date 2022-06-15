@@ -216,6 +216,7 @@ namespace OnlineEditorsExample
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
+                                            { "chat", !user.id.Equals("uid-0") },
                                             { "reviewGroups", user.reviewGroups },
                                             { "commentGroups", user.commentGroups },
                                             { "userInfoGroups", user.userInfoGroups }

@@ -351,6 +351,13 @@ class HomeController < ApplicationController
       body = JSON.parse(request.body.read)
       dockey = body["dockey"]
       newfilename = body["newfilename"]
+
+      orig_ext = '.' + body["ext"]
+      cur_ext = File.extname(newfilename).downcase
+      if orig_ext != cur_ext
+        newfilename += orig_ext
+      end
+
       meta = {
         :title => newfilename
       }

@@ -1,5 +1,6 @@
 # Change Log
 
+- anonymous without chat
 - offline viewer for anonymous
 - zh-TW, pt-PT
 
