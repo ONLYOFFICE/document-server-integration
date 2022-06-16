@@ -43,7 +43,8 @@ public class ExampleData {
                 "Can't create new files from the editor",
                 "Can’t see anyone’s information",
                 "Can't rename files from the editor",
-               "Can't view chat"
+                "Can't view chat",
+                "View file without collaboration"
         );
         List<String> description_user_1 = List.of(  // the description for user 1
                 "File author by default",
