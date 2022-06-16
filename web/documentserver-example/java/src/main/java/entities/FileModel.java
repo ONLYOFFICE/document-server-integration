@@ -77,6 +77,12 @@ public class FileModel
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
+
+        editorConfig.coEditing = mode.equals("edit") && user.id.equals("uid-0") ? 
+        new HashMap<String, Object>()  {{ 
+            put("mode", "strict");
+            put("change", false);
+        }} : null;
         
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
@@ -266,11 +272,10 @@ public class FileModel
         public Boolean modifyContentControl;
         public Boolean review;
         public Boolean chat;
-        public String coEditing;
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
         public List<String> userInfoGroups;
-        public Gson gson = new Gson();
+        //public Gson gson = new Gson();
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -285,11 +290,6 @@ public class FileModel
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
             chat = !user.id.equals("uid-0");
-            coEditing = mode.equals("view") && user.id.equals("uid-0") ? 
-                gson.toJson( new HashMap<String, Object>()  {{ 
-                    put("mode", "strict");
-                    put("change", false);
-                }}) : null;
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;
             userInfoGroups = user.userInfoGroups;
@@ -314,6 +314,7 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
+        public HashMap<String, Object> coEditing = null;
         public String lang = "en";
         public String createUrl;
         public List<Map<String, String>> templates;
