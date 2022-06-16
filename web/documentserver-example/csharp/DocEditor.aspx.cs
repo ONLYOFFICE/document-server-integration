@@ -217,11 +217,6 @@ namespace OnlineEditorsExample
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
                                             { "chat", !user.id.Equals("uid-0") },
-                                            { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? (new JavaScriptSerializer()).Serialize((object)
-                                                new Dictionary<string, object>{
-                                                    {"mode", "strict"},
-                                                    {"change", false}
-                                                }) : null },
                                             { "reviewGroups", user.reviewGroups },
                                             { "commentGroups", user.commentGroups },
                                             { "userInfoGroups", user.userInfoGroups }
@@ -236,6 +231,11 @@ namespace OnlineEditorsExample
                                 { "mode", mode },
                                 { "lang", Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
+                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? 
+                                    new Dictionary<string, object>{
+                                        {"mode", "strict"},
+                                        {"change", false}
+                                    } : null },
                                 { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
                                 { "templates", user.templates ? templates : null },
                                 {
