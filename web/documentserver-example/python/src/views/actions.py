@@ -247,7 +247,6 @@ def edit(request):
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
                 'chat': user.id !='uid-0',
-                'coEditing': edMode == 'view' and user.id =='uid-0' if json.dumps({"mode": "strict", "change": False}) else None,
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups
@@ -258,6 +257,11 @@ def edit(request):
             'mode': mode,
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
+            'coEditing': {
+                            "mode": "strict", 
+                            "change": False
+                         } 
+                         if edMode == 'edit' and user.id =='uid-0' else None,
             'createUrl' : createUrl if user.id !='uid-0' else None,
             'templates' : templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
