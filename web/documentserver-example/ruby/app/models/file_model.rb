@@ -128,7 +128,6 @@ class FileModel
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
           :chat => !@user.id.eql?("uid-0"),
-          :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {:mode => "strict", :change => false}.to_json : nil,
           :reviewGroups => @user.reviewGroups,
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups
@@ -139,6 +138,10 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
+        :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {
+          :mode => "strict", 
+          :change => false
+        } : nil,
         :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
