@@ -219,7 +219,7 @@ class FileModel
         dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
-        dataObj["directUrl"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
+        dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
         dataObj["version"] = i
 
         if (i > 1)  # check if the version number is greater than 1
