@@ -100,16 +100,17 @@ namespace OnlineEditorsExample
         }
 
         // get url to download a file
-        public static string getDownloadUrl(string fileName)
+        public static string getDownloadUrl(string fileName, Boolean isServer = true)
         {
-            var downloadUrl = new UriBuilder(_Default.GetServerUrl(true));
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress) : "";
+            var downloadUrl = new UriBuilder(_Default.GetServerUrl(isServer));
                 downloadUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
                 downloadUrl.Query = "type=download"
                                     + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                                    + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+                                    + userAddress;
                 return downloadUrl.ToString();
         }
 
@@ -165,6 +166,7 @@ namespace OnlineEditorsExample
             var actionLink = Request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
 
+            var directUrl = getDownloadUrl(FileName, false);
             var createUrl = getCreateUrl(DocumentType, editorsType);
             var templatesImageUrl = GetTemplateImageUrl(ext); // image url for templates
             var templates = new List<Dictionary<string, string>>
@@ -193,6 +195,7 @@ namespace OnlineEditorsExample
                             {
                                 { "title", FileName },
                                 { "url", getDownloadUrl(FileName) },
+                                { "directUrl", directUrl },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -245,9 +248,9 @@ namespace OnlineEditorsExample
                                     // the parameters for the embedded document type
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUriUser },  // the absolute URL that will allow the document to be saved onto the user personal computer
-                                            { "embedUrl", FileUriUser },  // the absolute URL to the document serving as a source file for the document embedded into the web page
-                                            { "shareUrl", FileUriUser },  // the absolute URL that will allow other users to share this document
+                                            { "saveUrl", directUrl },  // the absolute URL that will allow the document to be saved onto the user personal computer
+                                            { "embedUrl", directUrl },  // the absolute URL to the document serving as a source file for the document embedded into the web page
+                                            { "shareUrl", directUrl },  // the absolute URL that will allow other users to share this document
                                             { "toolbarDocked", "top" }  // the place for the embedded viewer toolbar (top or bottom)
                                         }
                                 },
@@ -359,13 +362,16 @@ namespace OnlineEditorsExample
                     dataObj.Add("fileType", ext.Replace(".", ""));
                     dataObj.Add("key", key);
                     // write file url to the data object
+                    var directPrevFileUrl = i == currentVersion ? _Default.FileUri(FileName, false) : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext, false);
                     var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext);
                     if (Path.IsPathRooted(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                        directPrevFileUrl = i == currentVersion ? getDownloadUrl(FileName, false) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
                     }
 
                     dataObj.Add("url", prevFileUrl);  // write file url to the data object
+                    dataObj.Add("directUrl", directPrevFileUrl);  // write direct url to the data object
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -387,6 +393,7 @@ namespace OnlineEditorsExample
                             { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
                             { "url", prev["url"] },
+                            { "directUrl", prev["directUrl"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = MakePublicHistoryUrl(FileName, (i - 1).ToString(), "diff.zip");
@@ -420,11 +427,17 @@ namespace OnlineEditorsExample
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "App_Themes\\images\\logo.png";
 
+            var DirectImageUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "App_Themes\\images\\logo.png";
+
             // create a logo config
             Dictionary<string, object> logoConfig = new Dictionary<string, object>
                 {
                     { "fileType", "png"},
-                    { "url", InsertImageUrl.ToString()}
+                    { "url", InsertImageUrl.ToString()},
+                    { "directUrl", DirectImageUrl.ToString()}
                 };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
@@ -446,11 +459,18 @@ namespace OnlineEditorsExample
                 + "webeditor.ashx";
             compareFileUrl.Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx");
 
+            var DirectFileUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectFileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            DirectFileUrl.Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx");
+
             // create an object with the information about the compared file
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
                     { "fileType", "docx" },
-                    { "url", compareFileUrl.ToString() }
+                    { "url", compareFileUrl.ToString() },
+                    { "directUrl", DirectFileUrl.ToString() }
                 };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
@@ -473,11 +493,19 @@ namespace OnlineEditorsExample
                     + "webeditor.ashx";
             mailmergeUrl.Query = "type=csv";
 
+            var DirectMailMergeUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectMailMergeUrl.Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+            DirectMailMergeUrl.Query = "type=csv";
+
             // create a mail merge config
             Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString() }
+                    { "url", mailmergeUrl.ToString() },
+                    { "directUrl", DirectMailMergeUrl.ToString() }
                 };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
@@ -521,15 +549,16 @@ namespace OnlineEditorsExample
 
 
         // create the public history url
-        private string MakePublicHistoryUrl(string filename, string version, string file)
+        private string MakePublicHistoryUrl(string filename, string version, string file, Boolean isServer = true)
         {
-            var fileUrl = new UriBuilder(_Default.GetServerUrl(true));
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress) : "";
+            var fileUrl = new UriBuilder(_Default.GetServerUrl(isServer));
             fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                 + "webeditor.ashx";
             fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
                 + "&ver=" + version + "&file=" + file
-                + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+                + userAddress;
             return fileUrl.ToString();
         }
 
