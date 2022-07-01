@@ -97,6 +97,7 @@ namespace OnlineEditorsExampleMVC.Models
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
 
+            var directUrl = DocManagerHelper.GetDownloadUrl(FileName, false);
             var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
             var templatesImageUrl = DocManagerHelper.GetTemplateImageUrl(FileUtility.GetFileType(FileName)); // image url for templates
             var templates = new List<Dictionary<string, string>>
@@ -125,6 +126,7 @@ namespace OnlineEditorsExampleMVC.Models
                             {
                                 { "title", FileName },
                                 { "url", DownloadUrl },
+                                { "directUrl", directUrl },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -177,9 +179,9 @@ namespace OnlineEditorsExampleMVC.Models
                                     // the parameters for the embedded document type
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUriUser },  // the absolute URL that will allow the document to be saved onto the user personal computer
-                                            { "embedUrl", FileUriUser },  // the absolute URL to the document serving as a source file for the document embedded into the web page
-                                            { "shareUrl", FileUriUser },  // the absolute URL that will allow other users to share this document
+                                            { "saveUrl", directUrl },  // the absolute URL that will allow the document to be saved onto the user personal computer
+                                            { "embedUrl", directUrl },  // the absolute URL to the document serving as a source file for the document embedded into the web page
+                                            { "shareUrl", directUrl },  // the absolute URL that will allow other users to share this document
                                             { "toolbarDocked", "top" }  // the place for the embedded viewer toolbar (top or bottom)
                                         }
                                 },
@@ -262,17 +264,23 @@ namespace OnlineEditorsExampleMVC.Models
                     dataObj.Add("key", key);
                     // write file url to the data object
                     string prevFileUrl;
+                    string directPrevFileUrl;
                     if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
                     {
                         prevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext)
                             : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                        directPrevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext, false)
+                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
                     }
                     else {
-                       prevFileUrl = i == currentVersion ? FileUri
-                        : DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext);
+                        prevFileUrl = i == currentVersion ? FileUri
+                            : DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext);
+                        directPrevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext, false)
+                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
                     }
 
                     dataObj.Add("url", prevFileUrl);
+                    dataObj.Add("directUrl", directPrevFileUrl);
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -294,6 +302,7 @@ namespace OnlineEditorsExampleMVC.Models
                             { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
                             { "url", prev["url"] },
+                            { "directUrl", prev["directUrl"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(FileName, (i - 1).ToString(), "diff.zip");
@@ -332,11 +341,20 @@ namespace OnlineEditorsExampleMVC.Models
                 Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
             };
 
+            var directCompareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
+            };
+
             // create an object with the information about the compared file
             var dataCompareFile = new Dictionary<string, object>
             {
                 { "fileType", "docx" },
-                { "url", compareFileUrl.ToString() }
+                { "url", compareFileUrl.ToString() },
+                { "directUrl", directCompareFileUrl.ToString()}
             };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
@@ -361,11 +379,19 @@ namespace OnlineEditorsExampleMVC.Models
                     + "Content\\images\\logo.png"
             };
 
+            var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Content\\images\\logo.png"
+            };
+
             // create a logo config
             var logoConfig = new Dictionary<string, object>
             {
                 { "fileType", "png"},
-                { "url", mailMergeUrl.ToString()}
+                { "url", mailMergeUrl.ToString()},
+                { "directUrl", directMailMergeUrl.ToString()}
             };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
@@ -392,11 +418,21 @@ namespace OnlineEditorsExampleMVC.Models
                 Query = "type=csv"
             };
 
+            var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=csv"
+            };
+
             // create a mail merge config
             var mailMergeConfig = new Dictionary<string, object>
             {
                 { "fileType", "csv" },
-                { "url", mailMergeUrl.ToString()}
+                { "url", mailMergeUrl.ToString()},
+                { "directUrl", directMailMergeUrl.ToString()}
             };
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
