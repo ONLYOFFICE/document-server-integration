@@ -118,10 +118,10 @@ public class DefaultDocumentManager implements DocumentManager {
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
                     : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
-
+            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
             String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
                 + "&ver=" + version + "&file="+file
-                + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+                + userAddress;
             return filePath;
         }
         catch (UnsupportedEncodingException | UnknownHostException e)
@@ -149,15 +149,15 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get URL to download a file
-    public String getDownloadUrl(String fileName) {
-        String serverPath = storagePathBuilder.getServerUrl(true);
+    public String getDownloadUrl(String fileName, Boolean isServer) {
+        String serverPath = storagePathBuilder.getServerUrl(isServer);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try
         {
+            String userAddress = isServer ? "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
             String query = downloadUrl+"?fileName="
                     + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress="
-                    + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+                    + userAddress;
 
             return serverPath + query;
         }
