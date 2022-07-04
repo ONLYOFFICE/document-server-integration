@@ -354,7 +354,7 @@ public class DocumentManager
 
             String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
             if (f.isAbsolute() && f.isFile()) {
-                filePath = GetDownloadUrl(fileName);
+                filePath = GetDownloadUrl(fileName, true);
                 if (!Files.isWritable(f.toPath())) {
                     throw new SecurityException("No write permission to path: " + f.toPath());
                 }
@@ -450,12 +450,13 @@ public class DocumentManager
     }
 
     // get url to download a file
-    public static String GetDownloadUrl(String fileName) {
-        String serverPath = GetServerUrl(true);
+    public static String GetDownloadUrl(String fileName, Boolean forDocumentServer) {
+        String serverPath = GetServerUrl(forDocumentServer);
         String hostAddress = CurUserHostAddress(null);
         try
         {
-            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
 
             return serverPath + "/IndexServlet" + query;
         }
@@ -466,12 +467,13 @@ public class DocumentManager
     }
 
     // get url to download a file to History prev.*
-    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file) {
-        String serverPath = GetServerUrl(true);
+    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file, Boolean forDocumentServer) {
+        String serverPath = GetServerUrl(forDocumentServer);
         String hostAddress = CurUserHostAddress(null);
         try
         {
-            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
             query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
