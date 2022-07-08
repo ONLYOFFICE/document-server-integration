@@ -1,6 +1,6 @@
 # Change Log
 
-- zh-TW, pt-PT
+- added hy, eu, zh-TW, ms, pt-PT
 
 ## 1.2.0
 - ruby v3.0
