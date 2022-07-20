@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT

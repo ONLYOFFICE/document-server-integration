@@ -754,6 +754,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var historyData = [];
         var lang = req.docManager.getLang();
         var user = users.getUser(req.query.userid);
+        var userDirectUrl = req.query.directUrl == "true";
 
         var userid = user.id;
         var name = user.name;
@@ -851,7 +852,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     version: i,
                     key: keyVersion,
                     url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
-                    directUrl: i == countVersion ? directUrl : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`),
+                    directUrl: !userDirectUrl ? null : i == countVersion ? directUrl : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`),
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -859,7 +860,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
-                        directUrl:  historyData[i-2].directUrl,
+                        directUrl: !userDirectUrl ? null :  historyData[i-2].directUrl,
                     };
                     let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
@@ -878,7 +879,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 version: countVersion,
                 key: key,
                 url: url,
-                directUrl: directUrl,
+                directUrl: !userDirectUrl ? null : directUrl,
             });
         }
 
@@ -895,7 +896,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
-                directUrl: directUrl,
+                directUrl: !userDirectUrl ? null : directUrl,
+                uriUser: directUrl,
                 version: countVersion,
                 created: new Date().toDateString(),
                 favorite: user.favorite != null ? user.favorite : "null"
@@ -940,17 +942,17 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             dataInsertImage: {
                 fileType: "png",
                 url: req.docManager.getServerUrl(true) + "/images/logo.png",
-                directUrl: req.docManager.getServerUrl() + "/images/logo.png",
+                directUrl: !userDirectUrl ? null : req.docManager.getServerUrl() + "/images/logo.png",
             },
             dataCompareFile: {
                 fileType: "docx",
                 url: req.docManager.getServerUrl(true) + "/assets/sample/sample.docx",
-                directUrl: req.docManager.getServerUrl() + "/assets/sample/sample.docx",
+                directUrl: !userDirectUrl ? null : req.docManager.getServerUrl() + "/assets/sample/sample.docx",
             },
             dataMailMergeRecipients: {
                 fileType: "csv",
                 url: req.docManager.getServerUrl(true) + "/csv",
-                directUrl: req.docManager.getServerUrl() + "/csv",
+                directUrl: !userDirectUrl ? null : req.docManager.getServerUrl() + "/csv",
             },
             usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null,
         };
