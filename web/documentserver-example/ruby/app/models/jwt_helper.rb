@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'jwt'
+
 class JwtHelper
 
     @jwt_secret = Rails.configuration.jwtSecret
@@ -26,37 +28,19 @@ class JwtHelper
 
         # encode a payload object into a token using a secret key
         def encode(payload)
-            header = { :alg => "HS256", :typ => "JWT" }  # define the hashing algorithm and the token type
-            # three parts of token
-            enc_header = Base64.urlsafe_encode64(header.to_json).remove("=")  # header
-            enc_payload = Base64.urlsafe_encode64(payload.to_json).remove("=")  # payload
-            hash = Base64.urlsafe_encode64(calc_hash(enc_header, enc_payload)).remove("=")  # signature
-
-            return "#{enc_header}.#{enc_payload}.#{hash}"
+            return JWT.encode payload, @jwt_secret, 'HS256' # define the hashing algorithm and get token
         end
 
         # decode a token into a payload object using a secret key
         def decode(token)
-            if !is_enabled
+            begin
+                decoded = JWT.decode token, @jwt_secret, true, { algorithm: 'HS256' }
+            rescue
                 return ""
             end
-
-            split = token.split(".")
-
-            hash = Base64.urlsafe_encode64(calc_hash(split[0], split[1])).remove("=")
-
-            if !hash.eql?(split[2])
-                return ""
-            end
-
-            return Base64.urlsafe_decode64(split[1])
-        end
-
-        private
-
-        # generate a hash code based on a key using the HMAC method
-        def calc_hash(header, payload)
-            return OpenSSL::HMAC.digest("SHA256", @jwt_secret, "#{header}.#{payload}")
+            # decoded = Array [ {"data"=>"test"}, # payload
+            #                   {"alg"=>"HS256"} # header   ]
+            return decoded[0].to_json   #   get json payload
         end
     end
 end

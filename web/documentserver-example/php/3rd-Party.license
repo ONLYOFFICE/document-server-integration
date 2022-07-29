@@ -19,3 +19,7 @@ License File:   jQuery.iframe-transport.license
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+JWT           - JSON Web Token implementation (https://github.com/firebase/php-jwt/blob/master/LICENSE)
+License:        BSD
+License File:   jwt.license
