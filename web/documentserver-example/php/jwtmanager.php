@@ -17,6 +17,10 @@
  *
  */
 
+require_once( dirname(__FILE__) . '/lib/jwt/BeforeValidException.php' );
+require_once( dirname(__FILE__) . '/lib/jwt/ExpiredException.php' );
+require_once( dirname(__FILE__) . '/lib/jwt/SignatureInvalidException.php' );
+require_once( dirname(__FILE__) . '/lib/jwt/JWT.php' );
 require_once( dirname(__FILE__) . '/config.php' );
 
 // check if a secret key to generate token exists or not
@@ -26,51 +30,17 @@ function isJwtEnabled() {
 
 // encode a payload object into a token using a secret key
 function jwtEncode($payload) {
-    $header = [
-        "alg" => "HS256",  // the hashing algorithm
-        "typ" => "JWT"  // the token type
-    ];
-    // three parts of token
-    $encHeader = base64UrlEncode(json_encode($header));  // header
-    $encPayload = base64UrlEncode(json_encode($payload));  // payload
-    $hash = base64UrlEncode(calculateHash($encHeader, $encPayload));  // signature
-
-    return "$encHeader.$encPayload.$hash";
+    return \Firebase\JWT\JWT::encode($payload, $GLOBALS["DOC_SERV_JWT_SECRET"]);
 }
 
 // decode a token into a payload object using a secret key
 function jwtDecode($token) {
-    if (!isJwtEnabled()) return "";
-
-    $split = explode(".", $token);
-    if (count($split) != 3) return "";
-
-    $hash = base64UrlEncode(calculateHash($split[0], $split[1]));
-
-    if (strcmp($hash, $split[2]) != 0) return "";
-    return base64UrlDecode($split[1]);
-}
-
-// generate a hash code based on a key using the HMAC method
-function calculateHash($encHeader, $encPayload) {
-    return hash_hmac("sha256", "$encHeader.$encPayload", $GLOBALS['DOC_SERV_JWT_SECRET'], true);
-}
-
-// encode a string into the base64 value
-function base64UrlEncode($str) {
-    return str_replace("/", "_", str_replace("+", "-", trim(base64_encode($str), "=")));
-}
-
-// decode a base64 value into the string
-function base64UrlDecode($payload) {
-    $b64 = str_replace("_", "/", str_replace("-", "+", $payload));
-    switch (strlen($b64) % 4) {
-        case 2:
-            $b64 = $b64 . "=="; break;
-        case 3:
-            $b64 = $b64 . "="; break;
+    try {
+        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["DOC_SERV_JWT_SECRET"], array("HS256"));
+    } catch (\UnexpectedValueException $e) {
+        $payload = "";
     }
-    return base64_decode($b64);
-}
 
+    return $payload;
+}
 ?>

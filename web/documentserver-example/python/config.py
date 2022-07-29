@@ -55,7 +55,9 @@ EXT_DOCUMENT = [
 
 LANGUAGES = {
     'en': 'English',
+    'hy': 'Armenian',
     'az': 'Azerbaijani',
+    'eu': 'Basque',
     'be': 'Belarusian',
     'bg': 'Bulgarian',
     'ca': 'Catalan',
@@ -76,6 +78,7 @@ LANGUAGES = {
     'ko': 'Korean',
     'lv': 'Latvian',
     'lo': 'Lao',
+    'ms': 'Malay (Malaysia)',
     'nb': 'Norwegian',
     'pl': 'Polish',
     'pt' : 'Portuguese (Brazil)',

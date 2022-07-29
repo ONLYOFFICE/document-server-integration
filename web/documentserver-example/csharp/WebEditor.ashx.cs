@@ -207,7 +207,7 @@ namespace OnlineEditorsExample
             try
             {
                 var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress));
+                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
                 var histDir = _Default.HistoryDir(path);
 
                 if (File.Exists(path)) File.Delete(path);  // delete file
