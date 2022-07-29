@@ -165,7 +165,7 @@
                                                         var isFillFormDoc = FillFormsExts.Contains(ext);
                                                         %>
 
-                                                        <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
+                                                        <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress.Replace(':','_')) %>]">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                                                                     <span><%= storedFile.Name %></span>

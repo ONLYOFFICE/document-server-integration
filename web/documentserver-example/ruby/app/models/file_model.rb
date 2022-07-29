@@ -157,7 +157,7 @@ class FileModel
           :forcesave => false,  # adding the request for the forced file saving to the callback handler
           :submitForm => submitForm,  # the Submit form button state
           :goback => {
-            :url => DocumentHelper.get_server_url(true)
+            :url => DocumentHelper.get_server_url(false)
           },
         }
       }
