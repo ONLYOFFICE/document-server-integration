@@ -265,6 +265,7 @@ public class FileModel
         public Boolean modifyFilter;
         public Boolean modifyContentControl;
         public Boolean review;
+        public Boolean chat;
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
         public List<String> userInfoGroups;
@@ -281,6 +282,7 @@ public class FileModel
             modifyFilter = !mode.equals("filter");
             modifyContentControl = !mode.equals("blockcontent");
             review = canEdit && (mode.equals("edit") || mode.equals("review"));
+            chat = !user.id.equals("uid-0");
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;
             userInfoGroups = user.userInfoGroups;

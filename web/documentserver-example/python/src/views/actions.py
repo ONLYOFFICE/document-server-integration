@@ -246,6 +246,7 @@ def edit(request):
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
+                'chat': user.id !='uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups

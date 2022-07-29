@@ -1,5 +1,6 @@
 # Change Log
 
+- anonymous without chat
 - changed jwt implementation in csharp, csharp-mvc, php, ruby
 - added hy, eu, zh-TW, ms, pt-PT
 

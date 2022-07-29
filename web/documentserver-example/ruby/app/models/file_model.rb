@@ -127,6 +127,7 @@ class FileModel
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
+          :chat => !@user.id.eql?("uid-0"),
           :reviewGroups => @user.reviewGroups,
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups
