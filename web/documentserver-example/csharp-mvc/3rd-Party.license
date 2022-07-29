@@ -24,11 +24,15 @@ jQuery.UI     - jQuery UI is an open source library of interface components — 
 License:        MIT
 License File:   jQuery.UI.license
 
+JWT           - JWT (JSON Web Token) Implementation for .NET (Public Domain) (https://github.com/jwt-dotnet/jwt/)
+License:        MIT
+License File:   JWT.license
+
 Microsoft.Web.Infrastructure - This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time. (https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm)
 License:        MS-EULA License
 License File:   Microsoft.Web.Infrastructure.license
 
-Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://licenses.nuget.org/MIT)
+Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://github.com/JamesNK/Newtonsoft.Json)
 License:        MIT
 License File:   Newtonsoft.Json.license
 
