@@ -65,6 +65,7 @@ public class Users {
         add("Can't create new files from the editor");
         add("Can’t see anyone’s information");
         add("Can't rename files from the editor");
+        add("Can't view chat");
     }};
 
     private static List<User> users = new ArrayList<User>() {{

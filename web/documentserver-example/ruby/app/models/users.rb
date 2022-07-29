@@ -73,7 +73,8 @@ class Users
         "Can't mention others in comments",
         "Can't create new files from the editor",
         "Can’t see anyone’s information",
-        "Can't rename files from the editor"
+        "Can't rename files from the editor",
+        "Can't view chat"
     ];
 
     @@users = [

@@ -1,5 +1,7 @@
 # Change Log
 
+- anonymous without chat
+
 ## 1.2.0
 - ruby v3.0
 - set filetype in setHistoryData

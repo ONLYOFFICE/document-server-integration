@@ -106,6 +106,7 @@
                 "modifyFilter" => $editorsMode != "filter",
                 "modifyContentControl" => $editorsMode != "blockcontent",
                 "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
+                "chat" => $user->id != "uid-0",
                 "reviewGroups" => $user->reviewGroups,
                 "commentGroups" => $user->commentGroups,
                 "userInfoGroups" => $user->userInfoGroups
