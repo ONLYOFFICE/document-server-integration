@@ -48,3 +48,6 @@ gem 'uuid'
 gem 'rack-cors'
 
 gem 'webrick'
+
+# A ruby implementation of the RFC 7519 OAuth JSON Web Token (JWT) standard.
+gem 'jwt', '~> 2.4.1'

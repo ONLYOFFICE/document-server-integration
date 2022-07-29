@@ -19,3 +19,11 @@ License File:   jQuery.iframe-transport.license
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+JWT           - JWT (JSON Web Token) Implementation for .NET (Public Domain) (https://github.com/jwt-dotnet/jwt/)
+License:        MIT
+License File:   JWT.license
+
+Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://github.com/JamesNK/Newtonsoft.Json)
+License:        MIT
+License File:   Newtonsoft.Json.license
