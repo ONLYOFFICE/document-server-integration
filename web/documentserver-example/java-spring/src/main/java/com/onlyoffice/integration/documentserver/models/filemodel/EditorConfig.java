@@ -38,6 +38,7 @@ import java.util.List;
 public class EditorConfig {  // the parameters pertaining to the editor interface: opening mode (viewer or editor), interface language, additional buttons, etc.
     private HashMap<String, Object> actionLink = null;  // the data which contains the information about the action in the document that will be scrolled to
     private String callbackUrl;  // the absolute URL to the document storage service
+    private HashMap<String, Object> coEditing = null;
     private String createUrl;  // the absolute URL of the document where it will be created and available after creation
     @Autowired
     private Customization customization;  // the parameters which allow to customize the editor interface so that it looked like your other products (if there are any) and change the presence or absence of the additional buttons, links, change logos and editor owner details

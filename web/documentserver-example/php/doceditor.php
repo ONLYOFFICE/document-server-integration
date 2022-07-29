@@ -117,6 +117,10 @@
             "mode" => $mode,
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
+            "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
+                "mode" => "strict", 
+                "change" => false
+            ] : null,
             "createUrl" => $user->id != "uid-0" ? $createUrl : null,
             "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document

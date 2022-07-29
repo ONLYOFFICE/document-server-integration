@@ -77,6 +77,12 @@ public class FileModel
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
+
+        editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0") ? 
+        new HashMap<String, Object>()  {{ 
+            put("mode", "strict");
+            put("change", false);
+        }} : null;
         
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
@@ -269,6 +275,7 @@ public class FileModel
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
         public List<String> userInfoGroups;
+        //public Gson gson = new Gson();
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -307,6 +314,7 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
+        public HashMap<String, Object> coEditing = null;
         public String lang = "en";
         public String createUrl;
         public List<Map<String, String>> templates;
