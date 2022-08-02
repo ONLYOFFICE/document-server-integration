@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.3.0
 - anonymous without chat
 - changed jwt implementation in csharp, csharp-mvc, php, ruby
 
