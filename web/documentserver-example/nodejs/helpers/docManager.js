@@ -66,6 +66,9 @@ docManager.prototype.getCustomParams = function () {
     const lang = this.req.query.lang;  // language
     params += (lang ? "&lang=" + this.getLang() : "");
 
+    const directUrl = this.req.query.directUrl;  // directUrl
+    params += (directUrl ? "&directUrl=" + (directUrl == "true") : "");
+
     const fileName = this.req.query.fileName;  // file name
     params += (fileName ? "&fileName=" + fileName : "");
 
