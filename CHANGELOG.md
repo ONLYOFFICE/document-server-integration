@@ -1,6 +1,12 @@
 # Change Log
 
-- zh-TW, pt-PT
+- offline viewer for anonymous
+- added hy, eu, zh-TW, ms, pt-PT
+
+## 1.3.0
+- update empty files
+- anonymous without chat
+- changed jwt implementation in csharp, csharp-mvc, php, ruby
 
 ## 1.2.0
 - ruby v3.0

@@ -25,6 +25,7 @@ public enum Action {
     embedded,
     filter,
     comment,
+    chat,
     fillForms,
     blockcontent
 }

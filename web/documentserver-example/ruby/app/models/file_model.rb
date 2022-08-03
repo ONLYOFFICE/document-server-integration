@@ -128,6 +128,7 @@ class FileModel
           :modifyFilter => !editorsmode.eql?("filter"),
           :modifyContentControl => !editorsmode.eql?("blockcontent"),
           :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
+          :chat => !@user.id.eql?("uid-0"),
           :reviewGroups => @user.reviewGroups,
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups
@@ -138,6 +139,10 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
+        :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {
+          :mode => "strict", 
+          :change => false
+        } : nil,
         :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
@@ -158,7 +163,7 @@ class FileModel
           :forcesave => false,  # adding the request for the forced file saving to the callback handler
           :submitForm => submitForm,  # the Submit form button state
           :goback => {
-            :url => DocumentHelper.get_server_url(true)
+            :url => DocumentHelper.get_server_url(false)
           },
         }
       }

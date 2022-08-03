@@ -242,7 +242,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
                 {
-                    Path = HttpRuntime.AppDomainAppVirtualPath + "/"
+                    Path = HttpRuntime.AppDomainAppVirtualPath
+                           + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                            + CurUserHostAddress() + "/"
                            + fileName,
                     Query = ""
@@ -292,7 +293,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
             };
             return callbackUrl.ToString();
         }
@@ -314,7 +315,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // create the public history url
         public static string GetHistoryDownloadUrl(string filename, string version, string file, Boolean isServer = true)
         {
-            var userAddress = "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress);
+            var userAddress = "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
             var downloadUrl = new UriBuilder(GetServerUrl(isServer))
             {
                 Path =
@@ -342,6 +343,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
                         + userAddress
             };
             return downloadUrl.ToString();

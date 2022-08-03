@@ -80,7 +80,9 @@ descr_user_0 = [
     "Can't mention others in comments",
     "Can't create new files from the editor",
     "Can’t see anyone’s information",
-    "Can't rename files from the editor"
+    "Can't rename files from the editor",
+    "Can't view chat",
+    "View file without collaboration",
 ]
 
 USERS = [

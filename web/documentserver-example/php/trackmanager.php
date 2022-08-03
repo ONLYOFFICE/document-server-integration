@@ -32,7 +32,7 @@ function readBody() {
         return $result;
     }
 
-    $data = json_decode($body_stream, TRUE); // json_decode - PHP 5 >= 5.2.0
+    $data = json_decode($body_stream, false);
 
     // check if the response is correct
     if ($data === NULL) {
@@ -47,27 +47,29 @@ function readBody() {
         sendlog("   jwt enabled, checking tokens", "webedior-ajax.log");
 
         $inHeader = false;
-        $token = "";
+        $data = "";
         $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
         if (!empty($data["token"])) {  // if the document token is in the data
-            $token = jwtDecode($data["token"]);  // decode it
+            $data = jwtDecode($data["token"]);  // decode it
+            sendlog("   jwt in body", "webedior-ajax.log");
         } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-            $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));  // decode its part after Authorization prefix
+            $data = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));  // decode its part after Authorization prefix
             $inHeader = true;
+            sendlog("   jwt in header", "webedior-ajax.log");
         } else {  // otherwise, an error occurs
             sendlog("   jwt token wasn't found in body or headers", "webedior-ajax.log");
             $result["error"] = "Expected JWT";
             return $result;
         }
-        if (empty($token)) {  // invalid signature error
+
+        if ($data === "") {  // invalid signature error
             sendlog("   token was found but signature is invalid", "webedior-ajax.log");
             $result["error"] = "Invalid JWT signature";
             return $result;
         }
 
-        $data = json_decode($token, true);
-        if ($inHeader) $data = $data["payload"];
+        if ($inHeader) $data = $data->payload;
     }
 
     return $data;
@@ -75,14 +77,14 @@ function readBody() {
 
 // file saving process
 function processSave($data, $fileName, $userAddress) {
-    $downloadUri = $data["url"];
+    $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
         return $result;
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
     // TODO [Delete in version 7.0 or higher]
     if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION)); // Support for versions below 7.0
@@ -123,18 +125,18 @@ function processSave($data, $fileName, $userAddress) {
         rename(getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
         file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
-        if ($changesData = file_get_contents($data["changesurl"])) {
+        if ($changesData = file_get_contents($data->changesurl)) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
         }
 
-        $histData = empty($data["changeshistory"]) ? null : $data["changeshistory"];
+        $histData = empty($data->changeshistory) ? null : $data->changeshistory;
         if (empty($histData)) {
-            $histData = json_encode($data["history"], JSON_PRETTY_PRINT);
+            $histData = json_encode($data->history, JSON_PRETTY_PRINT);
         }
         if (!empty($histData)) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);  // write the history changes to the changes.json file
         }
-        file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data["key"], LOCK_EX);  // write the key value to the key.txt file
+        file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);  // write the key value to the key.txt file
 
         $forcesavePath = getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
         if ($forcesavePath != "") {  // if the forcesaved file version exists
@@ -151,14 +153,14 @@ function processSave($data, $fileName, $userAddress) {
 
 // file force saving process
 function processForceSave($data, $fileName, $userAddress) {
-    $downloadUri = $data["url"];
+    $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
         return $result;
     }
 
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . $data["filetype"]);  // get the extension of the downloaded file
+    $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
     // TODO [Delete in version 7.0 or higher]
     if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));    // Support for versions below 7.0
@@ -190,7 +192,7 @@ function processForceSave($data, $fileName, $userAddress) {
 
     if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
         $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-        $isSubmitForm = $data["forcesavetype"] == 3;  // SubmitForm
+        $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
         if ($isSubmitForm) {
             if ($newFileName){
@@ -213,7 +215,7 @@ function processForceSave($data, $fileName, $userAddress) {
         file_put_contents($forcesavePath, $new_data, LOCK_EX);
 
         if ($isSubmitForm) {
-            $uid = $data["actions"][0]["userid"];  // get the user id
+            $uid = $data->actions[0]->userid;  // get the user id
             createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
         }
 

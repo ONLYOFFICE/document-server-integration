@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['version'] = "1.2.0";
+$GLOBALS['version'] = "1.3.0";
 
 $GLOBALS['FILE_SIZE_MAX'] = 5242880;
 $GLOBALS['STORAGE_PATH'] = "";
@@ -48,7 +48,9 @@ $GLOBALS['ExtsDocument'] = array(".doc", ".docx", ".docm",
 
 $GLOBALS['LANGUAGES'] = array(
     'en' => 'English',
+    'hy' => 'Armenian',
     'az' => 'Azerbaijani',
+    'eu' => 'Basque',
     'be' => 'Belarusian',
     'bg' => 'Bulgarian',
     'ca' => 'Catalan',
@@ -69,6 +71,7 @@ $GLOBALS['LANGUAGES'] = array(
     'ko' => 'Korean',
     'lv' => 'Latvian',
     'lo' => 'Lao',
+    'ms' => 'Malay (Malaysia)',
     'nb' => 'Norwegian',
     'pl' => 'Polish',
     'pt' => 'Portuguese (Brazil)',
