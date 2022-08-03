@@ -76,7 +76,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" src="images/info.svg" />
+                                                <img id="info" class="info" src="images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -86,7 +86,8 @@
                                         </tr>
                                         <tr>
                                             <td valign="middle">
-                                                <span class="select-user">Language editors interface</span>
+                                                <span class="select-user">Language</span>
+                                                <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
                                                 <select class="select-user" id="language">
                                                     <% Object.keys(languages).forEach(key => { %>
                                                         <option value="<%= key %>"><%= languages[key] %></option>
