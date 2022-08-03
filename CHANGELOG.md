@@ -1,5 +1,6 @@
 # Change Log
 
+- opening file on client by directUrl
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT
 
