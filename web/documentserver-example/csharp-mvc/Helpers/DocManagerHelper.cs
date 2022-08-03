@@ -313,9 +313,10 @@ namespace OnlineEditorsExampleMVC.Helpers
         }
 
         // create the public history url
-        public static string GetHistoryDownloadUrl(string filename, string version, string file)
+        public static string GetHistoryDownloadUrl(string filename, string version, string file, Boolean isServer = true)
         {
-            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            var userAddress = "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
+            var downloadUrl = new UriBuilder(GetServerUrl(isServer))
             {
                 Path =
                     HttpRuntime.AppDomainAppVirtualPath
@@ -323,7 +324,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=downloadhistory"
                         + "&fileName=" + HttpUtility.UrlEncode(filename)
-                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
+                        + userAddress
                         + "&ver=" + version
                         + "&file="+ file
             };
@@ -331,9 +332,10 @@ namespace OnlineEditorsExampleMVC.Helpers
         }
 
         // get url to download a file
-        public static string GetDownloadUrl(string fileName)
+        public static string GetDownloadUrl(string fileName, Boolean isServer = true)
         {
-            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress) : "";
+            var downloadUrl = new UriBuilder(GetServerUrl(isServer))
             {
                 Path =
                     HttpRuntime.AppDomainAppVirtualPath
@@ -342,6 +344,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
                         + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
+                        + userAddress
             };
             return downloadUrl.ToString();
         }

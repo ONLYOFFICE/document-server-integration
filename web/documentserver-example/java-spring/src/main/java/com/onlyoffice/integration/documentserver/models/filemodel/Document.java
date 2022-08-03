@@ -39,4 +39,5 @@ public class Document {  // the parameters pertaining to the document (title, ur
     private String urlUser;  // the absolute URL that will allow the document to be saved onto the user personal computer
     private String title;  // the desired file name for the viewed or edited document which will also be used as file name when the document is downloaded
     private String url;  // the absolute URL where the source viewed or edited document is stored
+    private String directUrl;
 }

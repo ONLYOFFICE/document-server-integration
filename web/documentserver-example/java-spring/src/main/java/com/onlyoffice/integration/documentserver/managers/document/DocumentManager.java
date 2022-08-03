@@ -27,7 +27,7 @@ public interface DocumentManager {
     String getFileUri(String fileName, Boolean forDocumentServer);  // get file URL
     String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer);  // get file URL
     String getCallback(String fileName);  // get the callback URL
-    String getDownloadUrl(String fileName);  // get URL to download a file
+    String getDownloadUrl(String fileName, Boolean forDocumentServer);  // get URL to download a file
     ArrayList<Map<String, Object>> getFilesInfo();  // get file information
     ArrayList<Map<String, Object>> getFilesInfo(String fileId);  // get file information by its ID
     String versionDir(String path, Integer version, boolean historyPath);  // get the path to the file version by the history path and file version

@@ -176,6 +176,7 @@ def edit(request):
 
     fileUri = docManager.getFileUri(filename, True, request)
     fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
+    directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
@@ -233,6 +234,7 @@ def edit(request):
         'document': {
             'title': filename,
             'url': docManager.getDownloadUrl(filename, request),
+            'directUrl': directUrl,
             'fileType': ext[1:],
             'key': docKey,
             'info': infObj,
@@ -270,9 +272,9 @@ def edit(request):
                 'group': user.group
             },
             'embedded': {  # the parameters for the embedded document type
-                'saveUrl': fileUriUser,  # the absolute URL that will allow the document to be saved onto the user personal computer
-                'embedUrl': fileUriUser,  # the absolute URL to the document serving as a source file for the document embedded into the web page
-                'shareUrl': fileUriUser,  # the absolute URL that will allow other users to share this document
+                'saveUrl': directUrl,  # the absolute URL that will allow the document to be saved onto the user personal computer
+                'embedUrl': directUrl,  # the absolute URL to the document serving as a source file for the document embedded into the web page
+                'shareUrl': directUrl,  # the absolute URL that will allow other users to share this document
                 'toolbarDocked': 'top'  # the place for the embedded viewer toolbar (top or bottom)
             },
             'customization': {  # the parameters for the editor interface
@@ -291,19 +293,22 @@ def edit(request):
     # an image which will be inserted into the document
     dataInsertImage = {
         'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png',
+        'directUrl': docManager.getServerUrl(False, request) + 'static/images/logo.png'
     }
 
     # a document which will be compared with the current document
     dataCompareFile = {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx',
+        'directUrl': docManager.getServerUrl(False, request) + 'static/sample.docx'
     }
 
     # recipient data for mail merging
     dataMailMergeRecipients = {
         'fileType': 'csv',
-        'url': docManager.getServerUrl(True, request) + 'csv'
+        'url': docManager.getServerUrl(True, request) + 'csv',
+        'directUrl': docManager.getServerUrl(False, request) + 'csv'
     }
 
     # users data for mentions

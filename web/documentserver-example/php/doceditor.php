@@ -53,6 +53,7 @@
 
     $fileuri = FileUri($filename, true);
     $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
+    $directUrl = getDownloadUrl($filename, FALSE);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -89,6 +90,7 @@
         "document" => [
             "title" => $filename,
             "url" => getDownloadUrl($filename),
+            "directUrl" => $directUrl,
             "fileType" => $filetype,
             "key" => $docKey,
             "info" => [
@@ -129,9 +131,9 @@
                 "group" => $user->group
             ],
             "embedded" => [  // the parameters for the embedded document type
-                "saveUrl" => $fileuriUser,  // the absolute URL that will allow the document to be saved onto the user personal computer
-                "embedUrl" => $fileuriUser,  // the absolute URL to the document serving as a source file for the document embedded into the web page
-                "shareUrl" => $fileuriUser,  // the absolute URL that will allow other users to share this document
+                "saveUrl" => $directUrl,  // the absolute URL that will allow the document to be saved onto the user personal computer
+                "embedUrl" => $directUrl,  // the absolute URL to the document serving as a source file for the document embedded into the web page
+                "shareUrl" => $directUrl,  // the absolute URL that will allow other users to share this document
                 "toolbarDocked" => "top",  // the place for the embedded viewer toolbar (top or bottom)
             ],
             "customization" => [  // the parameters for the editor interface
@@ -150,19 +152,22 @@
     // an image for inserting
     $dataInsertImage = [
         "fileType" => "png",
-        "url" => serverPath(true) . "/css/images/logo.png"
+        "url" => serverPath(true) . "/css/images/logo.png",
+        "directUrl" => serverPath(false) . "/css/images/logo.png"
     ];
 
     // a document for comparing
     $dataCompareFile = [
         "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx"
     ];
 
     // recipients data for mail merging
     $dataMailMergeRecipients = [
         "fileType" =>"csv",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
+        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv"
     ];
     
     // users data for mentions
@@ -213,23 +218,25 @@
                 . "&type=" . $type;
     }
 
-    function getHistoryDownloadUrl($fileName, $version, $file) {
-        return serverPath(TRUE) . '/'
+    function getHistoryDownloadUrl($fileName, $version, $file, $isServer = TRUE) {
+        $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
+        return serverPath($isServer) . '/'
             . "webeditor-ajax.php"
             . "?type=history"
             . "&fileName=" . urlencode($fileName)
             . "&ver=" . $version
             . "&file=" . urlencode($file)
-            . "&userAddress=" . getClientIp();
+            . $userAddress;
     }
 
     // get url to download a file
-    function getDownloadUrl($fileName) {
-        return serverPath(TRUE) . '/'
+    function getDownloadUrl($fileName, $isServer = TRUE) {
+        $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
+        return serverPath($isServer) . '/'
             . "webeditor-ajax.php"
             . "?type=download"
             . "&fileName=" . urlencode($fileName)
-            . "&userAddress=" . getClientIp();
+            . $userAddress;
     }
 
     // get document history
@@ -271,12 +278,15 @@
                 $dataObj["fileType"] = $fileExe;
                 $dataObj["key"] = $key;
 
+                $directUrl =  $i == $curVer ? FileUri($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
                 $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if (realpath($storagePath) === $storagePath) {
-                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :  getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                    $directUrl =  $i == $curVer ? getDownloadUrl($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
                 }
 
                 $dataObj["url"] = $prevFileUrl;  // write file url to the data object
+                $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
                 $dataObj["version"] = $i;
 
                 if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
@@ -292,7 +302,8 @@
                     $dataObj["previous"] = [  // write information about previous file version to the data object
                         "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
-                        "url" => $prev["url"]
+                        "url" => $prev["url"],
+                        "directUrl" => $prev["directUrl"]
                     ];
 
                     // write the path to the diff.zip archive with differences in this file version

@@ -806,7 +806,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         var key = req.docManager.getKey(fileName);
         var url = req.docManager.getDownloadUrl(fileName, true);
-        var urlUser = req.docManager.getDownloadUrl(fileName);
+        var directUrl = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
 
         var type = req.query.type || ""; // type: embedded/mobile/desktop
@@ -851,6 +851,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     version: i,
                     key: keyVersion,
                     url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
+                    directUrl: i == countVersion ? directUrl : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`),
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -858,6 +859,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         fileType: historyData[i-2].fileType,
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
+                        directUrl:  historyData[i-2].directUrl,
                     };
                     let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
@@ -875,7 +877,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             historyData.push({
                 version: countVersion,
                 key: key,
-                url: url
+                url: url,
+                directUrl: directUrl,
             });
         }
 
@@ -892,7 +895,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 name: fileName,
                 ext: fileUtility.getFileExtension(fileName, true),
                 uri: url,
-                uriUser: urlUser,
+                directUrl: directUrl,
                 version: countVersion,
                 created: new Date().toDateString(),
                 favorite: user.favorite != null ? user.favorite : "null"
@@ -936,15 +939,18 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             historyData: historyData,
             dataInsertImage: {
                 fileType: "png",
-                url: req.docManager.getServerUrl(true) + "/images/logo.png"
+                url: req.docManager.getServerUrl(true) + "/images/logo.png",
+                directUrl: req.docManager.getServerUrl() + "/images/logo.png",
             },
             dataCompareFile: {
                 fileType: "docx",
-                url: req.docManager.getServerUrl(true) + "/assets/sample/sample.docx"
+                url: req.docManager.getServerUrl(true) + "/assets/sample/sample.docx",
+                directUrl: req.docManager.getServerUrl() + "/assets/sample/sample.docx",
             },
             dataMailMergeRecipients: {
                 fileType: "csv",
-                url: req.docManager.getServerUrl(true) + "/csv"
+                url: req.docManager.getServerUrl(true) + "/csv",
+                directUrl: req.docManager.getServerUrl() + "/csv",
             },
             usersForMentions: user.id != "uid-0" ? users.getUsersForMentions(user.id) : null,
         };
