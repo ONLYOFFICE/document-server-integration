@@ -328,12 +328,12 @@ if (typeof jQuery != "undefined") {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
                 }
-                jq(".info").on("touchend", function () {
+                jq("#info").on("touchend", function () {
                     showUserTooltip(true);
                 });
             }
     } else {
-        jq(".info").mouseover(function (event) {
+        jq("#info").mouseover(function (event) {
             if (fileList.length > 0) {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);

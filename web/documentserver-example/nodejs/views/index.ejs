@@ -76,7 +76,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" src="images/info.svg" />
+                                                <img id="info" class="info" src="images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
