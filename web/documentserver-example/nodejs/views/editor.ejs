@@ -186,20 +186,21 @@
             }
         };
 
-        config = {<%- include("config") %>,
-                events: {
-                    "onAppReady": onAppReady,
-                    "onDocumentStateChange": onDocumentStateChange,
-                    "onRequestEditRights": onRequestEditRights,
-                    "onError": onError,
-                    "onOutdatedVersion": onOutdatedVersion,
-                    "onMakeActionLink": onMakeActionLink,
-                    "onMetaChange": onMetaChange,
-                    "onRequestInsertImage": onRequestInsertImage,
-                    "onRequestCompareFile": onRequestCompareFile,
-                    "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                }
-            };
+        config = {
+            <%- include("config") %>
+        };
+        config.events = {
+            "onAppReady": onAppReady,
+            "onDocumentStateChange": onDocumentStateChange,
+            "onRequestEditRights": onRequestEditRights,
+            "onError": onError,
+            "onOutdatedVersion": onOutdatedVersion,
+            "onMakeActionLink": onMakeActionLink,
+            "onMetaChange": onMetaChange,
+            "onRequestInsertImage": onRequestInsertImage,
+            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+        };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
             config.events.onRequestHistory = onRequestHistory;
