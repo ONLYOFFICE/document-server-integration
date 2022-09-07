@@ -28,6 +28,7 @@ const docManager = require("../docManager");
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
 actionMapping[reqConsts.requestType.PutFile] = putFile;
+actionMapping[reqConsts.requestType.PutRelativeFile] = putRelativeFile;
 actionMapping[reqConsts.requestType.CheckFileInfo] = checkFileInfo;
 actionMapping[reqConsts.requestType.UnlockAndRelock] = unlockAndRelock;
 actionMapping[reqConsts.requestType.Lock] = lock;
@@ -251,6 +252,13 @@ function putFile(wopi, req, res, userHost) {
         // lock mismatch
         returnLockMismatch(res, lockManager.getLock(storagePath), "Lock mismatch");
     }
+}
+
+function putRelativeFile(wopi, req, res, userHost) {
+    let fileInfo = {
+        "HostEditUrl": 'http://localhost'
+    };
+    res.status(200).send(fileInfo);
 }
 
 // return information about the file properties, access rights and editor settings
