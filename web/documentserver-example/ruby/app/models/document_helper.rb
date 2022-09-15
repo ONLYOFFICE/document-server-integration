@@ -230,7 +230,7 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + URI::encode(file_name)
+      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
 
       return uri
     end
@@ -239,7 +239,7 @@ class DocumentHelper
     def get_historypath_uri(file_name,version,file,is_serverUrl=true)
       # for redirection to my link
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
-      uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + URI::encode(file_name) + '&ver='+ version.to_s + '&file='+ URI::encode(file) + user_host
+      uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver='+ version.to_s + '&file='+ ERB::Util.url_encode(file) + user_host
       return uri
     end
 
@@ -255,7 +255,7 @@ class DocumentHelper
     # get callback url
     def get_callback(file_name)
 
-      get_server_url(true) + '/track?fileName=' + URI::encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?fileName=' + ERB::Util.url_encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
 
     end
 
@@ -270,7 +270,7 @@ class DocumentHelper
     def get_download_url(file_name, is_serverUrl=true)
 
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
-      get_server_url(is_serverUrl) + '/download?fileName=' + URI::encode(file_name)  + user_host
+      get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name)  + user_host
 
     end
 
