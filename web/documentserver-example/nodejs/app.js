@@ -44,6 +44,7 @@ const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizat
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const urllib = require("urllib");
+const { emitWarning } = require("process");
 const verifyPeerOff = configServer.get('verify_peer_off');
 
 if(verifyPeerOff) {
@@ -128,9 +129,8 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
 
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
-    var isEmbedded = req.query.dmode;
 
-    if ((cfgSignatureEnable && cfgSignatureUseForRequest) && isEmbedded == null ) {
+    if ((cfgSignatureEnable && cfgSignatureUseForRequest)) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
@@ -212,7 +212,6 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     const form = new formidable.IncomingForm();  // create a new incoming form
     form.uploadDir = uploadDirTmp;  // and write there all the necessary parameters
     form.keepExtensions = true;
-    form.maxFileSize = configServer.get("maxFileSize");
 
     form.parse(req, function (err, fields, files) {  // parse this form 
     	if (err) {  // if an error occurs
@@ -325,7 +324,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     var fileName = fileUtility.getFileName(req.body.filename);
     var filePass = req.body.filePass ? req.body.filePass : null;
     var lang = req.body.lang ? req.body.lang : null;
-    var fileUri = req.docManager.getFileUri(fileName);
+    var fileUri = req.docManager.getDownloadUrl(fileName, true);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
     var internalFileExt = req.docManager.getInternalExtension(fileType);
@@ -349,7 +348,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
         response.end();
     };
 
-    var callback = function (err, data) {
+    var callback = async function (err, res) {
         if (err) {  // if an error occurs
             if (err.name === "ConnectionTimeoutError" || err.name === "ResponseTimeoutError") {  // check what type of error it is
                 writeResult(fileName, 0, null);  // despite the timeout errors, write the file to the result object
@@ -360,7 +359,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
         }
 
         try {
-            var responseUri = documentService.getResponseUri(data.toString());
+            var responseUri = documentService.getResponseUri(res.toString());
             var result = responseUri.key;
             var newFileUri = responseUri.value;  // get the callback url
 
@@ -371,10 +370,11 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
             var correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + internalFileExt);  // get the file name with a new extension
 
-            urllib.request(newFileUri, {method: "GET"},function(err, data) {
-                fileSystem.writeFileSync(req.docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
-            });
+            const {status, data} = await urllib.request(newFileUri, {method: "GET"});
 
+            if (status != 200) throw new Error("Conversion service returned status: " + status);
+
+            fileSystem.writeFileSync(req.docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
             fileSystem.unlinkSync(req.docManager.storagePath(fileName));  // remove file with the origin extension
 
             var userAddress = req.docManager.curUserHostAddress();
@@ -469,7 +469,7 @@ app.get("/csv", function (req, res) {  // define a handler for downloading csv f
     filestream.pipe(res);  // send file information to the response by streams
 })
 
-app.post("/track", function (req, res) {  // define a handler for tracking file changes
+app.post("/track", async function (req, res) {  // define a handler for tracking file changes
 
     req.docManager = new docManager(req, res);
 
@@ -478,11 +478,15 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
     var version = 0;
 
     // track file changes
-    var processTrack = function (response, body, fileName, userAddress) {
+    var processTrack = async function (response, body, fileName, userAddress) {
 
         // callback file saving process
-        var callbackProcessSave = function (downloadUri, body, fileName, userAddress, newFileName) {
+        var callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
             try {
+                const {status, data} = await urllib.request(downloadUri, {method: "GET"});
+
+                if (status != 200) throw new Error("Document editing service returned status: " + status);
+
                 var storagePath = req.docManager.storagePath(newFileName, userAddress);
 
                 var historyPath = req.docManager.historyPath(newFileName, userAddress);  // get the path to the history data
@@ -499,9 +503,12 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var downloadZip = body.changesurl;
                 if (downloadZip) {
                     var path_changes = req.docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
-                    urllib.request(downloadZip, {method: "GET"},function(err, data) {
+                    const {status, data} = await urllib.request(downloadZip, {method: "GET"});
+                    if (status == 200) {
                         fileSystem.writeFileSync(path_changes, data);  // write the document version differences to the archive
-                    });
+                    } else {
+                        emitWarning("Document editing service returned status: " + status);
+                    }
                 }
 
                 var changeshistory = body.changeshistory || JSON.stringify(body.history);
@@ -516,9 +523,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(req.docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
 
-                urllib.request(downloadUri, {method: "GET"},function(err, data) {
-                    fileSystem.writeFileSync(storagePath, data);
-                });
+                fileSystem.writeFileSync(storagePath, data);
 
                 var forcesavePath = req.docManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file
                 if (forcesavePath != "") {  // if this path is empty
@@ -526,6 +531,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 }
 
             } catch (ex) {
+                console.log(ex);
                 response.write("{\"error\":1}");
                 response.end();
                 return;
@@ -536,7 +542,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         }
 
         // file saving process
-        var processSave = function (downloadUri, body, fileName, userAddress) {
+        var processSave = async function (downloadUri, body, fileName, userAddress) {
 
             if (!downloadUri) {
                 response.write("{\"error\":1}");
@@ -557,18 +563,18 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 var key = documentService.generateRevisionId(downloadUri);
                 newFileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);  // get the correct file name if it already exists
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
                         if (err) {
-                            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+                            await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            callbackProcessSave(res.value, body, fileName, userAddress, fileName);
+                            await callbackProcessSave(res.value, body, fileName, userAddress, fileName);
                             return;
                         } catch (ex) {
                             console.log(ex);
-                            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+                            await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
                         }
                     });
@@ -577,12 +583,16 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     console.log(ex);
                 }
             }
-            callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
+            await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
         };
 
         // callback file force saving process
-        var callbackProcessForceSave = function (downloadUri, body, fileName, userAddress, newFileName = false){
+        var callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
+                const {status, data} = await urllib.request(downloadUri, {method: "GET"});
+
+                if (status != 200) throw new Error("Document editing service returned status: " + status);
+
                 var downloadExt = "." + body.fileType;
 
                 /// TODO [Delete in version 7.0 or higher]
@@ -610,9 +620,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     }
                 }
 
-                urllib.request(downloadUri, {method: "GET"},function(err, data) {
-                    fileSystem.writeFileSync(forcesavePath, data);
-                });
+                fileSystem.writeFileSync(forcesavePath, data);
 
                 if (isSubmitForm) {
                     var uid =body.actions[0].userid
@@ -629,7 +637,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
         }
 
         // file force saving process
-        var processForceSave = function (downloadUri, body, fileName, userAddress) {
+        var processForceSave = async function (downloadUri, body, fileName, userAddress) {
 
             if (!downloadUri) {
                 response.write("{\"error\":1}");
@@ -647,18 +655,18 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             if (downloadExt != curExt) {
                 var key = documentService.generateRevisionId(downloadUri);
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
                         if (err) {
-                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
+                            await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
                             return;
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            callbackProcessForceSave(res.value, body, fileName, userAddress, false);
+                            await callbackProcessForceSave(res.value, body, fileName, userAddress, false);
                             return;
                         } catch (ex) {
                             console.log(ex);
-                            callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
+                            await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
                             return;
                         }
                     });
@@ -667,7 +675,7 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                     console.log(ex);
                 }
             }
-            callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
+            await callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
         };
 
         if (body.status == 1) { // editing
@@ -683,10 +691,10 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
                 }
             }
         } else if (body.status == 2 || body.status == 3) { // MustSave, Corrupted
-            processSave(body.url, body, fileName, userAddress);  // save file
+            await processSave(body.url, body, fileName, userAddress);  // save file
             return;
         } else if (body.status == 6 || body.status == 7) { // MustForceSave, CorruptedForceSave
-            processForceSave(body.url, body, fileName, userAddress);  // force save file
+            await processForceSave(body.url, body, fileName, userAddress);  // force save file
             return;
         }
 
@@ -695,14 +703,14 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
     };
 
     // read request body
-    var readbody = function (request, response, fileName, userAddress) {
+    var readbody = async function (request, response, fileName, userAddress) {
         var content = "";
-        request.on('data', function (data) {  // get data from the request
+        request.on('data', async function (data) {  // get data from the request
             content += data;
         });
-        request.on('end', function () {
+        request.on('end', async function () {
             var body = JSON.parse(content);
-            processTrack(response, body, fileName, userAddress);  // and track file changes
+            await processTrack(response, body, fileName, userAddress);  // and track file changes
         });
     };
 
@@ -734,14 +742,14 @@ app.post("/track", function (req, res) {  // define a handler for tracking file 
             res.end();
             return;
         }
-        processTrack(res, body, fileName, userAddress);
+        await processTrack(res, body, fileName, userAddress);
         return;
     }
 
     if (req.body.hasOwnProperty("status")) {  // if the request body has status parameter
-        processTrack(res, req.body, fileName, userAddress);  // track file changes
+        await processTrack(res, req.body, fileName, userAddress);  // track file changes
     } else {
-        readbody(req, res, fileName, userAddress);  // otherwise, read request body first
+        await readbody(req, res, fileName, userAddress);  // otherwise, read request body first
     }
 });
 
@@ -807,8 +815,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             };
         }
         var key = req.docManager.getKey(fileName);
-        var url = req.docManager.getDownloadUrl(fileName);
-        var urlUser = path.isAbsolute(storageFolder) ? req.docManager.getDownloadUrl(fileName) + "&dmode=emb" : req.docManager.getlocalFileUri(fileName, 0, false);
+        var url = req.docManager.getDownloadUrl(fileName, true);
+        var urlUser = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
 
         var type = req.query.type || ""; // type: embedded/mobile/desktop
@@ -852,7 +860,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                     fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
-                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
+                    url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
@@ -861,7 +869,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                         key: historyData[i-2].key,
                         url: historyData[i-2].url,
                     };
-                    let changesUrl = `${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+                    let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 
@@ -909,6 +917,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 templates: user.templates ? templates : null,
                 isEdit: canEdit && (mode == "edit" || mode == "view" || mode == "filter" || mode == "blockcontent"),
                 review: canEdit && (mode == "edit" || mode == "review"),
+                chat: userid != "uid-0",
                 comment: mode != "view" && mode != "fillForms" && mode != "embedded" && mode != "blockcontent",
                 fillForms: mode != "view" && mode != "comment" && mode != "embedded" && mode != "blockcontent",
                 modifyFilter: mode != "filter",
@@ -976,6 +985,12 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 app.post("/rename", function (req, res) { //define a handler for renaming file
 
     var newfilename = req.body.newfilename;
+    var origExt = req.body.ext;
+    var curExt = fileUtility.getFileExtension(newfilename, true);
+    if (curExt !== origExt) {
+        newfilename += '.' + origExt;
+    }
+
     var dockey = req.body.dockey;
     var meta = {title: newfilename};
 

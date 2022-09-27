@@ -177,7 +177,7 @@ class HomeController < ApplicationController
       # add headers to the response to specify the page parameters
       response.headers['Content-Length'] = File.size(file_path).to_s
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file)
 
       send_file file_path, :x_sendfile => true
     rescue => ex
@@ -262,7 +262,7 @@ class HomeController < ApplicationController
     # add headers to the response to specify the page parameters
     response.headers['Content-Length'] = File.size(csvPath).to_s
     response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
-    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
 
     send_file csvPath, :x_sendfile => true
   end
@@ -295,7 +295,7 @@ class HomeController < ApplicationController
       # add headers to the response to specify the page parameters
       response.headers['Content-Length'] = File.size(file_path).to_s
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + URI.escape(file_name, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
 
       send_file file_path, :x_sendfile => true
     rescue => ex
@@ -351,6 +351,13 @@ class HomeController < ApplicationController
       body = JSON.parse(request.body.read)
       dockey = body["dockey"]
       newfilename = body["newfilename"]
+
+      orig_ext = '.' + body["ext"]
+      cur_ext = File.extname(newfilename).downcase
+      if orig_ext != cur_ext
+        newfilename += orig_ext
+      end
+
       meta = {
         :title => newfilename
       }

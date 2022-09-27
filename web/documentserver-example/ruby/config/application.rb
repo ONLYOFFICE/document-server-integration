@@ -26,7 +26,7 @@ module OnlineEditorsExampleRuby
       end
     end
 
-    Rails.configuration.version="1.2.0"
+    Rails.configuration.version="1.3.0"
 
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
@@ -62,7 +62,7 @@ module OnlineEditorsExampleRuby
       'nl' => 'Dutch',
       'fi' => 'Finnish',
       'fr' => 'French',
-      'gl' => 'Galego'
+      'gl' => 'Galego',
       'de' => 'German',
       'el' => 'Greek',
       'hu' => 'Hungarian',

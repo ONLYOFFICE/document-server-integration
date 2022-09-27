@@ -128,7 +128,7 @@
                       <% 
                         docs.each { |d|
                           isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
-                          editUrl = "editor?fileName=#{URI::encode(d)}"
+                          editUrl = "editor?fileName=#{ERB::Util.url_encode(d)}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
                           <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
@@ -221,7 +221,7 @@
                                 </a>
                             </td>
                             <td class="contentCells contentCells-shift contentCells-icon downloadContentCellShift">
-                              <a href="<%= "download?fileName=#{URI::encode(d)}" %>">
+                              <a href="<%= "download?fileName=#{ERB::Util.url_encode(d)}" %>">
                                 <img class="icon-download" src="assets/download.svg" alt="Download" title="Download" />
                               </a>
                             </td>

@@ -207,7 +207,7 @@ namespace OnlineEditorsExample
             try
             {
                 var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress));
+                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
                 var histDir = _Default.HistoryDir(path);
 
                 if (File.Exists(path)) File.Delete(path);  // delete file
@@ -394,6 +394,15 @@ namespace OnlineEditorsExample
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
             var newFileName = (string) body["newfilename"];
             var docKey = (string) body["dockey"];
+
+            var origExt = '.' + (string) body["ext"];
+            var curExt = Path.GetExtension(newFileName).ToLower();
+
+            if (string.Compare(origExt, curExt, true) != 0)
+            {
+                newFileName += origExt;
+            }
+
             var meta =  new Dictionary<string, object>() {
                 { "title", newFileName }
             };

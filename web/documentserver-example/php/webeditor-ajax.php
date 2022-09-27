@@ -215,22 +215,24 @@ function track() {
 
     // get the body of the post request and check if it is correct
     $data = readBody();
-    if (!empty($data["error"])){
+
+    if (!empty($data->error)){
         return $data;
     }
 
     global $_trackerStatus;
-    $status = $_trackerStatus[$data["status"]];  // get status from the request body
+    $status = $_trackerStatus[$data->status];  // get status from the request body
 
     $userAddress = $_GET["userAddress"];
     $fileName = basename($_GET["fileName"]);
 
+    sendlog("   CommandRequest status: " . $data->status, "webedior-ajax.log");
     switch ($status) {
         case "Editing":  // status == 1
-            if ($data["actions"] && $data["actions"][0]["type"] == 0) {   // finished edit
-                $user = $data["actions"][0]["userid"];  // the user who finished editing
-                if (array_search($user, $data["users"]) === FALSE) {
-                    $commandRequest = commandRequest("forcesave", $data["key"]);  // create a command request with the forcasave method
+            if ($data->actions && $data->actions[0]->type == 0) {   // finished edit
+                $user = $data->actions[0]->userid;  // the user who finished editing
+                if (array_search($user, $data->users) === FALSE) {
+                    $commandRequest = commandRequest("forcesave", $data->key);  // create a command request with the forcasave method
                     sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
                 }
             }
@@ -259,7 +261,7 @@ function convert() {
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
     // check if the file with such an extension can be converted
-    if (in_array("." + $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
+    if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $post["fileUri"];
         if ($fileUri == NULL || $fileUri == "") {
@@ -469,6 +471,13 @@ function delTree($dir) {
 function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
+
+    $curExt = strtolower(array_pop(explode('.', $newfilename)));
+    $origExt = $post["ext"];
+    if($origExt !== $curExt){
+        $newfilename .= '.' . $origExt;
+    }
+
     $dockey = $post["dockey"];
     $meta = ["title" => $newfilename];
 
