@@ -138,6 +138,7 @@ public class EditorController {
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("directUrl", storagePathBuilder.getServerUrl(false) + "/css/img/logo.png");
 
         // check if the document token is enabled
         if(jwtManager.tokenEnabled()){
@@ -152,6 +153,7 @@ public class EditorController {
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
+        dataCompareFile.put("directUrl", storagePathBuilder.getServerUrl(false) + "/assets?name=sample.docx");
 
         // check if the document token is enabled
         if(jwtManager.tokenEnabled()){
@@ -166,6 +168,7 @@ public class EditorController {
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
+        dataMailMergeRecipients.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
 
         // check if the document token is enabled
         if(jwtManager.tokenEnabled()){

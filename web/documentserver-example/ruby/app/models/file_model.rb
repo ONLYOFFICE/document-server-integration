@@ -71,8 +71,8 @@ class FileModel
   end
 
   # get url to download a file
-  def download_url
-    DocumentHelper.get_download_url(@file_name)
+  def download_url(is_serverUrl=true)
+    DocumentHelper.get_download_url(@file_name, is_serverUrl)
   end
 
   # get current user host address
@@ -110,6 +110,7 @@ class FileModel
       :document => {
         :title => @file_name,
         :url => download_url,
+        :directUrl => download_url(false),
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
@@ -138,6 +139,10 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
+        :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {
+          :mode => "strict", 
+          :change => false
+        } : nil,
         :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => {  # the user currently viewing or editing the document
@@ -146,9 +151,9 @@ class FileModel
           :group => @user.group
         },
         :embedded => {  # the parameters for the embedded document type
-          :saveUrl => file_uri_user,  # the absolute URL that will allow the document to be saved onto the user personal computer
-          :embedUrl => file_uri_user,  # the absolute URL to the document serving as a source file for the document embedded into the web page
-          :shareUrl => file_uri_user,  # the absolute URL that will allow other users to share this document
+          :saveUrl => download_url(false),  # the absolute URL that will allow the document to be saved onto the user personal computer
+          :embedUrl => download_url(false),  # the absolute URL to the document serving as a source file for the document embedded into the web page
+          :shareUrl => download_url(false),  # the absolute URL that will allow other users to share this document
           :toolbarDocked => "top"  # the place for the embedded viewer toolbar (top or bottom)
         },
         :customization => {  # the parameters for the editor interface
@@ -219,6 +224,7 @@ class FileModel
         dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
         dataObj["version"] = i
 
         if (i > 1)  # check if the version number is greater than 1
@@ -240,7 +246,8 @@ class FileModel
           dataObj["previous"] = {  # write key and url information about previous file version
             :fileType => prev["fileType"],
             :key => prev["key"],
-            :url => prev["url"]
+            :url => prev["url"],
+            :directUrl => prev["directUrl"]
           }
 
           # write the path to the diff.zip archive with differences in this file version
@@ -272,7 +279,8 @@ class FileModel
   def get_insert_image 
     insert_image = {
       :fileType => "png",  # image file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png"  # server url to the image
+      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png",  # server url to the image
+      :directUrl => DocumentHelper.get_server_url(false) + "/assets/logo.png"  # direct url to the image
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
@@ -286,7 +294,8 @@ class FileModel
   def get_compare_file
     compare_file = {
       :fileType => "docx",  # file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"  # server url to the compared file
+      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx",  # server url to the compared file
+      :directUrl => DocumentHelper.get_server_url(false) + "/assets/sample/sample.docx"  # direct url to the compared file
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
@@ -300,7 +309,8 @@ class FileModel
   def dataMailMergeRecipients
     dataMailMergeRecipients = {
       :fileType => "csv",  # file type
-      :url => DocumentHelper.get_server_url(true) + "/csv"  # server url to the mail merge recipients file
+      :url => DocumentHelper.get_server_url(true) + "/csv",  # server url to the mail merge recipients file
+      :directUrl => DocumentHelper.get_server_url(false) + "/csv"  # direct url to the mail merge recipients file
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
