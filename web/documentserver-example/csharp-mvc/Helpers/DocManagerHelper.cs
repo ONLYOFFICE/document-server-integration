@@ -334,7 +334,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get url to download a file
         public static string GetDownloadUrl(string fileName, Boolean isServer = true)
         {
-            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress) : "";
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)) : "";
             var downloadUrl = new UriBuilder(GetServerUrl(isServer))
             {
                 Path =
@@ -343,7 +343,6 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
                         + userAddress
             };
             return downloadUrl.ToString();
