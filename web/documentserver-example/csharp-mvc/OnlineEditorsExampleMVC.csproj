@@ -185,10 +185,12 @@
     <Content Include="assets\AUTHORS.md" />
     <Content Include="assets\LICENSE" />
     <Content Include="assets\new\new.docx" />
+    <Content Include="assets\new\new.docxf" />
     <Content Include="assets\new\new.pptx" />
     <Content Include="assets\new\new.xlsx" />
     <Content Include="assets\sample\csv.csv" />
     <Content Include="assets\sample\sample.docx" />
+    <Content Include="assets\sample\sample.docxf" />
     <Content Include="assets\sample\sample.pptx" />
     <Content Include="assets\sample\sample.xlsx" />
     <None Include="packages.config" />
