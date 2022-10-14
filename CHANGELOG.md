@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.4.0
 - nodejs: option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
