@@ -1,9 +1,9 @@
 # Change Log
 
-- java spring: option to send directUrl
 - nodejs: referenceData
 
 ## 1.4.0
+- java spring: option to send directUrl
 - nodejs: option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
@@ -15,7 +15,6 @@
 - changed jwt implementation in csharp, csharp-mvc, php, ruby
 
 ## 1.2.0
-
 - ruby v3.0
 - set filetype in setHistoryData
 - read filetype from input request
@@ -31,10 +30,8 @@
 - ignore certificate
 
 ## 1.1.0
-
 - creating docxf
 - opening docxf, oform
-
 
 ## 1.0.0
 - added java spring
