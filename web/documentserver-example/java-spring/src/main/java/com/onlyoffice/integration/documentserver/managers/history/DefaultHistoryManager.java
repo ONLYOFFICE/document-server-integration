@@ -91,8 +91,10 @@ public class DefaultHistoryManager implements HistoryManager {
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl() :
                         documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
-                dataObj.put("directUrl", i == curVer ? document.getDirectUrl() :
-                        documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), false));
+                if (!document.getDirectUrl().equals("")) {
+                    dataObj.put("directUrl", i == curVer ? document.getDirectUrl() :
+                            documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), false));
+                }
                 dataObj.put("version", i);
 
                 if (i > 1) {  //check if the version number is greater than 1
@@ -111,7 +113,9 @@ public class DefaultHistoryManager implements HistoryManager {
                     prevInfo.put("fileType", prev.get("fileType"));
                     prevInfo.put("key", prev.get("key"));  // write key and URL information about previous file version
                     prevInfo.put("url", prev.get("url"));
-                    prevInfo.put("directUrl", prev.get("directUrl"));
+                    if (!document.getDirectUrl().equals("")) {
+                        prevInfo.put("directUrl", prev.get("directUrl"));
+                    }
                     dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                     // write the path to the diff.zip archive with differences in this file version
                     Integer verdiff = i - 1;
