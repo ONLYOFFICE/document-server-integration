@@ -80,6 +80,7 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
                     .fileName(fileName)
                     .permission(updatePermissions(userPermissions, action, canEdit))
                     .favorite(wrapper.getUser().getFavorite())
+                    .isEnableDirectUrl(wrapper.getIsEnableDirectUrl())
                     .build();
 
             defaultDocumentConfigurer.configure(fileModel.getDocument(), documentWrapper);  // define the document configurer

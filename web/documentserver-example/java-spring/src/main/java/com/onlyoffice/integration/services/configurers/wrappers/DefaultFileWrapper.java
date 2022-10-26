@@ -36,4 +36,5 @@ public class DefaultFileWrapper {
     private Action action;
     private String actionData;
     private Boolean canEdit;
+    private Boolean isEnableDirectUrl;
 }

@@ -137,7 +137,7 @@
                                         <tr th:each="file,iState : ${files}" class="tableRow" th:title="${files[iState.index].getName() + versions[iState.index]}">
                                             <td class="contentCells">
                                                 <a class="stored-edit" th:classappend="${docTypes[iState.index]}"
-                                                   th:href="@{/editor(fileName=${files[iState.index].getName()})}" target="_blank">
+                                                   th:href="@{/editor(fileName=${files[iState.index].getName()}, directUrl=${directUrl})}" target="_blank">
                                                 <span th:text="${files[iState.index].getName()}"></span>
                                                 </a>
                                             </td>
