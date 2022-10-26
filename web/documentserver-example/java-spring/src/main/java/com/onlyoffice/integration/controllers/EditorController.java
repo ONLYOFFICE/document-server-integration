@@ -77,6 +77,7 @@ public class EditorController {
                         @RequestParam(value = "action", required = false) String actionParam,
                         @RequestParam(value = "type", required = false) String typeParam,
                         @RequestParam(value = "actionLink", required = false) String actionLink,
+                        @RequestParam(value = "directUrl", required = false) Boolean directUrl,
                         @CookieValue(value = "uid") String uid,
                         @CookieValue(value = "ulang") String lang,
                         Model model) throws JsonProcessingException {
@@ -105,6 +106,7 @@ public class EditorController {
                         .action(action)
                         .user(user)
                         .actionData(actionLink)
+                        .isEnableDirectUrl(directUrl)
                         .build()
         );
 

@@ -28,4 +28,5 @@ public class DefaultDocumentWrapper {
     private Permission permission;
     private String fileName;
     private Boolean favorite;
+    private Boolean isEnableDirectUrl;
 }

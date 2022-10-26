@@ -68,7 +68,8 @@ public class IndexController {
     private String langs;
 
     @GetMapping("${url.index}")
-    public String index(Model model){
+    public String index(@RequestParam(value = "directUrl", required = false) Boolean directUrl,
+                        Model model){
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
@@ -107,6 +108,7 @@ public class IndexController {
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
+        model.addAttribute("directUrl", directUrl);
 
         return "index.html";
     }
