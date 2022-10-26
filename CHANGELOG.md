@@ -6,6 +6,10 @@
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT
 
+## 1.3.1
+- charp: fix references
+- ruby: update rails 
+
 ## 1.3.0
 - update empty files
 - anonymous without chat
