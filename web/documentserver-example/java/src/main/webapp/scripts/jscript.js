@@ -16,10 +16,23 @@
  *
  */
 
+var directUrl;
+
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
+    directUrl = getUrlVars()["directUrl"] == "true";
+
     mustReload = false;
+
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
+    else
+        directUrl = jq("#directUrl").prop("checked");
+
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
+    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -218,7 +231,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=edit&fileName=" + fileId;
+        var url = UrlEditor + "?mode=edit&fileName=" + fileId + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -226,7 +239,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -234,7 +247,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId;
+        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -287,6 +300,17 @@ if (typeof jQuery !== "undefined") {
         }
     };
 
+    function getUrlVars() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    };
+
     var fileList = jq("tr.tableRow");
 
     var mouseIsOverTooltip = false;
@@ -302,7 +326,7 @@ if (typeof jQuery !== "undefined") {
                 });
             }
     } else {
-        jq(".info").mouseover(function (event) {
+        jq("#info").mouseover(function (event) {
             if (fileList.length > 0) {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);

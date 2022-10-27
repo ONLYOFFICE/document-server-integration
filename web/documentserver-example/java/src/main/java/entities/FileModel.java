@@ -40,7 +40,7 @@ public class FileModel
     public String token;
 
     // create file model
-    public FileModel(String fileName, String lang, String actionData, User user)
+    public FileModel(String fileName, String lang, String actionData, User user, Boolean isEnableDirectUrl)
     {
         if (fileName == null) fileName = "";
         fileName = fileName.trim();  // remove extra spaces in the file name
@@ -52,7 +52,7 @@ public class FileModel
         document = new Document();
         document.title = fileName;
         document.url = DocumentManager.GetDownloadUrl(fileName, true);  // get file url
-        document.directUrl = DocumentManager.GetDownloadUrl(fileName, false);  // get direct url
+        document.directUrl = isEnableDirectUrl ? DocumentManager.GetDownloadUrl(fileName, false) : "";  // get direct url
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -185,7 +185,9 @@ public class FileModel
                     dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
                     dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), true));
-                    dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), false));
+                    if (!document.directUrl.equals("")) {
+                        dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), false));
+                    }
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
