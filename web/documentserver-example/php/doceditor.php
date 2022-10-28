@@ -26,6 +26,7 @@
     $filename;
 
     $user = getUser($_GET["user"]);
+    $isEnableDirectUrl = $_GET["directUrl"] != null ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
     // get the file url and upload it
     $externalUrl = $_GET["fileUrl"];
@@ -90,7 +91,7 @@
         "document" => [
             "title" => $filename,
             "url" => getDownloadUrl($filename),
-            "directUrl" => $directUrl,
+            "directUrl" => $isEnableDirectUrl ? $directUrl : "",
             "fileType" => $filetype,
             "key" => $docKey,
             "info" => [
@@ -150,24 +151,33 @@
     ];
 
     // an image for inserting
-    $dataInsertImage = [
+    $dataInsertImage = $isEnableDirectUrl ? [
         "fileType" => "png",
         "url" => serverPath(true) . "/css/images/logo.png",
         "directUrl" => serverPath(false) . "/css/images/logo.png"
+    ] : [
+        "fileType" => "png",
+        "url" => serverPath(true) . "/css/images/logo.png"
     ];
 
     // a document for comparing
-    $dataCompareFile = [
+    $dataCompareFile = $isEnableDirectUrl ? [
         "fileType" => "docx",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
         "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx"
+    ] : [
+        "fileType" => "docx",
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
     ];
 
     // recipients data for mail merging
-    $dataMailMergeRecipients = [
+    $dataMailMergeRecipients = $isEnableDirectUrl ? [
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
         "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv"
+    ]  : [
+        "fileType" =>"csv",
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
     ];
     
     // users data for mentions
@@ -240,7 +250,7 @@
     }
 
     // get document history
-    function getHistory($filename, $filetype, $docKey, $fileuri) {
+    function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl) {
         $storagePath = $GLOBALS['STORAGE_PATH'];
         $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
@@ -282,11 +292,15 @@
                 $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if (realpath($storagePath) === $storagePath) {
                     $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
-                    $directUrl =  $i == $curVer ? getDownloadUrl($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
+                    if ($isEnableDirectUrl) {
+                        $directUrl =  $i == $curVer ? getDownloadUrl($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
+                    }
                 }
 
                 $dataObj["url"] = $prevFileUrl;  // write file url to the data object
-                $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
+                if ($isEnableDirectUrl) {
+                    $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
+                }
                 $dataObj["version"] = $i;
 
                 if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
@@ -299,11 +313,15 @@
                     $obj["user"] = $change ? $change["user"] : null;
 
                     $prev = $histData[$i - 2];  // get the history data from the previous file version
-                    $dataObj["previous"] = [  // write information about previous file version to the data object
+                    $dataObj["previous"] = $isEnableDirectUrl ? [  // write information about previous file version to the data object
                         "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
                         "url" => $prev["url"],
                         "directUrl" => $prev["directUrl"]
+                    ] : [
+                        "fileType" => $prev["fileType"],
+                        "key" => $prev["key"],
+                        "url" => $prev["url"]
                     ];
 
                     // write the path to the diff.zip archive with differences in this file version
@@ -529,7 +547,7 @@
             };
 
             <?php
-                $out = getHistory($filename, $filetype, $docKey, $fileuri);
+                $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
                 $history = $out[0];
                 $historyData = $out[1];
             ?>
