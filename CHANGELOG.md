@@ -2,6 +2,7 @@
 
 
 ## 1.4.0
+- ruby: option to send directUrl
 - java: option to send directUrl
 - java spring: option to send directUrl
 - nodejs: option to send directUrl
