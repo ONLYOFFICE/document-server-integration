@@ -2,6 +2,7 @@
 
 
 ## 1.4.0
+- php: option to send directUrl
 - ruby: option to send directUrl
 - java: option to send directUrl
 - java spring: option to send directUrl
