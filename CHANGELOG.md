@@ -2,6 +2,7 @@
 
 
 ## 1.4.0
+- java: option to send directUrl
 - java spring: option to send directUrl
 - nodejs: option to send directUrl
 - opening file on client by directUrl
