@@ -3,6 +3,7 @@
 - nodejs: referenceData
 
 ## 1.4.0
+- python: option to send directUrl
 - php: option to send directUrl
 - ruby: option to send directUrl
 - java: option to send directUrl
