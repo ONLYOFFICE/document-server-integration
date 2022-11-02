@@ -70,7 +70,7 @@
                                             <a class="try-editor form" data-type="docxf">Form template</a>
                                         </li>
                                     </ul>
-                                    <label class="create-sample">
+                                    <label class="side-option">
                                         <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                     </label>
                                 </div>
