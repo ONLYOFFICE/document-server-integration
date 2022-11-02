@@ -3,13 +3,7 @@
 - nodejs: referenceData
 
 ## 1.4.0
-- csharp-mvc: option to send directUrl
-- python: option to send directUrl
-- php: option to send directUrl
-- ruby: option to send directUrl
-- java: option to send directUrl
-- java spring: option to send directUrl
-- nodejs: option to send directUrl
+- option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT
