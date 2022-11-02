@@ -442,5 +442,11 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
             return languages;
         }
+
+        public static string GetDirectUrl()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return isEnabledDirectUrl != null ? isEnabledDirectUrl : "false";
+        }
     }
 }
