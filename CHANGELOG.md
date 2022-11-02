@@ -2,6 +2,7 @@
 
 
 ## 1.4.0
+- csharp-mvc: option to send directUrl
 - python: option to send directUrl
 - php: option to send directUrl
 - ruby: option to send directUrl
