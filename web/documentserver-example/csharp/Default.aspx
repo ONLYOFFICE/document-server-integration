@@ -73,7 +73,7 @@
                                                 <a class="try-editor form" data-type="docxf">Form template</a>
                                             </li>
                                         </ul>
-                                        <label class="create-sample">
+                                        <label class="side-option">
                                             <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                         </label>
                                     </div>
@@ -109,6 +109,14 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="app_themes/images/info.svg" />
+                                            </label>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -158,7 +166,8 @@
                                                 <tbody>
                                                 <%  foreach (var storedFile in storedFiles)
                                                     {
-                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                        var directUrlParam = GetDirectUrlParam();
+                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name) + directUrlParam;
                                                         var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
                                                         var canEdit = EditedExts.Contains(ext);
