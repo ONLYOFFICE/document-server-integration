@@ -626,5 +626,11 @@ namespace OnlineEditorsExample
             }
             return languages;
         }
+
+        public static string GetDirectUrlParam()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return "&directUrl=" + (isEnabledDirectUrl != null ? isEnabledDirectUrl : "false");
+        }
     }
 }

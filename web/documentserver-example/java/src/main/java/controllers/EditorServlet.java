@@ -47,6 +47,7 @@ public class EditorServlet extends HttpServlet
         String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
         String fileExt = request.getParameter("fileExt");
         String sample = request.getParameter("sample");
+        Boolean isEnableDirectUrl = Boolean.valueOf(request.getParameter("directUrl"));
 
         // check if there is sample data in the request
         Boolean sampleData = (sample == null || sample.isEmpty()) ? false : sample.toLowerCase().equals("true");
@@ -70,7 +71,7 @@ public class EditorServlet extends HttpServlet
         }
 
         // create file model (get all the necessary parameters from cookies)
-        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user);
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user, isEnableDirectUrl);
         // change type parameter if needed
         file.changeType(request.getParameter("mode"), request.getParameter("type"), user, fileName);
 
@@ -78,19 +79,25 @@ public class EditorServlet extends HttpServlet
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
-        dataInsertImage.put("directUrl", DocumentManager.GetServerUrl(false) + "/css/img/logo.png");
+        if (isEnableDirectUrl) {
+            dataInsertImage.put("directUrl", DocumentManager.GetServerUrl(false) + "/css/img/logo.png");
+        }
 
         // a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
-        dataCompareFile.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
+        if (isEnableDirectUrl) {
+            dataCompareFile.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
+        }
 
         // recipients data for mail merging
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
-        dataMailMergeRecipients.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=csv");
+        if (isEnableDirectUrl) {
+            dataMailMergeRecipients.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=csv");
+        }
 
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);

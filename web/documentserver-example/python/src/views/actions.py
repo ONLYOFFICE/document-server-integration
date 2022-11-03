@@ -171,6 +171,7 @@ def rename(request):
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
+    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true")  if 'directUrl' in request.GET else False
 
     ext = fileUtils.getFileExt(filename)
 
@@ -234,7 +235,7 @@ def edit(request):
         'document': {
             'title': filename,
             'url': docManager.getDownloadUrl(filename, request),
-            'directUrl': directUrl,
+            'directUrl': directUrl if isEnableDirectUrl else "",
             'fileType': ext[1:],
             'key': docKey,
             'info': infObj,
@@ -295,6 +296,9 @@ def edit(request):
         'fileType': 'png',
         'url': docManager.getServerUrl(True, request) + 'static/images/logo.png',
         'directUrl': docManager.getServerUrl(False, request) + 'static/images/logo.png'
+    } if isEnableDirectUrl else {
+        'fileType': 'png',
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
     }
 
     # a document which will be compared with the current document
@@ -302,6 +306,9 @@ def edit(request):
         'fileType': 'docx',
         'url': docManager.getServerUrl(True, request) + 'static/sample.docx',
         'directUrl': docManager.getServerUrl(False, request) + 'static/sample.docx'
+    } if isEnableDirectUrl else {
+        'fileType': 'docx',
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
     }
 
     # recipient data for mail merging
@@ -309,6 +316,9 @@ def edit(request):
         'fileType': 'csv',
         'url': docManager.getServerUrl(True, request) + 'csv',
         'directUrl': docManager.getServerUrl(False, request) + 'csv'
+    } if isEnableDirectUrl else {
+        'fileType': 'csv',
+        'url': docManager.getServerUrl(True, request) + 'csv'
     }
 
     # users data for mentions
@@ -320,7 +330,7 @@ def edit(request):
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
         dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
 
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)  # get the document history
+    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format

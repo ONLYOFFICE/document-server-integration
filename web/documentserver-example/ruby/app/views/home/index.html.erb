@@ -44,7 +44,7 @@
                         <a class="try-editor form" data-type="docxf">Form template</a>
                       </li>
                   </ul>
-                  <label class="create-sample">
+                  <label class="side-option">
                       <input id="createSample" class="checkbox" type="checkbox" />With sample content
                   </label>
               </div>
@@ -60,7 +60,7 @@
                   <tr>
                     <td valign="middle">
                       <span class="select-user">Username</span>
-                      <img class="info" data-id="user" src="assets/info.svg" />
+                      <img id="info" data-id="user" src="assets/info.svg" />
                       <select class="select-user" id="user">
                         <% for user in Users.get_all_users() do %>
                           <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
@@ -78,6 +78,14 @@
                       </select>
                     </td>
                   </tr>
+                  <tr>
+                    <td valign="middle">
+                      <label class="side-option">
+                        <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                        <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="assets/info.svg" />
+                      </label>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -87,6 +95,7 @@
           <%
             DocumentHelper.init(request.remote_ip, request.base_url)
             docs = DocumentHelper.get_stored_files(nil)
+            directUrl = request.params[:directUrl]
           %>
           <div class="main-panel">
             <div id="portal-info" style="display: <%= docs.length > 0 ? "none" : "table-cell" %>">
@@ -128,7 +137,7 @@
                       <% 
                         docs.each { |d|
                           isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
-                          editUrl = "editor?fileName=#{ERB::Util.url_encode(d)}"
+                          editUrl = directUrl == nil ? "editor?fileName=#{ERB::Util.url_encode(d)}" : "editor?fileName=#{ERB::Util.url_encode(d)}&directUrl=#{directUrl}"
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
                           <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">

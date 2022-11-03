@@ -59,7 +59,7 @@
                                         <a class="try-editor form" data-type="docxf">Form template</a>
                                     </li>
                                 </ul>
-                                <label class="create-sample">
+                                <label class="side-option">
                                     <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                 </label>
                             </div>
@@ -75,7 +75,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" src="css/img/info.svg"/>
+                                            <img id="info" class="info" src="css/img/info.svg"/>
                                             <select class="select-user" id="user">
                                                 <option th:each="user : ${users}"
                                                         th:value="${user.id}"
@@ -91,6 +91,14 @@
                                                         th:value="${language.key}"
                                                         th:text="${language.value}"/>
                                             </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="css/img/info.svg" />
+                                            </label>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -129,43 +137,50 @@
                                         <tr th:each="file,iState : ${files}" class="tableRow" th:title="${files[iState.index].getName() + versions[iState.index]}">
                                             <td class="contentCells">
                                                 <a class="stored-edit" th:classappend="${docTypes[iState.index]}"
-                                                   th:href="@{/editor(fileName=${files[iState.index].getName()})}" target="_blank">
+                                                   th:with="directUrl=${directUrl}"
+                                                   th:href="@{/editor(fileName=${files[iState.index].getName()}, __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                 <span th:text="${files[iState.index].getName()}"></span>
                                                 </a>
                                             </td>
                                             <th:block th:if="${filesEditable[iState.index]}">
                                                 <td class="contentCells contentCells-icon">
-                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='edit')}" target="_blank">
+                                                    <a th:with="directUrl=${directUrl}"
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='edit', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                     <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                     </a>
                                                 </td>
                                                 <td class="contentCells contentCells-icon">
-                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='edit')}" target="_blank">
+                                                    <a th:with="directUrl=${directUrl}"
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='edit', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                     <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                     </a>
                                                 </td>
                                                 <td class="contentCells contentCells-icon">
-                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment')}" target="_blank">
+                                                    <a th:with="directUrl=${directUrl}"
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                         <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                     </a>
                                                 </td>
                                                     <div th:if="${docTypes[iState.index]} eq 'word'">
                                                         <td class="contentCells contentCells-icon">
-                                                            <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='review')}" target="_blank">
+                                                            <a th:with="directUrl=${directUrl}"
+                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='review', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                             <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                             </a>
                                                         </td>
                                                     </div>
                                                     <div th:if="${docTypes[iState.index]} eq 'cell'">
                                                         <td class="contentCells contentCells-icon">
-                                                            <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='filter')}" target="_blank">
+                                                            <a th:with="directUrl=${directUrl}"
+                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='filter', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                             <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                             </a>
                                                         </td>
                                                     </div>
                                                     <div th:if="${docTypes[iState.index]} eq 'word'">
                                                         <td class="contentCells contentCells-icon">
-                                                            <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='blockcontent')}" target="_blank">
+                                                            <a th:with="directUrl=${directUrl}"
+                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='blockcontent', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                             <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                             </a>
                                                         </td>
@@ -178,7 +193,8 @@
                                                     </div>
                                                     <div th:if="${isFillFormDoc[iState.index]}">
                                                         <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                            <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms')}" target="_blank">
+                                                            <a th:with="directUrl=${directUrl}"
+                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                                 <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                             </a>
                                                         </td>
@@ -190,7 +206,8 @@
                                             <th:block th:if="${isFillFormDoc[iState.index] and not filesEditable[iState.index]}">
                                                 <td class="contentCells contentCells-icon "></td>
                                                 <td class="contentCells contentCells-icon">
-                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='fillForms')}" target="_blank">
+                                                    <a th:with="directUrl=${directUrl}"
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='fillForms', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                         <img src="css/img/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
                                                     </a>
                                                 </td>
@@ -198,7 +215,8 @@
                                                 <td class="contentCells contentCells-icon "></td>
                                                 <td class="contentCells contentCells-icon "></td>
                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                    <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms')}" target="_blank">
+                                                    <a th:with="directUrl=${directUrl}"
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                         <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                     </a>
                                                 </td>
@@ -207,17 +225,20 @@
                                                 <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                             </th:block>
                                             <td class="contentCells contentCells-icon firstContentCellViewers">
-                                                <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='view')}" target="_blank">
+                                                <a th:with="directUrl=${directUrl}"
+                                                   th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='view', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                 <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                 </a>
                                             </td>
                                             <td class="contentCells contentCells-icon">
-                                                <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='view')}" target="_blank">
+                                                <a th:with="directUrl=${directUrl}"
+                                                   th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='view', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                 <img src="css/img/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                 </a>
                                             </td>
                                             <td class="contentCells contentCells-icon contentCells-shift">
-                                                <a th:href="@{/editor(fileName=${files[iState.index].getName()},type='embedded',action='embedded')}" target="_blank">
+                                                <a th:with="directUrl=${directUrl}"
+                                                   th:href="@{/editor(fileName=${files[iState.index].getName()},type='embedded',action='embedded', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
                                                 <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                 </a>
                                             </td>

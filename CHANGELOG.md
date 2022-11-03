@@ -3,7 +3,7 @@
 - nodejs: referenceData
 
 ## 1.4.0
-- nodejs: option to send directUrl
+- option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT
@@ -35,7 +35,6 @@
 ## 1.1.0
 - creating docxf
 - opening docxf, oform
-
 
 ## 1.0.0
 - added java spring

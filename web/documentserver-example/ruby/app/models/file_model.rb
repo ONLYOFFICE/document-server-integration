@@ -16,7 +16,7 @@
 
 class FileModel
 
-  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data
+  attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data, :direct_url
 
   # set file parameters
   def initialize(attributes = {})
@@ -27,6 +27,7 @@ class FileModel
     @lang = attributes[:lang]
     @user = attributes[:user]
     @action_data = attributes[:action_data]
+    @direct_url = attributes[:direct_url]
   end
 
   def type
@@ -110,7 +111,7 @@ class FileModel
       :document => {
         :title => @file_name,
         :url => download_url,
-        :directUrl => download_url(false),
+        :directUrl => is_enable_direct_url ? download_url(false) : "",
         :fileType => file_ext.delete("."),
         :key => key,
         :info => {
@@ -224,7 +225,9 @@ class FileModel
         dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
         dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
-        dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
+        if is_enable_direct_url == true
+          dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
+        end
         dataObj["version"] = i
 
         if (i > 1)  # check if the version number is greater than 1
@@ -243,11 +246,15 @@ class FileModel
           obj["user"] = change ? change["user"] : nil
 
           prev = histData[(i - 2).to_s]  # get the history data from the previous file version
-          dataObj["previous"] = {  # write key and url information about previous file version
+          dataObj["previous"] = is_enable_direct_url == true ? {  # write key and url information about previous file version with optional direct url
             :fileType => prev["fileType"],
             :key => prev["key"],
             :url => prev["url"],
             :directUrl => prev["directUrl"]
+          } : {
+            :fileType => prev["fileType"],
+            :key => prev["key"],
+            :url => prev["url"]
           }
 
           # write the path to the diff.zip archive with differences in this file version
@@ -276,11 +283,14 @@ class FileModel
   end
 
   # get image information
-  def get_insert_image 
-    insert_image = {
+  def get_insert_image
+    insert_image = is_enable_direct_url == true ? {
       :fileType => "png",  # image file type
       :url => DocumentHelper.get_server_url(true) + "/assets/logo.png",  # server url to the image
       :directUrl => DocumentHelper.get_server_url(false) + "/assets/logo.png"  # direct url to the image
+    } : {
+      :fileType => "png",  # image file type
+      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png"  # server url to the image
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
@@ -292,10 +302,13 @@ class FileModel
 
   # get compared file information
   def get_compare_file
-    compare_file = {
+    compare_file = is_enable_direct_url == true ? {
       :fileType => "docx",  # file type
       :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx",  # server url to the compared file
       :directUrl => DocumentHelper.get_server_url(false) + "/assets/sample/sample.docx"  # direct url to the compared file
+    } : {
+      :fileType => "docx",  # file type
+      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"  # server url to the compared file
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
@@ -307,10 +320,13 @@ class FileModel
 
   # get mail merge recipients information
   def dataMailMergeRecipients
-    dataMailMergeRecipients = {
+    dataMailMergeRecipients = is_enable_direct_url == true ? {
       :fileType => "csv",  # file type
       :url => DocumentHelper.get_server_url(true) + "/csv",  # server url to the mail merge recipients file
       :directUrl => DocumentHelper.get_server_url(false) + "/csv"  # direct url to the mail merge recipients file
+    } : {
+      :fileType => "csv",  # file type
+      :url => DocumentHelper.get_server_url(true) + "/csv"  # server url to the mail merge recipients file
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
@@ -323,6 +339,11 @@ class FileModel
   # get users data for mentions
   def get_users_mentions
     return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
+  end
+
+  # get direct url existence flag
+  def is_enable_direct_url
+    return @direct_url != nil && @direct_url == "true"
   end
 
 end

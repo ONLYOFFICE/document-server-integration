@@ -16,10 +16,23 @@
  *
  */
 
+var directUrl;
+
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
+    directUrl = getUrlVars()["directUrl"] == "true";
+
     mustReload = false;
+
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
+    else
+        directUrl = jq("#directUrl").prop("checked");
+
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
+    });
 
     user = getUrlVars()["user"];
     if ("" != user && undefined != user)
@@ -234,7 +247,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -243,7 +256,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -252,7 +265,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");

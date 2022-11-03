@@ -195,7 +195,7 @@ namespace OnlineEditorsExample
                             {
                                 { "title", FileName },
                                 { "url", getDownloadUrl(FileName) },
-                                { "directUrl", directUrl },
+                                { "directUrl", IsEnabledDirectUrl() ? directUrl : "" },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -377,7 +377,12 @@ namespace OnlineEditorsExample
                     }
 
                     dataObj.Add("url", prevFileUrl);  // write file url to the data object
-                    dataObj.Add("directUrl", directPrevFileUrl);  // write direct url to the data object
+
+                    if (IsEnabledDirectUrl())
+                    {
+                        dataObj.Add("directUrl", directPrevFileUrl); // write direct url to the data object
+                    } 
+
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -395,12 +400,19 @@ namespace OnlineEditorsExample
                         obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-                        dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
+
+                        Dictionary<string, object> dataPrev = new Dictionary<string, object>() {  // write information about previous file version to the data object
                             { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
-                            { "url", prev["url"] },
-                            { "directUrl", prev["directUrl"] },
-                        });
+                            { "url", prev["url"] }
+                        };
+
+                        if (IsEnabledDirectUrl())
+                        {
+                            dataPrev.Add("directUrl", prev["directUrl"]);
+                        }
+
+                        dataObj.Add("previous", dataPrev);
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = MakePublicHistoryUrl(FileName, (i - 1).ToString(), "diff.zip");
                         dataObj.Add("changesUrl", changesUrl);
@@ -442,9 +454,13 @@ namespace OnlineEditorsExample
             Dictionary<string, object> logoConfig = new Dictionary<string, object>
                 {
                     { "fileType", "png"},
-                    { "url", InsertImageUrl.ToString()},
-                    { "directUrl", DirectImageUrl.ToString()}
+                    { "url", InsertImageUrl.ToString()}
                 };
+
+            if (IsEnabledDirectUrl())
+            {
+                logoConfig.Add("directUrl", DirectImageUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -475,9 +491,13 @@ namespace OnlineEditorsExample
             Dictionary<string, object> dataCompareFile = new Dictionary<string, object>
                 {
                     { "fileType", "docx" },
-                    { "url", compareFileUrl.ToString() },
-                    { "directUrl", DirectFileUrl.ToString() }
+                    { "url", compareFileUrl.ToString() }
                 };
+
+            if (IsEnabledDirectUrl())
+            {
+                dataCompareFile.Add("directUrl", DirectFileUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -510,9 +530,13 @@ namespace OnlineEditorsExample
             Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString() },
-                    { "directUrl", DirectMailMergeUrl.ToString() }
+                    { "url", mailmergeUrl.ToString() }
                 };
+
+            if (IsEnabledDirectUrl())
+            {
+                mailMergeConfig.Add("directUrl", DirectMailMergeUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -614,6 +638,13 @@ namespace OnlineEditorsExample
                 { "id", uid },
                 { "name", uname }
             }));
+        }
+
+        // get direct url flag
+        private static bool IsEnabledDirectUrl()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return isEnabledDirectUrl != null ? Convert.ToBoolean(isEnabledDirectUrl) : false;
         }
     }
 }
