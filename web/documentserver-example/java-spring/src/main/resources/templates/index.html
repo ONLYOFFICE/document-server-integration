@@ -318,9 +318,19 @@
     <script type="text/javascript" src="scripts/jscript.js"></script>
     <script type="text/javascript" src="scripts/converter.js"></script>
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function(){
-	        document.getElementById("language").value="en";
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var lang = document.cookie
+                    .split('; ')
+                    .find((row) => row.startsWith('ulang='))
+                    ?.split('=')[1];
+
+            var languages = Array.from(document.getElementById("language").options).map(e => e.value)
+
+            if (!languages.includes(lang)) {
+                lang = "en";
+            }
+
+        document.getElementById("language").value=lang;
     </script>
 </body>
 </html>
