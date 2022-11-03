@@ -1,9 +1,10 @@
 # Change Log
 
 - nodejs: referenceData
+- option to send directUrl
 
 ## 1.4.0
-- option to send directUrl
+- nodejs: option to send directUrl
 - opening file on client by directUrl
 - offline viewer for anonymous
 - added hy, eu, zh-TW, ms, pt-PT
