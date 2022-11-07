@@ -26,7 +26,6 @@ import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
-import com.onlyoffice.integration.documentserver.models.enums.Language;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
@@ -52,6 +51,9 @@ public class EditorController {
 
     @Value("${files.docservice.url.api}")
     private String docserviceApiUrl;
+
+    @Value("${files.docservice.languages}")
+    private String langs;
 
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
@@ -83,11 +85,19 @@ public class EditorController {
                         Model model) throws JsonProcessingException {
         Action action = Action.edit;
         Type type = Type.desktop;
-        Language language = Language.en;
+        Locale locale = new Locale("en");
 
         if(actionParam != null) action = Action.valueOf(actionParam);
         if(typeParam != null) type = Type.valueOf(typeParam);
-        if(lang != null) language = Language.valueOf(lang);
+
+        List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
+        for (String langAndKey : langsAndKeys) {
+            String[] couple = langAndKey.split(":");
+            if (couple[0].equals(lang)) {
+                String[] langAndCountry = couple[0].split("-");
+                locale = new Locale(langAndCountry[0], langAndCountry.length > 1 ? langAndCountry[1] : "");
+            }
+        }
 
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
@@ -102,7 +112,7 @@ public class EditorController {
                         .builder()
                         .fileName(fileName)
                         .type(type)
-                        .lang(language)
+                        .lang(locale.toLanguageTag())
                         .action(action)
                         .user(user)
                         .actionData(actionLink)
