@@ -349,8 +349,19 @@
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
 
-            document.addEventListener('DOMContentLoaded', function(){
-                document.getElementById("language").value="en";
+            document.addEventListener('DOMContentLoaded', function() {
+                var lang = document.cookie
+                        .split('; ')
+                        .find((row) => row.startsWith('ulang='))
+                        ?.split('=')[1];
+
+                var languages = Array.from(document.getElementById("language").options).map(e => e.value)
+
+                if (!languages.includes(lang)) {
+                    lang = "en";
+                }
+
+                document.getElementById("language").value=lang;
             });
         </script>
     </body>

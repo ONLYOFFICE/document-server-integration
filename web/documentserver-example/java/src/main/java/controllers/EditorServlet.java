@@ -78,16 +78,19 @@ public class EditorServlet extends HttpServlet
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("directUrl", DocumentManager.GetServerUrl(false) + "/css/img/logo.png");
 
         // a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
+        dataCompareFile.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
 
         // recipients data for mail merging
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
+        dataMailMergeRecipients.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=csv");
 
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);

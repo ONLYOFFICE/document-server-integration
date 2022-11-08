@@ -164,7 +164,7 @@ public class FileController {
     public String convert(@RequestBody Converter body,  // convert a file
                           @CookieValue("uid") String uid, @CookieValue("ulang") String lang){
         String fileName = body.getFileName();  // get file name
-        String fileUri = documentManager.getDownloadUrl(fileName);  // get URL for downloading a file with the specified name
+        String fileUri = documentManager.getDownloadUrl(fileName, true);  // get URL for downloading a file with the specified name
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;  // get file password if it exists
         String fileExt = fileUtility.getFileExtension(fileName);  // get file extension
         DocumentType type = fileUtility.getDocumentType(fileName);  // get document type (word, cell or slide)

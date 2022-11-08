@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.models.filemodel;
 
 import com.onlyoffice.integration.documentserver.models.configurations.Customization;
 import com.onlyoffice.integration.documentserver.models.configurations.Embedded;
-import com.onlyoffice.integration.documentserver.models.enums.Language;
 import com.onlyoffice.integration.documentserver.models.enums.Mode;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +37,13 @@ import java.util.List;
 public class EditorConfig {  // the parameters pertaining to the editor interface: opening mode (viewer or editor), interface language, additional buttons, etc.
     private HashMap<String, Object> actionLink = null;  // the data which contains the information about the action in the document that will be scrolled to
     private String callbackUrl;  // the absolute URL to the document storage service
+    private HashMap<String, Object> coEditing = null;
     private String createUrl;  // the absolute URL of the document where it will be created and available after creation
     @Autowired
     private Customization customization;  // the parameters which allow to customize the editor interface so that it looked like your other products (if there are any) and change the presence or absence of the additional buttons, links, change logos and editor owner details
     @Autowired
     private Embedded embedded;  // the parameters which allow to change the settings which define the behavior of the buttons in the embedded mode
-    private Language lang;  // the editor interface language
+    private String lang;  // the editor interface language
     private Mode mode;  // the editor opening mode
     @Autowired
     private User user;  // the user currently viewing or editing the document

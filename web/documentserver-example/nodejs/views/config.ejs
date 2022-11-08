@@ -1,4 +1,5 @@
 ﻿"document": {
+    "directUrl": "<%- file.directUrl %>",
     "fileType": "<%- file.ext %>",
     "info": {
         "owner": "Me",
@@ -28,6 +29,7 @@
 "editorConfig": {
     "actionLink": <%- editor.actionData %>,
     "callbackUrl": "<%- editor.callbackUrl %>",
+    "coEditing": <%- JSON.stringify(editor.coEditing) %>,
     "createUrl": <%- JSON.stringify(editor.createUrl) %>,
     "customization": {
         "about": true,

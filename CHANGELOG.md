@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.4.0
+- nodejs: option to send directUrl
+- opening file on client by directUrl
+- offline viewer for anonymous
+- added hy, eu, zh-TW, ms, pt-PT
+
 ## 1.3.1
 - charp: fix references
 - ruby: update rails 

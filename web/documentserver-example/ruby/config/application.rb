@@ -26,7 +26,7 @@ module OnlineEditorsExampleRuby
       end
     end
 
-    Rails.configuration.version="1.3.1"
+    Rails.configuration.version="1.4.0"
 
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
@@ -52,11 +52,14 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.languages={
       'en' => 'English',
+      'hy' => 'Armenian',
       'az' => 'Azerbaijani',
+      'eu' => 'Basque',
       'be' => 'Belarusian',
       'bg' => 'Bulgarian',
       'ca' => 'Catalan',
-      'zh' => 'Chinese',
+      'zh' => 'Chinese (People\'s Republic of China)',
+      'zh-TW' => 'Chinese (Traditional, Taiwan)',
       'cs' => 'Czech',
       'da' => 'Danish',
       'nl' => 'Dutch',
@@ -72,9 +75,11 @@ module OnlineEditorsExampleRuby
       'ko' => 'Korean',
       'lv' => 'Latvian',
       'lo' => 'Lao',
+      'ms' => 'Malay (Malaysia)',
       'nb' => 'Norwegian',
       'pl' => 'Polish',
-      'pt' => 'Portuguese',
+      'pt' => 'Portuguese (Brazil)',
+      'pt-PT' => 'Portuguese (Portugal)',
       'ro' => 'Romanian',
       'ru' => 'Russian',
       'sk' => 'Slovak',

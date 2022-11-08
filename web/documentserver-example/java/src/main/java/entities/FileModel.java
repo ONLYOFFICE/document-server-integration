@@ -51,7 +51,8 @@ public class FileModel
         // set the document parameters
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetDownloadUrl(fileName);  // get file url
+        document.url = DocumentManager.GetDownloadUrl(fileName, true);  // get file url
+        document.directUrl = DocumentManager.GetDownloadUrl(fileName, false);  // get direct url
         document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
         document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
@@ -77,6 +78,12 @@ public class FileModel
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
+
+        editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0") ? 
+        new HashMap<String, Object>()  {{ 
+            put("mode", "strict");
+            put("change", false);
+        }} : null;
         
         if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
 
@@ -121,7 +128,7 @@ public class FileModel
 
     public void InitDesktop(String fileName)
     {
-        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName) + "&dmode=emb");
+        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName, false) + "&dmode=emb");
     }
 
     // generate document token
@@ -177,7 +184,8 @@ public class FileModel
 
                     dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title)));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), true));
+                    dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), false));
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
@@ -199,7 +207,7 @@ public class FileModel
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
                         Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip");
+                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip", true);
                         dataObj.put("changesUrl", changesUrl);
                     }
 
@@ -247,6 +255,7 @@ public class FileModel
     {
         public String title;
         public String url;
+        public String directUrl;
         public String fileType;
         public String key;
         public Info info;
@@ -269,6 +278,7 @@ public class FileModel
         public List<String> reviewGroups;
         public CommentGroups commentGroups;
         public List<String> userInfoGroups;
+        //public Gson gson = new Gson();
 
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user)
@@ -307,6 +317,7 @@ public class FileModel
         public HashMap<String, Object> actionLink = null;
         public String mode = "edit";
         public String callbackUrl;
+        public HashMap<String, Object> coEditing = null;
         public String lang = "en";
         public String createUrl;
         public List<Map<String, String>> templates;

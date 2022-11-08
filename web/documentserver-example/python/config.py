@@ -1,6 +1,6 @@
 import os
 
-VERSION = '1.3.0'
+VERSION = '1.4.0'
 
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
@@ -55,11 +55,14 @@ EXT_DOCUMENT = [
 
 LANGUAGES = {
     'en': 'English',
+    'hy': 'Armenian',
     'az': 'Azerbaijani',
+    'eu': 'Basque',
     'be': 'Belarusian',
     'bg': 'Bulgarian',
     'ca': 'Catalan',
-    'zh': 'Chinese',
+    'zh' : 'Chinese (People\'s Republic of China)',
+    'zh-TW' : 'Chinese (Traditional, Taiwan)',
     'cs': 'Czech',
     'da': 'Danish',
     'nl': 'Dutch',
@@ -75,9 +78,11 @@ LANGUAGES = {
     'ko': 'Korean',
     'lv': 'Latvian',
     'lo': 'Lao',
+    'ms': 'Malay (Malaysia)',
     'nb': 'Norwegian',
     'pl': 'Polish',
-    'pt': 'Portuguese',
+    'pt' : 'Portuguese (Brazil)',
+    'pt-PT' : 'Portuguese (Portugal)',
     'ro': 'Romanian',
     'ru': 'Russian',
     'sk': 'Slovak',

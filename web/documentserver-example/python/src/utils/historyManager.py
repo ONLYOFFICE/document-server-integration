@@ -135,10 +135,10 @@ def readFile(path):
         return stream.read()
 
 # get the url to the history file version with a given extension
-def getPublicHistUri(filename, ver, file, req):
-    host = docManager.getServerUrl(True, req)
-    curAdr = req.META['REMOTE_ADDR']
-    return f'{host}/downloadhistory?fileName={filename}&ver={ver}&file={file}&userAddress={curAdr}'
+def getPublicHistUri(filename, ver, file, req, isServerUrl=True):
+    host = docManager.getServerUrl(isServerUrl, req)
+    curAdr = f'&userAddress={req.META["REMOTE_ADDR"]}' if isServerUrl else ''
+    return f'{host}/downloadhistory?fileName={filename}&ver={ver}&file={file}{curAdr}'
 
 # get the meta data of the file
 def getMeta(storagePath):
@@ -184,6 +184,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                         }
                     
                 dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req) # write file url to the data object
+                dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False) # write file direct url to the data object
 
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
@@ -198,7 +199,8 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                     prevInfo = { # write key and url information about previous file version
                         'fileType': prev['fileType'],
                         'key': prev['key'],
-                        'url': prev['url']
+                        'url': prev['url'],
+                        'directUrl': prev['directUrl']
                     }
                     dataObj['previous'] = prevInfo # write information about previous file version to the data object
                     dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req) # write the path to the diff.zip archive with differences in this file version

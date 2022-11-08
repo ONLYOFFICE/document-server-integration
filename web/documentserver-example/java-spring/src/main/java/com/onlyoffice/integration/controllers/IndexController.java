@@ -76,7 +76,7 @@ public class IndexController {
         List<Boolean> isFillFormDoc = new ArrayList<>();
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
 
-        Map<String, String> languages = new HashMap<>();
+        Map<String, String> languages = new LinkedHashMap<>();
 
         langsAndKeys.forEach((str) -> {
             String[] couple = str.split(":");
