@@ -211,7 +211,9 @@ def createFile(stream, path, req = None, meta = False):
 
 # create file response
 def createFileResponse(response, path, req, meta):
-    response.raise_for_status()
+    status_code = response.status_code
+    if status_code != 200:  # checking status code
+        raise RuntimeError('Document editing service returned status: %s' % status_code)
     with open(path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)
@@ -219,7 +221,7 @@ def createFileResponse(response, path, req, meta):
 
 # save file from the given url 
 def saveFileFromUri(uri, path, req = None, meta = False):
-    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER)
+    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER, timeout=5)
     createFileResponse(resp, path, req, meta)
     return
 

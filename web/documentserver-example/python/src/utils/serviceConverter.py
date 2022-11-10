@@ -58,7 +58,10 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None, la
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
         headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
-    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER) # send the headers and body values to the converter and write the result to the response
+    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER, timeout=5) # send the headers and body values to the converter and write the result to the response
+    status_code = response.status_code
+    if status_code != 200:  # checking status code
+        raise RuntimeError('Convertation service returned status: %s' % status_code)
     json = response.json()
 
     return getResponseUri(json)
