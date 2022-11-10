@@ -143,6 +143,12 @@ public class ServiceConverter
         }
 
         connection.connect();
+
+        int statusCode = connection.getResponseCode();
+        if (statusCode != 200) {  // checking status code
+            connection.disconnect();
+            throw new Exception("Conversion service returned status: " + statusCode);
+        }
         try (OutputStream os = connection.getOutputStream()) {
             os.write(bodyByte);
         }
