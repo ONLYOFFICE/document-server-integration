@@ -253,6 +253,14 @@ public class TrackManager {
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+        connection.setConnectTimeout(5000);
+
+        int statusCode = connection.getResponseCode();
+        if (statusCode != 200) {  // checking status code
+            connection.disconnect();
+            throw new RuntimeException("Document editing service returned status: " + statusCode);
+        }
+
         InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
 
         if (stream == null)
