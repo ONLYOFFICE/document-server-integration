@@ -251,11 +251,17 @@ class TrackHelper
         def save_from_uri(path, uristr)
             uri = URI.parse(uristr)  # parse the url string
             http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+            http.open_timeout = 5
 
             DocumentHelper.verify_ssl(uristr, http)
 
             req = Net::HTTP::Get.new(uri)
             res = http.request(req)  # get the response
+
+            status_code = res.code
+            if status_code != 200  # checking status code
+                raise "Document editing service returned status: #{status_code}"
+            end
             data = res.body  # and take its body
 
             if data == nil
