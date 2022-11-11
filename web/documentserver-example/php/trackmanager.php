@@ -115,7 +115,8 @@ function processSave($data, $fileName, $userAddress) {
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
+    if (!(($new_data = file_get_contents($downloadUri, false,
+            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
         $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
         $histDir = getHistoryDir($storagePath);  // get the path to the history direction
         $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
@@ -125,7 +126,8 @@ function processSave($data, $fileName, $userAddress) {
         rename(getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
         file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
-        if ($changesData = file_get_contents($data->changesurl)) {
+        if ($changesData = file_get_contents($data->changesurl, false,
+            stream_context_create(["http"=>["timeout"=>5]]))) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
         }
 
@@ -190,7 +192,8 @@ function processForceSave($data, $fileName, $userAddress) {
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents($downloadUri)) === FALSE)) {
+    if (!(($new_data = file_get_contents($downloadUri, false,
+            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
         $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
