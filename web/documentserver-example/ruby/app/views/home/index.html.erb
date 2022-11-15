@@ -96,6 +96,7 @@
             DocumentHelper.init(request.remote_ip, request.base_url)
             docs = DocumentHelper.get_stored_files(nil)
             directUrl = request.params[:directUrl]
+            userId = request.params[:userId]
           %>
           <div class="main-panel">
             <div id="portal-info" style="display: <%= docs.length > 0 ? "none" : "table-cell" %>">
@@ -137,7 +138,9 @@
                       <% 
                         docs.each { |d|
                           isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
-                          editUrl = directUrl == nil ? "editor?fileName=#{ERB::Util.url_encode(d)}" : "editor?fileName=#{ERB::Util.url_encode(d)}&directUrl=#{directUrl}"
+                          userIdParam = userId == nil ? "" : "&userId=#{userId}";
+                          directUrlParam = directUrl == nil ? "" : "&directUrl=#{directUrl}";
+                          editUrl = "editor?fileName=#{ERB::Util.url_encode(d)}" + directUrlParam + userIdParam;
                           docType = FileUtility.get_file_type(d) 
                           canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
                           <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
