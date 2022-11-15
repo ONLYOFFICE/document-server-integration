@@ -87,7 +87,7 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img id="info" src="css/img/info.svg" />
+                                                    <img id="info" class="info" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
                                                             <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
@@ -97,7 +97,10 @@
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language editors interface</span>
+                                                    <span class="select-user">Language</span>
+                                                    <img class="info info-tooltip" data-id="language"
+                                                         data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                         src="css/img/info.svg" />
                                                     <select class="select-user" id="language">
                                                         <% Map<String, String> languages = DocumentManager.GetLanguages(); %>
                                                         <% for (Map.Entry<String, String> language : languages.entrySet()) { %>

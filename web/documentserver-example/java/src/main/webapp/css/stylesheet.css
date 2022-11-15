@@ -747,3 +747,28 @@ html {
 .user-descr > b {
     margin-left: 25px;
 }
+
+.tooltip {
+    background: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
+    color: #666666;
+    line-height: 160%;
+    max-width: 455px;
+    padding: 14px;
+    position: absolute;
+}
+
+.tooltip ul {
+    margin: 0;
+}
+
+.arrow {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #FFFFFF;
+    left: -4px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
