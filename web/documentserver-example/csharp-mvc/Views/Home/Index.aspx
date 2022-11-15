@@ -86,7 +86,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                             <img id="info" src="content/images/info.svg" />
+                                             <img id="info" class="info" src="content/images/info.svg" />
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
@@ -97,7 +97,10 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language editors interface</span>
+                                            <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="content/images/info.svg" />
                                             <select class="select-user" id="language">
                                                 <% Dictionary<string, string> languages = DocManagerHelper.GetLanguages(); 
                                                 foreach (var lang in languages)
