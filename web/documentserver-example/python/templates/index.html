@@ -86,7 +86,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img id="info" src="{% static "images/info.svg" %}" />
+                                            <img id="info" class="info" src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="user">
                                                 {% for user in users %}
                                                     <option value="{{ user.id }}">{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %} </option>
@@ -96,7 +96,10 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language editors interface</span>
+                                            <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="language">
                                                 {% for key, val in languages.items %}
                                                     <option value="{{ key }}">{{ val }}</option>
