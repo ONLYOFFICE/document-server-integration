@@ -36,8 +36,8 @@ if (typeof jQuery != "undefined") {
         window.location = "?directUrl=" + jq(this).prop("checked") + "&userId=" + userId;
     });
 
-    if ("" != userId && undefined != userId)
-        jq("#user").val();
+    if (userId)
+        jq("#user").val(userId);
     else
         userId = jq("#user").val();
 
@@ -197,7 +197,6 @@ if (typeof jQuery != "undefined") {
     };
 
     var initSelectors = function () {
-        var userSel = jq("#user");
         var langSel = jq("#language");
 
         function getCookie(name) {
@@ -210,7 +209,6 @@ if (typeof jQuery != "undefined") {
             document.cookie = name + "=" + value + "; expires=" + new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(); //week
         }
 
-        if (userId) userSel.val(userId);
         var langId = getCookie("ulang");
         if (langId) langSel.val(langId);
 
@@ -276,7 +274,7 @@ if (typeof jQuery != "undefined") {
         if (jq("#createSample").is(":checked")) {
             url += "&sample=true";
         }
-        if (userId != "" && userId != undefined) {
+        if (userId) {
             url += "&userId=" + userId;
         }
         var w = window.open(url, "_blank");
