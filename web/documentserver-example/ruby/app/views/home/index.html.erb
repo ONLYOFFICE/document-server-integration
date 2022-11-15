@@ -60,7 +60,7 @@
                   <tr>
                     <td valign="middle">
                       <span class="select-user">Username</span>
-                      <img id="info" data-id="user" src="assets/info.svg" />
+                      <img id="info" class="info" data-id="user" src="assets/info.svg" />
                       <select class="select-user" id="user">
                         <% for user in Users.get_all_users() do %>
                           <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
@@ -70,7 +70,10 @@
                   </tr>
                   <tr>
                     <td valign="middle">
-                      <span class="select-user">Language editors interface</span>
+                       <span class="select-user">Language</span>
+                        <img class="info info-tooltip" data-id="language"
+                        data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                        src="assets/info.svg" />
                       <select class="select-user" id="language">
                         <% Rails.configuration.languages.each { |key, language|%>
                           <option value="<%=key %>"> <%=language %> </option>
