@@ -17,11 +17,13 @@
  */
 
 var directUrl;
+var userId;
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
     directUrl = getUrlVars()["directUrl"] == "true";
+    userId = getUrlVars()["userId"];
 
     mustReload = false;
 
@@ -29,10 +31,19 @@ if (typeof jQuery != "undefined") {
         jq("#directUrl").prop("checked", directUrl);
     else
         directUrl = jq("#directUrl").prop("checked");
-
+   
     jq("#directUrl").change(function() {
-        window.location = "?directUrl=" + jq(this).prop("checked");
+        window.location = "?directUrl=" + jq(this).prop("checked") + "&userId=" + userId;
     });
+
+    if ("" != userId && undefined != userId)
+        jq("#user").val();
+    else
+        userId = jq("#user").val();
+
+    jq("#user").change(function() {
+        window.location = "?directUrl=" + directUrl + "&userId=" + jq(this).val();
+    }); 
 
     jq(function () {
         jq('#fileupload').fileupload({
@@ -199,14 +210,10 @@ if (typeof jQuery != "undefined") {
             document.cookie = name + "=" + value + "; expires=" + new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(); //week
         }
 
-        var userId = getCookie("uid");
         if (userId) userSel.val(userId);
         var langId = getCookie("ulang");
         if (langId) langSel.val(langId);
 
-        userSel.on("change", function () {
-            setCookie("uid", userSel.val());
-        });
         langSel.on("change", function () {
             setCookie("ulang", langSel.val());
         });
@@ -231,7 +238,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?fileName=" + fileId + "&directUrl=" + directUrl + "&userId=" + userId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -239,7 +246,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?editorsMode=view&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?editorsMode=view&fileName=" + fileId + "&directUrl=" + directUrl + "&userId=" + userId;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -247,7 +254,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?editorsType=embedded&editorsMode=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?editorsType=embedded&editorsMode=embedded&fileName=" + fileId + "&directUrl=" + directUrl + "&userId=" + userId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -268,6 +275,9 @@ if (typeof jQuery != "undefined") {
         var url = "sample?fileExt=" + e.target.attributes["data-type"].value;
         if (jq("#createSample").is(":checked")) {
             url += "&sample=true";
+        }
+        if (userId != "" && userId != undefined) {
+            url += "&userId=" + userId;
         }
         var w = window.open(url, "_blank");
         w.onload = function () {
