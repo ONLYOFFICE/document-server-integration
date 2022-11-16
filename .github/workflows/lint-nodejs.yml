@@ -1,0 +1,35 @@
+name: ESLint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/nodejs/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/nodejs/**']
+
+env:
+  NODE_VERSION: 16
+
+jobs:
+  lint:
+    name: Lint 
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web/documentserver-example/nodejs
+    steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Code Linting
+        run: npm run lint
