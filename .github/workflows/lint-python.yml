@@ -1,0 +1,39 @@
+name: PyLint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/python/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/python/**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web/documentserver-example/python
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6.9
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+          pip install pylint
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint Flake8
+        run: |
+          flake8 ./**/*.py --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 ./**/*.py --count --max-complexity=10 --max-line-length=79 --statistics
+          
+      - name: Lint Pylint
+        run: |
+          pylint ./**/*.py
