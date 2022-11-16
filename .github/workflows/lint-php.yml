@@ -1,0 +1,29 @@
+name: PHPCs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/php/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/php/**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web/documentserver-example/php
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: cs2pr, phpcs
+          
+      - name: Run phpcs
+        run: phpcs -q --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml --ignore=node_modules,bower_components,vendor ./
