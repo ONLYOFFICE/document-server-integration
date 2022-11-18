@@ -853,6 +853,14 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             portalName: req.docManager.getServerUrl()
         };
 
+        var type = req.query.type || ""; // type: embedded/mobile/desktop
+        if (type == "") {
+            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+        } else if (type != "mobile"
+            && type != "embedded") {
+                type = "desktop";
+        }
+
         var templatesImageUrl = req.docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
         var createUrl = req.docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
         var templates = [
@@ -893,14 +901,6 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var url = req.docManager.getDownloadUrl(fileName, true);
         var directUrl = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
-
-        var type = req.query.type || ""; // type: embedded/mobile/desktop
-        if (type == "") {
-            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
-        } else if (type != "mobile"
-            && type != "embedded") {
-                type = "desktop";
-        }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
