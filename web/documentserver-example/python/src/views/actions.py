@@ -368,8 +368,8 @@ def track(request):
             trackManager.processForceSave(body, filename, usAddr)
 
     except Exception as e:
-        response.setdefault('error', 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
-        response.setdefault('message', e.args[0])
+        response.setdefault("error", 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
+        response.setdefault("message", str(e.args[0]))
 
     response.setdefault('error', 0)  # if no exceptions are raised, the default error value is 0 (no errors)
     # the response status is 200 if the changes are saved successfully; otherwise, it is equal to 500
