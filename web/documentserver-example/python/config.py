@@ -91,7 +91,8 @@ LANGUAGES = {
     'sv': 'Swedish',
     'tr': 'Turkish',
     'uk': 'Ukrainian',
-    'vi': 'Vietnamese'
+    'vi': 'Vietnamese',
+    'aa-AA': 'Test Language'
 }
 
 if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain
