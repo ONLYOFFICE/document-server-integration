@@ -142,9 +142,12 @@ namespace OnlineEditorsExample
             // get the path to the previous file version and rename the storage path with it
             File.Copy(_Default.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
 
-            DownloadToFile(downloadUri, storagePath);  // save file to the storage directory
-            DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
-
+            bool isSaveFile = DownloadToFile(downloadUri, storagePath);  // save file to the storage directory
+            if (fileData.ContainsKey("changesurl"))
+            {
+                DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
+            }
+            
             var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
             if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
             {
@@ -165,7 +168,12 @@ namespace OnlineEditorsExample
                 File.Delete(forcesavePath);  // remove it
             }
 
-            return 0;
+            if (!isSaveFile)
+            {
+                Directory.Delete(versionDir, true);
+            }
+
+            return isSaveFile ? 0 : 1;
         }
 
         // file force saving process
@@ -237,7 +245,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            DownloadToFile(downloadUri, forcesavePath);
+            bool isSaveFile = DownloadToFile(downloadUri, forcesavePath);
 
             if (isSubmitForm)
             {
@@ -248,7 +256,7 @@ namespace OnlineEditorsExample
                 DocEditor.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
             }
 
-            return 0;
+            return isSaveFile ? 0 : 1;
         }
 
         // create a command request
@@ -318,28 +326,35 @@ namespace OnlineEditorsExample
         }
 
         // save file information from the url to the file specified
-        private static void DownloadToFile(string url, string path)
+        private static bool DownloadToFile(string url, string path)
         {
-            if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified
-
-            var req = (HttpWebRequest)WebRequest.Create(url);
-            req.Timeout = 5000;
-            using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
+            try
             {
-                if (stream == null) throw new Exception("stream is null");
-                const int bufferSize = 4096;
+                if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
+                if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified
 
-                using (var fs = File.Open(path, FileMode.Create))
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Timeout = 5000;
+                using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
                 {
-                    var buffer = new byte[bufferSize];
-                    int readed;
-                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                    if (stream == null) throw new Exception("stream is null");
+                    const int bufferSize = 4096;
+
+                    using (var fs = File.Open(path, FileMode.Create))
                     {
-                        fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                        var buffer = new byte[bufferSize];
+                        int readed;
+                        while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                        {
+                            fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                        }
                     }
                 }
-            }
+                return true;
+            } catch (Exception)
+            {
+                return false;
+            }          
         }
     }
 }
