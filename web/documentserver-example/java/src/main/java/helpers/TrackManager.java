@@ -28,6 +28,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -117,7 +122,7 @@ public class TrackManager {
     }
 
     // file saving process
-    public static void processSave(JSONObject body, String fileName, String userAddress) throws Exception {
+    public static int processSave(JSONObject body, String fileName, String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
@@ -125,6 +130,7 @@ public class TrackManager {
         String changesUri = (String) body.get("changesurl");
         String key = (String) body.get("key");
         String newFileName = fileName;
+        boolean isSaveFile;
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
         String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
@@ -157,9 +163,9 @@ public class TrackManager {
 
         if (!ver.exists()) ver.mkdirs();
 
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));  // get the path to the previous file version and rename the last file version with it
+        Files.copy(lastVersion.toPath(), Paths.get(versionDir + File.separator + "prev" + curExt), StandardCopyOption.REPLACE_EXISTING); // copy the latest file version to the previous file version
 
-        downloadToFile(downloadUri, toSave);  // save file to the storage path 
+        isSaveFile = downloadToFile(downloadUri, toSave);  // save file to the storage path
         downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
 
         String history = (String) body.get("changeshistory");
@@ -181,10 +187,11 @@ public class TrackManager {
             File forceSaveFile = new File(forcesavePath);
             forceSaveFile.delete();  // remove it
         }
+        return isSaveFile ? 0 : 1;
     }
 
     // file force saving process
-    public static void processForceSave(JSONObject body, String fileName, String userAddress) throws Exception {
+    public static int processForceSave(JSONObject body, String fileName, String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
@@ -236,7 +243,7 @@ public class TrackManager {
         }
 
         File toSave = new File(forcesavePath);
-        downloadToFile(downloadUri, toSave);
+        boolean isSaveFile = downloadToFile(downloadUri, toSave);
 
         if (isSubmitForm) {
             JSONArray actions = (JSONArray) body.get("actions");
@@ -244,44 +251,51 @@ public class TrackManager {
             String user = (String) action.get("userid");  // get the user id
             DocumentManager.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for forcesaved file
         }
+
+        return isSaveFile ? 0 : 1;
     }
 
     // save file information from the url to the file specified
-    private static void downloadToFile(String url, File file) throws Exception {
-        if (url == null || url.isEmpty()) throw new Exception("argument url");  // url isn't specified
-        if (file == null) throw new Exception("argument path");  // file isn't specified
+    private static boolean downloadToFile(String url, File file) {
+        try {
+            if (url == null || url.isEmpty()) throw new Exception("argument url");  // url isn't specified
+            if (file == null) throw new Exception("argument path");  // file isn't specified
 
-        URL uri = new URL(url);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(5000);
+            URL uri = new URL(url);
+            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+            connection.setConnectTimeout(5000);
 
-        int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
-            connection.disconnect();
-            throw new RuntimeException("Document editing service returned status: " + statusCode);
-        }
-
-        InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
-
-        if (stream == null)
-        {
-            throw new Exception("Stream is null");
-        }
-
-        try (FileOutputStream out = new FileOutputStream(file))
-        {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);  // write bytes to the output stream
+            int statusCode = connection.getResponseCode();
+            if (statusCode != 200) {  // checking status code
+                connection.disconnect();
+                throw new RuntimeException("Document editing service returned status: " + statusCode);
             }
 
-            // force write data to the output stream that can be cached in the current thread
-            out.flush();
-        }
+            InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
 
-        connection.disconnect();
+            if (stream == null)
+            {
+                throw new Exception("Stream is null");
+            }
+
+            try (FileOutputStream out = new FileOutputStream(file))
+            {
+                int read;
+                final byte[] bytes = new byte[1024];
+                while ((read = stream.read(bytes)) != -1)
+                {
+                    out.write(bytes, 0, read);  // write bytes to the output stream
+                }
+
+                // force write data to the output stream that can be cached in the current thread
+                out.flush();
+            }
+
+            connection.disconnect();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // create a command request

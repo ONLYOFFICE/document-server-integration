@@ -342,7 +342,7 @@ public class IndexServlet extends HttpServlet
 
         if (status == 2 || status == 3) { // MustSave, Corrupted
             try {
-                TrackManager.processSave(body, fileName, userAddress);
+                saved = TrackManager.processSave(body, fileName, userAddress);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 saved = 1;
@@ -352,7 +352,7 @@ public class IndexServlet extends HttpServlet
 
         if (status == 6 || status == 7) { // MustForceSave, CorruptedForceSave
             try {
-                TrackManager.processForceSave(body, fileName, userAddress);
+                saved = TrackManager.processForceSave(body, fileName, userAddress);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 saved = 1;
