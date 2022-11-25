@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -332,7 +333,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create or update a file
-    public boolean createOrUpdateFile(final Path path, final InputStream stream) {
+    public boolean createOrUpdateFile(final Path path, final ByteArrayInputStream stream) {
         if (!Files.exists(path)) { // if the specified file does not exist
             return createFile(path, stream);  // create it in the specified directory
         } else {
@@ -372,7 +373,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             path = Paths.get(historyPath);  // otherwise, get the path to the history directory
             if (!Files.exists(path)) {
                 return 1;  // if the history directory does not exist, then the file version is 1
-            }
+        }
         }
 
         // run through all the files in the history directory
