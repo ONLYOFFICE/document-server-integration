@@ -29,6 +29,7 @@ import config
 import requests
 import os
 import json
+import shutil
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
 # read request body
@@ -84,7 +85,8 @@ def processSave(body, filename, usAddr):
 
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
-    os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
+    shutil.copyfile(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # copy the latest file version to the previous file version
+    
     docManager.saveFileFromUri(download, path) # save file to the storage path 
     docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 
