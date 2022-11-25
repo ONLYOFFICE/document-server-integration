@@ -14,7 +14,7 @@ public interface FileStorageMutator {
     boolean deleteFileHistory(String fileName);  // delete file history
     String updateFile(String fileName, byte[] bytes);  // update a file
     boolean writeToFile(String pathName, String payload);  // write the payload to the file
-    boolean moveFile(Path source, Path destination);  // move a file to the specified destination
+    boolean copyFile(Path source, Path destination);  // copy a file to the specified destination
     Resource loadFileAsResource(String fileName);  // load file as a resource
     Resource loadFileAsResourceHistory(String fileName,String version,String file);  // load file as a resource
     File[] getStoredFiles();  // get a collection of all the stored files

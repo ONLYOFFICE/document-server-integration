@@ -56,6 +56,13 @@ public class DefaultHistoryManager implements HistoryManager {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private JSONObject getFakeChanges() { // get fake json for changes
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("serverVersion", null);
+        jsonObject.put("changes", null);
+        return jsonObject;
+    }
+
     //TODO: Refactoring
     @SneakyThrows
     public String[] getHistory(Document document) {  // get document history
@@ -99,14 +106,15 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
-                    JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(documentManager.versionDir(histDir, i - 1, true) + File.separator + "changes.json")));
-                    JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
+                    File changesFile = new File(documentManager.versionDir(histDir, i - 1, true) + File.separator + "changes.json");
+                    JSONObject changes = changesFile.exists() ? (JSONObject) parser.parse(readFileToEnd(changesFile)) : this.getFakeChanges();
+                    JSONObject change = changes.get("changes") != null ? (JSONObject) ((JSONArray) changes.get("changes")).get(0) : null;
 
                     // write information about changes to the object
                     obj.put("changes", changes.get("changes"));
                     obj.put("serverVersion", changes.get("serverVersion"));
-                    obj.put("created", change.get("created"));
-                    obj.put("user", change.get("user"));
+                    obj.put("created", change != null ? change.get("created") : null);
+                    obj.put("user", change != null ? change.get("user") : null);
 
                     Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
                     Map<String, Object> prevInfo = new HashMap<String, Object>();

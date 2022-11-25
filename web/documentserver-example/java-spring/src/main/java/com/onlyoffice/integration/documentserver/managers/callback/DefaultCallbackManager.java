@@ -70,35 +70,41 @@ public class DefaultCallbackManager implements CallbackManager {
     private ServiceConverter serviceConverter;
 
     // save file information from the URL to the file specified
-    private void downloadToFile(String url, Path path) throws Exception {
-        if (url == null || url.isEmpty()) throw new RuntimeException("Url argument is not specified");  // URL isn't specified
-        if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
+    private boolean downloadToFile(String url, Path path) {
+        try {
+            if (url == null || url.isEmpty()) throw new RuntimeException("Url argument is not specified");  // URL isn't specified
+            if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
 
-        URL uri = new URL(url);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(5000);
-        InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
+            URL uri = new URL(url);
+            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+            connection.setConnectTimeout(5000);
+            InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
 
-        int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
-            connection.disconnect();
-            throw new RuntimeException("Document editing service returned status: " + statusCode);
+            int statusCode = connection.getResponseCode();
+            if (statusCode != 200) {  // checking status code
+                connection.disconnect();
+                throw new RuntimeException("Document editing service returned status: " + statusCode);
+            }
+
+            if (stream == null) {
+                connection.disconnect();
+                throw new RuntimeException("Input stream is null");
+            }
+
+            storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-
-        if (stream == null) {
-            connection.disconnect();
-            throw new RuntimeException("Input stream is null");
-        }
-
-        storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
     }
 
     @SneakyThrows
-    public void processSave(Track body, String fileName) {  // file saving process
+    public int processSave(Track body, String fileName) {  // file saving process
         String downloadUri = body.getUrl();
         String changesUri = body.getChangesurl();
         String key = body.getKey();
         String newFileName = fileName;
+        boolean isSaveFile = false;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
@@ -135,9 +141,9 @@ public class DefaultCallbackManager implements CallbackManager {
             Path toSave = Paths.get(storagePath);
 
             storageMutator.createDirectory(ver);  // create the file version directory
-            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));  // move the last file version to the file version directory with the "prev" postfix
+            storageMutator.copyFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));  // copy the last file version to the file version directory with the "prev" postfix
 
-            downloadToFile(downloadUri, toSave);  // save file to the storage path
+            isSaveFile = downloadToFile(downloadUri, toSave);  // save file to the storage path
             downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
@@ -156,6 +162,7 @@ public class DefaultCallbackManager implements CallbackManager {
             storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);  // write the key value to the key.txt file
             storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));  // get the path to the forcesaved file version and remove it
         }
+        return isSaveFile ? 0 : 1;
     }
 
     //TODO: Replace (String method) with (Enum method)
@@ -221,12 +228,13 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @SneakyThrows
-    public void processForceSave(Track body, String fileName) {  // file force saving process
+    public int processForceSave(Track body, String fileName) {  // file force saving process
 
         String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+        boolean isSaveFile;
 
         // Todo [Delete in version 7.0 or higher]
         if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
@@ -279,6 +287,7 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        downloadToFile(downloadUri, Path.of(forcesavePath));
+        isSaveFile = downloadToFile(downloadUri, Path.of(forcesavePath));
+        return isSaveFile ? 0 : 1;
     }
 }

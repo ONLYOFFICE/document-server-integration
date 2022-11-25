@@ -31,9 +31,9 @@ public class SaveCallback implements Callback {
     private CallbackManager callbackManager;
     @Override
     public int handle(Track body, String fileName) {  // handle the callback when the saving request is performed
-        int result = 0;
+        int result;
         try {
-            callbackManager.processSave(body, fileName);  // file saving process
+            result = callbackManager.processSave(body, fileName);  // file saving process
         } catch (Exception ex) {
             ex.printStackTrace();
             result = 1;

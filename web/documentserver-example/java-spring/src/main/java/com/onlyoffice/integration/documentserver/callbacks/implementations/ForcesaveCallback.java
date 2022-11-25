@@ -31,9 +31,9 @@ public class ForcesaveCallback implements Callback {
     private CallbackManager callbackManager;
     @Override
     public int handle(Track body, String fileName) {  // handle the callback when the force saving request is performed
-        int result = 0;
+        int result;
         try {
-            callbackManager.processForceSave(body, fileName);  // file force saving process
+            result = callbackManager.processForceSave(body, fileName);  // file force saving process
         } catch (Exception ex) {
             ex.printStackTrace();
             result = 1;

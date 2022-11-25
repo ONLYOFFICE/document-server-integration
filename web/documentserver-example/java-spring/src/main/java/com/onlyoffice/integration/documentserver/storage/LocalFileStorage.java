@@ -184,10 +184,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return "";
     }
 
-    // move a file to the specified destination
-    public boolean moveFile(Path source, Path destination){
+    // copy a file to the specified destination
+    public boolean copyFile(Path source, Path destination){
         try {
-            Files.move(source, destination,
+            Files.copy(source, destination,
                     new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
             return true;
         } catch (IOException e) {
