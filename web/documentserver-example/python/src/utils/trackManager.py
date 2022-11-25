@@ -68,6 +68,10 @@ def processSave(body, filename, usAddr):
 
     path = docManager.getStoragePath(newFilename, usAddr) # get the file path
 
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
+
     histDir = historyManager.getHistoryDir(path) # get the path to the history direction
     if not os.path.exists(histDir): # if the path doesn't exist
         os.makedirs(histDir) # create it
@@ -75,8 +79,13 @@ def processSave(body, filename, usAddr):
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
     os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
-    docManager.saveFileFromUri(download, path) # save file to the storage path 
-    docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
+
+    docManager.saveFile(data, path)  # save document file
+
+    dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
+    if (dataChanges is None):
+        raise Exception("Downloaded changes is null")
+    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 
     hist = None
     hist = body.get('changeshistory')
@@ -115,6 +124,10 @@ def processForceSave(body, filename, usAddr):
         except Exception:
             newFilename = True
 
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
+
     isSubmitForm = body.get('forcesavetype') == 3 # SubmitForm
 
     if(isSubmitForm):
@@ -130,7 +143,7 @@ def processForceSave(body, filename, usAddr):
         if (forcesavePath == ""):
             forcesavePath = docManager.getForcesavePath(filename, usAddr, True)
 
-    docManager.saveFileFromUri(download, forcesavePath)
+    docManager.saveFile(download, forcesavePath) # save document file
 
     if(isSubmitForm):
         uid = body['actions'][0]['userid'] # get the user id
