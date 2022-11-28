@@ -321,7 +321,7 @@ if (typeof jQuery !== "undefined") {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
                 }
-                jq(".info").on("touchend", function () {
+                jq("#info").on("touchend", function () {
                     showUserTooltip(true);
                 });
             }
@@ -350,4 +350,18 @@ if (typeof jQuery !== "undefined") {
             }, 500);
         });
     }
+
+    jq(".info-tooltip").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
+    });
 }

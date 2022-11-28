@@ -88,7 +88,7 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img id="info" src="css/images/info.svg" />
+                                                    <img id="info" class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <?php foreach(getAllUsers() as $user_l) {
                                                             $name = $user_l->name ? $user_l->name : "Anonymous";
@@ -99,7 +99,10 @@
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language editors interface</span>
+                                                <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="css/images/info.svg" />
                                                     <select class="select-user" id="language">
                                                         <?php foreach ($GLOBALS['LANGUAGES'] as $key => $language) { ?>
                                                             <option value="<?=$key?>"><?=$language?></option>
