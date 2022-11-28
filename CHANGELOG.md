@@ -1,5 +1,6 @@
 # Change Log
 
+- description in the tooltip on the main page
 - option to send directUrl
 
 ## 1.4.0
