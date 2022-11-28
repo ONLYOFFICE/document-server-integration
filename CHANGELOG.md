@@ -1,5 +1,6 @@
 # Change Log
 
+- setting an unavailable language
 - description in the tooltip on the main page
 - option to send directUrl
 
