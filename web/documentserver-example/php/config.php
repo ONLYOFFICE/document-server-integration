@@ -84,6 +84,7 @@ $GLOBALS['LANGUAGES'] = array(
     'sv' => 'Swedish',
     'tr' => 'Turkish',
     'uk' => 'Ukrainian',
-    'vi' => 'Vietnamese'
+    'vi' => 'Vietnamese',
+    'aa-AA' => 'Test Language'
 );
 ?>
