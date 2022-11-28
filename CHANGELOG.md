@@ -1,5 +1,6 @@
 # Change Log
 
+- description in the tooltip on the main page
 - nodejs: referenceData
 - option to send directUrl
 
