@@ -101,8 +101,8 @@ class TrackHelper
 
                 FileUtils.mkdir_p(ver_dir)  # create the version directory if doesn't exist
 
-                FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # move the file from the storage directory to the previous file version directory
-                save_from_uri(storage_path, download_uri)  # save the downloaded file to the storage directory
+                FileUtils.copy(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # copy the file from the storage directory to the previous file version directory
+                saved_file = save_from_uri(storage_path, download_uri)  # save the downloaded file to the storage directory
 
                 if (file_data["changesurl"])  # if the changesurl is in the body
                     save_from_uri(File.join(ver_dir, "diff.zip"), file_data["changesurl"])  # get the information from this url to the file with document versions differences
@@ -133,7 +133,7 @@ class TrackHelper
                 saved = 1
             end
 
-            return saved
+            return saved_file ? saved : 1
         end
 
         # file force saving process
@@ -190,7 +190,7 @@ class TrackHelper
                     end
                 end
 
-                save_from_uri(forcesave_path, download_uri)  # download the form
+                saved_file = save_from_uri(forcesave_path, download_uri)  # download the form
 
                 if (is_submit_form)
                     uid = file_data['actions'][0]['userid']
@@ -202,7 +202,7 @@ class TrackHelper
                 saved = 1
             end
 
-            return saved
+            return saved_file ? saved : 1
         end
 
         # send the command request
@@ -249,27 +249,33 @@ class TrackHelper
 
         # save file from the url
         def save_from_uri(path, uristr)
-            uri = URI.parse(uristr)  # parse the url string
-            http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
-            http.open_timeout = 5
+            begin
+                uri = URI.parse(uristr)  # parse the url string
+                http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+                http.open_timeout = 5
 
-            DocumentHelper.verify_ssl(uristr, http)
+                DocumentHelper.verify_ssl(uristr, http)
 
-            req = Net::HTTP::Get.new(uri)
-            res = http.request(req)  # get the response
+                req = Net::HTTP::Get.new(uri)
+                res = http.request(req)  # get the response
 
-            status_code = res.code
-            if status_code != 200  # checking status code
-                raise "Document editing service returned status: #{status_code}"
-            end
-            data = res.body  # and take its body
+                status_code = res.code
+                if status_code != '200'  # checking status code
+                    raise "Document editing service returned status: #{status_code}"
+                end
+                data = res.body  # and take its body
 
-            if data == nil
-              raise 'stream is null'
-            end
+                if data == nil
+                    raise 'stream is null'
+                end
 
-            File.open(path, 'wb') do |file|  # open the file from the path specified
-              file.write(data)  # and write the response data to it
+                return true
+            rescue => e
+                return false
+            ensure
+                File.open(path, 'wb') do |file|  # open the file from the path specified
+                    file.write(data)  # and write the response data to it
+                end
             end
         end
     end
