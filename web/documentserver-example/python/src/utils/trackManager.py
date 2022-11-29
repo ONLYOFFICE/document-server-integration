@@ -86,7 +86,7 @@ def processSave(body, filename, usAddr):
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
     shutil.copyfile(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # copy the latest file version to the previous file version
-    
+
     docManager.saveFileFromUri(download, path) # save file to the storage path 
     docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 

@@ -171,7 +171,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
         // file force saving process
         public static int processForceSave(Dictionary<string, object> fileData, string fileName, string userAddress)
-        {           
+        {
             if (fileData["url"].Equals(null)) {
                 throw new Exception("DownloadUrl is null");
             }
@@ -346,15 +346,15 @@ namespace OnlineEditorsExampleMVC.Helpers
                 var req = (HttpWebRequest)WebRequest.Create(url);
                 req.Timeout = 5000;
                 stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
-                
-                    if (stream == null) throw new Exception("stream is null");
-                
+
+                if (stream == null) throw new Exception("stream is null");
+
                 return true;
             }
             catch (Exception)
             {
                 return false;
-            } 
+            }
             finally
             {
                 SaveFile(path, stream);

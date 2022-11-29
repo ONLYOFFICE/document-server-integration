@@ -147,7 +147,7 @@ namespace OnlineEditorsExample
             {
                 DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
             }
-            
+
             var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
             if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
             {
@@ -350,16 +350,18 @@ namespace OnlineEditorsExample
                 stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
 
                 if (stream == null) throw new Exception("stream is null");
-                
+
                 return true;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return false;
-            } finally
+            }
+            finally
             {
                 SaveFile(path, stream);
                 if (stream != null) stream.Close();
-            }          
+            }
         }
     }
 }
