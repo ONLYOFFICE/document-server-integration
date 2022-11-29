@@ -166,11 +166,6 @@ namespace OnlineEditorsExampleMVC.Helpers
                 File.Delete(forcesavePath);  // remove it
             }
 
-            if (!isSaveFile)
-            {
-                Directory.Delete(versionDir, true);
-            }
-
             return isSaveFile ? 0 : 1;
         }
 
@@ -322,9 +317,27 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
         }
 
+        // save file
+        private static void SaveFile(string path, Stream stream)
+        {
+            const int bufferSize = 4096;
+            if (stream == null) stream = new MemoryStream();
+
+            using (var fs = File.Open(path, FileMode.Create))
+            {
+                var buffer = new byte[bufferSize];
+                int readed;
+                while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                {
+                    fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                }
+            }
+        }
+
         // save file information from the url to the file specified
         private static bool DownloadToFile(string url, string path)
         {
+            Stream stream = null;
             try
             {
                 if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
@@ -332,26 +345,20 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 var req = (HttpWebRequest)WebRequest.Create(url);
                 req.Timeout = 5000;
-                using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
-                {
+                stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
+                
                     if (stream == null) throw new Exception("stream is null");
-                    const int bufferSize = 4096;
-
-                    using (var fs = File.Open(path, FileMode.Create))
-                    {
-                        var buffer = new byte[bufferSize];
-                        int readed;
-                        while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                        {
-                            fs.Write(buffer, 0, readed);  // write bytes to the output stream
-                        }
-                    }
-                }
+                
                 return true;
             }
             catch (Exception)
             {
                 return false;
+            } 
+            finally
+            {
+                SaveFile(path, stream);
+                if (stream != null) stream.Close();
             }
         }
     }
