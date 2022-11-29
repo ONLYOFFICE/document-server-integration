@@ -71,6 +71,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
     // save file information from the URL to the file specified
     private boolean downloadToFile(String url, Path path) {
+        InputStream stream = new ByteArrayInputStream(new byte[0]);
         try {
             if (url == null || url.isEmpty()) throw new RuntimeException("Url argument is not specified");  // URL isn't specified
             if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
@@ -78,7 +79,7 @@ public class DefaultCallbackManager implements CallbackManager {
             URL uri = new URL(url);
             java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
             connection.setConnectTimeout(5000);
-            InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
+            stream = connection.getInputStream();  // get input stream of the file information from the URL
 
             int statusCode = connection.getResponseCode();
             if (statusCode != 200) {  // checking status code
@@ -91,10 +92,11 @@ public class DefaultCallbackManager implements CallbackManager {
                 throw new RuntimeException("Input stream is null");
             }
 
-            storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
             return true;
         } catch (Exception e) {
             return false;
+        } finally {
+            storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
         }
     }
 
