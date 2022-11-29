@@ -33,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -257,44 +258,52 @@ public class TrackManager {
 
     // save file information from the url to the file specified
     private static boolean downloadToFile(String url, File file) {
+        InputStream stream = new ByteArrayInputStream(new byte[0]);
+        java.net.HttpURLConnection connection = null;
         try {
             if (url == null || url.isEmpty()) throw new Exception("argument url");  // url isn't specified
             if (file == null) throw new Exception("argument path");  // file isn't specified
 
             URL uri = new URL(url);
-            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+            connection = (java.net.HttpURLConnection) uri.openConnection();
             connection.setConnectTimeout(5000);
 
             int statusCode = connection.getResponseCode();
             if (statusCode != 200) {  // checking status code
-                connection.disconnect();
                 throw new RuntimeException("Document editing service returned status: " + statusCode);
             }
 
-            InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
-
+            stream = connection.getInputStream();  // get input stream of the file information from the url
             if (stream == null)
             {
                 throw new Exception("Stream is null");
             }
 
-            try (FileOutputStream out = new FileOutputStream(file))
-            {
-                int read;
-                final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1)
-                {
-                    out.write(bytes, 0, read);  // write bytes to the output stream
-                }
-
-                // force write data to the output stream that can be cached in the current thread
-                out.flush();
-            }
-
-            connection.disconnect();
             return true;
         } catch (Exception e) {
             return false;
+        } finally {
+            saveFile(file, stream);
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    // save file
+    private static void saveFile(File file, InputStream stream) {
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            int read;
+            final byte[] bytes = new byte[1024];
+            while ((read = stream.read(bytes)) != -1)
+            {
+                out.write(bytes, 0, read);  // write bytes to the output stream
+            }
+
+            // force write data to the output stream that can be cached in the current thread
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

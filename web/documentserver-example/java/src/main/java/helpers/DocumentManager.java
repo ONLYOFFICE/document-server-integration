@@ -183,6 +183,7 @@ public class DocumentManager
     // get the path to the forcesaved file version
     public static String ForcesavePath(String fileName, String userAddress, Boolean create)
     {
+        if (request.getSession() == null) return "";
         String hostAddress = CurUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.GetProperty("storage-folder");
