@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: fix wopi actions after restart
 - setting an unavailable language
 - description in the tooltip on the main page
 - nodejs: referenceData
