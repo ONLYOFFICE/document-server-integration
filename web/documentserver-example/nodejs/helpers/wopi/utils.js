@@ -30,17 +30,6 @@ async function initWopi(docManager) {
     let absSiteUrl = siteUrl;
     if (absSiteUrl.indexOf("/") === 0) {
         absSiteUrl = docManager.getServerHost() + siteUrl;
-
-        //todo: remove
-        if (absSiteUrl.indexOf("example") !== -1) {
-            let host = req.get("host");
-            let pos = host.indexOf("/", "https://".length);
-            if (pos > -1)
-            {
-                host = host.substring(0, pos);
-            }
-            absSiteUrl = req.docManager.getProtocol() + "://" + host + siteUrl;
-        }
     }
 
     // get the wopi discovery information
