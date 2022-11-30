@@ -289,7 +289,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create or update a file
-    public boolean createOrUpdateFile(Path path, InputStream stream) {
+    public boolean createOrUpdateFile(Path path, ByteArrayInputStream stream) {
         if (!Files.exists(path)){ // if the specified file does not exist
             return createFile(path, stream);  // create it in the specified directory
         } else {
