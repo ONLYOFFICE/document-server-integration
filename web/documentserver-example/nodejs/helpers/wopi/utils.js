@@ -22,8 +22,30 @@ var urlModule = require("url");
 var urllib = require("urllib");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
+const siteUrl = configServer.get("siteUrl");  // the path to the editors installation
 
 var cache = null;
+
+async function initWopi(docManager) {
+    let absSiteUrl = siteUrl;
+    if (absSiteUrl.indexOf("/") === 0) {
+        absSiteUrl = docManager.getServerHost() + siteUrl;
+
+        //todo: remove
+        if (absSiteUrl.indexOf("example") !== -1) {
+            let host = req.get("host");
+            let pos = host.indexOf("/", "https://".length);
+            if (pos > -1)
+            {
+                host = host.substring(0, pos);
+            }
+            absSiteUrl = req.docManager.getProtocol() + "://" + host + siteUrl;
+        }
+    }
+
+    // get the wopi discovery information
+    await getDiscoveryInfo(absSiteUrl);
+}
 
 // get the wopi discovery information
 async function getDiscoveryInfo(siteUrl) {
@@ -125,6 +147,7 @@ function getActionUrl(host, userAddress, action, filename) {
     return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
 }
 
+exports.initWopi = initWopi;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;
