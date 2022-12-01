@@ -119,12 +119,15 @@ users.getUser = function (id) {
     return result ? result : this[0];
 };
 
-// get a list of users with their names and emails for mentions
+// get a list of users with their name and email
 users.getUsersForMentions = function (id) {
     var result = [];
     this.forEach(user => {
         if (user.id != id && user.name != null && user.email != null) {
-            result.push({ name: user.name, email: user.email });
+            result.push({
+                email: user.email,
+                name: user.name
+            });
         }
     });
     return result;

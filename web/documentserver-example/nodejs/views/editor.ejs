@@ -139,7 +139,7 @@
             docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {  // add mentions for not anonymous users
+        var onRequestUsers = function () {
             docEditor.setUsers({  // set a list of users to mention in the comments
                 "users": <%- JSON.stringify(usersForMentions) %>
             });
