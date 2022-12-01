@@ -77,7 +77,7 @@ var users = [
                 remove: ["group-2"]
             }, ["group-2", ""],
             true, [], descr_user_2, false),  // own and without group
-    new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
+    new User("uid-3", "Hamish Mitchell", null,
             "group-3", ["group-2"], {
                 view: ["group-3", "group-2"],
                 edit: ["group-2"],
@@ -119,13 +119,28 @@ users.getUser = function (id) {
     return result ? result : this[0];
 };
 
-// get a list of users with their name and email
+// get a list of users with their name and email for mentions
 users.getUsersForMentions = function (id) {
     var result = [];
     this.forEach(user => {
         if (user.id != id && user.name != null && user.email != null) {
             result.push({
                 email: user.email,
+                name: user.name
+            });
+        }
+    });
+    return result;
+};
+
+// get a list of users with their name, id and email for protect
+users.getUsersForProtect = function (id) {
+    var result = [];
+    this.forEach(user => {
+        if (user.id != id && user.name != null) {
+            result.push({
+                email: user.email,
+                id: user.id,
                 name: user.name
             });
         }
