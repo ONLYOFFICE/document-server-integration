@@ -28,12 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,6 +39,78 @@ import java.util.Scanner;
 
 public class TrackManager {
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+
+    // create a new file if it does not exist
+    private static boolean createFile(ByteArrayInputStream stream, Path path) {
+        if (Files.exists(path)) {
+            return true;
+        }
+        try {
+            File file = Files.createFile(path).toFile();  // create a new file in the specified path
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                int read;
+                final byte[] bytes = new byte[1024];
+                while ((read = stream.read(bytes)) != -1) {
+                    out.write(bytes, 0, read);  // write bytes to the output stream
+                }
+                out.flush();  // force write data to the output stream that can be cached in the current thread
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // get byte array from stream
+    private static byte[] getAllBytes(InputStream is) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buffer = new byte[0xFFFF];
+        for (int len = is.read(buffer); len != -1; len = is.read(buffer)) {
+            os.write(buffer, 0, len);
+        }
+        return os.toByteArray();
+    }
+
+    // save file
+    private static boolean saveFile(ByteArrayInputStream stream, Path path) {
+        if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        if (!Files.exists(path)) { // if the specified file does not exist
+            return createFile(stream, path);  // create it in the specified directory
+        } else {
+            try {
+                Files.write(path, getAllBytes(stream));  // otherwise, write new information in the bytes format to the file
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    // download file from url
+    private static ByteArrayInputStream getDownloadFile(String url) throws Exception {
+        if (url == null || url.isEmpty())
+            throw new RuntimeException("Url argument is not specified");  // URL isn't specified
+
+        URL uri = new URL(url);
+        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+        connection.setConnectTimeout(5000);
+        InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
+
+        int statusCode = connection.getResponseCode();
+
+        if (statusCode != 200) {  // checking status code
+            connection.disconnect();
+            throw new RuntimeException("Document editing service returned status: " + statusCode);
+        }
+
+        if (stream == null) {
+            connection.disconnect();
+            throw new RuntimeException("Input stream is null");
+        }
+
+        return new ByteArrayInputStream(getAllBytes(stream));
+    }
 
     // read request body
     public static JSONObject readBody(HttpServletRequest request, PrintWriter writer) throws Exception {
@@ -52,8 +122,7 @@ public class TrackManager {
             scanner.useDelimiter("\\A");
             bodyString = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             writer.write("get request.getInputStream error:" + ex.getMessage());
             throw ex;
         }
@@ -100,7 +169,7 @@ public class TrackManager {
             if (jwt.getObject("payload") != null) {  // get the payload object from the request body
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> payload =
-                            (LinkedHashMap<String, Object>)jwt.getObject("payload");
+                            (LinkedHashMap<String, Object>) jwt.getObject("payload");
 
                     jwt.claims = payload;
                 } catch (Exception ex) {
@@ -128,16 +197,18 @@ public class TrackManager {
             throw new Exception("DownloadUrl is null");
         }
         String downloadUri = (String) body.get("url");
+        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
+
         String changesUri = (String) body.get("changesurl");
         String key = (String) body.get("key");
         String newFileName = fileName;
-        boolean isSaveFile;
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
         String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt == "." + null) downloadExt = FileUtility.GetFileExtension(downloadUri); // Support for versions below 7.0
+        if (downloadExt == "." + null)
+            downloadExt = FileUtility.GetFileExtension(downloadUri); // Support for versions below 7.0
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
@@ -148,47 +219,52 @@ public class TrackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
         }
 
         String storagePath = DocumentManager.StoragePath(newFileName, userAddress);  // get the file path
-        File histDir = new File(DocumentManager.HistoryDir(storagePath));  // get the path to the history direction
-        if (!histDir.exists()) histDir.mkdirs();  // if the path doesn't exist, create it
+        Path toSave = Paths.get(storagePath);
+        saveFile(streamFile, toSave); // save document file
 
-        String versionDir = DocumentManager.VersionDir(histDir.getAbsolutePath(), DocumentManager.GetFileVersion(histDir.getAbsolutePath()));  // get the path to the file version
-        File ver = new File(versionDir);
-        File lastVersion = new File(DocumentManager.StoragePath(fileName, userAddress));
-        File toSave = new File(storagePath);
+        Path lastVersion = Paths.get(DocumentManager.StoragePath(fileName, userAddress));  // get the path to the last file version
+        if (lastVersion.toFile().exists()) {  // if the last file version exists
+            Path histDir = Paths.get(DocumentManager.HistoryDir(storagePath));  // get the path to the history direction
+            if (!Files.exists(histDir)) Files.createDirectories(histDir);  // if the path doesn't exist, create it
+            String versionDir = DocumentManager.VersionDir(histDir.toAbsolutePath().toString(),
+                    DocumentManager.GetFileVersion(histDir.toAbsolutePath().toString()));  // get the path to the file version
 
-        if (!ver.exists()) ver.mkdirs();
+            Path ver = Paths.get(versionDir);
 
-        Files.copy(lastVersion.toPath(), Paths.get(versionDir + File.separator + "prev" + curExt), StandardCopyOption.REPLACE_EXISTING); // copy the latest file version to the previous file version
+            if (!Files.exists(ver)) Files.createDirectories(ver);
+            Files.copy(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt), StandardCopyOption.REPLACE_EXISTING); // copy the latest file version to the previous file version
 
-        isSaveFile = downloadToFile(downloadUri, toSave);  // save file to the storage path
-        downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
+            ByteArrayInputStream streamChanges = getDownloadFile(changesUri);
+            saveFile(streamChanges, Paths.get(versionDir + File.separator + "diff.zip"));
 
-        String history = (String) body.get("changeshistory");
-        if (history == null && body.containsKey("history")) {
-            history = ((JSONObject) body.get("history")).toJSONString();
-        }
-        if (history != null && !history.isEmpty()) {
-            FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));  // write the history changes to the changes.json file
-            fw.write(history);
+            String history = (String) body.get("changeshistory");
+            if (history == null && body.containsKey("history")) {
+                history = ((JSONObject) body.get("history")).toJSONString();
+            }
+            if (history != null && !history.isEmpty()) {
+                FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));  // write the history changes to the changes.json file
+                fw.write(history);
+                fw.close();
+            }
+
+            FileWriter fw = new FileWriter(new File(versionDir + File.separator + "key.txt"));  // write the key value to the key.txt file
+            fw.write(key);
             fw.close();
+
+            String forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
+            if (!forcesavePath.equals("")) {  // if the forcesaved file version exists
+                File forceSaveFile = new File(forcesavePath);
+                forceSaveFile.delete();  // remove it
+            }
         }
 
-        FileWriter fw = new FileWriter(new File(versionDir + File.separator + "key.txt"));  // write the key value to the key.txt file
-        fw.write(key);
-        fw.close();
-
-        String forcesavePath = DocumentManager.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
-        if (!forcesavePath.equals("")) {  // if the forcesaved file version exists
-            File forceSaveFile = new File(forcesavePath);
-            forceSaveFile.delete();  // remove it
-        }
-        return isSaveFile ? 0 : 1;
+        return 0;
     }
 
     // file force saving process
@@ -197,12 +273,14 @@ public class TrackManager {
             throw new Exception("DownloadUrl is null");
         }
         String downloadUri = (String) body.get("url");
+        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
+        String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt == "."+null) downloadExt = FileUtility.GetFileExtension(downloadUri);    // Support for versions below 7.0
+        if (downloadExt == "." + null)
+            downloadExt = FileUtility.GetFileExtension(downloadUri);    // Support for versions below 7.0
 
         Boolean newFileName = false;
 
@@ -215,7 +293,7 @@ public class TrackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = true;
             }
         }
@@ -225,14 +303,14 @@ public class TrackManager {
 
         if (isSubmitForm) {  // if the form is submitted
             // new file
-            if (newFileName){
+            if (newFileName) {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
             } else {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
             }
             forcesavePath = DocumentManager.StoragePath(fileName, userAddress);
         } else {
-            if (newFileName){
+            if (newFileName) {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
 
@@ -243,8 +321,7 @@ public class TrackManager {
             }
         }
 
-        File toSave = new File(forcesavePath);
-        boolean isSaveFile = downloadToFile(downloadUri, toSave);
+        saveFile(streamFile, Paths.get(forcesavePath));
 
         if (isSubmitForm) {
             JSONArray actions = (JSONArray) body.get("actions");
@@ -253,58 +330,7 @@ public class TrackManager {
             DocumentManager.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for forcesaved file
         }
 
-        return isSaveFile ? 0 : 1;
-    }
-
-    // save file information from the url to the file specified
-    private static boolean downloadToFile(String url, File file) {
-        InputStream stream = new ByteArrayInputStream(new byte[0]);
-        java.net.HttpURLConnection connection = null;
-        try {
-            if (url == null || url.isEmpty()) throw new Exception("argument url");  // url isn't specified
-            if (file == null) throw new Exception("argument path");  // file isn't specified
-
-            URL uri = new URL(url);
-            connection = (java.net.HttpURLConnection) uri.openConnection();
-            connection.setConnectTimeout(5000);
-
-            int statusCode = connection.getResponseCode();
-            if (statusCode != 200) {  // checking status code
-                throw new RuntimeException("Document editing service returned status: " + statusCode);
-            }
-
-            stream = connection.getInputStream();  // get input stream of the file information from the url
-            if (stream == null)
-            {
-                throw new Exception("Stream is null");
-            }
-
-            return true;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            saveFile(file, stream);
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    // save file
-    private static void saveFile(File file, InputStream stream) {
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            int read;
-            final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
-                out.write(bytes, 0, read);  // write bytes to the output stream
-            }
-
-            // force write data to the output stream that can be cached in the current thread
-            out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return 0;
     }
 
     // create a command request
@@ -358,7 +384,7 @@ public class TrackManager {
         connection.disconnect();
 
         JSONObject response = ServiceConverter.ConvertStringToJSON(jsonString);  // convert json string to json object
-        if (!response.get("error").toString().equals("0")){
+        if (!response.get("error").toString().equals("0")) {
             throw new Exception(response.toJSONString());
         }
     }
