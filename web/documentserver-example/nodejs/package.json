@@ -3,7 +3,9 @@
   "version": "4.1.0",
   "private": false,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "bin": "bin/www",
   "description": "OnlineEditorsExampleNodeJS",
@@ -40,5 +42,10 @@
       "public/**/*",
       "views/*"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.28.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
   }
 }

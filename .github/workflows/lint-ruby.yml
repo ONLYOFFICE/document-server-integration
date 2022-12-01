@@ -1,4 +1,4 @@
-name: RuboCop Linter
+name: Rubocop
 
 on:
   workflow_dispatch:
@@ -18,8 +18,14 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        
-      - name: RuboCop Linter Action
-        uses: andrewmcodes/rubocop-linter-action@v3.3.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      - name: Install dependencies
+        run: | 
+          bundle install
+      - name: Rubocop
+        run: |
+          gem install rubocop
+          rubocop
