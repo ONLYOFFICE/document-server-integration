@@ -92,17 +92,19 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) {
+            if (fileData["url"].Equals(null)) 
+            {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
-            string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
+            string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension           
 
             var downloadExt = fileData.ContainsKey("filetype")
-                ? "." + (string)fileData["filetype"]
-                : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+                    ? "." + (string)fileData["filetype"]
+                    : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
 
             var newFileName = fileName;
+            byte[] bytesFile = DownloadFile(downloadUri); // download document file
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (!curExt.Equals(downloadExt, StringComparison.InvariantCultureIgnoreCase))
@@ -117,11 +119,11 @@ namespace OnlineEditorsExampleMVC.Helpers
                         // get the correct file name if it already exists
                         newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                     }
-                    else 
+                    else
                     {
                         downloadUri = newFileUri;
                     }
-                } 
+                }
                 catch (Exception)
                 {
                     newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
@@ -130,7 +132,9 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             DocManagerHelper.VerifySSL();
 
-            var storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
+            string storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
+            SaveFile(bytesFile, storagePath);// save document file
+
             var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
             if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
 
@@ -140,10 +144,10 @@ namespace OnlineEditorsExampleMVC.Helpers
             // get the path to the previous file version and copy it to the storage directory
             File.Copy(DocManagerHelper.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
 
-            bool isSaveFile = DownloadToFile(downloadUri, storagePath);  // save file to the storage directory
             if (fileData.ContainsKey("changesurl"))
             {
-                DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
+                byte[] bytesChanges = DownloadFile((string)fileData["changesurl"]); // download changes file
+                SaveFile(bytesChanges, Path.Combine(versionDir, "diff.zip")); // save file changes to the diff.zip archive
             }
 
             var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
@@ -166,7 +170,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 File.Delete(forcesavePath);  // remove it
             }
 
-            return isSaveFile ? 0 : 1;
+            return 0;
         }
 
         // file force saving process
@@ -176,6 +180,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
+            byte[] bytesFile = DownloadFile(downloadUri); // download document file
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
@@ -237,7 +242,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
-            bool isSaveFile = DownloadToFile(downloadUri, forcesavePath);
+            SaveFile(bytesFile, forcesavePath);// save document file
 
             if (isSubmitForm)
             {
@@ -248,7 +253,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
             }
 
-            return isSaveFile ? 0 : 1;
+            return 0;
         }
 
         // create a command request
@@ -318,48 +323,27 @@ namespace OnlineEditorsExampleMVC.Helpers
         }
 
         // save file
-        private static void SaveFile(string path, Stream stream)
+        private static void SaveFile(byte[] data, string path)
         {
-            const int bufferSize = 4096;
-            if (stream == null) stream = new MemoryStream();
-
-            using (var fs = File.Open(path, FileMode.Create))
-            {
-                var buffer = new byte[bufferSize];
-                int readed;
-                while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                {
-                    fs.Write(buffer, 0, readed);  // write bytes to the output stream
-                }
-            }
+            File.WriteAllBytes(path, data);
         }
 
         // save file information from the url to the file specified
-        private static bool DownloadToFile(string url, string path)
+        private static byte[] DownloadFile(string url)
         {
-            Stream stream = null;
-            try
-            {
-                if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
-                if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified
+            if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
 
-                var req = (HttpWebRequest)WebRequest.Create(url);
-                req.Timeout = 5000;
-                stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Timeout = 5000;
+            Stream stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
 
-                if (stream == null) throw new Exception("stream is null");
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally
-            {
-                SaveFile(path, stream);
-                if (stream != null) stream.Close();
-            }
+            if (stream == null) throw new Exception("stream is null");
+            MemoryStream memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            stream.Close();
+            byte[] data = memoryStream.ToArray();
+            memoryStream.Close();
+            return data;
         }
     }
 }
