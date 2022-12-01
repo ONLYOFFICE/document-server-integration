@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: refresh config
+
 ## 1.11.0
 - he-IL skin language
 - ConvertService.ashx address replaced with converter
