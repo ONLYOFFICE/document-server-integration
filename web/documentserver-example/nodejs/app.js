@@ -1012,6 +1012,53 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   }
 });
 
+app.get('/config', async (req, res) => {
+  try {
+    req.DocManager = new DocManager(req, res);
+    const fileName = fileUtility.getFileName(req.query.fileName);
+
+    const userAddress = req.DocManager.curUserHostAddress();
+    // if the file with a given name doesn't exist
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+      throw new Error(`File not found: ${fileName}`); // display error message
+    }
+
+    // file config data
+    const data = {
+      document: {
+        key: req.DocManager.getKey(fileName),
+        title: fileName,
+        url: req.DocManager.getDownloadUrl(fileName, true),
+        referenceData: {
+          fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
+          instanceId: req.DocManager.getInstanceId(),
+        },
+      },
+      editorConfig: {
+        callbackUrl: req.DocManager.getCallback(fileName),
+        mode: 'edit',
+      },
+    };
+
+    if (req.query.directUrl === 'true') {
+      data.document.directUrl = req.DocManager.getDownloadUrl(fileName);
+    }
+
+    if (cfgSignatureEnable) {
+      // sign token with given data using signature secret
+      data.token = jwt.sign(data, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.write(JSON.stringify(data));
+  } catch (ex) {
+    console.log(ex);
+    res.status(500);
+    res.write('error');
+  }
+  res.end();
+});
+
 app.get('/editor', (req, res) => { // define a handler for editing document
   try {
     req.DocManager = new DocManager(req, res);
