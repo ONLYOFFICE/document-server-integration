@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: link in referenceData
 - nodejs: onRequestSelectDocument method
 - nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
