@@ -88,7 +88,7 @@ def convert(request):
             else:
                 correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + newExt, request)  # otherwise, create a new name with the necessary extension
                 path = docManager.getStoragePath(correctName, request)
-                docManager.saveFileFromUri(newUri, path, request, True)  # save the file from the new url in the storage directory
+                docManager.downloadFileFromUri(newUri, path, True)  # save the file from the new url in the storage directory
                 docManager.removeFile(filename, request)  # remove the original file
                 response.setdefault('filename', correctName)  # pass the name of the converted file to the response
         else:
@@ -138,7 +138,7 @@ def saveAs(request):
             response.setdefault('error', 'File type is not supported')
             raise Exception('File type is not supported')
 
-        docManager.saveFileFromUri(saveAsFileUrl, path, request, True)  # save the file from the new url in the storage directory
+        docManager.downloadFileFromUri(saveAsFileUrl, path, True)  # save the file from the new url in the storage directory
 
         response.setdefault('file', filename)
     except Exception as e:
