@@ -83,6 +83,13 @@ function processSave($data, $fileName, $userAddress) {
         return $result;
     }
 
+    $new_data = file_get_contents($downloadUri, false,
+        stream_context_create(["http"=>["timeout"=>5]]));
+    if ($new_data === FALSE) {
+        $result["error"] = 1;
+        return $result;
+    }
+
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
@@ -115,38 +122,35 @@ function processSave($data, $fileName, $userAddress) {
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
-        $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
-        $histDir = getHistoryDir($storagePath);  // get the path to the history direction
-        $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
+    $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
+    $histDir = getHistoryDir($storagePath);  // get the path to the history direction
+    $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
 
-        mkdir($verDir);  // if the path doesn't exist, create it
+    mkdir($verDir);  // if the path doesn't exist, create it
 
-        rename(getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
-        file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
+    rename(getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
+    file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
-        if ($changesData = file_get_contents($data->changesurl, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) {
-            file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
-        }
-
-        $histData = empty($data->changeshistory) ? null : $data->changeshistory;
-        if (empty($histData)) {
-            $histData = json_encode($data->history, JSON_PRETTY_PRINT);
-        }
-        if (!empty($histData)) {
-            file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);  // write the history changes to the changes.json file
-        }
-        file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);  // write the key value to the key.txt file
-
-        $forcesavePath = getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
-        if ($forcesavePath != "") {  // if the forcesaved file version exists
-            unlink($forcesavePath);  // remove it
-        }
-
-        $saved = 0;
+    if ($changesData = file_get_contents($data->changesurl, false,
+        stream_context_create(["http"=>["timeout"=>5]]))) {
+        file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
     }
+
+    $histData = empty($data->changeshistory) ? null : $data->changeshistory;
+    if (empty($histData)) {
+        $histData = json_encode($data->history, JSON_PRETTY_PRINT);
+    }
+    if (!empty($histData)) {
+        file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);  // write the history changes to the changes.json file
+    }
+    file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);  // write the key value to the key.txt file
+
+    $forcesavePath = getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
+    if ($forcesavePath != "") {  // if the forcesaved file version exists
+        unlink($forcesavePath);  // remove it
+    }
+
+    $saved = 0;
 
     $result["error"] = $saved;
 
@@ -157,6 +161,13 @@ function processSave($data, $fileName, $userAddress) {
 function processForceSave($data, $fileName, $userAddress) {
     $downloadUri = $data->url;
     if ($downloadUri === null) {
+        $result["error"] = 1;
+        return $result;
+    }
+
+    $new_data = file_get_contents($downloadUri, false,
+        stream_context_create(["http"=>["timeout"=>5]]));
+    if ($new_data === FALSE) {
         $result["error"] = 1;
         return $result;
     }
@@ -192,38 +203,35 @@ function processForceSave($data, $fileName, $userAddress) {
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
-        $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
-        $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
+    $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
+    $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
-        if ($isSubmitForm) {
-            if ($newFileName){
-                $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
-            } else {
-                $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
-            }
-            $forcesavePath = getStoragePath($fileName, $userAddress);
+    if ($isSubmitForm) {
+        if ($newFileName){
+            $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
         } else {
-            if ($newFileName){
-                $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
-            }
-            // create forcesave path if it doesn't exist
-            $forcesavePath = getForcesavePath($fileName, $userAddress, false);
-            if ($forcesavePath == "") {
-                $forcesavePath = getForcesavePath($fileName, $userAddress, true);
-            }
+            $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
         }
-
-        file_put_contents($forcesavePath, $new_data, LOCK_EX);
-
-        if ($isSubmitForm) {
-            $uid = $data->actions[0]->userid;  // get the user id
-            createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
+        $forcesavePath = getStoragePath($fileName, $userAddress);
+    } else {
+        if ($newFileName){
+            $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
         }
-
-        $saved = 0;
+        // create forcesave path if it doesn't exist
+        $forcesavePath = getForcesavePath($fileName, $userAddress, false);
+        if ($forcesavePath == "") {
+            $forcesavePath = getForcesavePath($fileName, $userAddress, true);
+        }
     }
+
+    file_put_contents($forcesavePath, $new_data, LOCK_EX);
+
+    if ($isSubmitForm) {
+        $uid = $data->actions[0]->userid;  // get the user id
+        createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
+    }
+
+    $saved = 0;
 
     $result["error"] = $saved;
 
