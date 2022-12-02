@@ -116,12 +116,11 @@ class TrackHelper
                     return is_saved
                 end
 
-                byebug
                 if file_data["changesurl"] # if the changesurl is in the body
-                    save_from_uri(File.join(ver_dir, "diff.zip"), file_data["changesurl"])  # get the information from this url to the file with document versions differences
+                    change_data = download_file(file_data["changesurl"]) # download file with document versions differences
+                    save_file(change_data, File.join(ver_dir, "diff.zip")) # save file with document versions differences
                 end
 
-                byebug
                 hist_data = file_data["changeshistory"]
                 unless hist_data # if there are no changes in the history
                     hist_data = file_data["history"].to_json # write the original history information to the history data
@@ -132,7 +131,6 @@ class TrackHelper
                     end
                 end
 
-                byebug
                 # write the key value to the key.txt file
                 File.open(File.join(ver_dir, "key.txt"), 'wb') do |file|
                     file.write(file_data["key"])

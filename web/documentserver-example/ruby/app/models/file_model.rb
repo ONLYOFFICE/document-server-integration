@@ -237,7 +237,7 @@ class FileModel
             changes = JSON.parse(file.read())  # and parse its content
           end
 
-          change = changes["changes"][0]
+          change = changes["changes"] ? changes["changes"][0] : nil
 
           # write information about changes to the object
           obj["changes"] = change ? changes["changes"] : nil
