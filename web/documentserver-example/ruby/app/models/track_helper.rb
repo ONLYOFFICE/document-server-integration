@@ -63,10 +63,17 @@ class TrackHelper
         # file saving process
         def process_save(file_data, file_name, user_address)
             download_uri = file_data['url']
-            if (download_uri.eql?(nil))
+            if download_uri.eql?(nil)
                 saved = 1
                 return saved
             end
+
+            data = download_file(download_uri) # download document file
+            if data.eql?(nil)
+                saved = 1
+                return saved
+            end
+
             new_file_name = file_name
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
 
@@ -78,12 +85,12 @@ class TrackHelper
             cur_ext = File.extname(file_name).downcase  # get current file extension
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
-            if (!cur_ext.eql?(download_ext))
-                key = ServiceConverter.generate_revision_id(download_uri)  # get the document key
+            unless cur_ext.eql?(download_ext)
+                key = ServiceConverter.generate_revision_id(download_uri) # get the document key
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil)  # get the url of the converted file
-                    if (new_file_uri == nil || new_file_uri.empty?)
-                        new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)  # get the correct file name if it already exists
+                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+                    if new_file_uri == nil || new_file_uri.empty?
+                        new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) # get the correct file name if it already exists
                     else
                         download_uri = new_file_uri
                     end
@@ -96,36 +103,44 @@ class TrackHelper
             begin
                 storage_path = DocumentHelper.storage_path(new_file_name, user_address)  # get the storage directory of the new file
 
+
                 hist_dir = DocumentHelper.history_dir(storage_path)  # get the history directory of the new file
                 ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir))  # get the path to the specified file version
+
 
                 FileUtils.mkdir_p(ver_dir)  # create the version directory if doesn't exist
 
                 FileUtils.copy(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # copy the file from the storage directory to the previous file version directory
-                saved_file = save_from_uri(storage_path, download_uri)  # save the downloaded file to the storage directory
+                is_saved = save_file(data, storage_path)  # save the downloaded file to the storage directory
+                if is_saved == 1
+                    return is_saved
+                end
 
-                if (file_data["changesurl"])  # if the changesurl is in the body
+                byebug
+                if file_data["changesurl"] # if the changesurl is in the body
                     save_from_uri(File.join(ver_dir, "diff.zip"), file_data["changesurl"])  # get the information from this url to the file with document versions differences
                 end
 
+                byebug
                 hist_data = file_data["changeshistory"]
-                if (!hist_data)  # if there are no changes in the history
-                    hist_data = file_data["history"].to_json  # write the original history information to the history data
+                unless hist_data # if there are no changes in the history
+                    hist_data = file_data["history"].to_json # write the original history information to the history data
                 end
-                if (hist_data)
+                if hist_data
                     File.open(File.join(ver_dir, "changes.json"), 'wb') do |file|  # open the file with document changes
                         file.write(hist_data)  # and write history data to this file
                     end
                 end
 
+                byebug
                 # write the key value to the key.txt file
                 File.open(File.join(ver_dir, "key.txt"), 'wb') do |file|
                     file.write(file_data["key"])
                 end
 
                 forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false)  # get the path to the forcesaved file
-                if (!forcesave_path.eql?(""))  # if this path is empty
-                    File.delete(forcesave_path)  # remove it
+                unless forcesave_path.eql?("") # if this path is empty
+                    File.delete(forcesave_path) # remove it
                 end
 
                 saved = 0
@@ -133,20 +148,26 @@ class TrackHelper
                 saved = 1
             end
 
-            return saved_file ? saved : 1
+            saved
         end
 
         # file force saving process
         def process_force_save(file_data, file_name, user_address)  
             download_uri = file_data['url']
-            if (download_uri.eql?(nil))
+            if download_uri.eql?(nil)
+                saved = 1
+                return saved
+            end
+
+            data = download_file(download_uri) # download document file
+            if data.eql?(nil)
                 saved = 1
                 return saved
             end
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
 
             # TODO [Delete in version 7.0 or higher]
-            if (download_ext == ".")
+            if download_ext == "."
                 download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
             end
 
@@ -155,11 +176,11 @@ class TrackHelper
             new_file_name = false
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
-            if (!cur_ext.eql?(download_ext))
-                key = ServiceConverter.generate_revision_id(download_uri)  # get the document key
+            unless cur_ext.eql?(download_ext)
+                key = ServiceConverter.generate_revision_id(download_uri) # get the document key
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil)  # get the url of the converted file
-                    if (new_file_uri == nil || new_file_uri.empty?)
+                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+                    if new_file_uri == nil || new_file_uri.empty?
                         new_file_name = true
                     else
                         download_uri = new_file_uri
@@ -173,26 +194,29 @@ class TrackHelper
             begin
                 is_submit_form = file_data["forcesavetype"].to_i == 3  # check if the forcesave type is equal to 3 (the form was submitted)
 
-                if (is_submit_form)
-                    if (new_file_name)
+                if is_submit_form
+                    if new_file_name
                         file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + "-form" + download_ext, user_address)  # get the correct file name if it already exists
                     else
                         file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + "-form" + cur_ext, user_address)
                     end
                     forcesave_path = DocumentHelper.storage_path(file_name, user_address)  # get the path to the new file
                 else
-                    if (new_file_name)
+                    if new_file_name
                         file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                     end
                     forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
-                    if (forcesave_path.eql?(""))
+                    if forcesave_path.eql?("")
                         forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true)  # if the path to the new file doesn't exist, create it
                     end
                 end
 
-                saved_file = save_from_uri(forcesave_path, download_uri)  # download the form
+                is_saved = save_file(data, forcesave_path)  # save the downloaded file to the storage directory
+                if is_saved == 1
+                    return is_saved
+                end
 
-                if (is_submit_form)
+                if is_submit_form
                     uid = file_data['actions'][0]['userid']
                     DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address)  # create file meta information with the Filling form tag instead of user name 
                 end
@@ -202,7 +226,7 @@ class TrackHelper
                 saved = 1
             end
 
-            return saved_file ? saved : 1
+            saved
         end
 
         # send the command request
@@ -248,34 +272,36 @@ class TrackHelper
         end
 
         # save file from the url
-        def save_from_uri(path, uristr)
+        def download_file(uristr)
+            uri = URI.parse(uristr)  # parse the url string
+            http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+            http.open_timeout = 5
+
+            DocumentHelper.verify_ssl(uristr, http)
+
+            req = Net::HTTP::Get.new(uri)
+            res = http.request(req)  # get the response
+
+            status_code = res.code
+            if status_code != '200'  # checking status code
+                raise "Document editing service returned status: #{status_code}"
+            end
+            data = res.body  # and take its body
+
+            if data == nil
+                raise 'stream is null'
+            end
+            data
+        end
+
+        def save_file(data, path)
             begin
-                uri = URI.parse(uristr)  # parse the url string
-                http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
-                http.open_timeout = 5
-
-                DocumentHelper.verify_ssl(uristr, http)
-
-                req = Net::HTTP::Get.new(uri)
-                res = http.request(req)  # get the response
-
-                status_code = res.code
-                if status_code != '200'  # checking status code
-                    raise "Document editing service returned status: #{status_code}"
-                end
-                data = res.body  # and take its body
-
-                if data == nil
-                    raise 'stream is null'
-                end
-
-                return true
-            rescue => e
-                return false
-            ensure
                 File.open(path, 'wb') do |file|  # open the file from the path specified
                     file.write(data)  # and write the response data to it
                 end
+                return 0
+            rescue
+                return 1
             end
         end
     end
