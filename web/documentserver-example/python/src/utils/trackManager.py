@@ -57,6 +57,10 @@ def processSave(body, filename, usAddr):
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
+
+    data = docManager.downloadFileFromUri(download) # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
     changesUri = body.get('changesurl')
     newFilename = filename
 
@@ -79,6 +83,7 @@ def processSave(body, filename, usAddr):
 
     path = docManager.getStoragePath(newFilename, usAddr) # get the file path
 
+    docManager.saveFile(data, path) # save document file
     histDir = historyManager.getHistoryDir(path) # get the path to the history direction
     if not os.path.exists(histDir): # if the path doesn't exist
         os.makedirs(histDir) # create it
@@ -87,8 +92,10 @@ def processSave(body, filename, usAddr):
 
     shutil.copyfile(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # copy the latest file version to the previous file version
 
-    docManager.saveFileFromUri(download, path) # save file to the storage path 
-    docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
+    dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
+    if (dataChanges is None):
+        raise Exception("Downloaded changes is null")
+    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 
     hist = None
     hist = body.get('changeshistory')
@@ -110,6 +117,9 @@ def processForceSave(body, filename, usAddr):
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
+    data = docManager.downloadFileFromUri(download) # download document file    
+    if (data is None):
+        raise Exception("Downloaded document is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
     
                                              # Todo [Delete here in version 7.0 or higher]
@@ -144,7 +154,7 @@ def processForceSave(body, filename, usAddr):
         if (forcesavePath == ""):
             forcesavePath = docManager.getForcesavePath(filename, usAddr, True)
 
-    docManager.saveFileFromUri(download, forcesavePath)
+    docManager.saveFile(download, forcesavePath) # save document file
 
     if(isSubmitForm):
         uid = body['actions'][0]['userid'] # get the user id

@@ -209,21 +209,24 @@ def createFile(stream, path, req = None, meta = False):
         historyManager.createMeta(path, req) # create meta data for the file if needed
     return
 
-# create file response
-def createFileResponse(response, path, req, meta):
-    status_code = response.status_code
-    if status_code != 200:  # checking status code
-        raise RuntimeError('Document editing service returned status: %s' % status_code)
+# save file
+def saveFile(response, path):
     with open(path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)
     return
 
-# save file from the given url 
-def saveFileFromUri(uri, path, req = None, meta = False):
+# download file from the given url 
+def downloadFileFromUri(uri, path = None, withSave = False):
     resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER, timeout=5)
-    createFileResponse(resp, path, req, meta)
-    return
+    status_code = resp.status_code
+    if status_code != 200:  # checking status code
+        raise RuntimeError('Document editing service returned status: %s' % status_code)
+    if withSave:
+        if path is None:
+            raise RuntimeError('Path for saving file is null')
+        saveFile(resp, path)
+    return resp    
 
 # create sample file
 def createSample(fileType, sample, req):
