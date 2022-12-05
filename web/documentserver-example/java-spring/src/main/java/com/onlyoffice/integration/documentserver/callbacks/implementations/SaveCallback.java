@@ -22,13 +22,13 @@ import com.onlyoffice.integration.documentserver.callbacks.Callback;
 import com.onlyoffice.integration.documentserver.callbacks.Status;
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 import com.onlyoffice.integration.dto.Track;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class SaveCallback implements Callback {
-    @Autowired
-    private CallbackManager callbackManager;
+    private final CallbackManager callbackManager;
     @Override
     public int handle(Track body, String fileName) {  // handle the callback when the saving request is performed
         int result = 0;

@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.mappers;
 
+import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.documentserver.models.filemodel.CommentGroup;
 import org.modelmapper.ModelMapper;
@@ -32,10 +33,9 @@ import java.util.stream.Collectors;
 @Primary
 public class PermissionsMapper extends AbstractMapper<Permission, com.onlyoffice.integration.documentserver.models.filemodel.Permission> {
     @Autowired
-    private ModelMapper mapper;
-
-    public PermissionsMapper() {
+    public PermissionsMapper(ModelMapper mapper) {
         super(com.onlyoffice.integration.documentserver.models.filemodel.Permission.class);
+        this.mapper = mapper;
     }
 
     @PostConstruct
@@ -46,14 +46,14 @@ public class PermissionsMapper extends AbstractMapper<Permission, com.onlyoffice
 
     @Override
     void handleSpecificFields(Permission source, com.onlyoffice.integration.documentserver.models.filemodel.Permission destination) {  // handle specific permission fields
-        destination.setReviewGroups(source.getReviewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));  // set the reviewGroups parameter
+        destination.setReviewGroups(source.getReviewGroups().stream().map(Group::getName).collect(Collectors.toList()));  // set the reviewGroups parameter
         destination.setCommentGroups(  // set the commentGroups parameter
                 new CommentGroup(
-                        source.getCommentsViewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),
-                        source.getCommentsEditGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),
-                        source.getCommentsRemoveGroups().stream().map(g -> g.getName()).collect(Collectors.toList())
+                        source.getCommentsViewGroups().stream().map(Group::getName).collect(Collectors.toList()),
+                        source.getCommentsEditGroups().stream().map(Group::getName).collect(Collectors.toList()),
+                        source.getCommentsRemoveGroups().stream().map(Group::getName).collect(Collectors.toList())
                 )
         );
-        destination.setUserInfoGroups(source.getUserInfoGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));
+        destination.setUserInfoGroups(source.getUserInfoGroups().stream().map(Group::getName).collect(Collectors.toList()));
     }
 }

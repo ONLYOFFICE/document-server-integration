@@ -1,5 +1,4 @@
 /**
- *
  * (c) Copyright Ascensio System SIA 2021
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,31 +21,26 @@ import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServices {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private GroupServices groupServices;
-
-    @Autowired
-    private PermissionServices permissionService;
+    private final UserRepository userRepository;
+    private final GroupServices groupServices;
+    private final PermissionServices permissionService;
 
     // get a list of all users
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
     // get a user by their ID
-    public Optional<User> findUserById(Integer id){
+    public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);
     }
 
@@ -56,9 +50,9 @@ public class UserServices {
                            List<String> reviewGroups,
                            List<String> viewGroups,
                            List<String> editGroups,
-                           List<String> removeGroups, 
+                           List<String> removeGroups,
                            List<String> userInfoGroups, Boolean favoriteDoc,
-                           Boolean chat){
+                           Boolean chat) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email

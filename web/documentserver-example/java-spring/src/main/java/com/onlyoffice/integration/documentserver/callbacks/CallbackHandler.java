@@ -19,32 +19,31 @@
 package com.onlyoffice.integration.documentserver.callbacks;
 
 import com.onlyoffice.integration.dto.Track;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 @Service
+@RequiredArgsConstructor
 public class CallbackHandler {
 
-    private Logger logger = LoggerFactory.getLogger(CallbackHandler.class);
+    private final Map<Integer, Callback> callbackHandlers = new HashMap<>();
 
-    private Map<Integer, Callback> callbackHandlers = new HashMap<>();
-
-    public void register(int code, Callback callback){  // register a callback handler
+    public void register(int code, Callback callback) {  // register a callback handler
         callbackHandlers.put(code, callback);
     }
 
-    public int handle(Track body, String fileName){  // handle a callback
+    public int handle(Track body, String fileName) {  // handle a callback
         Callback callback = callbackHandlers.get(body.getStatus());
-        if (callback == null){
-            logger.warn("Callback status "+body.getStatus()+" is not supported yet");
-           return 0;
+        if (callback == null) {
+            log.warn("Callback status " + body.getStatus() + " is not supported yet");
+            return 0;
         }
 
-        int result = callback.handle(body, fileName);
-        return result;
+        return callback.handle(body, fileName);
     }
 }

@@ -71,10 +71,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
      */
     public void configure(String address) {
         this.storageAddress = address;
-        if(this.storageAddress == null){
-            try{
+        if (this.storageAddress == null) {
+            try {
                 this.storageAddress = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e){
+            } catch (UnknownHostException e) {
                 this.storageAddress = "unknown_storage";
             }
         }
@@ -83,7 +83,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get the storage directory
-    public String getStorageLocation(){
+    public String getStorageLocation() {
         String serverPath = System.getProperty("user.dir");  // get the path to the server
         String directory;  // create the storage directory
         if (Paths.get(this.storageAddress).isAbsolute()) {
@@ -94,15 +94,16 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
                     + File.separator + this.storageAddress
                     + File.separator;
         }
-        if (!Files.exists(Paths.get(directory))) {
-            createDirectory(Paths.get(directory));
+        Path dirPath = Paths.get(directory);
+        if (!Files.exists(dirPath)) {
+            createDirectory(dirPath);
         }
 
         return directory;
     }
 
     // get the directory of the specified file
-    public String getFileLocation(String fileName){
+    public String getFileLocation(String fileName) {
         if (fileName.contains(File.separator)) {
             return getStorageLocation() + fileName;
         }
@@ -110,7 +111,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create a new directory if it does not exist
-    public void createDirectory(Path path){
+    public void createDirectory(Path path) {
         if (Files.exists(path)) return;
         try {
             Files.createDirectories(path);
@@ -120,18 +121,16 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create a new file if it does not exist
-    public boolean createFile(Path path, InputStream stream){
-        if (Files.exists(path)){
+    public boolean createFile(Path path, InputStream stream) {
+        if (Files.exists(path)) {
             return true;
         }
         try {
             File file = Files.createFile(path).toFile();  // create a new file in the specified path
-            try (FileOutputStream out = new FileOutputStream(file))
-            {
+            try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
                 final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1)
-                {
+                while ((read = stream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);  // write bytes to the output stream
                 }
                 out.flush();  // force write data to the output stream that can be cached in the current thread
@@ -143,7 +142,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // delete a file
-    public boolean deleteFile(String fileName){
+    public boolean deleteFile(String fileName) {
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);  // decode a x-www-form-urlencoded string
         if (fileName.isBlank()) return false;
 
@@ -185,7 +184,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // move a file to the specified destination
-    public boolean moveFile(Path source, Path destination){
+    public boolean moveFile(Path source, Path destination) {
         try {
             Files.move(source, destination,
                     new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
@@ -197,7 +196,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // write the payload to the file
-    public boolean writeToFile(String pathName, String payload){
+    public boolean writeToFile(String pathName, String payload) {
         try (FileWriter fw = new FileWriter(pathName)) {
             fw.write(payload);
             return true;
@@ -231,29 +230,29 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // load file as a resource
-    public Resource loadFileAsResource(String fileName){
+    public Resource loadFileAsResource(String fileName) {
         String fileLocation = getForcesavePath(fileName, false);  // get the path where all the forcely saved file versions are saved
-        if (fileLocation.isBlank()){  // if file location is empty
+        if (fileLocation.isBlank()) {  // if file location is empty
             fileLocation = getFileLocation(fileName);  // get it by the file name
         }
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if(resource.exists()) return resource;
+            if (resource.exists()) return resource;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public Resource loadFileAsResourceHistory(String fileName,String version,String file){
+    public Resource loadFileAsResourceHistory(String fileName, String version, String file) {
 
         String fileLocation = getStorageLocation() + fileName + "-hist" + File.separator + version + File.separator + file;  // get it by the file name
 
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if(resource.exists()) return resource;
+            if (resource.exists()) return resource;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -261,10 +260,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get a collection of all the stored files
-    public File[] getStoredFiles()
-    {
+    public File[] getStoredFiles() {
         File file = new File(getStorageLocation());
-        return file.listFiles(pathname -> pathname.isFile());
+        return file.listFiles(File::isFile);
     }
 
     @SneakyThrows
@@ -283,14 +281,14 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         File meta = new File(histDir + File.separator + "createdInfo.json");  // create the createdInfo.json file with the file meta information
         try (FileWriter writer = new FileWriter(meta)) {
             json.writeJSONString(writer);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     // create or update a file
     public boolean createOrUpdateFile(Path path, InputStream stream) {
-        if (!Files.exists(path)){ // if the specified file does not exist
+        if (!Files.exists(path)) { // if the specified file does not exist
             return createFile(path, stream);  // create it in the specified directory
         } else {
             try {
@@ -313,14 +311,12 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get the history directory
-    public String getHistoryDir(String path)
-    {
+    public String getHistoryDir(String path) {
         return path + historyPostfix;
     }
 
     // get the file version
-    public int getFileVersion(String historyPath, Boolean ifIndexPage)
-    {
+    public int getFileVersion(String historyPath, Boolean ifIndexPage) {
         Path path;
         if (ifIndexPage) {  // if the start page is opened
             path = Paths.get(getStorageLocation() + getHistoryDir(historyPath));  // get the storage directory and add the history directory to it
@@ -331,7 +327,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
         try (Stream<Path> stream = Files.walk(path, 1)) {  // run through all the files in the history directory
             return stream
-                    .filter(file -> Files.isDirectory(file))  // take only directories from the history folder
+                    .filter(Files::isDirectory)  // take only directories from the history folder
                     .map(Path::getFileName)  // get file names
                     .map(Path::toString)  // and convert them into strings
                     .collect(Collectors.toSet()).size();  // convert stream into set and get its size which specifies the file version

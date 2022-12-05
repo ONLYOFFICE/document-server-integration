@@ -34,8 +34,8 @@ public class User extends AbstractModel {
     private String group;
 
     // the user configuration parameters
-    public void configure(int id, String name, String group){
-        this.id = "uid-"+id;  // the user id
+    public void configure(int id, String name, String group) {
+        this.id = "uid-" + id;  // the user id
         this.name = name;  // the user name
         this.group = group;  // the group the user belongs to
     }

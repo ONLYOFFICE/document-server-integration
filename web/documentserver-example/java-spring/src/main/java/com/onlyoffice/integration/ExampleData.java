@@ -20,7 +20,7 @@ package com.onlyoffice.integration;
 
 import com.onlyoffice.integration.documentserver.serializers.FilterState;
 import com.onlyoffice.integration.services.UserServices;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class ExampleData {
-    @Autowired
-    private UserServices userService;
+    private final UserServices userService;
     @PostConstruct
-    public void init(){
+    public void init() {
         List<String> description_user_0=List.of(  // the description for user 0
                 "The name is requested when the editor is opened",
                 "Doesn’t belong to any group",

@@ -24,7 +24,7 @@ import com.onlyoffice.integration.documentserver.util.Misc;
 import com.onlyoffice.integration.entities.*;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,22 +35,8 @@ import java.util.stream.Collectors;
 
 @CrossOrigin("*")
 @Controller
+@RequiredArgsConstructor
 public class IndexController {
-
-    @Autowired
-    private FileStorageMutator storageMutator;
-
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
-
-    @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
-    private Misc mistUtility;
-
-    @Autowired
-    private UserServices userService;
 
     @Value("${files.docservice.url.site}")
     private String docserviceSite;
@@ -67,9 +53,19 @@ public class IndexController {
     @Value("${files.docservice.languages}")
     private String langs;
 
+    private final FileStorageMutator storageMutator;
+
+    private final FileStoragePathBuilder storagePathBuilder;
+
+    private final FileUtility fileUtility;
+
+    private final Misc mistUtility;
+
+    private final UserServices userService;
+
     @GetMapping("${url.index}")
     public String index(@RequestParam(value = "directUrl", required = false) Boolean directUrl,
-                        Model model){
+                        Model model) {
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
@@ -90,21 +86,21 @@ public class IndexController {
                 .map(user -> mistUtility.convertUserDescriptions(user.getName(), user.getDescriptions()))  // convert user descriptions to the specified format
                 .collect(Collectors.joining());
 
-        for(java.io.File file:files){  // run through all the files
+        for (java.io.File file : files) {  // run through all the files
             String fileName = file.getName();  // get file name
             docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());  // add a document type of each file to the list
             filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
-            versions.add(" ["+storagePathBuilder.getFileVersion(fileName, true)+"]");  // add a file version to the list
+            versions.add(" [" + storagePathBuilder.getFileVersion(fileName, true) + "]");  // add a file version to the list
             isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
         }
 
         // add all the parameters to the model
         model.addAttribute("isFillFormDoc", isFillFormDoc);
-        model.addAttribute("versions",versions);
+        model.addAttribute("versions", versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
-        model.addAttribute("datadocs", docserviceSite+docservicePreloader);
+        model.addAttribute("datadocs", docserviceSite + docservicePreloader);
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
@@ -115,7 +111,7 @@ public class IndexController {
 
     @PostMapping("/config")
     @ResponseBody
-    public HashMap<String, String> configParameters(){  // get configuration parameters
+    public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
 
         configuration.put("FillExtList", String.join(",", fileUtility.getFillExts()));  // put a list of the extensions that can be filled to config

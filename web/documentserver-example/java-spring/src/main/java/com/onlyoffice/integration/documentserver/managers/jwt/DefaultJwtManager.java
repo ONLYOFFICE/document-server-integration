@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.documentserver.managers.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.primeframework.jwt.Signer;
@@ -26,7 +27,6 @@ import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACSigner;
 import org.primeframework.jwt.hmac.HMACVerifier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,13 +34,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class DefaultJwtManager implements JwtManager {
     @Value("${files.docservice.secret}")
     private String tokenSecret;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private JSONParser parser;
+    private final ObjectMapper objectMapper;
+    private final JSONParser parser;
 
     // create document token
     public String createToken(Map<String, Object> payloadClaims) {
@@ -100,7 +99,7 @@ public class DefaultJwtManager implements JwtManager {
             if (jwt.getObject("payload") != null) {  // get payload from the token and check if it is not empty
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> jwtPayload =
-                            (LinkedHashMap<String, Object>)jwt.getObject("payload");
+                            (LinkedHashMap<String, Object>) jwt.getObject("payload");
 
                     jwt.claims = jwtPayload;
                 } catch (Exception ex) {

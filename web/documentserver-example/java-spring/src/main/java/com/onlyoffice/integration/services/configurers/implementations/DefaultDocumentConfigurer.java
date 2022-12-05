@@ -26,7 +26,7 @@ import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentW
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -34,21 +34,15 @@ import java.io.File;
 
 @Service
 @Primary
+@RequiredArgsConstructor
 public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocumentWrapper> {
 
-    @Autowired
-    private DocumentManager documentManager;
+    private final DocumentManager documentManager;
+    private final FileStoragePathBuilder storagePathBuilder;
+    private final FileUtility fileUtility;
+    private final ServiceConverter serviceConverter;
 
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
-
-    @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
-    private ServiceConverter serviceConverter;
-
-    public void configure(Document document, DefaultDocumentWrapper wrapper){  // define the document configurer
+    public void configure(Document document, DefaultDocumentWrapper wrapper) {  // define the document configurer
         String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
         Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
 
@@ -56,13 +50,13 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setUrl(documentManager.getDownloadUrl(fileName, true));  // set the URL to download a file to the document config
         document.setUrlUser(documentManager.getFileUri(fileName, false));  // set the file URL to the document config
         document.setDirectUrl(wrapper.getIsEnableDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : "");
-        document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));  // set the file type to the document config
+        document.setFileType(fileUtility.getFileExtension(fileName).replace(".", ""));  // set the file type to the document config
         document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
-        String key =  serviceConverter.  // get the document key
-                        generateRevisionId(storagePathBuilder.getStorageLocation()
-                        + "/" + fileName + "/"
-                        + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
+        String key = serviceConverter.  // get the document key
+                generateRevisionId(storagePathBuilder.getStorageLocation()
+                + "/" + fileName + "/"
+                + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 
         document.setKey(key);  // set the key to the document config
         document.setPermissions(permission);  // set the permission parameters to the document config

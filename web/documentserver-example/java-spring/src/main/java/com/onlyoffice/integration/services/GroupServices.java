@@ -20,23 +20,23 @@ package com.onlyoffice.integration.services;
 
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.repositories.GroupRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GroupServices {
-
-    @Autowired
-    private GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
 
     // create a new group with the specified name
-    public Group createGroup(String name){
-        if(name == null) return null;  // check if a name is specified
+    public Group createGroup(String name) {
+        if (name == null) return null;  // check if a name is specified
         Optional<Group> group = groupRepository.findGroupByName(name);  // check if group with such a name already exists
-        if(group.isPresent()) return group.get();  // if it exists, return it
+        if (group.isPresent()) return group.get();  // if it exists, return it
         Group newGroup = new Group();
         newGroup.setName(name);  // otherwise, create a new group with the specified name
 
@@ -46,10 +46,10 @@ public class GroupServices {
     }
 
     // create a list of groups from the reviewGroups permission parameter
-    public List<Group> createGroups(List<String> reviewGroups){
-        if(reviewGroups == null) return null;  // check if the reviewGroups permission exists
+    public List<Group> createGroups(List<String> reviewGroups) {
+        if (reviewGroups == null) return null;  // check if the reviewGroups permission exists
         return reviewGroups.stream()  // convert this parameter to a list of groups whose changes the user can accept/reject
-                .map(group -> createGroup(group))
+                .map(this::createGroup)
                 .collect(Collectors.toList());
     }
 }

@@ -32,9 +32,9 @@ import com.onlyoffice.integration.services.configurers.wrappers.DefaultCustomiza
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultEmbeddedWrapper;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -43,37 +43,23 @@ import java.util.HashMap;
 
 @Service
 @Primary
+@RequiredArgsConstructor
 public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<DefaultFileWrapper> {
-
-    @Autowired
-    private Mapper<User, com.onlyoffice.integration.documentserver.models.filemodel.User> mapper;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private DocumentManager documentManager;
-
-    @Autowired
+    private final Mapper<User, com.onlyoffice.integration.documentserver.models.filemodel.User> mapper;
+    private final ObjectMapper objectMapper;
+    private final DocumentManager documentManager;
     @Qualifier("sample")
-    private TemplateManager templateManager;
-
-    @Autowired
-    private DefaultCustomizationConfigurer defaultCustomizationConfigurer;
-
-    @Autowired
-    private DefaultEmbeddedConfigurer defaultEmbeddedConfigurer;
-
-    @Autowired
-    private FileUtility fileUtility;
+    private final TemplateManager templateManager;
+    private final DefaultCustomizationConfigurer defaultCustomizationConfigurer;
+    private final DefaultEmbeddedConfigurer defaultEmbeddedConfigurer;
 
     @SneakyThrows
-    public void configure(EditorConfig config, DefaultFileWrapper wrapper){  // define the editorConfig configurer
+    public void configure(EditorConfig config, DefaultFileWrapper wrapper) {  // define the editorConfig configurer
         if (wrapper.getActionData() != null) {  // check if the actionData is not empty in the editorConfig wrapper
-            config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));  // set actionLink to the editorConfig
+            config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() {
+            }.getType()));  // set actionLink to the editorConfig
         }
         String fileName = wrapper.getFileName();  // set the fileName parameter from the editorConfig wrapper
-        String fileExt = fileUtility.getFileExtension(fileName);
         boolean userIsAnon = wrapper.getUser().getName().equals("Anonymous");  // check if the user from the editorConfig wrapper is anonymous or not
 
         config.setTemplates(userIsAnon ? null : templateManager.createTemplates(fileName));  // set a template to the editorConfig if the user is not anonymous
@@ -82,7 +68,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
         config.setLang(wrapper.getLang());  // set the language to the editorConfig
         Boolean canEdit = wrapper.getCanEdit();  // check if the file of the specified type can be edited or not
         Action action = wrapper.getAction();  // get the action parameter from the editorConfig wrapper
-        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<String, Object>()  {{ 
+        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<>() {{
             put("mode", "strict");
             put("change", false);
         }} : null);

@@ -27,8 +27,8 @@ import com.onlyoffice.integration.services.configurers.FileConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentWrapper;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -37,27 +37,17 @@ import java.util.Map;
 
 @Service
 @Primary
+@RequiredArgsConstructor
 public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper> {
-    @Autowired
-    private ObjectFactory<FileModel> fileModelObjectFactory;
+    private final ObjectFactory<FileModel> fileModelObjectFactory;
+    private final FileUtility fileUtility;
+    private final JwtManager jwtManager;
+    private final Mapper<com.onlyoffice.integration.entities.Permission, Permission> mapper;
+    private final DefaultDocumentConfigurer defaultDocumentConfigurer;
+    private final DefaultEditorConfigConfigurer defaultEditorConfigConfigurer;
 
-    @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
-    private JwtManager jwtManager;
-
-    @Autowired
-    private Mapper<com.onlyoffice.integration.entities.Permission, Permission> mapper;
-
-    @Autowired
-    private DefaultDocumentConfigurer defaultDocumentConfigurer;
-
-    @Autowired
-    private DefaultEditorConfigConfigurer defaultEditorConfigConfigurer;
-
-    public void configure(FileModel fileModel, DefaultFileWrapper wrapper){  // define the file configurer
-        if (fileModel != null){  // check if the file model is specified
+    public void configure(FileModel fileModel, DefaultFileWrapper wrapper) {  // define the file configurer
+        if (fileModel != null) {  // check if the file model is specified
             String fileName = wrapper.getFileName();  // get the fileName parameter from the file wrapper
             Action action = wrapper.getAction();  // get the action parameter from the file wrapper
 
@@ -68,7 +58,7 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
             Permission userPermissions = mapper.toModel(wrapper.getUser().getPermissions());  // convert the permission entity to the model
 
             String fileExt = fileUtility.getFileExtension(wrapper.getFileName());
-            Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
+            boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
             if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
                 canEdit = true;
                 wrapper.setAction(Action.fillForms);
@@ -123,9 +113,9 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
 
         userPermissions.setEdit(canEdit &&
                 (action.equals(Action.view)
-                || action.equals(Action.edit)
-                || action.equals(Action.filter)
-                || action.equals(Action.blockcontent)));
+                        || action.equals(Action.edit)
+                        || action.equals(Action.filter)
+                        || action.equals(Action.blockcontent)));
 
         return userPermissions;
     }

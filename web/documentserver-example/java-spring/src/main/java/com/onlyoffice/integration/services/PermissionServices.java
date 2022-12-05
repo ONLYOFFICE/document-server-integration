@@ -21,16 +21,15 @@ package com.onlyoffice.integration.services;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.repositories.PermissionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PermissionServices {
-
-    @Autowired
-    private PermissionRepository permissionRepository;
+    private final PermissionRepository permissionRepository;
 
     // create permissions with the specified parameters
     public Permission createPermission(List<Group> reviewGroups,
@@ -38,7 +37,7 @@ public class PermissionServices {
                                        List<Group> commentEditGroups,
                                        List<Group> commentRemoveGroups,
                                        List<Group> userInfoGroups,
-                                       Boolean chat){
+                                       Boolean chat) {
 
         Permission permission = new Permission();
         permission.setReviewGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
@@ -54,7 +53,7 @@ public class PermissionServices {
     }
 
     // update permissions
-    public Permission updatePermission(Permission newPermission){
+    public Permission updatePermission(Permission newPermission) {
         permissionRepository.save(newPermission);  // save new permissions
 
         return newPermission;

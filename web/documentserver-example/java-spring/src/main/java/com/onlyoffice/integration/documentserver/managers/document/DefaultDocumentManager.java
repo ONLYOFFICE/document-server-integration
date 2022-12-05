@@ -22,7 +22,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -34,6 +34,7 @@ import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,6 +42,7 @@ import java.util.*;
 
 @Component
 @Primary
+@RequiredArgsConstructor
 public class DefaultDocumentManager implements DocumentManager {
 
     @Value("${files.storage.folder}")
@@ -52,25 +54,19 @@ public class DefaultDocumentManager implements DocumentManager {
     @Value("${url.download}")
     private String downloadUrl;
 
-    @Autowired
-    private FileStorageMutator storageMutator;
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
-    @Autowired
-    private FileUtility fileUtility;
-    @Autowired
-    private ServiceConverter serviceConverter;
+    private final FileStorageMutator storageMutator;
+    private final FileStoragePathBuilder storagePathBuilder;
+    private final FileUtility fileUtility;
+    private final ServiceConverter serviceConverter;
 
     // get URL to the created file
-    public String getCreateUrl(String fileName, Boolean sample){
+    public String getCreateUrl(String fileName, Boolean sample) {
         String fileExt = fileName.substring(fileName.length() - 4);
-        String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
-        return url;
+        return storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
     }
 
     // get a file name with an index if the file with such a name already exists
-    public String getCorrectName(String fileName)
-    {
+    public String getCorrectName(String fileName) {
         String baseName = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
         String ext = fileUtility.getFileExtension(fileName);  // get file extension
         String name = baseName + ext;  // create a full file name
@@ -87,10 +83,8 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file URL
-    public String getFileUri(String fileName, Boolean forDocumentServer)
-    {
-        try
-        {
+    public String getFileUri(String fileName, Boolean forDocumentServer) {
+        try {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
@@ -99,80 +93,58 @@ public class DefaultDocumentManager implements DocumentManager {
                 filePathDownload = filePathDownload.substring(filesStorage.length() + 1);
             }
 
-            String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, StandardCharsets.UTF_8)
+                    + "&userAddress" + URLEncoder.encode(hostAddress, StandardCharsets.UTF_8);
             return filePath;
-        }
-        catch (UnsupportedEncodingException | UnknownHostException e)
-        {
+        } catch (UnknownHostException e) {
             return "";
         }
     }
 
     // get file URL
-    public String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer)
-    {
-        try
-        {
+    public String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer) {
+        try {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
                     : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
-            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
-                + "&ver=" + version + "&file="+file
-                + userAddress;
-            return filePath;
-        }
-        catch (UnsupportedEncodingException | UnknownHostException e)
-        {
+            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder.encode(hostAddress, StandardCharsets.UTF_8) : "";
+            return serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, StandardCharsets.UTF_8)
+                    + "&ver=" + version + "&file=" + file
+                    + userAddress;
+        } catch (UnknownHostException e) {
             return "";
         }
     }
 
     // get the callback URL
-    public String getCallback(String fileName)
-    {
+    public String getCallback(String fileName) {
         String serverPath = storagePathBuilder.getServerUrl(true);
         String storageAddress = storagePathBuilder.getStorageLocation();
-        try
-        {
-            String query = trackUrl+"?fileName="+
-                    URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-            return serverPath + query;
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            return "";
-        }
+        String query = trackUrl + "?fileName=" +
+                URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+                + "&userAddress=" + URLEncoder.encode(storageAddress, StandardCharsets.UTF_8);
+        return serverPath + query;
     }
 
     // get URL to download a file
     public String getDownloadUrl(String fileName, Boolean isServer) {
         String serverPath = storagePathBuilder.getServerUrl(isServer);
         String storageAddress = storagePathBuilder.getStorageLocation();
-        try
-        {
-            String userAddress = isServer ? "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = downloadUrl+"?fileName="
-                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + userAddress;
+        String userAddress = isServer ? "&userAddress=" + URLEncoder.encode(storageAddress, StandardCharsets.UTF_8) : "";
+        String query = downloadUrl + "?fileName="
+                + URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+                + userAddress;
 
-            return serverPath + query;
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            return "";
-        }
+        return serverPath + query;
     }
 
     // get file information
-    public ArrayList<Map<String, Object>> getFilesInfo(){
+    public ArrayList<Map<String, Object>> getFilesInfo() {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : storageMutator.getStoredFiles()){
+        for (File file : storageMutator.getStoredFiles()) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
@@ -181,7 +153,7 @@ public class DefaultDocumentManager implements DocumentManager {
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0)))
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0)))
                     .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
@@ -193,11 +165,11 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file information by its ID
-    public ArrayList<Map<String, Object>> getFilesInfo(String fileId){
+    public ArrayList<Map<String, Object>> getFilesInfo(String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
-        for (Map<String, Object> map : getFilesInfo()){
-            if (map.get("id").equals(fileId)){
+        for (Map<String, Object> map : getFilesInfo()) {
+            if (map.get("id").equals(fileId)) {
                 file.add(map);
                 break;
             }
@@ -208,21 +180,21 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get the path to the file version by the history path and file version
     public String versionDir(String path, Integer version, boolean historyPath) {
-        if (!historyPath){
+        if (!historyPath) {
             return storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(path)) + version;
         }
         return path + File.separator + version;
     }
 
     // create demo document
-    public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
+    public String createDemo(String fileExt, Boolean sample, String uid, String uname) {
         String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-        String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;  // get the path to the sample document
+        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator + demoName;  // get the path to the sample document
         String fileName = getCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 
         InputStream stream = Thread.currentThread()
-                                    .getContextClassLoader()
-                                    .getResourceAsStream(demoPath);  // get the input file stream
+                .getContextClassLoader()
+                .getResourceAsStream(demoPath);  // get the input file stream
 
         if (stream == null) return null;
 

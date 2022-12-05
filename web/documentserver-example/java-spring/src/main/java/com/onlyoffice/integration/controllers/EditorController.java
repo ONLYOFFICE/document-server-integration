@@ -31,8 +31,8 @@ import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.services.configurers.FileConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,10 +40,12 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.*;
 
 @CrossOrigin("*")
 @Controller
+@RequiredArgsConstructor
 public class EditorController {
 
     @Value("${files.docservice.url.site}")
@@ -55,23 +57,17 @@ public class EditorController {
     @Value("${files.docservice.languages}")
     private String langs;
 
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
+    private final FileStoragePathBuilder storagePathBuilder;
 
-    @Autowired
-    private JwtManager jwtManager;
+    private final JwtManager jwtManager;
 
-    @Autowired
-    private UserServices userService;
+    private final UserServices userService;
 
-    @Autowired
-    private HistoryManager historyManager;
+    private final HistoryManager historyManager;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private FileConfigurer<DefaultFileWrapper> fileConfigurer;
+    private final FileConfigurer<DefaultFileWrapper> fileConfigurer;
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
@@ -87,10 +83,10 @@ public class EditorController {
         Type type = Type.desktop;
         Locale locale = new Locale("en");
 
-        if(actionParam != null) action = Action.valueOf(actionParam);
-        if(typeParam != null) type = Type.valueOf(typeParam);
+        if (actionParam != null) action = Action.valueOf(actionParam);
+        if (typeParam != null) type = Type.valueOf(typeParam);
 
-        List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
+        String[] langsAndKeys = langs.split("\\|");
         for (String langAndKey : langsAndKeys) {
             String[] couple = langAndKey.split(":");
             if (couple[0].equals(lang)) {
@@ -102,7 +98,7 @@ public class EditorController {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
         // if the user is not present, return the ONLYOFFICE start page
-        if(!optionalUser.isPresent()) return "index.html";
+        if (optionalUser.isEmpty()) return "index.html";
 
         User user = optionalUser.get();
 
@@ -123,21 +119,21 @@ public class EditorController {
         // add attributes to the specified model
         model.addAttribute("model", fileModel);  // add file model with the default parameters to the original model
         model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));  // get file history and add it to the model
-        model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
-        model.addAttribute("dataInsertImage",  getInsertImage(directUrl));  // get an image and add it to the model
-        model.addAttribute("dataCompareFile",  getCompareFile(directUrl));  // get a document for comparison and add it to the model
+        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
+        model.addAttribute("dataInsertImage", getInsertImage(directUrl));  // get an image and add it to the model
+        model.addAttribute("dataCompareFile", getCompareFile(directUrl));  // get a document for comparison and add it to the model
         model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));  // get recipients data for mail merging and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));  // get user data for mentions and add it to the model
         return "editor.html";
     }
 
-    private List<Mentions> getUserMentions(String uid){  // get user data for mentions
-        List<Mentions> usersForMentions=new ArrayList<>();
-        if(uid!=null && !uid.equals("4")) {
+    private List<Mentions> getUserMentions(String uid) {  // get user data for mentions
+        List<Mentions> usersForMentions = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
-                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));  // user data includes user names and emails
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != 4) {
+                    usersForMentions.add(new Mentions(u.getName(), u.getEmail()));  // user data includes user names and emails
                 }
             }
         }
@@ -155,11 +151,11 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if (jwtManager.tokenEnabled()) {
             dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
         }
 
-        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1);
+        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length() - 1);
     }
 
     @SneakyThrows
@@ -172,7 +168,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if (jwtManager.tokenEnabled()) {
             dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
         }
 
@@ -189,7 +185,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if (jwtManager.tokenEnabled()) {
             dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 

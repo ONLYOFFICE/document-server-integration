@@ -27,9 +27,9 @@ import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.dto.Action;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.dto.Track;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -45,6 +44,7 @@ import java.util.*;
 //TODO: Refactoring
 @Component
 @Primary
+@RequiredArgsConstructor
 public class DefaultCallbackManager implements CallbackManager {
 
     @Value("${files.docservice.url.site}")
@@ -54,24 +54,18 @@ public class DefaultCallbackManager implements CallbackManager {
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
 
-    @Autowired
-    private DocumentManager documentManager;
-    @Autowired
-    private JwtManager jwtManager;
-    @Autowired
-    private FileUtility fileUtility;
-    @Autowired
-    private FileStorageMutator storageMutator;
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private ServiceConverter serviceConverter;
+    private final DocumentManager documentManager;
+    private final JwtManager jwtManager;
+    private final FileUtility fileUtility;
+    private final FileStorageMutator storageMutator;
+    private final FileStoragePathBuilder storagePathBuilder;
+    private final ObjectMapper objectMapper;
+    private final ServiceConverter serviceConverter;
 
     // save file information from the URL to the file specified
     private void downloadToFile(String url, Path path) throws Exception {
-        if (url == null || url.isEmpty()) throw new RuntimeException("Url argument is not specified");  // URL isn't specified
+        if (url == null || url.isEmpty())
+            throw new RuntimeException("Url argument is not specified");  // URL isn't specified
         if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
 
         URL uri = new URL(url);
@@ -104,7 +98,8 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null) downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
+        if (downloadExt != "." + null)
+            downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
 
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -116,7 +111,7 @@ public class DefaultCallbackManager implements CallbackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
         }
@@ -209,7 +204,7 @@ public class DefaultCallbackManager implements CallbackManager {
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
         //TODO: Add errors ENUM
         String responseCode = response.get("error").toString();
-        switch(responseCode) {
+        switch (responseCode) {
             case "0":
             case "4": {
                 break;
@@ -226,12 +221,13 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+        String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
-        
-        Boolean newFileName = false;
+        if (downloadExt != "." + null)
+            downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+
+        boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         //TODO: Extract function
@@ -244,7 +240,7 @@ public class DefaultCallbackManager implements CallbackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = true;
             }
         }
@@ -257,19 +253,19 @@ public class DefaultCallbackManager implements CallbackManager {
 
         //TODO: Extract function
         if (isSubmitForm) {  // if the form is submitted
-            if (newFileName){
+            if (newFileName) {
                 fileName = documentManager
                         .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + downloadExt);  // get the correct file name if it already exists
             } else {
                 fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt);
             }
             forcesavePath = storagePathBuilder.getFileLocation(fileName);  // create forcesave path if it doesn't exist
-            List<Action> actions =  body.getActions();
+            List<Action> actions = body.getActions();
             Action action = actions.get(0);
             String user = action.getUserid();  // get the user ID
             storageMutator.createMeta(fileName, user, "Filling Form");  // create meta data for the forcesaved file
         } else {
-            if (newFileName){
+            if (newFileName) {
                 fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
 

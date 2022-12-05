@@ -23,11 +23,11 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.filemodel.Document;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -36,37 +36,32 @@ import java.util.*;
 
 //TODO: Rebuild completely
 @Component
+@RequiredArgsConstructor
 public class DefaultHistoryManager implements HistoryManager {
 
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
+    private final FileStoragePathBuilder storagePathBuilder;
 
-    @Autowired
-    private DocumentManager documentManager;
+    private final DocumentManager documentManager;
 
-    @Autowired
-    private JwtManager jwtManager;
+    private final JwtManager jwtManager;
 
-    @Autowired
-    private FileUtility fileUtility;
+    private final FileUtility fileUtility;
 
-    @Autowired
-    private JSONParser parser;
+    private final JSONParser parser;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     //TODO: Refactoring
     @SneakyThrows
     public String[] getHistory(Document document) {  // get document history
         String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(document.getTitle()));  // get history directory
-        Integer curVer = storagePathBuilder.getFileVersion(histDir, false);  // get current file version
+        int curVer = storagePathBuilder.getFileVersion(histDir, false);  // get current file version
 
         if (curVer > 0) {  // check if the current file version is greater than 0
             List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<>();
 
-            for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
+            for (int i = 1; i <= curVer; i++) {  // run through all the file versions
                 Map<String, Object> obj = new HashMap<String, Object>();
                 Map<String, Object> dataObj = new HashMap<String, Object>();
                 String verDir = documentManager.versionDir(histDir, i, true);  // get the path to the given file version
@@ -155,6 +150,7 @@ public class DefaultHistoryManager implements HistoryManager {
                 scanner.close();
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return output;
     }

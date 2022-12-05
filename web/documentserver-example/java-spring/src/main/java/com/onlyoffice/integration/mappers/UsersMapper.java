@@ -30,10 +30,9 @@ import javax.annotation.PostConstruct;
 @Primary
 public class UsersMapper extends AbstractMapper<User, com.onlyoffice.integration.documentserver.models.filemodel.User> {
     @Autowired
-    private ModelMapper mapper;
-
-    public UsersMapper(){
+    public UsersMapper(ModelMapper mapper) {
         super(com.onlyoffice.integration.documentserver.models.filemodel.User.class);
+        this.mapper = mapper;
     }
 
     @PostConstruct

@@ -12,23 +12,20 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.springframework.stereotype.Component;
+
 /**
  * Disables and enables certificate and host-name checking in
  * HttpsURLConnection, the default JVM implementation of the HTTPS/TLS protocol.
  * Has no effect on implementations such as Apache Http Client, Ok Http.
-*/
+ */
 @Component
 public final class SSLUtils {
 
     private final HostnameVerifier jvmHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
 
-    private final HostnameVerifier trivialHostnameVerifier = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession sslSession) {
-            return true;
-        }
-    };
+    private final HostnameVerifier trivialHostnameVerifier = (hostname, sslSession) -> true;
 
-    private final TrustManager[] UNQUESTIONING_TRUST_MANAGER = new TrustManager[] { new X509TrustManager() {
+    private final TrustManager[] UNQUESTIONING_TRUST_MANAGER = new TrustManager[]{new X509TrustManager() {
         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
         }
@@ -38,7 +35,7 @@ public final class SSLUtils {
 
         public void checkServerTrusted(X509Certificate[] certs, String authType) {
         }
-    } };
+    }};
 
     public void turnOffSslChecking() throws NoSuchAlgorithmException, KeyManagementException {
         HttpsURLConnection.setDefaultHostnameVerifier(trivialHostnameVerifier);

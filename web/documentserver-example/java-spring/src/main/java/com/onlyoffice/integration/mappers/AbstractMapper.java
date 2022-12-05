@@ -30,7 +30,7 @@ public abstract class AbstractMapper<E extends AbstractEntity, M extends Abstrac
     @Autowired
     ModelMapper mapper;
 
-    private Class<M> modelClass;
+    private final Class<M> modelClass;
 
     AbstractMapper(Class<M> modelClass) {
         this.modelClass = modelClass;
