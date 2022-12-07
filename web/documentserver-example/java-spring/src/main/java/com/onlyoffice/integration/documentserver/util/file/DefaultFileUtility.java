@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.MEGABYTE;
+
 @Component
 @Qualifier("default")
 public class DefaultFileUtility implements FileUtility {
@@ -70,19 +72,22 @@ public class DefaultFileUtility implements FileUtility {
             ".odp", ".fodp", ".otp");
 
     // get the document type
-    public DocumentType getDocumentType(String fileName) {
+    public final DocumentType getDocumentType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
-        if (extsDocument.contains(ext))
+        if (extsDocument.contains(ext)){
             return DocumentType.word;
+        }
 
         // cell type for spreadsheet extensions
-        if (extsSpreadsheet.contains(ext))
+        if (extsSpreadsheet.contains(ext)) {
             return DocumentType.cell;
+        }
 
         // slide type for presentation extensions
-        if (extsPresentation.contains(ext))
+        if (extsPresentation.contains(ext)) {
             return DocumentType.slide;
+        }
 
         // default file type is word
         return DocumentType.word;
@@ -90,7 +95,9 @@ public class DefaultFileUtility implements FileUtility {
 
     // get file name from its URL
     public String getFileName(String url) {
-        if (url == null) return "";
+        if (url == null) {
+            return "";
+        }
 
         // get file name from the last part of URL
         String fileName = url.substring(url.lastIndexOf('/') + 1);
@@ -101,14 +108,18 @@ public class DefaultFileUtility implements FileUtility {
     // get file name without extension
     public String getFileNameWithoutExtension(String url) {
         String fileName = getFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         return fileName.substring(0, fileName.lastIndexOf('.'));
     }
 
     // get file extension from URL
     public String getFileExtension(String url) {
         String fileName = getFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String fileExt = fileName.substring(fileName.lastIndexOf("."));
         return fileExt.toLowerCase();
     }
@@ -116,16 +127,19 @@ public class DefaultFileUtility implements FileUtility {
     // get an editor internal extension
     public String getInternalExtension(DocumentType type) {
         // .docx for word file type
-        if (type.equals(DocumentType.word))
+        if (type.equals(DocumentType.word)) {
             return ".docx";
+        }
 
         // .xlsx for cell file type
-        if (type.equals(DocumentType.cell))
+        if (type.equals(DocumentType.cell)) {
             return ".xlsx";
+        }
 
         // .pptx for slide file type
-        if (type.equals(DocumentType.slide))
+        if (type.equals(DocumentType.slide)) {
             return ".pptx";
+        }
 
         // the default file type is .docx
         return ".docx";
@@ -178,8 +192,8 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get maximum file size
-    public long getMaxFileSize() {
+    public final long getMaxFileSize() {
         long size = Long.parseLong(filesizeMax);
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : 5 * MEGABYTE;
     }
 }

@@ -39,7 +39,7 @@ public class Permission extends AbstractEntity {
     private Boolean modifyContentControl = true;
     private Boolean review = true;
     private Boolean chat = true;
-    private Boolean templates=true;
+    private Boolean templates = true;
     @ManyToMany
     private List<Group> reviewGroups;
     @ManyToMany
