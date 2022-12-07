@@ -92,16 +92,16 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) 
+            if (fileData["url"].Equals(null))
             {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
-            string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension           
+            string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
             var downloadExt = fileData.ContainsKey("filetype")
-                    ? "." + (string)fileData["filetype"]
-                    : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+                ? "." + (string)fileData["filetype"]
+                : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
 
             var newFileName = fileName;
             byte[] bytesFile = DownloadFile(downloadUri); // download document file

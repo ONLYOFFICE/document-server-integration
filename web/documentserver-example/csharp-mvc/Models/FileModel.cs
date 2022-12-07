@@ -283,18 +283,18 @@ namespace OnlineEditorsExampleMVC.Models
                     {
                         prevFileUrl = i == currentVersion ? FileUri
                             : DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext);
+
                         bool isExistPrevFile = Directory.Exists(verDir) && Directory.GetFiles(verDir, "prev.*").Length > 0;
                         if (isExistPrevFile)
                         {
                             directPrevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext, false)
-                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
+                                : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
                         }
                         else
                         {
                             directPrevFileUrl = null;
                             prevFileUrl = null;
                         }
-
                     }
 
                     dataObj.Add("url", prevFileUrl);

@@ -226,7 +226,7 @@ def downloadFileFromUri(uri, path = None, withSave = False):
         if path is None:
             raise RuntimeError('Path for saving file is null')
         saveFile(resp, path)
-    return resp    
+    return resp
 
 # create sample file
 def createSample(fileType, sample, req):
