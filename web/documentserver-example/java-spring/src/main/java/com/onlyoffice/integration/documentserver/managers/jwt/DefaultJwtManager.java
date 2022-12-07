@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.SEVEN;
+
 @Component
 @RequiredArgsConstructor
 public class DefaultJwtManager implements JwtManager {
@@ -85,7 +87,7 @@ public class DefaultJwtManager implements JwtManager {
             String token = (String) body.get("token");  // get token from the body
             if (token == null) {  // if token is empty
                 if (header != null && !header.isBlank()) {  // and the header is defined
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
+                    token = header.startsWith("Bearer ") ? header.substring(SEVEN) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
                 }
             }
             if (token == null || token.isBlank()) {

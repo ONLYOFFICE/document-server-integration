@@ -53,8 +53,8 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setFileType(fileUtility.getFileExtension(fileName).replace(".", ""));  // set the file type to the document config
         document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
-        String key = serviceConverter.  // get the document key
-                generateRevisionId(storagePathBuilder.getStorageLocation()
+        String key = serviceConverter  // get the document key
+                .generateRevisionId(storagePathBuilder.getStorageLocation()
                 + "/" + fileName + "/"
                 + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 

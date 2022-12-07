@@ -26,7 +26,7 @@ public interface Callback {
     int handle(Track body, String fileName);  // handle the callback
     int getStatus();  // get document status
     @Autowired
-    default void selfRegistration(CallbackHandler callbackHandler){  // register a callback handler
+    default void selfRegistration(CallbackHandler callbackHandler) {  // register a callback handler
         callbackHandler.register(getStatus(), this);
     }
 }

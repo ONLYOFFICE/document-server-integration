@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.FOUR;
+
 @CrossOrigin("*")
 @Controller
 @RequiredArgsConstructor
@@ -83,8 +85,12 @@ public class EditorController {
         Type type = Type.desktop;
         Locale locale = new Locale("en");
 
-        if (actionParam != null) action = Action.valueOf(actionParam);
-        if (typeParam != null) type = Type.valueOf(typeParam);
+        if (actionParam != null) {
+            action = Action.valueOf(actionParam);
+        }
+        if (typeParam != null) {
+            type = Type.valueOf(typeParam);
+        }
 
         String[] langsAndKeys = langs.split("\\|");
         for (String langAndKey : langsAndKeys) {
@@ -98,7 +104,9 @@ public class EditorController {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
         // if the user is not present, return the ONLYOFFICE start page
-        if (optionalUser.isEmpty()) return "index.html";
+        if (optionalUser.isEmpty()) {
+            return "index.html";
+        }
 
         User user = optionalUser.get();
 
@@ -132,7 +140,7 @@ public class EditorController {
         if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getId() != Integer.parseInt(uid) && u.getId() != 4) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != FOUR) {
                     usersForMentions.add(new Mentions(u.getName(), u.getEmail()));  // user data includes user names and emails
                 }
             }

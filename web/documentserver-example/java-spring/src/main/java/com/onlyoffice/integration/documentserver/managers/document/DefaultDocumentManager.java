@@ -27,8 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
 import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -38,7 +38,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static com.onlyoffice.integration.documentserver.util.Constants.FOUR;
+import static com.onlyoffice.integration.documentserver.util.Constants.KILOBYTE;
 
 @Component
 @Primary
@@ -61,7 +67,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get URL to the created file
     public String getCreateUrl(String fileName, Boolean sample) {
-        String fileExt = fileName.substring(fileName.length() - 4);
+        String fileExt = fileName.substring(fileName.length() - FOUR);
         return storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
     }
 
@@ -73,8 +79,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
         Path path = Paths.get(storagePathBuilder.getFileLocation(name));
 
-        for (int i = 1; Files.exists(path); i++)  // run through all the files with such a name in the storage directory
-        {
+        for (int i = 1; Files.exists(path); i++) {  // run through all the files with such a name in the storage directory
             name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
             path = Paths.get(storagePathBuilder.getFileLocation(name));
         }
@@ -121,8 +126,8 @@ public class DefaultDocumentManager implements DocumentManager {
     public String getCallback(String fileName) {
         String serverPath = storagePathBuilder.getServerUrl(true);
         String storageAddress = storagePathBuilder.getStorageLocation();
-        String query = trackUrl + "?fileName=" +
-                URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+        String query = trackUrl + "?fileName="
+                + URLEncoder.encode(fileName, StandardCharsets.UTF_8)
                 + "&userAddress=" + URLEncoder.encode(storageAddress, StandardCharsets.UTF_8);
         return serverPath + query;
     }
@@ -148,12 +153,12 @@ public class DefaultDocumentManager implements DocumentManager {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
-                    .generateRevisionId(storagePathBuilder.getStorageLocation() +
-                            "/" + file.getName() + "/"
+                    .generateRevisionId(storagePathBuilder.getStorageLocation()
+                            + "/" + file.getName() + "/"
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0)))
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE))))
                     .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
@@ -196,7 +201,9 @@ public class DefaultDocumentManager implements DocumentManager {
                 .getContextClassLoader()
                 .getResourceAsStream(demoPath);  // get the input file stream
 
-        if (stream == null) return null;
+        if (stream == null) {
+            return null;
+        }
 
         storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);  // create a file in the specified directory
         storageMutator.createMeta(fileName, uid, uname);  // create meta information of the demo file

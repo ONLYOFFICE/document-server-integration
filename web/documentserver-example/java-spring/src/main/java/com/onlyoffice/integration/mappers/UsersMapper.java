@@ -32,12 +32,12 @@ public class UsersMapper extends AbstractMapper<User, com.onlyoffice.integration
     @Autowired
     public UsersMapper(ModelMapper mapper) {
         super(com.onlyoffice.integration.documentserver.models.filemodel.User.class);
-        this.mapper = mapper;
+        this.setMapper(mapper);
     }
 
     @PostConstruct
     public void configure() {  // configure the users mapper
-        mapper.createTypeMap(User.class, com.onlyoffice.integration.documentserver.models.filemodel.User.class)  // create the type map
+        this.getMapper().createTypeMap(User.class, com.onlyoffice.integration.documentserver.models.filemodel.User.class)  // create the type map
                 .setPostConverter(modelConverter());  // and apply the post converter to it
     }
 

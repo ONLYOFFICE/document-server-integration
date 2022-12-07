@@ -22,7 +22,8 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.mappers.Mapper;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
-import com.onlyoffice.integration.documentserver.models.filemodel.*;
+import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
+import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
 import com.onlyoffice.integration.services.configurers.FileConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentWrapper;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
@@ -108,11 +109,11 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
                         && !action.equals(Action.blockcontent)
         );
 
-        userPermissions.setReview(canEdit &&
-                (action.equals(Action.review) || action.equals(Action.edit)));
+        userPermissions.setReview(canEdit
+                && (action.equals(Action.review) || action.equals(Action.edit)));
 
-        userPermissions.setEdit(canEdit &&
-                (action.equals(Action.view)
+        userPermissions.setEdit(canEdit
+                && (action.equals(Action.view)
                         || action.equals(Action.edit)
                         || action.equals(Action.filter)
                         || action.equals(Action.blockcontent)));

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.onlyoffice.integration.documentserver.util.Constants.MEGABYTE;
+import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_SIZE;
 
 @Component
 @Qualifier("default")
@@ -72,10 +72,10 @@ public class DefaultFileUtility implements FileUtility {
             ".odp", ".fodp", ".otp");
 
     // get the document type
-    public final DocumentType getDocumentType(final String fileName) {
+    public final DocumentType getDocumentType(String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
-        if (extsDocument.contains(ext)){
+        if (extsDocument.contains(ext)) {
             return DocumentType.word;
         }
 
@@ -94,7 +94,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name from its URL
-    public String getFileName(String url) {
+    public final String getFileName(String url) {
         if (url == null) {
             return "";
         }
@@ -106,7 +106,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name without extension
-    public String getFileNameWithoutExtension(String url) {
+    public final String getFileNameWithoutExtension(String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -115,7 +115,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file extension from URL
-    public String getFileExtension(String url) {
+    public final String getFileExtension(String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -125,7 +125,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get an editor internal extension
-    public String getInternalExtension(DocumentType type) {
+    public final String getInternalExtension(DocumentType type) {
         // .docx for word file type
         if (type.equals(DocumentType.word)) {
             return ".docx";
@@ -194,6 +194,6 @@ public class DefaultFileUtility implements FileUtility {
     // get maximum file size
     public final long getMaxFileSize() {
         long size = Long.parseLong(filesizeMax);
-        return size > 0 ? size : 5 * MEGABYTE;
+        return size > 0 ? size : MAX_FILE_SIZE;
     }
 }

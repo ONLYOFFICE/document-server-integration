@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public abstract class AbstractMapper<E extends AbstractEntity, M extends AbstractModel> implements Mapper<E, M> {
     @Autowired
-    ModelMapper mapper;
+    private ModelMapper mapper;
 
     private final Class<M> modelClass;
 
@@ -52,7 +52,14 @@ public abstract class AbstractMapper<E extends AbstractEntity, M extends Abstrac
         };
     }
 
-
     void handleSpecificFields(E source, M destination) {
+    }
+
+    public void setMapper(ModelMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public ModelMapper getMapper() {
+        return mapper;
     }
 }

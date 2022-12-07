@@ -43,6 +43,8 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.KILOBYTE;
+
 //TODO: Refactoring
 @Component
 @Primary
@@ -112,11 +114,12 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
     // create a new directory if it does not exist
     public void createDirectory(Path path) {
-        if (Files.exists(path)) return;
-        try {
-            Files.createDirectories(path);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -129,7 +132,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             File file = Files.createFile(path).toFile();  // create a new file in the specified path
             try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
-                final byte[] bytes = new byte[1024];
+                final byte[] bytes = new byte[KILOBYTE];
                 while ((read = stream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);  // write bytes to the output stream
                 }
@@ -144,7 +147,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     // delete a file
     public boolean deleteFile(String fileName) {
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);  // decode a x-www-form-urlencoded string
-        if (fileName.isBlank()) return false;
+        if (fileName.isBlank()) {
+            return false;
+        }
 
         String filenameWithoutExt = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
 
@@ -160,7 +165,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     // delete file history
     public boolean deleteFileHistory(String fileName) {
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);  // decode a x-www-form-urlencoded string
-        if (fileName.isBlank()) return false;
+        if (fileName.isBlank()) {
+            return false;
+        }
 
         Path fileHistoryPath = Paths.get(getStorageLocation() + getHistoryDir(fileName));  // get the path to the history file
         Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + getHistoryDir(fileUtility.getFileNameWithoutExtension(fileName)));  // get the path to the history file without extension
@@ -211,12 +218,16 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         String directory = getStorageLocation();
 
         Path path = Paths.get(directory);  // get the storage directory
-        if (!Files.exists(path)) return "";
+        if (!Files.exists(path)) {
+            return "";
+        }
 
         directory = getFileLocation(fileName) + historyPostfix + File.separator;
 
         path = Paths.get(directory);   // get the history file directory
-        if (!create && !Files.exists(path)) return "";
+        if (!create && !Files.exists(path)) {
+            return "";
+        }
 
         createDirectory(path);  // create a new directory where all the forcely saved file versions will be saved
 
@@ -238,7 +249,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if (resource.exists()) return resource;
+            if (resource.exists()) {
+                return resource;
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -252,7 +265,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if (resource.exists()) return resource;
+            if (resource.exists()) {
+                return resource;
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -322,7 +337,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             path = Paths.get(getStorageLocation() + getHistoryDir(historyPath));  // get the storage directory and add the history directory to it
         } else {
             path = Paths.get(historyPath);  // otherwise, get the path to the history directory
-            if (!Files.exists(path)) return 1;  // if the history directory does not exist, then the file version is 1
+            if (!Files.exists(path)) {
+                return 1;  // if the history directory does not exist, then the file version is 1
+            }
         }
 
         try (Stream<Path> stream = Files.walk(path, 1)) {  // run through all the files in the history directory

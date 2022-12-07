@@ -32,6 +32,7 @@ import lombok.SneakyThrows;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -40,6 +41,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static com.onlyoffice.integration.documentserver.util.Constants.FILE_SAVE_TIMEOUT;
 
 //TODO: Refactoring
 @Component
@@ -64,17 +67,20 @@ public class DefaultCallbackManager implements CallbackManager {
 
     // save file information from the URL to the file specified
     private void downloadToFile(String url, Path path) throws Exception {
-        if (url == null || url.isEmpty())
+        if (url == null || url.isEmpty()) {
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
-        if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        }
+        if (path == null) {
+            throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        }
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(5000);
+        connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
         InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
 
         int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
+        if (statusCode != HttpStatus.OK.value()) {  // checking status code
             connection.disconnect();
             throw new RuntimeException("Document editing service returned status: " + statusCode);
         }
@@ -98,8 +104,9 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null)
+        if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
+        }
 
         //TODO: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -156,9 +163,9 @@ public class DefaultCallbackManager implements CallbackManager {
     //TODO: Replace (String method) with (Enum method)
     @SneakyThrows
     public void commandRequest(String method, String key, HashMap meta) {  // create a command request
-        String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
+        String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
-        URL url = new URL(DocumentCommandUrl);
+        URL url = new URL(documentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -170,8 +177,7 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String headerToken;
-        if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
-        {
+        if (jwtManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
             Map<String, Object> payloadMap = new HashMap<>();
             payloadMap.put("payload", params);
             headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token
@@ -196,7 +202,9 @@ public class DefaultCallbackManager implements CallbackManager {
 
         InputStream stream = connection.getInputStream();  // get input stream
 
-        if (stream == null) throw new RuntimeException("Could not get an answer");
+        if (stream == null) {
+            throw new RuntimeException("Could not get an answer");
+        }
 
         String jsonString = serviceConverter.convertStreamToString(stream);  // convert stream to json string
         connection.disconnect();
@@ -206,12 +214,11 @@ public class DefaultCallbackManager implements CallbackManager {
         String responseCode = response.get("error").toString();
         switch (responseCode) {
             case "0":
-            case "4": {
+            case "4":
                 break;
-            }
-            default: {
+            default:
                 throw new RuntimeException(response.toJSONString());
-            }
+
         }
     }
 
@@ -224,8 +231,9 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null)
+        if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
+        }
 
         boolean newFileName = false;
 

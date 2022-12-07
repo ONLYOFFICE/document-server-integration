@@ -32,7 +32,6 @@ import com.onlyoffice.integration.services.configurers.wrappers.DefaultCustomiza
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultEmbeddedWrapper;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;

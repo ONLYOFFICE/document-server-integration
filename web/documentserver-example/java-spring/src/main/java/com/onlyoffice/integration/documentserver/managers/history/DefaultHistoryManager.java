@@ -84,11 +84,11 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 dataObj.put("fileType", fileUtility.getFileExtension(document.getTitle()).replace(".", ""));
                 dataObj.put("key", key);
-                dataObj.put("url", i == curVer ? document.getUrl() :
-                        documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
+                dataObj.put("url", i == curVer
+                        ? document.getUrl() : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
                 if (!document.getDirectUrl().equals("")) {
-                    dataObj.put("directUrl", i == curVer ? document.getDirectUrl() :
-                            documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), false));
+                    dataObj.put("directUrl", i == curVer
+                            ? document.getDirectUrl() : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), false));
                 }
                 dataObj.put("version", i);
 
@@ -117,7 +117,9 @@ public class DefaultHistoryManager implements HistoryManager {
                     dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 
-                if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
+                if (jwtManager.tokenEnabled()) {
+                    dataObj.put("token", jwtManager.createToken(dataObj));
+                }
 
                 hist.add(obj);
                 histData.put(Integer.toString(i - 1), dataObj);

@@ -212,7 +212,7 @@ public class FileController {
     }
 
     @GetMapping("/downloadhistory")
-    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request,// download a file
+    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request, // download a file
                                                     @RequestParam("fileName") String fileName,
                                                     @RequestParam("ver") String version,
                                                     @RequestParam("file") String file) { // history file
@@ -262,8 +262,9 @@ public class FileController {
         if (fileExt != null) {
             try {
                 Optional<User> user = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
-                if (user.isEmpty())
+                if (user.isEmpty()) {
                     throw new RuntimeException("Could not fine any user with id = " + uid);  // if the user with the specified ID doesn't exist, an error occurs
+                }
                 String fileName = documentManager.createDemo(fileExt, sampleData, uid, user.get().getName());  // create a demo document with the sample data
                 if (fileName.isBlank() || fileName == null) {
                     throw new RuntimeException("You must have forgotten to add asset files");
@@ -278,15 +279,13 @@ public class FileController {
     }
 
     @GetMapping("/assets")
-    public ResponseEntity<Resource> assets(@RequestParam("name") String name)  // get sample files from the assests
-    {
+    public ResponseEntity<Resource> assets(@RequestParam("name") String name) {  // get sample files from the assests
         String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/csv")
-    public ResponseEntity<Resource> csv()  // download a csv file
-    {
+    public ResponseEntity<Resource> csv() {  // download a csv file
         String fileName = Path.of("assets", "sample", "csv.csv").toString();
         return downloadFile(fileName);
     }
