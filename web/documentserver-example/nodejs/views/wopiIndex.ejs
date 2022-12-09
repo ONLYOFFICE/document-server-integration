@@ -163,7 +163,9 @@
                                                                         <img
                                                                             src='<%= storedFiles[i].actions[j].name == "edit"
                                                                                     ? "images/editor.svg"
-                                                                                    : "images/view.svg" %>'
+                                                                                    : storedFiles[i].actions[j].name == "convert"
+                                                                                        ? "images/convert.svg"
+                                                                                        : "images/view.svg" %>'
                                                                             alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                     </a>
                                                                 <% } %>
