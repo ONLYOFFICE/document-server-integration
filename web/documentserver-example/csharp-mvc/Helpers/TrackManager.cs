@@ -55,7 +55,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             // check if the document token is enabled
             if (JwtManager.Enabled)
             {
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                 string token = null;
 
@@ -92,7 +92,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) {
+            if (string.IsNullOrEmpty((string)fileData["url"])) {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
@@ -169,7 +169,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file force saving process
         public static int processForceSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) {
+            if ( string.IsNullOrEmpty((string)fileData["url"])) {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
@@ -228,7 +228,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 }
                 forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
-                if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
+                if (string.IsNullOrEmpty(forcesavePath))  // create forcesave path if it doesn't exist
                 {
                     forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
                 }
@@ -279,7 +279,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 
                 body.Add("token", bodyToken);
