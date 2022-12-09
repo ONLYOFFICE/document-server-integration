@@ -57,7 +57,7 @@ namespace OnlineEditorsExample
             // check if the document token is enabled
             if (JwtManager.Enabled)
             {
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                 string token = null;
 
@@ -76,7 +76,7 @@ namespace OnlineEditorsExample
                     context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
                 }
 
-                if (token != null && !token.Equals(""))  // invalid signature error
+                if (!string.IsNullOrEmpty(token))  // invalid signature error
                 {
                     fileData = jss.Deserialize<Dictionary<string, object>>(token);
                     if (fileData.ContainsKey("payload"))
@@ -160,7 +160,7 @@ namespace OnlineEditorsExample
             File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
 
             string forcesavePath = _Default.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
-            if (!forcesavePath.Equals(""))  // if the forcesaved file version exists
+            if (!string.IsNullOrEmpty(forcesavePath))  // if the forcesaved file version exists
             {
                 File.Delete(forcesavePath);  // remove it
             }
@@ -231,7 +231,7 @@ namespace OnlineEditorsExample
                 }
 
                 forcesavePath = _Default.ForcesavePath(fileName, userAddress, false);
-                if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
+                if (string.IsNullOrEmpty(forcesavePath))  // create forcesave path if it doesn't exist
                 {
                     forcesavePath = _Default.ForcesavePath(fileName, userAddress, true);
                 }
@@ -282,7 +282,7 @@ namespace OnlineEditorsExample
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 
                 body.Add("token", bodyToken);
