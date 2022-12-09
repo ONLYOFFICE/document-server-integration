@@ -60,6 +60,8 @@ const requestHeaders = Object.freeze({
     "SuggestedTarget": "X-WOPI-SuggestedTarget",
     "RelativeTarget": "X-WOPI-RelativeTarget",
     "OverwriteRelativeTarget": "X-WOPI-OverwriteRelativeTarget",
+
+    "ValidRelativeTarget": "X-WOPI-ValidRelativeTarget",
 });
 
 module.exports = {

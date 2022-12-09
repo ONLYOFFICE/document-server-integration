@@ -223,31 +223,12 @@ function putFile(wopi, req, res, userHost) {
         returnLockMismatch(res, "", "File isn't locked");
     } else if (lockManager.getLock(storagePath) == requestLock) {
         // lock matches current lock => put file
-        if (req.body) {
-            var historyPath = req.docManager.historyPath(wopi.id, userAddress);  // get the path to the file history
-            if (historyPath == "") {  // if it is empty
-                historyPath = req.docManager.historyPath(wopi.id, userAddress, true);  // create it
-                req.docManager.createDirectory(historyPath);  // and create a new directory for the history
+        saveFileFromBody(req, wopi.id, userAddress, true, (err, version) => {
+            if (!err) {
+                res.setHeader(reqConsts.requestHeaders.ItemVersion, version);  // set the X-WOPI-ItemVersion header
             }
-
-            var count_version = req.docManager.countVersion(historyPath);  // get the last file version
-            version = count_version + 1;  // get a number of a new file version
-            res.setHeader(reqConsts.requestHeaders.ItemVersion, version + 1);  // set the X-WOPI-ItemVersion header
-            var versionPath = req.docManager.versionPath(wopi.id, userAddress, version);  // get the path to the specified file version
-            req.docManager.createDirectory(versionPath);  // and create a new directory for the specified version
-
-            var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(wopi.id));  // get the path to the previous file version
-            fileSystem.renameSync(req.docManager.storagePath(wopi.id, userAddress), path_prev);  // synchronously rename the given file as the previous file version
-
-            let filestream = fileSystem.createWriteStream(storagePath);
-            req.pipe(filestream);
-            req.on('end', () => {
-                filestream.close();
-                res.sendStatus(200);
-            })
-        } else {
-            res.sendStatus(404);
-        }
+            res.sendStatus(err ? 404 : 200);
+        });
     } else {
         // lock mismatch
         returnLockMismatch(res, lockManager.getLock(storagePath), "Lock mismatch");
@@ -255,10 +236,52 @@ function putFile(wopi, req, res, userHost) {
 }
 
 function putRelativeFile(wopi, req, res, userHost) {
-    let fileInfo = {
-        "HostEditUrl": 'http://localhost'
-    };
-    res.status(200).send(fileInfo);
+    let userAddress = req.docManager.curUserHostAddress(userHost);
+    let storagePath = req.docManager.storagePath(wopi.id, userAddress);
+
+    let filename = req.headers[reqConsts.requestHeaders.RelativeTarget.toLowerCase()]; // we cannot modify this filename
+    if (filename) {
+        if (req.docManager.existsSync(storagePath)) { // check if already exists
+            let overwrite = req.headers[reqConsts.requestHeaders.OverwriteRelativeTarget.toLowerCase()]; // overwrite header
+            if (overwrite && overwrite === "true") { // check if we can overwrite
+                if (lockManager.hasLock(storagePath)) { // check if file locked
+                    returnValidRelativeTarget(res, req.docManager.getCorrectName(wopi.id, userAddress)); // file is locked, cannot overwrite
+                    return;
+                }
+            } else {
+                returnValidRelativeTarget(res, req.docManager.getCorrectName(wopi.id, userAddress)); // file exists and overwrite header is false
+                return;
+            }
+        }
+    } else {
+        filename = req.headers[reqConsts.requestHeaders.SuggestedTarget.toLowerCase()]; // we can modify this filename
+
+        if (filename.startsWith(".")) { // check if extension
+            filename = fileUtility.getFileName(wopi.id, true) + filename; // get original filename with new extension
+        }
+
+        filename = req.docManager.getCorrectName(filename, userAddress); // get correct filename if already exists
+    }
+
+    // if we got here, then we can save a file
+    saveFileFromBody(req, filename, userAddress, false, (err) => {
+        if (err) {
+            res.sendStatus(404);
+            return;
+        }
+
+        let serverUrl = req.docManager.getServerUrl(true);
+        let fileActionUrl = serverUrl + "/wopi-action/" + filename + "?action=";
+
+        let fileInfo = {
+            "Name": filename,
+            "Url": serverUrl + "/wopi/files/" + filename,
+            "HostViewUrl": fileActionUrl + "view",
+            "HostEditNewUrl": fileActionUrl + "editnew",
+            "HostEditUrl": fileActionUrl + "edit",
+        };
+        res.status(200).send(fileInfo);
+    });
 }
 
 // return information about the file properties, access rights and editor settings
@@ -285,6 +308,43 @@ function checkFileInfo(wopi, req, res, userHost) {
         "SupportsUpdate": true,
     };
     res.status(200).send(fileInfo);
+}
+
+function saveFileFromBody(req, filename, userAddress, isNewVersion, callback) {
+    if (req.body) {
+        var storagePath = req.docManager.storagePath(filename, userAddress);
+        var historyPath = req.docManager.historyPath(filename, userAddress);  // get the path to the file history
+        if (historyPath == "") {  // if it is empty
+            historyPath = req.docManager.historyPath(filename, userAddress, true);  // create it
+            req.docManager.createDirectory(historyPath);  // and create a new directory for the history
+        }
+
+        var version = 0;
+        if (isNewVersion) {
+            var count_version = req.docManager.countVersion(historyPath);  // get the last file version
+            version = count_version + 1;  // get a number of a new file version
+            var versionPath = req.docManager.versionPath(filename, userAddress, version);  // get the path to the specified file version
+            req.docManager.createDirectory(versionPath);  // and create a new directory for the specified version
+
+            var path_prev = path.join(versionPath, "prev" + fileUtility.getFileExtension(filename));  // get the path to the previous file version
+            fileSystem.renameSync(storagePath, path_prev);  // synchronously rename the given file as the previous file version
+        }
+
+        let filestream = fileSystem.createWriteStream(storagePath);
+        req.pipe(filestream);
+        req.on('end', () => {
+            filestream.close();
+            callback(null, version);
+        })
+    } else {
+        callback("empty body");
+    }
+}
+
+// return name that wopi-client can use as the value of X-WOPI-RelativeTarget in a future PutRelativeFile operation
+function returnValidRelativeTarget(res, filename) {
+    res.setHeader(reqConsts.requestHeaders.ValidRelativeTarget, filename);  // set the X-WOPI-ValidRelativeTarget header
+    res.sendStatus(409); // file with that name already exists
 }
 
 // return lock mismatch
