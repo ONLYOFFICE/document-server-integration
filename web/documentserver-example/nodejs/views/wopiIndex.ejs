@@ -164,7 +164,9 @@
                                                                                 ? "images/editor.svg"
                                                                                 : storedFiles[i].actions[j].name == "editnew"
                                                                                     ? "images/clear.svg"
-                                                                                    : "images/view.svg" %>'
+                                                                                    : storedFiles[i].actions[j].name == "embedview"
+                                                                                        ? "images/embedview.svg"
+                                                                                        : "images/view.svg" %>'
                                                                         alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                 </a>
                                                             <% } %>
