@@ -160,13 +160,7 @@
                                                             <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
                                                                 <a href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
                                                                     <img
-                                                                        src='<%= storedFiles[i].actions[j].name == "edit"
-                                                                                ? "images/editor.svg"
-                                                                                : storedFiles[i].actions[j].name == "editnew"
-                                                                                    ? "images/clear.svg"
-                                                                                    : storedFiles[i].actions[j].name == "embedview"
-                                                                                        ? "images/embedview.svg"
-                                                                                        : "images/view.svg" %>'
+                                                                        src="images/wopi-<%= storedFiles[i].actions[j].name %>.svg"
                                                                         alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                 </a>
                                                             <% } %>
