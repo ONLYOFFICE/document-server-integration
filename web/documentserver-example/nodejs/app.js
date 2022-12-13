@@ -483,28 +483,22 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
     if (!!referenceData) {
         var portalName = referenceData.portalName;
 
-        if (portalName != req.docManager.getServerUrl()) {
-            result({ "error": "You do not have access to this site" });
-            return;
-        }
+        if (portalName === req.docManager.getServerUrl()) {
+            var fileId = JSON.parse(referenceData.fileId);
+            var userAddress = fileId.userAddress;
 
-        var fileId = JSON.parse(referenceData.fileId);
-        var userAddress = fileId.userAddress;
-        if (userAddress != req.docManager.curUserHostAddress()) {
-            result({ "error": "You do not have access to this file" });
-            return;
+            if (userAddress === req.docManager.curUserHostAddress()
+                && req.docManager.existsSync(req.docManager.storagePath(fileId.fileName, userAddress))) {
+                var fileName = fileId.fileName;
+            }
         }
+    }
 
-        var fileName = fileId.fileName;
-        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
-            result({ "error": "File is not exist" });
-            return;
-        }
-    } else if (!!req.body.path) {
-        var fileName = fileUtility.getFileName(req.body.path);
-        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
-            result({ "error": "File is not exist" });
-            return;
+    if (!fileName && !!req.body.path) {
+        var path = fileUtility.getFileName(req.body.path);
+
+        if (req.docManager.existsSync(req.docManager.storagePath(path, userAddress))) {
+            fileName = path;
         }
     }
 
