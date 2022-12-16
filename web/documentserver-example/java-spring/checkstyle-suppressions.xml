@@ -3,4 +3,6 @@
         "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
         "https://checkstyle.org/dtds/suppressions_1_0.dtd">
 
-<suppressions/>
+<suppressions>
+    <suppress checks="HideUtilityClassConstructor" files="IntegrationApplication.java"/>
+</suppressions>
