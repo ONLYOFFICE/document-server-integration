@@ -244,8 +244,7 @@ public class DefaultServiceConverter implements ServiceConverter {
         if (isEndConvert) {  // if the conversion is completed
             resultPercent = 100l;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file URL
-        }
-        else {  // if the conversion isn't completed
+        } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
             resultPercent = resultPercent >= 100l ? 99l : resultPercent;  // get the percentage value of the conversion process
         }

@@ -214,9 +214,8 @@ public class FileController {
             boolean fileSuccess = storageMutator.deleteFile(fullFileName);  // delete a file from the storage and return the status of this operation (true or false)
             boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);  // delete file history and return the status of this operation (true or false)
 
-            return "{ \"success\": \""+ (fileSuccess && historySuccess) +"\"}";
-        }
-        catch (Exception e) {
+            return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
+        } catch (Exception e) {
             return "{ \"error\": \"" + e.getMessage() + "\"}";  // if the operation of file deleting is unsuccessful, an error occurs
         }
     }

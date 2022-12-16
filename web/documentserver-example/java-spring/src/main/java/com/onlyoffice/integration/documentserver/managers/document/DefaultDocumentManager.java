@@ -98,8 +98,7 @@ public class DefaultDocumentManager implements DocumentManager {
             String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return filePath;
-        }
-        catch (UnsupportedEncodingException | UnknownHostException e) {
+        } catch (UnsupportedEncodingException | UnknownHostException e) {
             return "";
         }
     }
@@ -116,8 +115,7 @@ public class DefaultDocumentManager implements DocumentManager {
                 + "&ver=" + version + "&file="+file
                 + userAddress;
             return filePath;
-        }
-        catch (UnsupportedEncodingException | UnknownHostException e) {
+        } catch (UnsupportedEncodingException | UnknownHostException e) {
             return "";
         }
     }
@@ -131,8 +129,7 @@ public class DefaultDocumentManager implements DocumentManager {
                     URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return serverPath + query;
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
@@ -148,8 +145,7 @@ public class DefaultDocumentManager implements DocumentManager {
                     + userAddress;
 
             return serverPath + query;
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
