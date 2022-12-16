@@ -209,16 +209,14 @@ public class FileController {
     @PostMapping("/delete")
     @ResponseBody
     public String delete(@RequestBody Converter body){  // delete a file
-        try
-        {
+        try {
             String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
             boolean fileSuccess = storageMutator.deleteFile(fullFileName);  // delete a file from the storage and return the status of this operation (true or false)
             boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);  // delete file history and return the status of this operation (true or false)
 
             return "{ \"success\": \""+ (fileSuccess && historySuccess) +"\"}";
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return "{ \"error\": \"" + e.getMessage() + "\"}";  // if the operation of file deleting is unsuccessful, an error occurs
         }
     }
@@ -291,15 +289,13 @@ public class FileController {
     }
 
     @GetMapping("/assets")
-    public ResponseEntity<Resource> assets(@RequestParam("name") String name)  // get sample files from the assests
-    {
+    public ResponseEntity<Resource> assets(@RequestParam("name") String name) {  // get sample files from the assests
         String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/csv")
-    public ResponseEntity<Resource> csv()  // download a csv file
-    {
+    public ResponseEntity<Resource> csv() {  // download a csv file
         String fileName = Path.of("assets", "sample", "csv.csv").toString();
         return downloadFile(fileName);
     }

@@ -180,8 +180,7 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String headerToken;
-        if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
-        {
+        if (jwtManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
             Map<String, Object> payloadMap = new HashMap<>();
             payloadMap.put("payload", params);
             headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token

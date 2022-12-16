@@ -128,12 +128,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         }
         try {
             File file = Files.createFile(path).toFile();  // create a new file in the specified path
-            try (FileOutputStream out = new FileOutputStream(file))
-            {
+            try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
                 final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1)
-                {
+                while ((read = stream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);  // write bytes to the output stream
                 }
                 out.flush();  // force write data to the output stream that can be cached in the current thread
@@ -275,8 +273,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get a collection of all the stored files
-    public File[] getStoredFiles()
-    {
+    public File[] getStoredFiles() {
         File file = new File(getStorageLocation());
         return file.listFiles(pathname -> pathname.isFile());
     }
@@ -327,14 +324,12 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get the history directory
-    public String getHistoryDir(String path)
-    {
+    public String getHistoryDir(String path) {
         return path + historyPostfix;
     }
 
     // get the file version
-    public int getFileVersion(String historyPath, Boolean ifIndexPage)
-    {
+    public int getFileVersion(String historyPath, Boolean ifIndexPage) {
         Path path;
         if (ifIndexPage) {  // if the start page is opened
             path = Paths.get(getStorageLocation() + getHistoryDir(historyPath));  // get the storage directory and add the history directory to it

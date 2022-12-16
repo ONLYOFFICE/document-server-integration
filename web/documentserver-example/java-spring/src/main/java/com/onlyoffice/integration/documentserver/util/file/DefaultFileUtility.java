@@ -70,8 +70,7 @@ public class DefaultFileUtility implements FileUtility {
                             ".odp", ".fodp", ".otp");
 
     // get the document type
-    public DocumentType getDocumentType(String fileName)
-    {
+    public DocumentType getDocumentType(String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
         if (ExtsDocument.contains(ext)) {
@@ -93,8 +92,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name from its URL
-    public String getFileName(String url)
-    {
+    public String getFileName(String url) {
         if (url == null) {
             return "";
         }
@@ -106,8 +104,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name without extension
-    public String getFileNameWithoutExtension(String url)
-    {
+    public String getFileNameWithoutExtension(String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -117,8 +114,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file extension from URL
-    public String getFileExtension(String url)
-    {
+    public String getFileExtension(String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -128,8 +124,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get an editor internal extension
-    public String getInternalExtension(DocumentType type)
-    {
+    public String getInternalExtension(DocumentType type) {
         // .docx for word file type
         if (type.equals(DocumentType.word)) {
             return ".docx";
@@ -149,26 +144,22 @@ public class DefaultFileUtility implements FileUtility {
         return ".docx";
     }
 
-    public List<String> getFillExts()
-    {
+    public List<String> getFillExts() {
         return Arrays.asList(docserviceFillDocs.split("\\|"));
     }
 
     // get file extensions that can be viewed
-    public List<String> getViewedExts()
-    {
+    public List<String> getViewedExts() {
         return Arrays.asList(docserviceViewedDocs.split("\\|"));
     }
 
     // get file extensions that can be edited
-    public List<String> getEditedExts()
-    {
+    public List<String> getEditedExts() {
         return Arrays.asList(docserviceEditedDocs.split("\\|"));
     }
 
     // get file extensions that can be converted
-    public List<String> getConvertExts()
-    {
+    public List<String> getConvertExts() {
         return Arrays.asList(docserviceConvertDocs.split("\\|"));
     }
 
