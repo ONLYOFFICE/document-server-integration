@@ -31,4 +31,8 @@ public class SerializerFilter {
         }
         return false;
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
