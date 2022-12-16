@@ -199,8 +199,10 @@ class FileModel
         # get document key
         cur_key = doc_key
         if (i != cur_ver)
-          File.open(File.join(ver_dir, "key.txt"), 'r') do |file|
-            cur_key = file.read()
+          if File.file?(File.join(ver_dir, "key.txt"))
+            File.open(File.join(ver_dir, "key.txt"), 'r') do |file|
+              cur_key = file.read()
+            end
           end
         end
         obj["key"] = cur_key
@@ -233,15 +235,17 @@ class FileModel
         if (i > 1)  # check if the version number is greater than 1
           changes = nil
           change = nil
-          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|  # get the path to the changes.json file
-            changes = JSON.parse(file.read())  # and parse its content
+          if File.file?(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"))
+            File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|  # get the path to the changes.json file
+              changes = JSON.parse(file.read())  # and parse its content
+            end
           end
 
-          change = changes["changes"] ? changes["changes"][0] : nil
+          change = changes && changes["changes"] ? changes["changes"][0] : nil
 
           # write information about changes to the object
           obj["changes"] = change ? changes["changes"] : nil
-          obj["serverVersion"] = changes["serverVersion"]
+          obj["serverVersion"] = changes && changes["serverVersion"] ? changes["serverVersion"] : nil
           obj["created"] = change ? change["created"] : nil
           obj["user"] = change ? change["user"] : nil
 

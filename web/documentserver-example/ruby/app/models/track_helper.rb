@@ -68,12 +68,6 @@ class TrackHelper
                 return saved
             end
 
-            data = download_file(download_uri) # download document file
-            if data.eql?(nil)
-                saved = 1
-                return saved
-            end
-
             new_file_name = file_name
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
 
@@ -99,6 +93,12 @@ class TrackHelper
                 end
             end
 
+            data = download_file(download_uri) # download document file
+            if data.eql?(nil)
+                saved = 1
+                return saved
+            end
+
             saved = 1
             begin
                 storage_path = DocumentHelper.storage_path(new_file_name, user_address)  # get the storage directory of the new file
@@ -110,16 +110,12 @@ class TrackHelper
 
                 FileUtils.mkdir_p(ver_dir)  # create the version directory if doesn't exist
 
-                FileUtils.copy(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # copy the file from the storage directory to the previous file version directory
-                is_saved = save_file(data, storage_path)  # save the downloaded file to the storage directory
-                if is_saved == 1
-                    return is_saved
-                end
+                FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # move the file from the storage directory to the previous file version directory
 
-                if file_data["changesurl"] # if the changesurl is in the body
-                    change_data = download_file(file_data["changesurl"]) # download file with document versions differences
-                    save_file(change_data, File.join(ver_dir, "diff.zip")) # save file with document versions differences
-                end
+                save_file(data, storage_path)  # save the downloaded file to the storage directory
+
+                change_data = download_file(file_data["changesurl"]) # download file with document versions differences
+                save_file(change_data, File.join(ver_dir, "diff.zip")) # save file with document versions differences
 
                 hist_data = file_data["changeshistory"]
                 unless hist_data # if there are no changes in the history
@@ -157,11 +153,6 @@ class TrackHelper
                 return saved
             end
 
-            data = download_file(download_uri) # download document file
-            if data.eql?(nil)
-                saved = 1
-                return saved
-            end
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
 
             # TODO [Delete in version 7.0 or higher]
@@ -188,6 +179,12 @@ class TrackHelper
                 end
             end
 
+            data = download_file(download_uri) # download document file
+            if data.eql?(nil)
+                saved = 1
+                return saved
+            end
+
             saved = 1
             begin
                 is_submit_form = file_data["forcesavetype"].to_i == 3  # check if the forcesave type is equal to 3 (the form was submitted)
@@ -209,10 +206,7 @@ class TrackHelper
                     end
                 end
 
-                is_saved = save_file(data, forcesave_path)  # save the downloaded file to the storage directory
-                if is_saved == 1
-                    return is_saved
-                end
+                save_file(data, forcesave_path)  # save the downloaded file to the storage directory
 
                 if is_submit_form
                     uid = file_data['actions'][0]['userid']
@@ -293,13 +287,8 @@ class TrackHelper
         end
 
         def save_file(data, path)
-            begin
-                File.open(path, 'wb') do |file|  # open the file from the path specified
-                    file.write(data)  # and write the response data to it
-                end
-                return 0
-            rescue
-                return 1
+            File.open(path, 'wb') do |file|  # open the file from the path specified
+                file.write(data)  # and write the response data to it
             end
         end
     end
