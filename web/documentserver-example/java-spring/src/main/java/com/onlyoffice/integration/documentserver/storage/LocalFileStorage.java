@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -184,11 +183,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return "";
     }
 
-    // copy a file to the specified destination
-    public boolean copyFile(Path source, Path destination){
+    // move a file to the specified destination
+    public boolean moveFile(Path source, Path destination){
         try {
-            Files.copy(source, destination,
-                    new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
+            Files.move(source, destination);
             return true;
         } catch (IOException e) {
             e.printStackTrace();

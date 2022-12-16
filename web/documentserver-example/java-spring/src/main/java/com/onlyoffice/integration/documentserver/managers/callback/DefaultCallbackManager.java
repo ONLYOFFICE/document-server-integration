@@ -71,7 +71,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
     // download file from url
     @SneakyThrows
-    private ByteArrayInputStream getDownloadFile(String url) {
+    private byte[] getDownloadFile(String url) {
         if (url == null || url.isEmpty())
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
 
@@ -92,21 +92,20 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        return new ByteArrayInputStream(stream.readAllBytes());
+        return stream.readAllBytes();
     }
 
     // file saving
     @SneakyThrows
-    private void saveFile(ByteArrayInputStream stream, Path path) {
+    private void saveFile(byte[] byteArray, Path path) {
         if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
-        storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
+        storageMutator.createOrUpdateFile(path, new ByteArrayInputStream(byteArray));  // update a file or create a new one
     }
 
     @SneakyThrows
     public int processSave(Track body, String fileName) {  // file saving process
         String downloadUri = body.getUrl();
-        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
-
+        //downloadUri = downloadUri.replace("192.168.0.103", "192.168.0.111");
         String changesUri = body.getChangesurl();
         String key = body.getKey();
         String newFileName = fileName;
@@ -134,8 +133,8 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);// download document file
         Path toSave = Paths.get(storagePath);
-        saveFile(streamFile, toSave); // save document file
 
         Path lastVersion = Paths.get(storagePathBuilder.getFileLocation(fileName));  // get the path to the last file version
 
@@ -148,10 +147,12 @@ public class DefaultCallbackManager implements CallbackManager {
             Path ver = Paths.get(versionDir);
 
             storageMutator.createDirectory(ver);  // create the file version directory
-            storageMutator.copyFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));  // copy the last file version to the file version directory with the "prev" postfix
+            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));  // move the last file version to the file version directory with the "prev" postfix
 
-            ByteArrayInputStream streamChanges = getDownloadFile(changesUri); // download file changes
-            saveFile(streamChanges, Path.of(versionDir + File.separator + "diff.zip")); // save file changes to the diff.zip archive
+            saveFile(byteArrayFile, toSave); // save document file
+
+            byte[] byteArrayChanges = getDownloadFile(changesUri); // download file changes
+            saveFile(byteArrayChanges, Path.of(versionDir + File.separator + "diff.zip")); // save file changes to the diff.zip archive
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
             jsonChanges.put("changes", body.getHistory().getChanges());  // put the changes to the json object
@@ -237,7 +238,6 @@ public class DefaultCallbackManager implements CallbackManager {
     @SneakyThrows
     public int processForceSave(Track body, String fileName) {  // file force saving process
         String downloadUri = body.getUrl();
-        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
@@ -264,6 +264,7 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);// download document file
         String forcesavePath = "";
 
         //TODO: Use ENUMS
@@ -289,7 +290,7 @@ public class DefaultCallbackManager implements CallbackManager {
                 forcesavePath = storagePathBuilder.getForcesavePath(fileName, true);
             }
         }
-        saveFile(streamFile, Path.of(forcesavePath));
+        saveFile(byteArrayFile, Path.of(forcesavePath));
 
         if (isSubmitForm) {
             List<Action> actions = body.getActions();
