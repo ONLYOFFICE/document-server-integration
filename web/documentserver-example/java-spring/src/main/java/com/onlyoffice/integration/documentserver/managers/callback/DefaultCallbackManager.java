@@ -210,12 +210,10 @@ public class DefaultCallbackManager implements CallbackManager {
         String responseCode = response.get("error").toString();
         switch(responseCode) {
             case "0":
-            case "4": {
+            case "4":
                 break;
-            }
-            default: {
+            default:
                 throw new RuntimeException(response.toJSONString());
-            }
         }
     }
 
