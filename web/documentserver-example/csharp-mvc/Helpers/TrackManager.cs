@@ -104,7 +104,6 @@ namespace OnlineEditorsExampleMVC.Helpers
                 : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
 
             var newFileName = fileName;
-            byte[] bytesFile = DownloadFile(downloadUri); // download document file
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (!curExt.Equals(downloadExt, StringComparison.InvariantCultureIgnoreCase))
@@ -132,42 +131,48 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             DocManagerHelper.VerifySSL();
 
-            string storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
-            SaveFile(bytesFile, storagePath);// save document file
-
-            var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
-            if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
-
-            var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));  // get the path to the file version
-            if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
-
-            // get the path to the previous file version and copy it to the storage directory
-            File.Copy(DocManagerHelper.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
-
-            if (fileData.ContainsKey("changesurl"))
+            try
             {
+                byte[] bytesFile = DownloadFile(downloadUri); // download document file
+                string storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path           
+
+                var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
+                if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
+
+                var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));  // get the path to the file version
+                if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
+
+                // get the path to the previous file version and move it to the storage directory
+                File.Move(DocManagerHelper.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
+
+                SaveFile(bytesFile, storagePath);// save document file
+
                 byte[] bytesChanges = DownloadFile((string)fileData["changesurl"]); // download changes file
                 SaveFile(bytesChanges, Path.Combine(versionDir, "diff.zip")); // save file changes to the diff.zip archive
-            }
 
-            var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
-            if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
-            {
-                var jss = new JavaScriptSerializer();
-                hist = jss.Serialize(fileData["history"]);
-            }
+                var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
+                if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+                {
+                    var jss = new JavaScriptSerializer();
+                    hist = jss.Serialize(fileData["history"]);
+                }
 
-            if (!string.IsNullOrEmpty(hist))
-            {
-                File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
-            }
+                if (!string.IsNullOrEmpty(hist))
+                {
+                    File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
+                }
 
-            File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
+                File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
 
-            string forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
-            if (!forcesavePath.Equals(""))  // if the forcesaved file version exists
-            {
-                File.Delete(forcesavePath);  // remove it
+                string forcesavePath = DocManagerHelper.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
+                if (!forcesavePath.Equals(""))  // if the forcesaved file version exists
+                {
+                    File.Delete(forcesavePath);  // remove it
+                }
+
+            } catch (Exception)
+            {              
+                return 1;
             }
 
             return 0;
@@ -180,7 +185,6 @@ namespace OnlineEditorsExampleMVC.Helpers
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
-            byte[] bytesFile = DownloadFile(downloadUri); // download document file
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
@@ -214,44 +218,53 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
 
             DocManagerHelper.VerifySSL();
-            
-            string forcesavePath = "";
-            Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
 
-            if (isSubmitForm)  // if the form is submitted
+            try
             {
-                if (newFileName)
-                {
-                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
-                } else
-                {
-                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
-                }
-                forcesavePath = DocManagerHelper.StoragePath(fileName, userAddress);
-            }
-            else
-            {
-                if (newFileName)
-                {
-                    fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
-                }
-                forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
-                if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
-                {
-                    forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
-                }
-            }
+                byte[] bytesFile = DownloadFile(downloadUri); // download document file
 
-            SaveFile(bytesFile, forcesavePath);// save document file
+                string forcesavePath = "";
+                Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
 
-            if (isSubmitForm)
+                if (isSubmitForm)  // if the form is submitted
+                {
+                    if (newFileName)
+                    {
+                        fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
+                    }
+                    else
+                    {
+                        fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
+                    }
+                    forcesavePath = DocManagerHelper.StoragePath(fileName, userAddress);
+                }
+                else
+                {
+                    if (newFileName)
+                    {
+                        fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                    }
+                    forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
+                    if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
+                    {
+                        forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
+                    }
+                }
+
+                SaveFile(bytesFile, forcesavePath);// save document file
+
+                if (isSubmitForm)
+                {
+                    var jss = new JavaScriptSerializer();
+                    var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
+                    var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
+                    var user = action["userid"].ToString();  // get the user id
+                    DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
+                }
+            } catch (Exception)
             {
-                var jss = new JavaScriptSerializer();
-                var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
-                var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
-                var user = action["userid"].ToString();  // get the user id
-                DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
-            }
+                return 1;
+            }   
 
             return 0;
         }
@@ -325,7 +338,10 @@ namespace OnlineEditorsExampleMVC.Helpers
         // save file
         private static void SaveFile(byte[] data, string path)
         {
-            File.WriteAllBytes(path, data);
+            using (var fs = File.Open(path, FileMode.Create))
+            {
+                fs.Write(data, 0, data.Length);
+            }
         }
 
         // save file information from the url to the file specified
@@ -335,15 +351,16 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             var req = (HttpWebRequest)WebRequest.Create(url);
             req.Timeout = 5000;
-            Stream stream = req.GetResponse().GetResponseStream();  // get input stream of the file information from the url
+            using (Stream stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
+            {
+                if (stream == null) throw new Exception("stream is null");
 
-            if (stream == null) throw new Exception("stream is null");
-            MemoryStream memoryStream = new MemoryStream();
-            stream.CopyTo(memoryStream);
-            stream.Close();
-            byte[] data = memoryStream.ToArray();
-            memoryStream.Close();
-            return data;
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    return memoryStream.ToArray();
+                }
+            }           
         }
     }
 }
