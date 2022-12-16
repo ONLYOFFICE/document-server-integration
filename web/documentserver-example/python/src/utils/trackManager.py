@@ -29,7 +29,6 @@ import config
 import requests
 import os
 import json
-import shutil
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
 # read request body
@@ -58,9 +57,6 @@ def processSave(body, filename, usAddr):
     if (download is None):
         raise Exception("DownloadUrl is null")
 
-    data = docManager.downloadFileFromUri(download) # download document file
-    if (data is None):
-        raise Exception("Downloaded document is null")
     changesUri = body.get('changesurl')
     newFilename = filename
 
@@ -83,14 +79,19 @@ def processSave(body, filename, usAddr):
 
     path = docManager.getStoragePath(newFilename, usAddr) # get the file path
 
-    docManager.saveFile(data, path) # save document file
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
+
     histDir = historyManager.getHistoryDir(path) # get the path to the history direction
     if not os.path.exists(histDir): # if the path doesn't exist
         os.makedirs(histDir) # create it
 
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
-    shutil.copyfile(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # copy the latest file version to the previous file version
+    os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # copy the latest file version to the previous file version
+
+    docManager.saveFile(data, path)  # save document file
 
     dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
     if (dataChanges is None):
@@ -117,9 +118,6 @@ def processForceSave(body, filename, usAddr):
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
-    data = docManager.downloadFileFromUri(download) # download document file    
-    if (data is None):
-        raise Exception("Downloaded document is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
     
                                              # Todo [Delete here in version 7.0 or higher]
@@ -138,6 +136,10 @@ def processForceSave(body, filename, usAddr):
                 download = newUri
         except Exception:
             newFilename = True
+
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
 
     isSubmitForm = body.get('forcesavetype') == 3 # SubmitForm
 
