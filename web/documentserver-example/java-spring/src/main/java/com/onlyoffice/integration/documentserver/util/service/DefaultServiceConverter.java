@@ -63,7 +63,9 @@ public class DefaultServiceConverter implements ServiceConverter
     @PostConstruct
     public void init(){
         int timeout = Integer.parseInt(docserviceTimeout);  // parse the dcoument service timeout value
-        if (timeout > 0) convertTimeout = timeout;
+        if (timeout > 0) {
+            convertTimeout = timeout;
+        }
     }
 
     @SneakyThrows
@@ -141,8 +143,9 @@ public class DefaultServiceConverter implements ServiceConverter
         body.setTitle(title);
         body.setKey(documentRevisionId);
         body.setFilePass(filePass);
-        if (isAsync)
+        if (isAsync) {
             body.setAsync(true);
+        }
 
         String headerToken = "";
         if (jwtManager.tokenEnabled())
@@ -155,8 +158,9 @@ public class DefaultServiceConverter implements ServiceConverter
             map.put("title", body.getTitle());
             map.put("key", body.getKey());
             map.put("password", body.getFilePass());
-            if (isAsync)
+            if (isAsync) {
                 map.put("async", body.getAsync());
+            }
 
             // add token to the body if it is enabled
             String token = jwtManager.createToken(map);
@@ -175,8 +179,9 @@ public class DefaultServiceConverter implements ServiceConverter
     // generate document key
     public String generateRevisionId(String expectedKey)
     {
-        if (expectedKey.length() > 20)  // if the expected key length is greater than 20
+        if (expectedKey.length() > 20) {  // if the expected key length is greater than 20
             expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
+        }
 
         String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
@@ -232,8 +237,9 @@ public class DefaultServiceConverter implements ServiceConverter
         JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
-        if (error != null)  // if an error occurs
+        if (error != null) {  // if an error occurs
             processConvertServiceResponceError(Math.toIntExact((long)error));  // then get an error message
+        }
 
         // check if the conversion is completed and save the result to a variable
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");

@@ -74,16 +74,19 @@ public class DefaultFileUtility implements FileUtility {
     {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
-        if (ExtsDocument.contains(ext))
+        if (ExtsDocument.contains(ext)) {
             return DocumentType.word;
+        }
 
         // cell type for spreadsheet extensions
-        if (ExtsSpreadsheet.contains(ext))
+        if (ExtsSpreadsheet.contains(ext)) {
             return DocumentType.cell;
+        }
 
         // slide type for presentation extensions
-        if (ExtsPresentation.contains(ext))
+        if (ExtsPresentation.contains(ext)) {
             return DocumentType.slide;
+        }
 
         // default file type is word
         return DocumentType.word;
@@ -92,7 +95,9 @@ public class DefaultFileUtility implements FileUtility {
     // get file name from its URL
     public String getFileName(String url)
     {
-        if (url == null) return "";
+        if (url == null) {
+            return "";
+        }
 
         // get file name from the last part of URL
         String fileName = url.substring(url.lastIndexOf('/') + 1);
@@ -104,7 +109,9 @@ public class DefaultFileUtility implements FileUtility {
     public String getFileNameWithoutExtension(String url)
     {
         String fileName = getFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
         return fileNameWithoutExt;
     }
@@ -113,7 +120,9 @@ public class DefaultFileUtility implements FileUtility {
     public String getFileExtension(String url)
     {
         String fileName = getFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String fileExt = fileName.substring(fileName.lastIndexOf("."));
         return fileExt.toLowerCase();
     }
@@ -122,16 +131,19 @@ public class DefaultFileUtility implements FileUtility {
     public String getInternalExtension(DocumentType type)
     {
         // .docx for word file type
-        if (type.equals(DocumentType.word))
+        if (type.equals(DocumentType.word)) {
             return ".docx";
+        }
 
         // .xlsx for cell file type
-        if (type.equals(DocumentType.cell))
+        if (type.equals(DocumentType.cell)) {
             return ".xlsx";
+        }
 
         // .pptx for slide file type
-        if (type.equals(DocumentType.slide))
+        if (type.equals(DocumentType.slide)) {
             return ".pptx";
+        }
 
         // the default file type is .docx
         return ".docx";

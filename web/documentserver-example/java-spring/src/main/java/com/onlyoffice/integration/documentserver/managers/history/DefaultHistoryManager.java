@@ -122,7 +122,9 @@ public class DefaultHistoryManager implements HistoryManager {
                     dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 
-                if (jwtManager.tokenEnabled()) dataObj.put("token", jwtManager.createToken(dataObj));
+                if (jwtManager.tokenEnabled()) {
+                    dataObj.put("token", jwtManager.createToken(dataObj));
+                }
 
                 hist.add(obj);
                 histData.put(Integer.toString(i - 1), dataObj);

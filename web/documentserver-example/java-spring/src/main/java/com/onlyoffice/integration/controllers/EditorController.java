@@ -87,8 +87,12 @@ public class EditorController {
         Type type = Type.desktop;
         Locale locale = new Locale("en");
 
-        if(actionParam != null) action = Action.valueOf(actionParam);
-        if(typeParam != null) type = Type.valueOf(typeParam);
+        if(actionParam != null) {
+            action = Action.valueOf(actionParam);
+        }
+        if(typeParam != null) {
+            type = Type.valueOf(typeParam);
+        }
 
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
         for (String langAndKey : langsAndKeys) {
@@ -102,7 +106,9 @@ public class EditorController {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
         // if the user is not present, return the ONLYOFFICE start page
-        if(!optionalUser.isPresent()) return "index.html";
+        if(!optionalUser.isPresent()) {
+            return "index.html";
+        }
 
         User user = optionalUser.get();
 

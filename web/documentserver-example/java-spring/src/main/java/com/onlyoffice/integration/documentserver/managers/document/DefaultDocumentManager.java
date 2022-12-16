@@ -224,7 +224,9 @@ public class DefaultDocumentManager implements DocumentManager {
                                     .getContextClassLoader()
                                     .getResourceAsStream(demoPath);  // get the input file stream
 
-        if (stream == null) return null;
+        if (stream == null) {
+            return null;
+        }
 
         storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);  // create a file in the specified directory
         storageMutator.createMeta(fileName, uid, uname);  // create meta information of the demo file

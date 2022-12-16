@@ -274,7 +274,9 @@ public class FileController {
         if(fileExt != null){
             try{
                 Optional<User> user = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
-                if (!user.isPresent()) throw new RuntimeException("Could not fine any user with id = "+uid);  // if the user with the specified ID doesn't exist, an error occurs
+                if (!user.isPresent()) {
+                    throw new RuntimeException("Could not fine any user with id = "+uid);  // if the user with the specified ID doesn't exist, an error occurs
+                }
                 String fileName = documentManager.createDemo(fileExt, sampleData, uid, user.get().getName());  // create a demo document with the sample data
                 if (fileName.isBlank() || fileName == null) {
                     throw new RuntimeException("You must have forgotten to add asset files");
