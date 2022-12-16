@@ -41,16 +41,16 @@ public class TrackManager {
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
     // create a new file if it does not exist
-    private static boolean createFile(ByteArrayInputStream stream, Path path) {
+    private static boolean createFile(byte[] byteArray, Path path) {
         if (Files.exists(path)) {
             return true;
         }
-        try {
+        try(ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray)) {
             File file = Files.createFile(path).toFile();  // create a new file in the specified path
             try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
                 final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1) {
+                while ((read = byteArrayInputStream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);  // write bytes to the output stream
                 }
                 out.flush();  // force write data to the output stream that can be cached in the current thread
@@ -72,13 +72,13 @@ public class TrackManager {
     }
 
     // save file
-    private static boolean saveFile(ByteArrayInputStream stream, Path path) {
+    private static boolean saveFile(byte[] byteArray, Path path) {
         if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
         if (!Files.exists(path)) { // if the specified file does not exist
-            return createFile(stream, path);  // create it in the specified directory
+            return createFile(byteArray, path);  // create it in the specified directory
         } else {
             try {
-                Files.write(path, getAllBytes(stream));  // otherwise, write new information in the bytes format to the file
+                Files.write(path, byteArray);  // otherwise, write new information in the bytes format to the file
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,7 +88,7 @@ public class TrackManager {
     }
 
     // download file from url
-    private static ByteArrayInputStream getDownloadFile(String url) throws Exception {
+    private static byte[] getDownloadFile(String url) throws Exception {
         if (url == null || url.isEmpty())
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
 
@@ -109,7 +109,7 @@ public class TrackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        return new ByteArrayInputStream(getAllBytes(stream));
+        return getAllBytes(stream);
     }
 
     // read request body
@@ -197,8 +197,6 @@ public class TrackManager {
             throw new Exception("DownloadUrl is null");
         }
         String downloadUri = (String) body.get("url");
-        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
-
         String changesUri = (String) body.get("changesurl");
         String key = (String) body.get("key");
         String newFileName = fileName;
@@ -224,9 +222,9 @@ public class TrackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);// download document file
         String storagePath = DocumentManager.StoragePath(newFileName, userAddress);  // get the file path
         Path toSave = Paths.get(storagePath);
-        saveFile(streamFile, toSave); // save document file
 
         Path lastVersion = Paths.get(DocumentManager.StoragePath(fileName, userAddress));  // get the path to the last file version
         if (lastVersion.toFile().exists()) {  // if the last file version exists
@@ -238,10 +236,12 @@ public class TrackManager {
             Path ver = Paths.get(versionDir);
 
             if (!Files.exists(ver)) Files.createDirectories(ver);
-            Files.copy(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt), StandardCopyOption.REPLACE_EXISTING); // copy the latest file version to the previous file version
+            Files.move(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt)); // move the latest file version to the previous file version
 
-            ByteArrayInputStream streamChanges = getDownloadFile(changesUri);
-            saveFile(streamChanges, Paths.get(versionDir + File.separator + "diff.zip"));
+            saveFile(byteArrayFile, toSave); // save document file
+
+            byte[] byteArrayChanges = getDownloadFile(changesUri);
+            saveFile(byteArrayChanges, Paths.get(versionDir + File.separator + "diff.zip"));
 
             String history = (String) body.get("changeshistory");
             if (history == null && body.containsKey("history")) {
@@ -273,8 +273,6 @@ public class TrackManager {
             throw new Exception("DownloadUrl is null");
         }
         String downloadUri = (String) body.get("url");
-        ByteArrayInputStream streamFile = getDownloadFile(downloadUri);// download document file
-
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
         String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
 
@@ -298,6 +296,7 @@ public class TrackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);// download document file
         String forcesavePath = "";
         boolean isSubmitForm = body.get("forcesavetype").toString().equals("3");  // SubmitForm
 
@@ -321,7 +320,7 @@ public class TrackManager {
             }
         }
 
-        saveFile(streamFile, Paths.get(forcesavePath));
+        saveFile(byteArrayFile, Paths.get(forcesavePath));
 
         if (isSubmitForm) {
             JSONArray actions = (JSONArray) body.get("actions");
