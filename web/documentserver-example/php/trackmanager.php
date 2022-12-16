@@ -83,13 +83,6 @@ function processSave($data, $fileName, $userAddress) {
         return $result;
     }
 
-    $new_data = file_get_contents($downloadUri, false,
-        stream_context_create(["http"=>["timeout"=>5]]));
-    if ($new_data === FALSE) {
-        $result["error"] = 1;
-        return $result;
-    }
-
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
@@ -118,6 +111,13 @@ function processSave($data, $fileName, $userAddress) {
             $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
             $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
         }
+    }
+
+    $new_data = file_get_contents($downloadUri, false,
+        stream_context_create(["http"=>["timeout"=>5]]));
+    if ($new_data === FALSE) {
+        $result["error"] = 1;
+        return $result;
     }
 
     $saved = 1;
@@ -165,13 +165,6 @@ function processForceSave($data, $fileName, $userAddress) {
         return $result;
     }
 
-    $new_data = file_get_contents($downloadUri, false,
-        stream_context_create(["http"=>["timeout"=>5]]));
-    if ($new_data === FALSE) {
-        $result["error"] = 1;
-        return $result;
-    }
-
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
@@ -199,6 +192,13 @@ function processForceSave($data, $fileName, $userAddress) {
             sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
             $newFileName = true;
         }
+    }
+
+    $new_data = file_get_contents($downloadUri, false,
+        stream_context_create(["http"=>["timeout"=>5]]));
+    if ($new_data === FALSE) {
+        $result["error"] = 1;
+        return $result;
     }
 
     $saved = 1;
