@@ -19,9 +19,6 @@
 package com.onlyoffice.integration.documentserver.util.service;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 import java.io.InputStream;
 
 
