@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-//TODO: Refactoring
+// todo: Refactoring
 @Component
 public class DefaultServiceConverter implements ServiceConverter {
     @Value("${files.docservice.header}")
@@ -183,7 +183,7 @@ public class DefaultServiceConverter implements ServiceConverter {
         return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
     }
 
-    //TODO: Replace with a registry (callbacks package for reference)
+    // todo: Replace with a registry (callbacks package for reference)
     // create an error message for an error code
     private void processConvertServiceResponceError(int errorCode) {
         String errorMessage = "";

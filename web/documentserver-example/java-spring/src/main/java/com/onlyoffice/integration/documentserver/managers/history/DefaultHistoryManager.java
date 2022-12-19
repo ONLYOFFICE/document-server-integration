@@ -34,7 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 
-//TODO: Rebuild completely
+// todo: Rebuild completely
 @Component
 public class DefaultHistoryManager implements HistoryManager {
 
@@ -56,7 +56,7 @@ public class DefaultHistoryManager implements HistoryManager {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //TODO: Refactoring
+    // todo: Refactoring
     @SneakyThrows
     public String[] getHistory(Document document) {  // get document history
         String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(document.getTitle()));  // get history directory

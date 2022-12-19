@@ -41,7 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-//TODO: Refactoring
+// todo: Refactoring
 @Component
 @Primary
 public class DefaultCallbackManager implements CallbackManager {
@@ -106,12 +106,12 @@ public class DefaultCallbackManager implements CallbackManager {
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
 
-        // Todo [Delete in version 7.0 or higher]
+        // todo: [Delete in version 7.0 or higher]
         if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
         }
 
-        //TODO: Refactoring
+        // todo: Refactoring
         if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
             try {
                 String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert a file and get URL to a new file
@@ -163,7 +163,7 @@ public class DefaultCallbackManager implements CallbackManager {
         }
     }
 
-    //TODO: Replace (String method) with (Enum method)
+    // todo: Replace (String method) with (Enum method)
     @SneakyThrows
     public void commandRequest(String method, String key, HashMap meta) {  // create a command request
         String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
@@ -213,7 +213,7 @@ public class DefaultCallbackManager implements CallbackManager {
         connection.disconnect();
 
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
-        //TODO: Add errors ENUM
+        // todo: Add errors ENUM
         String responseCode = response.get("error").toString();
         switch (responseCode) {
             case "0":
@@ -232,7 +232,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
 
-        // Todo [Delete in version 7.0 or higher]
+        // todo: [Delete in version 7.0 or higher]
         if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
         }
@@ -240,7 +240,7 @@ public class DefaultCallbackManager implements CallbackManager {
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
-        //TODO: Extract function
+        // todo: Extract function
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt,
@@ -257,11 +257,11 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String forcesavePath = "";
 
-        //TODO: Use ENUMS
-        //TODO: Pointless toString conversion
+        // todo: Use ENUMS
+        // todo: Pointless toString conversion
         boolean isSubmitForm = body.getForcesavetype().toString().equals("3");
 
-        //TODO: Extract function
+        // todo: Extract function
         if (isSubmitForm) {  // if the form is submitted
             if (newFileName) {
                 fileName = documentManager
