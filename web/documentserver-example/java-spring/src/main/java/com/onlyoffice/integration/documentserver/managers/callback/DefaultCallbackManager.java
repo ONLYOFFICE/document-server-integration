@@ -166,9 +166,9 @@ public class DefaultCallbackManager implements CallbackManager {
     // todo: Replace (String method) with (Enum method)
     @SneakyThrows
     public void commandRequest(String method, String key, HashMap meta) {  // create a command request
-        String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
+        String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
-        URL url = new URL(DocumentCommandUrl);
+        URL url = new URL(documentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
