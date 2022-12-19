@@ -237,7 +237,7 @@ public class DefaultCallbackManager implements CallbackManager {
         if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
         }
-        
+
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
