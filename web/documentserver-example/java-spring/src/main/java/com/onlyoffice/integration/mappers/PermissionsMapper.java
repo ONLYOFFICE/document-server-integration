@@ -47,7 +47,9 @@ public class PermissionsMapper extends AbstractMapper<Permission, com.onlyoffice
     @Override
     void handleSpecificFields(Permission source, com.onlyoffice.integration.documentserver.models.filemodel.Permission destination) {  // handle specific permission fields
         destination.setReviewGroups(source.getReviewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()));  // set the reviewGroups parameter
-        destination.setCommentGroups(  // set the commentGroups parameter
+
+        // set the commentGroups parameter
+        destination.setCommentGroups(
                 new CommentGroup(
                         source.getCommentsViewGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),
                         source.getCommentsEditGroups().stream().map(g -> g.getName()).collect(Collectors.toList()),
