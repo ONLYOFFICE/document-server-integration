@@ -28,7 +28,8 @@ public final class SSLUtils {
         }
     };
 
-    private final TrustManager[] UNQUESTIONING_TRUST_MANAGER = new TrustManager[] { new X509TrustManager() {
+    private final TrustManager[] UNQUESTIONING_TRUST_MANAGER = new TrustManager[] {
+            new X509TrustManager() {
         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
         }
