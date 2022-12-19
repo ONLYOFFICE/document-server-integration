@@ -93,7 +93,7 @@ public class FileController {
     private String createUserMetadata(String uid, String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
         String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             storageMutator.createMeta(fullFileName,  // create meta information with the user ID and name specified
                     String.valueOf(user.getId()), user.getName());
@@ -115,7 +115,7 @@ public class FileController {
 
     // download data from the specified history file
     private ResponseEntity<Resource> downloadFileHistory(String fileName, String version, String file) {
-        Resource resource = storageMutator.loadFileAsResourceHistory(fileName,version,file);  // load the specified file as a resource
+        Resource resource = storageMutator.loadFileAsResourceHistory(fileName, version, file);  // load the specified file as a resource
         String contentType = "application/octet-stream";
 
         // create a response with the content type, header and body with the file data
@@ -136,12 +136,12 @@ public class FileController {
             byte[] bytes = file.getBytes();  // get file in bytes
 
             // check if the file size exceeds the maximum file size or is less than 0
-            if(fileUtility.getMaxFileSize() < fileSize || fileSize <= 0) {
+            if (fileUtility.getMaxFileSize() < fileSize || fileSize <= 0) {
                 return "{ \"error\": \"File size is incorrect\"}";  // if so, write an error message to the response
             }
 
             // check if file extension is supported by the editor
-            if(!fileUtility.getFileExts().contains(fileExtension)) {
+            if (!fileUtility.getFileExts().contains(fileExtension)) {
                 return "{ \"error\": \"File type is not supported\"}";  // if not, write an error message to the response
             }
 
@@ -171,12 +171,12 @@ public class FileController {
         String internalFileExt = fileUtility.getInternalExtension(type);  // get an editor internal extension (".docx", ".xlsx" or ".pptx")
 
         try {
-            if(fileUtility.getConvertExts().contains(fileExt)) {  // check if the file with such an extension can be converted
+            if (fileUtility.getConvertExts().contains(fileExt)) {  // check if the file with such an extension can be converted
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
                 String newFileUri = serviceConverter  // get the URL to the converted file
                         .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
 
-                if(newFileUri.isEmpty()) {
+                if (newFileUri.isEmpty()) {
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
                 }
 
@@ -221,23 +221,23 @@ public class FileController {
     }
 
     @GetMapping("/downloadhistory")
-    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request,// download a file
+    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request, // download a file
                                              @RequestParam("fileName") String fileName,
                                              @RequestParam("ver") String version,
                                              @RequestParam("file") String file) { // history file
         try {
             // check if a token is enabled or not
-            if(jwtManager.tokenEnabled()) {
+            if (jwtManager.tokenEnabled()) {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
-                if(header != null && !header.isEmpty()) {
+                if (header != null && !header.isEmpty()) {
                     String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
                 } else {
                     return null;
                 }
             }
-            return downloadFileHistory(fileName,version,file);  // download data from the specified file
+            return downloadFileHistory(fileName, version, file);  // download data from the specified file
         } catch (Exception e) {
             return null;
         }
@@ -248,10 +248,10 @@ public class FileController {
                                              @RequestParam("fileName") String fileName) {
         try {
             // check if a token is enabled or not
-            if(jwtManager.tokenEnabled()) {
+            if (jwtManager.tokenEnabled()) {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
-                if(header != null && !header.isEmpty()) {
+                if (header != null && !header.isEmpty()) {
                     String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
                 }
@@ -268,7 +268,7 @@ public class FileController {
                          @CookieValue(value = "uid", required = false) String uid,
                          Model model) {
         Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();  // specify if the sample data exists or not
-        if(fileExt != null) {
+        if (fileExt != null) {
             try {
                 Optional<User> user = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
                 if (!user.isPresent()) {
@@ -371,11 +371,11 @@ public class FileController {
         String origExt = "." + (String) body.get("ext");
         String curExt = newfilename;
 
-        if(newfilename.indexOf(".") != -1) {
+        if (newfilename.indexOf(".") != -1) {
             curExt = (String) fileUtility.getFileExtension(newfilename);
         }
 
-        if(origExt.compareTo(curExt) != 0) {
+        if (origExt.compareTo(curExt) != 0) {
             newfilename += origExt;
         }
 

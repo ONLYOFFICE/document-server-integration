@@ -57,9 +57,9 @@ public class SampleTemplateManager implements TemplateManager {
         String path = storagePathBuilder.getServerUrl(true);  // get server URL
         if (fileType.equals(DocumentType.word)) {  // get URL to the template image for the word document type
             return path + "/css/img/file_docx.svg";
-        } else if(fileType.equals(DocumentType.slide)) {  // get URL to the template image for the slide document type
+        } else if (fileType.equals(DocumentType.slide)) {  // get URL to the template image for the slide document type
             return path + "/css/img/file_pptx.svg";
-        } else if(fileType.equals(DocumentType.cell)) {  // get URL to the template image for the cell document type
+        } else if (fileType.equals(DocumentType.cell)) {  // get URL to the template image for the cell document type
             return path + "/css/img/file_xlsx.svg";
         }
         return path + "/css/img/file_docx.svg";  // get URL to the template image for the default document type (word)

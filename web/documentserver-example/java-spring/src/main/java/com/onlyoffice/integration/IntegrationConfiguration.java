@@ -66,9 +66,9 @@ public class IntegrationConfiguration {
     @PostConstruct
     public void init() {  // initialize the storage path builder
         storagePathBuilder.configure(storageAddress.isBlank() ? null : storageAddress);
-        if(!verifyPerrOff.isEmpty()) {
+        if (!verifyPerrOff.isEmpty()) {
             try {
-                if(verifyPerrOff.equals("true")) {
+                if (verifyPerrOff.equals("true")) {
                     ssl.turnOffSslChecking(); //the certificate will be ignored
                 } else {
                     ssl.turnOnSslChecking(); //the certificate will be verified

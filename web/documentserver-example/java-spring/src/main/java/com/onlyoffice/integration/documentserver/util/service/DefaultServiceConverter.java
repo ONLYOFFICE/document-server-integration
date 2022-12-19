@@ -232,7 +232,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
         Object error = jsonObj.get("error");
         if (error != null) {  // if an error occurs
-            processConvertServiceResponceError(Math.toIntExact((long)error));  // then get an error message
+            processConvertServiceResponceError(Math.toIntExact((long) error));  // then get an error message
         }
 
         // check if the conversion is completed and save the result to a variable

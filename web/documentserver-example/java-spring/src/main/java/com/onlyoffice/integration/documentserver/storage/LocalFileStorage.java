@@ -71,7 +71,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
      */
     public void configure(String address) {
         this.storageAddress = address;
-        if(this.storageAddress == null) {
+        if (this.storageAddress == null) {
             try {
                 this.storageAddress = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
@@ -247,7 +247,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             }
         } catch (MalformedURLException e) {
@@ -256,14 +256,14 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return null;
     }
 
-    public Resource loadFileAsResourceHistory(String fileName,String version,String file) {
+    public Resource loadFileAsResourceHistory(String fileName, String version, String file) {
 
         String fileLocation = getStorageLocation() + fileName + "-hist" + File.separator + version + File.separator + file;  // get it by the file name
 
         try {
             Path filePath = Paths.get(fileLocation);  // get the path to the file location
             Resource resource = new UrlResource(filePath.toUri());  // convert the file path to URL
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             }
         } catch (MalformedURLException e) {

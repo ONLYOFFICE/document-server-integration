@@ -155,7 +155,7 @@ public class DefaultDocumentManager implements DocumentManager {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : storageMutator.getStoredFiles()) {
+        for (File file : storageMutator.getStoredFiles()) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
@@ -198,7 +198,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // create demo document
-    public String createDemo(String fileExt,Boolean sample,String uid,String uname) {
+    public String createDemo(String fileExt, Boolean sample, String uid, String uname) {
         String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
         String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;  // get the path to the sample document
         String fileName = getCorrectName(demoName);  // get a file name with an index if the file with such a name already exists

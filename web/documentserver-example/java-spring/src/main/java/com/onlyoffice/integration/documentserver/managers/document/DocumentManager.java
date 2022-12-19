@@ -31,6 +31,6 @@ public interface DocumentManager {
     ArrayList<Map<String, Object>> getFilesInfo();  // get file information
     ArrayList<Map<String, Object>> getFilesInfo(String fileId);  // get file information by its ID
     String versionDir(String path, Integer version, boolean historyPath);  // get the path to the file version by the history path and file version
-    String createDemo(String fileExt,Boolean sample,String uid,String uname) throws Exception;  // create demo document
+    String createDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception;  // create demo document
     String getCreateUrl(String fileName, Boolean sample);  // get URL to the created file
 }

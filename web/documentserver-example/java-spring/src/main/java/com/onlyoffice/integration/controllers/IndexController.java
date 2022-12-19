@@ -90,7 +90,7 @@ public class IndexController {
                 .map(user -> mistUtility.convertUserDescriptions(user.getName(), user.getDescriptions()))  // convert user descriptions to the specified format
                 .collect(Collectors.joining());
 
-        for(java.io.File file:files) {  // run through all the files
+        for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
             docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());  // add a document type of each file to the list
             filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
@@ -100,7 +100,7 @@ public class IndexController {
 
         // add all the parameters to the model
         model.addAttribute("isFillFormDoc", isFillFormDoc);
-        model.addAttribute("versions",versions);
+        model.addAttribute("versions", versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);

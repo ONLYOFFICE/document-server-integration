@@ -56,7 +56,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setUrl(documentManager.getDownloadUrl(fileName, true));  // set the URL to download a file to the document config
         document.setUrlUser(documentManager.getFileUri(fileName, false));  // set the file URL to the document config
         document.setDirectUrl(wrapper.getIsEnableDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : "");
-        document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));  // set the file type to the document config
+        document.setFileType(fileUtility.getFileExtension(fileName).replace(".", ""));  // set the file type to the document config
         document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
         // get the document key

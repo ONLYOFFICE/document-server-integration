@@ -100,7 +100,7 @@ public class DefaultJwtManager implements JwtManager {
             if (jwt.getObject("payload") != null) {  // get payload from the token and check if it is not empty
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> jwtPayload =
-                            (LinkedHashMap<String, Object>)jwt.getObject("payload");
+                            (LinkedHashMap<String, Object>) jwt.getObject("payload");
 
                     jwt.claims = jwtPayload;
                 } catch (Exception ex) {

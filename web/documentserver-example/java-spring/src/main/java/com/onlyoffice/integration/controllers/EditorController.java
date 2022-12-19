@@ -87,10 +87,10 @@ public class EditorController {
         Type type = Type.desktop;
         Locale locale = new Locale("en");
 
-        if(actionParam != null) {
+        if (actionParam != null) {
             action = Action.valueOf(actionParam);
         }
-        if(typeParam != null) {
+        if (typeParam != null) {
             type = Type.valueOf(typeParam);
         }
 
@@ -106,7 +106,7 @@ public class EditorController {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
         // if the user is not present, return the ONLYOFFICE start page
-        if(!optionalUser.isPresent()) {
+        if (!optionalUser.isPresent()) {
             return "index.html";
         }
 
@@ -129,7 +129,7 @@ public class EditorController {
         // add attributes to the specified model
         model.addAttribute("model", fileModel);  // add file model with the default parameters to the original model
         model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));  // get file history and add it to the model
-        model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
+        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
         model.addAttribute("dataInsertImage",  getInsertImage(directUrl));  // get an image and add it to the model
         model.addAttribute("dataCompareFile",  getCompareFile(directUrl));  // get a document for comparison and add it to the model
         model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));  // get recipients data for mail merging and add it to the model
@@ -139,11 +139,11 @@ public class EditorController {
 
     private List<Mentions> getUserMentions(String uid) {  // get user data for mentions
         List<Mentions> usersForMentions = new ArrayList<>();
-        if(uid != null && !uid.equals("4")) {
+        if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
                 if (u.getId() != Integer.parseInt(uid) && u.getId() != 4) {
-                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));  // user data includes user names and emails
+                    usersForMentions.add(new Mentions(u.getName(), u.getEmail()));  // user data includes user names and emails
                 }
             }
         }
@@ -161,7 +161,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()) {
+        if (jwtManager.tokenEnabled()) {
             dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
         }
 
@@ -178,7 +178,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()) {
+        if (jwtManager.tokenEnabled()) {
             dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
         }
 
@@ -195,7 +195,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()) {
+        if (jwtManager.tokenEnabled()) {
             dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 
