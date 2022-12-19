@@ -31,7 +31,7 @@ public class EditCallback implements Callback {
     @Autowired
     private CallbackManager callbackManager;
     @Override
-    public int handle(Track body, String fileName) {  // handle the callback when the document is being edited
+    public int handle(final Track body, final String fileName) {  // handle the callback when the document is being edited
         int result = 0;
         Action action =  body.getActions().get(0);  // get the user ID who is editing the document
         if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums.Action.edit)) {  // if this value is not equal to the user ID

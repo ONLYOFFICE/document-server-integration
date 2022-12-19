@@ -62,14 +62,14 @@ public class DefaultDocumentManager implements DocumentManager {
     private ServiceConverter serviceConverter;
 
     // get URL to the created file
-    public String getCreateUrl(String fileName, Boolean sample) {
+    public String getCreateUrl(final String fileName, final Boolean sample) {
         String fileExt = fileName.substring(fileName.length() - 4);
         String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
     }
 
     // get a file name with an index if the file with such a name already exists
-    public String getCorrectName(String fileName) {
+    public String getCorrectName(final String fileName) {
         String baseName = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
         String ext = fileUtility.getFileExtension(fileName);  // get file extension
         String name = baseName + ext;  // create a full file name
@@ -85,7 +85,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file URL
-    public String getFileUri(String fileName, Boolean forDocumentServer) {
+    public String getFileUri(final String fileName, final Boolean forDocumentServer) {
         try {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
@@ -104,7 +104,8 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file URL
-    public String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer) {
+    public String getHistoryFileUrl(final String fileName, final Integer version, final String file,
+                                    final Boolean forDocumentServer) {
         try {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
@@ -121,7 +122,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get the callback URL
-    public String getCallback(String fileName) {
+    public String getCallback(final String fileName) {
         String serverPath = storagePathBuilder.getServerUrl(true);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
@@ -135,7 +136,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get URL to download a file
-    public String getDownloadUrl(String fileName, Boolean isServer) {
+    public String getDownloadUrl(final String fileName, final Boolean isServer) {
         String serverPath = storagePathBuilder.getServerUrl(isServer);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
@@ -176,7 +177,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file information by its ID
-    public ArrayList<Map<String, Object>> getFilesInfo(String fileId) {
+    public ArrayList<Map<String, Object>> getFilesInfo(final String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
         for (Map<String, Object> map : getFilesInfo()) {
@@ -190,7 +191,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get the path to the file version by the history path and file version
-    public String versionDir(String path, Integer version, boolean historyPath) {
+    public String versionDir(final String path, final Integer version, final boolean historyPath) {
         if (!historyPath) {
             return storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(path)) + version;
         }
@@ -198,7 +199,7 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // create demo document
-    public String createDemo(String fileExt, Boolean sample, String uid, String uname) {
+    public String createDemo(final String fileExt, final Boolean sample, final String uid, final String uname) {
         String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
         String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;  // get the path to the sample document
         String fileName = getCorrectName(demoName);  // get a file name with an index if the file with such a name already exists

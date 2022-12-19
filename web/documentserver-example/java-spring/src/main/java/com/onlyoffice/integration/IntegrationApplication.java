@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class IntegrationApplication {
 
     // run the SpringApplication from the IntagrationApplication with the specified parameters
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(IntegrationApplication.class, args);
     }
 

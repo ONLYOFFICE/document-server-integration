@@ -69,7 +69,7 @@ public class DefaultCallbackManager implements CallbackManager {
     private ServiceConverter serviceConverter;
 
     // save file information from the URL to the file specified
-    private void downloadToFile(String url, Path path) throws Exception {
+    private void downloadToFile(final String url, final Path path) throws Exception {
         if (url == null || url.isEmpty()) {
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
         }
@@ -97,7 +97,7 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @SneakyThrows
-    public void processSave(Track body, String fileName) {  // file saving process
+    public void processSave(final Track body, final String fileName) {  // file saving process
         String downloadUri = body.getUrl();
         String changesUri = body.getChangesurl();
         String key = body.getKey();
@@ -165,7 +165,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
     // todo: Replace (String method) with (Enum method)
     @SneakyThrows
-    public void commandRequest(String method, String key, HashMap meta) {  // create a command request
+    public void commandRequest(final String method, final String key, final HashMap meta) {  // create a command request
         String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
         URL url = new URL(documentCommandUrl);
@@ -225,9 +225,10 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @SneakyThrows
-    public void processForceSave(Track body, String fileName) {  // file force saving process
+    public void processForceSave(final Track body, final String fileNameParam) {  // file force saving process
 
         String downloadUri = body.getUrl();
+        String fileName = fileNameParam;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file

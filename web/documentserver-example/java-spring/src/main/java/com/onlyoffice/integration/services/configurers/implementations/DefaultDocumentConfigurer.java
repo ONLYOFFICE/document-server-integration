@@ -48,7 +48,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     @Autowired
     private ServiceConverter serviceConverter;
 
-    public void configure(Document document, DefaultDocumentWrapper wrapper) {  // define the document configurer
+    public void configure(final Document document, final DefaultDocumentWrapper wrapper) {  // define the document configurer
         String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
         Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
 

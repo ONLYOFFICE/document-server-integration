@@ -68,8 +68,8 @@ public class IndexController {
     private String langs;
 
     @GetMapping("${url.index}")
-    public String index(@RequestParam(value = "directUrl", required = false) Boolean directUrl,
-                        Model model) {
+    public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
+                        final Model model) {
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();

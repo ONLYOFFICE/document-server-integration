@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 @Primary
 public class DefaultCustomizationConfigurer implements CustomizationConfigurer<DefaultCustomizationWrapper> {
     @Override
-    public void configure(Customization customization, DefaultCustomizationWrapper wrapper) {  // define the customization configurer
+    public void configure(final Customization customization, final DefaultCustomizationWrapper wrapper) {  // define the customization configurer
         Action action = wrapper.getAction();  // get the action parameter from the customization wrapper
         User user = wrapper.getUser();
         customization.setSubmitForm(false);  // set the submitForm parameter to the customization config

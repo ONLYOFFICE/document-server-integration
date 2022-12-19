@@ -43,7 +43,7 @@ public class UsersMapper extends AbstractMapper<User, com.onlyoffice.integration
     }
 
     @Override
-    public void handleSpecificFields(User source, com.onlyoffice.integration.documentserver.models.filemodel.User destination) {  // handle specific users fields
+    public void handleSpecificFields(final User source, final com.onlyoffice.integration.documentserver.models.filemodel.User destination) {  // handle specific users fields
         destination.setGroup(source.getGroup() != null ? source.getGroup().getName() : null);  // set the Group parameter
     }
 }

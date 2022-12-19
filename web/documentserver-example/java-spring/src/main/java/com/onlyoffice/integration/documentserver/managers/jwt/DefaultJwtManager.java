@@ -43,7 +43,7 @@ public class DefaultJwtManager implements JwtManager {
     private JSONParser parser;
 
     // create document token
-    public String createToken(Map<String, Object> payloadClaims) {
+    public String createToken(final Map<String, Object> payloadClaims) {
         try {
             // build a HMAC signer using a SHA-256 hash
             Signer signer = HMACSigner.newSHA256Signer(tokenSecret);
@@ -63,7 +63,7 @@ public class DefaultJwtManager implements JwtManager {
     }
 
     // read document token
-    public JWT readToken(String token) {
+    public JWT readToken(final String token) {
         try {
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
@@ -74,7 +74,7 @@ public class DefaultJwtManager implements JwtManager {
     }
 
     // parse the body
-    public JSONObject parseBody(String payload, String header) {
+    public JSONObject parseBody(final String payload, final String header) {
         JSONObject body;
         try {
             Object obj = parser.parse(payload);  // get body parameters by parsing the payload

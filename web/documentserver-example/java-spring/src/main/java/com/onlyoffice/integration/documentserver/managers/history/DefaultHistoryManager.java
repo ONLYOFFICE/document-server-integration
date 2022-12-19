@@ -58,7 +58,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
     // todo: Refactoring
     @SneakyThrows
-    public String[] getHistory(Document document) {  // get document history
+    public String[] getHistory(final Document document) {  // get document history
         String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(document.getTitle()));  // get history directory
         Integer curVer = storagePathBuilder.getFileVersion(histDir, false);  // get current file version
 
@@ -145,7 +145,7 @@ public class DefaultHistoryManager implements HistoryManager {
     }
 
     // read a file
-    private String readFileToEnd(File file) {
+    private String readFileToEnd(final File file) {
         String output = "";
         try {
             try (FileInputStream is = new FileInputStream(file)) {

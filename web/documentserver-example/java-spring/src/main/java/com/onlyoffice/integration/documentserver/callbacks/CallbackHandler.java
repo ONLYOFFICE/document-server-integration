@@ -33,11 +33,11 @@ public class CallbackHandler {
 
     private Map<Integer, Callback> callbackHandlers = new HashMap<>();
 
-    public void register(int code, Callback callback) {  // register a callback handler
+    public void register(final int code, final Callback callback) {  // register a callback handler
         callbackHandlers.put(code, callback);
     }
 
-    public int handle(Track body, String fileName) {  // handle a callback
+    public int handle(final Track body, final String fileName) {  // handle a callback
         Callback callback = callbackHandlers.get(body.getStatus());
         if (callback == null) {
             logger.warn("Callback status " + body.getStatus() + " is not supported yet");

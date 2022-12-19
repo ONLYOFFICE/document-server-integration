@@ -68,7 +68,7 @@ public class DefaultServiceConverter implements ServiceConverter {
     }
 
     @SneakyThrows
-    private String postToServer(Convert body, String headerToken) {  // send the POST request to the server
+    private String postToServer(final Convert body, final String headerToken) {  // send the POST request to the server
         String bodyString = objectMapper.writeValueAsString(body);  // write the body request to the object mapper in the string format
         URL url = null;
         java.net.HttpURLConnection connection = null;
@@ -116,29 +116,29 @@ public class DefaultServiceConverter implements ServiceConverter {
     }
 
     // get the URL to the converted file
-    public String getConvertedUri(String documentUri, String fromExtension,
-                                  String toExtension, String documentRevisionId,
-                                  String filePass, Boolean isAsync, String lang) {
+    public String getConvertedUri(final String documentUri, final String fromExtension,
+                                  final String toExtension, final String documentRevisionId,
+                                  final String filePass, final Boolean isAsync, final String lang) {
         // check if the fromExtension parameter is defined; if not, get it from the document url
-        fromExtension = fromExtension == null || fromExtension.isEmpty()
+        String fromExt = fromExtension == null || fromExtension.isEmpty()
                 ? fileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
         String title = fileUtility.getFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
-        documentRevisionId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
+        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
 
-        documentRevisionId = generateRevisionId(documentRevisionId);  // create document token
+        documentRevId = generateRevisionId(documentRevId);  // create document token
 
         // write all the necessary parameters to the body object
         Convert body = new Convert();
         body.setLang(lang);
         body.setUrl(documentUri);
         body.setOutputtype(toExtension.replace(".", ""));
-        body.setFiletype(fromExtension.replace(".", ""));
+        body.setFiletype(fromExt.replace(".", ""));
         body.setTitle(title);
-        body.setKey(documentRevisionId);
+        body.setKey(documentRevId);
         body.setFilePass(filePass);
         if (isAsync) {
             body.setAsync(true);
@@ -173,19 +173,17 @@ public class DefaultServiceConverter implements ServiceConverter {
     }
 
     // generate document key
-    public String generateRevisionId(String expectedKey) {
-        if (expectedKey.length() > 20) {  // if the expected key length is greater than 20
-            expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
-        }
-
-        String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
+    public String generateRevisionId(final String expectedKey) {
+        // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
+        String formatKey = expectedKey.length() > 20 ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
         return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
     }
 
     // todo: Replace with a registry (callbacks package for reference)
     // create an error message for an error code
-    private void processConvertServiceResponceError(int errorCode) {
+    private void processConvertServiceResponceError(final int errorCode) {
         String errorMessage = "";
         String errorMessageTemplate = "Error occurred in the ConvertService: ";
 
@@ -227,7 +225,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     // get the response URL
     @SneakyThrows
-    private String getResponseUri(String jsonString) {
+    private String getResponseUri(final String jsonString) {
         JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
@@ -254,7 +252,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     // convert stream to string
     @SneakyThrows
-    public String convertStreamToString(InputStream stream) {
+    public String convertStreamToString(final InputStream stream) {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
@@ -272,7 +270,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     // convert string to json
     @SneakyThrows
-    public JSONObject convertStringToJSON(String jsonString) {
+    public JSONObject convertStringToJSON(final String jsonString) {
         Object obj = parser.parse(jsonString);  // parse json string
         JSONObject jsonObj = (JSONObject) obj;  // and turn it into a json object
 

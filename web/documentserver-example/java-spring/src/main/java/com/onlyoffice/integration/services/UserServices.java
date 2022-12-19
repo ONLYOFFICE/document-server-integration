@@ -45,19 +45,19 @@ public class UserServices {
     }
 
     // get a user by their ID
-    public Optional<User> findUserById(Integer id) {
+    public Optional<User> findUserById(final Integer id) {
         return userRepository.findById(id);
     }
 
     // create a user with the specified parameters
-    public User createUser(String name, String email,
-                           List<String> description, String group,
-                           List<String> reviewGroups,
-                           List<String> viewGroups,
-                           List<String> editGroups,
-                           List<String> removeGroups, 
-                           List<String> userInfoGroups, Boolean favoriteDoc,
-                           Boolean chat) {
+    public User createUser(final String name, final String email,
+                           final List<String> description, final String group,
+                           final List<String> reviewGroups,
+                           final List<String> viewGroups,
+                           final List<String> editGroups,
+                           final List<String> removeGroups,
+                           final List<String> userInfoGroups, final Boolean favoriteDoc,
+                           final Boolean chat) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email

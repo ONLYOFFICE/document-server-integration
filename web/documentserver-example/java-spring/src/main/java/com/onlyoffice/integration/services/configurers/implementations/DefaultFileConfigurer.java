@@ -56,7 +56,7 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
     @Autowired
     private DefaultEditorConfigConfigurer defaultEditorConfigConfigurer;
 
-    public void configure(FileModel fileModel, DefaultFileWrapper wrapper) {  // define the file configurer
+    public void configure(final FileModel fileModel, final DefaultFileWrapper wrapper) {  // define the file configurer
         if (fileModel != null) {  // check if the file model is specified
             String fileName = wrapper.getFileName();  // get the fileName parameter from the file wrapper
             Action action = wrapper.getAction();  // get the action parameter from the file wrapper
@@ -97,13 +97,13 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
     }
 
     @Override
-    public FileModel getFileModel(DefaultFileWrapper wrapper) {  // get file model
+    public FileModel getFileModel(final DefaultFileWrapper wrapper) {  // get file model
         FileModel fileModel = fileModelObjectFactory.getObject();
         configure(fileModel, wrapper);  // and configure it
         return fileModel;
     }
 
-    private Permission updatePermissions(Permission userPermissions, Action action, Boolean canEdit) {
+    private Permission updatePermissions(final Permission userPermissions, final Action action, final Boolean canEdit) {
         userPermissions.setComment(
                 !action.equals(Action.view)
                         && !action.equals(Action.fillForms)

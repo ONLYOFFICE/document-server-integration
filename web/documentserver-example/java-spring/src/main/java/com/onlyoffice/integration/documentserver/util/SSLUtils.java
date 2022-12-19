@@ -23,7 +23,7 @@ public final class SSLUtils {
     private final HostnameVerifier jvmHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
 
     private final HostnameVerifier trivialHostnameVerifier = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession sslSession) {
+        public boolean verify(final String hostname, final SSLSession sslSession) {
             return true;
         }
     };
@@ -34,10 +34,10 @@ public final class SSLUtils {
             return null;
         }
 
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
         }
 
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
         }
     } };
 

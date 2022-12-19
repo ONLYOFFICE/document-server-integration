@@ -70,7 +70,7 @@ public class DefaultFileUtility implements FileUtility {
                             ".odp", ".fodp", ".otp");
 
     // get the document type
-    public DocumentType getDocumentType(String fileName) {
+    public DocumentType getDocumentType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
         if (extsDocument.contains(ext)) {
@@ -92,7 +92,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name from its URL
-    public String getFileName(String url) {
+    public String getFileName(final String url) {
         if (url == null) {
             return "";
         }
@@ -104,7 +104,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file name without extension
-    public String getFileNameWithoutExtension(String url) {
+    public String getFileNameWithoutExtension(final String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -114,7 +114,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get file extension from URL
-    public String getFileExtension(String url) {
+    public String getFileExtension(final String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -124,7 +124,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // get an editor internal extension
-    public String getInternalExtension(DocumentType type) {
+    public String getInternalExtension(final DocumentType type) {
         // .docx for word file type
         if (type.equals(DocumentType.word)) {
             return ".docx";
@@ -176,7 +176,7 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // generate the file path from file directory and name
-    public Path generateFilepath(String directory, String fullFileName) {
+    public Path generateFilepath(final String directory, final String fullFileName) {
         String fileName = getFileNameWithoutExtension(fullFileName);  // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension
         Path path = Paths.get(directory + fullFileName);  // get the path to the files with the specified name

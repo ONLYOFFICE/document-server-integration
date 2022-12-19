@@ -90,7 +90,7 @@ public class FileController {
     private CallbackManager callbackManager;
 
     // create user metadata
-    private String createUserMetadata(String uid, String fullFileName) {
+    private String createUserMetadata(final String uid, final String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
         String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
         if (optionalUser.isPresent()) {
@@ -102,7 +102,7 @@ public class FileController {
     }
 
     // download data from the specified file
-    private ResponseEntity<Resource> downloadFile(String fileName) {
+    private ResponseEntity<Resource> downloadFile(final String fileName) {
         Resource resource = storageMutator.loadFileAsResource(fileName);  // load the specified file as a resource
         String contentType = "application/octet-stream";
 
@@ -114,7 +114,7 @@ public class FileController {
     }
 
     // download data from the specified history file
-    private ResponseEntity<Resource> downloadFileHistory(String fileName, String version, String file) {
+    private ResponseEntity<Resource> downloadFileHistory(final String fileName, final String version, final String file) {
         Resource resource = storageMutator.loadFileAsResourceHistory(fileName, version, file);  // load the specified file as a resource
         String contentType = "application/octet-stream";
 
@@ -127,8 +127,8 @@ public class FileController {
 
     @PostMapping("/upload")
     @ResponseBody
-    public String upload(@RequestParam("file") MultipartFile file,  // upload a file
-                             @CookieValue("uid") String uid) {
+    public String upload(@RequestParam("file") final MultipartFile file,  // upload a file
+                             @CookieValue("uid") final String uid) {
         try {
             String fullFileName = file.getOriginalFilename();  // get file name
             String fileExtension = fileUtility.getFileExtension(fullFileName);  // get file extension
@@ -161,8 +161,8 @@ public class FileController {
 
     @PostMapping(path = "${url.converter}")
     @ResponseBody
-    public String convert(@RequestBody Converter body,  // convert a file
-                          @CookieValue("uid") String uid, @CookieValue("ulang") String lang) {
+    public String convert(@RequestBody final Converter body,  // convert a file
+                          @CookieValue("uid") final String uid, @CookieValue("ulang") final String lang) {
         String fileName = body.getFileName();  // get file name
         String fileUri = documentManager.getDownloadUrl(fileName, true);  // get URL for downloading a file with the specified name
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;  // get file password if it exists
@@ -208,7 +208,7 @@ public class FileController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public String delete(@RequestBody Converter body) {  // delete a file
+    public String delete(@RequestBody final Converter body) {  // delete a file
         try {
             String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
             boolean fileSuccess = storageMutator.deleteFile(fullFileName);  // delete a file from the storage and return the status of this operation (true or false)
@@ -221,10 +221,10 @@ public class FileController {
     }
 
     @GetMapping("/downloadhistory")
-    public ResponseEntity<Resource> downloadHistory(HttpServletRequest request, // download a file
-                                             @RequestParam("fileName") String fileName,
-                                             @RequestParam("ver") String version,
-                                             @RequestParam("file") String file) { // history file
+    public ResponseEntity<Resource> downloadHistory(final HttpServletRequest request, // download a file
+                                             @RequestParam("fileName") final String fileName,
+                                             @RequestParam("ver") final String version,
+                                             @RequestParam("file") final String file) { // history file
         try {
             // check if a token is enabled or not
             if (jwtManager.tokenEnabled()) {
@@ -244,8 +244,8 @@ public class FileController {
     }
 
     @GetMapping(path = "${url.download}")
-    public ResponseEntity<Resource> download(HttpServletRequest request,  // download a file
-                                             @RequestParam("fileName") String fileName) {
+    public ResponseEntity<Resource> download(final HttpServletRequest request,  // download a file
+                                             @RequestParam("fileName") final String fileName) {
         try {
             // check if a token is enabled or not
             if (jwtManager.tokenEnabled()) {
@@ -263,10 +263,10 @@ public class FileController {
     }
 
     @GetMapping("/create")
-    public String create(@RequestParam("fileExt") String fileExt,  // create a sample file of the specified extension
-                         @RequestParam(value = "sample", required = false) Optional<Boolean> isSample,
-                         @CookieValue(value = "uid", required = false) String uid,
-                         Model model) {
+    public String create(@RequestParam("fileExt") final String fileExt,  // create a sample file of the specified extension
+                         @RequestParam(value = "sample", required = false) final Optional<Boolean> isSample,
+                         @CookieValue(value = "uid", required = false) final String uid,
+                         final Model model) {
         Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();  // specify if the sample data exists or not
         if (fileExt != null) {
             try {
@@ -288,7 +288,7 @@ public class FileController {
     }
 
     @GetMapping("/assets")
-    public ResponseEntity<Resource> assets(@RequestParam("name") String name) {  // get sample files from the assests
+    public ResponseEntity<Resource> assets(@RequestParam("name") final String name) {  // get sample files from the assests
         String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
@@ -301,16 +301,17 @@ public class FileController {
 
     @GetMapping("/files")
     @ResponseBody
-    public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) String fileId) {  // get files information
+    public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) final String fileId) {  // get files information
         return fileId == null ? documentManager.getFilesInfo() : documentManager.getFilesInfo(fileId);
     }
 
     @PostMapping(path = "${url.track}")
     @ResponseBody
-    public String track(HttpServletRequest request,  // track file changes
-                        @RequestParam("fileName") String fileName,
-                        @RequestParam("userAddress") String userAddress,
-                        @RequestBody Track body) {
+    public String track(final HttpServletRequest request,  // track file changes
+                        @RequestParam("fileName") final String fileName,
+                        @RequestParam("userAddress") final String userAddress,
+                        @RequestBody final Track body) {
+        Track track;
         try {
             String bodyString = objectMapper.writeValueAsString(body);  // write the request body to the object mapper as a string
             String header = request.getHeader(documentJwtHeader == null  // get the request header
@@ -321,20 +322,20 @@ public class FileController {
             }
 
             JSONObject bodyCheck = jwtManager.parseBody(bodyString, header);  // parse the request body
-            body = objectMapper.readValue(bodyCheck.toJSONString(), Track.class);  // read the request body
+            track = objectMapper.readValue(bodyCheck.toJSONString(), Track.class);  // read the request body
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
 
-        int error = callbackHandler.handle(body, fileName);
+        int error = callbackHandler.handle(track, fileName);
 
         return "{\"error\":" + error + "}";
     }
 
     @PostMapping("/saveas")
     @ResponseBody
-    public String saveAs(@RequestBody JSONObject body, @CookieValue("uid") String uid) {
+    public String saveAs(@RequestBody final JSONObject body, @CookieValue("uid") final String uid) {
         String title = (String) body.get("title");
         String saveAsFileUrl = (String) body.get("url");
 
@@ -365,7 +366,7 @@ public class FileController {
 
     @PostMapping("/rename")
     @ResponseBody
-    public String rename(@RequestBody JSONObject body) {
+    public String rename(@RequestBody final JSONObject body) {
         String newfilename = (String) body.get("newfilename");
         String dockey = (String) body.get("dockey");
         String origExt = "." + (String) body.get("ext");

@@ -75,14 +75,14 @@ public class EditorController {
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
-    public String index(@RequestParam("fileName") String fileName,
-                        @RequestParam(value = "action", required = false) String actionParam,
-                        @RequestParam(value = "type", required = false) String typeParam,
-                        @RequestParam(value = "actionLink", required = false) String actionLink,
-                        @RequestParam(value = "directUrl", required = false, defaultValue = "false") Boolean directUrl,
-                        @CookieValue(value = "uid") String uid,
-                        @CookieValue(value = "ulang") String lang,
-                        Model model) throws JsonProcessingException {
+    public String index(@RequestParam("fileName") final String fileName,
+                        @RequestParam(value = "action", required = false) final String actionParam,
+                        @RequestParam(value = "type", required = false) final String typeParam,
+                        @RequestParam(value = "actionLink", required = false) final String actionLink,
+                        @RequestParam(value = "directUrl", required = false, defaultValue = "false") final Boolean directUrl,
+                        @CookieValue(value = "uid") final String uid,
+                        @CookieValue(value = "ulang") final String lang,
+                        final Model model) throws JsonProcessingException {
         Action action = Action.edit;
         Type type = Type.desktop;
         Locale locale = new Locale("en");
@@ -137,7 +137,7 @@ public class EditorController {
         return "editor.html";
     }
 
-    private List<Mentions> getUserMentions(String uid) {  // get user data for mentions
+    private List<Mentions> getUserMentions(final String uid) {  // get user data for mentions
         List<Mentions> usersForMentions = new ArrayList<>();
         if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
@@ -152,7 +152,7 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getInsertImage(Boolean directUrl) {  // get an image that will be inserted into the document
+    private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
@@ -169,7 +169,7 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getCompareFile(Boolean directUrl) {  // get a document that will be compared with the current document
+    private String getCompareFile(final Boolean directUrl) {  // get a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
@@ -186,7 +186,7 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getMailMerge(Boolean directUrl) {
+    private String getMailMerge(final Boolean directUrl) {
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");

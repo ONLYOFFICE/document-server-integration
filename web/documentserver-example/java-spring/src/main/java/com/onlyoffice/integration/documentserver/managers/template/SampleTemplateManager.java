@@ -42,7 +42,7 @@ public class SampleTemplateManager implements TemplateManager {
     private FileUtility fileUtility;
 
     // create a template document with the specified name
-    public List<Template> createTemplates(String fileName) {
+    public List<Template> createTemplates(final String fileName) {
         List<Template> templates = List.of(
                 new Template("", "Blank", documentManager.getCreateUrl(fileName, false)),  // create a blank template
                 new Template(getTemplateImageUrl(fileName), "With sample content", documentManager.getCreateUrl(fileName, true))  // create a template with sample content using the template image
@@ -52,7 +52,7 @@ public class SampleTemplateManager implements TemplateManager {
     }
 
     // get the template image URL for the specified file
-    public String getTemplateImageUrl(String fileName) {
+    public String getTemplateImageUrl(final String fileName) {
         DocumentType fileType = fileUtility.getDocumentType(fileName);  // get the file type
         String path = storagePathBuilder.getServerUrl(true);  // get server URL
         if (fileType.equals(DocumentType.word)) {  // get URL to the template image for the word document type

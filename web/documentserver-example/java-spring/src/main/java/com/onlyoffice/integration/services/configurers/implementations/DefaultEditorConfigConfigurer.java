@@ -68,7 +68,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
     private FileUtility fileUtility;
 
     @SneakyThrows
-    public void configure(EditorConfig config, DefaultFileWrapper wrapper) {  // define the editorConfig configurer
+    public void configure(final EditorConfig config, final DefaultFileWrapper wrapper) {  // define the editorConfig configurer
         if (wrapper.getActionData() != null) {  // check if the actionData is not empty in the editorConfig wrapper
             config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));  // set actionLink to the editorConfig
         }
