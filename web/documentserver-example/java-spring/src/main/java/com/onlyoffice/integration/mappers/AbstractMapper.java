@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public abstract class AbstractMapper<E extends AbstractEntity, M extends AbstractModel> implements Mapper<E, M> {
     @Autowired
-    ModelMapper mapper;
+    private ModelMapper mapper;
 
     private Class<M> modelClass;
 
