@@ -125,8 +125,8 @@ public class DefaultDocumentManager implements DocumentManager {
         String serverPath = storagePathBuilder.getServerUrl(true);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
-            String query = trackUrl + "?fileName=" +
-                    URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+            String query = trackUrl + "?fileName="
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return serverPath + query;
         } catch (UnsupportedEncodingException e) {
@@ -159,8 +159,8 @@ public class DefaultDocumentManager implements DocumentManager {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
-                    .generateRevisionId(storagePathBuilder.getStorageLocation() +
-                            "/" + file.getName() + "/"
+                    .generateRevisionId(storagePathBuilder.getStorageLocation()
+                            + "/" + file.getName() + "/"
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));

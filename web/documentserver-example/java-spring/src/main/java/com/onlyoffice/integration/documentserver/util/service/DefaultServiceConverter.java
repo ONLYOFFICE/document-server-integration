@@ -90,8 +90,8 @@ public class DefaultServiceConverter implements ServiceConverter {
             // check if the token is enabled
             if (jwtManager.tokenEnabled()) {
                 // set the JWT header to the request
-                connection.setRequestProperty(documentJwtHeader.isBlank() ?
-                        "Authorization" : documentJwtHeader, "Bearer " + headerToken);
+                connection.setRequestProperty(documentJwtHeader.isBlank()
+                        ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);
             }
 
             connection.connect();
@@ -120,8 +120,8 @@ public class DefaultServiceConverter implements ServiceConverter {
                                   String toExtension, String documentRevisionId,
                                   String filePass, Boolean isAsync, String lang) {
         // check if the fromExtension parameter is defined; if not, get it from the document url
-        fromExtension = fromExtension == null || fromExtension.isEmpty() ?
-                fileUtility.getFileExtension(documentUri) : fromExtension;
+        fromExtension = fromExtension == null || fromExtension.isEmpty()
+                ? fileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
         String title = fileUtility.getFileName(documentUri);

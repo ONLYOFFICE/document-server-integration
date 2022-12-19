@@ -118,11 +118,11 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
                         && !action.equals(Action.blockcontent)
         );
 
-        userPermissions.setReview(canEdit &&
-                (action.equals(Action.review) || action.equals(Action.edit)));
+        userPermissions.setReview(canEdit
+                && (action.equals(Action.review) || action.equals(Action.edit)));
 
-        userPermissions.setEdit(canEdit &&
-                (action.equals(Action.view)
+        userPermissions.setEdit(canEdit
+                && (action.equals(Action.view)
                 || action.equals(Action.edit)
                 || action.equals(Action.filter)
                 || action.equals(Action.blockcontent)));
