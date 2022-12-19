@@ -49,7 +49,7 @@ public class DefaultFileUtility implements FileUtility {
     private String docserviceFillDocs;
 
     // document extensions
-    private List<String> ExtsDocument = Arrays.asList(
+    private List<String> extsDocument = Arrays.asList(
                             ".doc", ".docx", ".docm",
                             ".dot", ".dotx", ".dotm",
                             ".odt", ".fodt", ".ott", ".rtf", ".txt",
@@ -57,13 +57,13 @@ public class DefaultFileUtility implements FileUtility {
                             ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oform");
 
     // spreadsheet extensions
-    private List<String> ExtsSpreadsheet = Arrays.asList(
+    private List<String> extsSpreadsheet = Arrays.asList(
                             ".xls", ".xlsx", ".xlsm", ".xlsb",
                             ".xlt", ".xltx", ".xltm",
                             ".ods", ".fods", ".ots", ".csv");
 
     // presentation extensions
-    private List<String> ExtsPresentation = Arrays.asList(
+    private List<String> extsPresentation = Arrays.asList(
                             ".pps", ".ppsx", ".ppsm",
                             ".ppt", ".pptx", ".pptm",
                             ".pot", ".potx", ".potm",
@@ -73,17 +73,17 @@ public class DefaultFileUtility implements FileUtility {
     public DocumentType getDocumentType(String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
         // word type for document extensions
-        if (ExtsDocument.contains(ext)) {
+        if (extsDocument.contains(ext)) {
             return DocumentType.word;
         }
 
         // cell type for spreadsheet extensions
-        if (ExtsSpreadsheet.contains(ext)) {
+        if (extsSpreadsheet.contains(ext)) {
             return DocumentType.cell;
         }
 
         // slide type for presentation extensions
-        if (ExtsPresentation.contains(ext)) {
+        if (extsPresentation.contains(ext)) {
             return DocumentType.slide;
         }
 
