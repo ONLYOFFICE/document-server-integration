@@ -56,8 +56,8 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
     @Autowired
     private DefaultEditorConfigConfigurer defaultEditorConfigConfigurer;
 
-    public void configure(FileModel fileModel, DefaultFileWrapper wrapper){  // define the file configurer
-        if (fileModel != null){  // check if the file model is specified
+    public void configure(FileModel fileModel, DefaultFileWrapper wrapper) {  // define the file configurer
+        if (fileModel != null) {  // check if the file model is specified
             String fileName = wrapper.getFileName();  // get the fileName parameter from the file wrapper
             Action action = wrapper.getAction();  // get the action parameter from the file wrapper
 

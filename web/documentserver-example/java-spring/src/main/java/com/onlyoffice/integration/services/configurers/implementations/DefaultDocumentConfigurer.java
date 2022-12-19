@@ -48,7 +48,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     @Autowired
     private ServiceConverter serviceConverter;
 
-    public void configure(Document document, DefaultDocumentWrapper wrapper){  // define the document configurer
+    public void configure(Document document, DefaultDocumentWrapper wrapper) {  // define the document configurer
         String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
         Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
 
@@ -59,7 +59,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
         document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));  // set the file type to the document config
         document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
-        String key =  serviceConverter.  // get the document key
+        String key = serviceConverter.  // get the document key
                         generateRevisionId(storagePathBuilder.getStorageLocation()
                         + "/" + fileName + "/"
                         + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());

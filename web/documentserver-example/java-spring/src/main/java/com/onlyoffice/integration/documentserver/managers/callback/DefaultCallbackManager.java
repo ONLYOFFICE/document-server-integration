@@ -121,7 +121,7 @@ public class DefaultCallbackManager implements CallbackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
         }
@@ -215,7 +215,7 @@ public class DefaultCallbackManager implements CallbackManager {
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
         //TODO: Add errors ENUM
         String responseCode = response.get("error").toString();
-        switch(responseCode) {
+        switch (responseCode) {
             case "0":
             case "4":
                 break;
@@ -230,10 +230,10 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadUri = body.getUrl();
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+        String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "."+null) {
+        if (downloadExt != "." + null) {
             downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
         }
         
@@ -250,7 +250,7 @@ public class DefaultCallbackManager implements CallbackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = true;
             }
         }
@@ -263,7 +263,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
         //TODO: Extract function
         if (isSubmitForm) {  // if the form is submitted
-            if (newFileName){
+            if (newFileName) {
                 fileName = documentManager
                         .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + downloadExt);  // get the correct file name if it already exists
             } else {
@@ -275,7 +275,7 @@ public class DefaultCallbackManager implements CallbackManager {
             String user = action.getUserid();  // get the user ID
             storageMutator.createMeta(fileName, user, "Filling Form");  // create meta data for the forcesaved file
         } else {
-            if (newFileName){
+            if (newFileName) {
                 fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
 

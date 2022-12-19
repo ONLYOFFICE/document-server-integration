@@ -33,7 +33,7 @@ public class GroupServices {
     private GroupRepository groupRepository;
 
     // create a new group with the specified name
-    public Group createGroup(String name){
+    public Group createGroup(String name) {
         if(name == null) {
             return null;  // check if a name is specified
         }
@@ -50,7 +50,7 @@ public class GroupServices {
     }
 
     // create a list of groups from the reviewGroups permission parameter
-    public List<Group> createGroups(List<String> reviewGroups){
+    public List<Group> createGroups(List<String> reviewGroups) {
         if(reviewGroups == null) {
             return null;  // check if the reviewGroups permission exists
         }

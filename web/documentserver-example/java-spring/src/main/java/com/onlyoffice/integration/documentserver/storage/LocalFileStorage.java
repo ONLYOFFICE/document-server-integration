@@ -71,10 +71,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
      */
     public void configure(String address) {
         this.storageAddress = address;
-        if(this.storageAddress == null){
-            try{
+        if(this.storageAddress == null) {
+            try {
                 this.storageAddress = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e){
+            } catch (UnknownHostException e) {
                 this.storageAddress = "unknown_storage";
             }
         }
@@ -83,7 +83,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get the storage directory
-    public String getStorageLocation(){
+    public String getStorageLocation() {
         String serverPath = System.getProperty("user.dir");  // get the path to the server
         String directory;  // create the storage directory
         if (Paths.get(this.storageAddress).isAbsolute()) {
@@ -102,7 +102,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // get the directory of the specified file
-    public String getFileLocation(String fileName){
+    public String getFileLocation(String fileName) {
         if (fileName.contains(File.separator)) {
             return getStorageLocation() + fileName;
         }
@@ -110,7 +110,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create a new directory if it does not exist
-    public void createDirectory(Path path){
+    public void createDirectory(Path path) {
         if (Files.exists(path)) {
             return;
         }
@@ -122,8 +122,8 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // create a new file if it does not exist
-    public boolean createFile(Path path, InputStream stream){
-        if (Files.exists(path)){
+    public boolean createFile(Path path, InputStream stream) {
+        if (Files.exists(path)) {
             return true;
         }
         try {
@@ -143,7 +143,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // delete a file
-    public boolean deleteFile(String fileName){
+    public boolean deleteFile(String fileName) {
         fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);  // decode a x-www-form-urlencoded string
         if (fileName.isBlank()) {
             return false;
@@ -189,7 +189,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // move a file to the specified destination
-    public boolean moveFile(Path source, Path destination){
+    public boolean moveFile(Path source, Path destination) {
         try {
             Files.move(source, destination,
                     new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
@@ -201,7 +201,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // write the payload to the file
-    public boolean writeToFile(String pathName, String payload){
+    public boolean writeToFile(String pathName, String payload) {
         try (FileWriter fw = new FileWriter(pathName)) {
             fw.write(payload);
             return true;
@@ -239,9 +239,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     }
 
     // load file as a resource
-    public Resource loadFileAsResource(String fileName){
+    public Resource loadFileAsResource(String fileName) {
         String fileLocation = getForcesavePath(fileName, false);  // get the path where all the forcely saved file versions are saved
-        if (fileLocation.isBlank()){  // if file location is empty
+        if (fileLocation.isBlank()) {  // if file location is empty
             fileLocation = getFileLocation(fileName);  // get it by the file name
         }
         try {
@@ -256,7 +256,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return null;
     }
 
-    public Resource loadFileAsResourceHistory(String fileName,String version,String file){
+    public Resource loadFileAsResourceHistory(String fileName,String version,String file) {
 
         String fileLocation = getStorageLocation() + fileName + "-hist" + File.separator + version + File.separator + file;  // get it by the file name
 
@@ -294,14 +294,14 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         File meta = new File(histDir + File.separator + "createdInfo.json");  // create the createdInfo.json file with the file meta information
         try (FileWriter writer = new FileWriter(meta)) {
             json.writeJSONString(writer);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     // create or update a file
     public boolean createOrUpdateFile(Path path, InputStream stream) {
-        if (!Files.exists(path)){ // if the specified file does not exist
+        if (!Files.exists(path)) { // if the specified file does not exist
             return createFile(path, stream);  // create it in the specified directory
         } else {
             try {

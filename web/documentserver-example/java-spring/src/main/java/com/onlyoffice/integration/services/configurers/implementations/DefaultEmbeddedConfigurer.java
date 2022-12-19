@@ -35,7 +35,7 @@ public class DefaultEmbeddedConfigurer implements EmbeddedConfigurer<DefaultEmbe
     @Autowired
     private DocumentManager documentManager;
 
-    public void configure(Embedded embedded, DefaultEmbeddedWrapper wrapper){  // define the embedded configurer
+    public void configure(Embedded embedded, DefaultEmbeddedWrapper wrapper) {  // define the embedded configurer
         if(wrapper.getType().equals(Type.embedded)) {  // check if the type from the embedded wrapper is embedded
             String url = documentManager.getDownloadUrl(wrapper.getFileName(), false);  // get file URL of the specified file
             embedded.setEmbedUrl(url);  // set the embedURL parameter to the embedded config (the absolute URL to the document serving as a source file for the document embedded into the web page)

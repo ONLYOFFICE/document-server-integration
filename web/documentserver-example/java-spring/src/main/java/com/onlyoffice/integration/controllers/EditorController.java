@@ -137,12 +137,12 @@ public class EditorController {
         return "editor.html";
     }
 
-    private List<Mentions> getUserMentions(String uid){  // get user data for mentions
-        List<Mentions> usersForMentions=new ArrayList<>();
-        if(uid!=null && !uid.equals("4")) {
+    private List<Mentions> getUserMentions(String uid) {  // get user data for mentions
+        List<Mentions> usersForMentions = new ArrayList<>();
+        if(uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != 4) {
                     usersForMentions.add(new Mentions(u.getName(),u.getEmail()));  // user data includes user names and emails
                 }
             }
@@ -161,11 +161,11 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if(jwtManager.tokenEnabled()) {
             dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
         }
 
-        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1);
+        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length() - 1);
     }
 
     @SneakyThrows
@@ -178,7 +178,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if(jwtManager.tokenEnabled()) {
             dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
         }
 
@@ -195,7 +195,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
+        if(jwtManager.tokenEnabled()) {
             dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 

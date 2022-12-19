@@ -68,7 +68,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
     private FileUtility fileUtility;
 
     @SneakyThrows
-    public void configure(EditorConfig config, DefaultFileWrapper wrapper){  // define the editorConfig configurer
+    public void configure(EditorConfig config, DefaultFileWrapper wrapper) {  // define the editorConfig configurer
         if (wrapper.getActionData() != null) {  // check if the actionData is not empty in the editorConfig wrapper
             config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));  // set actionLink to the editorConfig
         }
@@ -82,7 +82,7 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
         config.setLang(wrapper.getLang());  // set the language to the editorConfig
         Boolean canEdit = wrapper.getCanEdit();  // check if the file of the specified type can be edited or not
         Action action = wrapper.getAction();  // get the action parameter from the editorConfig wrapper
-        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<String, Object>()  {{ 
+        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<String, Object>() {{
             put("mode", "strict");
             put("change", false);
         }} : null);

@@ -60,7 +60,7 @@ public class DefaultServiceConverter implements ServiceConverter {
     private ObjectMapper objectMapper;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         int timeout = Integer.parseInt(docserviceTimeout);  // parse the dcoument service timeout value
         if (timeout > 0) {
             convertTimeout = timeout;
@@ -68,7 +68,7 @@ public class DefaultServiceConverter implements ServiceConverter {
     }
 
     @SneakyThrows
-    private String postToServer(Convert body, String headerToken){  // send the POST request to the server
+    private String postToServer(Convert body, String headerToken) {  // send the POST request to the server
         String bodyString = objectMapper.writeValueAsString(body);  // write the body request to the object mapper in the string format
         URL url = null;
         java.net.HttpURLConnection connection = null;
@@ -76,9 +76,9 @@ public class DefaultServiceConverter implements ServiceConverter {
         String jsonString = null;
 
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);  // convert body string into bytes
-        try{
+        try {
             // set the request parameters
-            url = new URL(docServiceUrl+docServiceUrlConverter);
+            url = new URL(docServiceUrl + docServiceUrlConverter);
             connection = (java.net.HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);

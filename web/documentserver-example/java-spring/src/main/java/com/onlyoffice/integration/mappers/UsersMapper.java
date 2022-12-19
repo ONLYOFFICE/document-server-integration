@@ -32,7 +32,7 @@ public class UsersMapper extends AbstractMapper<User, com.onlyoffice.integration
     @Autowired
     private ModelMapper mapper;
 
-    public UsersMapper(){
+    public UsersMapper() {
         super(com.onlyoffice.integration.documentserver.models.filemodel.User.class);
     }
 

@@ -176,22 +176,22 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     // generate the file path from file directory and name
-    public Path generateFilepath(String directory, String fullFileName){
+    public Path generateFilepath(String directory, String fullFileName) {
         String fileName = getFileNameWithoutExtension(fullFileName);  // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension
-        Path path = Paths.get(directory+fullFileName);  // get the path to the files with the specified name
+        Path path = Paths.get(directory + fullFileName);  // get the path to the files with the specified name
 
-        for(int i = 1; Files.exists(path); i++){  // run through all the files with the specified name
-            fileName = getFileNameWithoutExtension(fullFileName) + "("+i+")";  // get a name of each file without extension and add an index to it
-            path = Paths.get(directory+fileName+fileExtension);  // create a new path for this file with the correct name and extension
+        for(int i = 1; Files.exists(path); i++) {  // run through all the files with the specified name
+            fileName = getFileNameWithoutExtension(fullFileName) + "(" + i + ")";  // get a name of each file without extension and add an index to it
+            path = Paths.get(directory + fileName + fileExtension);  // create a new path for this file with the correct name and extension
         }
 
-        path = Paths.get(directory+fileName+fileExtension);
+        path = Paths.get(directory + fileName + fileExtension);
         return path;
     }
 
     // get maximum file size
-    public long getMaxFileSize(){
+    public long getMaxFileSize() {
         long size = Long.parseLong(filesizeMax);
         return size > 0 ? size : 5 * 1024 * 1024;
     }

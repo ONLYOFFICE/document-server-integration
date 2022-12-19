@@ -62,7 +62,7 @@ public class DefaultDocumentManager implements DocumentManager {
     private ServiceConverter serviceConverter;
 
     // get URL to the created file
-    public String getCreateUrl(String fileName, Boolean sample){
+    public String getCreateUrl(String fileName, Boolean sample) {
         String fileExt = fileName.substring(fileName.length() - 4);
         String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
@@ -112,7 +112,7 @@ public class DefaultDocumentManager implements DocumentManager {
                     : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
             String userAddress = forDocumentServer ? "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
             String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
-                + "&ver=" + version + "&file="+file
+                + "&ver=" + version + "&file=" + file
                 + userAddress;
             return filePath;
         } catch (UnsupportedEncodingException | UnknownHostException e) {
@@ -125,7 +125,7 @@ public class DefaultDocumentManager implements DocumentManager {
         String serverPath = storagePathBuilder.getServerUrl(true);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
-            String query = trackUrl+"?fileName="+
+            String query = trackUrl + "?fileName=" +
                     URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return serverPath + query;
@@ -140,7 +140,7 @@ public class DefaultDocumentManager implements DocumentManager {
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
             String userAddress = isServer ? "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = downloadUrl+"?fileName="
+            String query = downloadUrl + "?fileName="
                     + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + userAddress;
 
@@ -151,11 +151,11 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file information
-    public ArrayList<Map<String, Object>> getFilesInfo(){
+    public ArrayList<Map<String, Object>> getFilesInfo() {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : storageMutator.getStoredFiles()){
+        for(File file : storageMutator.getStoredFiles()) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
             map.put("id", serviceConverter
@@ -164,7 +164,7 @@ public class DefaultDocumentManager implements DocumentManager {
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0)))
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0)))
                     .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
@@ -176,11 +176,11 @@ public class DefaultDocumentManager implements DocumentManager {
     }
 
     // get file information by its ID
-    public ArrayList<Map<String, Object>> getFilesInfo(String fileId){
+    public ArrayList<Map<String, Object>> getFilesInfo(String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
-        for (Map<String, Object> map : getFilesInfo()){
-            if (map.get("id").equals(fileId)){
+        for (Map<String, Object> map : getFilesInfo()) {
+            if (map.get("id").equals(fileId)) {
                 file.add(map);
                 break;
             }
@@ -191,7 +191,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get the path to the file version by the history path and file version
     public String versionDir(String path, Integer version, boolean historyPath) {
-        if (!historyPath){
+        if (!historyPath) {
             return storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(path)) + version;
         }
         return path + File.separator + version;

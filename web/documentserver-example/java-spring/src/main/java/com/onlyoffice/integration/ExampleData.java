@@ -32,8 +32,8 @@ public class ExampleData {
     @Autowired
     private UserServices userService;
     @PostConstruct
-    public void init(){
-        List<String> description_user_0=List.of(  // the description for user 0
+    public void init() {
+        List<String> description_user_0 = List.of(  // the description for user 0
                 "The name is requested when the editor is opened",
                 "Doesn’t belong to any group",
                 "Can review all the changes",

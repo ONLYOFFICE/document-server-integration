@@ -40,12 +40,12 @@ public class UserServices {
     private PermissionServices permissionService;
 
     // get a list of all users
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
     // get a user by their ID
-    public Optional<User> findUserById(Integer id){
+    public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);
     }
 
@@ -57,7 +57,7 @@ public class UserServices {
                            List<String> editGroups,
                            List<String> removeGroups, 
                            List<String> userInfoGroups, Boolean favoriteDoc,
-                           Boolean chat){
+                           Boolean chat) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
