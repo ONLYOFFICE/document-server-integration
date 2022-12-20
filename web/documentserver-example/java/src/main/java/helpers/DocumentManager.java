@@ -297,7 +297,7 @@ public class DocumentManager {
     }
 
     public static boolean CreateFile(Path path, InputStream stream) {
-        if (Files.exists(path)){
+        if (Files.exists(path)) {
             return true;
         }
         try {
@@ -339,15 +339,15 @@ public class DocumentManager {
     }
 
     // get file information
-    public static ArrayList<Map<String, Object>> GetFilesInfo(){
+    public static ArrayList<Map<String, Object>> GetFilesInfo() {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : GetStoredFiles(null)){
+        for(File file : GetStoredFiles(null)) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", GetFileVersion(file.getName(), null));
             map.put("id", ServiceConverter.GenerateRevisionId(CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(StoragePath(file.getName(), null)).lastModified())));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
             map.put("updated", String.valueOf(new Date(file.lastModified())));
@@ -358,11 +358,11 @@ public class DocumentManager {
     }
 
     // get file information by its id
-    public static ArrayList<Map<String, Object>> GetFilesInfo(String fileId){
+    public static ArrayList<Map<String, Object>> GetFilesInfo(String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
-        for (Map<String, Object> map : GetFilesInfo()){
-            if (map.get("id").equals(fileId)){
+        for (Map<String, Object> map : GetFilesInfo()) {
+            if (map.get("id").equals(fileId)) {
                 file.add(map);
                 break;
             }

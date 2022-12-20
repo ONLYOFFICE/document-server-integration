@@ -107,7 +107,7 @@ public class EditorServlet extends HttpServlet {
         Gson gson = new Gson();
         request.setAttribute("file", file);
         request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.api"));
-        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length()-1));
+        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length() - 1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
         request.setAttribute("usersForMentions", !user.id.equals("uid-0") ? gson.toJson(usersForMentions) : null);

@@ -142,7 +142,7 @@ public class TrackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
         }
@@ -196,10 +196,10 @@ public class TrackManager {
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.GetFileExtension(fileName);  // get current file extension
-        String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
+        String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt == "."+null) {
+        if (downloadExt == "." + null) {
             downloadExt = FileUtility.GetFileExtension(downloadUri);  // Support for versions below 7.0
         }
 
@@ -214,7 +214,7 @@ public class TrackManager {
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = true;
             }
         }
@@ -224,14 +224,14 @@ public class TrackManager {
 
         if (isSubmitForm) {  // if the form is submitted
             // new file
-            if (newFileName){
+            if (newFileName) {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
             } else {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
             }
             forcesavePath = DocumentManager.StoragePath(fileName, userAddress);
         } else {
-            if (newFileName){
+            if (newFileName) {
                 fileName = DocumentManager.GetCorrectName(FileUtility.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
 
@@ -343,7 +343,7 @@ public class TrackManager {
         connection.disconnect();
 
         JSONObject response = ServiceConverter.ConvertStringToJSON(jsonString);  // convert json string to json object
-        if (!response.get("error").toString().equals("0")){
+        if (!response.get("error").toString().equals("0")) {
             throw new Exception(response.toJSONString());
         }
     }

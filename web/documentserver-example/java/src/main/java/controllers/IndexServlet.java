@@ -370,12 +370,12 @@ public class IndexServlet extends HttpServlet {
             if (request.getParameter("fileId") == null) {
                 files = DocumentManager.GetFilesInfo();  // get the information about the files from the storage path
                 writer.write(gson.toJson(files));
-            }else {
+            } else {
                 String fileId = request.getParameter("fileId");  // get file id from the request
                 files = DocumentManager.GetFilesInfo(fileId);
-                if(files.isEmpty()) {
+                if (files.isEmpty()) {
                     writer.write("\"File not found\"");
-                }else {
+                } else {
                     writer.write(gson.toJson(files));
                 }
             }
@@ -517,9 +517,9 @@ public class IndexServlet extends HttpServlet {
             while ((readBytes = inputStream.read()) != -1) {  // write bytes to the output stream
                 writer.write(readBytes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {

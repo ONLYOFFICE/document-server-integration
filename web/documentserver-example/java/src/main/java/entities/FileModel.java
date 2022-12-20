@@ -242,7 +242,7 @@ public class FileModel {
     private String readFileToEnd(File file) {
         String output = "";
         try {
-            try(FileInputStream is = new FileInputStream(file)) {
+            try (FileInputStream is = new FileInputStream(file)) {
                 Scanner scanner = new Scanner(is);  // read data from the source
                 scanner.useDelimiter("\\A");
                 while (scanner.hasNext()) {
