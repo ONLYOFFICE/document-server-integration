@@ -85,8 +85,9 @@ public class ServiceConverter {
         body.title = title;
         body.key = documentRevisionId;
         body.password = filePass;
-        if (isAsync)
+        if (isAsync) {
             body.async = true;
+        }
 
         String headerToken = "";
         if (DocumentManager.TokenEnabled()) {
@@ -98,8 +99,9 @@ public class ServiceConverter {
             map.put("title", body.title);
             map.put("key", body.key);
             map.put("password", body.password);
-            if (isAsync)
+            if (isAsync) {
                 map.put("async", body.async);
+            }
 
             // add token to the body if it is enabled
             String token = DocumentManager.CreateToken(map);
@@ -143,8 +145,9 @@ public class ServiceConverter {
 
         InputStream stream = connection.getInputStream();
 
-        if (stream == null)
+        if (stream == null) {
             throw new Exception("Could not get an answer");
+        }
 
         // convert string to json
         String jsonString = ConvertStreamToString(stream);
@@ -156,8 +159,9 @@ public class ServiceConverter {
 
     // generate document key
     public static String GenerateRevisionId(String expectedKey) {
-        if (expectedKey.length() > 20)  // if the expected key length is greater than 20
+        if (expectedKey.length() > 20) {  // if the expected key length is greater than 20
             expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
+        }
 
         String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
@@ -210,8 +214,9 @@ public class ServiceConverter {
         JSONObject jsonObj = ConvertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
-        if (error != null)  // if an error occurs
+        if (error != null) {  // if an error occurs
             ProcessConvertServiceResponceError(Math.toIntExact((long)error));  // then get an error message
+        }
 
         // check if the conversion is completed and save the result to a variable
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");

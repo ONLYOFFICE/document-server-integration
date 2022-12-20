@@ -486,11 +486,13 @@ public class IndexServlet extends HttpServlet {
     private static void delete(File f) throws Exception {
         // to delete a directory
         if (f.isDirectory()) {
-            for (File c : f.listFiles())  // run through all the files in it
-            delete(c);  // and delete them
+            for (File c : f.listFiles()) {  // run through all the files in it
+                delete(c);  // and delete them
+            }
         }
-        if (!f.delete())
+        if (!f.delete()) {
             throw new Exception("Failed to delete file: " + f);
+        }
     }
 
     // download data from the url to the file
@@ -514,8 +516,9 @@ public class IndexServlet extends HttpServlet {
             FileInputStream fileInputStream = new FileInputStream(file);
             inputStream = new BufferedInputStream(fileInputStream);
             int readBytes = 0;
-            while ((readBytes = inputStream.read()) != -1)  // write bytes to the output stream
+            while ((readBytes = inputStream.read()) != -1) {  // write bytes to the output stream
                 writer.write(readBytes);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {

@@ -32,16 +32,19 @@ public class FileUtility {
         String ext = GetFileExtension(fileName).toLowerCase();
 
         // word type for document extensions
-        if (ExtsDocument.contains(ext))
+        if (ExtsDocument.contains(ext)) {
             return FileType.Word;
+        }
 
         // cell type for spreadsheet extensions
-        if (ExtsSpreadsheet.contains(ext))
+        if (ExtsSpreadsheet.contains(ext)) {
             return FileType.Cell;
+        }
 
         // slide type for presentation extensions
-        if (ExtsPresentation.contains(ext))
+        if (ExtsPresentation.contains(ext)) {
             return FileType.Slide;
+        }
 
         // default file type is word
         return FileType.Word;
@@ -77,7 +80,9 @@ public class FileUtility {
 
     // get file name from the url
     public static String GetFileName(String url) {
-        if (url == null) return "";
+        if (url == null) {
+            return "";
+        }
 
         // get file name from the last part of url
         String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
@@ -88,7 +93,9 @@ public class FileUtility {
     // get file name without extension
     public static String GetFileNameWithoutExtension(String url) {
         String fileName = GetFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
         return fileNameWithoutExt;
     }
@@ -96,7 +103,9 @@ public class FileUtility {
     // get file extension from url
     public static String GetFileExtension(String url) {
         String fileName = GetFileName(url);
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String fileExt = fileName.substring(fileName.lastIndexOf("."));
         return fileExt.toLowerCase();
     }

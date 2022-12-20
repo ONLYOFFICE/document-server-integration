@@ -173,12 +173,16 @@ public class DocumentManager {
         String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
 
         File file = new File(directory);
-        if (!file.exists()) return "";
+        if (!file.exists()) {
+            return "";
+        }
 
         // create the directory to the history of this file version
         directory = directory + fileName + "-hist" + File.separator;
         file = new File(directory);
-        if (!create && !file.exists()) return "";
+        if (!create && !file.exists()) {
+            return "";
+        }
 
         file.mkdirs();
 
@@ -210,7 +214,9 @@ public class DocumentManager {
     public static Integer GetFileVersion(String historyPath) {
         File dir = new File(historyPath);
 
-        if (!dir.exists()) return 1;  // if the history path doesn't exist, then the file version is 1
+        if (!dir.exists()) {
+            return 1;  // if the history path doesn't exist, then the file version is 1
+        }
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override
@@ -446,16 +452,19 @@ public class DocumentManager {
     // get an editor internal extension
     public static String GetInternalExtension(FileType fileType) {
         // .docx for word file type
-        if (fileType.equals(FileType.Word))
+        if (fileType.equals(FileType.Word)) {
             return ".docx";
+        }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell))
+        if (fileType.equals(FileType.Cell)) {
             return ".xlsx";
+        }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide))
+        if (fileType.equals(FileType.Slide)) {
             return ".pptx";
+        }
 
         // the default file type is .docx
         return ".docx";
@@ -465,16 +474,19 @@ public class DocumentManager {
     public static String GetTemplateImageUrl(FileType fileType) {
         String path = GetServerUrl(true) + "/css/img/";
         // for word file type
-        if (fileType.equals(FileType.Word))
+        if (fileType.equals(FileType.Word)) {
             return path + "file_docx.svg";
+        }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell))
+        if (fileType.equals(FileType.Cell)) {
             return path + "file_xlsx.svg";
+        }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide))
+        if (fileType.equals(FileType.Slide)) {
             return path + "file_pptx.svg";
+        }
 
         // the default file type
         return path + "file_docx.svg";

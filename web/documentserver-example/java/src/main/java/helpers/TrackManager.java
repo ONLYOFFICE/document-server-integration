@@ -130,7 +130,9 @@ public class TrackManager {
         String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt == "." + null) downloadExt = FileUtility.GetFileExtension(downloadUri); // Support for versions below 7.0
+        if (downloadExt == "." + null) {
+            downloadExt = FileUtility.GetFileExtension(downloadUri); // Support for versions below 7.0
+        }
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
@@ -148,14 +150,18 @@ public class TrackManager {
 
         String storagePath = DocumentManager.StoragePath(newFileName, userAddress);  // get the file path
         File histDir = new File(DocumentManager.HistoryDir(storagePath));  // get the path to the history direction
-        if (!histDir.exists()) histDir.mkdirs();  // if the path doesn't exist, create it
+        if (!histDir.exists()) {
+            histDir.mkdirs();  // if the path doesn't exist, create it
+        }
 
         String versionDir = DocumentManager.VersionDir(histDir.getAbsolutePath(), DocumentManager.GetFileVersion(histDir.getAbsolutePath()));  // get the path to the file version
         File ver = new File(versionDir);
         File lastVersion = new File(DocumentManager.StoragePath(fileName, userAddress));
         File toSave = new File(storagePath);
 
-        if (!ver.exists()) ver.mkdirs();
+        if (!ver.exists()) {
+            ver.mkdirs();
+        }
 
         lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));  // get the path to the previous file version and rename the last file version with it
 
@@ -194,7 +200,9 @@ public class TrackManager {
         String downloadExt = "."+(String) body.get("filetype");  // get the extension of the downloaded file
 
         // Todo [Delete in version 7.0 or higher]
-        if (downloadExt == "."+null) downloadExt = FileUtility.GetFileExtension(downloadUri);    // Support for versions below 7.0
+        if (downloadExt == "."+null) {
+            downloadExt = FileUtility.GetFileExtension(downloadUri);  // Support for versions below 7.0
+        }
 
         Boolean newFileName = false;
 
@@ -248,8 +256,12 @@ public class TrackManager {
 
     // save file information from the url to the file specified
     private static void downloadToFile(String url, File file) throws Exception {
-        if (url == null || url.isEmpty()) throw new Exception("argument url");  // url isn't specified
-        if (file == null) throw new Exception("argument path");  // file isn't specified
+        if (url == null || url.isEmpty()) {
+            throw new Exception("argument url");  // url isn't specified
+        }
+        if (file == null) {
+            throw new Exception("argument path");  // file isn't specified
+        }
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
@@ -324,8 +336,9 @@ public class TrackManager {
         }
         InputStream stream = connection.getInputStream();  // get input stream
 
-        if (stream == null)
+        if (stream == null) {
             throw new Exception("Could not get an answer");
+        }
 
         String jsonString = ServiceConverter.ConvertStreamToString(stream);  // convert stream to json string
         connection.disconnect();

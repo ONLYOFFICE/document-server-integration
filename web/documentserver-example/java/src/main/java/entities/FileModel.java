@@ -40,7 +40,9 @@ public class FileModel {
 
     // create file model
     public FileModel(String fileName, String lang, String actionData, User user, Boolean isEnableDirectUrl) {
-        if (fileName == null) fileName = "";
+        if (fileName == null) {
+            fileName = "";
+        }
         fileName = fileName.trim();  // remove extra spaces in the file name
 
         // get file type from the file name (word, cell or slide)
@@ -83,7 +85,9 @@ public class FileModel {
             put("change", false);
         }} : null;
         
-        if (lang != null) editorConfig.lang = lang;  // write language parameter to the config
+        if (lang != null) {
+            editorConfig.lang = lang;  // write language parameter to the config
+        }
 
         editorConfig.createUrl = !user.id.equals("uid-0") ? createUrl : null;
         editorConfig.templates = user.templates ? templates : null;
@@ -101,8 +105,12 @@ public class FileModel {
 
     // change the document type
     public void changeType(String _mode, String _type, User user, String fileName) {
-        if (_mode != null) mode = _mode;
-        if (_type != null) type = _type;
+        if (_mode != null) {
+            mode = _mode;
+        }
+        if (_type != null) {
+            type = _type;
+        }
 
         // check if the file with such an extension can be edited
         String fileExt = FileUtility.GetFileExtension(document.title);
@@ -120,7 +128,9 @@ public class FileModel {
         // set document permissions
         document.permissions = new Permissions(mode, type, canEdit, user);
 
-        if (type.equals("embedded")) InitDesktop(fileName);  // set parameters for the embedded document
+        if (type.equals("embedded")) {
+            InitDesktop(fileName);  // set parameters for the embedded document
+        }
     }
 
     public void InitDesktop(String fileName) {
