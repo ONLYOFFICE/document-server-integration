@@ -104,12 +104,12 @@ public class FileModel {
     }
 
     // change the document type
-    public void changeType(String _mode, String _type, User user, String fileName) {
-        if (_mode != null) {
-            mode = _mode;
+    public void changeType(String modeParam, String typeParam, User user, String fileName) {
+        if (modeParam != null) {
+            mode = modeParam;
         }
-        if (_type != null) {
-            type = _type;
+        if (typeParam != null) {
+            type = typeParam;
         }
 
         // check if the file with such an extension can be edited
