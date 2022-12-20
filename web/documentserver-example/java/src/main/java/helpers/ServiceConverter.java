@@ -220,18 +220,18 @@ public class ServiceConverter {
         // check if the conversion is completed and save the result to a variable
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");
 
-        Long resultPercent = 0l;
+        Long resultPercent = 0L;
         String responseUri = null;
 
         if (isEndConvert) {  // if the conversion is completed
-            resultPercent = 100l;
+            resultPercent = 100L;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= 100l ? 99l : resultPercent;  // get the percentage value
+            resultPercent = resultPercent >= 100L ? 99L : resultPercent;  // get the percentage value
         }
 
-        return resultPercent >= 100l ? responseUri : "";
+        return resultPercent >= 100L ? responseUri : "";
     }
 
     // convert stream to string
