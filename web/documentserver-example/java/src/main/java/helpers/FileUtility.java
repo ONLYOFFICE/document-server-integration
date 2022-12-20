@@ -51,31 +51,28 @@ public class FileUtility {
     }
 
     // document extensions
-    public static List<String> ExtsDocument = Arrays.asList
-            (
-                    ".doc", ".docx", ".docm",
-                    ".dot", ".dotx", ".dotm",
-                    ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                    ".html", ".htm", ".mht", ".xml",
-                    ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
-            );
+    public static List<String> ExtsDocument = Arrays.asList(
+            ".doc", ".docx", ".docm",
+            ".dot", ".dotx", ".dotm",
+            ".odt", ".fodt", ".ott", ".rtf", ".txt",
+            ".html", ".htm", ".mht", ".xml",
+            ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
+    );
 
     // spreadsheet extensions
-    public static List<String> ExtsSpreadsheet = Arrays.asList
-            (
-                    ".xls", ".xlsx", ".xlsm", ".xlsb",
-                    ".xlt", ".xltx", ".xltm",
-                    ".ods", ".fods", ".ots", ".csv"
-            );
+    public static List<String> ExtsSpreadsheet = Arrays.asList(
+            ".xls", ".xlsx", ".xlsm", ".xlsb",
+            ".xlt", ".xltx", ".xltm",
+            ".ods", ".fods", ".ots", ".csv"
+    );
 
     // presentation extensions
-    public static List<String> ExtsPresentation = Arrays.asList
-            (
-                    ".pps", ".ppsx", ".ppsm",
-                    ".ppt", ".pptx", ".pptm",
-                    ".pot", ".potx", ".potm",
-                    ".odp", ".fodp", ".otp"
-            );
+    public static List<String> ExtsPresentation = Arrays.asList(
+            ".pps", ".ppsx", ".ppsm",
+            ".ppt", ".pptx", ".pptm",
+            ".pot", ".potx", ".potm",
+            ".odp", ".fodp", ".otp"
+    );
 
 
     // get file name from the url

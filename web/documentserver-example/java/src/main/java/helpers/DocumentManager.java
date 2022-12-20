@@ -406,7 +406,7 @@ public class DocumentManager {
     }
 
     // get url to the created file
-    public static String GetCreateUrl (FileType fileType) {
+    public static String GetCreateUrl(FileType fileType) {
         String serverPath = GetServerUrl(false);
         String fileExt = GetInternalExtension(fileType).replace(".", "");
         String query = "?fileExt=" + fileExt;

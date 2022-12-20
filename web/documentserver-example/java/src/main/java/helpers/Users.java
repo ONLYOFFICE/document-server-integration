@@ -85,7 +85,7 @@ public class Users {
     }};
 
     // get a user by id specified
-    public static User getUser (String id) {
+    public static User getUser(String id) {
         for (User user : users) {
             if (user.id.equals(id)) {
                 return user;
@@ -95,12 +95,12 @@ public class Users {
     }
 
     // get a list of all the users
-    public static List<User> getAllUsers () {
+    public static List<User> getAllUsers() {
         return users;
     }
 
     // get a list of users with their names and emails for mentions
-    public static List<Map<String, Object>> getUsersForMentions (String id) {
+    public static List<Map<String, Object>> getUsersForMentions(String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
         for (User user : users) {
             if (!user.id.equals(id) && user.name != null && user.email != null) {
