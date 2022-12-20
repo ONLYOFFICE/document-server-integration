@@ -27,7 +27,6 @@ import java.util.Map;
 
 public class FileUtility
 {
-    static {}
 
     // get file type
     public static FileType GetFileType(String fileName)
