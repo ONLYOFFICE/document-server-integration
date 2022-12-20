@@ -32,17 +32,17 @@ public class FileUtility {
         String ext = GetFileExtension(fileName).toLowerCase();
 
         // word type for document extensions
-        if (ExtsDocument.contains(ext)) {
+        if (extsDocument.contains(ext)) {
             return FileType.Word;
         }
 
         // cell type for spreadsheet extensions
-        if (ExtsSpreadsheet.contains(ext)) {
+        if (extsSpreadsheet.contains(ext)) {
             return FileType.Cell;
         }
 
         // slide type for presentation extensions
-        if (ExtsPresentation.contains(ext)) {
+        if (extsPresentation.contains(ext)) {
             return FileType.Slide;
         }
 
@@ -51,7 +51,7 @@ public class FileUtility {
     }
 
     // document extensions
-    public static List<String> ExtsDocument = Arrays.asList(
+    public static List<String> extsDocument = Arrays.asList(
             ".doc", ".docx", ".docm",
             ".dot", ".dotx", ".dotm",
             ".odt", ".fodt", ".ott", ".rtf", ".txt",
@@ -60,14 +60,14 @@ public class FileUtility {
     );
 
     // spreadsheet extensions
-    public static List<String> ExtsSpreadsheet = Arrays.asList(
+    public static List<String> extsSpreadsheet = Arrays.asList(
             ".xls", ".xlsx", ".xlsm", ".xlsb",
             ".xlt", ".xltx", ".xltm",
             ".ods", ".fods", ".ots", ".csv"
     );
 
     // presentation extensions
-    public static List<String> ExtsPresentation = Arrays.asList(
+    public static List<String> extsPresentation = Arrays.asList(
             ".pps", ".ppsx", ".ppsm",
             ".ppt", ".pptx", ".pptm",
             ".pot", ".potx", ".potm",

@@ -24,7 +24,7 @@ import java.util.*;
 
 public class Users {
 
-    static List<String> descr_user_1 = new ArrayList<String>() {{
+    static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
@@ -34,7 +34,7 @@ public class Users {
         add("Can see the information about all users");
     }};
 
-    static List<String> descr_user_2 = new ArrayList<String>() {{
+    static List<String> descriptionUserSecond = new ArrayList<String>() {{
         add("Belongs to Group2");
         add("Can review only his own changes or changes made by users with no group");
         add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
@@ -43,7 +43,7 @@ public class Users {
         add("Can see the information about users from Group2 and users who don’t belong to any group");
     }};
 
-    static List<String> descr_user_3 = new ArrayList<String>() {{
+    static List<String> descriptionUserThird = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
         add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
@@ -55,7 +55,7 @@ public class Users {
         add("Can see the information about Group2 users");
     }};
 
-    static List<String> descr_user_0 = new ArrayList<String>() {{
+    static List<String> descriptionUserZero = new ArrayList<String>() {{
         add("The name is requested when the editor is opened");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
@@ -72,16 +72,16 @@ public class Users {
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
-                null, new ArrayList<String>(), descr_user_1, true));
+                null, new ArrayList<String>(), descriptionUserFirst, true));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
-                true, new ArrayList<String>(), descr_user_2, false));
+                true, new ArrayList<String>(), descriptionUserSecond, false));
         add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()), Arrays.asList("group-2"),
-                false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
+                false, Arrays.asList("copy", "download", "print"), descriptionUserThird, false));
         add(new User("uid-0", null, null,
                 "", null, new CommentGroups(), new ArrayList<String>(),
-                null, new ArrayList<String>(), descr_user_0, false));
+                null, new ArrayList<String>(), descriptionUserZero, false));
     }};
 
     // get a user by id specified

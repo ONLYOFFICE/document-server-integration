@@ -35,7 +35,7 @@ import org.json.simple.parser.ParseException;
 
 
 public class ServiceConverter {
-    private static int ConvertTimeout = 120000;
+    private static int convertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.converter");
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
@@ -56,7 +56,7 @@ public class ServiceConverter {
             // get timeout value from the settings.properties
             int timeout = Integer.parseInt(ConfigManager.GetProperty("files.docservice.timeout"));
             if (timeout > 0) {  // if it's greater than 0
-                ConvertTimeout = timeout;  // assign this value to a convert timeout
+                convertTimeout = timeout;  // assign this value to a convert timeout
             }
         } catch (Exception ex) {
         }
@@ -124,7 +124,7 @@ public class ServiceConverter {
         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         connection.setFixedLengthStreamingMode(bodyByte.length);
         connection.setRequestProperty("Accept", "application/json");
-        connection.setConnectTimeout(ConvertTimeout);
+        connection.setConnectTimeout(convertTimeout);
 
         // write header token to the request
         if (DocumentManager.TokenEnabled()) {
