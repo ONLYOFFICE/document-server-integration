@@ -79,8 +79,8 @@ public class FileModel {
         editorConfig = new EditorConfig(actionData);
         editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
 
-        editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0") ? 
-        new HashMap<String, Object>()  {{ 
+        editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0")
+                ? new HashMap<String, Object>()  {{
             put("mode", "strict");
             put("change", false);
         }} : null;
