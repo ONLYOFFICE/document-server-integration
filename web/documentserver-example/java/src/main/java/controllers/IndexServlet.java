@@ -29,7 +29,6 @@ import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -44,7 +43,6 @@ import entities.FileType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACVerifier;
