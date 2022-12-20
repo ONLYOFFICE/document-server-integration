@@ -94,7 +94,7 @@
 						<id>validate</id>
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>google_checks.xml</configLocation>
+							<configLocation>sun_checks.xml</configLocation>
 							<encoding>UTF-8</encoding>
 							<failsOnError>true</failsOnError>
 							<failOnViolation>true</failOnViolation>
