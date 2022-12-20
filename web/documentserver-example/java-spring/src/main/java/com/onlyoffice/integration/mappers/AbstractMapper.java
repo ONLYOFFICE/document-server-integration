@@ -32,8 +32,8 @@ public abstract class AbstractMapper<E extends AbstractEntity, M extends Abstrac
 
     private Class<M> modelClass;
 
-    AbstractMapper(final Class<M> modelClass) {
-        this.modelClass = modelClass;
+    AbstractMapper(final Class<M> modelClassParam) {
+        this.modelClass = modelClassParam;
     }
 
     @Override

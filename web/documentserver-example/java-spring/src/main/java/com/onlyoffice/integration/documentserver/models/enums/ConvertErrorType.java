@@ -14,9 +14,9 @@ public enum ConvertErrorType {
     private final int code;
     private final String label;
 
-    ConvertErrorType(final int code, final String label) {
-        this.code = code;
-        this.label = label;
+    ConvertErrorType(final int codeParam, final String labelParam) {
+        this.code = codeParam;
+        this.label = labelParam;
     }
 
     public static String labelOfCode(final int code) {
