@@ -6,4 +6,5 @@
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="IntegrationApplication.java"/>
     <suppress checks="DesignForExtension" files="."/>
+    <suppress checks="ParameterNumber" files="."/>
 </suppressions>
