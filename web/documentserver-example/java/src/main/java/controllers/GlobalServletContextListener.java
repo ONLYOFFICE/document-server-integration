@@ -72,7 +72,6 @@ public class GlobalServletContextListener implements ServletContextListener {
             } catch (NoSuchAlgorithmException | KeyManagementException ex) {
             }
         }
-       
 
         // create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier() {

@@ -164,7 +164,7 @@ public class TrackManager {
 
         lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));  // get the path to the previous file version and rename the last file version with it
 
-        downloadToFile(downloadUri, toSave);  // save file to the storage path 
+        downloadToFile(downloadUri, toSave);  // save file to the storage path
         downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
 
         String history = (String) body.get("changeshistory");

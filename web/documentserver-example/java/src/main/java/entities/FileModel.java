@@ -84,7 +84,6 @@ public class FileModel {
             put("mode", "strict");
             put("change", false);
         }} : null;
-        
         if (lang != null) {
             editorConfig.lang = lang;  // write language parameter to the config
         }

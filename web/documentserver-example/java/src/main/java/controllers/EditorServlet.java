@@ -60,7 +60,7 @@ public class EditorServlet extends HttpServlet {
                 response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
                 return;
             } catch (Exception ex) {
-                response.getWriter().write("Error: " + ex.getMessage());    
+                response.getWriter().write("Error: " + ex.getMessage());
             }
         }
 
