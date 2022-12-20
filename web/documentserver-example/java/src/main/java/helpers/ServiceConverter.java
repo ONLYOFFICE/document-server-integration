@@ -34,14 +34,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 
-public class ServiceConverter
-{
+public class ServiceConverter {
     private static int ConvertTimeout = 120000;
     private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.converter");
     private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
-    public static class ConvertBody
-    {
+    public static class ConvertBody {
         public String region;
         public String url;
         public String outputtype;
@@ -53,25 +51,20 @@ public class ServiceConverter
         public String password;
     }
 
-    static
-    {
-        try
-        {
+    static {
+        try {
             // get timeout value from the settings.properties
             int timeout = Integer.parseInt(ConfigManager.GetProperty("files.docservice.timeout"));
-            if (timeout > 0)  // if it's greater than 0
-            {
+            if (timeout > 0) {  // if it's greater than 0
                 ConvertTimeout = timeout;  // assign this value to a convert timeout
             }
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
         }
     }
 
     // get the url of the converted file
-    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync, String lang) throws Exception
-    {
+    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync, String lang) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
         fromExtension = fromExtension == null || fromExtension.isEmpty() ? FileUtility.GetFileExtension(documentUri) : fromExtension;
 
@@ -96,8 +89,7 @@ public class ServiceConverter
             body.async = true;
 
         String headerToken = "";
-        if (DocumentManager.TokenEnabled())
-        {
+        if (DocumentManager.TokenEnabled()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
             map.put("url", body.url);
@@ -134,8 +126,7 @@ public class ServiceConverter
         connection.setConnectTimeout(ConvertTimeout);
 
         // write header token to the request
-        if (DocumentManager.TokenEnabled())
-        {
+        if (DocumentManager.TokenEnabled()) {
             connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
         }
 
@@ -164,8 +155,7 @@ public class ServiceConverter
     }
 
     // generate document key
-    public static String GenerateRevisionId(String expectedKey)
-    {
+    public static String GenerateRevisionId(String expectedKey) {
         if (expectedKey.length() > 20)  // if the expected key length is greater than 20
             expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
 
@@ -175,14 +165,12 @@ public class ServiceConverter
     }
 
     // create an error message for an error code
-    private static void ProcessConvertServiceResponceError(int errorCode) throws Exception
-    {
+    private static void ProcessConvertServiceResponceError(int errorCode) throws Exception {
         String errorMessage = "";
         String errorMessageTemplate = "Error occurred in the ConvertService: ";
 
         // add the error message to the error message template depending on the error code
-        switch (errorCode)
-        {
+        switch (errorCode) {
             case -8:
                 errorMessage = errorMessageTemplate + "Error document VKey";
                 break;
@@ -218,8 +206,7 @@ public class ServiceConverter
     }
 
     // get the response url
-    private static String GetResponseUri(String jsonString) throws Exception
-    {
+    private static String GetResponseUri(String jsonString) throws Exception {
         JSONObject jsonObj = ConvertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
@@ -232,13 +219,11 @@ public class ServiceConverter
         Long resultPercent = 0l;
         String responseUri = null;
 
-        if (isEndConvert)  // if the conversion is completed
-        {
+        if (isEndConvert) {  // if the conversion is completed
             resultPercent = 100l;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
         }
-        else  // if the conversion isn't completed
-        {
+        else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
             resultPercent = resultPercent >= 100l ? 99l : resultPercent;  // get the percentage value
         }
@@ -247,15 +232,13 @@ public class ServiceConverter
     }
 
     // convert stream to string
-    public static String ConvertStreamToString(InputStream stream) throws IOException
-    {
+    public static String ConvertStreamToString(InputStream stream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
         String line = bufferedReader.readLine();  // get incoming streams by lines
 
-        while (line != null)
-        {
+        while (line != null) {
             stringBuilder.append(line);  // concatenate strings using the string builder
             line = bufferedReader.readLine();
         }
@@ -266,8 +249,7 @@ public class ServiceConverter
     }
 
     // convert string to json
-    public static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
-    {
+    public static JSONObject ConvertStringToJSON(String jsonString) throws ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);  // parse json string
         JSONObject jsonObj = (JSONObject) obj;  // and turn it into a json object

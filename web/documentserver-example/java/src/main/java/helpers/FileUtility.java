@@ -25,12 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileUtility
-{
+public class FileUtility {
 
     // get file type
-    public static FileType GetFileType(String fileName)
-    {
+    public static FileType GetFileType(String fileName) {
         String ext = GetFileExtension(fileName).toLowerCase();
 
         // word type for document extensions
@@ -78,8 +76,7 @@ public class FileUtility
 
 
     // get file name from the url
-    public static String GetFileName(String url)
-    {
+    public static String GetFileName(String url) {
         if (url == null) return "";
 
         // get file name from the last part of url
@@ -89,8 +86,7 @@ public class FileUtility
     }
 
     // get file name without extension
-    public static String GetFileNameWithoutExtension(String url)
-    {
+    public static String GetFileNameWithoutExtension(String url) {
         String fileName = GetFileName(url);
         if (fileName == null) return null;
         String fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -98,8 +94,7 @@ public class FileUtility
     }
 
     // get file extension from url
-    public static String GetFileExtension(String url)
-    {
+    public static String GetFileExtension(String url) {
         String fileName = GetFileName(url);
         if (fileName == null) return null;
         String fileExt = fileName.substring(fileName.lastIndexOf("."));
@@ -107,23 +102,19 @@ public class FileUtility
     }
 
     // get url parameters
-    public static Map<String, String> GetUrlParams(String url)
-    {
-        try
-        {
+    public static Map<String, String> GetUrlParams(String url) {
+        try {
             String query = new URL(url).getQuery();  // take all the parameters which are placed after ? sign in the file url
             String[] params = query.split("&");  // parameters are separated by & sign
             Map<String, String> map = new HashMap<>();
-            for (String param : params)  // write parameters and their values to the map dictionary
-            {
+            for (String param : params) {  // write parameters and their values to the map dictionary
                 String name = param.split("=")[0];
                 String value = param.split("=")[1];
                 map.put(name, value);
             }
             return map;
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             return null;
         }
     }

@@ -21,35 +21,28 @@ package helpers;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ConfigManager
-{
+public class ConfigManager {
     private static Properties properties;
 
-    static
-    {
+    static {
         Init();
     }
 
-    private static void Init()
-    {
-        try
-        {
+    private static void Init() {
+        try {
             // get stream from the settings.properties resource and load it
             properties = new Properties();
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("settings.properties");
             properties.load(stream);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             properties = null;
         }
     }
 
     // get name from the settings.properties file
-    public static String GetProperty(String name)
-    {
-        if (properties == null)
-        {
+    public static String GetProperty(String name) {
+        if (properties == null) {
             return "";
         }
 

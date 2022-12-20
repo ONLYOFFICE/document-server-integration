@@ -37,11 +37,9 @@ import entities.FileModel;
 
 
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
-public class EditorServlet extends HttpServlet
-{
+public class EditorServlet extends HttpServlet {
     // process request
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DocumentManager.Init(request, response);
 
         String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
@@ -55,17 +53,14 @@ public class EditorServlet extends HttpServlet
         CookieManager cm = new CookieManager(request);
         User user = Users.getUser(cm.getCookie("uid"));
 
-        if (fileExt != null)
-        {
-            try
-            {
+        if (fileExt != null) {
+            try {
                 // create demo document
                 fileName = DocumentManager.CreateDemo(fileExt, sampleData, user);
                 response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
                 return;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 response.getWriter().write("Error: " + ex.getMessage());    
             }
         }
@@ -103,8 +98,7 @@ public class EditorServlet extends HttpServlet
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);
 
         // check if the document token is enabled
-        if (DocumentManager.TokenEnabled())
-        {
+        if (DocumentManager.TokenEnabled()) {
             file.BuildToken();  // generate document token
             dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));  // create token from the dataInsertImage object
             dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));  // create token from the dataCompareFile object
@@ -123,22 +117,19 @@ public class EditorServlet extends HttpServlet
 
     // create get request
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     // create post request
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     // get servlet information
     @Override
-    public String getServletInfo()
-    {
+    public String getServletInfo() {
         return "Editor page";
     }
 }

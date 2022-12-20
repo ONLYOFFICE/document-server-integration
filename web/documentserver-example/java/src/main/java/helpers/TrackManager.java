@@ -263,17 +263,14 @@ public class TrackManager {
 
         InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
 
-        if (stream == null)
-        {
+        if (stream == null) {
             throw new Exception("Stream is null");
         }
 
-        try (FileOutputStream out = new FileOutputStream(file))
-        {
+        try (FileOutputStream out = new FileOutputStream(file)) {
             int read;
             final byte[] bytes = new byte[1024];
-            while ((read = stream.read(bytes)) != -1)
-            {
+            while ((read = stream.read(bytes)) != -1) {
                 out.write(bytes, 0, read);  // write bytes to the output stream
             }
 
@@ -300,8 +297,7 @@ public class TrackManager {
         }
 
         String headerToken = "";
-        if (DocumentManager.TokenEnabled())  // check if a secret key to generate token exists or not
-        {
+        if (DocumentManager.TokenEnabled()) {  // check if a secret key to generate token exists or not
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", params);
             headerToken = DocumentManager.CreateToken(payloadMap);  // encode a payload object into a header token

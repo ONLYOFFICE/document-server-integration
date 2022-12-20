@@ -31,40 +31,32 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import helpers.*;
 
-public class GlobalServletContextListener implements ServletContextListener
-{
+public class GlobalServletContextListener implements ServletContextListener {
     // destroy ServletContextListener interface
     @Override
-    public void contextDestroyed(ServletContextEvent arg0)
-    {
+    public void contextDestroyed(ServletContextEvent arg0) {
         System.out.println("ServletContextListener destroyed");
     }
 
     // start ServletContextListener interface
     @Override
-    public void contextInitialized(ServletContextEvent arg0)
-    {
-        TrustManager[] trustAllCerts = new TrustManager[]
-        {
-            new X509TrustManager()
-            {
+    public void contextInitialized(ServletContextEvent arg0) {
+        TrustManager[] trustAllCerts = new TrustManager[] {
+            new X509TrustManager() {
                 // return an array of certificates which are trusted
                 @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers()
-                {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
 
                 // check whether the X509 certificate chain can be validated and is trusted for client authentication
                 @Override
-                public void checkClientTrusted(X509Certificate[] certs, String authType)
-                {
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
                 }
 
                 // check whether the X509 certificate chain can be validated and is trusted for server authentication
                 @Override
-                public void checkServerTrusted(X509Certificate[] certs, String authType)
-                {
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
                 }
             }
         };
@@ -72,25 +64,21 @@ public class GlobalServletContextListener implements ServletContextListener
         SSLContext sc;
 
         if(!ConfigManager.GetProperty("files.docservice.verify-peer-off").isEmpty()) {
-             try
-            {
+             try {
                 // register the all-trusting trust manager for HTTPS
                 sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             }
-            catch (NoSuchAlgorithmException | KeyManagementException ex)
-            {
+            catch (NoSuchAlgorithmException | KeyManagementException ex) {
             }
         }
        
 
         // create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier()
-        {
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
             @Override
-            public boolean verify(String hostname, SSLSession session)
-            {
+            public boolean verify(String hostname, SSLSession session) {
                 return true;
             }
         };
