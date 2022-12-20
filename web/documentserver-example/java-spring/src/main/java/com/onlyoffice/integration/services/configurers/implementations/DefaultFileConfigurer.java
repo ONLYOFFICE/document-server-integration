@@ -20,13 +20,14 @@ package com.onlyoffice.integration.services.configurers.implementations;
 
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
-import com.onlyoffice.integration.mappers.Mapper;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
-import com.onlyoffice.integration.documentserver.models.filemodel.*;
+import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
+import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
+import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.mappers.Mapper;
 import com.onlyoffice.integration.services.configurers.FileConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentWrapper;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;

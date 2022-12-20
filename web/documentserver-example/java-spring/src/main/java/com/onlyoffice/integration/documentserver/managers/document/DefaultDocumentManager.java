@@ -27,8 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
 import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -37,7 +38,10 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.onlyoffice.integration.documentserver.util.Constants.EXT_LENGTH_PART;
 import static com.onlyoffice.integration.documentserver.util.Constants.KILOBYTE_SIZE;

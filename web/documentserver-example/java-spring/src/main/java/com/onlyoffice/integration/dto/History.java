@@ -20,7 +20,9 @@ package com.onlyoffice.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.onlyoffice.integration.documentserver.models.filemodel.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
