@@ -86,7 +86,7 @@ public class DefaultJwtManager implements JwtManager {
             String token = (String) body.get("token");  // get token from the body
             if (token == null) {  // if token is empty
                 if (header != null && !header.isBlank()) {  // and the header is defined
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
+                    token = header.startsWith("Bearer ") ? header.substring("Bearer ".length()) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
                 }
             }
             if (token == null || token.isBlank()) {

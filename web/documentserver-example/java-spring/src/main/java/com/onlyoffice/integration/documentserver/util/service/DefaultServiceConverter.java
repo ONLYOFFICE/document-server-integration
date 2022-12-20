@@ -20,6 +20,7 @@ package com.onlyoffice.integration.documentserver.util.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
+import com.onlyoffice.integration.documentserver.models.enums.ConvertErrorType;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.dto.Convert;
 import lombok.SneakyThrows;
@@ -27,6 +28,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +38,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.onlyoffice.integration.documentserver.util.Constants.CONVERTATION_ERROR_MESSAGE_TEMPLATE;
+import static com.onlyoffice.integration.documentserver.util.Constants.CONVERT_TIMEOUT_MS;
+import static com.onlyoffice.integration.documentserver.util.Constants.FULL_LOADING_IN_PERCENT;
+import static com.onlyoffice.integration.documentserver.util.Constants.MAX_KEY_LENGTH;
 
 // todo: Refactoring
 @Component
@@ -48,7 +55,7 @@ public class DefaultServiceConverter implements ServiceConverter {
     private String docServiceUrlConverter;
     @Value("${files.docservice.timeout}")
     private String docserviceTimeout;
-    private int convertTimeout = 120000;
+    private int convertTimeout;
 
     @Autowired
     private JwtManager jwtManager;
@@ -62,9 +69,7 @@ public class DefaultServiceConverter implements ServiceConverter {
     @PostConstruct
     public void init() {
         int timeout = Integer.parseInt(docserviceTimeout);  // parse the dcoument service timeout value
-        if (timeout > 0) {
-            convertTimeout = timeout;
-        }
+        convertTimeout = timeout > 0 ? timeout : CONVERT_TIMEOUT_MS;
     }
 
     @SneakyThrows
@@ -97,7 +102,7 @@ public class DefaultServiceConverter implements ServiceConverter {
             connection.connect();
 
             int statusCode = connection.getResponseCode();
-            if (statusCode != 200) {  // checking status code
+            if (statusCode != HttpStatus.OK.value()) {  // checking status code
                 connection.disconnect();
                 throw new RuntimeException("Convertation service returned status: " + statusCode);
             }
@@ -175,50 +180,16 @@ public class DefaultServiceConverter implements ServiceConverter {
     // generate document key
     public String generateRevisionId(final String expectedKey) {
         // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
-        String formatKey = expectedKey.length() > 20 ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH ? Integer.toString(expectedKey.hashCode()) : expectedKey;
         String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
-        return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
+        return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
     }
 
     // todo: Replace with a registry (callbacks package for reference)
     // create an error message for an error code
     private void processConvertServiceResponceError(final int errorCode) {
-        String errorMessage = "";
-        String errorMessageTemplate = "Error occurred in the ConvertService: ";
-
-        // add the error message to the error message template depending on the error code
-        switch (errorCode) {
-            case -8:
-                errorMessage = errorMessageTemplate + "Error document VKey";
-                break;
-            case -7:
-                errorMessage = errorMessageTemplate + "Error document request";
-                break;
-            case -6:
-                errorMessage = errorMessageTemplate + "Error database";
-                break;
-            case -5:
-                errorMessage = errorMessageTemplate + "Error unexpected guid";
-                break;
-            case -4:
-                errorMessage = errorMessageTemplate + "Error download error";
-                break;
-            case -3:
-                errorMessage = errorMessageTemplate + "Error convertation error";
-                break;
-            case -2:
-                errorMessage = errorMessageTemplate + "Error convertation timeout";
-                break;
-            case -1:
-                errorMessage = errorMessageTemplate + "Error convertation unknown";
-                break;
-            case 0:  // if the error code is equal to 0, the error message is empty
-                break;
-            default:
-                errorMessage = "ErrorCode = " + errorCode;  // default value for the error message
-                break;
-        }
+        String errorMessage = CONVERTATION_ERROR_MESSAGE_TEMPLATE + ConvertErrorType.labelOfCode(errorCode);
 
         throw new RuntimeException(errorMessage);
     }
@@ -240,14 +211,14 @@ public class DefaultServiceConverter implements ServiceConverter {
         String responseUri = null;
 
         if (isEndConvert) {  // if the conversion is completed
-            resultPercent = 100L;
+            resultPercent = FULL_LOADING_IN_PERCENT;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file URL
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= 100L ? 99L : resultPercent;  // get the percentage value of the conversion process
+            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value of the conversion process
         }
 
-        return resultPercent >= 100L ? responseUri : "";
+        return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
     }
 
     // convert stream to string

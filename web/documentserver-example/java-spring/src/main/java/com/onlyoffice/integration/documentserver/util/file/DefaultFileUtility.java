@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_SIZE;
+
 @Component
 @Qualifier("default")
 public class DefaultFileUtility implements FileUtility {
@@ -193,6 +195,6 @@ public class DefaultFileUtility implements FileUtility {
     // get maximum file size
     public long getMaxFileSize() {
         long size = Long.parseLong(filesizeMax);
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : MAX_FILE_SIZE;
     }
 }

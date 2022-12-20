@@ -32,6 +32,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -40,6 +41,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static com.onlyoffice.integration.documentserver.util.Constants.FILE_SAVE_TIMEOUT;
 
 // todo: Refactoring
 @Component
@@ -79,11 +82,11 @@ public class DefaultCallbackManager implements CallbackManager {
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(5000);
+        connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
         InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
 
         int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
+        if (statusCode != HttpStatus.OK.value()) {  // checking status code
             connection.disconnect();
             throw new RuntimeException("Document editing service returned status: " + statusCode);
         }

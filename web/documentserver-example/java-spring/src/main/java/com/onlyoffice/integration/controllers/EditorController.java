@@ -42,6 +42,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.*;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS_USER_ID;
+
 @CrossOrigin("*")
 @Controller
 public class EditorController {
@@ -142,7 +144,7 @@ public class EditorController {
         if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getId() != Integer.parseInt(uid) && u.getId() != 4) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != ANONYMOUS_USER_ID) {
                     usersForMentions.add(new Mentions(u.getName(), u.getEmail()));  // user data includes user names and emails
                 }
             }

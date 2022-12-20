@@ -39,6 +39,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.onlyoffice.integration.documentserver.util.Constants.EXT_LENGTH_PART;
+import static com.onlyoffice.integration.documentserver.util.Constants.KILOBYTE_SIZE;
+
 @Component
 @Primary
 public class DefaultDocumentManager implements DocumentManager {
@@ -63,7 +66,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get URL to the created file
     public String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileName.substring(fileName.length() - 4);
+        String fileExt = fileName.substring(fileName.length() - EXT_LENGTH_PART);
         String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
     }
@@ -165,7 +168,7 @@ public class DefaultDocumentManager implements DocumentManager {
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
                             .lastModified()));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0)))
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE_SIZE))))
                     .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
