@@ -69,8 +69,7 @@ public class GlobalServletContextListener implements ServletContextListener {
                 sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            }
-            catch (NoSuchAlgorithmException | KeyManagementException ex) {
+            } catch (NoSuchAlgorithmException | KeyManagementException ex) {
             }
         }
        

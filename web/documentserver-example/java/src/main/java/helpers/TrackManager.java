@@ -46,8 +46,7 @@ public class TrackManager {
             scanner.useDelimiter("\\A");
             bodyString = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             writer.write("get request.getInputStream error:" + ex.getMessage());
             throw ex;
         }

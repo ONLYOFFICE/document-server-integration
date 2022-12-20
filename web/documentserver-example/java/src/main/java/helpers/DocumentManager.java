@@ -53,8 +53,7 @@ public class DocumentManager {
 
         try {
             size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             size = 0;
         }
 
@@ -102,8 +101,7 @@ public class DocumentManager {
             try {
                 // use InetAddress class to get the user address if it wasn't passed to the function
                 userAddress = InetAddress.getLocalHost().getHostAddress();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 userAddress = "";
             }
         }
@@ -335,8 +333,7 @@ public class DocumentManager {
             }
 
             return filePath;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "";
         }
     }
@@ -403,8 +400,7 @@ public class DocumentManager {
             String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
@@ -427,8 +423,7 @@ public class DocumentManager {
             String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
@@ -443,8 +438,7 @@ public class DocumentManager {
             query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
@@ -502,8 +496,7 @@ public class DocumentManager {
                 jwt.addClaim(key, payloadClaims.get(key));  // and write each claim to the jwt
             }
             return JWT.getEncoder().encode(jwt, signer);  // sign and encode the JWT to a JSON string representation
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "";
         }
     }
@@ -514,8 +507,7 @@ public class DocumentManager {
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(GetTokenSecret());
             return JWT.getDecoder().decode(token, verifier);  // verify and decode the encoded string JWT to a rich object
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             return null;
         }
     }

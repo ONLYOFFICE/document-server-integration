@@ -34,8 +34,7 @@ public class ConfigManager {
             properties = new Properties();
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("settings.properties");
             properties.load(stream);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             properties = null;
         }
     }

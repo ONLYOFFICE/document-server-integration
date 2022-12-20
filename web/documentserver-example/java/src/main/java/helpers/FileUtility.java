@@ -122,8 +122,7 @@ public class FileUtility {
                 map.put(name, value);
             }
             return map;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return null;
         }
     }

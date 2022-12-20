@@ -197,8 +197,7 @@ public class IndexServlet extends HttpServlet {
 
             writer.write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\" }");
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
         }
     }
@@ -277,8 +276,7 @@ public class IndexServlet extends HttpServlet {
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             writer.write("{ \"error\": \"" + ex.getMessage() + "\"}");
         }
     }
@@ -356,8 +354,7 @@ public class IndexServlet extends HttpServlet {
             delete(hist);
 
             writer.write("{ \"success\": true }");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
         }
     }
@@ -382,8 +379,7 @@ public class IndexServlet extends HttpServlet {
                     writer.write(gson.toJson(files));
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
         }
     }

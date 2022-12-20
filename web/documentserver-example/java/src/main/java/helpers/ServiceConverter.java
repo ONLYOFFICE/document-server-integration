@@ -58,8 +58,7 @@ public class ServiceConverter {
             if (timeout > 0) {  // if it's greater than 0
                 ConvertTimeout = timeout;  // assign this value to a convert timeout
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -227,8 +226,7 @@ public class ServiceConverter {
         if (isEndConvert) {  // if the conversion is completed
             resultPercent = 100l;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
-        }
-        else {  // if the conversion isn't completed
+        } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
             resultPercent = resultPercent >= 100l ? 99l : resultPercent;  // get the percentage value
         }
