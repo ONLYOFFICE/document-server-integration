@@ -268,7 +268,7 @@ public class FileModel {
     // the permissions parameters
     public class Permissions {
         public Boolean comment;
-        public Boolean сopy;
+        public Boolean copy;
         public Boolean download;
         public Boolean edit;
         public Boolean print;
@@ -285,7 +285,7 @@ public class FileModel {
         // defines what can be done with a document
         public Permissions(String mode, String type, Boolean canEdit, User user) {
             comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            сopy = !user.deniedPermissions.contains("сopy");
+            copy = !user.deniedPermissions.contains("сopy");
             download = !user.deniedPermissions.contains("download");
             edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
             print = !user.deniedPermissions.contains("print");
