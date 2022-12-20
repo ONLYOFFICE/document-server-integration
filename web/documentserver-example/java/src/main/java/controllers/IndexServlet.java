@@ -127,7 +127,7 @@ public class IndexServlet extends HttpServlet {
             InputStream stream = connection.getInputStream();
 
             if (filesizeMax < stream.available() || stream.available() <= 0) {
-                writer.write( "{\"error\":\"File size is incorrect\"}");
+                writer.write("{\"error\":\"File size is incorrect\"}");
             }
 
             String fileName = DocumentManager.GetCorrectName(title, null);
@@ -135,7 +135,7 @@ public class IndexServlet extends HttpServlet {
 
             DocumentManager.CreateMeta(fileName, user.id, user.name, null);
 
-            writer.write( "{\"file\":  \"" + fileName + "\"}");
+            writer.write("{\"file\":  \"" + fileName + "\"}");
         } catch (Exception e) {
             e.printStackTrace();
             writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
