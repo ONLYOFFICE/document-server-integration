@@ -97,7 +97,7 @@ public class DocumentManager {
 
     // get current user host address
     public static String CurUserHostAddress(String userAddress) {
-        if(userAddress == null) {
+        if (userAddress == null) {
             try {
                 // use InetAddress class to get the user address if it wasn't passed to the function
                 userAddress = InetAddress.getLocalHost().getHostAddress();
@@ -343,7 +343,7 @@ public class DocumentManager {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : GetStoredFiles(null)) {
+        for (File file : GetStoredFiles(null)) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", GetFileVersion(file.getName(), null));
             map.put("id", ServiceConverter.GenerateRevisionId(CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(StoragePath(file.getName(), null)).lastModified())));

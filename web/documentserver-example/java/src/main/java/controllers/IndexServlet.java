@@ -545,11 +545,11 @@ public class IndexServlet extends HttpServlet {
             String origExt = "." + (String) body.get("ext");
             String curExt = newfilename;
 
-            if(newfilename.indexOf(".") != -1) {
+            if (newfilename.indexOf(".") != -1) {
                 curExt = (String) FileUtility.GetFileExtension(newfilename);
             }
 
-            if(origExt.compareTo(curExt) != 0) {
+            if (origExt.compareTo(curExt) != 0) {
                 newfilename += origExt;
             }
 

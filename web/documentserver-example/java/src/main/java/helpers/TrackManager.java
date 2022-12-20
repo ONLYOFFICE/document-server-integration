@@ -93,7 +93,7 @@ public class TrackManager {
             if (jwt.getObject("payload") != null) {  // get the payload object from the request body
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> payload =
-                            (LinkedHashMap<String, Object>)jwt.getObject("payload");
+                            (LinkedHashMap<String, Object>) jwt.getObject("payload");
 
                     jwt.claims = payload;
                 } catch (Exception ex) {

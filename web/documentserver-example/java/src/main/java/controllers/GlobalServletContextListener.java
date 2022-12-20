@@ -63,7 +63,7 @@ public class GlobalServletContextListener implements ServletContextListener {
 
         SSLContext sc;
 
-        if(!ConfigManager.GetProperty("files.docservice.verify-peer-off").isEmpty()) {
+        if (!ConfigManager.GetProperty("files.docservice.verify-peer-off").isEmpty()) {
              try {
                 // register the all-trusting trust manager for HTTPS
                 sc = SSLContext.getInstance("SSL");
