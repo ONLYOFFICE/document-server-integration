@@ -99,6 +99,8 @@ public class IndexServlet extends HttpServlet {
             case "rename":
                 Rename(request, response, writer);
                 break;
+            default:
+                break;
         }
     }
 
