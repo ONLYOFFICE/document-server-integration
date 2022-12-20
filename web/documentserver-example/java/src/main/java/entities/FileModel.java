@@ -233,9 +233,9 @@ public class FileModel {
             histObj.put("history", hist);
 
             Gson gson = new Gson();
-            return new String[] { gson.toJson(histObj), gson.toJson(histData) };
+            return new String[] {gson.toJson(histObj), gson.toJson(histData) };
         }
-        return new String[] { "", "" };
+        return new String[] {"", "" };
     }
 
     // read a file
