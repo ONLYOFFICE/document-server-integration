@@ -193,7 +193,7 @@ public class DocumentManager {
 
     // get the history directory
     public static String HistoryDir(String storagePath) {
-        return storagePath += "-hist";
+        return storagePath + "-hist";
     }
 
     // get the path to the file version by the history path and file version
