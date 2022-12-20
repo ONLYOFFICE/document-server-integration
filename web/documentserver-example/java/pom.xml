@@ -94,7 +94,7 @@
 						<id>validate</id>
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>sun_checks.xml</configLocation>
+							<configLocation>checkstyle.xml</configLocation>
 							<failsOnError>true</failsOnError>
 							<failOnViolation>true</failOnViolation>
 							<logViolationsToConsole>true</logViolationsToConsole>
