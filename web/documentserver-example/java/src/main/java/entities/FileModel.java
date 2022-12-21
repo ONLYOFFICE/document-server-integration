@@ -20,7 +20,9 @@ package entities;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import helpers.*;
+import helpers.DocumentManager;
+import helpers.FileUtility;
+import helpers.ServiceConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,7 +30,13 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Scanner;
 
 public class FileModel {
     private String type = "desktop";

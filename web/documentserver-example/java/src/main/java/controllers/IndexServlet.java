@@ -19,16 +19,22 @@
 package controllers;
 
 import com.google.gson.Gson;
+import entities.FileType;
 import entities.User;
-import helpers.*;
-
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import helpers.ConfigManager;
+import helpers.CookieManager;
+import helpers.DocumentManager;
+import helpers.FileUtility;
+import helpers.ServiceConverter;
+import helpers.TrackManager;
+import helpers.Users;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.primeframework.jwt.Verifier;
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACVerifier;
+import utils.StatusType;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -37,16 +43,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
-import entities.FileType;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.primeframework.jwt.Verifier;
-import org.primeframework.jwt.domain.JWT;
-import org.primeframework.jwt.hmac.HMACVerifier;
-import utils.StatusType;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import static utils.Constants.KILOBYTE_SIZE;
 

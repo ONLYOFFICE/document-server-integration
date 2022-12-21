@@ -18,7 +18,24 @@
 
 package helpers;
 
-import java.io.*;
+import entities.FileType;
+import entities.User;
+import org.json.simple.JSONObject;
+import org.primeframework.jwt.Signer;
+import org.primeframework.jwt.Verifier;
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACSigner;
+import org.primeframework.jwt.hmac.HMACVerifier;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -27,18 +44,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import entities.FileType;
-
-import entities.User;
-import org.primeframework.jwt.domain.JWT;
-import org.primeframework.jwt.hmac.HMACSigner;
-import org.primeframework.jwt.hmac.HMACVerifier;
-import org.json.simple.JSONObject;
-import org.primeframework.jwt.Signer;
-import org.primeframework.jwt.Verifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static utils.Constants.KILOBYTE_SIZE;
 import static utils.Constants.MAX_FILE_SIZE;
