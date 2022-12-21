@@ -6,4 +6,5 @@
 <suppressions>
     <suppress checks="ParameterNumber" files="."/>
     <suppress checks="DesignForExtension" files="."/>
+    <suppress checks="JavadocPackage" files="."/>
 </suppressions>
