@@ -31,12 +31,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FileModel {
-    public String type = "desktop";
-    public String mode = "edit";
-    public String documentType;
-    public Document document;
-    public EditorConfig editorConfig;
-    public String token;
+    private String type = "desktop";
+    private String mode = "edit";
+    private String documentType;
+    private Document document;
+    private EditorConfig editorConfig;
+    private String token;
 
     // create file model
     public FileModel(final String fileNameParam, final String lang, final String actionData, final User user, final Boolean isEnableDirectUrl) {
@@ -48,14 +48,16 @@ public class FileModel {
 
         // set the document parameters
         document = new Document();
-        document.title = fileName;
-        document.url = DocumentManager.getDownloadUrl(fileName, true);  // get file url
-        document.directUrl = isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "";  // get direct url
-        document.fileType = FileUtility.getFileExtension(fileName).replace(".", "");  // get file extension from the file name
+        document.setTitle(fileName);
+        document.setUrl(DocumentManager.getDownloadUrl(fileName, true)); // get file url
+        document.setDirectUrl(isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "");  // get direct url
+        document.setFileType(FileUtility.getFileExtension(fileName).replace(".", ""));  // get file extension from the file name
         // generate document key
-        document.key = ServiceConverter.generateRevisionId(DocumentManager.curUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.storagePath(fileName, null)).lastModified()));
-        document.info = new Info();
-        document.info.favorite = user.favorite;
+        document.setKey(ServiceConverter
+                .generateRevisionId(DocumentManager
+                        .curUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.storagePath(fileName, null)).lastModified())));
+        document.setInfo(new Info());
+        document.getInfo().setFavorite(user.getFavorite());
 
         String templatesImageUrl = DocumentManager.getTemplateImageUrl(FileUtility.getFileType(fileName));
         List<Map<String, String>> templates = new ArrayList<>();
@@ -75,27 +77,28 @@ public class FileModel {
 
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
-        editorConfig.callbackUrl = DocumentManager.getCallback(fileName);  // get callback url
+        editorConfig.setCallbackUrl(DocumentManager.getCallback(fileName));  // get callback url
 
-        editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0")
+        HashMap<String, Object> coEditing = mode.equals("view") && user.getId().equals("uid-0")
                 ? new HashMap<String, Object>()  {{
             put("mode", "strict");
             put("change", false);
         }} : null;
+        editorConfig.setCoEditing(coEditing);
         if (lang != null) {
-            editorConfig.lang = lang;  // write language parameter to the config
+            editorConfig.setLang(lang);  // write language parameter to the config
         }
 
-        editorConfig.createUrl = !user.id.equals("uid-0") ? createUrl : null;
-        editorConfig.templates = user.templates ? templates : null;
+        editorConfig.setCreateUrl(!user.getId().equals("uid-0") ? createUrl : null);
+        editorConfig.setTemplates(user.getTemplates() ? templates : null);
 
         // write user information to the config (id, name and group)
-        editorConfig.user.id = !user.id.equals("uid-0") ? user.id : null;
-        editorConfig.user.name = user.name;
-        editorConfig.user.group = user.group;
+        editorConfig.getUser().setId(!user.getId().equals("uid-0") ? user.getId() : null);
+        editorConfig.getUser().setName(user.getName());
+        editorConfig.getUser().setGroup(user.getGroup());
 
         // write the absolute URL to the file location
-        editorConfig.customization.goback.url = DocumentManager.getServerUrl(false) + "/IndexServlet";
+        editorConfig.getCustomization().getGoback().setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
 
         changeType(mode, type, user, fileName);
     }
@@ -110,20 +113,20 @@ public class FileModel {
         }
 
         // check if the file with such an extension can be edited
-        String fileExt = FileUtility.getFileExtension(document.title);
+        String fileExt = FileUtility.getFileExtension(document.getTitle());
         Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.customization.submitForm = false;
+        editorConfig.getCustomization().setSubmitForm(false);
 
         if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.getFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
         // set the mode parameter: change it to view if the document can't be edited
-        editorConfig.mode = canEdit && !mode.equals("view") ? "edit" : "view";
+        editorConfig.setMode(canEdit && !mode.equals("view") ? "edit" : "view");
 
         // set document permissions
-        document.permissions = new Permissions(mode, type, canEdit, user);
+        document.setPermissions(new Permissions(mode, type, canEdit, user));
 
         if (type.equals("embedded")) {
             initDesktop(fileName);  // set parameters for the embedded document
@@ -150,7 +153,7 @@ public class FileModel {
     // get document history
     public String[] getHistory() {
         JSONParser parser = new JSONParser();
-        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.title, null));  // get history directory
+        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.getTitle(), null));  // get history directory
         if (DocumentManager.getFileVersion(histDir) > 0) {
             Integer curVer = DocumentManager.getFileVersion(histDir);  // get current file version if it is greater than 0
 
@@ -166,7 +169,7 @@ public class FileModel {
                     String key = null;
 
                     // get document key
-                    key = i == curVer ? document.key : readFileToEnd(new File(verDir + File.separator + "key.txt"));
+                    key = i == curVer ? document.getKey() : readFileToEnd(new File(verDir + File.separator + "key.txt"));
 
                     obj.put("key", key);
                     obj.put("version", i);
@@ -183,11 +186,11 @@ public class FileModel {
                         obj.put("user", user);
                     }
 
-                    dataObj.put("fileType", FileUtility.getFileExtension(document.title).substring(1));
+                    dataObj.put("fileType", FileUtility.getFileExtension(document.getTitle()).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.getDownloadHistoryUrl(document.title, i, "prev" + FileUtility.getFileExtension(document.title), true));
-                    if (!document.directUrl.equals("")) {
-                        dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.getDownloadHistoryUrl(document.title, i, "prev" + FileUtility.getFileExtension(document.title), false));
+                    dataObj.put("url", i == curVer ? document.getUrl() : DocumentManager.getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility.getFileExtension(document.getTitle()), true));
+                    if (!document.getDirectUrl().equals("")) {
+                        dataObj.put("directUrl", i == curVer ? document.getUrl() : DocumentManager.getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility.getFileExtension(document.getTitle()), false));
                     }
                     dataObj.put("version", i);
 
@@ -210,7 +213,7 @@ public class FileModel {
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
                         Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager.getDownloadHistoryUrl(document.title, verdiff, "diff.zip", true);
+                        String changesUrl = DocumentManager.getDownloadHistoryUrl(document.getTitle(), verdiff, "diff.zip", true);
                         dataObj.put("changesUrl", changesUrl);
                     }
 
@@ -253,73 +256,129 @@ public class FileModel {
 
     // the document parameters
     public class Document {
-        public String title;
-        public String url;
-        public String directUrl;
-        public String fileType;
-        public String key;
-        public Info info;
-        public Permissions permissions;
+        private String title;
+        private String url;
+        private String directUrl;
+        private String fileType;
+        private String key;
+        private Info info;
+        private Permissions permissions;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(final String titleParam) {
+            this.title = titleParam;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(final String urlParam) {
+            this.url = urlParam;
+        }
+
+        public String getDirectUrl() {
+            return directUrl;
+        }
+
+        public void setDirectUrl(final String directUrlParam) {
+            this.directUrl = directUrlParam;
+        }
+
+        public void setFileType(final String fileTypeParam) {
+            this.fileType = fileTypeParam;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(final String keyParam) {
+            this.key = keyParam;
+        }
+
+        public Info getInfo() {
+            return info;
+        }
+
+        public void setInfo(final Info infoParam) {
+            this.info = infoParam;
+        }
+
+        public Permissions getPermissions() {
+            return permissions;
+        }
+
+        public void setPermissions(final Permissions permissionsParam) {
+            this.permissions = permissionsParam;
+        }
     }
 
     // the permissions parameters
     public class Permissions {
-        public Boolean comment;
-        public Boolean copy;
-        public Boolean download;
-        public Boolean edit;
-        public Boolean print;
-        public Boolean fillForms;
-        public Boolean modifyFilter;
-        public Boolean modifyContentControl;
-        public Boolean review;
-        public Boolean chat;
-        public List<String> reviewGroups;
-        public CommentGroups commentGroups;
-        public List<String> userInfoGroups;
+        private final Boolean comment;
+        private final Boolean copy;
+        private final Boolean download;
+        private final Boolean edit;
+        private final Boolean print;
+        private final Boolean fillForms;
+        private final Boolean modifyFilter;
+        private final Boolean modifyContentControl;
+        private final Boolean review;
+        private final Boolean chat;
+        private final List<String> reviewGroups;
+        private final CommentGroups commentGroups;
+        private final List<String> userInfoGroups;
         //public Gson gson = new Gson();
 
         // defines what can be done with a document
         public Permissions(final String modeParam, final String typeParam, final Boolean canEdit, final User user) {
             comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
-            copy = !user.deniedPermissions.contains("сopy");
-            download = !user.deniedPermissions.contains("download");
+            copy = !user.getDeniedPermissions().contains("сopy");
+            download = !user.getDeniedPermissions().contains("download");
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter") || modeParam.equals("blockcontent"));
-            print = !user.deniedPermissions.contains("print");
+            print = !user.getDeniedPermissions().contains("print");
             fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
             modifyFilter = !modeParam.equals("filter");
             modifyContentControl = !modeParam.equals("blockcontent");
             review = canEdit && (modeParam.equals("edit") || modeParam.equals("review"));
-            chat = !user.id.equals("uid-0");
-            reviewGroups = user.reviewGroups;
-            commentGroups = user.commentGroups;
-            userInfoGroups = user.userInfoGroups;
+            chat = !user.getId().equals("uid-0");
+            reviewGroups = user.getReviewGroups();
+            commentGroups = user.getCommentGroups();
+            userInfoGroups = user.getUserInfoGroups();
         }
     }
 
     // the Favorite icon state
     public class Info {
-        public String owner = "Me";
-        public Boolean favorite;
-        public String uploaded = getDate();
+        private String owner = "Me";
+        private Boolean favorite;
+        private String uploaded = getDate();
 
         private String getDate() {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
             return simpleDateFormat.format(new Date());
         }
+
+        public void setFavorite(final Boolean favoriteParam) {
+            this.favorite = favoriteParam;
+        }
     }
     // the editor config parameters
     public class EditorConfig {
-        public HashMap<String, Object> actionLink = null;
-        public String mode = "edit";
-        public String callbackUrl;
-        public HashMap<String, Object> coEditing = null;
-        public String lang = "en";
-        public String createUrl;
-        public List<Map<String, String>> templates;
-        public User user;
-        public Customization customization;
-        public Embedded embedded;
+        private HashMap<String, Object> actionLink = null;
+        private String mode = "edit";
+        private String callbackUrl;
+        private HashMap<String, Object> coEditing = null;
+        private String lang = "en";
+        private String createUrl;
+        private List<Map<String, String>> templates;
+        private User user;
+        private Customization customization;
+        private Embedded embedded;
 
         public EditorConfig(final String actionData) {
             // get the action in the document that will be scrolled to (bookmark or comment)
@@ -334,27 +393,99 @@ public class FileModel {
         // set parameters for the embedded document
         public void initDesktop(final String url) {
             embedded = new Embedded();
-            embedded.saveUrl = url;  // the absolute URL that will allow the document to be saved onto the user personal computer
-            embedded.embedUrl = url;  // the absolute URL to the document serving as a source file for the document embedded into the web page
-            embedded.shareUrl = url;  // the absolute URL that will allow other users to share this document
-            embedded.toolbarDocked = "top";  // the place for the embedded viewer toolbar, can be either top or bottom
+            embedded.setSaveUrl(url);  // the absolute URL that will allow the document to be saved onto the user personal computer
+            embedded.setEmbedUrl(url);  // the absolute URL to the document serving as a source file for the document embedded into the web page
+            embedded.setShareUrl(url);  // the absolute URL that will allow other users to share this document
+            embedded.setToolbarDocked("top");  // the place for the embedded viewer toolbar, can be either top or bottom
+        }
+
+        public String getMode() {
+            return mode;
+        }
+
+        public void setMode(final String modeParam) {
+            this.mode = modeParam;
+        }
+
+        public void setCallbackUrl(final String callbackUrlParam) {
+            this.callbackUrl = callbackUrlParam;
+        }
+
+        public void setCoEditing(final HashMap<String, Object> coEditingParam) {
+            this.coEditing = coEditingParam;
+        }
+
+        public void setLang(final String langParam) {
+            this.lang = langParam;
+        }
+
+        public void setCreateUrl(final String createUrlParam) {
+            this.createUrl = createUrlParam;
+        }
+
+        public void setTemplates(final List<Map<String, String>> templatesParam) {
+            this.templates = templatesParam;
+        }
+
+        public User getUser() {
+            return user;
+        }
+
+        public void setUser(final User userParam) {
+            this.user = userParam;
+        }
+
+        public Customization getCustomization() {
+            return customization;
         }
 
         // default user parameters (id, name and group)
         public class User {
-            public String id;
-            public String name;
-            public String group;
+            private String id;
+            private String name;
+            private String group;
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(final String idParam) {
+                this.id = idParam;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(final String nameParam) {
+                this.name = nameParam;
+            }
+
+            public String getGroup() {
+                return group;
+            }
+
+            public void setGroup(final String groupParam) {
+                this.group = groupParam;
+            }
         }
 
         // customization parameters
         public class Customization {
-            public Goback goback;
-            public Boolean forcesave;
-            public Boolean submitForm;
-            public Boolean about;
-            public Boolean comments;
-            public Boolean feedback;
+            private Goback goback;
+            private Boolean forcesave;
+            private Boolean submitForm;
+            private Boolean about;
+            private Boolean comments;
+            private Boolean feedback;
+
+            public Goback getGoback() {
+                return goback;
+            }
+
+            public void setSubmitForm(final Boolean submitFormParam) {
+                this.submitForm = submitFormParam;
+            }
 
             public Customization() {
                 about = true;
@@ -365,16 +496,40 @@ public class FileModel {
             }
 
             public class Goback {
-                public String url;
+                private String url;
+
+                public String getUrl() {
+                    return url;
+                }
+
+                public void setUrl(final String urlParam) {
+                    this.url = urlParam;
+                }
             }
         }
 
         // parameters for embedded document
         public class Embedded {
-            public String saveUrl;
-            public String embedUrl;
-            public String shareUrl;
-            public String toolbarDocked;
+            private String saveUrl;
+            private String embedUrl;
+            private String shareUrl;
+            private String toolbarDocked;
+
+            public void setSaveUrl(final String saveUrlParam) {
+                this.saveUrl = saveUrlParam;
+            }
+
+            public void setEmbedUrl(final String embedUrlParam) {
+                this.embedUrl = embedUrlParam;
+            }
+
+            public void setShareUrl(final String shareUrlParam) {
+                this.shareUrl = shareUrlParam;
+            }
+
+            public void setToolbarDocked(final String toolbarDockedParam) {
+                this.toolbarDocked = toolbarDockedParam;
+            }
         }
     }
 
@@ -383,5 +538,9 @@ public class FileModel {
     public static String serialize(final FileModel model) {
         Gson gson = new Gson();
         return gson.toJson(model);
+    }
+
+    public String getDocumentType() {
+        return documentType;
     }
 }

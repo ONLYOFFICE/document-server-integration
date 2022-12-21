@@ -136,7 +136,7 @@ public class IndexServlet extends HttpServlet {
             String fileName = DocumentManager.getCorrectName(title, null);
             DocumentManager.createFile(Paths.get(DocumentManager.storagePath(fileName, null)), stream);
 
-            DocumentManager.createMeta(fileName, user.id, user.name, null);
+            DocumentManager.createMeta(fileName, user.getId(), user.getName(), null);
 
             writer.write("{\"file\":  \"" + fileName + "\"}");
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public class IndexServlet extends HttpServlet {
             CookieManager cm = new CookieManager(request);
             User user = Users.getUser(cm.getCookie("uid"));
 
-            DocumentManager.createMeta(fileName, user.id, user.name, null);
+            DocumentManager.createMeta(fileName, user.getId(), user.getName(), null);
 
             writer.write("{ \"filename\": \"" + fileName + "\", \"documentType\": \"" + documentType + "\" }");
 
@@ -274,7 +274,7 @@ public class IndexServlet extends HttpServlet {
                 // create meta information about the converted file with the user id and name specified
                 User user = Users.getUser(cm.getCookie("uid"));
 
-                DocumentManager.createMeta(fileName, user.id, user.name, null);
+                DocumentManager.createMeta(fileName, user.getId(), user.getName(), null);
             }
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");

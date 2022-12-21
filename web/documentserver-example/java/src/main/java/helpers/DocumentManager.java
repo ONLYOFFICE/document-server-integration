@@ -297,7 +297,7 @@ public class DocumentManager {
         createFile(Paths.get(storagePath(fileName, null)), stream);
 
         // create meta information of the demo file
-        createMeta(fileName, user.id, user.name, null);
+        createMeta(fileName, user.getId(), user.getName(), null);
 
         return fileName;
     }

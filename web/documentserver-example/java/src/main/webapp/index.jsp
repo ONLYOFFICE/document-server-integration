@@ -90,7 +90,7 @@
                                                     <img id="info" class="info" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
-                                                            <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
+                                                            <option value="<%= user.getId() %>"><%= user.getName() == null ? "Anonymous" : user.getName() %></option>
                                                         <% } %>
                                                     </select>
                                                 </td>
@@ -134,9 +134,9 @@
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
                                         <div class="user-descr">
-                                            <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                            <b><%= user.getName() == null ? "Anonymous" : user.getName() %></b>
                                             <ul>
-                                                <% for (String description : user.descriptions) { %>
+                                                <% for (String description : user.getDescriptions()) { %>
                                                 <li><%= description %></li>
                                                 <% } %>
                                             </ul>

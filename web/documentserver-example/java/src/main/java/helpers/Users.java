@@ -24,7 +24,7 @@ import java.util.*;
 
 public class Users {
 
-    static List<String> descriptionUserFirst = new ArrayList<String>() {{
+    private static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
@@ -34,7 +34,7 @@ public class Users {
         add("Can see the information about all users");
     }};
 
-    static List<String> descriptionUserSecond = new ArrayList<String>() {{
+    private static List<String> descriptionUserSecond = new ArrayList<String>() {{
         add("Belongs to Group2");
         add("Can review only his own changes or changes made by users with no group");
         add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
@@ -43,7 +43,7 @@ public class Users {
         add("Can see the information about users from Group2 and users who don’t belong to any group");
     }};
 
-    static List<String> descriptionUserThird = new ArrayList<String>() {{
+    private static List<String> descriptionUserThird = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
         add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
@@ -55,7 +55,7 @@ public class Users {
         add("Can see the information about Group2 users");
     }};
 
-    static List<String> descriptionUserZero = new ArrayList<String>() {{
+    private static List<String> descriptionUserZero = new ArrayList<String>() {{
         add("The name is requested when the editor is opened");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
@@ -87,7 +87,7 @@ public class Users {
     // get a user by id specified
     public static User getUser(final String id) {
         for (User user : users) {
-            if (user.id.equals(id)) {
+            if (user.getId().equals(id)) {
                 return user;
             }
         }
@@ -103,10 +103,10 @@ public class Users {
     public static List<Map<String, Object>> getUsersForMentions(final String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
         for (User user : users) {
-            if (!user.id.equals(id) && user.name != null && user.email != null) {
+            if (!user.getId().equals(id) && user.getName() != null && user.getEmail() != null) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("name", user.name);
-                data.put("email", user.email);
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
                 usersData.add(data);
             }
         }

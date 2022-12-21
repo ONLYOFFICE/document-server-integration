@@ -48,15 +48,79 @@ public class ServiceConverter {
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
     public static class ConvertBody {
-        public String region;
-        public String url;
-        public String outputtype;
-        public String filetype;
-        public String title;
-        public String key;
-        public Boolean async;
-        public String token;
-        public String password;
+        private String region;
+        private String url;
+        private String outputtype;
+        private String filetype;
+        private String title;
+        private String key;
+        private Boolean async;
+        private String token;
+        private String password;
+
+        public void setRegion(final String regionParam) {
+            this.region = regionParam;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(final String urlParam) {
+            this.url = urlParam;
+        }
+
+        public String getOutputtype() {
+            return outputtype;
+        }
+
+        public void setOutputtype(final String outputtypeParam) {
+            this.outputtype = outputtypeParam;
+        }
+
+        public String getFiletype() {
+            return filetype;
+        }
+
+        public void setFiletype(final String filetypeParam) {
+            this.filetype = filetypeParam;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(final String titleParam) {
+            this.title = titleParam;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(final String keyParam) {
+            this.key = keyParam;
+        }
+
+        public Boolean getAsync() {
+            return async;
+        }
+
+        public void setAsync(final Boolean asyncParam) {
+            this.async = asyncParam;
+        }
+
+        public void setToken(final String tokenParam) {
+            this.token = tokenParam;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(final String passwordParam) {
+            this.password = passwordParam;
+        }
     }
 
     static {
@@ -87,34 +151,34 @@ public class ServiceConverter {
 
         // write all the necessary parameters to the body object
         ConvertBody body = new ConvertBody();
-        body.region = lang;
-        body.url = documentUri;
-        body.outputtype = toExtension.replace(".", "");
-        body.filetype = fromExt.replace(".", "");
-        body.title = title;
-        body.key = documentRevId;
-        body.password = filePass;
+        body.setRegion(lang);
+        body.setUrl(documentUri);
+        body.setOutputtype(toExtension.replace(".", ""));
+        body.setFiletype(fromExt.replace(".", ""));
+        body.setTitle(title);
+        body.setKey(documentRevId);
+        body.setPassword(filePass);
         if (isAsync) {
-            body.async = true;
+            body.setAsync(true);
         }
 
         String headerToken = "";
         if (DocumentManager.tokenEnabled()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
-            map.put("url", body.url);
-            map.put("outputtype", body.outputtype);
-            map.put("filetype", body.filetype);
-            map.put("title", body.title);
-            map.put("key", body.key);
-            map.put("password", body.password);
+            map.put("url", body.getUrl());
+            map.put("outputtype", body.getOutputtype());
+            map.put("filetype", body.getFiletype());
+            map.put("title", body.getTitle());
+            map.put("key", body.getKey());
+            map.put("password", body.getPassword());
             if (isAsync) {
-                map.put("async", body.async);
+                map.put("async", body.getAsync());
             }
 
             // add token to the body if it is enabled
             String token = DocumentManager.createToken(map);
-            body.token = token;
+            body.setToken(token);
 
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", map);  // create payload object

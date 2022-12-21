@@ -28,7 +28,7 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>

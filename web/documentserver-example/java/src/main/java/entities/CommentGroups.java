@@ -3,9 +3,9 @@ package entities;
 import java.util.List;
 
 public class CommentGroups {
-    public List<String> view;
-    public List<String> edit;
-    public List<String> remove;
+    private List<String> view;
+    private List<String> edit;
+    private List<String> remove;
     public CommentGroups() {
 
     }

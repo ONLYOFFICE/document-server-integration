@@ -21,17 +21,17 @@ package entities;
 import java.util.List;
 
 public class User {
-    public String id;
-    public String name;
-    public String email;
-    public String group;
-    public List<String> reviewGroups;
-    public CommentGroups commentGroups;
-    public Boolean favorite;
-    public List<String> deniedPermissions;
-    public List<String> descriptions;
-    public Boolean templates;
-    public List<String> userInfoGroups;
+    private final String id;
+    private final String name;
+    private final String email;
+    private final String group;
+    private final List<String> reviewGroups;
+    private final CommentGroups commentGroups;
+    private final Boolean favorite;
+    private final List<String> deniedPermissions;
+    private final List<String> descriptions;
+    private final Boolean templates;
+    private final List<String> userInfoGroups;
 
     public User(final String idParam, final String nameParam, final String emailParam, final String groupParam,
                 final List<String> reviewGroupsParam, final CommentGroups commentGroupsParam,
@@ -49,5 +49,49 @@ public class User {
         this.descriptions = descriptionsParam;
         this.templates = templatesParam;
         this.userInfoGroups = userInfoGroupsParam;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public List<String> getReviewGroups() {
+        return reviewGroups;
+    }
+
+    public CommentGroups getCommentGroups() {
+        return commentGroups;
+    }
+
+    public Boolean getFavorite() {
+        return favorite;
+    }
+
+    public List<String> getDeniedPermissions() {
+        return deniedPermissions;
+    }
+
+    public List<String> getDescriptions() {
+        return descriptions;
+    }
+
+    public Boolean getTemplates() {
+        return templates;
+    }
+
+    public List<String> getUserInfoGroups() {
+        return userInfoGroups;
     }
 }

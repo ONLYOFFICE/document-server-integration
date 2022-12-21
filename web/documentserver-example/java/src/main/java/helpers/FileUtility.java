@@ -51,7 +51,7 @@ public class FileUtility {
     }
 
     // document extensions
-    public static List<String> extsDocument = Arrays.asList(
+    private static List<String> extsDocument = Arrays.asList(
             ".doc", ".docx", ".docm",
             ".dot", ".dotx", ".dotm",
             ".odt", ".fodt", ".ott", ".rtf", ".txt",
@@ -60,14 +60,14 @@ public class FileUtility {
     );
 
     // spreadsheet extensions
-    public static List<String> extsSpreadsheet = Arrays.asList(
+    private static List<String> extsSpreadsheet = Arrays.asList(
             ".xls", ".xlsx", ".xlsm", ".xlsb",
             ".xlt", ".xltx", ".xltm",
             ".ods", ".fods", ".ots", ".csv"
     );
 
     // presentation extensions
-    public static List<String> extsPresentation = Arrays.asList(
+    private static List<String> extsPresentation = Arrays.asList(
             ".pps", ".ppsx", ".ppsm",
             ".ppt", ".pptx", ".pptm",
             ".pot", ".potx", ".potm",
