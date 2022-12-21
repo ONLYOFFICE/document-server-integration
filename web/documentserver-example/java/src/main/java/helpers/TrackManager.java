@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class TrackManager {
-    private static final String DocumentJwtHeader = ConfigManager.getProperty("files.docservice.header");
+    private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
     // read request body
     public static JSONObject readBody(HttpServletRequest request, PrintWriter writer) throws Exception {
@@ -73,7 +73,7 @@ public class TrackManager {
             String token = (String) body.get("token");  // get the document token
 
             if (token == null) {  // if JSON web token is not received
-                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);  // get it from the Authorization header
+                String header = (String) request.getHeader(DOCUMENT_JWT_HEADER == null || DOCUMENT_JWT_HEADER.isEmpty() ? "Authorization" : DOCUMENT_JWT_HEADER);  // get it from the Authorization header
                 if (header != null && !header.isEmpty()) {
                     token = header.startsWith("Bearer ") ? header.substring(7) : header;  // and save it without Authorization prefix
                 }
@@ -314,7 +314,7 @@ public class TrackManager {
             headerToken = DocumentManager.createToken(payloadMap);  // encode a payload object into a header token
 
             // add a header Authorization with a header token and Authorization prefix in it
-            connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("") ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
 
             String token = DocumentManager.createToken(params);  // encode a payload object into a body token
             params.put("token", token);

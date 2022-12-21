@@ -36,8 +36,8 @@ import org.json.simple.parser.ParseException;
 
 public class ServiceConverter {
     private static int convertTimeout = 120000;
-    private static final String DocumentConverterUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
-    private static final String DocumentJwtHeader = ConfigManager.getProperty("files.docservice.header");
+    private static final String DOCUMENT_CONVERTER_URL = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
+    private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
     public static class ConvertBody {
         public String region;
@@ -117,7 +117,7 @@ public class ServiceConverter {
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
 
         // specify request parameters
-        URL url = new URL(DocumentConverterUrl);
+        URL url = new URL(DOCUMENT_CONVERTER_URL);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
@@ -128,7 +128,7 @@ public class ServiceConverter {
 
         // write header token to the request
         if (DocumentManager.tokenEnabled()) {
-            connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("") ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
         }
 
         connection.connect();
