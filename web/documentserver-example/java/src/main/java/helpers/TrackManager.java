@@ -37,8 +37,10 @@ import java.util.Scanner;
 import static utils.Constants.FILE_SAVE_TIMEOUT;
 import static utils.Constants.KILOBYTE_SIZE;
 
-public class TrackManager {
+public final class TrackManager {
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
+
+    private TrackManager() { }
 
     // read request body
     public static JSONObject readBody(final HttpServletRequest request, final PrintWriter writer) throws Exception {

@@ -43,8 +43,10 @@ import org.primeframework.jwt.Verifier;
 import static utils.Constants.KILOBYTE_SIZE;
 import static utils.Constants.MAX_FILE_SIZE;
 
-public class DocumentManager {
+public final class DocumentManager {
     private static HttpServletRequest request;
+
+    private DocumentManager() { }
 
     public static void init(final HttpServletRequest req, final HttpServletResponse resp) {
         request = req;

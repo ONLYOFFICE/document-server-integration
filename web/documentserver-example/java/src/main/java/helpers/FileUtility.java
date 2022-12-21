@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileUtility {
+public final class FileUtility {
+
+    private FileUtility() { }
 
     // get file type
     public static FileType getFileType(final String fileName) {

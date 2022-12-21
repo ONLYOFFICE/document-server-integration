@@ -42,10 +42,12 @@ import static utils.Constants.FULL_LOADING_IN_PERCENT;
 import static utils.Constants.MAX_KEY_LENGTH;
 
 
-public class ServiceConverter {
+public final class ServiceConverter {
     private static int convertTimeout;
     private static final String DOCUMENT_CONVERTER_URL = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
+
+    private ServiceConverter() { }
 
     public static class ConvertBody {
         private String region;

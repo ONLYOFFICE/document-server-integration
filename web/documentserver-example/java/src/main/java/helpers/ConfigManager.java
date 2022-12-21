@@ -21,8 +21,10 @@ package helpers;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ConfigManager {
+public final class ConfigManager {
     private static Properties properties;
+
+    private ConfigManager() { }
 
     static {
         init();

@@ -22,7 +22,7 @@ import entities.*;
 
 import java.util.*;
 
-public class Users {
+public final class Users {
 
     private static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
@@ -83,6 +83,8 @@ public class Users {
                 "", null, new CommentGroups(), new ArrayList<String>(),
                 null, new ArrayList<String>(), descriptionUserZero, false));
     }};
+
+    private Users() { }
 
     // get a user by id specified
     public static User getUser(final String id) {
