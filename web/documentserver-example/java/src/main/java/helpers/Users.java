@@ -42,7 +42,8 @@ public final class Users {
     private static List<String> descriptionUserSecond = new ArrayList<String>() {{
         add("Belongs to Group2");
         add("Can review only his own changes or changes made by users with no group");
-        add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
+        add("Can view comments, edit his own comments and comments left by users with no group."
+                + " Can remove his own comments only");
         add("This file is marked as favorite");
         add("Can create new files from the editor");
         add("Can see the information about users from Group2 and users who don’t belong to any group");
@@ -79,11 +80,14 @@ public final class Users {
                 "", null, new CommentGroups(), null,
                 null, new ArrayList<String>(), descriptionUserFirst, true));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
-                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
+                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
+                Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false));
         add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
-                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()), Arrays.asList("group-2"),
-                false, Arrays.asList("copy", "download", "print"), descriptionUserThird, false));
+                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
+                Arrays.asList("group-2"), new ArrayList<String>()), Arrays.asList("group-2"),
+                false, Arrays.asList("copy", "download", "print"),
+                descriptionUserThird, false));
         add(new User("uid-0", null, null,
                 "", null, new CommentGroups(), new ArrayList<String>(),
                 null, new ArrayList<String>(), descriptionUserZero, false));

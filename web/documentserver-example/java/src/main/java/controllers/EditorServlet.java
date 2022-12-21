@@ -42,7 +42,8 @@ import java.util.Map;
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
 public class EditorServlet extends HttpServlet {
     // process request
-    protected void processRequest(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(final HttpServletRequest request,
+                                  final HttpServletResponse response) throws ServletException, IOException {
         DocumentManager.init(request, response);
 
         String fileName = FileUtility.getFileName(request.getParameter("fileName"));
@@ -60,7 +61,9 @@ public class EditorServlet extends HttpServlet {
             try {
                 // create demo document
                 fileName = DocumentManager.createDemo(fileExt, sampleData, user);
-                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
+
+                // redirect the request
+                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
                 return;
             } catch (Exception ex) {
                 response.getWriter().write("Error: " + ex.getMessage());
@@ -68,7 +71,8 @@ public class EditorServlet extends HttpServlet {
         }
 
         // create file model (get all the necessary parameters from cookies)
-        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"), user, isEnableDirectUrl);
+        FileModel file = new FileModel(fileName, cm.getCookie("ulang"), request.getParameter("actionLink"),
+                user, isEnableDirectUrl);
         // change type parameter if needed
         file.changeType(request.getParameter("mode"), request.getParameter("type"), user, fileName);
 
@@ -83,17 +87,21 @@ public class EditorServlet extends HttpServlet {
         // a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
+        dataCompareFile.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?type=assets&"
+                + "name=sample.docx");
         if (isEnableDirectUrl) {
-            dataCompareFile.put("directUrl", DocumentManager.getServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
+            dataCompareFile.put("directUrl", DocumentManager.getServerUrl(false) + "/IndexServlet?"
+                    + "type=assets&name=sample.docx");
         }
 
         // recipients data for mail merging
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?type=csv");
+        dataMailMergeRecipients.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?"
+                + "type=csv");
         if (isEnableDirectUrl) {
-            dataMailMergeRecipients.put("directUrl", DocumentManager.getServerUrl(false) + "/IndexServlet?type=csv");
+            dataMailMergeRecipients.put("directUrl", DocumentManager.getServerUrl(false)
+                    + "/IndexServlet?type=csv");
         }
 
         // users data for mentions
@@ -102,30 +110,41 @@ public class EditorServlet extends HttpServlet {
         // check if the document token is enabled
         if (DocumentManager.tokenEnabled()) {
             file.buildToken();  // generate document token
-            dataInsertImage.put("token", DocumentManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
-            dataCompareFile.put("token", DocumentManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
-            dataMailMergeRecipients.put("token", DocumentManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
+
+            // create token from the dataInsertImage object
+            dataInsertImage.put("token", DocumentManager.createToken(dataInsertImage));
+
+            // create token from the dataCompareFile object
+            dataCompareFile.put("token", DocumentManager.createToken(dataCompareFile));
+
+            // create token from the dataMailMergeRecipients object
+            dataMailMergeRecipients.put("token", DocumentManager.createToken(dataMailMergeRecipients));
         }
 
         Gson gson = new Gson();
         request.setAttribute("file", file);
-        request.setAttribute("docserviceApiUrl", ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.api"));
-        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length() - 1));
+        request.setAttribute("docserviceApiUrl", ConfigManager.getProperty("files.docservice.url.site")
+                + ConfigManager.getProperty("files.docservice.url.api"));
+        request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage)
+                .substring(1, gson.toJson(dataInsertImage).length() - 1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
-        request.setAttribute("usersForMentions", !user.getId().equals("uid-0") ? gson.toJson(usersForMentions) : null);
+        request.setAttribute("usersForMentions", !user.getId()
+                .equals("uid-0") ? gson.toJson(usersForMentions) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 
     // create get request
     @Override
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
+            IOException {
         processRequest(request, response);
     }
 
     // create post request
     @Override
-    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest request,
+                          final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

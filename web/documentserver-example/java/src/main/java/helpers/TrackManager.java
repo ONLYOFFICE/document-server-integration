@@ -84,10 +84,13 @@ public final class TrackManager {
             String token = (String) body.get("token");  // get the document token
 
             if (token == null) {  // if JSON web token is not received
-                String header = (String) request.getHeader(DOCUMENT_JWT_HEADER == null || DOCUMENT_JWT_HEADER.isEmpty() ? "Authorization" : DOCUMENT_JWT_HEADER);  // get it from the Authorization header
+                String header = (String) request.getHeader(DOCUMENT_JWT_HEADER == null || DOCUMENT_JWT_HEADER.isEmpty()
+                        ? "Authorization" : DOCUMENT_JWT_HEADER);  // get it from the Authorization header
                 if (header != null && !header.isEmpty()) {
                     String bearerPrefix = "Bearer ";
-                    token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;  // and save it without Authorization prefix
+
+                    // and save it without Authorization prefix
+                    token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
                 }
             }
 
@@ -128,7 +131,9 @@ public final class TrackManager {
     }
 
     // file saving process
-    public static void processSave(final JSONObject body, final String fileName, final String userAddress) throws Exception {
+    public static void processSave(final JSONObject body,
+                                   final String fileName,
+                                   final String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
@@ -148,14 +153,22 @@ public final class TrackManager {
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = ServiceConverter.getConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
+                String newFileUri = ServiceConverter
+                        .getConvertedUri(downloadUri, downloadExt, curExt,
+                                ServiceConverter.generateRevisionId(downloadUri),
+                                null, false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
-                    newFileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + downloadExt, userAddress);  // get the correct file name if it already exists
+
+                    // get the correct file name if it already exists
+                    newFileName = DocumentManager
+                            .getCorrectName(FileUtility
+                                    .getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e) {
-                newFileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                newFileName = DocumentManager.getCorrectName(FileUtility
+                        .getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
         }
 
@@ -165,7 +178,8 @@ public final class TrackManager {
             histDir.mkdirs();  // if the path doesn't exist, create it
         }
 
-        String versionDir = DocumentManager.versionDir(histDir.getAbsolutePath(), DocumentManager.getFileVersion(histDir.getAbsolutePath()));  // get the path to the file version
+        String versionDir = DocumentManager.versionDir(histDir.getAbsolutePath(), DocumentManager
+                .getFileVersion(histDir.getAbsolutePath()));  // get the path to the file version
         File ver = new File(versionDir);
         File lastVersion = new File(DocumentManager.storagePath(fileName, userAddress));
         File toSave = new File(storagePath);
@@ -174,26 +188,33 @@ public final class TrackManager {
             ver.mkdirs();
         }
 
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));  // get the path to the previous file version and rename the last file version with it
+        // get the path to the previous file version and rename the last file version with it
+        lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));
 
         downloadToFile(downloadUri, toSave);  // save file to the storage path
-        downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
+
+        // save file changes to the diff.zip archive
+        downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));
 
         String history = (String) body.get("changeshistory");
         if (history == null && body.containsKey("history")) {
             history = ((JSONObject) body.get("history")).toJSONString();
         }
         if (history != null && !history.isEmpty()) {
-            FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));  // write the history changes to the changes.json file
+
+            // write the history changes to the changes.json file
+            FileWriter fw = new FileWriter(new File(versionDir + File.separator + "changes.json"));
             fw.write(history);
             fw.close();
         }
 
-        FileWriter fw = new FileWriter(new File(versionDir + File.separator + "key.txt"));  // write the key value to the key.txt file
+        // write the key value to the key.txt file
+        FileWriter fw = new FileWriter(new File(versionDir + File.separator + "key.txt"));
         fw.write(key);
         fw.close();
 
-        String forcesavePath = DocumentManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
+        // get the path to the forcesaved file version
+        String forcesavePath = DocumentManager.forcesavePath(newFileName, userAddress, false);
         if (!forcesavePath.equals("")) {  // if the forcesaved file version exists
             File forceSaveFile = new File(forcesavePath);
             forceSaveFile.delete();  // remove it
@@ -201,7 +222,9 @@ public final class TrackManager {
     }
 
     // file force saving process
-    public static void processForceSave(final JSONObject body, final String fileNameParam, final String userAddress) throws Exception {
+    public static void processForceSave(final JSONObject body,
+                                        final String fileNameParam,
+                                        final String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
@@ -221,7 +244,10 @@ public final class TrackManager {
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = ServiceConverter.getConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get url to a new file
+                String newFileUri = ServiceConverter
+                        .getConvertedUri(downloadUri, downloadExt, curExt,
+                                ServiceConverter.generateRevisionId(downloadUri), null,
+                                false, null);  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {
@@ -238,14 +264,17 @@ public final class TrackManager {
         if (isSubmitForm) {  // if the form is submitted
             // new file
             if (newFileName) {
-                fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
+                fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName)
+                        + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
             } else {
-                fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
+                fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName)
+                        + "-form" + curExt, userAddress);
             }
             forcesavePath = DocumentManager.storagePath(fileName, userAddress);
         } else {
             if (newFileName) {
-                fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                fileName = DocumentManager.getCorrectName(FileUtility
+                        .getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
             }
 
             // create forcesave path if it doesn't exist
@@ -262,7 +291,9 @@ public final class TrackManager {
             JSONArray actions = (JSONArray) body.get("actions");
             JSONObject action = (JSONObject) actions.get(0);
             String user = (String) action.get("userid");  // get the user id
-            DocumentManager.createMeta(fileName, user, "Filling Form", userAddress);  // create meta data for forcesaved file
+
+            // create meta data for forcesaved file
+            DocumentManager.createMeta(fileName, user, "Filling Form", userAddress);
         }
     }
 
@@ -307,7 +338,8 @@ public final class TrackManager {
 
     // create a command request
     public static void commandRequest(final String method, final String key, final HashMap meta) throws Exception {
-        String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.command");
+        String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager
+                .getProperty("files.docservice.url.command");
 
         URL url = new URL(documentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -327,7 +359,8 @@ public final class TrackManager {
             headerToken = DocumentManager.createToken(payloadMap);  // encode a payload object into a header token
 
             // add a header Authorization with a header token and Authorization prefix in it
-            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("") ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
+            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("")
+                    ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
 
             String token = DocumentManager.createToken(params);  // encode a payload object into a body token
             params.put("token", token);
@@ -339,7 +372,9 @@ public final class TrackManager {
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
 
         connection.setRequestMethod("POST");  // set the request method
-        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
+
+        // set the Content-Type header
+        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         connection.setDoOutput(true); // set the doOutput field to true
 
         connection.connect();

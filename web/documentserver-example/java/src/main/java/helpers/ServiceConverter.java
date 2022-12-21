@@ -44,7 +44,8 @@ import static utils.Constants.MAX_KEY_LENGTH;
 
 public final class ServiceConverter {
     private static int convertTimeout;
-    private static final String DOCUMENT_CONVERTER_URL = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
+    private static final String DOCUMENT_CONVERTER_URL = ConfigManager
+            .getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
     private ServiceConverter() { }
@@ -141,13 +142,15 @@ public final class ServiceConverter {
                                          final String filePass, final Boolean isAsync,
                                          final String lang) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
-        String fromExt = fromExtension == null || fromExtension.isEmpty() ? FileUtility.getFileExtension(documentUri) : fromExtension;
+        String fromExt = fromExtension == null || fromExtension.isEmpty()
+                ? FileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
         String title = FileUtility.getFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
-        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
+        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty()
+                ? documentUri : documentRevisionId;
 
         documentRevId = generateRevisionId(documentRevId);  // create document token
 
@@ -204,7 +207,8 @@ public final class ServiceConverter {
 
         // write header token to the request
         if (DocumentManager.tokenEnabled()) {
-            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("") ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
+            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("")
+                    ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
         }
 
         connection.connect();
@@ -234,8 +238,10 @@ public final class ServiceConverter {
 
     // generate document key
     public static String generateRevisionId(final String expectedKey) {
-        // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
-        String formatKey = expectedKey.length() > MAX_KEY_LENGTH ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        /* if the expected key length is greater than 20 then
+         he expected key is hashed and a fixed length value is stored in the string format */
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH
+                ? Integer.toString(expectedKey.hashCode()) : expectedKey;
         String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
         return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
@@ -268,7 +274,8 @@ public final class ServiceConverter {
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value
+            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT
+                    ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value
         }
 
         return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
@@ -278,7 +285,9 @@ public final class ServiceConverter {
     public static String convertStreamToString(final InputStream stream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
+
+        // create an object to read incoming streams
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();  // get incoming streams by lines
 
         while (line != null) {

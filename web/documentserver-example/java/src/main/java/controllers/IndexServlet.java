@@ -67,7 +67,8 @@ import static utils.Constants.KILOBYTE_SIZE;
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet {
-    protected void processRequest(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(final HttpServletRequest request,
+                                  final HttpServletResponse response) throws ServletException, IOException {
         // get the type parameter from the request
         String action = request.getParameter("type");
 
@@ -78,7 +79,9 @@ public class IndexServlet extends HttpServlet {
         }
 
         DocumentManager.init(request, response);
-        PrintWriter writer = response.getWriter();  // create a variable to display information about the application and error messages
+
+        // create a variable to display information about the application and error messages
+        PrintWriter writer = response.getWriter();
 
         // define functions for each type of operation
         switch (action.toLowerCase()) {
@@ -120,7 +123,9 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
-    private static void saveAs(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void saveAs(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
         response.setContentType("text/plain");
         try {
             Scanner scanner = new Scanner(request.getInputStream());
@@ -160,7 +165,9 @@ public class IndexServlet extends HttpServlet {
 
 
     // upload a file
-    private static void upload(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void upload(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
         response.setContentType("text/plain");
 
         try {
@@ -170,26 +177,41 @@ public class IndexServlet extends HttpServlet {
             String fileName = "";
             for (String content : httpPostedFile.getHeader("content-disposition").split(";")) {
                 if (content.trim().startsWith("filename")) {
-                    fileName = content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
+                    fileName = content
+                            .substring(content.indexOf('=') + 1)
+                            .trim()
+                            .replace("\"", "");
                 }
             }
 
             long curSize = httpPostedFile.getSize();  // get file size
-            if (DocumentManager.getMaxFileSize() < curSize || curSize <= 0) {  // check if the file size exceeds the maximum file size or is less than 0
-                writer.write("{ \"error\": \"File size is incorrect\"}");  // if so, write the error status and message to the response
+
+            // check if the file size exceeds the maximum file size or is less than 0
+            if (DocumentManager.getMaxFileSize() < curSize || curSize <= 0) {
+
+                // if so, write the error status and message to the response
+                writer.write("{ \"error\": \"File size is incorrect\"}");
                 return;
             }
 
             String curExt = FileUtility.getFileExtension(fileName);  // get current file extension
-            if (!DocumentManager.getFileExts().contains(curExt)) {  // check if this extension is supported by the editor
-                writer.write("{ \"error\": \"File type is not supported\"}");  // if not, write the error status and message to the response
+
+            // check if this extension is supported by the editor
+            if (!DocumentManager.getFileExts().contains(curExt)) {
+
+                // if not, write the error status and message to the response
+                writer.write("{ \"error\": \"File type is not supported\"}");
                 return;
             }
 
-            InputStream fileStream = httpPostedFile.getInputStream();  // get input file stream
+            // get input file stream
+            InputStream fileStream = httpPostedFile.getInputStream();
 
-            fileName = DocumentManager.getCorrectName(fileName, null);  // get a file name with an index if the file with such a name already exists
-            String fileStoragePath = DocumentManager.storagePath(fileName, null);  // get the storage path of the file
+            // get a file name with an index if the file with such a name already exists
+            fileName = DocumentManager.getCorrectName(fileName, null);
+
+            // get the storage path of the file
+            String fileStoragePath = DocumentManager.storagePath(fileName, null);
             String documentType = FileUtility.getFileType(fileName).toString().toLowerCase();
 
             File file = new File(fileStoragePath);
@@ -219,7 +241,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // convert a file
-    private static void convert(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) throws UnsupportedEncodingException {
+    private static void convert(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) throws UnsupportedEncodingException {
         CookieManager cm = new CookieManager(request);
         response.setContentType("text/plain");
 
@@ -246,15 +270,18 @@ public class IndexServlet extends HttpServlet {
                 String key = ServiceConverter.generateRevisionId(fileUri);
 
                 // get the url to the converted file
-                String newFileUri = ServiceConverter.getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                String newFileUri = ServiceConverter
+                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
 
                 if (newFileUri.isEmpty()) {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;
                 }
 
-                // get a file name of an internal file extension with an index if the file with such a name already exists
-                String correctName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName) + internalFileExt, null);
+                /* get a file name of an internal file extension with an index if the file
+                 with such a name already exists */
+                String correctName = DocumentManager.getCorrectName(FileUtility
+                                .getFileNameWithoutExtension(fileName) + internalFileExt, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -298,7 +325,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // track file changes
-    private static void track(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void track(final HttpServletRequest request,
+                              final HttpServletResponse response,
+                              final PrintWriter writer) {
         JSONObject body = null;
 
         // read request body
@@ -322,7 +351,9 @@ public class IndexServlet extends HttpServlet {
                 if (users.indexOf(user) == -1) {
                     String key = (String) body.get("key");
                     try {
-                        TrackManager.commandRequest("forcesave", key, null);  // create a command request with the forcesave method
+
+                        // create a command request with the forcesave method
+                        TrackManager.commandRequest("forcesave", key, null);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -333,7 +364,8 @@ public class IndexServlet extends HttpServlet {
         String userAddress = request.getParameter("userAddress");
         String fileName = FileUtility.getFileName(request.getParameter("fileName"));
 
-        if (status == StatusType.MUST_SAVE.getCode() || status == StatusType.CORRUPTED.getCode()) { // MustSave, Corrupted
+        // MustSave, Corrupted
+        if (status == StatusType.MUST_SAVE.getCode() || status == StatusType.CORRUPTED.getCode()) {
             try {
                 TrackManager.processSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -343,7 +375,8 @@ public class IndexServlet extends HttpServlet {
 
         }
 
-        if (status == StatusType.MUST_FORCE_SAVE.getCode() || status == StatusType.CORRUPTED_FORCE_SAVE.getCode()) { // MustForceSave, CorruptedForceSave
+        // MustForceSave, CorruptedForceSave
+        if (status == StatusType.MUST_FORCE_SAVE.getCode() || status == StatusType.CORRUPTED_FORCE_SAVE.getCode()) {
             try {
                 TrackManager.processForceSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -356,7 +389,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // remove a file
-    private static void remove(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void remove(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
         try {
             String fileName = FileUtility.getFileName(request.getParameter("filename"));
             String path = DocumentManager.storagePath(fileName, null);
@@ -376,7 +411,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // get files information
-    private static void files(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void files(final HttpServletRequest request,
+                              final HttpServletResponse response,
+                              final PrintWriter writer) {
         ArrayList<Map<String, Object>> files = null;
 
         try {
@@ -401,7 +438,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a csv file
-    private static void csv(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void csv(final HttpServletRequest request,
+                            final HttpServletResponse response,
+                            final PrintWriter writer) {
         String fileName = "assets/sample/csv.csv";
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
@@ -414,7 +453,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // get sample files from the assests
-    private static void assets(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void assets(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
         String fileName = "assets/sample/" + FileUtility.getFileName(request.getParameter("name"));
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
@@ -427,13 +468,16 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a file from history
-    private static void downloadHistory(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void downloadHistory(final HttpServletRequest request,
+                                        final HttpServletResponse response,
+                                        final PrintWriter writer) {
         try {
             if (DocumentManager.tokenEnabled()) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
-                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty()
+                        ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String bearerPrefix = "Bearer ";
                     String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
@@ -465,7 +509,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a file
-    private static void download(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void download(final HttpServletRequest request,
+                                 final HttpServletResponse response,
+                                 final PrintWriter writer) {
         try {
             String fileName = FileUtility.getFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
@@ -475,7 +521,8 @@ public class IndexServlet extends HttpServlet {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
-                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty()
+                        ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String bearerPrefix = "Bearer ";
                     String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
@@ -489,7 +536,8 @@ public class IndexServlet extends HttpServlet {
                 }
             }
 
-            String filePath = DocumentManager.forcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
+            // get the path to the force saved document version
+            String filePath = DocumentManager.forcesavePath(fileName, userAddress, false);
             if (filePath.equals("")) {
                 filePath = DocumentManager.storagePath(fileName, userAddress);  // or to the original document
             }
@@ -547,7 +595,9 @@ public class IndexServlet extends HttpServlet {
     }
 
     // rename a file
-    private static void rename(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
+    private static void rename(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
         try {
             Scanner scanner = new Scanner(request.getInputStream());
             scanner.useDelimiter("\\A");
@@ -585,13 +635,15 @@ public class IndexServlet extends HttpServlet {
 
     // process get request
     @Override
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest request,
+                         final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     // process post request
     @Override
-    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest request,
+                          final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

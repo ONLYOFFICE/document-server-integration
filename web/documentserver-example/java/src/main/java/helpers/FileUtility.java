@@ -112,7 +112,8 @@ public final class FileUtility {
     // get url parameters
     public static Map<String, String> getUrlParams(final String url) {
         try {
-            String query = new URL(url).getQuery();  // take all the parameters which are placed after ? sign in the file url
+            // take all the parameters which are placed after ? sign in the file url
+            String query = new URL(url).getQuery();
             String[] params = query.split("&");  // parameters are separated by & sign
             Map<String, String> map = new HashMap<>();
             for (String param : params) {  // write parameters and their values to the map dictionary

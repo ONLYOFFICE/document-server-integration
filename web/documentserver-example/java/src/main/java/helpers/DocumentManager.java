@@ -144,7 +144,8 @@ public final class DocumentManager {
                 throw new SecurityException("The path to the file is specified instead of the folder");
             }
         }
-        String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
+        String directory = !f.isAbsolute() ? serverPath + storagePath
+                + File.separator + hostAddress + File.separator : storagePath + File.separator;
 
         File file = new File(directory);
 
@@ -301,11 +302,19 @@ public final class DocumentManager {
 
     // create demo document
     public static String createDemo(final String fileExt, final Boolean sample, final User user) throws Exception {
-        String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;  // get the path to the sample document
-        String fileName = getCorrectName(demoName, null);  // get a file name with an index if the file with such a name already exists
+        // create sample or new template file with the necessary extension
+        String demoName = (sample ? "sample." : "new.") + fileExt;
 
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);  // get the input file stream
+        // get the path to the sample document
+        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;
+
+        // get a file name with an index if the file with such a name already exists
+        String fileName = getCorrectName(demoName, null);
+
+        // get the input file stream
+        InputStream stream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(demoPath + demoName);
 
         createFile(Paths.get(storagePath(fileName, null)), stream);
 
@@ -343,7 +352,9 @@ public final class DocumentManager {
             File f = new File(storagePath);
             String hostAddress = curUserHostAddress(null);
 
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/"
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    .replace("+", "%20");
             if (f.isAbsolute() && f.isFile()) {
                 filePath = getDownloadUrl(fileName, true);
                 if (!Files.isWritable(f.toPath())) {
@@ -365,8 +376,11 @@ public final class DocumentManager {
         for (File file : getStoredFiles(null)) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", getFileVersion(file.getName(), null));
-            map.put("id", ServiceConverter.generateRevisionId(curUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(storagePath(file.getName(), null)).lastModified())));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE_SIZE)))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("id", ServiceConverter
+                    .generateRevisionId(curUserHostAddress(null) + "/" + file.getName() + "/"
+                            + Long.toString(new File(storagePath(file.getName(), null)).lastModified())));
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE_SIZE))))
+                    .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
             map.put("updated", String.valueOf(new Date(file.lastModified())));
@@ -396,7 +410,9 @@ public final class DocumentManager {
         String storagePath = ConfigManager.getProperty("storage-folder");
         String hostAddress = curUserHostAddress(null);
 
-        String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + path.replace(File.separator, "/").substring(filesRootPath(null).length()).replace(" ", "%20");
+        String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/"
+                + path.replace(File.separator, "/").substring(filesRootPath(null).length())
+                .replace(" ", "%20");
 
         return filePath;
     }
@@ -407,7 +423,8 @@ public final class DocumentManager {
         if (forDocumentServer && !ConfigManager.getProperty("files.docservice.url.example").equals("")) {
             return ConfigManager.getProperty("files.docservice.url.example");
         } else {
-            return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                    + request.getContextPath();
         }
     }
 
@@ -416,7 +433,10 @@ public final class DocumentManager {
         String serverPath = getServerUrl(true);
         String hostAddress = curUserHostAddress(null);
         try {
-            String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String query = "?type=track&fileName="
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
         } catch (UnsupportedEncodingException e) {
@@ -438,8 +458,10 @@ public final class DocumentManager {
         String serverPath = getServerUrl(forDocumentServer);
         String hostAddress = curUserHostAddress(null);
         try {
-            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=download&fileName=" + URLEncoder
+                    .encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
 
             return serverPath + "/IndexServlet" + query;
         } catch (UnsupportedEncodingException e) {
@@ -453,9 +475,12 @@ public final class DocumentManager {
         String serverPath = getServerUrl(forDocumentServer);
         String hostAddress = curUserHostAddress(null);
         try {
-            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
-            query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=downloadhistory&fileName=" + URLEncoder
+                    .encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
+            query = query + "&ver=" + version + "&file=" + URLEncoder.
+                    encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
         } catch (UnsupportedEncodingException e) {
@@ -526,7 +551,9 @@ public final class DocumentManager {
         try {
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(getTokenSecret());
-            return JWT.getDecoder().decode(token, verifier);  // verify and decode the encoded string JWT to a rich object
+
+            // verify and decode the encoded string JWT to a rich object
+            return JWT.getDecoder().decode(token, verifier);
         } catch (Exception exception) {
             return null;
         }

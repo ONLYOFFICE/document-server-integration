@@ -47,9 +47,14 @@ public class FileModel {
     private String token;
 
     // create file model
-    public FileModel(final String fileNameParam, final String lang, final String actionData, final User user, final Boolean isEnableDirectUrl) {
+    public FileModel(final String fileNameParam,
+                     final String lang,
+                     final String actionData,
+                     final User user,
+                     final Boolean isEnableDirectUrl) {
 
-        String fileName = fileNameParam == null ? "" : fileNameParam.trim();  // remove extra spaces in the file name if not null
+        // remove extra spaces in the file name if not null
+        String fileName = fileNameParam == null ? "" : fileNameParam.trim();
 
         // get file type from the file name (word, cell or slide)
         documentType = FileUtility.getFileType(fileName).toString().toLowerCase();
@@ -58,12 +63,18 @@ public class FileModel {
         document = new Document();
         document.setTitle(fileName);
         document.setUrl(DocumentManager.getDownloadUrl(fileName, true)); // get file url
-        document.setDirectUrl(isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "");  // get direct url
-        document.setFileType(FileUtility.getFileExtension(fileName).replace(".", ""));  // get file extension from the file name
+
+        // get direct url
+        document.setDirectUrl(isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "");
+
+        // get file extension from the file name
+        document.setFileType(FileUtility.getFileExtension(fileName).replace(".", ""));
         // generate document key
         document.setKey(ServiceConverter
                 .generateRevisionId(DocumentManager
-                        .curUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.storagePath(fileName, null)).lastModified())));
+                        .curUserHostAddress(null) + "/" + fileName + "/"
+                        + Long.toString(new File(DocumentManager.storagePath(fileName, null))
+                        .lastModified())));
         document.setInfo(new Info());
         document.getInfo().setFavorite(user.getFavorite());
 
@@ -106,7 +117,8 @@ public class FileModel {
         editorConfig.getUser().setGroup(user.getGroup());
 
         // write the absolute URL to the file location
-        editorConfig.getCustomization().getGoback().setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
+        editorConfig.getCustomization().getGoback()
+                .setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
 
         changeType(mode, type, user, fileName);
     }
@@ -126,7 +138,8 @@ public class FileModel {
         // check if the Submit form button is displayed or not
         editorConfig.getCustomization().setSubmitForm(false);
 
-        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.getFillExts().contains(fileExt)) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
+                && DocumentManager.getFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
@@ -161,9 +174,13 @@ public class FileModel {
     // get document history
     public String[] getHistory() {
         JSONParser parser = new JSONParser();
-        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.getTitle(), null));  // get history directory
+
+        // get history directory
+        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.getTitle(), null));
         if (DocumentManager.getFileVersion(histDir) > 0) {
-            Integer curVer = DocumentManager.getFileVersion(histDir);  // get current file version if it is greater than 0
+
+            // get current file version if it is greater than 0
+            Integer curVer = DocumentManager.getFileVersion(histDir);
 
             List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<String, Object>();
@@ -177,13 +194,15 @@ public class FileModel {
                     String key = null;
 
                     // get document key
-                    key = i == curVer ? document.getKey() : readFileToEnd(new File(verDir + File.separator + "key.txt"));
+                    key = i == curVer
+                            ? document.getKey() : readFileToEnd(new File(verDir + File.separator + "key.txt"));
 
                     obj.put("key", key);
                     obj.put("version", i);
 
                     if (i == 1) {  // check if the version number is equal to 1
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json")); // get file with meta data
+                        String createdInfo = readFileToEnd(new File(histDir + File.separator
+                                + "createdInfo.json")); // get file with meta data
                         JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
                         // write meta information to the object (user information and creation date)
@@ -196,15 +215,20 @@ public class FileModel {
 
                     dataObj.put("fileType", FileUtility.getFileExtension(document.getTitle()).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.getUrl() : DocumentManager.getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility.getFileExtension(document.getTitle()), true));
+                    dataObj.put("url", i == curVer ? document.getUrl() : DocumentManager
+                            .getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility
+                                    .getFileExtension(document.getTitle()), true));
                     if (!document.getDirectUrl().equals("")) {
-                        dataObj.put("directUrl", i == curVer ? document.getUrl() : DocumentManager.getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility.getFileExtension(document.getTitle()), false));
+                        dataObj.put("directUrl", i == curVer ? document.getUrl() : DocumentManager
+                                .getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility
+                                        .getFileExtension(document.getTitle()), false));
                     }
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
                         // if so, get the path to the changes.json file
-                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.versionDir(histDir, i - 1) + File.separator + "changes.json")));
+                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager
+                                .versionDir(histDir, i - 1) + File.separator + "changes.json")));
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         // write information about changes to the object
@@ -213,15 +237,22 @@ public class FileModel {
                         obj.put("created", !change.isEmpty() ? change.get("created") : null);
                         obj.put("user", !change.isEmpty() ? change.get("user") : null);
 
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
+                        // get the history data from the previous file version
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
                         prevInfo.put("fileType", prev.get("fileType"));
-                        prevInfo.put("key", prev.get("key"));  // write key and url information about previous file version
+
+                        // write key and url information about previous file version
+                        prevInfo.put("key", prev.get("key"));
                         prevInfo.put("url", prev.get("url"));
-                        dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
+
+                        // write information about previous file version to the data object
+                        dataObj.put("previous", prevInfo);
                         // write the path to the diff.zip archive with differences in this file version
                         Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager.getDownloadHistoryUrl(document.getTitle(), verdiff, "diff.zip", true);
+                        String changesUrl = DocumentManager
+                                .getDownloadHistoryUrl(document.getTitle(), verdiff,
+                                        "diff.zip", true);
                         dataObj.put("changesUrl", changesUrl);
                     }
 
@@ -344,12 +375,15 @@ public class FileModel {
 
         // defines what can be done with a document
         public Permissions(final String modeParam, final String typeParam, final Boolean canEdit, final User user) {
-            comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
+            comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded")
+                    && !modeParam.equals("blockcontent");
             copy = !user.getDeniedPermissions().contains("сopy");
             download = !user.getDeniedPermissions().contains("download");
-            edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter") || modeParam.equals("blockcontent"));
+            edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
+                    || modeParam.equals("blockcontent"));
             print = !user.getDeniedPermissions().contains("print");
-            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
+            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded")
+                    && !modeParam.equals("blockcontent");
             modifyFilter = !modeParam.equals("filter");
             modifyContentControl = !modeParam.equals("blockcontent");
             review = canEdit && (modeParam.equals("edit") || modeParam.equals("review"));
@@ -401,10 +435,18 @@ public class FileModel {
         // set parameters for the embedded document
         public void initDesktop(final String url) {
             embedded = new Embedded();
-            embedded.setSaveUrl(url);  // the absolute URL that will allow the document to be saved onto the user personal computer
-            embedded.setEmbedUrl(url);  // the absolute URL to the document serving as a source file for the document embedded into the web page
-            embedded.setShareUrl(url);  // the absolute URL that will allow other users to share this document
-            embedded.setToolbarDocked("top");  // the place for the embedded viewer toolbar, can be either top or bottom
+
+            // the absolute URL that will allow the document to be saved onto the user personal computer
+            embedded.setSaveUrl(url);
+
+            // the absolute URL to the document serving as a source file for the document embedded into the web page
+            embedded.setEmbedUrl(url);
+
+            // the absolute URL that will allow other users to share this document
+            embedded.setShareUrl(url);
+
+            // the place for the embedded viewer toolbar, can be either top or bottom
+            embedded.setToolbarDocked("top");
         }
 
         public String getMode() {
