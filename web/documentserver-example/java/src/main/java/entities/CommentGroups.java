@@ -9,9 +9,9 @@ public class CommentGroups {
     public CommentGroups() {
 
     }
-    public CommentGroups(List<String> view, List<String> edit, List<String> remove) {
-        this.view = view;
-        this.edit = edit;
-        this.remove = remove;
+    public CommentGroups(List<String> viewParam, List<String> editParam, List<String> removeParam) {
+        this.view = viewParam;
+        this.edit = editParam;
+        this.remove = removeParam;
     }
 }

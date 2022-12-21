@@ -282,16 +282,16 @@ public class FileModel {
         //public Gson gson = new Gson();
 
         // defines what can be done with a document
-        public Permissions(String mode, String type, Boolean canEdit, User user) {
-            comment = !mode.equals("view") && !mode.equals("fillForms") && !mode.equals("embedded") && !mode.equals("blockcontent");
+        public Permissions(String modeParam, String typeParam, Boolean canEdit, User user) {
+            comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
             copy = !user.deniedPermissions.contains("сopy");
             download = !user.deniedPermissions.contains("download");
-            edit = canEdit && (mode.equals("edit") || mode.equals("view") || mode.equals("filter") || mode.equals("blockcontent"));
+            edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter") || modeParam.equals("blockcontent"));
             print = !user.deniedPermissions.contains("print");
-            fillForms = !mode.equals("view") && !mode.equals("comment") && !mode.equals("embedded") && !mode.equals("blockcontent");
-            modifyFilter = !mode.equals("filter");
-            modifyContentControl = !mode.equals("blockcontent");
-            review = canEdit && (mode.equals("edit") || mode.equals("review"));
+            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
+            modifyFilter = !modeParam.equals("filter");
+            modifyContentControl = !modeParam.equals("blockcontent");
+            review = canEdit && (modeParam.equals("edit") || modeParam.equals("review"));
             chat = !user.id.equals("uid-0");
             reviewGroups = user.reviewGroups;
             commentGroups = user.commentGroups;

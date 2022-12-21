@@ -33,18 +33,18 @@ public class User {
     public Boolean templates;
     public List<String> userInfoGroups;
 
-    public User(String id, String name, String email, String group, List<String> reviewGroups, CommentGroups commentGroups, List<String> userInfoGroups,
-                Boolean favorite, List<String> deniedPermissions, List<String> descriptions, Boolean templates) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.group = group;
-        this.reviewGroups = reviewGroups;
-        this.commentGroups = commentGroups;
-        this.favorite = favorite;
-        this.deniedPermissions = deniedPermissions;
-        this.descriptions = descriptions;
-        this.templates = templates;
-        this.userInfoGroups = userInfoGroups;
+    public User(String idParam, String nameParam, String emailParam, String groupParam, List<String> reviewGroupsParam, CommentGroups commentGroupsParam, List<String> userInfoGroupsParam,
+                Boolean favoriteParam, List<String> deniedPermissionsParam, List<String> descriptionsParam, Boolean templatesParam) {
+        this.id = idParam;
+        this.name = nameParam;
+        this.email = emailParam;
+        this.group = groupParam;
+        this.reviewGroups = reviewGroupsParam;
+        this.commentGroups = commentGroupsParam;
+        this.favorite = favoriteParam;
+        this.deniedPermissions = deniedPermissionsParam;
+        this.descriptions = descriptionsParam;
+        this.templates = templatesParam;
+        this.userInfoGroups = userInfoGroupsParam;
     }
 }
