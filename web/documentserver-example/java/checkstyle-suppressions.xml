@@ -5,4 +5,5 @@
 
 <suppressions>
     <suppress checks="ParameterNumber" files="."/>
+    <suppress checks="DesignForExtension" files="."/>
 </suppressions>
