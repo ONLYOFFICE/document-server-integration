@@ -46,6 +46,9 @@ import org.json.simple.parser.JSONParser;
 import org.primeframework.jwt.Verifier;
 import org.primeframework.jwt.domain.JWT;
 import org.primeframework.jwt.hmac.HMACVerifier;
+import utils.StatusType;
+
+import static utils.Constants.KILOBYTE_SIZE;
 
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
@@ -180,7 +183,7 @@ public class IndexServlet extends HttpServlet {
 
             try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
-                final byte[] bytes = new byte[1024];
+                final byte[] bytes = new byte[KILOBYTE_SIZE];
                 while ((read = fileStream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);  // write bytes to the output stream
                 }
@@ -251,7 +254,7 @@ public class IndexServlet extends HttpServlet {
                 File convertedFile = new File(DocumentManager.storagePath(correctName, null));
                 try (FileOutputStream out = new FileOutputStream(convertedFile)) {
                     int read;
-                    final byte[] bytes = new byte[1024];
+                    final byte[] bytes = new byte[KILOBYTE_SIZE];
                     while ((read = stream.read(bytes)) != -1) {
                         out.write(bytes, 0, read);  // write bytes to the output stream
                     }
@@ -297,7 +300,7 @@ public class IndexServlet extends HttpServlet {
         int status = Math.toIntExact((long) body.get("status"));
         int saved = 0;
 
-        if (status == 1) { // editing
+        if (status == StatusType.EDITING.getCode()) { // editing
             JSONArray actions = (JSONArray) body.get("actions");
             JSONArray users = (JSONArray) body.get("users");
             JSONObject action = (JSONObject) actions.get(0);
@@ -317,7 +320,7 @@ public class IndexServlet extends HttpServlet {
         String userAddress = request.getParameter("userAddress");
         String fileName = FileUtility.getFileName(request.getParameter("fileName"));
 
-        if (status == 2 || status == 3) { // MustSave, Corrupted
+        if (status == StatusType.MUST_SAVE.getCode() || status == StatusType.CORRUPTED.getCode()) { // MustSave, Corrupted
             try {
                 TrackManager.processSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -327,7 +330,7 @@ public class IndexServlet extends HttpServlet {
 
         }
 
-        if (status == 6 || status == 7) { // MustForceSave, CorruptedForceSave
+        if (status == StatusType.MUST_FORCE_SAVE.getCode() || status == StatusType.CORRUPTED_FORCE_SAVE.getCode()) { // MustForceSave, CorruptedForceSave
             try {
                 TrackManager.processForceSave(body, fileName, userAddress);
             } catch (Exception ex) {
@@ -419,16 +422,17 @@ public class IndexServlet extends HttpServlet {
 
                 String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
-                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    String bearerPrefix = "Bearer ";
+                    String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
                     try {
                         Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
                         JWT jwt = JWT.getDecoder().decode(token, verifier);
                     } catch (Exception e) {
-                        response.sendError(403, "JWT validation failed");
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
                         return;
                     }
                 } else {
-                    response.sendError(403, "JWT validation failed");
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
                     return;
                 }
             }
@@ -460,12 +464,13 @@ public class IndexServlet extends HttpServlet {
 
                 String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
-                    String token = header.startsWith("Bearer ") ? header.substring(7) : header;
+                    String bearerPrefix = "Bearer ";
+                    String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
                     try {
                         Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
                         JWT jwt = JWT.getDecoder().decode(token, verifier);
                     } catch (Exception e) {
-                        response.sendError(403, "JWT validation failed");
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
                         return;
                     }
                 }

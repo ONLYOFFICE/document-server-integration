@@ -25,6 +25,7 @@ import org.json.simple.parser.JSONParser;
 import org.primeframework.jwt.domain.JWT;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import static utils.Constants.FILE_SAVE_TIMEOUT;
+import static utils.Constants.KILOBYTE_SIZE;
 
 public class TrackManager {
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
@@ -75,7 +79,8 @@ public class TrackManager {
             if (token == null) {  // if JSON web token is not received
                 String header = (String) request.getHeader(DOCUMENT_JWT_HEADER == null || DOCUMENT_JWT_HEADER.isEmpty() ? "Authorization" : DOCUMENT_JWT_HEADER);  // get it from the Authorization header
                 if (header != null && !header.isEmpty()) {
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;  // and save it without Authorization prefix
+                    String bearerPrefix = "Bearer ";
+                    token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;  // and save it without Authorization prefix
                 }
             }
 
@@ -265,10 +270,10 @@ public class TrackManager {
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(5000);
+        connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
 
         int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
+        if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new RuntimeException("Document editing service returned status: " + statusCode);
         }
@@ -281,7 +286,7 @@ public class TrackManager {
 
         try (FileOutputStream out = new FileOutputStream(file)) {
             int read;
-            final byte[] bytes = new byte[1024];
+            final byte[] bytes = new byte[KILOBYTE_SIZE];
             while ((read = stream.read(bytes)) != -1) {
                 out.write(bytes, 0, read);  // write bytes to the output stream
             }

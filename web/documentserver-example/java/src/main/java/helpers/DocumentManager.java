@@ -40,6 +40,9 @@ import org.json.simple.JSONObject;
 import org.primeframework.jwt.Signer;
 import org.primeframework.jwt.Verifier;
 
+import static utils.Constants.KILOBYTE_SIZE;
+import static utils.Constants.MAX_FILE_SIZE;
+
 public class DocumentManager {
     private static HttpServletRequest request;
 
@@ -57,7 +60,7 @@ public class DocumentManager {
             size = 0;
         }
 
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : MAX_FILE_SIZE;
     }
 
     // get all the supported file extensions
@@ -307,7 +310,7 @@ public class DocumentManager {
             File file = Files.createFile(path).toFile();
             try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
-                final byte[] bytes = new byte[1024];
+                final byte[] bytes = new byte[KILOBYTE_SIZE];
                 while ((read = stream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
@@ -350,7 +353,7 @@ public class DocumentManager {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", getFileVersion(file.getName(), null));
             map.put("id", ServiceConverter.generateRevisionId(curUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(storagePath(file.getName(), null)).lastModified())));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / 1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE_SIZE)))).setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
             map.put("updated", String.valueOf(new Date(file.lastModified())));

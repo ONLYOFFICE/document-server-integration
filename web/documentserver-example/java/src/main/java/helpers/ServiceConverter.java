@@ -32,10 +32,18 @@ import java.nio.charset.StandardCharsets;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import utils.ConvertErrorType;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static utils.Constants.CONVERTATION_ERROR_MESSAGE_TEMPLATE;
+import static utils.Constants.CONVERT_TIMEOUT_MS;
+import static utils.Constants.FULL_LOADING_IN_PERCENT;
+import static utils.Constants.MAX_KEY_LENGTH;
 
 
 public class ServiceConverter {
-    private static int convertTimeout = 120000;
+    private static int convertTimeout;
     private static final String DOCUMENT_CONVERTER_URL = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
@@ -55,9 +63,8 @@ public class ServiceConverter {
         try {
             // get timeout value from the settings.properties
             int timeout = Integer.parseInt(ConfigManager.getProperty("files.docservice.timeout"));
-            if (timeout > 0) {  // if it's greater than 0
-                convertTimeout = timeout;  // assign this value to a convert timeout
-            }
+            // if it's greater than 0 then value to a convert timeout
+            convertTimeout = timeout > 0 ? timeout : CONVERT_TIMEOUT_MS;
         } catch (Exception ex) {
         }
     }
@@ -137,7 +144,7 @@ public class ServiceConverter {
         connection.connect();
 
         int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
+        if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new Exception("Conversion service returned status: " + statusCode);
         }
@@ -162,49 +169,15 @@ public class ServiceConverter {
     // generate document key
     public static String generateRevisionId(final String expectedKey) {
         // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
-        String formatKey = expectedKey.length() > 20 ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH ? Integer.toString(expectedKey.hashCode()) : expectedKey;
         String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
-        return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
+        return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
     }
 
     // create an error message for an error code
     private static void processConvertServiceResponceError(final int errorCode) throws Exception {
-        String errorMessage = "";
-        String errorMessageTemplate = "Error occurred in the ConvertService: ";
-
-        // add the error message to the error message template depending on the error code
-        switch (errorCode) {
-            case -8:
-                errorMessage = errorMessageTemplate + "Error document VKey";
-                break;
-            case -7:
-                errorMessage = errorMessageTemplate + "Error document request";
-                break;
-            case -6:
-                errorMessage = errorMessageTemplate + "Error database";
-                break;
-            case -5:
-                errorMessage = errorMessageTemplate + "Incorrect password";
-                break;
-            case -4:
-                errorMessage = errorMessageTemplate + "Error download error";
-                break;
-            case -3:
-                errorMessage = errorMessageTemplate + "Error convertation error";
-                break;
-            case -2:
-                errorMessage = errorMessageTemplate + "Error convertation timeout";
-                break;
-            case -1:
-                errorMessage = errorMessageTemplate + "Error convertation unknown";
-                break;
-            case 0:  // if the error code is equal to 0, the error message is empty
-                break;
-            default:
-                errorMessage = "ErrorCode = " + errorCode;  // default value for the error message
-                break;
-        }
+        String errorMessage = CONVERTATION_ERROR_MESSAGE_TEMPLATE + ConvertErrorType.labelOfCode(errorCode);
 
         throw new Exception(errorMessage);
     }
@@ -225,14 +198,14 @@ public class ServiceConverter {
         String responseUri = null;
 
         if (isEndConvert) {  // if the conversion is completed
-            resultPercent = 100L;
+            resultPercent = FULL_LOADING_IN_PERCENT;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= 100L ? 99L : resultPercent;  // get the percentage value
+            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value
         }
 
-        return resultPercent >= 100L ? responseUri : "";
+        return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
     }
 
     // convert stream to string
