@@ -294,9 +294,9 @@ public class TrackManager {
 
     // create a command request
     public static void commandRequest(String method, String key, HashMap meta) throws Exception {
-        String DocumentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.command");
+        String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.command");
 
-        URL url = new URL(DocumentCommandUrl);
+        URL url = new URL(documentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();

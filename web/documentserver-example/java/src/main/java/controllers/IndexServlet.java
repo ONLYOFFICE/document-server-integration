@@ -415,9 +415,9 @@ public class IndexServlet extends HttpServlet {
         try {
             if (DocumentManager.tokenEnabled()) {
 
-                String DocumentJwtHeader = ConfigManager.getProperty("files.docservice.header");
+                String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
-                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header.startsWith("Bearer ") ? header.substring(7) : header;
                     try {
@@ -456,9 +456,9 @@ public class IndexServlet extends HttpServlet {
 
             if (DocumentManager.tokenEnabled() && isEmbedded == null) {
 
-                String DocumentJwtHeader = ConfigManager.getProperty("files.docservice.header");
+                String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
-                String header = (String) request.getHeader(DocumentJwtHeader == null || DocumentJwtHeader.isEmpty() ? "Authorization" : DocumentJwtHeader);
+                String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header.startsWith("Bearer ") ? header.substring(7) : header;
                     try {
