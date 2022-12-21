@@ -41,7 +41,7 @@
     -->
     <property name="severity" value="error"/>
 
-    <property name="fileExtensions" value="java, properties, xml"/>
+    <property name="fileExtensions" value="java, properties, xml, jsp"/>
 
     <!-- Excludes all 'module-info.java' files              -->
     <!-- See https://checkstyle.org/config_filefilters.html -->
@@ -72,7 +72,7 @@
     <!-- See https://checkstyle.org/config_sizes.html -->
     <module name="FileLength"/>
     <module name="LineLength">
-        <property name="fileExtensions" value="java"/>
+        <property name="fileExtensions" value="java, jsp"/>
     </module>
 
     <!-- Checks for whitespace                               -->
@@ -92,7 +92,7 @@
     <!-- See https://checkstyle.org/config_header.html   -->
      <module name="Header">
        <property name="headerFile" value="onlyoffice.header"/>
-       <property name="fileExtensions" value="java"/>
+       <property name="fileExtensions" value="java, jsp"/>
      </module>
 
     <module name="TreeWalker">
