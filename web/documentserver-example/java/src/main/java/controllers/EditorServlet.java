@@ -40,9 +40,9 @@ import entities.FileModel;
 public class EditorServlet extends HttpServlet {
     // process request
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        DocumentManager.Init(request, response);
+        DocumentManager.init(request, response);
 
-        String fileName = FileUtility.GetFileName(request.getParameter("fileName"));
+        String fileName = FileUtility.getFileName(request.getParameter("fileName"));
         String fileExt = request.getParameter("fileExt");
         String sample = request.getParameter("sample");
         Boolean isEnableDirectUrl = Boolean.valueOf(request.getParameter("directUrl"));
@@ -56,7 +56,7 @@ public class EditorServlet extends HttpServlet {
         if (fileExt != null) {
             try {
                 // create demo document
-                fileName = DocumentManager.CreateDemo(fileExt, sampleData, user);
+                fileName = DocumentManager.createDemo(fileExt, sampleData, user);
                 response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));  // redirect the request
                 return;
             } catch (Exception ex) {
@@ -72,41 +72,41 @@ public class EditorServlet extends HttpServlet {
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", DocumentManager.GetServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.png");
         if (isEnableDirectUrl) {
-            dataInsertImage.put("directUrl", DocumentManager.GetServerUrl(false) + "/css/img/logo.png");
+            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.png");
         }
 
         // a document that will be compared with the current document
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
+        dataCompareFile.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?type=assets&name=sample.docx");
         if (isEnableDirectUrl) {
-            dataCompareFile.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
+            dataCompareFile.put("directUrl", DocumentManager.getServerUrl(false) + "/IndexServlet?type=assets&name=sample.docx");
         }
 
         // recipients data for mail merging
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();
         dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", DocumentManager.GetServerUrl(true) + "/IndexServlet?type=csv");
+        dataMailMergeRecipients.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?type=csv");
         if (isEnableDirectUrl) {
-            dataMailMergeRecipients.put("directUrl", DocumentManager.GetServerUrl(false) + "/IndexServlet?type=csv");
+            dataMailMergeRecipients.put("directUrl", DocumentManager.getServerUrl(false) + "/IndexServlet?type=csv");
         }
 
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.id);
 
         // check if the document token is enabled
-        if (DocumentManager.TokenEnabled()) {
-            file.BuildToken();  // generate document token
-            dataInsertImage.put("token", DocumentManager.CreateToken(dataInsertImage));  // create token from the dataInsertImage object
-            dataCompareFile.put("token", DocumentManager.CreateToken(dataCompareFile));  // create token from the dataCompareFile object
-            dataMailMergeRecipients.put("token", DocumentManager.CreateToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
+        if (DocumentManager.tokenEnabled()) {
+            file.buildToken();  // generate document token
+            dataInsertImage.put("token", DocumentManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
+            dataCompareFile.put("token", DocumentManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
+            dataMailMergeRecipients.put("token", DocumentManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
         }
 
         Gson gson = new Gson();
         request.setAttribute("file", file);
-        request.setAttribute("docserviceApiUrl", ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.api"));
+        request.setAttribute("docserviceApiUrl", ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.api"));
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage).substring(1, gson.toJson(dataInsertImage).length() - 1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
         request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));

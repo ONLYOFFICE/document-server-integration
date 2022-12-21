@@ -161,7 +161,7 @@
             }
         };
 
-        config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
         config.events = {
@@ -178,7 +178,7 @@
         };
 
         <%
-            String[] histArray = Model.GetHistory();
+            String[] histArray = Model.getHistory();
             String history = histArray[0];
             String historyData = histArray[1];
             String usersForMentions = (String) request.getAttribute("usersForMentions");

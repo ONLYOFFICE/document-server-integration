@@ -25,10 +25,10 @@ public class ConfigManager {
     private static Properties properties;
 
     static {
-        Init();
+        init();
     }
 
-    private static void Init() {
+    private static void init() {
         try {
             // get stream from the settings.properties resource and load it
             properties = new Properties();
@@ -40,7 +40,7 @@ public class ConfigManager {
     }
 
     // get name from the settings.properties file
-    public static String GetProperty(String name) {
+    public static String getProperty(String name) {
         if (properties == null) {
             return "";
         }

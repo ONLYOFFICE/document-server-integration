@@ -46,22 +46,22 @@ public class FileModel {
         fileName = fileName.trim();  // remove extra spaces in the file name
 
         // get file type from the file name (word, cell or slide)
-        documentType = FileUtility.GetFileType(fileName).toString().toLowerCase();
+        documentType = FileUtility.getFileType(fileName).toString().toLowerCase();
 
         // set the document parameters
         document = new Document();
         document.title = fileName;
-        document.url = DocumentManager.GetDownloadUrl(fileName, true);  // get file url
-        document.directUrl = isEnableDirectUrl ? DocumentManager.GetDownloadUrl(fileName, false) : "";  // get direct url
-        document.fileType = FileUtility.GetFileExtension(fileName).replace(".", "");  // get file extension from the file name
+        document.url = DocumentManager.getDownloadUrl(fileName, true);  // get file url
+        document.directUrl = isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "";  // get direct url
+        document.fileType = FileUtility.getFileExtension(fileName).replace(".", "");  // get file extension from the file name
         // generate document key
-        document.key = ServiceConverter.GenerateRevisionId(DocumentManager.CurUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.StoragePath(fileName, null)).lastModified()));
+        document.key = ServiceConverter.generateRevisionId(DocumentManager.curUserHostAddress(null) + "/" + fileName + "/" + Long.toString(new File(DocumentManager.storagePath(fileName, null)).lastModified()));
         document.info = new Info();
         document.info.favorite = user.favorite;
 
-        String templatesImageUrl = DocumentManager.GetTemplateImageUrl(FileUtility.GetFileType(fileName));
+        String templatesImageUrl = DocumentManager.getTemplateImageUrl(FileUtility.getFileType(fileName));
         List<Map<String, String>> templates = new ArrayList<>();
-        String createUrl = DocumentManager.GetCreateUrl(FileUtility.GetFileType(fileName));
+        String createUrl = DocumentManager.getCreateUrl(FileUtility.getFileType(fileName));
 
         // add templates for the "Create New" from menu option
         Map<String, String> templateForBlankDocument = new HashMap<>();
@@ -77,7 +77,7 @@ public class FileModel {
 
         // set the editor config parameters
         editorConfig = new EditorConfig(actionData);
-        editorConfig.callbackUrl = DocumentManager.GetCallback(fileName);  // get callback url
+        editorConfig.callbackUrl = DocumentManager.getCallback(fileName);  // get callback url
 
         editorConfig.coEditing = mode.equals("view") && user.id.equals("uid-0")
                 ? new HashMap<String, Object>()  {{
@@ -97,7 +97,7 @@ public class FileModel {
         editorConfig.user.group = user.group;
 
         // write the absolute URL to the file location
-        editorConfig.customization.goback.url = DocumentManager.GetServerUrl(false) + "/IndexServlet";
+        editorConfig.customization.goback.url = DocumentManager.getServerUrl(false) + "/IndexServlet";
 
         changeType(mode, type, user, fileName);
     }
@@ -112,12 +112,12 @@ public class FileModel {
         }
 
         // check if the file with such an extension can be edited
-        String fileExt = FileUtility.GetFileExtension(document.title);
-        Boolean canEdit = DocumentManager.GetEditedExts().contains(fileExt);
+        String fileExt = FileUtility.getFileExtension(document.title);
+        Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
         editorConfig.customization.submitForm = false;
 
-        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.GetFillExts().contains(fileExt)) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && DocumentManager.getFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
@@ -128,16 +128,16 @@ public class FileModel {
         document.permissions = new Permissions(mode, type, canEdit, user);
 
         if (type.equals("embedded")) {
-            InitDesktop(fileName);  // set parameters for the embedded document
+            initDesktop(fileName);  // set parameters for the embedded document
         }
     }
 
-    public void InitDesktop(String fileName) {
-        editorConfig.InitDesktop(DocumentManager.GetDownloadUrl(fileName, false) + "&dmode=emb");
+    public void initDesktop(String fileName) {
+        editorConfig.initDesktop(DocumentManager.getDownloadUrl(fileName, false) + "&dmode=emb");
     }
 
     // generate document token
-    public void BuildToken() {
+    public void buildToken() {
         // write all the necessary document parameters to the map
         Map<String, Object> map = new HashMap<>();
         map.put("type", type);
@@ -146,15 +146,15 @@ public class FileModel {
         map.put("editorConfig", editorConfig);
 
         // and create token from them
-        token = DocumentManager.CreateToken(map);
+        token = DocumentManager.createToken(map);
     }
 
     // get document history
-    public String[] GetHistory() {
+    public String[] getHistory() {
         JSONParser parser = new JSONParser();
-        String histDir = DocumentManager.HistoryDir(DocumentManager.StoragePath(document.title, null));  // get history directory
-        if (DocumentManager.GetFileVersion(histDir) > 0) {
-            Integer curVer = DocumentManager.GetFileVersion(histDir);  // get current file version if it is greater than 0
+        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.title, null));  // get history directory
+        if (DocumentManager.getFileVersion(histDir) > 0) {
+            Integer curVer = DocumentManager.getFileVersion(histDir);  // get current file version if it is greater than 0
 
             List<Object> hist = new ArrayList<>();
             Map<String, Object> histData = new HashMap<String, Object>();
@@ -162,7 +162,7 @@ public class FileModel {
             for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
                 Map<String, Object> obj = new HashMap<String, Object>();
                 Map<String, Object> dataObj = new HashMap<String, Object>();
-                String verDir = DocumentManager.VersionDir(histDir, i);  // get the path to the given file version
+                String verDir = DocumentManager.versionDir(histDir, i);  // get the path to the given file version
 
                 try {
                     String key = null;
@@ -185,17 +185,17 @@ public class FileModel {
                         obj.put("user", user);
                     }
 
-                    dataObj.put("fileType", FileUtility.GetFileExtension(document.title).substring(1));
+                    dataObj.put("fileType", FileUtility.getFileExtension(document.title).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), true));
+                    dataObj.put("url", i == curVer ? document.url : DocumentManager.getDownloadHistoryUrl(document.title, i, "prev" + FileUtility.getFileExtension(document.title), true));
                     if (!document.directUrl.equals("")) {
-                        dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.GetDownloadHistoryUrl(document.title, i, "prev" + FileUtility.GetFileExtension(document.title), false));
+                        dataObj.put("directUrl", i == curVer ? document.url : DocumentManager.getDownloadHistoryUrl(document.title, i, "prev" + FileUtility.getFileExtension(document.title), false));
                     }
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
                         // if so, get the path to the changes.json file
-                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.VersionDir(histDir, i - 1) + File.separator + "changes.json")));
+                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager.versionDir(histDir, i - 1) + File.separator + "changes.json")));
                         JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                         // write information about changes to the object
@@ -212,12 +212,12 @@ public class FileModel {
                         dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
                         // write the path to the diff.zip archive with differences in this file version
                         Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager.GetDownloadHistoryUrl(document.title, verdiff, "diff.zip", true);
+                        String changesUrl = DocumentManager.getDownloadHistoryUrl(document.title, verdiff, "diff.zip", true);
                         dataObj.put("changesUrl", changesUrl);
                     }
 
-                    if (DocumentManager.TokenEnabled()) {
-                        dataObj.put("token", DocumentManager.CreateToken(dataObj));
+                    if (DocumentManager.tokenEnabled()) {
+                        dataObj.put("token", DocumentManager.createToken(dataObj));
                     }
 
                     hist.add(obj);
@@ -334,7 +334,7 @@ public class FileModel {
         }
 
         // set parameters for the embedded document
-        public void InitDesktop(String url) {
+        public void initDesktop(String url) {
             embedded = new Embedded();
             embedded.saveUrl = url;  // the absolute URL that will allow the document to be saved onto the user personal computer
             embedded.embedUrl = url;  // the absolute URL to the document serving as a source file for the document embedded into the web page
@@ -382,7 +382,7 @@ public class FileModel {
 
 
     // turn java objects into json strings
-    public static String Serialize(FileModel model) {
+    public static String serialize(FileModel model) {
         Gson gson = new Gson();
         return gson.toJson(model);
     }

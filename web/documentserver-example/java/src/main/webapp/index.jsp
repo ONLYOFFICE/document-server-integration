@@ -102,7 +102,7 @@
                                                          data-tooltip="Choose the language for ONLYOFFICE editors interface"
                                                          src="css/img/info.svg" />
                                                     <select class="select-user" id="language">
-                                                        <% Map<String, String> languages = DocumentManager.GetLanguages(); %>
+                                                        <% Map<String, String> languages = DocumentManager.getLanguages(); %>
                                                         <% for (Map.Entry<String, String> language : languages.entrySet()) { %>
                                                             <option value="<%=language.getKey()%>"><%=language.getValue()%></option>
                                                         <% } %>
@@ -121,8 +121,8 @@
                             </div>
                         </td>
                         <td class="section">
-                            <% DocumentManager.Init(request, response); %>
-                            <% File[] files = DocumentManager.GetStoredFiles(null); %>
+                            <% DocumentManager.init(request, response); %>
+                            <% File[] files = DocumentManager.getStoredFiles(null); %>
                             <div class="main-panel">
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
@@ -161,10 +161,10 @@
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <% for (Integer i = 0; i < files.length; i++) {
-                                                        Boolean isFillFormDoc = DocumentManager.GetFillExts().contains(FileUtility.GetFileExtension(files[i].getName()).toLowerCase());
-                                                        String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
-                                                        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
-                                                        String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
+                                                        Boolean isFillFormDoc = DocumentManager.getFillExts().contains(FileUtility.getFileExtension(files[i].getName()).toLowerCase());
+                                                        String docType = FileUtility.getFileType(files[i].getName()).toString().toLowerCase();
+                                                        Boolean canEdit = DocumentManager.getEditedExts().contains(FileUtility.getFileExtension(files[i].getName()));
+                                                        String version=" ["+DocumentManager.getFileVersion(DocumentManager.historyDir(DocumentManager.storagePath(files[i].getName(), null)))+"]";
                                                     %>
                                                         <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
@@ -335,7 +335,7 @@
             </div>
         </div>
 
-        <span id="loadScripts" data-docs="<%= ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.preloader") %>"></span>
+        <span id="loadScripts" data-docs="<%= ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.preloader") %>"></span>
 
         <footer>
             <div class="center">
@@ -366,9 +366,9 @@
         <script type="text/javascript" src="scripts/jscript.js"></script>
 
         <script language="javascript" type="text/javascript">
-            var FillExtList = "<%= String.join(",", DocumentManager.GetFillExts()) %>";
-            var ConverExtList = "<%= String.join(",", DocumentManager.GetConvertExts()) %>";
-            var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
+            var FillExtList = "<%= String.join(",", DocumentManager.getFillExts()) %>";
+            var ConverExtList = "<%= String.join(",", DocumentManager.getConvertExts()) %>";
+            var EditedExtList = "<%= String.join(",", DocumentManager.getEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
 
