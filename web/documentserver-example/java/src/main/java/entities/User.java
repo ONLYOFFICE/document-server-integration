@@ -33,8 +33,11 @@ public class User {
     public Boolean templates;
     public List<String> userInfoGroups;
 
-    public User(String idParam, String nameParam, String emailParam, String groupParam, List<String> reviewGroupsParam, CommentGroups commentGroupsParam, List<String> userInfoGroupsParam,
-                Boolean favoriteParam, List<String> deniedPermissionsParam, List<String> descriptionsParam, Boolean templatesParam) {
+    public User(final String idParam, final String nameParam, final String emailParam, final String groupParam,
+                final List<String> reviewGroupsParam, final CommentGroups commentGroupsParam,
+                final List<String> userInfoGroupsParam, final Boolean favoriteParam,
+                final List<String> deniedPermissionsParam, final List<String> descriptionsParam,
+                final Boolean templatesParam) {
         this.id = idParam;
         this.name = nameParam;
         this.email = emailParam;

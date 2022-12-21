@@ -9,7 +9,7 @@ public class CommentGroups {
     public CommentGroups() {
 
     }
-    public CommentGroups(List<String> viewParam, List<String> editParam, List<String> removeParam) {
+    public CommentGroups(final List<String> viewParam, final List<String> editParam, final List<String> removeParam) {
         this.view = viewParam;
         this.edit = editParam;
         this.remove = removeParam;

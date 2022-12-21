@@ -34,13 +34,13 @@ import helpers.*;
 public class GlobalServletContextListener implements ServletContextListener {
     // destroy ServletContextListener interface
     @Override
-    public void contextDestroyed(ServletContextEvent arg0) {
+    public void contextDestroyed(final ServletContextEvent arg0) {
         System.out.println("ServletContextListener destroyed");
     }
 
     // start ServletContextListener interface
     @Override
-    public void contextInitialized(ServletContextEvent arg0) {
+    public void contextInitialized(final ServletContextEvent arg0) {
         TrustManager[] trustAllCerts = new TrustManager[] {
             new X509TrustManager() {
                 // return an array of certificates which are trusted
@@ -51,12 +51,12 @@ public class GlobalServletContextListener implements ServletContextListener {
 
                 // check whether the X509 certificate chain can be validated and is trusted for client authentication
                 @Override
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
                 }
 
                 // check whether the X509 certificate chain can be validated and is trusted for server authentication
                 @Override
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
                 }
             }
         };
@@ -76,7 +76,7 @@ public class GlobalServletContextListener implements ServletContextListener {
         // create all-trusting host name verifier
         HostnameVerifier allHostsValid = new HostnameVerifier() {
             @Override
-            public boolean verify(String hostname, SSLSession session) {
+            public boolean verify(final String hostname, final SSLSession session) {
                 return true;
             }
         };

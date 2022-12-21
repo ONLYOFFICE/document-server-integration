@@ -39,7 +39,7 @@ import entities.FileModel;
 @WebServlet(name = "EditorServlet", urlPatterns = {"/EditorServlet"})
 public class EditorServlet extends HttpServlet {
     // process request
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         DocumentManager.init(request, response);
 
         String fileName = FileUtility.getFileName(request.getParameter("fileName"));
@@ -116,13 +116,13 @@ public class EditorServlet extends HttpServlet {
 
     // create get request
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     // create post request
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

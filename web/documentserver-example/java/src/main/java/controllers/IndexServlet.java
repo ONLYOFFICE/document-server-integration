@@ -51,7 +51,7 @@ import org.primeframework.jwt.hmac.HMACVerifier;
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet {
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         // get the type parameter from the request
         String action = request.getParameter("type");
 
@@ -104,7 +104,7 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
-    private static void saveAs(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void saveAs(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         response.setContentType("text/plain");
         try {
             Scanner scanner = new Scanner(request.getInputStream());
@@ -144,7 +144,7 @@ public class IndexServlet extends HttpServlet {
 
 
     // upload a file
-    private static void upload(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void upload(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         response.setContentType("text/plain");
 
         try {
@@ -203,7 +203,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // convert a file
-    private static void convert(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws UnsupportedEncodingException {
+    private static void convert(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) throws UnsupportedEncodingException {
         CookieManager cm = new CookieManager(request);
         response.setContentType("text/plain");
 
@@ -282,7 +282,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // track file changes
-    private static void track(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void track(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         JSONObject body = null;
 
         // read request body
@@ -340,7 +340,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // remove a file
-    private static void remove(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void remove(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         try {
             String fileName = FileUtility.getFileName(request.getParameter("filename"));
             String path = DocumentManager.storagePath(fileName, null);
@@ -360,7 +360,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // get files information
-    private static void files(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void files(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         ArrayList<Map<String, Object>> files = null;
 
         try {
@@ -385,7 +385,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a csv file
-    private static void csv(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void csv(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         String fileName = "assets/sample/csv.csv";
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
@@ -398,7 +398,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // get sample files from the assests
-    private static void assets(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void assets(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         String fileName = "assets/sample/" + FileUtility.getFileName(request.getParameter("name"));
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
@@ -411,7 +411,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a file from history
-    private static void downloadHistory(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void downloadHistory(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         try {
             if (DocumentManager.tokenEnabled()) {
 
@@ -448,7 +448,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download a file
-    private static void download(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void download(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         try {
             String fileName = FileUtility.getFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
@@ -481,7 +481,7 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
-    private static void delete(File f) throws Exception {
+    private static void delete(final File f) throws Exception {
         // to delete a directory
         if (f.isDirectory()) {
             for (File c : f.listFiles()) {  // run through all the files in it
@@ -494,7 +494,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // download data from the url to the file
-    private static void download(String filePath, HttpServletResponse response, PrintWriter writer) {
+    private static void download(final String filePath, final HttpServletResponse response, final PrintWriter writer) {
         String fileType = null;
         try {
             fileType = Files.probeContentType(Paths.get(filePath));
@@ -529,7 +529,7 @@ public class IndexServlet extends HttpServlet {
     }
 
     // rename a file
-    private static void rename(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) {
+    private static void rename(final HttpServletRequest request, final HttpServletResponse response, final PrintWriter writer) {
         try {
             Scanner scanner = new Scanner(request.getInputStream());
             scanner.useDelimiter("\\A");
@@ -567,13 +567,13 @@ public class IndexServlet extends HttpServlet {
 
     // process get request
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
     // process post request
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 

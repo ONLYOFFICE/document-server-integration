@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public class CookieManager {
     private HashMap<String, String> cookiesMap;
 
-    public CookieManager(HttpServletRequest request) throws UnsupportedEncodingException {
+    public CookieManager(final HttpServletRequest request) throws UnsupportedEncodingException {
         cookiesMap = new HashMap<String, String>();
 
         Cookie[] cookies = request.getCookies();  // get all the cookies from the request
@@ -40,7 +40,7 @@ public class CookieManager {
     }
 
     // get cookie by its name
-    public String getCookie(String name) {
+    public String getCookie(final String name) {
         return cookiesMap.get(name);
     }
 }

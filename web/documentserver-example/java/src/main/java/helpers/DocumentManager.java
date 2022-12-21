@@ -43,7 +43,7 @@ import org.primeframework.jwt.Verifier;
 public class DocumentManager {
     private static HttpServletRequest request;
 
-    public static void init(HttpServletRequest req, HttpServletResponse resp) {
+    public static void init(final HttpServletRequest req, final HttpServletResponse resp) {
         request = req;
     }
 
@@ -96,21 +96,22 @@ public class DocumentManager {
     }
 
     // get current user host address
-    public static String curUserHostAddress(String userAddress) {
-        if (userAddress == null) {
+    public static String curUserHostAddress(final String userAddress) {
+        String userAddr = userAddress;
+        if (userAddr == null) {
             try {
                 // use InetAddress class to get the user address if it wasn't passed to the function
-                userAddress = InetAddress.getLocalHost().getHostAddress();
+                userAddr = InetAddress.getLocalHost().getHostAddress();
             } catch (Exception ex) {
-                userAddress = "";
+                userAddr = "";
             }
         }
 
-        return userAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
+        return userAddr.replaceAll("[^0-9a-zA-Z.=]", "_");
     }
 
     // get the root directory of the user host
-    public static String filesRootPath(String userAddress) {
+    public static String filesRootPath(final String userAddress) {
         String hostAddress = curUserHostAddress(userAddress);  // get current user host address
         String serverPath = request.getSession().getServletContext().getRealPath("");  // get the server url
         String storagePath = ConfigManager.getProperty("storage-folder");  // get the storage directory
@@ -141,13 +142,14 @@ public class DocumentManager {
     }
 
     // get the storage path of the file
-    public static String storagePath(String fileName, String userAddress) {
+    public static String storagePath(final String fileName, final String userAddress) {
         String directory = filesRootPath(userAddress);
         return directory + FileUtility.getFileName(fileName);
     }
 
     // get the path to history file
-    public static String historyPath(String fileName, String userAddress, String version, String file) {
+    public static String historyPath(final String fileName, final String userAddress, final String version,
+                                     final String file) {
         String hostAddress = curUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.getProperty("storage-folder");
@@ -162,7 +164,7 @@ public class DocumentManager {
     }
 
     // get the path to the forcesaved file version
-    public static String forcesavePath(String fileName, String userAddress, Boolean create) {
+    public static String forcesavePath(final String fileName, final String userAddress, final Boolean create) {
         String hostAddress = curUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
         String storagePath = ConfigManager.getProperty("storage-folder");
@@ -194,22 +196,22 @@ public class DocumentManager {
     }
 
     // get the history directory
-    public static String historyDir(String storagePath) {
+    public static String historyDir(final String storagePath) {
         return storagePath + "-hist";
     }
 
     // get the path to the file version by the history path and file version
-    public static String versionDir(String histPath, Integer version) {
+    public static String versionDir(final String histPath, final Integer version) {
         return histPath + File.separator + Integer.toString(version);
     }
 
     // get the path to the file version by the file name, user address and file version
-    public static String versionDir(String fileName, String userAddress, Integer version) {
+    public static String versionDir(final String fileName, final String userAddress, final Integer version) {
         return versionDir(historyDir(storagePath(fileName, userAddress)), version);
     }
 
     // get the file version by the history path
-    public static Integer getFileVersion(String historyPath) {
+    public static Integer getFileVersion(final String historyPath) {
         File dir = new File(historyPath);
 
         if (!dir.exists()) {
@@ -218,7 +220,7 @@ public class DocumentManager {
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override
-            public boolean accept(File pathname) {
+            public boolean accept(final File pathname) {
                 return pathname.isDirectory();
             }
         });
@@ -227,12 +229,12 @@ public class DocumentManager {
     }
 
     // get the file version by the file name and user address
-    public static int getFileVersion(String fileName, String userAddress) {
+    public static int getFileVersion(final String fileName, final String userAddress) {
         return getFileVersion(historyDir(storagePath(fileName, userAddress)));
     }
 
     // get a file name with an index if the file with such a name already exists
-    public static String getCorrectName(String fileName, String userAddress) {
+    public static String getCorrectName(final String fileName, final String userAddress) {
         String baseName = FileUtility.getFileNameWithoutExtension(fileName);
         String ext = FileUtility.getFileExtension(fileName);
         String name = baseName + ext;
@@ -248,7 +250,8 @@ public class DocumentManager {
     }
 
     // create meta information
-    public static void createMeta(String fileName, String uid, String uname, String userAddress) throws Exception {
+    public static void createMeta(final String fileName, final String uid, final String uname,
+                                  final String userAddress) throws Exception {
         String histDir = historyDir(storagePath(fileName, userAddress));
 
         File dir = new File(histDir);  // create history directory
@@ -268,20 +271,20 @@ public class DocumentManager {
     }
 
     // get all the stored files from the user host address
-    public static File[] getStoredFiles(String userAddress) {
+    public static File[] getStoredFiles(final String userAddress) {
         String directory = filesRootPath(userAddress);
 
         File file = new File(directory);
         return file.listFiles(new FileFilter() {  // take only files from the root directory
             @Override
-            public boolean accept(File pathname) {
+            public boolean accept(final File pathname) {
                 return pathname.isFile();
             }
         });
     }
 
     // create demo document
-    public static String createDemo(String fileExt, Boolean sample, User user) throws Exception {
+    public static String createDemo(final String fileExt, final Boolean sample, final User user) throws Exception {
         String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
         String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;  // get the path to the sample document
         String fileName = getCorrectName(demoName, null);  // get a file name with an index if the file with such a name already exists
@@ -296,7 +299,7 @@ public class DocumentManager {
         return fileName;
     }
 
-    public static boolean createFile(Path path, InputStream stream) {
+    public static boolean createFile(final Path path, final InputStream stream) {
         if (Files.exists(path)) {
             return true;
         }
@@ -317,7 +320,7 @@ public class DocumentManager {
     }
 
     // get file url
-    public static String getFileUri(String fileName, Boolean forDocumentServer) {
+    public static String getFileUri(final String fileName, final Boolean forDocumentServer) {
         try {
             String serverPath = getServerUrl(forDocumentServer);
             String storagePath = ConfigManager.getProperty("storage-folder");
@@ -358,7 +361,7 @@ public class DocumentManager {
     }
 
     // get file information by its id
-    public static ArrayList<Map<String, Object>> getFilesInfo(String fileId) {
+    public static ArrayList<Map<String, Object>> getFilesInfo(final String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
         for (Map<String, Object> map : getFilesInfo()) {
@@ -372,7 +375,7 @@ public class DocumentManager {
     }
 
     // get the path url
-    public static String getPathUri(String path) {
+    public static String getPathUri(final String path) {
         String serverPath = getServerUrl(true);
         String storagePath = ConfigManager.getProperty("storage-folder");
         String hostAddress = curUserHostAddress(null);
@@ -384,7 +387,7 @@ public class DocumentManager {
 
 
     // get the server url
-    public static String getServerUrl(Boolean forDocumentServer) {
+    public static String getServerUrl(final Boolean forDocumentServer) {
         if (forDocumentServer && !ConfigManager.getProperty("files.docservice.url.example").equals("")) {
             return ConfigManager.getProperty("files.docservice.url.example");
         } else {
@@ -393,7 +396,7 @@ public class DocumentManager {
     }
 
     // get the callback url
-    public static String getCallback(String fileName) {
+    public static String getCallback(final String fileName) {
         String serverPath = getServerUrl(true);
         String hostAddress = curUserHostAddress(null);
         try {
@@ -406,7 +409,7 @@ public class DocumentManager {
     }
 
     // get url to the created file
-    public static String getCreateUrl(FileType fileType) {
+    public static String getCreateUrl(final FileType fileType) {
         String serverPath = getServerUrl(false);
         String fileExt = getInternalExtension(fileType).replace(".", "");
         String query = "?fileExt=" + fileExt;
@@ -415,7 +418,7 @@ public class DocumentManager {
     }
 
     // get url to download a file
-    public static String getDownloadUrl(String fileName, Boolean forDocumentServer) {
+    public static String getDownloadUrl(final String fileName, final Boolean forDocumentServer) {
         String serverPath = getServerUrl(forDocumentServer);
         String hostAddress = curUserHostAddress(null);
         try {
@@ -429,7 +432,8 @@ public class DocumentManager {
     }
 
     // get url to download a file to History prev.*
-    public static String getDownloadHistoryUrl(String fileName, Integer version, String file, Boolean forDocumentServer) {
+    public static String getDownloadHistoryUrl(final String fileName, final Integer version, final String file,
+                                               final Boolean forDocumentServer) {
         String serverPath = getServerUrl(forDocumentServer);
         String hostAddress = curUserHostAddress(null);
         try {
@@ -444,7 +448,7 @@ public class DocumentManager {
     }
 
     // get an editor internal extension
-    public static String getInternalExtension(FileType fileType) {
+    public static String getInternalExtension(final FileType fileType) {
         // .docx for word file type
         if (fileType.equals(FileType.Word)) {
             return ".docx";
@@ -465,7 +469,7 @@ public class DocumentManager {
     }
 
     // get image url for templates
-    public static String getTemplateImageUrl(FileType fileType) {
+    public static String getTemplateImageUrl(final FileType fileType) {
         String path = getServerUrl(true) + "/css/img/";
         // for word file type
         if (fileType.equals(FileType.Word)) {
@@ -487,7 +491,7 @@ public class DocumentManager {
     }
 
     // create document token
-    public static String createToken(Map<String, Object> payloadClaims) {
+    public static String createToken(final Map<String, Object> payloadClaims) {
         try {
             // build a HMAC signer using a SHA-256 hash
             Signer signer = HMACSigner.newSHA256Signer(getTokenSecret());
@@ -502,7 +506,7 @@ public class DocumentManager {
     }
 
     // read document token
-    public static JWT readToken(String token) {
+    public static JWT readToken(final String token) {
         try {
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(getTokenSecret());

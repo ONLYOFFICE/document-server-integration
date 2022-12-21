@@ -28,7 +28,7 @@ import java.util.Map;
 public class FileUtility {
 
     // get file type
-    public static FileType getFileType(String fileName) {
+    public static FileType getFileType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();
 
         // word type for document extensions
@@ -76,7 +76,7 @@ public class FileUtility {
 
 
     // get file name from the url
-    public static String getFileName(String url) {
+    public static String getFileName(final String url) {
         if (url == null) {
             return "";
         }
@@ -88,7 +88,7 @@ public class FileUtility {
     }
 
     // get file name without extension
-    public static String getFileNameWithoutExtension(String url) {
+    public static String getFileNameWithoutExtension(final String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -98,7 +98,7 @@ public class FileUtility {
     }
 
     // get file extension from url
-    public static String getFileExtension(String url) {
+    public static String getFileExtension(final String url) {
         String fileName = getFileName(url);
         if (fileName == null) {
             return null;
@@ -108,7 +108,7 @@ public class FileUtility {
     }
 
     // get url parameters
-    public static Map<String, String> getUrlParams(String url) {
+    public static Map<String, String> getUrlParams(final String url) {
         try {
             String query = new URL(url).getQuery();  // take all the parameters which are placed after ? sign in the file url
             String[] params = query.split("&");  // parameters are separated by & sign

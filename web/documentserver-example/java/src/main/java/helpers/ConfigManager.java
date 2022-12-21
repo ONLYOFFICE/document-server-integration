@@ -40,7 +40,7 @@ public class ConfigManager {
     }
 
     // get name from the settings.properties file
-    public static String getProperty(String name) {
+    public static String getProperty(final String name) {
         if (properties == null) {
             return "";
         }

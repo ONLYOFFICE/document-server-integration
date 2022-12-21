@@ -63,26 +63,29 @@ public class ServiceConverter {
     }
 
     // get the url of the converted file
-    public static String getConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync, String lang) throws Exception {
+    public static String getConvertedUri(final String documentUri, final String fromExtension,
+                                         final String toExtension, final String documentRevisionId,
+                                         final String filePass, final Boolean isAsync,
+                                         final String lang) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
-        fromExtension = fromExtension == null || fromExtension.isEmpty() ? FileUtility.getFileExtension(documentUri) : fromExtension;
+        String fromExt = fromExtension == null || fromExtension.isEmpty() ? FileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
         String title = FileUtility.getFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
-        documentRevisionId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
+        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
 
-        documentRevisionId = generateRevisionId(documentRevisionId);  // create document token
+        documentRevId = generateRevisionId(documentRevId);  // create document token
 
         // write all the necessary parameters to the body object
         ConvertBody body = new ConvertBody();
         body.region = lang;
         body.url = documentUri;
         body.outputtype = toExtension.replace(".", "");
-        body.filetype = fromExtension.replace(".", "");
+        body.filetype = fromExt.replace(".", "");
         body.title = title;
-        body.key = documentRevisionId;
+        body.key = documentRevId;
         body.password = filePass;
         if (isAsync) {
             body.async = true;
@@ -157,18 +160,16 @@ public class ServiceConverter {
     }
 
     // generate document key
-    public static String generateRevisionId(String expectedKey) {
-        if (expectedKey.length() > 20) {  // if the expected key length is greater than 20
-            expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
-        }
-
-        String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
+    public static String generateRevisionId(final String expectedKey) {
+        // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
+        String formatKey = expectedKey.length() > 20 ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
         return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
     }
 
     // create an error message for an error code
-    private static void processConvertServiceResponceError(int errorCode) throws Exception {
+    private static void processConvertServiceResponceError(final int errorCode) throws Exception {
         String errorMessage = "";
         String errorMessageTemplate = "Error occurred in the ConvertService: ";
 
@@ -209,7 +210,7 @@ public class ServiceConverter {
     }
 
     // get the response url
-    private static String getResponseUri(String jsonString) throws Exception {
+    private static String getResponseUri(final String jsonString) throws Exception {
         JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
@@ -235,7 +236,7 @@ public class ServiceConverter {
     }
 
     // convert stream to string
-    public static String convertStreamToString(InputStream stream) throws IOException {
+    public static String convertStreamToString(final InputStream stream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
@@ -252,7 +253,7 @@ public class ServiceConverter {
     }
 
     // convert string to json
-    public static JSONObject convertStringToJSON(String jsonString) throws ParseException {
+    public static JSONObject convertStringToJSON(final String jsonString) throws ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);  // parse json string
         JSONObject jsonObj = (JSONObject) obj;  // and turn it into a json object

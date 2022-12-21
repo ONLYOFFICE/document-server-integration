@@ -37,7 +37,7 @@ public class TrackManager {
     private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
     // read request body
-    public static JSONObject readBody(HttpServletRequest request, PrintWriter writer) throws Exception {
+    public static JSONObject readBody(final HttpServletRequest request, final PrintWriter writer) throws Exception {
         String bodyString = "";
 
         try {
@@ -116,7 +116,7 @@ public class TrackManager {
     }
 
     // file saving process
-    public static void processSave(JSONObject body, String fileName, String userAddress) throws Exception {
+    public static void processSave(final JSONObject body, final String fileName, final String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
@@ -189,10 +189,11 @@ public class TrackManager {
     }
 
     // file force saving process
-    public static void processForceSave(JSONObject body, String fileName, String userAddress) throws Exception {
+    public static void processForceSave(final JSONObject body, final String fileNameParam, final String userAddress) throws Exception {
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
+        String fileName = fileNameParam;
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.getFileExtension(fileName);  // get current file extension
@@ -254,7 +255,7 @@ public class TrackManager {
     }
 
     // save file information from the url to the file specified
-    private static void downloadToFile(String url, File file) throws Exception {
+    private static void downloadToFile(final String url, final File file) throws Exception {
         if (url == null || url.isEmpty()) {
             throw new Exception("argument url");  // url isn't specified
         }
@@ -293,7 +294,7 @@ public class TrackManager {
     }
 
     // create a command request
-    public static void commandRequest(String method, String key, HashMap meta) throws Exception {
+    public static void commandRequest(final String method, final String key, final HashMap meta) throws Exception {
         String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.command");
 
         URL url = new URL(documentCommandUrl);

@@ -39,11 +39,9 @@ public class FileModel {
     public String token;
 
     // create file model
-    public FileModel(String fileName, String lang, String actionData, User user, Boolean isEnableDirectUrl) {
-        if (fileName == null) {
-            fileName = "";
-        }
-        fileName = fileName.trim();  // remove extra spaces in the file name
+    public FileModel(final String fileNameParam, final String lang, final String actionData, final User user, final Boolean isEnableDirectUrl) {
+
+        String fileName = fileNameParam == null ? "" : fileNameParam.trim();  // remove extra spaces in the file name if not null
 
         // get file type from the file name (word, cell or slide)
         documentType = FileUtility.getFileType(fileName).toString().toLowerCase();
@@ -103,7 +101,7 @@ public class FileModel {
     }
 
     // change the document type
-    public void changeType(String modeParam, String typeParam, User user, String fileName) {
+    public void changeType(final String modeParam, final String typeParam, final User user, final String fileName) {
         if (modeParam != null) {
             mode = modeParam;
         }
@@ -132,7 +130,7 @@ public class FileModel {
         }
     }
 
-    public void initDesktop(String fileName) {
+    public void initDesktop(final String fileName) {
         editorConfig.initDesktop(DocumentManager.getDownloadUrl(fileName, false) + "&dmode=emb");
     }
 
@@ -238,7 +236,7 @@ public class FileModel {
     }
 
     // read a file
-    private String readFileToEnd(File file) {
+    private String readFileToEnd(final File file) {
         String output = "";
         try {
             try (FileInputStream is = new FileInputStream(file)) {
@@ -282,7 +280,7 @@ public class FileModel {
         //public Gson gson = new Gson();
 
         // defines what can be done with a document
-        public Permissions(String modeParam, String typeParam, Boolean canEdit, User user) {
+        public Permissions(final String modeParam, final String typeParam, final Boolean canEdit, final User user) {
             comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded") && !modeParam.equals("blockcontent");
             copy = !user.deniedPermissions.contains("сopy");
             download = !user.deniedPermissions.contains("download");
@@ -323,7 +321,7 @@ public class FileModel {
         public Customization customization;
         public Embedded embedded;
 
-        public EditorConfig(String actionData) {
+        public EditorConfig(final String actionData) {
             // get the action in the document that will be scrolled to (bookmark or comment)
             if (actionData != null) {
                 Gson gson = new Gson();
@@ -334,7 +332,7 @@ public class FileModel {
         }
 
         // set parameters for the embedded document
-        public void initDesktop(String url) {
+        public void initDesktop(final String url) {
             embedded = new Embedded();
             embedded.saveUrl = url;  // the absolute URL that will allow the document to be saved onto the user personal computer
             embedded.embedUrl = url;  // the absolute URL to the document serving as a source file for the document embedded into the web page
@@ -382,7 +380,7 @@ public class FileModel {
 
 
     // turn java objects into json strings
-    public static String serialize(FileModel model) {
+    public static String serialize(final FileModel model) {
         Gson gson = new Gson();
         return gson.toJson(model);
     }
