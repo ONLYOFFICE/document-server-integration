@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.onlyoffice.integration.documentserver.util.Constants.EXT_LENGTH_PART;
 import static com.onlyoffice.integration.documentserver.util.Constants.KILOBYTE_SIZE;
 
 @Component
@@ -70,7 +69,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get URL to the created file
     public String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileName.substring(fileName.length() - EXT_LENGTH_PART);
+        String fileExt = fileUtility.getFileExtension(fileName).replace(".", "");
         String url = storagePathBuilder.getServerUrl(true)
                 + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
