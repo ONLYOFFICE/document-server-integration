@@ -8,4 +8,5 @@
     <suppress checks="DesignForExtension" files="."/>
     <suppress checks="ParameterNumber" files="."/>
     <suppress checks="JavadocPackage" files="."/>
+    <suppress checks="JavadocVariable" files="."/>
 </suppressions>
