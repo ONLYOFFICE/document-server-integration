@@ -26,5 +26,6 @@ public interface FileStoragePathBuilder {
     String getServerUrl(Boolean forDocumentServer);  // get the server URL
     String getHistoryDir(String fileName);  // get the history directory
     int getFileVersion(String historyPath, Boolean ifIndexPage);  // get the file version
-    String getForcesavePath(String fileName, Boolean create);  // get the path where all the forcely saved file versions are saved or create it
+    String getForcesavePath(String fileName, Boolean create);  /* get the path where all the
+    forcely saved file versions are saved or create it */
 }

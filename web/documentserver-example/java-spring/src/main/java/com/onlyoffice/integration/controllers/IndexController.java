@@ -96,14 +96,20 @@ public class IndexController {
         List<User> users = userService.findAll();  // get a list of all the users
 
         String tooltip = users.stream()  // get the tooltip with the user descriptions
-                .map(user -> mistUtility.convertUserDescriptions(user.getName(), user.getDescriptions()))  // convert user descriptions to the specified format
+                .map(user -> mistUtility.convertUserDescriptions(user.getName(),
+                        user.getDescriptions()))  // convert user descriptions to the specified format
                 .collect(Collectors.joining());
 
         for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
-            docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());  // add a document type of each file to the list
-            filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
-            versions.add(" [" + storagePathBuilder.getFileVersion(fileName, true) + "]");  // add a file version to the list
+            docTypes.add(fileUtility
+                    .getDocumentType(fileName)
+                    .toString()
+                    .toLowerCase());  // add a document type of each file to the list
+            filesEditable.add(fileUtility.getEditedExts()
+                    .contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
+            versions.add(" [" + storagePathBuilder.
+                    getFileVersion(fileName, true) + "]");  // add a file version to the list
             isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
         }
 
@@ -127,9 +133,12 @@ public class IndexController {
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
 
-        configuration.put("FillExtList", String.join(",", fileUtility.getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility.getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility.getEditedExts()));  // put a list of the extensions that can be edited to config
+        configuration.put("FillExtList", String.join(",", fileUtility
+                .getFillExts()));  // put a list of the extensions that can be filled to config
+        configuration.put("ConverExtList", String.join(",", fileUtility
+                .getConvertExts()));  // put a list of the extensions that can be converted to config
+        configuration.put("EditedExtList", String.join(",", fileUtility
+                .getEditedExts()));  // put a list of the extensions that can be edited to config
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 

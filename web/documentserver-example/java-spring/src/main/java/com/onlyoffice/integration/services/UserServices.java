@@ -65,14 +65,23 @@ public class UserServices {
         newUser.setDescriptions(description);  // set the user description
         newUser.setFavorite(favoriteDoc);  // specify if the user has the favorite documents or not
 
-        List<Group> groupsReview = groupServices.createGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
-        List<Group> commentGroupsView = groupServices.createGroups(viewGroups);  // defines the groups whose comments the user can view
-        List<Group> commentGroupsEdit = groupServices.createGroups(editGroups);  // defines the groups whose comments the user can edit
-        List<Group> commentGroupsRemove = groupServices.createGroups(removeGroups);  // defines the groups whose comments the user can remove
+        List<Group> groupsReview = groupServices
+                .createGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
+        List<Group> commentGroupsView = groupServices
+                .createGroups(viewGroups);  // defines the groups whose comments the user can view
+        List<Group> commentGroupsEdit = groupServices
+                .createGroups(editGroups);  // defines the groups whose comments the user can edit
+        List<Group> commentGroupsRemove = groupServices
+                .createGroups(removeGroups);  // defines the groups whose comments the user can remove
         List<Group> usInfoGroups = groupServices.createGroups(userInfoGroups);
 
         Permission permission = permissionService
-                .createPermission(groupsReview, commentGroupsView, commentGroupsEdit, commentGroupsRemove, usInfoGroups, chat);  // specify permissions for the current user
+                .createPermission(groupsReview,
+                        commentGroupsView,
+                        commentGroupsEdit,
+                        commentGroupsRemove,
+                        usInfoGroups,
+                        chat);  // specify permissions for the current user
         newUser.setPermissions(permission);
 
         userRepository.save(newUser); // save a new user

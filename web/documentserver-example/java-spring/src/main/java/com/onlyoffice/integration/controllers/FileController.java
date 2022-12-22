@@ -119,19 +119,25 @@ public class FileController {
         // create a response with the content type, header and body with the file data
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 
     // download data from the specified history file
-    private ResponseEntity<Resource> downloadFileHistory(final String fileName, final String version, final String file) {
-        Resource resource = storageMutator.loadFileAsResourceHistory(fileName, version, file);  // load the specified file as a resource
+    private ResponseEntity<Resource> downloadFileHistory(final String fileName,
+                                                         final String version,
+                                                         final String file) {
+
+        // load the specified file as a resource
+        Resource resource = storageMutator.loadFileAsResourceHistory(fileName, version, file);
         String contentType = "application/octet-stream";
 
         // create a response with the content type, header and body with the file data
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 
@@ -152,7 +158,9 @@ public class FileController {
 
             // check if file extension is supported by the editor
             if (!fileUtility.getFileExts().contains(fileExtension)) {
-                return "{ \"error\": \"File type is not supported\"}";  // if not, write an error message to the response
+
+                // if not, write an error message to the response
+                return "{ \"error\": \"File type is not supported\"}";
             }
 
             String fileNamePath = storageMutator.updateFile(fullFileName, bytes);  // update a file
@@ -166,22 +174,36 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "{ \"error\": \"Something went wrong when uploading the file.\"}";  // if the operation of file uploading is unsuccessful, an error occurs
+
+        // if the operation of file uploading is unsuccessful, an error occurs
+        return "{ \"error\": \"Something went wrong when uploading the file.\"}";
     }
 
     @PostMapping(path = "${url.converter}")
     @ResponseBody
     public String convert(@RequestBody final Converter body,  // convert a file
                           @CookieValue("uid") final String uid, @CookieValue("ulang") final String lang) {
-        String fileName = body.getFileName();  // get file name
-        String fileUri = documentManager.getDownloadUrl(fileName, true);  // get URL for downloading a file with the specified name
-        String filePass = body.getFilePass() != null ? body.getFilePass() : null;  // get file password if it exists
-        String fileExt = fileUtility.getFileExtension(fileName);  // get file extension
-        DocumentType type = fileUtility.getDocumentType(fileName);  // get document type (word, cell or slide)
-        String internalFileExt = fileUtility.getInternalExtension(type);  // get an editor internal extension (".docx", ".xlsx" or ".pptx")
+        // get file name
+        String fileName = body.getFileName();
+
+        // get URL for downloading a file with the specified name
+        String fileUri = documentManager.getDownloadUrl(fileName, true);
+
+        // get file password if it exists
+        String filePass = body.getFilePass() != null ? body.getFilePass() : null;
+
+        // get file extension
+        String fileExt = fileUtility.getFileExtension(fileName);
+
+        // get document type (word, cell or slide)
+        DocumentType type = fileUtility.getDocumentType(fileName);
+
+        // get an editor internal extension (".docx", ".xlsx" or ".pptx")
+        String internalFileExt = fileUtility.getInternalExtension(type);
 
         try {
-            if (fileUtility.getConvertExts().contains(fileExt)) {  // check if the file with such an extension can be converted
+            // check if the file with such an extension can be converted
+            if (fileUtility.getConvertExts().contains(fileExt)) {
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
                 String newFileUri = serviceConverter  // get the URL to the converted file
                         .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
@@ -190,7 +212,8 @@ public class FileController {
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
                 }
 
-                // get a file name of an internal file extension with an index if the file with such a name already exists
+                /* get a file name of an internal file extension with an index if the file
+                 with such a name already exists */
                 String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + internalFileExt;
                 String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
@@ -213,7 +236,8 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "{ \"error\": \"" + "The file can't be converted.\"}";  // if the operation of file converting is unsuccessful, an error occurs
+        // if the operation of file converting is unsuccessful, an error occurs
+        return "{ \"error\": \"" + "The file can't be converted.\"}";
     }
 
     @PostMapping("/delete")
@@ -221,12 +245,17 @@ public class FileController {
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
             String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
-            boolean fileSuccess = storageMutator.deleteFile(fullFileName);  // delete a file from the storage and return the status of this operation (true or false)
-            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);  // delete file history and return the status of this operation (true or false)
+
+            // delete a file from the storage and return the status of this operation (true or false)
+            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+
+            // delete file history and return the status of this operation (true or false)
+            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
 
             return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
         } catch (Exception e) {
-            return "{ \"error\": \"" + e.getMessage() + "\"}";  // if the operation of file deleting is unsuccessful, an error occurs
+            // if the operation of file deleting is unsuccessful, an error occurs
+            return "{ \"error\": \"" + e.getMessage() + "\"}";
         }
     }
 
@@ -241,7 +270,8 @@ public class FileController {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
-                    String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
+                    String token = header
+                            .replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
                 } else {
                     return null;
@@ -262,7 +292,8 @@ public class FileController {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
-                    String token = header.replace("Bearer ", "");  // token is the header without the Bearer prefix
+                    String token = header
+                            .replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
                 }
             }
@@ -273,22 +304,29 @@ public class FileController {
     }
 
     @GetMapping("/create")
-    public String create(@RequestParam("fileExt") final String fileExt,  // create a sample file of the specified extension
+    public String create(@RequestParam("fileExt")
+                             final String fileExt, // create a sample file of the specified extension
                          @RequestParam(value = "sample", required = false) final Optional<Boolean> isSample,
                          @CookieValue(value = "uid", required = false) final String uid,
                          final Model model) {
-        Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();  // specify if the sample data exists or not
+        // specify if the sample data exists or not
+        Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
         if (fileExt != null) {
             try {
                 Optional<User> user = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
                 if (!user.isPresent()) {
-                    throw new RuntimeException("Could not fine any user with id = " + uid);  // if the user with the specified ID doesn't exist, an error occurs
+                    // if the user with the specified ID doesn't exist, an error occurs
+                    throw new RuntimeException("Could not fine any user with id = " + uid);
                 }
-                String fileName = documentManager.createDemo(fileExt, sampleData, uid, user.get().getName());  // create a demo document with the sample data
+                String fileName = documentManager.createDemo(fileExt,
+                        sampleData,
+                        uid,
+                        user.get().getName());  // create a demo document with the sample data
                 if (fileName.isBlank() || fileName == null) {
                     throw new RuntimeException("You must have forgotten to add asset files");
                 }
-                return "redirect:editor?fileName=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8);  // redirect the request
+                return "redirect:editor?fileName=" + URLEncoder
+                        .encode(fileName, StandardCharsets.UTF_8);  // redirect the request
             } catch (Exception ex) {
                 model.addAttribute("error", ex.getMessage());
                 return "error.html";
@@ -298,7 +336,8 @@ public class FileController {
     }
 
     @GetMapping("/assets")
-    public ResponseEntity<Resource> assets(@RequestParam("name") final String name) {  // get sample files from the assests
+    public ResponseEntity<Resource> assets(@RequestParam("name")
+                                               final String name) {  // get sample files from the assests
         String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
@@ -311,7 +350,8 @@ public class FileController {
 
     @GetMapping("/files")
     @ResponseBody
-    public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false) final String fileId) {  // get files information
+    public ArrayList<Map<String, Object>> files(@RequestParam(value = "fileId", required = false)
+                                                    final String fileId) {  // get files information
         return fileId == null ? documentManager.getFilesInfo() : documentManager.getFilesInfo(fileId);
     }
 
@@ -323,7 +363,8 @@ public class FileController {
                         @RequestBody final Track body) {
         Track track;
         try {
-            String bodyString = objectMapper.writeValueAsString(body);  // write the request body to the object mapper as a string
+            String bodyString = objectMapper
+                    .writeValueAsString(body);  // write the request body to the object mapper as a string
             String header = request.getHeader(documentJwtHeader == null  // get the request header
                     || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
 

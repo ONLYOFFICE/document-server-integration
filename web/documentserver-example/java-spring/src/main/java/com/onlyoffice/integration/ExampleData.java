@@ -63,8 +63,10 @@ public class ExampleData {
         // the description for user 2
         List<String> descriptionUserSecond = List.of(
                 "He belongs to Group2",
-                "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-                "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
+                "He can review only his own changes or the changes made by the users who don’t belong"
+                        + " to any of the groups",
+                "He can view every comment, edit his comments and the comments left by the users "
+                        + "who don't belong to any of the groups and remove only his comments",
                 "This file is favorite",
                 "Can create a file from an editor",
                 "Can see the information about users from Group2 and users who don’t belong to any group",
@@ -75,7 +77,8 @@ public class ExampleData {
         List<String> descriptionUserThird = List.of(
                 "He belongs to Group3",
                 "He can review only the changes made by the users from Group2",
-                "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
+                "He can view the comments left by the users from Group2 and Group3 and edit the comments left by "
+                        + "the users from Group2",
                 "This file isn’t favorite",
                 "He can’t copy data from the file into the clipboard",
                 "He can’t download the file",
@@ -84,24 +87,27 @@ public class ExampleData {
                 "Can see the information about Group2 users",
                 "Can view chat"
         );
-        userService.createUser("John Smith", "smith@example.com",  // create user 1 with the specified parameters
-                descriptionUserFirst, "", List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                null, true);
-        userService.createUser("Mark Pottato", "pottato@example.com",  // create user 2 with the specified parameters
-                descriptionUserSecond, "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true,
-                true);
-        userService.createUser("Hamish Mitchell", "mitchell@example.com",  // create user 3 with the specified parameters
-                descriptionUserThird, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>(), List.of("group-2"), false,
-                true);
-        userService.createUser("Anonymous", null,  // create user 0 with the specified parameters
-                descriptionUserZero, "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), new ArrayList<>(), null,
-                false);
+
+        // create user 1 with the specified parameters
+        userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
+                "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), null, true);
+
+        // create user 2 with the specified parameters
+        userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
+                "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
+                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true);
+
+        // create user 3 with the specified parameters
+        userService.createUser("Hamish Mitchell", "mitchell@example.com", descriptionUserThird,
+                "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
+                new ArrayList<>(), List.of("group-2"), false, true);
+
+        // create user 0 with the specified parameters
+        userService.createUser("Anonymous", null, descriptionUserZero, "",
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                new ArrayList<>(), null, false);
     }
 }

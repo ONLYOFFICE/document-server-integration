@@ -44,7 +44,8 @@ public class PermissionServices {
         permission.setReviewGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
         permission.setCommentsViewGroups(commentViewGroups);  // defines the groups whose comments the user can view
         permission.setCommentsEditGroups(commentEditGroups);  // defines the groups whose comments the user can edit
-        permission.setCommentsRemoveGroups(commentRemoveGroups);  // defines the groups whose comments the user can remove
+        permission.setCommentsRemoveGroups(commentRemoveGroups);  /* defines the groups
+         whose comments the user can remove */
         permission.setUserInfoGroups(userInfoGroups);
         permission.setChat(chat);
 

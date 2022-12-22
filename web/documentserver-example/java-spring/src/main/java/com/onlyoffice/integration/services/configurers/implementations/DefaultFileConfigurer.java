@@ -62,15 +62,18 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
             String fileName = wrapper.getFileName();  // get the fileName parameter from the file wrapper
             Action action = wrapper.getAction();  // get the action parameter from the file wrapper
 
-            DocumentType documentType = fileUtility.getDocumentType(fileName);  // get the document type of the specified file
+            DocumentType documentType = fileUtility
+                    .getDocumentType(fileName);  // get the document type of the specified file
             fileModel.setDocumentType(documentType);  // set the document type to the file model
             fileModel.setType(wrapper.getType());  // set the platform type to the file model
 
-            Permission userPermissions = mapper.toModel(wrapper.getUser().getPermissions());  // convert the permission entity to the model
+            Permission userPermissions = mapper.toModel(wrapper.getUser()
+                    .getPermissions());  // convert the permission entity to the model
 
             String fileExt = fileUtility.getFileExtension(wrapper.getFileName());
             Boolean canEdit = fileUtility.getEditedExts().contains(fileExt);
-            if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility.getFillExts().contains(fileExt)) {
+            if ((!canEdit && action.equals(Action.edit) || action.equals(Action.fillForms)) && fileUtility
+                    .getFillExts().contains(fileExt)) {
                 canEdit = true;
                 wrapper.setAction(Action.fillForms);
             }
@@ -84,8 +87,10 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
                     .isEnableDirectUrl(wrapper.getIsEnableDirectUrl())
                     .build();
 
-            defaultDocumentConfigurer.configure(fileModel.getDocument(), documentWrapper);  // define the document configurer
-            defaultEditorConfigConfigurer.configure(fileModel.getEditorConfig(), wrapper);  // define the editorConfig configurer
+            defaultDocumentConfigurer
+                    .configure(fileModel.getDocument(), documentWrapper);  // define the document configurer
+            defaultEditorConfigConfigurer
+                    .configure(fileModel.getEditorConfig(), wrapper);  // define the editorConfig configurer
 
             Map<String, Object> map = new HashMap<>();
             map.put("type", fileModel.getType());

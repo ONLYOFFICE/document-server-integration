@@ -37,7 +37,8 @@ public class GroupServices {
         if (name == null) {
             return null;  // check if a name is specified
         }
-        Optional<Group> group = groupRepository.findGroupByName(name);  // check if group with such a name already exists
+        Optional<Group> group = groupRepository
+                .findGroupByName(name);  // check if group with such a name already exists
         if (group.isPresent()) {
             return group.get();  // if it exists, return it
         }
@@ -54,7 +55,8 @@ public class GroupServices {
         if (reviewGroups == null) {
             return null;  // check if the reviewGroups permission exists
         }
-        return reviewGroups.stream()  // convert this parameter to a list of groups whose changes the user can accept/reject
+        // convert this parameter to a list of groups whose changes the user can accept/reject
+        return reviewGroups.stream()
                 .map(group -> createGroup(group))
                 .collect(Collectors.toList());
     }

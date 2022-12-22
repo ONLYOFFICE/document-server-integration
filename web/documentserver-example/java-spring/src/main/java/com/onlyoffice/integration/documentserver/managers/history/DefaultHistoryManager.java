@@ -65,7 +65,9 @@ public class DefaultHistoryManager implements HistoryManager {
     // todo: Refactoring
     @SneakyThrows
     public String[] getHistory(final Document document) {  // get document history
-        String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(document.getTitle()));  // get history directory
+
+        // get history directory
+        String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(document.getTitle()));
         Integer curVer = storagePathBuilder.getFileVersion(histDir, false);  // get current file version
 
         if (curVer > 0) {  // check if the current file version is greater than 0
@@ -75,14 +77,17 @@ public class DefaultHistoryManager implements HistoryManager {
             for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
                 Map<String, Object> obj = new HashMap<String, Object>();
                 Map<String, Object> dataObj = new HashMap<String, Object>();
-                String verDir = documentManager.versionDir(histDir, i, true);  // get the path to the given file version
+                String verDir = documentManager
+                        .versionDir(histDir, i, true);  // get the path to the given file version
 
-                String key = i == curVer ? document.getKey() : readFileToEnd(new File(verDir + File.separator + "key.txt"));  // get document key
+                String key = i == curVer ? document.getKey() : readFileToEnd(new File(verDir
+                        + File.separator + "key.txt"));  // get document key
                 obj.put("key", key);
                 obj.put("version", i);
 
                 if (i == 1) {  // check if the version number is equal to 1
-                    String createdInfo = readFileToEnd(new File(histDir + File.separator + "createdInfo.json"));  // get file with meta data
+                    String createdInfo = readFileToEnd(new File(histDir
+                            + File.separator + "createdInfo.json"));  // get file with meta data
                     JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
 
                     // write meta information to the object (user information and creation date)
@@ -93,19 +98,23 @@ public class DefaultHistoryManager implements HistoryManager {
                     obj.put("user", user);
                 }
 
-                dataObj.put("fileType", fileUtility.getFileExtension(document.getTitle()).replace(".", ""));
+                dataObj.put("fileType", fileUtility
+                        .getFileExtension(document.getTitle()).replace(".", ""));
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl()
-                        : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), true));
+                        : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility
+                        .getFileExtension(document.getTitle()), true));
                 if (!document.getDirectUrl().equals("")) {
                     dataObj.put("directUrl", i == curVer ? document.getDirectUrl()
-                            : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility.getFileExtension(document.getTitle()), false));
+                            : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility
+                            .getFileExtension(document.getTitle()), false));
                 }
                 dataObj.put("version", i);
 
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
-                    JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(documentManager.versionDir(histDir, i - 1, true) + File.separator + "changes.json")));
+                    JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(documentManager
+                            .versionDir(histDir, i - 1, true) + File.separator + "changes.json")));
                     JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
 
                     // write information about changes to the object
@@ -114,7 +123,8 @@ public class DefaultHistoryManager implements HistoryManager {
                     obj.put("created", change.get("created"));
                     obj.put("user", change.get("user"));
 
-                    Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));  // get the history data from the previous file version
+                    // get the history data from the previous file version
+                    Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));
                     Map<String, Object> prevInfo = new HashMap<String, Object>();
                     prevInfo.put("fileType", prev.get("fileType"));
                     prevInfo.put("key", prev.get("key"));  // write key and URL information about previous file version
@@ -122,10 +132,13 @@ public class DefaultHistoryManager implements HistoryManager {
                     if (!document.getDirectUrl().equals("")) {
                         prevInfo.put("directUrl", prev.get("directUrl"));
                     }
-                    dataObj.put("previous", prevInfo);  // write information about previous file version to the data object
+
+                    // write information about previous file version to the data object
+                    dataObj.put("previous", prevInfo);
                     // write the path to the diff.zip archive with differences in this file version
                     Integer verdiff = i - 1;
-                    dataObj.put("changesUrl", documentManager.getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
+                    dataObj.put("changesUrl", documentManager
+                            .getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 
                 if (jwtManager.tokenEnabled()) {
@@ -142,7 +155,8 @@ public class DefaultHistoryManager implements HistoryManager {
             histObj.put("history", hist);
 
             try {
-                return new String[]{objectMapper.writeValueAsString(histObj), objectMapper.writeValueAsString(histData)};
+                return new String[]{objectMapper.writeValueAsString(histObj),
+                        objectMapper.writeValueAsString(histData)};
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

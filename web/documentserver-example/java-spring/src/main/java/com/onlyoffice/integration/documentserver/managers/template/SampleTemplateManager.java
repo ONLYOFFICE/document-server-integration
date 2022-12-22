@@ -44,8 +44,11 @@ public class SampleTemplateManager implements TemplateManager {
     // create a template document with the specified name
     public List<Template> createTemplates(final String fileName) {
         List<Template> templates = List.of(
-                new Template("", "Blank", documentManager.getCreateUrl(fileName, false)),  // create a blank template
-                new Template(getTemplateImageUrl(fileName), "With sample content", documentManager.getCreateUrl(fileName, true))  // create a template with sample content using the template image
+                new Template("", "Blank", documentManager
+                        .getCreateUrl(fileName, false)),  // create a blank template
+                new Template(getTemplateImageUrl(fileName), "With sample content", documentManager
+                        .getCreateUrl(fileName,
+                                true))  // create a template with sample content using the template image
         );
 
         return templates;

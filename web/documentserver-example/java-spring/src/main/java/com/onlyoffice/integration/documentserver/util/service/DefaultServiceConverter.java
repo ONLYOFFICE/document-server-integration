@@ -77,7 +77,8 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     @SneakyThrows
     private String postToServer(final Convert body, final String headerToken) {  // send the POST request to the server
-        String bodyString = objectMapper.writeValueAsString(body);  // write the body request to the object mapper in the string format
+        String bodyString = objectMapper
+                .writeValueAsString(body);  // write the body request to the object mapper in the string format
         URL url = null;
         java.net.HttpURLConnection connection = null;
         InputStream response = null;
@@ -135,7 +136,8 @@ public class DefaultServiceConverter implements ServiceConverter {
         String title = fileUtility.getFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
-        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
+        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty()
+                ? documentUri : documentRevisionId;
 
         documentRevId = generateRevisionId(documentRevId);  // create document token
 
@@ -182,8 +184,10 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     // generate document key
     public String generateRevisionId(final String expectedKey) {
-        // if the expected key length is greater than 20 then he expected key is hashed and a fixed length value is stored in the string format
-        String formatKey = expectedKey.length() > MAX_KEY_LENGTH ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        /* if the expected key length is greater than 20
+        then he expected key is hashed and a fixed length value is stored in the string format */
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH
+                ? Integer.toString(expectedKey.hashCode()) : expectedKey;
         String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
         return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
@@ -218,7 +222,9 @@ public class DefaultServiceConverter implements ServiceConverter {
             responseUri = (String) jsonObj.get("fileUrl");  // get the file URL
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value of the conversion process
+
+            // get the percentage value of the conversion process
+            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;
         }
 
         return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
@@ -229,7 +235,9 @@ public class DefaultServiceConverter implements ServiceConverter {
     public String convertStreamToString(final InputStream stream) {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
+
+        // create an object to read incoming streams
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();  // get incoming streams by lines
 
         while (line != null) {

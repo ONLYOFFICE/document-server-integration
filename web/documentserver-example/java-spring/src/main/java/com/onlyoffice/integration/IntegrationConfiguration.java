@@ -54,7 +54,8 @@ public class IntegrationConfiguration {
                 .setMatchingStrategy(MatchingStrategies.STRICT)  // specify the STRICT matching strategy
                 .setFieldMatchingEnabled(true)  // define if the field matching is enabled or not
                 .setSkipNullEnabled(true)  // define if null value will be skipped or not
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);  // specify the PRIVATE field access level
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);  /* specify
+                 the PRIVATE field access level */
         return mapper;
     }
 

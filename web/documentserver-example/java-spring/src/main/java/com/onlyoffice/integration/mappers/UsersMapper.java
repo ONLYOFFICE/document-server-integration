@@ -38,12 +38,16 @@ public class UsersMapper extends AbstractMapper<User, com.onlyoffice.integration
 
     @PostConstruct
     public void configure() {  // configure the users mapper
-        mapper.createTypeMap(User.class, com.onlyoffice.integration.documentserver.models.filemodel.User.class)  // create the type map
+        mapper.createTypeMap(User.class, com.onlyoffice.integration.documentserver.models.filemodel
+                        .User.class)  // create the type map
                 .setPostConverter(modelConverter());  // and apply the post converter to it
     }
 
     @Override
-    public void handleSpecificFields(final User source, final com.onlyoffice.integration.documentserver.models.filemodel.User destination) {  // handle specific users fields
-        destination.setGroup(source.getGroup() != null ? source.getGroup().getName() : null);  // set the Group parameter
+    public void handleSpecificFields(final User source,
+                                     final com.onlyoffice.integration.documentserver.models.filemodel
+                                             .User destination) {  // handle specific users fields
+        destination.setGroup(source.getGroup() != null
+                ? source.getGroup().getName() : null);  // set the Group parameter
     }
 }

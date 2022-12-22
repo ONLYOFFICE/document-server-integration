@@ -71,7 +71,8 @@ public class DefaultDocumentManager implements DocumentManager {
     // get URL to the created file
     public String getCreateUrl(final String fileName, final Boolean sample) {
         String fileExt = fileName.substring(fileName.length() - EXT_LENGTH_PART);
-        String url = storagePathBuilder.getServerUrl(true) + "/create?fileExt=" + fileExt + "&sample=" + sample;
+        String url = storagePathBuilder.getServerUrl(true)
+                + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
     }
 
@@ -83,7 +84,8 @@ public class DefaultDocumentManager implements DocumentManager {
 
         Path path = Paths.get(storagePathBuilder.getFileLocation(name));
 
-        for (int i = 1; Files.exists(path); i++) {  // run through all the files with such a name in the storage directory
+        // run through all the files with such a name in the storage directory
+        for (int i = 1; Files.exists(path); i++) {
             name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
             path = Paths.get(storagePathBuilder.getFileLocation(name));
         }
@@ -97,13 +99,15 @@ public class DefaultDocumentManager implements DocumentManager {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
-                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
+                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost()
+                    .getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
             if (!filesStorage.isEmpty() && filePathDownload.contains(filesStorage)) {
                 filePathDownload = filePathDownload.substring(filesStorage.length() + 1);
             }
 
-            String filePath = serverPath + "/download?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String filePath = serverPath + "/download?fileName=" + URLEncoder
+                    .encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress"
+                    + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return filePath;
         } catch (UnsupportedEncodingException | UnknownHostException e) {
             return "";
@@ -117,9 +121,12 @@ public class DefaultDocumentManager implements DocumentManager {
             String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
             String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
             String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
-                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
-            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder.encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress())
+                    + InetAddress.getLocalHost().getHostAddress().length() + 1);
+            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder
+                    .encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
                 + "&ver=" + version + "&file=" + file
                 + userAddress;
             return filePath;
@@ -135,7 +142,8 @@ public class DefaultDocumentManager implements DocumentManager {
         try {
             String query = trackUrl + "?fileName="
                     + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+                    + "&userAddress=" + URLEncoder
+                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
             return serverPath + query;
         } catch (UnsupportedEncodingException e) {
             return "";
@@ -147,7 +155,8 @@ public class DefaultDocumentManager implements DocumentManager {
         String serverPath = storagePathBuilder.getServerUrl(isServer);
         String storageAddress = storagePathBuilder.getStorageLocation();
         try {
-            String userAddress = isServer ? "&userAddress=" + URLEncoder.encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String userAddress = isServer ? "&userAddress=" + URLEncoder
+                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
             String query = downloadUrl + "?fileName="
                     + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
                     + userAddress;
@@ -207,9 +216,13 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // create demo document
     public String createDemo(final String fileExt, final Boolean sample, final String uid, final String uname) {
-        String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-        String demoPath = "assets" + File.separator  + (sample ? "sample" : "new") + File.separator + demoName;  // get the path to the sample document
-        String fileName = getCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
+        String demoName = (sample ? "sample." : "new.")
+                + fileExt;  // create sample or new template file with the necessary extension
+        String demoPath = "assets" + File.separator  + (sample ? "sample" : "new")
+                + File.separator + demoName;  // get the path to the sample document
+
+        // get a file name with an index if the file with such a name already exists
+        String fileName = getCorrectName(demoName);
 
         InputStream stream = Thread.currentThread()
                                     .getContextClassLoader()
@@ -219,7 +232,8 @@ public class DefaultDocumentManager implements DocumentManager {
             return null;
         }
 
-        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);  // create a file in the specified directory
+        storageMutator.createFile(Path.of(storagePathBuilder
+                .getFileLocation(fileName)), stream);  // create a file in the specified directory
         storageMutator.createMeta(fileName, uid, uname);  // create meta information of the demo file
 
         return fileName;
