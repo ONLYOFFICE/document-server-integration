@@ -481,30 +481,24 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
 
     var referenceData = req.body.referenceData;
     if (!!referenceData) {
-        var portalName = referenceData.portalName;
+        var instanceId = referenceData.instanceId;
 
-        if (portalName != req.docManager.getServerUrl()) {
-            result({ "error": "You do not have access to this site" });
-            return;
-        }
+        if (instanceId === req.docManager.getInstanceId()) {
+            var fileKey = JSON.parse(referenceData.fileKey);
+            var userAddress = fileKey.userAddress;
 
-        var fileId = JSON.parse(referenceData.fileId);
-        var userAddress = fileId.userAddress;
-        if (userAddress != req.docManager.curUserHostAddress()) {
-            result({ "error": "You do not have access to this file" });
-            return;
+            if (userAddress === req.docManager.curUserHostAddress()
+                && req.docManager.existsSync(req.docManager.storagePath(fileKey.fileName, userAddress))) {
+                var fileName = fileKey.fileName;
+            }
         }
+    }
 
-        var fileName = fileId.fileName;
-        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
-            result({ "error": "File is not exist" });
-            return;
-        }
-    } else if (!!req.body.path) {
-        var fileName = fileUtility.getFileName(req.body.path);
-        if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {
-            result({ "error": "File is not exist" });
-            return;
+    if (!fileName && !!req.body.path) {
+        var path = fileUtility.getFileName(req.body.path);
+
+        if (req.docManager.existsSync(req.docManager.storagePath(path, userAddress))) {
+            fileName = path;
         }
     }
 
@@ -517,8 +511,8 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
         url: req.docManager.getDownloadUrl(fileName, true),
         directUrl: req.docManager.getDownloadUrl(fileName),
         referenceData: {
-            fileId: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
-            portalName: req.docManager.getServerUrl()
+            fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            instanceId: req.docManager.getServerUrl()
         },
         path: fileName,
     });
@@ -834,11 +828,6 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             }
         }
 
-        var referenceData = {
-            fileId: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
-            portalName: req.docManager.getServerUrl()
-        };
-
         var type = req.query.type || ""; // type: embedded/mobile/desktop
         if (type == "") {
             type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
@@ -1006,7 +995,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
                 actionData: actionData,
-                referenceData: userid != "uid-0" ? referenceData : null
+                fileKey: userid != "uid-0" ? JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
+                instanceId: userid != "uid-0" ? req.docManager.getInstanceId() : null
             },
             history: history,
             historyData: historyData,

@@ -22,7 +22,10 @@
         "commentGroups": <%- editor.commentGroups %>,
         "userInfoGroups": <%- editor.userInfoGroups %>
     },
-    "referenceData": <%- JSON.stringify(editor.referenceData) %>,
+    "referenceData": {
+        "fileKey": <%- JSON.stringify(editor.fileKey) %>,
+        "instanceId": <%- JSON.stringify(editor.instanceId) %>
+    },
     "title": "<%- file.name %>",
     "url": "<%- file.uri %>"
 },
