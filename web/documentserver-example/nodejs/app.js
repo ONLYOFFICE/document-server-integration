@@ -130,17 +130,19 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
 
-    if ((cfgSignatureEnable && cfgSignatureUseForRequest)) {
+    if (!!userAddress
+        && cfgSignatureEnable && cfgSignatureUseForRequest) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
-            try {
-                var decoded = jwt.verify(token, cfgSignatureSecret);
-            } catch (err) {
-                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
-                res.sendStatus(403);
-                return;
-            }
+        }
+
+        try {
+            var decoded = jwt.verify(token, cfgSignatureSecret);
+        } catch (err) {
+            console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+            res.sendStatus(403);
+            return;
         }
     }
 
