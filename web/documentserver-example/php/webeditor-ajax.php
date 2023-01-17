@@ -411,7 +411,7 @@ function download() {
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 
-        if (isJwtEnabled() && $isEmbedded == null) {
+        if (isJwtEnabled() && $isEmbedded == null && !$userAddress) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
