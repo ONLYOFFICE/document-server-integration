@@ -411,17 +411,16 @@ function download() {
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 
-        if (isJwtEnabled() && $isEmbedded == null) {
+        if (isJwtEnabled() && $isEmbedded == null && $userAddress) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
-                if (empty($token)) {
-                    http_response_code(403);
-                    die("Invalid JWT signature");
-                }
+            }
+            if (empty($token)) {
+                http_response_code(403);
+                die("Invalid JWT signature");
             }
         }
-
         $filePath = getForcesavePath($fileName, $userAddress, false);  // get the path to the forcesaved file version
         if ($filePath == "") {
             $filePath = getStoragePath($fileName, $userAddress);  // get file from the storage directory
@@ -486,5 +485,3 @@ function renamefile() {
 
     return array("result" => $commandRequest);
 }
-
-?>
