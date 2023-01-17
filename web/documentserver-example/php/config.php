@@ -4,7 +4,7 @@ $GLOBALS['version'] = "1.5.0";
 
 $GLOBALS['FILE_SIZE_MAX'] = 5242880;
 $GLOBALS['STORAGE_PATH'] = "";
-$GLOBALS['ALONE'] = FALSE;
+$GLOBALS['ALONE'] = false;
 
 $GLOBALS['DOC_SERV_FILLFORMS'] = array(".oform", ".docx");
 $GLOBALS['DOC_SERV_VIEWD'] = array(".pdf", ".djvu", ".xps", ".oxps");
@@ -23,8 +23,9 @@ $GLOBALS['DOC_SERV_COMMAND_URL'] = "coauthoring/CommandService.ashx";
 
 $GLOBALS['DOC_SERV_JWT_SECRET'] = "";
 $GLOBALS['DOC_SERV_JWT_HEADER'] = "Authorization";
+$GLOBALS['DOC_SERV_JWT_USE_FOR_REQUEST'] = true;
 
-$GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] = TRUE;
+$GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] = true;
 
 $GLOBALS['EXAMPLE_URL'] = "";
 
@@ -87,4 +88,3 @@ $GLOBALS['LANGUAGES'] = array(
     'vi' => 'Vietnamese',
     'aa-AA' => 'Test Language'
 );
-?>
