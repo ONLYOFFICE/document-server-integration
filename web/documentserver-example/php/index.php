@@ -22,8 +22,8 @@
     require_once( dirname(__FILE__) . '/functions.php' );
     require_once( dirname(__FILE__) . '/users.php' );
 
-    $user = $_GET["user"];
-    $directUrlArg = $_GET["directUrl"] != null ? "&directUrl=" . $_GET["directUrl"] : "";
+    $user = isset($_GET["user"]) ? $_GET["user"] : "";
+    $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

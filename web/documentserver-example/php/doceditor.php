@@ -23,13 +23,12 @@
     require_once( dirname(__FILE__) . '/jwtmanager.php' );
     require_once( dirname(__FILE__) . '/users.php' );
 
-    $filename;
 
     $user = getUser($_GET["user"]);
-    $isEnableDirectUrl = $_GET["directUrl"] != null ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
+    $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
     // get the file url and upload it
-    $externalUrl = $_GET["fileUrl"];
+    $externalUrl = isset($_GET["fileUrl"]) ? $_GET["fileUrl"] : "";
     if (!empty($externalUrl))
     {
         $filename = DoUpload($externalUrl);
@@ -39,7 +38,7 @@
     {
         $filename = basename($_GET["fileID"]);
     }
-    $createExt = $_GET["fileExt"];
+    $createExt = isset($_GET["fileExt"]) ? $_GET["fileExt"] : "";
 
     if (!empty($createExt))
     {
