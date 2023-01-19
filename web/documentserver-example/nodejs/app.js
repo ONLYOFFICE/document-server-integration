@@ -888,6 +888,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         } else {  // if history path is empty
             history.push(req.docManager.getHistory(fileName, changes, keyVersion, countVersion));  // write the history information about the last file version
             historyData.push({
+                fileType: fileExt.slice(1),
                 version: countVersion,
                 key: key,
                 url: url,
