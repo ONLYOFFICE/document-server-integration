@@ -517,22 +517,23 @@ public class IndexServlet extends HttpServlet {
             String userAddress = request.getParameter("userAddress");
             String isEmbedded = request.getParameter("dmode");
 
-            if (DocumentManager.tokenEnabled() && isEmbedded == null) {
+            if (DocumentManager.tokenEnabled() && isEmbedded == null && userAddress != null) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
                 String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty()
                         ? "Authorization" : documentJwtHeader);
+                String token = "";
                 if (header != null && !header.isEmpty()) {
                     String bearerPrefix = "Bearer ";
-                    String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
-                    try {
-                        Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
-                        JWT jwt = JWT.getDecoder().decode(token, verifier);
-                    } catch (Exception e) {
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
-                        return;
-                    }
+                    token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
+                }
+                try {
+                    Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
+                    JWT jwt = JWT.getDecoder().decode(token, verifier);
+                } catch (Exception e) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
+                    return;
                 }
             }
 
