@@ -155,6 +155,8 @@
             innerAlert("onRequestReferenceData");
             innerAlert(event.data);
 
+            event.data.directUrl = !!config.document.directUrl;
+
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "reference");
             xhr.setRequestHeader("Content-Type", "application/json");

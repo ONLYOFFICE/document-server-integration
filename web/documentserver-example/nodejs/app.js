@@ -509,15 +509,22 @@ app.post("/reference", function (req, res) { //define a handler for renaming fil
         return;
     }
 
-    result({
+    var data = {
+        fileType: fileUtility.getFileExtension(fileName).slice(1),
         url: req.docManager.getDownloadUrl(fileName, true),
-        directUrl: req.docManager.getDownloadUrl(fileName),
+        directUrl: req.body.directUrl ? req.docManager.getDownloadUrl(fileName) : null,
         referenceData: {
             fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
             instanceId: req.docManager.getServerUrl()
         },
         path: fileName,
-    });
+    };
+
+    if (cfgSignatureEnable) {
+        data.token = jwt.sign(data, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});  // sign token with given data using signature secret
+    }
+
+    result(data);
 });
 
 app.post("/track", async function (req, res) {  // define a handler for tracking file changes
