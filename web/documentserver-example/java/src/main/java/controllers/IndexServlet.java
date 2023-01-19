@@ -488,7 +488,7 @@ public class IndexServlet extends HttpServlet
             String userAddress = request.getParameter("userAddress");
             String isEmbedded = request.getParameter("dmode");
 
-            if (DocumentManager.TokenEnabled() && isEmbedded == null) {
+            if (DocumentManager.TokenEnabled() && isEmbedded == null && userAddress == null) {
 
                 String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
 
