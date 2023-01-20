@@ -400,7 +400,7 @@ def download(request):
         userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and userAddress):
+        if (jwtManager.isEnabled() and isEmbedded == None and userAddress and config.DOC_SERV_JWT_USE_FOR_REQUEST):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
