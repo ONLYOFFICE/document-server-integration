@@ -78,6 +78,9 @@ public class FileController {
     @Value("${files.docservice.url.command}")
     private String docserviceUrlCommand;
 
+    @Value("${files.docservice.token-use-for-request}")
+    private String tokenUseForRequest;
+
     @Autowired
     private FileUtility fileUtility;
     @Autowired
@@ -289,7 +292,7 @@ public class FileController {
                                              @RequestParam(value = "userAddress", required = false) final String userAddress){
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && userAddress != null) {
+            if (jwtManager.tokenEnabled() && userAddress != null && Boolean.parseBoolean(tokenUseForRequest)) {
                 String header = request.getHeader(documentJwtHeader == null // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
