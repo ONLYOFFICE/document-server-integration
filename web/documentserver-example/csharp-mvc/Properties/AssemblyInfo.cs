@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ascensio System SIA")]
 [assembly: AssemblyProduct("OnlineEditorsExampleMVC")]
-[assembly: AssemblyCopyright("Ascensio System SIA 2021")]
+[assembly: AssemblyCopyright("Ascensio System SIA 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

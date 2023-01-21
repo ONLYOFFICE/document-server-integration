@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public interface Callback {
     int handle(Track body, String fileName);  // handle the callback
     int getStatus();  // get document status
     @Autowired
-    default void selfRegistration(CallbackHandler callbackHandler){  // register a callback handler
+    default void selfRegistration(CallbackHandler callbackHandler) {  // register a callback handler
         callbackHandler.register(getStatus(), this);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,9 +86,6 @@ function processSave($data, $fileName, $userAddress) {
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
-    // TODO [Delete in version 7.0 or higher]
-    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION)); // Support for versions below 7.0
-
     $newFileName = $fileName;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -164,9 +161,6 @@ function processForceSave($data, $fileName, $userAddress) {
     $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
     $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
-    // TODO [Delete in version 7.0 or higher]
-    if (!$downloadExt) $downloadExt = strtolower('.' . pathinfo($downloadUri, PATHINFO_EXTENSION));    // Support for versions below 7.0
-    
     $newFileName = false;
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal

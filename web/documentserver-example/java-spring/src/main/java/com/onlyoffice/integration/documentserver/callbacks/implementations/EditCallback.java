@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,18 @@ public class EditCallback implements Callback {
     @Autowired
     private CallbackManager callbackManager;
     @Override
-    public int handle(Track body, String fileName) {  // handle the callback when the document is being edited
+    public int handle(final Track body,
+                      final String fileName) {  // handle the callback when the document is being edited
         int result = 0;
         Action action =  body.getActions().get(0);  // get the user ID who is editing the document
-        if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums.Action.edit)) {  // if this value is not equal to the user ID
+        if (action.getType().equals(com.onlyoffice.integration.documentserver.models.enums
+                .Action.edit)) {  // if this value is not equal to the user ID
             String user =  action.getUserid();  // get user ID
             if (!body.getUsers().contains(user)) {  // if this user is not specified in the body
                 String key = body.getKey();  // get document key
                 try {
-                    callbackManager.commandRequest("forcesave", key, null);  // create a command request to forcibly save the document being edited without closing it
+                    // create a command request to forcibly save the document being edited without closing it
+                    callbackManager.commandRequest("forcesave", key, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     result = 1;
