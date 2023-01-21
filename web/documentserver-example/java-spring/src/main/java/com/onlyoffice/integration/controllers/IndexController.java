@@ -21,16 +21,25 @@ package com.onlyoffice.integration.controllers;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
-import com.onlyoffice.integration.entities.*;
-import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin("*")
@@ -68,8 +77,8 @@ public class IndexController {
     private String langs;
 
     @GetMapping("${url.index}")
-    public String index(@RequestParam(value = "directUrl", required = false) Boolean directUrl,
-                        Model model){
+    public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
+                        final Model model) {
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
@@ -87,24 +96,30 @@ public class IndexController {
         List<User> users = userService.findAll();  // get a list of all the users
 
         String tooltip = users.stream()  // get the tooltip with the user descriptions
-                .map(user -> mistUtility.convertUserDescriptions(user.getName(), user.getDescriptions()))  // convert user descriptions to the specified format
+                .map(user -> mistUtility.convertUserDescriptions(user.getName(),
+                        user.getDescriptions()))  // convert user descriptions to the specified format
                 .collect(Collectors.joining());
 
-        for(java.io.File file:files){  // run through all the files
+        for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
-            docTypes.add(fileUtility.getDocumentType(fileName).toString().toLowerCase());  // add a document type of each file to the list
-            filesEditable.add(fileUtility.getEditedExts().contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
-            versions.add(" ["+storagePathBuilder.getFileVersion(fileName, true)+"]");  // add a file version to the list
+            docTypes.add(fileUtility
+                    .getDocumentType(fileName)
+                    .toString()
+                    .toLowerCase());  // add a document type of each file to the list
+            filesEditable.add(fileUtility.getEditedExts()
+                    .contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
+            versions.add(" [" + storagePathBuilder.
+                    getFileVersion(fileName, true) + "]");  // add a file version to the list
             isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
         }
 
         // add all the parameters to the model
         model.addAttribute("isFillFormDoc", isFillFormDoc);
-        model.addAttribute("versions",versions);
+        model.addAttribute("versions", versions);
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
-        model.addAttribute("datadocs", docserviceSite+docservicePreloader);
+        model.addAttribute("datadocs", docserviceSite + docservicePreloader);
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
@@ -115,12 +130,15 @@ public class IndexController {
 
     @PostMapping("/config")
     @ResponseBody
-    public HashMap<String, String> configParameters(){  // get configuration parameters
+    public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
 
-        configuration.put("FillExtList", String.join(",", fileUtility.getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility.getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility.getEditedExts()));  // put a list of the extensions that can be edited to config
+        configuration.put("FillExtList", String.join(",", fileUtility
+                .getFillExts()));  // put a list of the extensions that can be filled to config
+        configuration.put("ConverExtList", String.join(",", fileUtility
+                .getConvertExts()));  // put a list of the extensions that can be converted to config
+        configuration.put("EditedExtList", String.join(",", fileUtility
+                .getEditedExts()));  // put a list of the extensions that can be edited to config
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 

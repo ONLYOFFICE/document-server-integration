@@ -68,26 +68,35 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
     private FileUtility fileUtility;
 
     @SneakyThrows
-    public void configure(EditorConfig config, DefaultFileWrapper wrapper){  // define the editorConfig configurer
+    public void configure(final EditorConfig config,
+                          final DefaultFileWrapper wrapper) {  // define the editorConfig configurer
         if (wrapper.getActionData() != null) {  // check if the actionData is not empty in the editorConfig wrapper
-            config.setActionLink(objectMapper.readValue(wrapper.getActionData(), (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));  // set actionLink to the editorConfig
+
+            // set actionLink to the editorConfig
+            config.setActionLink(objectMapper.readValue(wrapper.getActionData(),
+                    (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));
         }
         String fileName = wrapper.getFileName();  // set the fileName parameter from the editorConfig wrapper
         String fileExt = fileUtility.getFileExtension(fileName);
-        boolean userIsAnon = wrapper.getUser().getName().equals("Anonymous");  // check if the user from the editorConfig wrapper is anonymous or not
+        boolean userIsAnon = wrapper.getUser()
+                .getName().equals("Anonymous");  // check if the user from the editorConfig wrapper is anonymous or not
 
-        config.setTemplates(userIsAnon ? null : templateManager.createTemplates(fileName));  // set a template to the editorConfig if the user is not anonymous
+        // set a template to the editorConfig if the user is not anonymous
+        config.setTemplates(userIsAnon ? null : templateManager.createTemplates(fileName));
         config.setCallbackUrl(documentManager.getCallback(fileName));  // set the callback URL to the editorConfig
-        config.setCreateUrl(userIsAnon ? null : documentManager.getCreateUrl(fileName, false));  // set the document URL where it will be created to the editorConfig if the user is not anonymous
+
+        // set the document URL where it will be created to the editorConfig if the user is not anonymous
+        config.setCreateUrl(userIsAnon ? null : documentManager.getCreateUrl(fileName, false));
         config.setLang(wrapper.getLang());  // set the language to the editorConfig
         Boolean canEdit = wrapper.getCanEdit();  // check if the file of the specified type can be edited or not
         Action action = wrapper.getAction();  // get the action parameter from the editorConfig wrapper
-        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<String, Object>()  {{ 
+        config.setCoEditing(action.equals(Action.view) && userIsAnon ? new HashMap<String, Object>() {{
             put("mode", "strict");
             put("change", false);
         }} : null);
 
-        defaultCustomizationConfigurer.configure(config.getCustomization(), DefaultCustomizationWrapper.builder()  // define the customization configurer
+        defaultCustomizationConfigurer.configure(config.getCustomization(),
+                DefaultCustomizationWrapper.builder()  // define the customization configurer
                 .action(action)
                 .user(userIsAnon ? null : wrapper.getUser())
                 .build());

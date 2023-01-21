@@ -28,16 +28,16 @@ import java.util.Objects;
 
 public abstract class AbstractMapper<E extends AbstractEntity, M extends AbstractModel> implements Mapper<E, M> {
     @Autowired
-    ModelMapper mapper;
+    private ModelMapper mapper;
 
     private Class<M> modelClass;
 
-    AbstractMapper(Class<M> modelClass) {
-        this.modelClass = modelClass;
+    AbstractMapper(final Class<M> modelClassParam) {
+        this.modelClass = modelClassParam;
     }
 
     @Override
-    public M toModel(E entity) {  // convert the entity to the model
+    public M toModel(final E entity) {  // convert the entity to the model
         return Objects.isNull(entity)  // check if an entity is not empty
                 ? null
                 : mapper.map(entity, modelClass);  // and add it to the model mapper
@@ -53,6 +53,6 @@ public abstract class AbstractMapper<E extends AbstractEntity, M extends Abstrac
     }
 
 
-    void handleSpecificFields(E source, M destination) {
+    void handleSpecificFields(final E source, final M destination) {
     }
 }

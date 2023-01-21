@@ -37,5 +37,5 @@ import java.io.Serializable;
 public abstract class AbstractEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 }

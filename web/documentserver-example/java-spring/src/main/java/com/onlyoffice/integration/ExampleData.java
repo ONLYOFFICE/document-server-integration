@@ -32,8 +32,9 @@ public class ExampleData {
     @Autowired
     private UserServices userService;
     @PostConstruct
-    public void init(){
-        List<String> description_user_0=List.of(  // the description for user 0
+    public void init() {
+        // the description for user 0
+        List<String> descriptionUserZero = List.of(
                 "The name is requested when the editor is opened",
                 "Doesn’t belong to any group",
                 "Can review all the changes",
@@ -46,7 +47,9 @@ public class ExampleData {
                 "Can't view chat",
                 "View file without collaboration"
         );
-        List<String> description_user_1 = List.of(  // the description for user 1
+
+        // the description for user 1
+        List<String> descriptionUserFirst = List.of(
                 "File author by default",
                 "He doesn’t belong to any of the groups",
                 "He can review all the changes",
@@ -56,19 +59,26 @@ public class ExampleData {
                 "Can see the information about all users",
                 "Can view chat"
         );
-        List<String> description_user_2 = List.of(  // the description for user 2
+
+        // the description for user 2
+        List<String> descriptionUserSecond = List.of(
                 "He belongs to Group2",
-                "He can review only his own changes or the changes made by the users who don’t belong to any of the groups",
-                "He can view every comment, edit his comments and the comments left by the users who don't belong to any of the groups and remove only his comments",
+                "He can review only his own changes or the changes made by the users who don’t belong"
+                        + " to any of the groups",
+                "He can view every comment, edit his comments and the comments left by the users "
+                        + "who don't belong to any of the groups and remove only his comments",
                 "This file is favorite",
                 "Can create a file from an editor",
                 "Can see the information about users from Group2 and users who don’t belong to any group",
                 "Can view chat"
         );
-        List<String> description_user_3 = List.of(  // the description for user 3
+
+        // the description for user 3
+        List<String> descriptionUserThird = List.of(
                 "He belongs to Group3",
                 "He can review only the changes made by the users from Group2",
-                "He can view the comments left by the users from Group2 and Group3 and edit the comments left by the users from Group2",
+                "He can view the comments left by the users from Group2 and Group3 and edit the comments left by "
+                        + "the users from Group2",
                 "This file isn’t favorite",
                 "He can’t copy data from the file into the clipboard",
                 "He can’t download the file",
@@ -77,24 +87,27 @@ public class ExampleData {
                 "Can see the information about Group2 users",
                 "Can view chat"
         );
-        userService.createUser("John Smith", "smith@example.com",  // create user 1 with the specified parameters
-                description_user_1, "", List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()),
-                null, true);
-        userService.createUser("Mark Pottato", "pottato@example.com",  // create user 2 with the specified parameters
-                description_user_2, "group-2", List.of("","group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true,
-                true);
-        userService.createUser("Hamish Mitchell", "mitchell@example.com",  // create user 3 with the specified parameters
-                description_user_3, "group-3", List.of("group-2"), List.of("group-2", "group-3"),
-                List.of("group-2"), new ArrayList<>(), List.of("group-2"), false,
-                true);
-        userService.createUser("Anonymous",null,  // create user 0 with the specified parameters
-                description_user_0,"", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()), new ArrayList<>(),null,
-                false);
+
+        // create user 1 with the specified parameters
+        userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
+                "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), null, true);
+
+        // create user 2 with the specified parameters
+        userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
+                "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
+                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true);
+
+        // create user 3 with the specified parameters
+        userService.createUser("Hamish Mitchell", "mitchell@example.com", descriptionUserThird,
+                "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
+                new ArrayList<>(), List.of("group-2"), false, true);
+
+        // create user 0 with the specified parameters
+        userService.createUser("Anonymous", null, descriptionUserZero, "",
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
+                new ArrayList<>(), null, false);
     }
 }

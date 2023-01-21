@@ -38,7 +38,8 @@ public class Goback {  // the settings for the Open file location menu button an
     private String indexMapping;
 
     @Getter
-    private String url;  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+    private String url;  /* the absolute URL to the website address which will be opened
+    when clicking the Open file location menu button */
 
     @PostConstruct
     private void init() {

@@ -26,10 +26,10 @@ public enum Status {
     MUST_FORCE_SAVE(6),  // 6 - document is being edited, but the current document state is saved
     CORRUPTED_FORCE_SAVE(7);  // 7 - error has occurred while force saving the document
     private int code;
-    Status(int code){
-        this.code = code;
+    Status(final int codeParam) {
+        this.code = codeParam;
     }
-    public int getCode(){  // get document status
+    public int getCode() {  // get document status
         return this.code;
     }
 }

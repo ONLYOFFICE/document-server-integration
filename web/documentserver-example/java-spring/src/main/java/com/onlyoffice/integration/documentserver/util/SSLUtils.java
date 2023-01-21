@@ -41,20 +41,21 @@ public final class SSLUtils {
     private final HostnameVerifier jvmHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
 
     private final HostnameVerifier trivialHostnameVerifier = new HostnameVerifier() {
-        public boolean verify(String hostname, SSLSession sslSession) {
+        public boolean verify(final String hostname, final SSLSession sslSession) {
             return true;
         }
     };
 
-    private final TrustManager[] UNQUESTIONING_TRUST_MANAGER = new TrustManager[] { new X509TrustManager() {
+    private final TrustManager[] unquestioningTrustManager = new TrustManager[] {
+            new X509TrustManager() {
         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
         }
 
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
         }
 
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
         }
     } };
 
@@ -62,7 +63,7 @@ public final class SSLUtils {
         HttpsURLConnection.setDefaultHostnameVerifier(trivialHostnameVerifier);
         // Install the all-trusting trust manager
         SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, UNQUESTIONING_TRUST_MANAGER, null);
+        sc.init(null, unquestioningTrustManager, null);
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
     }
 

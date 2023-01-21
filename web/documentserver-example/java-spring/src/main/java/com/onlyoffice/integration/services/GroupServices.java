@@ -33,10 +33,15 @@ public class GroupServices {
     private GroupRepository groupRepository;
 
     // create a new group with the specified name
-    public Group createGroup(String name){
-        if(name == null) return null;  // check if a name is specified
-        Optional<Group> group = groupRepository.findGroupByName(name);  // check if group with such a name already exists
-        if(group.isPresent()) return group.get();  // if it exists, return it
+    public Group createGroup(final String name) {
+        if (name == null) {
+            return null;  // check if a name is specified
+        }
+        Optional<Group> group = groupRepository
+                .findGroupByName(name);  // check if group with such a name already exists
+        if (group.isPresent()) {
+            return group.get();  // if it exists, return it
+        }
         Group newGroup = new Group();
         newGroup.setName(name);  // otherwise, create a new group with the specified name
 
@@ -46,9 +51,12 @@ public class GroupServices {
     }
 
     // create a list of groups from the reviewGroups permission parameter
-    public List<Group> createGroups(List<String> reviewGroups){
-        if(reviewGroups == null) return null;  // check if the reviewGroups permission exists
-        return reviewGroups.stream()  // convert this parameter to a list of groups whose changes the user can accept/reject
+    public List<Group> createGroups(final List<String> reviewGroups) {
+        if (reviewGroups == null) {
+            return null;  // check if the reviewGroups permission exists
+        }
+        // convert this parameter to a list of groups whose changes the user can accept/reject
+        return reviewGroups.stream()
                 .map(group -> createGroup(group))
                 .collect(Collectors.toList());
     }
