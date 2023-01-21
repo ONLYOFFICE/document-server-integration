@@ -18,7 +18,24 @@
 
 package helpers;
 
-import java.io.*;
+import entities.FileType;
+import entities.User;
+import org.json.simple.JSONObject;
+import org.primeframework.jwt.Signer;
+import org.primeframework.jwt.Verifier;
+import org.primeframework.jwt.domain.JWT;
+import org.primeframework.jwt.hmac.HMACSigner;
+import org.primeframework.jwt.hmac.HMACVerifier;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
@@ -27,109 +44,93 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import entities.FileType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import entities.User;
-import org.primeframework.jwt.domain.JWT;
-import org.primeframework.jwt.hmac.HMACSigner;
-import org.primeframework.jwt.hmac.HMACVerifier;
-import org.json.simple.JSONObject;
-import org.primeframework.jwt.Signer;
-import org.primeframework.jwt.Verifier;
+import static utils.Constants.KILOBYTE_SIZE;
+import static utils.Constants.MAX_FILE_SIZE;
 
-public class DocumentManager
-{
+public final class DocumentManager {
     private static HttpServletRequest request;
 
-    public static void Init(HttpServletRequest req, HttpServletResponse resp)
-    {
+    private DocumentManager() { }
+
+    public static void init(final HttpServletRequest req, final HttpServletResponse resp) {
         request = req;
     }
 
     // get max file size
-    public static long GetMaxFileSize()
-    {
+    public static long getMaxFileSize() {
         long size;
 
-        try
-        {
-            size = Long.parseLong(ConfigManager.GetProperty("filesize-max"));
-        }
-        catch (Exception ex)
-        {
+        try {
+            size = Long.parseLong(ConfigManager.getProperty("filesize-max"));
+        } catch (Exception ex) {
             size = 0;
         }
 
-        return size > 0 ? size : 5 * 1024 * 1024;
+        return size > 0 ? size : MAX_FILE_SIZE;
     }
 
     // get all the supported file extensions
-    public static List<String> GetFileExts()
-    {
+    public static List<String> getFileExts() {
         List<String> res = new ArrayList<>();
 
-        res.addAll(GetViewedExts());
-        res.addAll(GetEditedExts());
-        res.addAll(GetConvertExts());
-        res.addAll(GetFillExts());
+        res.addAll(getViewedExts());
+        res.addAll(getEditedExts());
+        res.addAll(getConvertExts());
+        res.addAll(getFillExts());
 
         return res;
     }
 
-    public static List<String> GetFillExts() {
-        String exts = ConfigManager.GetProperty("files.docservice.fill-docs");
+    public static List<String> getFillExts() {
+        String exts = ConfigManager.getProperty("files.docservice.fill-docs");
         return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be viewed
-    public static List<String> GetViewedExts()
-    {
-        String exts = ConfigManager.GetProperty("files.docservice.viewed-docs");
+    public static List<String> getViewedExts() {
+        String exts = ConfigManager.getProperty("files.docservice.viewed-docs");
         return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be edited
-    public static List<String> GetEditedExts()
-    {
-        String exts = ConfigManager.GetProperty("files.docservice.edited-docs");
+    public static List<String> getEditedExts() {
+        String exts = ConfigManager.getProperty("files.docservice.edited-docs");
         return Arrays.asList(exts.split("\\|"));
     }
 
     // get file extensions that can be converted
-    public static List<String> GetConvertExts()
-    {
-        String exts = ConfigManager.GetProperty("files.docservice.convert-docs");
+    public static List<String> getConvertExts() {
+        String exts = ConfigManager.getProperty("files.docservice.convert-docs");
         return Arrays.asList(exts.split("\\|"));
     }
 
     // get current user host address
-    public static String CurUserHostAddress(String userAddress)
-    {
-        if(userAddress == null)
-        {
-            try
-            {
+    public static String curUserHostAddress(final String userAddress) {
+        String userAddr = userAddress;
+        if (userAddr == null) {
+            try {
                 // use InetAddress class to get the user address if it wasn't passed to the function
-                userAddress = InetAddress.getLocalHost().getHostAddress();
-            }
-            catch (Exception ex)
-            {
-                userAddress = "";
+                userAddr = InetAddress.getLocalHost().getHostAddress();
+            } catch (Exception ex) {
+                userAddr = "";
             }
         }
 
-        return userAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
+        return userAddr.replaceAll("[^0-9a-zA-Z.=]", "_");
     }
 
     // get the root directory of the user host
-    public static String FilesRootPath(String userAddress)
-    {
-        String hostAddress = CurUserHostAddress(userAddress);  // get current user host address
+    public static String filesRootPath(final String userAddress) {
+        String hostAddress = curUserHostAddress(userAddress);  // get current user host address
         String serverPath = request.getSession().getServletContext().getRealPath("");  // get the server url
-        String storagePath = ConfigManager.GetProperty("storage-folder");  // get the storage directory
+        String storagePath = ConfigManager.getProperty("storage-folder");  // get the storage directory
         File f = new File(storagePath);
 
         if (f.isAbsolute()) {
@@ -143,13 +144,13 @@ public class DocumentManager
                 throw new SecurityException("The path to the file is specified instead of the folder");
             }
         }
-        String directory = !f.isAbsolute() ? serverPath + storagePath + File.separator + hostAddress + File.separator : storagePath + File.separator;
+        String directory = !f.isAbsolute() ? serverPath + storagePath
+                + File.separator + hostAddress + File.separator : storagePath + File.separator;
 
         File file = new File(directory);
 
         // if the root directory doesn't exist
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             // create it
             file.mkdirs();
         }
@@ -158,21 +159,20 @@ public class DocumentManager
     }
 
     // get the storage path of the file
-    public static String StoragePath(String fileName, String userAddress)
-    {
-        String directory = FilesRootPath(userAddress);
-        return directory + FileUtility.GetFileName(fileName);
+    public static String storagePath(final String fileName, final String userAddress) {
+        String directory = filesRootPath(userAddress);
+        return directory + FileUtility.getFileName(fileName);
     }
 
     // get the path to history file
-    public static String HistoryPath(String fileName, String userAddress, String version, String file)
-    {
-        String hostAddress = CurUserHostAddress(userAddress);
+    public static String historyPath(final String fileName, final String userAddress, final String version,
+                                     final String file) {
+        String hostAddress = curUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
-        String storagePath = ConfigManager.GetProperty("storage-folder");
+        String storagePath = ConfigManager.getProperty("storage-folder");
         String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
         if (new File(storagePath).isAbsolute()) {
-            directory = FilesRootPath(userAddress);
+            directory = filesRootPath(userAddress);
         }
 
         directory = directory + fileName + "-hist" + File.separator + version + File.separator + file;
@@ -181,22 +181,25 @@ public class DocumentManager
     }
 
     // get the path to the forcesaved file version
-    public static String ForcesavePath(String fileName, String userAddress, Boolean create)
-    {
-        String hostAddress = CurUserHostAddress(userAddress);
+    public static String forcesavePath(final String fileName, final String userAddress, final Boolean create) {
+        String hostAddress = curUserHostAddress(userAddress);
         String serverPath = request.getSession().getServletContext().getRealPath("");
-        String storagePath = ConfigManager.GetProperty("storage-folder");
+        String storagePath = ConfigManager.getProperty("storage-folder");
 
         // create the directory to this file version
         String directory = serverPath + storagePath + File.separator + hostAddress + File.separator;
 
         File file = new File(directory);
-        if (!file.exists()) return "";
+        if (!file.exists()) {
+            return "";
+        }
 
         // create the directory to the history of this file version
         directory = directory + fileName + "-hist" + File.separator;
         file = new File(directory);
-        if (!create && !file.exists()) return "";
+        if (!create && !file.exists()) {
+            return "";
+        }
 
         file.mkdirs();
 
@@ -210,33 +213,31 @@ public class DocumentManager
     }
 
     // get the history directory
-    public static String HistoryDir(String storagePath)
-    {
-        return storagePath += "-hist";
+    public static String historyDir(final String storagePath) {
+        return storagePath + "-hist";
     }
 
     // get the path to the file version by the history path and file version
-    public static String VersionDir(String histPath, Integer version)
-    {
+    public static String versionDir(final String histPath, final Integer version) {
         return histPath + File.separator + Integer.toString(version);
     }
 
     // get the path to the file version by the file name, user address and file version
-    public static String VersionDir(String fileName, String userAddress, Integer version)
-    {
-        return VersionDir(HistoryDir(StoragePath(fileName, userAddress)), version);
+    public static String versionDir(final String fileName, final String userAddress, final Integer version) {
+        return versionDir(historyDir(storagePath(fileName, userAddress)), version);
     }
 
     // get the file version by the history path
-    public static Integer GetFileVersion(String historyPath)
-    {
+    public static Integer getFileVersion(final String historyPath) {
         File dir = new File(historyPath);
 
-        if (!dir.exists()) return 1;  // if the history path doesn't exist, then the file version is 1
+        if (!dir.exists()) {
+            return 1;  // if the history path doesn't exist, then the file version is 1
+        }
 
         File[] dirs = dir.listFiles(new FileFilter() {  // take only directories from the history folder
             @Override
-            public boolean accept(File pathname) {
+            public boolean accept(final File pathname) {
                 return pathname.isDirectory();
             }
         });
@@ -245,33 +246,30 @@ public class DocumentManager
     }
 
     // get the file version by the file name and user address
-    public static int GetFileVersion(String fileName, String userAddress)
-    {
-        return GetFileVersion(HistoryDir(StoragePath(fileName, userAddress)));
+    public static int getFileVersion(final String fileName, final String userAddress) {
+        return getFileVersion(historyDir(storagePath(fileName, userAddress)));
     }
 
     // get a file name with an index if the file with such a name already exists
-    public static String GetCorrectName(String fileName, String userAddress)
-    {
-        String baseName = FileUtility.GetFileNameWithoutExtension(fileName);
-        String ext = FileUtility.GetFileExtension(fileName);
+    public static String getCorrectName(final String fileName, final String userAddress) {
+        String baseName = FileUtility.getFileNameWithoutExtension(fileName);
+        String ext = FileUtility.getFileExtension(fileName);
         String name = baseName + ext;
 
-        File file = new File(StoragePath(name, userAddress));
+        File file = new File(storagePath(name, userAddress));
 
-        for (int i = 1; file.exists(); i++)  // run through all the files with such a name in the storage directory
-        {
+        for (int i = 1; file.exists(); i++) {  // run through all the files with such a name in the storage directory
             name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
-            file = new File(StoragePath(name, userAddress));
+            file = new File(storagePath(name, userAddress));
         }
 
         return name;
     }
 
     // create meta information
-    public static void CreateMeta(String fileName, String uid, String uname, String userAddress) throws Exception
-    {
-        String histDir = HistoryDir(StoragePath(fileName, userAddress));
+    public static void createMeta(final String fileName, final String uid, final String uname,
+                                  final String userAddress) throws Exception {
+        String histDir = historyDir(storagePath(fileName, userAddress));
 
         File dir = new File(histDir);  // create history directory
         dir.mkdir();
@@ -290,48 +288,52 @@ public class DocumentManager
     }
 
     // get all the stored files from the user host address
-    public static File[] GetStoredFiles(String userAddress)
-    {
-        String directory = FilesRootPath(userAddress);
+    public static File[] getStoredFiles(final String userAddress) {
+        String directory = filesRootPath(userAddress);
 
         File file = new File(directory);
         return file.listFiles(new FileFilter() {  // take only files from the root directory
             @Override
-            public boolean accept(File pathname) {
+            public boolean accept(final File pathname) {
                 return pathname.isFile();
             }
         });
     }
 
     // create demo document
-    public static String CreateDemo(String fileExt, Boolean sample, User user) throws Exception
-    {
-        String demoName = (sample ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;  // get the path to the sample document
-        String fileName = GetCorrectName(demoName, null);  // get a file name with an index if the file with such a name already exists
+    public static String createDemo(final String fileExt, final Boolean sample, final User user) throws Exception {
+        // create sample or new template file with the necessary extension
+        String demoName = (sample ? "sample." : "new.") + fileExt;
 
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(demoPath + demoName);  // get the input file stream
+        // get the path to the sample document
+        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;
 
-        CreateFile(Paths.get(StoragePath(fileName, null)), stream);
+        // get a file name with an index if the file with such a name already exists
+        String fileName = getCorrectName(demoName, null);
+
+        // get the input file stream
+        InputStream stream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(demoPath + demoName);
+
+        createFile(Paths.get(storagePath(fileName, null)), stream);
 
         // create meta information of the demo file
-        CreateMeta(fileName, user.id, user.name, null);
+        createMeta(fileName, user.getId(), user.getName(), null);
 
         return fileName;
     }
 
-    public static boolean CreateFile(Path path, InputStream stream) {
-        if (Files.exists(path)){
+    public static boolean createFile(final Path path, final InputStream stream) {
+        if (Files.exists(path)) {
             return true;
         }
         try {
             File file = Files.createFile(path).toFile();
-            try (FileOutputStream out = new FileOutputStream(file))
-            {
+            try (FileOutputStream out = new FileOutputStream(file)) {
                 int read;
-                final byte[] bytes = new byte[1024];
-                while ((read = stream.read(bytes)) != -1)
-                {
+                final byte[] bytes = new byte[KILOBYTE_SIZE];
+                while ((read = stream.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
                 out.flush();
@@ -343,41 +345,42 @@ public class DocumentManager
     }
 
     // get file url
-    public static String GetFileUri(String fileName, Boolean forDocumentServer)
-    {
-        try
-        {
-            String serverPath = GetServerUrl(forDocumentServer);
-            String storagePath = ConfigManager.GetProperty("storage-folder");
+    public static String getFileUri(final String fileName, final Boolean forDocumentServer) {
+        try {
+            String serverPath = getServerUrl(forDocumentServer);
+            String storagePath = ConfigManager.getProperty("storage-folder");
             File f = new File(storagePath);
-            String hostAddress = CurUserHostAddress(null);
+            String hostAddress = curUserHostAddress(null);
 
-            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()).replace("+", "%20");
+            String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/"
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    .replace("+", "%20");
             if (f.isAbsolute() && f.isFile()) {
-                filePath = GetDownloadUrl(fileName, true);
+                filePath = getDownloadUrl(fileName, true);
                 if (!Files.isWritable(f.toPath())) {
                     throw new SecurityException("No write permission to path: " + f.toPath());
                 }
             }
 
             return filePath;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return "";
         }
     }
 
     // get file information
-    public static ArrayList<Map<String, Object>> GetFilesInfo(){
+    public static ArrayList<Map<String, Object>> getFilesInfo() {
         ArrayList<Map<String, Object>> files = new ArrayList<>();
 
         // run through all the stored files
-        for(File file : GetStoredFiles(null)){
+        for (File file : getStoredFiles(null)) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
-            map.put("version", GetFileVersion(file.getName(), null));
-            map.put("id", ServiceConverter.GenerateRevisionId(CurUserHostAddress(null) + "/" + file.getName() + "/" + Long.toString(new File(StoragePath(file.getName(), null)).lastModified())));
-            map.put("contentLength", new BigDecimal(String.valueOf((file.length()/1024.0))).setScale(2, RoundingMode.HALF_UP) + " KB");
+            map.put("version", getFileVersion(file.getName(), null));
+            map.put("id", ServiceConverter
+                    .generateRevisionId(curUserHostAddress(null) + "/" + file.getName() + "/"
+                            + Long.toString(new File(storagePath(file.getName(), null)).lastModified())));
+            map.put("contentLength", new BigDecimal(String.valueOf((file.length() / Double.valueOf(KILOBYTE_SIZE))))
+                    .setScale(2, RoundingMode.HALF_UP) + " KB");
             map.put("pureContentLength", file.length());
             map.put("title", file.getName());
             map.put("updated", String.valueOf(new Date(file.lastModified())));
@@ -388,11 +391,11 @@ public class DocumentManager
     }
 
     // get file information by its id
-    public static ArrayList<Map<String, Object>> GetFilesInfo(String fileId){
+    public static ArrayList<Map<String, Object>> getFilesInfo(final String fileId) {
         ArrayList<Map<String, Object>> file = new ArrayList<>();
 
-        for (Map<String, Object> map : GetFilesInfo()){
-            if (map.get("id").equals(fileId)){
+        for (Map<String, Object> map : getFilesInfo()) {
+            if (map.get("id").equals(fileId)) {
                 file.add(map);
                 break;
             }
@@ -402,179 +405,174 @@ public class DocumentManager
     }
 
     // get the path url
-    public static String GetPathUri(String path)
-    {
-        String serverPath = GetServerUrl(true);
-        String storagePath = ConfigManager.GetProperty("storage-folder");
-        String hostAddress = CurUserHostAddress(null);
+    public static String getPathUri(final String path) {
+        String serverPath = getServerUrl(true);
+        String storagePath = ConfigManager.getProperty("storage-folder");
+        String hostAddress = curUserHostAddress(null);
 
-        String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/" + path.replace(File.separator, "/").substring(FilesRootPath(null).length()).replace(" ", "%20");
+        String filePath = serverPath + "/" + storagePath + "/" + hostAddress + "/"
+                + path.replace(File.separator, "/").substring(filesRootPath(null).length())
+                .replace(" ", "%20");
 
         return filePath;
     }
 
 
     // get the server url
-    public static String GetServerUrl(Boolean forDocumentServer) {
-        if (forDocumentServer && !ConfigManager.GetProperty("files.docservice.url.example").equals("")) {
-            return ConfigManager.GetProperty("files.docservice.url.example");
+    public static String getServerUrl(final Boolean forDocumentServer) {
+        if (forDocumentServer && !ConfigManager.getProperty("files.docservice.url.example").equals("")) {
+            return ConfigManager.getProperty("files.docservice.url.example");
         } else {
-            return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                    + request.getContextPath();
         }
     }
 
     // get the callback url
-    public static String GetCallback(String fileName)
-    {
-        String serverPath = GetServerUrl(true);
-        String hostAddress = CurUserHostAddress(null);
-        try
-        {
-            String query = "?type=track&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+    public static String getCallback(final String fileName) {
+        String serverPath = getServerUrl(true);
+        String hostAddress = curUserHostAddress(null);
+        try {
+            String query = "?type=track&fileName="
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
 
     // get url to the created file
-    public static String GetCreateUrl (FileType fileType) {
-        String serverPath = GetServerUrl(false);
-        String fileExt = GetInternalExtension(fileType).replace(".", "");
+    public static String getCreateUrl(final FileType fileType) {
+        String serverPath = getServerUrl(false);
+        String fileExt = getInternalExtension(fileType).replace(".", "");
         String query = "?fileExt=" + fileExt;
 
         return serverPath + "/EditorServlet" + query;
     }
 
     // get url to download a file
-    public static String GetDownloadUrl(String fileName, Boolean forDocumentServer) {
-        String serverPath = GetServerUrl(forDocumentServer);
-        String hostAddress = CurUserHostAddress(null);
-        try
-        {
-            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = "?type=download&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
+    public static String getDownloadUrl(final String fileName, final Boolean forDocumentServer) {
+        String serverPath = getServerUrl(forDocumentServer);
+        String hostAddress = curUserHostAddress(null);
+        try {
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=download&fileName=" + URLEncoder
+                    .encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
 
     // get url to download a file to History prev.*
-    public static String GetDownloadHistoryUrl(String fileName, Integer version, String file, Boolean forDocumentServer) {
-        String serverPath = GetServerUrl(forDocumentServer);
-        String hostAddress = CurUserHostAddress(null);
-        try
-        {
-            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = "?type=downloadhistory&fileName=" + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
-            query = query + "&ver=" + version + "&file=" + URLEncoder.encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
+    public static String getDownloadHistoryUrl(final String fileName, final Integer version, final String file,
+                                               final Boolean forDocumentServer) {
+        String serverPath = getServerUrl(forDocumentServer);
+        String hostAddress = curUserHostAddress(null);
+        try {
+            String userAddress = forDocumentServer ? "&userAddress=" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = "?type=downloadhistory&fileName=" + URLEncoder
+                    .encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString()) + userAddress;
+            query = query + "&ver=" + version + "&file=" + URLEncoder.
+                    encode(file, java.nio.charset.StandardCharsets.UTF_8.toString());
 
             return serverPath + "/IndexServlet" + query;
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
 
     // get an editor internal extension
-    public static String GetInternalExtension(FileType fileType)
-    {
+    public static String getInternalExtension(final FileType fileType) {
         // .docx for word file type
-        if (fileType.equals(FileType.Word))
+        if (fileType.equals(FileType.Word)) {
             return ".docx";
+        }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell))
+        if (fileType.equals(FileType.Cell)) {
             return ".xlsx";
+        }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide))
+        if (fileType.equals(FileType.Slide)) {
             return ".pptx";
+        }
 
         // the default file type is .docx
         return ".docx";
     }
 
     // get image url for templates
-    public static String GetTemplateImageUrl(FileType fileType)
-    {
-        String path = GetServerUrl(true) + "/css/img/";
+    public static String getTemplateImageUrl(final FileType fileType) {
+        String path = getServerUrl(true) + "/css/img/";
         // for word file type
-        if (fileType.equals(FileType.Word))
+        if (fileType.equals(FileType.Word)) {
             return path + "file_docx.svg";
+        }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell))
+        if (fileType.equals(FileType.Cell)) {
             return path + "file_xlsx.svg";
+        }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide))
+        if (fileType.equals(FileType.Slide)) {
             return path + "file_pptx.svg";
+        }
 
         // the default file type
         return path + "file_docx.svg";
     }
 
     // create document token
-    public static String CreateToken(Map<String, Object> payloadClaims)
-    {
-        try
-        {
+    public static String createToken(final Map<String, Object> payloadClaims) {
+        try {
             // build a HMAC signer using a SHA-256 hash
-            Signer signer = HMACSigner.newSHA256Signer(GetTokenSecret());
+            Signer signer = HMACSigner.newSHA256Signer(getTokenSecret());
             JWT jwt = new JWT();
-            for (String key : payloadClaims.keySet())  // run through all the keys from the payload
-            {
+            for (String key : payloadClaims.keySet()) {  // run through all the keys from the payload
                 jwt.addClaim(key, payloadClaims.get(key));  // and write each claim to the jwt
             }
             return JWT.getEncoder().encode(jwt, signer);  // sign and encode the JWT to a JSON string representation
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return "";
         }
     }
 
     // read document token
-    public static JWT ReadToken(String token)
-    {
-        try
-        {
+    public static JWT readToken(final String token) {
+        try {
             // build a HMAC verifier using the token secret
-            Verifier verifier = HMACVerifier.newVerifier(GetTokenSecret());
-            return JWT.getDecoder().decode(token, verifier);  // verify and decode the encoded string JWT to a rich object
-        }
-        catch (Exception exception)
-        {
+            Verifier verifier = HMACVerifier.newVerifier(getTokenSecret());
+
+            // verify and decode the encoded string JWT to a rich object
+            return JWT.getDecoder().decode(token, verifier);
+        } catch (Exception exception) {
             return null;
         }
     }
 
     // check if the token is enabled
-    public static Boolean TokenEnabled()
-    {
-        String secret = GetTokenSecret();
+    public static Boolean tokenEnabled() {
+        String secret = getTokenSecret();
         return secret != null && !secret.isEmpty();
     }
 
     // get token secret from the config parameters
-    public static String GetTokenSecret()
-    {
-        return ConfigManager.GetProperty("files.docservice.secret");
+    public static String getTokenSecret() {
+        return ConfigManager.getProperty("files.docservice.secret");
     }
 
     // get languages
-    public static Map<String, String> GetLanguages()
-    {
-        String langs = ConfigManager.GetProperty("files.docservice.languages");
+    public static Map<String, String> getLanguages() {
+        String langs = ConfigManager.getProperty("files.docservice.languages");
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
 
         Map<String, String> languages = new LinkedHashMap<>();

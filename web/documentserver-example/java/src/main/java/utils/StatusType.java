@@ -16,20 +16,22 @@
  *
  */
 
-package entities;
+package utils;
 
-import java.util.List;
+public enum StatusType {
 
-public class CommentGroups {
-    private List<String> view;
-    private List<String> edit;
-    private List<String> remove;
-    public CommentGroups() {
+    EDITING(1),
+    MUST_SAVE(2),
+    CORRUPTED(3),
+    MUST_FORCE_SAVE(6),
+    CORRUPTED_FORCE_SAVE(7);
+    private final int code;
 
+    StatusType(final int codeParam) {
+        this.code = codeParam;
     }
-    public CommentGroups(final List<String> viewParam, final List<String> editParam, final List<String> removeParam) {
-        this.view = viewParam;
-        this.edit = editParam;
-        this.remove = removeParam;
+
+    public int getCode() {
+       return code;
     }
 }

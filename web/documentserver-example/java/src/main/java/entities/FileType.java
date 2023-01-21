@@ -18,8 +18,7 @@
 
 package entities;
 
-public enum FileType
-{
+public enum FileType {
     Word,
     Cell,
     Slide
