@@ -555,9 +555,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
             var downloadExt = "." + body.filetype; // get the extension of the downloaded file
 
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
-
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -596,9 +593,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
                 if (status != 200) throw new Error("Document editing service returned status: " + status);
 
                 var downloadExt = "." + body.fileType;
-
-                /// TODO [Delete in version 7.0 or higher]
-                if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
@@ -649,9 +643,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
 
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = "." + body.filetype;
-
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
