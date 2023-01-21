@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,9 +98,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             var downloadUri = (string)fileData["url"];
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
-            var downloadExt = fileData.ContainsKey("filetype")
-                ? "." + (string)fileData["filetype"]
-                : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+            var downloadExt = "." + (string)fileData["filetype"]; // get the extension of the downloaded file
 
             var newFileName = fileName;
 
@@ -176,9 +174,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
-            var downloadExt = fileData.ContainsKey("filetype")
-                ? "." + (string)fileData["filetype"]
-                : Path.GetExtension(downloadUri).ToLower(); // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+            var downloadExt = "." + (string)fileData["filetype"];  // get the extension of the downloaded file
 
             Boolean newFileName = false;
 

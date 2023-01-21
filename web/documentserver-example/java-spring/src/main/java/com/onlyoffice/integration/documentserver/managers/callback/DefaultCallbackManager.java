@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,11 +112,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
-
-        // todo: [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null) {
-            downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
-        }
 
         // todo: Refactoring
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -262,11 +257,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
-
-        // todo: [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null) {
-            downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
-        }
 
         Boolean newFileName = false;
 
