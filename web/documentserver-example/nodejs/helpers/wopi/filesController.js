@@ -263,6 +263,9 @@ function putRelativeFile(wopi, req, res, userHost) {
         filename = req.docManager.getCorrectName(filename, userAddress); // get correct filename if already exists
     }
 
+    let isConverted = req.headers[reqConsts.requestHeaders.FileConversion.toLowerCase()];
+    console.log("putRelativeFile after conversation: " + isConverted);
+
     // if we got here, then we can save a file
     saveFileFromBody(req, filename, userAddress, false, (err) => {
         if (err) {
