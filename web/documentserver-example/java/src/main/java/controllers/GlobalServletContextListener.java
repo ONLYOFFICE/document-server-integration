@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@
 
 package controllers;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
+import helpers.ConfigManager;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -29,68 +28,56 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import helpers.*;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
-public class GlobalServletContextListener implements ServletContextListener
-{
+public class GlobalServletContextListener implements ServletContextListener {
     // destroy ServletContextListener interface
     @Override
-    public void contextDestroyed(ServletContextEvent arg0)
-    {
+    public void contextDestroyed(final ServletContextEvent arg0) {
         System.out.println("ServletContextListener destroyed");
     }
 
     // start ServletContextListener interface
     @Override
-    public void contextInitialized(ServletContextEvent arg0)
-    {
-        TrustManager[] trustAllCerts = new TrustManager[]
-        {
-            new X509TrustManager()
-            {
+    public void contextInitialized(final ServletContextEvent arg0) {
+        TrustManager[] trustAllCerts = new TrustManager[] {
+            new X509TrustManager() {
                 // return an array of certificates which are trusted
                 @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers()
-                {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
 
                 // check whether the X509 certificate chain can be validated and is trusted for client authentication
                 @Override
-                public void checkClientTrusted(X509Certificate[] certs, String authType)
-                {
+                public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
                 }
 
                 // check whether the X509 certificate chain can be validated and is trusted for server authentication
                 @Override
-                public void checkServerTrusted(X509Certificate[] certs, String authType)
-                {
+                public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
                 }
             }
         };
 
         SSLContext sc;
 
-        if(!ConfigManager.GetProperty("files.docservice.verify-peer-off").isEmpty()) {
-             try
-            {
+        if (!ConfigManager.getProperty("files.docservice.verify-peer-off").isEmpty()) {
+             try {
                 // register the all-trusting trust manager for HTTPS
                 sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            }
-            catch (NoSuchAlgorithmException | KeyManagementException ex)
-            {
+            } catch (NoSuchAlgorithmException | KeyManagementException ex) {
             }
         }
-       
 
         // create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier()
-        {
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
             @Override
-            public boolean verify(String hostname, SSLSession session)
-            {
+            public boolean verify(final String hostname, final SSLSession session) {
                 return true;
             }
         };

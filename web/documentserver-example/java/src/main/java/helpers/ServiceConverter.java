@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 package helpers;
 
-import helpers.DocumentManager;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,90 +32,162 @@ import java.nio.charset.StandardCharsets;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import utils.ConvertErrorType;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static utils.Constants.CONVERTATION_ERROR_MESSAGE_TEMPLATE;
+import static utils.Constants.CONVERT_TIMEOUT_MS;
+import static utils.Constants.FULL_LOADING_IN_PERCENT;
+import static utils.Constants.MAX_KEY_LENGTH;
 
 
-public class ServiceConverter
-{
-    private static int ConvertTimeout = 120000;
-    private static final String DocumentConverterUrl = ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.converter");
-    private static final String DocumentJwtHeader = ConfigManager.GetProperty("files.docservice.header");
+public final class ServiceConverter {
+    private static int convertTimeout;
+    private static final String DOCUMENT_CONVERTER_URL = ConfigManager
+            .getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.converter");
+    private static final String DOCUMENT_JWT_HEADER = ConfigManager.getProperty("files.docservice.header");
 
-    public static class ConvertBody
-    {
-        public String region;
-        public String url;
-        public String outputtype;
-        public String filetype;
-        public String title;
-        public String key;
-        public Boolean async;
-        public String token;
-        public String password;
+    private ServiceConverter() { }
+
+    public static class ConvertBody {
+        private String region;
+        private String url;
+        private String outputtype;
+        private String filetype;
+        private String title;
+        private String key;
+        private Boolean async;
+        private String token;
+        private String password;
+
+        public void setRegion(final String regionParam) {
+            this.region = regionParam;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(final String urlParam) {
+            this.url = urlParam;
+        }
+
+        public String getOutputtype() {
+            return outputtype;
+        }
+
+        public void setOutputtype(final String outputtypeParam) {
+            this.outputtype = outputtypeParam;
+        }
+
+        public String getFiletype() {
+            return filetype;
+        }
+
+        public void setFiletype(final String filetypeParam) {
+            this.filetype = filetypeParam;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(final String titleParam) {
+            this.title = titleParam;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(final String keyParam) {
+            this.key = keyParam;
+        }
+
+        public Boolean getAsync() {
+            return async;
+        }
+
+        public void setAsync(final Boolean asyncParam) {
+            this.async = asyncParam;
+        }
+
+        public void setToken(final String tokenParam) {
+            this.token = tokenParam;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(final String passwordParam) {
+            this.password = passwordParam;
+        }
     }
 
-    static
-    {
-        try
-        {
+    static {
+        try {
             // get timeout value from the settings.properties
-            int timeout = Integer.parseInt(ConfigManager.GetProperty("files.docservice.timeout"));
-            if (timeout > 0)  // if it's greater than 0
-            {
-                ConvertTimeout = timeout;  // assign this value to a convert timeout
-            }
-        }
-        catch (Exception ex)
-        {
+            int timeout = Integer.parseInt(ConfigManager.getProperty("files.docservice.timeout"));
+            // if it's greater than 0 then value to a convert timeout
+            convertTimeout = timeout > 0 ? timeout : CONVERT_TIMEOUT_MS;
+        } catch (Exception ex) {
         }
     }
 
     // get the url of the converted file
-    public static String GetConvertedUri(String documentUri, String fromExtension, String toExtension, String documentRevisionId, String filePass, Boolean isAsync, String lang) throws Exception
-    {
+    public static String getConvertedUri(final String documentUri, final String fromExtension,
+                                         final String toExtension, final String documentRevisionId,
+                                         final String filePass, final Boolean isAsync,
+                                         final String lang) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
-        fromExtension = fromExtension == null || fromExtension.isEmpty() ? FileUtility.GetFileExtension(documentUri) : fromExtension;
+        String fromExt = fromExtension == null || fromExtension.isEmpty()
+                ? FileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
-        String title = FileUtility.GetFileName(documentUri);
+        String title = FileUtility.getFileName(documentUri);
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
-        documentRevisionId = documentRevisionId == null || documentRevisionId.isEmpty() ? documentUri : documentRevisionId;
+        String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty()
+                ? documentUri : documentRevisionId;
 
-        documentRevisionId = GenerateRevisionId(documentRevisionId);  // create document token
+        documentRevId = generateRevisionId(documentRevId);  // create document token
 
         // write all the necessary parameters to the body object
         ConvertBody body = new ConvertBody();
-        body.region = lang;
-        body.url = documentUri;
-        body.outputtype = toExtension.replace(".", "");
-        body.filetype = fromExtension.replace(".", "");
-        body.title = title;
-        body.key = documentRevisionId;
-        body.password = filePass;
-        if (isAsync)
-            body.async = true;
+        body.setRegion(lang);
+        body.setUrl(documentUri);
+        body.setOutputtype(toExtension.replace(".", ""));
+        body.setFiletype(fromExt.replace(".", ""));
+        body.setTitle(title);
+        body.setKey(documentRevId);
+        body.setPassword(filePass);
+        if (isAsync) {
+            body.setAsync(true);
+        }
 
         String headerToken = "";
-        if (DocumentManager.TokenEnabled())
-        {
+        if (DocumentManager.tokenEnabled()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
-            map.put("url", body.url);
-            map.put("outputtype", body.outputtype);
-            map.put("filetype", body.filetype);
-            map.put("title", body.title);
-            map.put("key", body.key);
-            map.put("password", body.password);
-            if (isAsync)
-                map.put("async", body.async);
+            map.put("url", body.getUrl());
+            map.put("outputtype", body.getOutputtype());
+            map.put("filetype", body.getFiletype());
+            map.put("title", body.getTitle());
+            map.put("key", body.getKey());
+            map.put("password", body.getPassword());
+            if (isAsync) {
+                map.put("async", body.getAsync());
+            }
 
             // add token to the body if it is enabled
-            String token = DocumentManager.CreateToken(map);
-            body.token = token;
+            String token = DocumentManager.createToken(map);
+            body.setToken(token);
 
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", map);  // create payload object
-            headerToken = DocumentManager.CreateToken(payloadMap);  // create header token
+            headerToken = DocumentManager.createToken(payloadMap);  // create header token
         }
 
         Gson gson = new Gson();
@@ -127,25 +196,25 @@ public class ServiceConverter
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
 
         // specify request parameters
-        URL url = new URL(DocumentConverterUrl);
+        URL url = new URL(DOCUMENT_CONVERTER_URL);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         connection.setFixedLengthStreamingMode(bodyByte.length);
         connection.setRequestProperty("Accept", "application/json");
-        connection.setConnectTimeout(ConvertTimeout);
+        connection.setConnectTimeout(convertTimeout);
 
         // write header token to the request
-        if (DocumentManager.TokenEnabled())
-        {
-            connection.setRequestProperty(DocumentJwtHeader.equals("") ? "Authorization" : DocumentJwtHeader, "Bearer " + headerToken);
+        if (DocumentManager.tokenEnabled()) {
+            connection.setRequestProperty(DOCUMENT_JWT_HEADER.equals("")
+                    ? "Authorization" : DOCUMENT_JWT_HEADER, "Bearer " + headerToken);
         }
 
         connection.connect();
 
         int statusCode = connection.getResponseCode();
-        if (statusCode != 200) {  // checking status code
+        if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new Exception("Conversion service returned status: " + statusCode);
         }
@@ -155,110 +224,73 @@ public class ServiceConverter
 
         InputStream stream = connection.getInputStream();
 
-        if (stream == null)
+        if (stream == null) {
             throw new Exception("Could not get an answer");
+        }
 
         // convert string to json
-        String jsonString = ConvertStreamToString(stream);
+        String jsonString = convertStreamToString(stream);
 
         connection.disconnect();
 
-        return GetResponseUri(jsonString);
+        return getResponseUri(jsonString);
     }
 
     // generate document key
-    public static String GenerateRevisionId(String expectedKey)
-    {
-        if (expectedKey.length() > 20)  // if the expected key length is greater than 20
-            expectedKey = Integer.toString(expectedKey.hashCode());  // the expected key is hashed and a fixed length value is stored in the string format
+    public static String generateRevisionId(final String expectedKey) {
+        /* if the expected key length is greater than 20 then
+         he expected key is hashed and a fixed length value is stored in the string format */
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH
+                ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
 
-        String key = expectedKey.replace("[^0-9-.a-zA-Z_=]", "_");
-
-        return key.substring(0, Math.min(key.length(), 20));  // the resulting key length is 20 or less
+        return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
     }
 
     // create an error message for an error code
-    private static void ProcessConvertServiceResponceError(int errorCode) throws Exception
-    {
-        String errorMessage = "";
-        String errorMessageTemplate = "Error occurred in the ConvertService: ";
-
-        // add the error message to the error message template depending on the error code
-        switch (errorCode)
-        {
-            case -8:
-                errorMessage = errorMessageTemplate + "Error document VKey";
-                break;
-            case -7:
-                errorMessage = errorMessageTemplate + "Error document request";
-                break;
-            case -6:
-                errorMessage = errorMessageTemplate + "Error database";
-                break;
-            case -5:
-                errorMessage = errorMessageTemplate + "Incorrect password";
-                break;
-            case -4:
-                errorMessage = errorMessageTemplate + "Error download error";
-                break;
-            case -3:
-                errorMessage = errorMessageTemplate + "Error convertation error";
-                break;
-            case -2:
-                errorMessage = errorMessageTemplate + "Error convertation timeout";
-                break;
-            case -1:
-                errorMessage = errorMessageTemplate + "Error convertation unknown";
-                break;
-            case 0:  // if the error code is equal to 0, the error message is empty
-                break;
-            default:
-                errorMessage = "ErrorCode = " + errorCode;  // default value for the error message
-                break;
-        }
+    private static void processConvertServiceResponceError(final int errorCode) throws Exception {
+        String errorMessage = CONVERTATION_ERROR_MESSAGE_TEMPLATE + ConvertErrorType.labelOfCode(errorCode);
 
         throw new Exception(errorMessage);
     }
 
     // get the response url
-    private static String GetResponseUri(String jsonString) throws Exception
-    {
-        JSONObject jsonObj = ConvertStringToJSON(jsonString);
+    private static String getResponseUri(final String jsonString) throws Exception {
+        JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
-        if (error != null)  // if an error occurs
-            ProcessConvertServiceResponceError(Math.toIntExact((long)error));  // then get an error message
+        if (error != null) {  // if an error occurs
+            processConvertServiceResponceError(Math.toIntExact((long) error));  // then get an error message
+        }
 
         // check if the conversion is completed and save the result to a variable
         Boolean isEndConvert = (Boolean) jsonObj.get("endConvert");
 
-        Long resultPercent = 0l;
+        Long resultPercent = 0L;
         String responseUri = null;
 
-        if (isEndConvert)  // if the conversion is completed
-        {
-            resultPercent = 100l;
+        if (isEndConvert) {  // if the conversion is completed
+            resultPercent = FULL_LOADING_IN_PERCENT;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
-        }
-        else  // if the conversion isn't completed
-        {
+        } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
-            resultPercent = resultPercent >= 100l ? 99l : resultPercent;  // get the percentage value
+            resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT
+                    ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value
         }
 
-        return resultPercent >= 100l ? responseUri : "";
+        return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
     }
 
     // convert stream to string
-    public static String ConvertStreamToString(InputStream stream) throws IOException
-    {
+    public static String convertStreamToString(final InputStream stream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(stream);  // create an object to get incoming stream
         StringBuilder stringBuilder = new StringBuilder();  // create a string builder object
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  // create an object to read incoming streams
+
+        // create an object to read incoming streams
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();  // get incoming streams by lines
 
-        while (line != null)
-        {
+        while (line != null) {
             stringBuilder.append(line);  // concatenate strings using the string builder
             line = bufferedReader.readLine();
         }
@@ -269,8 +301,7 @@ public class ServiceConverter
     }
 
     // convert string to json
-    public static JSONObject ConvertStringToJSON(String jsonString) throws ParseException
-    {
+    public static JSONObject convertStringToJSON(final String jsonString) throws ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonString);  // parse json string
         JSONObject jsonObj = (JSONObject) obj;  // and turn it into a json object

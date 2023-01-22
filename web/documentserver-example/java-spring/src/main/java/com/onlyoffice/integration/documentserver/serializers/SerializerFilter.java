@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,17 @@ import java.util.List;
 
 public class SerializerFilter {
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof List) {
-            if(((List<?>) obj).size() == 1 && ((List<?>) obj).get(0) == FilterState.NULL.toString()){
+            if (((List<?>) obj).size() == 1 && ((List<?>) obj).get(0) == FilterState.NULL.toString()) {
                 return true;
             }
             return false;
         }
         return false;
+    }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

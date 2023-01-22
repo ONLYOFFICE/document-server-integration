@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2021
+        * (c) Copyright Ascensio System SIA 2023
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
@@ -161,7 +161,7 @@
             }
         };
 
-        config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
         config.events = {
@@ -178,7 +178,7 @@
         };
 
         <%
-            String[] histArray = Model.GetHistory();
+            String[] histArray = Model.getHistory();
             String history = histArray[0];
             String historyData = histArray[1];
             String usersForMentions = (String) request.getAttribute("usersForMentions");

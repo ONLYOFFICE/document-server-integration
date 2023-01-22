@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,14 @@ public class CallbackHandler {
 
     private Map<Integer, Callback> callbackHandlers = new HashMap<>();
 
-    public void register(int code, Callback callback){  // register a callback handler
+    public void register(final int code, final Callback callback) {  // register a callback handler
         callbackHandlers.put(code, callback);
     }
 
-    public int handle(Track body, String fileName){  // handle a callback
+    public int handle(final Track body, final String fileName) {  // handle a callback
         Callback callback = callbackHandlers.get(body.getStatus());
-        if (callback == null){
-            logger.warn("Callback status "+body.getStatus()+" is not supported yet");
+        if (callback == null) {
+            logger.warn("Callback status " + body.getStatus() + " is not supported yet");
            return 0;
         }
 

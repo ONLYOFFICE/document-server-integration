@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2021
+# (c) Copyright Ascensio System SIA 2023
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,11 +70,6 @@ class TrackHelper
             new_file_name = file_name
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
 
-            # TODO [Delete in version 7.0 or higher]
-            if (download_ext == ".")
-                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
-            end
-
             cur_ext = File.extname(file_name).downcase  # get current file extension
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -144,11 +139,6 @@ class TrackHelper
                 return saved
             end
             download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
-
-            # TODO [Delete in version 7.0 or higher]
-            if (download_ext == ".")
-                download_ext = File.extname(download_uri).downcase; # Support for versions below 7.0
-            end
 
             cur_ext = File.extname(file_name).downcase  # get current file extension
 

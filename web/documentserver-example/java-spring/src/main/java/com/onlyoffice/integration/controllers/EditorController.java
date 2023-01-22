@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,16 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
+import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS_USER_ID;
 
 @CrossOrigin("*")
 @Controller
@@ -75,20 +84,25 @@ public class EditorController {
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
-    public String index(@RequestParam("fileName") String fileName,
-                        @RequestParam(value = "action", required = false) String actionParam,
-                        @RequestParam(value = "type", required = false) String typeParam,
-                        @RequestParam(value = "actionLink", required = false) String actionLink,
-                        @RequestParam(value = "directUrl", required = false, defaultValue = "false") Boolean directUrl,
-                        @CookieValue(value = "uid") String uid,
-                        @CookieValue(value = "ulang") String lang,
-                        Model model) throws JsonProcessingException {
+    public String index(@RequestParam("fileName") final String fileName,
+                        @RequestParam(value = "action", required = false) final String actionParam,
+                        @RequestParam(value = "type", required = false) final String typeParam,
+                        @RequestParam(value = "actionLink", required = false) final String actionLink,
+                        @RequestParam(value = "directUrl", required = false,
+                                defaultValue = "false") final Boolean directUrl,
+                        @CookieValue(value = "uid") final String uid,
+                        @CookieValue(value = "ulang") final String lang,
+                        final Model model) throws JsonProcessingException {
         Action action = Action.edit;
         Type type = Type.desktop;
         Locale locale = new Locale("en");
 
-        if(actionParam != null) action = Action.valueOf(actionParam);
-        if(typeParam != null) type = Type.valueOf(typeParam);
+        if (actionParam != null) {
+            action = Action.valueOf(actionParam);
+        }
+        if (typeParam != null) {
+            type = Type.valueOf(typeParam);
+        }
 
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
         for (String langAndKey : langsAndKeys) {
@@ -102,7 +116,9 @@ public class EditorController {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));
 
         // if the user is not present, return the ONLYOFFICE start page
-        if(!optionalUser.isPresent()) return "index.html";
+        if (!optionalUser.isPresent()) {
+            return "index.html";
+        }
 
         User user = optionalUser.get();
 
@@ -121,23 +137,38 @@ public class EditorController {
         );
 
         // add attributes to the specified model
-        model.addAttribute("model", fileModel);  // add file model with the default parameters to the original model
-        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));  // get file history and add it to the model
-        model.addAttribute("docserviceApiUrl",docserviceSite + docserviceApiUrl);  // create the document service api URL and add it to the model
-        model.addAttribute("dataInsertImage",  getInsertImage(directUrl));  // get an image and add it to the model
-        model.addAttribute("dataCompareFile",  getCompareFile(directUrl));  // get a document for comparison and add it to the model
-        model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));  // get recipients data for mail merging and add it to the model
-        model.addAttribute("usersForMentions", getUserMentions(uid));  // get user data for mentions and add it to the model
+        // add file model with the default parameters to the original model
+        model.addAttribute("model", fileModel);
+
+        // get file history and add it to the model
+        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
+
+        // create the document service api URL and add it to the model
+        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
+
+        // get an image and add it to the model
+        model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
+
+        // get a document for comparison and add it to the model
+        model.addAttribute("dataCompareFile",  getCompareFile(directUrl));
+
+        // get recipients data for mail merging and add it to the model
+        model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));
+
+        // get user data for mentions and add it to the model
+        model.addAttribute("usersForMentions", getUserMentions(uid));
         return "editor.html";
     }
 
-    private List<Mentions> getUserMentions(String uid){  // get user data for mentions
-        List<Mentions> usersForMentions=new ArrayList<>();
-        if(uid!=null && !uid.equals("4")) {
+    private List<Mentions> getUserMentions(final String uid) {  // get user data for mentions
+        List<Mentions> usersForMentions = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
             List<User> list = userService.findAll();
             for (User u : list) {
-                if (u.getId()!=Integer.parseInt(uid) && u.getId()!=4) {
-                    usersForMentions.add(new Mentions(u.getName(),u.getEmail()));  // user data includes user names and emails
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != ANONYMOUS_USER_ID) {
+
+                    // user data includes user names and emails
+                    usersForMentions.add(new Mentions(u.getName(), u.getEmail()));
                 }
             }
         }
@@ -146,41 +177,49 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getInsertImage(Boolean directUrl) {  // get an image that will be inserted into the document
+    private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "png");
         dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
         if (directUrl) {
-            dataInsertImage.put("directUrl", storagePathBuilder.getServerUrl(false) + "/css/img/logo.png");
+            dataInsertImage.put("directUrl", storagePathBuilder
+                    .getServerUrl(false) + "/css/img/logo.png");
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
-            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));  // create token from the dataInsertImage object
+        if (jwtManager.tokenEnabled()) {
+
+            // create token from the dataInsertImage object
+            dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
         }
 
-        return objectMapper.writeValueAsString(dataInsertImage).substring(1, objectMapper.writeValueAsString(dataInsertImage).length()-1);
+        return objectMapper.writeValueAsString(dataInsertImage)
+                .substring(1, objectMapper.writeValueAsString(dataInsertImage).length() - 1);
     }
 
+    // get a document that will be compared with the current document
     @SneakyThrows
-    private String getCompareFile(Boolean directUrl) {  // get a document that will be compared with the current document
+    private String getCompareFile(final Boolean directUrl) {
         Map<String, Object> dataCompareFile = new HashMap<>();
         dataCompareFile.put("fileType", "docx");
         dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
         if (directUrl) {
-            dataCompareFile.put("directUrl", storagePathBuilder.getServerUrl(false) + "/assets?name=sample.docx");
+            dataCompareFile.put("directUrl", storagePathBuilder
+                    .getServerUrl(false) + "/assets?name=sample.docx");
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
-            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));  // create token from the dataCompareFile object
+        if (jwtManager.tokenEnabled()) {
+
+            // create token from the dataCompareFile object
+            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));
         }
 
         return objectMapper.writeValueAsString(dataCompareFile);
     }
 
     @SneakyThrows
-    private String getMailMerge(Boolean directUrl) {
+    private String getMailMerge(final Boolean directUrl) {
         Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
         dataMailMergeRecipients.put("fileType", "csv");
         dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
@@ -189,8 +228,10 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if(jwtManager.tokenEnabled()){
-            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));  // create token from the dataMailMergeRecipients object
+        if (jwtManager.tokenEnabled()) {
+
+            // create token from the dataMailMergeRecipients object
+            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
         }
 
         return objectMapper.writeValueAsString(dataMailMergeRecipients);
