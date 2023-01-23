@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.5.0
 - nodejs: added wopi putRelativeFile action
 - nodejs: wopi editnew action for exisiting file
 - nodejs: fix wopi actions after restart
