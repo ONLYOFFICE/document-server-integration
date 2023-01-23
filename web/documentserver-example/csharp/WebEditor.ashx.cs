@@ -280,8 +280,9 @@ namespace OnlineEditorsExample
                 var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = Path.GetFileName(context.Request["userAddress"]);
                 var isEmbedded = context.Request["dmode"];
+                var cfgSignatureUseForRequest = bool.Parse(WebConfigurationManager.AppSettings["files.docservice.token.useforrequest"]);
 
-                if (JwtManager.Enabled && isEmbedded == null && userAddress != null)
+                if (JwtManager.Enabled && isEmbedded == null && userAddress != null && cfgSignatureUseForRequest)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
