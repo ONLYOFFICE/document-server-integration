@@ -461,20 +461,21 @@ namespace OnlineEditorsExampleMVC
                 var userAddress = context.Request["userAddress"];
                 var isEmbedded = context.Request["dmode"];
 
-                if (JwtManager.Enabled && isEmbedded == null)
+                if (JwtManager.Enabled && isEmbedded == null && userAddress != null)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
+                    string token = "";
                     if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                     {
                         var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
-                        string token = JwtManager.Decode(headerToken);
-                        if (string.IsNullOrEmpty(token))
-                        {
-                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            context.Response.Write("JWT validation failed");
-                            return;
-                        }
+                        token = JwtManager.Decode(headerToken);
+                    }
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
                     }
                 }
 
