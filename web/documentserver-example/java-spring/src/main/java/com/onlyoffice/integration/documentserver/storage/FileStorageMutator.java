@@ -20,6 +20,7 @@ package com.onlyoffice.integration.documentserver.storage;
 
 import org.springframework.core.io.Resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -37,5 +38,5 @@ public interface FileStorageMutator {
     Resource loadFileAsResourceHistory(String fileName, String version, String file);  // load file as a resource
     File[] getStoredFiles();  // get a collection of all the stored files
     void createMeta(String fileName, String uid, String uname);  // create the file meta information
-    boolean createOrUpdateFile(Path path, InputStream stream);  // create or update a file
+    boolean createOrUpdateFile(Path path, ByteArrayInputStream stream);  // create or update a file
 }
