@@ -496,5 +496,9 @@ docManager.prototype.getFilesInfo = function (fileId) {
     else return responseArray;
 };
 
+docManager.prototype.getInstanceId = function () {
+    return this.getServerUrl();
+};
+
 // save all the functions to the docManager module to export it later in other files
 module.exports = docManager;
