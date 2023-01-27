@@ -88,7 +88,8 @@ module OnlineEditorsExampleRuby
       'sv' => 'Swedish',
       'tr' => 'Turkish',
       'uk' => 'Ukrainian',
-      'vi' => 'Vietnamese'
+      'vi' => 'Vietnamese',
+      'aa-AA' => 'Test Language'
     }
   end
 end

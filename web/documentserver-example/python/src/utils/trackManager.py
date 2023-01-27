@@ -1,26 +1,18 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2023
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
@@ -61,9 +53,7 @@ def processSave(body, filename, usAddr):
 
     curExt = fileUtils.getFileExt(filename) # get current file extension
 
-                                             # Todo [Delete here in version 7.0 or higher]
-    downloadExt = "." + body.get('filetype') if (body.get('filetype') != None) else fileUtils.getFileExt(download)  # get the extension of the downloaded file
-                                             # Support for versions below 7.0
+    downloadExt = "." + body.get('filetype')  # get the extension of the downloaded file
 
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
@@ -78,6 +68,10 @@ def processSave(body, filename, usAddr):
 
     path = docManager.getStoragePath(newFilename, usAddr) # get the file path
 
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
+
     histDir = historyManager.getHistoryDir(path) # get the path to the history direction
     if not os.path.exists(histDir): # if the path doesn't exist
         os.makedirs(histDir) # create it
@@ -85,8 +79,13 @@ def processSave(body, filename, usAddr):
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
     os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
-    docManager.saveFileFromUri(download, path) # save file to the storage path 
-    docManager.saveFileFromUri(changesUri, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
+
+    docManager.saveFile(data, path)  # save document file
+
+    dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
+    if (dataChanges is None):
+        raise Exception("Downloaded changes is null")
+    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 
     hist = None
     hist = body.get('changeshistory')
@@ -109,10 +108,8 @@ def processForceSave(body, filename, usAddr):
     if (download is None):
         raise Exception("DownloadUrl is null")
     curExt = fileUtils.getFileExt(filename) # get current file extension
-    
-                                             # Todo [Delete here in version 7.0 or higher]
-    downloadExt = "." + body.get('filetype') if (body.get('filetype') != None) else fileUtils.getFileExt(download)  # get the extension of the downloaded file
-                                             # Support for versions below 7.0
+
+    downloadExt = "." + body.get('filetype')  # get the extension of the downloaded file
 
     newFilename = False
 
@@ -126,6 +123,10 @@ def processForceSave(body, filename, usAddr):
                 download = newUri
         except Exception:
             newFilename = True
+
+    data = docManager.downloadFileFromUri(download)  # download document file
+    if (data is None):
+        raise Exception("Downloaded document is null")
 
     isSubmitForm = body.get('forcesavetype') == 3 # SubmitForm
 
@@ -142,7 +143,7 @@ def processForceSave(body, filename, usAddr):
         if (forcesavePath == ""):
             forcesavePath = docManager.getForcesavePath(filename, usAddr, True)
 
-    docManager.saveFileFromUri(download, forcesavePath)
+    docManager.saveFile(download, forcesavePath) # save document file
 
     if(isSubmitForm):
         uid = body['actions'][0]['userid'] # get the user id

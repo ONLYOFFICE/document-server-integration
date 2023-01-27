@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,19 @@ var urlModule = require("url");
 var urllib = require("urllib");
 const xmlParser = require("fast-xml-parser");
 const he = require("he");
+const siteUrl = configServer.get("siteUrl");  // the path to the editors installation
 
 var cache = null;
+
+async function initWopi(docManager) {
+    let absSiteUrl = siteUrl;
+    if (absSiteUrl.indexOf("/") === 0) {
+        absSiteUrl = docManager.getServerHost() + siteUrl;
+    }
+
+    // get the wopi discovery information
+    await getDiscoveryInfo(absSiteUrl);
+}
 
 // get the wopi discovery information
 async function getDiscoveryInfo(siteUrl) {
@@ -125,6 +136,7 @@ function getActionUrl(host, userAddress, action, filename) {
     return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
 }
 
+exports.initWopi = initWopi;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;

@@ -18,7 +18,7 @@
         <meta name="viewport" content="width=device-width" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2021
+        * (c) Copyright Ascensio System SIA 2023
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -87,33 +87,42 @@
                                             <tr>
                                                 <td valign="middle">
                                                     <span class="select-user">Username</span>
-                                                    <img class="info" src="css/img/info.svg" />
+                                                    <img id="info" class="info" src="css/img/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <% for (User user : Users.getAllUsers()) { %>
-                                                            <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
+                                                            <option value="<%= user.getId() %>"><%= user.getName() == null ? "Anonymous" : user.getName() %></option>
                                                         <% } %>
                                                     </select>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td valign="middle">
-                                                    <span class="select-user">Language editors interface</span>
+                                                    <span class="select-user">Language</span>
+                                                    <img class="info info-tooltip" data-id="language"
+                                                         data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                         src="css/img/info.svg" />
                                                     <select class="select-user" id="language">
-                                                        <% Map<String, String> languages = DocumentManager.GetLanguages(); %>
+                                                        <% Map<String, String> languages = DocumentManager.getLanguages(); %>
                                                         <% for (Map.Entry<String, String> language : languages.entrySet()) { %>
                                                             <option value="<%=language.getKey()%>"><%=language.getValue()%></option>
                                                         <% } %>
                                                     </select>
                                                 </td>
                                             </tr>
+                                            <td valign="middle">
+                                                <label class="side-option">
+                                                    <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                    <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="css/img/info.svg" />
+                                                </label>
+                                            </td>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </td>
                         <td class="section">
-                            <% DocumentManager.Init(request, response); %>
-                            <% File[] files = DocumentManager.GetStoredFiles(null); %>
+                            <% DocumentManager.init(request, response); %>
+                            <% File[] files = DocumentManager.getStoredFiles(null); %>
                             <div class="main-panel">
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
@@ -125,9 +134,9 @@
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
                                         <div class="user-descr">
-                                            <b><%= user.name == null ? "Anonymous" : user.name %></b>
+                                            <b><%= user.getName() == null ? "Anonymous" : user.getName() %></b>
                                             <ul>
-                                                <% for (String description : user.descriptions) { %>
+                                                <% for (String description : user.getDescriptions()) { %>
                                                 <li><%= description %></li>
                                                 <% } %>
                                             </ul>
@@ -152,49 +161,51 @@
                                             <table cellspacing="0" cellpadding="0" width="100%">
                                                 <tbody>
                                                     <% for (Integer i = 0; i < files.length; i++) {
-                                                        Boolean isFillFormDoc = DocumentManager.GetFillExts().contains(FileUtility.GetFileExtension(files[i].getName()).toLowerCase());
-                                                        String docType = FileUtility.GetFileType(files[i].getName()).toString().toLowerCase();
-                                                        Boolean canEdit = DocumentManager.GetEditedExts().contains(FileUtility.GetFileExtension(files[i].getName()));
-                                                        String version=" ["+DocumentManager.GetFileVersion(DocumentManager.HistoryDir(DocumentManager.StoragePath(files[i].getName(), null)))+"]";
+                                                        Boolean isFillFormDoc = DocumentManager.getFillExts().contains(FileUtility.getFileExtension(files[i].getName()).toLowerCase());
+                                                        String docType = FileUtility.getFileType(files[i].getName()).toString().toLowerCase();
+                                                        Boolean canEdit = DocumentManager.getEditedExts().contains(FileUtility.getFileExtension(files[i].getName()));
+                                                        String version=" ["+DocumentManager.getFileVersion(DocumentManager.historyDir(DocumentManager.storagePath(files[i].getName(), null)))+"]";
                                                     %>
                                                         <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
                                                             <td class="contentCells">
-                                                                <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>" target="_blank">
+                                                                <a class="stored-edit <%= docType %>" href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>" target="_blank">
                                                                     <span><%= files[i].getName() %></span>
                                                                 </a>
                                                             </td>
                                                             <% if (canEdit) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=edit" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=edit" target="_blank">
                                                                         <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=edit" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=mobile&mode=edit" target="_blank">
                                                                         <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=comment" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
                                                                         <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                     </a>
                                                                 </td>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=review" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">
                                                                         <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                                     </a>
                                                                 </td>
                                                                 <% } else if (docType.equals("cell")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=filter" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=filter" target="_blank">
                                                                         <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
                                                                     </a>
                                                                 </td>
                                                                 <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=blockcontent" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                    .concat(request.getParameter("directUrl") != null ?
+                                                                     "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=blockcontent" target="_blank">
                                                                         <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
                                                                 </td>
@@ -206,7 +217,9 @@
                                                                 <% } %>
                                                                 <% if (isFillFormDoc) { %>
                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                    .concat(request.getParameter("directUrl") != null ?
+                                                                     "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=fillForms" target="_blank">
                                                                         <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
                                                                 </td>
@@ -216,7 +229,9 @@
                                                                 <% } else if (isFillFormDoc) {%>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=fillForms" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                    .concat(request.getParameter("directUrl") != null ?
+                                                                     "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=mobile&mode=fillForms" target="_blank">
                                                                         <img src="css/img/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
                                                                     </a>
                                                                 </td>
@@ -224,24 +239,32 @@
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=fillForms" target="_blank">
+                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                    .concat(request.getParameter("directUrl") != null ?
+                                                                     "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=fillForms" target="_blank">
                                                                         <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
                                                             <% } else { %>
                                                             <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon firstContentCellViewers">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=desktop&mode=view" target="_blank">
+                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                .concat(request.getParameter("directUrl") != null ?
+                                                                 "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=view" target="_blank">
                                                                     <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=mobile&mode=view" target="_blank">
+                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                .concat(request.getParameter("directUrl") != null ?
+                                                                 "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=mobile&mode=view" target="_blank">
                                                                     <img src="css/img/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
-                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8") %>&type=embedded&mode=embedded" target="_blank">
+                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
+                                                                .concat(request.getParameter("directUrl") != null ?
+                                                                 "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=embedded&mode=embedded" target="_blank">
                                                                     <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
@@ -312,7 +335,7 @@
             </div>
         </div>
 
-        <span id="loadScripts" data-docs="<%= ConfigManager.GetProperty("files.docservice.url.site") + ConfigManager.GetProperty("files.docservice.url.preloader") %>"></span>
+        <span id="loadScripts" data-docs="<%= ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.preloader") %>"></span>
 
         <footer>
             <div class="center">
@@ -326,7 +349,7 @@
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                             </td>
                             <td class="copy">
-                                &copy; Ascensio Systems SIA 2020. All rights reserved.
+                                &copy; Ascensio Systems SIA 2023. All rights reserved.
                             </td>
                         </tr>
                     </tbody>
@@ -343,9 +366,9 @@
         <script type="text/javascript" src="scripts/jscript.js"></script>
 
         <script language="javascript" type="text/javascript">
-            var FillExtList = "<%= String.join(",", DocumentManager.GetFillExts()) %>";
-            var ConverExtList = "<%= String.join(",", DocumentManager.GetConvertExts()) %>";
-            var EditedExtList = "<%= String.join(",", DocumentManager.GetEditedExts()) %>";
+            var FillExtList = "<%= String.join(",", DocumentManager.getFillExts()) %>";
+            var ConverExtList = "<%= String.join(",", DocumentManager.getConvertExts()) %>";
+            var EditedExtList = "<%= String.join(",", DocumentManager.getEditedExts()) %>";
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
 

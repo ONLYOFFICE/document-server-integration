@@ -1,33 +1,38 @@
-﻿/*
+﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
- * The MIT License (MIT)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-*/
+ */
+
+var directUrl;
 
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
+    directUrl = getUrlVars()["directUrl"] == "true";
+
     mustReload = false;
+
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
+    else
+        directUrl = jq("#directUrl").prop("checked");
+
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
+    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -226,7 +231,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=edit&filename=" + fileId;
+        var url = UrlEditor + "?mode=edit&filename=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -234,7 +239,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=view&filename=" + fileId;
+        var url = UrlEditor + "?mode=view&filename=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -242,7 +247,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&mode=embedded&filename=" + fileId;
+        var url = UrlEditor + "?type=embedded&mode=embedded&filename=" + fileId + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -304,12 +309,12 @@ if (typeof jQuery !== "undefined") {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
                 }
-                jq(".info").on("touchend", function () {
+                jq("#info").on("touchend", function () {
                     showUserTooltip(true);
                 });
             }
     } else {
-        jq(".info").mouseover(function (event) {
+        jq("#info").mouseover(function (event) {
             if (fileList.length > 0) {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
@@ -333,4 +338,29 @@ if (typeof jQuery !== "undefined") {
             }, 500);
         });
     }
+
+    function getUrlVars() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    };
+
+    jq(".info-tooltip").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
+    });
 }

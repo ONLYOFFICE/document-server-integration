@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,23 @@
  *
  */
 
+var directUrl;
+
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
 
+    directUrl = getUrlVars()["directUrl"] == "true";
+
     mustReload = false;
+
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
+    else
+        directUrl = jq("#directUrl").prop("checked");
+
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
+    });
 
     user = getUrlVars()["user"];
     if ("" != user && undefined != user)
@@ -234,7 +247,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -243,7 +256,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -252,7 +265,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user;
+        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -330,12 +343,12 @@ if (typeof jQuery != "undefined") {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
                 }
-                jq(".info").on("touchend", function () {
+                jq("#info").on("touchend", function () {
                     showUserTooltip(true);
                 });
             }
     } else {
-        jq(".info").mouseover(function (event) {
+        jq("#info").mouseover(function (event) {
             if (fileList.length > 0) {
                 if (hideTooltipTimeout != null) {
                     clearTimeout(hideTooltipTimeout);
@@ -359,6 +372,20 @@ if (typeof jQuery != "undefined") {
             }, 500);
         });
     }
+
+    jq(".info-tooltip").mouseover(function (event) {
+        var target = event.target;
+        var id = target.dataset.id ? target.dataset.id : target.id;
+        var tooltip = target.dataset.tooltip;
+
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
+
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
+    }).mouseout(function () {
+        jq("div.tooltip").remove();
+    });
 }
 
 function getUrlVars() {

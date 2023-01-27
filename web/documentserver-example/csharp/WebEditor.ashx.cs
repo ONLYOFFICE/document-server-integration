@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -283,14 +283,14 @@ namespace OnlineEditorsExample
 
                 if (JwtManager.Enabled && isEmbedded == null)
                 {
-                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                    string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                     if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                     {
                         var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
                         string token = JwtManager.Decode(headerToken);
 
-                        if (token == null || token.Equals(""))
+                        if (string.IsNullOrEmpty(token))
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                             context.Response.Write("JWT validation failed");
@@ -300,7 +300,7 @@ namespace OnlineEditorsExample
                 }
 
                 var filePath = _Default.ForcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
-                if (filePath.Equals(""))
+                if (string.IsNullOrEmpty(filePath))
                 {
                     filePath = _Default.StoragePath(fileName, userAddress);  // or to the original document
                 }
@@ -340,14 +340,14 @@ namespace OnlineEditorsExample
 
                 if (JwtManager.Enabled)
                 {
-                    string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                    string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                     if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                     {
                         var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
                         string token = JwtManager.Decode(headerToken);
 
-                        if (token == null || token.Equals(""))
+                        if (string.IsNullOrEmpty(token))
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                             context.Response.Write("JWT validation failed");

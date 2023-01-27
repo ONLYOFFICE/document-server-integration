@@ -16,7 +16,7 @@
     <title>ONLYOFFICE</title>
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2023
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@
                                                 <a class="try-editor form" data-type="docxf">Form template</a>
                                             </li>
                                         </ul>
-                                        <label class="create-sample">
+                                        <label class="side-option">
                                             <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                         </label>
                                     </div>
@@ -88,7 +88,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" src="app_themes/images/info.svg" />
+                                                <img id="info" class="info" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% foreach (User user in Users.getAllUsers())
                                                        { %>
@@ -99,7 +99,10 @@
                                         </tr>
                                         <tr>
                                             <td valign="middle">
-                                                <span class="select-user">Language editors interface</span>
+                                                <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="language">
                                                     <% Dictionary<string, string> languages = GetLanguages(); 
                                                     foreach (var lang in languages)
@@ -109,6 +112,14 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="app_themes/images/info.svg" />
+                                            </label>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -158,7 +169,8 @@
                                                 <tbody>
                                                 <%  foreach (var storedFile in storedFiles)
                                                     {
-                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                        var directUrlParam = GetDirectUrlParam();
+                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name) + directUrlParam;
                                                         var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
                                                         var canEdit = EditedExts.Contains(ext);

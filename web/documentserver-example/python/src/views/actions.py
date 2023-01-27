@@ -1,26 +1,18 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2023
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 import requests
@@ -88,7 +80,7 @@ def convert(request):
             else:
                 correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + newExt, request)  # otherwise, create a new name with the necessary extension
                 path = docManager.getStoragePath(correctName, request)
-                docManager.saveFileFromUri(newUri, path, request, True)  # save the file from the new url in the storage directory
+                docManager.downloadFileFromUri(newUri, path, True)  # save the file from the new url in the storage directory
                 docManager.removeFile(filename, request)  # remove the original file
                 response.setdefault('filename', correctName)  # pass the name of the converted file to the response
         else:
@@ -138,7 +130,7 @@ def saveAs(request):
             response.setdefault('error', 'File type is not supported')
             raise Exception('File type is not supported')
 
-        docManager.saveFileFromUri(saveAsFileUrl, path, request, True)  # save the file from the new url in the storage directory
+        docManager.downloadFileFromUri(saveAsFileUrl, path, True)  # save the file from the new url in the storage directory
 
         response.setdefault('file', filename)
     except Exception as e:
@@ -171,6 +163,7 @@ def rename(request):
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
+    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true")  if 'directUrl' in request.GET else False
 
     ext = fileUtils.getFileExt(filename)
 
@@ -234,7 +227,7 @@ def edit(request):
         'document': {
             'title': filename,
             'url': docManager.getDownloadUrl(filename, request),
-            'directUrl': directUrl,
+            'directUrl': directUrl if isEnableDirectUrl else "",
             'fileType': ext[1:],
             'key': docKey,
             'info': infObj,
@@ -295,6 +288,9 @@ def edit(request):
         'fileType': 'png',
         'url': docManager.getServerUrl(True, request) + 'static/images/logo.png',
         'directUrl': docManager.getServerUrl(False, request) + 'static/images/logo.png'
+    } if isEnableDirectUrl else {
+        'fileType': 'png',
+        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
     }
 
     # a document which will be compared with the current document
@@ -302,6 +298,9 @@ def edit(request):
         'fileType': 'docx',
         'url': docManager.getServerUrl(True, request) + 'static/sample.docx',
         'directUrl': docManager.getServerUrl(False, request) + 'static/sample.docx'
+    } if isEnableDirectUrl else {
+        'fileType': 'docx',
+        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
     }
 
     # recipient data for mail merging
@@ -309,6 +308,9 @@ def edit(request):
         'fileType': 'csv',
         'url': docManager.getServerUrl(True, request) + 'csv',
         'directUrl': docManager.getServerUrl(False, request) + 'csv'
+    } if isEnableDirectUrl else {
+        'fileType': 'csv',
+        'url': docManager.getServerUrl(True, request) + 'csv'
     }
 
     # users data for mentions
@@ -320,7 +322,7 @@ def edit(request):
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
         dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
 
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, request)  # get the document history
+    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
@@ -358,8 +360,8 @@ def track(request):
             trackManager.processForceSave(body, filename, usAddr)
 
     except Exception as e:
-        response.setdefault('error', 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
-        response.setdefault('message', e.args[0])
+        response.setdefault("error", 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
+        response.setdefault("message", str(e.args[0]))
 
     response.setdefault('error', 0)  # if no exceptions are raised, the default error value is 0 (no errors)
     # the response status is 200 if the changes are saved successfully; otherwise, it is equal to 500

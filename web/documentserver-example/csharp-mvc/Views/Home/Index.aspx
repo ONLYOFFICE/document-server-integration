@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2023
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@
                                             <a class="try-editor form" data-type="docxf">Form template</a>
                                         </li>
                                     </ul>
-                                    <label class="create-sample">
+                                    <label class="side-option">
                                         <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                     </label>
                                 </div>
@@ -86,7 +86,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                             <img class="info" src="content/images/info.svg" />
+                                             <img id="info" class="info" src="content/images/info.svg" />
                                              <select class="select-user" id="user">
                                             <% foreach (User user in Users.getAllUsers())
                                                { %>
@@ -97,7 +97,10 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language editors interface</span>
+                                            <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="content/images/info.svg" />
                                             <select class="select-user" id="language">
                                                 <% Dictionary<string, string> languages = DocManagerHelper.GetLanguages(); 
                                                 foreach (var lang in languages)
@@ -105,6 +108,14 @@
                                                         <option value="<%= lang.Key %>"><%= lang.Value %></option>
                                                     <% } %>
                                             </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="content/images/info.svg" />
+                                            </label>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -156,7 +167,8 @@
                                             <tbody>
                                             <% foreach (var storedFile in storedFiles)
                                                {
-                                                    var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                            var isEnabledDirectUrl = DocManagerHelper.GetDirectUrl();
+                                                            var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
                                                             var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
                                                             var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
@@ -165,42 +177,42 @@
 
                                                             <tr class="tableRow" title="<%= storedFile.Name %> [<%= DocManagerHelper.GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress.Replace(':', '_')) %>]">
                                                                 <td class="contentCells">
-                                                                    <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name }) %>" target="_blank">
+                                                                    <a class="stored-edit <%= docType %>" href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                         <span><%= storedFile.Name %></span>
                                                                     </a>
                                                                 </td>
                                                                 <% if (canEdit) { %>
                                                                     <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit" }) %>" target="_blank">
+                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                             <img src="content/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                         </a>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit" }) %>" target="_blank">
+                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                             <img src="content/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                         </a>
                                                                     </td>
                                                                     <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment" }) %>" target="_blank">
+                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                             <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                         </a>
                                                                     </td>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review" }) %>" target="_blank">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                                 <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                                             </a>
                                                                         </td>
                                                                     <% } else if (docType == "cell") { %>
                                                                         <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter" }) %>" target="_blank">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                                 <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                             </a>
                                                                          </td>
                                                                     <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent" }) %>" target="_blank">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                                 <img src="content/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                             </a>
                                                                         </td>
@@ -212,7 +224,7 @@
                                                                     <% } %>
                                                                     <% if (isFillFormDoc) { %>
                                                                         <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                                 <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                             </a>
                                                                         </td>
@@ -222,7 +234,7 @@
                                                                 <% } else if (isFillFormDoc) { %>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon">
-                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "fillForms", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                            <img src="content/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
                                                                        </a>
                                                                     </td>
@@ -230,7 +242,7 @@
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                     <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms" }) %>" target="_blank">
+                                                                       <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                            <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                        </a>
                                                                     </td>
@@ -238,17 +250,17 @@
                                                                     <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                                 <% } %>
                                                                 <td class="contentCells contentCells-icon firstContentCellViewers">
-                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view" }) %>" target="_blank">
+                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                         <img src="content/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view" }) %>" target="_blank">
+                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                         <img src="content/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
-                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded" }) %>" target="_blank">
+                                                                    <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded", directUrl = isEnabledDirectUrl }) %>" target="_blank">
                                                                         <img src="content/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                     </a>
                                                                 </td>

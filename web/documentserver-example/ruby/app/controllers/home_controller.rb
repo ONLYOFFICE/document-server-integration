@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2021
+# (c) Copyright Ascensio System SIA 2023
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@ class HomeController < ApplicationController
   def editor
 
     DocumentHelper.init(request.remote_ip, request.base_url)
-    user = Users.get_user(cookies[:uid])
-
-    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :user => user, :action_data => params[:actionLink])
+    user = Users.get_user(params[:userId])
+    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :user => user, :action_data => params[:actionLink], :direct_url => params[:directUrl])
 
   end
 
@@ -34,10 +33,9 @@ class HomeController < ApplicationController
   def sample
 
     DocumentHelper.init(request.remote_ip, request.base_url)
-    user = Users.get_user(cookies[:uid])
-
+    user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
-    redirect_to :controller => 'home', :action => 'editor', :fileName => file_name
+    redirect_to :controller => 'home', :action => 'editor', :fileName => file_name, :userId => user.id
 
   end
 
@@ -73,7 +71,7 @@ class HomeController < ApplicationController
       end
 
       # create file meta information
-      user = Users.get_user(cookies[:uid])
+      user = Users.get_user(params[:userId])
 
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
@@ -134,7 +132,7 @@ class HomeController < ApplicationController
         end
 
         file_name = correct_name
-        user = Users.get_user(cookies[:uid])
+        user = Users.get_user(params[:userId])
 
         DocumentHelper.create_meta(file_name, user.id, user.name, nil)  # create meta data of the new file
       end
@@ -335,7 +333,7 @@ class HomeController < ApplicationController
       File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
         file.write(data)
       end
-      user = Users.get_user(cookies[:uid])
+      user = Users.get_user(params[:userId])
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)  # create meta data of the new file
 
       render plain: '{"file" : "' + file_name + '"}'

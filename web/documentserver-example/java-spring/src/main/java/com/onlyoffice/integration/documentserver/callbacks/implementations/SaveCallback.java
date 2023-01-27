@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ public class SaveCallback implements Callback {
     @Autowired
     private CallbackManager callbackManager;
     @Override
-    public int handle(Track body, String fileName) {  // handle the callback when the saving request is performed
+    public int handle(final Track body,
+                      final String fileName) {  // handle the callback when the saving request is performed
         int result = 0;
         try {
             callbackManager.processSave(body, fileName);  // file saving process

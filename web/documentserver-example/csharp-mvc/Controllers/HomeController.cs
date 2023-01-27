@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  *
  */
 
+using System;
 using System.IO;
 using System.Web.Mvc;
 using OnlineEditorsExampleMVC.Helpers;
@@ -31,13 +32,14 @@ namespace OnlineEditorsExampleMVC.Controllers
         }
 
         // viewing file in the editor
-        public ActionResult Editor(string fileName, string editorsMode, string editorsType)
+        public ActionResult Editor(string fileName, string editorsMode, string editorsType, string directUrl)
         {
             var file = new FileModel
             {
                 Mode = editorsMode,  // editor mode: edit or view
                 Type = editorsType,  // editor type: desktop, mobile, embedded
-                FileName = Path.GetFileName(fileName)  // file name
+                FileName = Path.GetFileName(fileName),  // file name
+                IsEnabledDirectUrl = directUrl != null ? Convert.ToBoolean(directUrl) : false
             };
 
             return View("Editor", file);

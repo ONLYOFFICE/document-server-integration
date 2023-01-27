@@ -1,26 +1,18 @@
 <!--*
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
- * The MIT License (MIT)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
 *-->
 
@@ -71,7 +63,7 @@
                                             <a class="try-editor form reload-page" target="_blank" data-type="docxf">Form template</a>
                                         </li>
                                     </ul>
-                                    <label class="create-sample">
+                                    <label class="side-option">
                                         <input type="checkbox" id="createSample" class="checkbox" />With sample content
                                     </label>
                                 </div>
@@ -86,7 +78,7 @@
                                     <tr>
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
-                                            <img class="info" src="{% static "images/info.svg" %}" />
+                                            <img id="info" class="info" src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="user">
                                                 {% for user in users %}
                                                     <option value="{{ user.id }}">{% if user.name %} {{ user.name }} {% else %} Anonymous {% endif %} </option>
@@ -96,12 +88,23 @@
                                     </tr>
                                     <tr>
                                         <td valign="middle">
-                                            <span class="select-user">Language editors interface</span>
+                                            <span class="select-user">Language</span>
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="{% static "images/info.svg" %}" />
                                             <select class="select-user" id="language">
                                                 {% for key, val in languages.items %}
                                                     <option value="{{ key }}">{{ val }}</option>
                                                 {% endfor %}
                                             </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="{% static "images/info.svg" %}" />
+                                            </label>
                                         </td>
                                     </tr>
                                 </table>
@@ -153,42 +156,42 @@
                                                 {% for file in files %}
                                                     <tr class="tableRow" title="{{ file.title }} [{{file.version}}]">
                                                         <td class="contentCells">
-                                                            <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}" target="_blank">
+                                                            <a class="stored-edit {{ file.type }}" href="edit?filename={{ file.title }}&directUrl={{ directUrl }}" target="_blank">
                                                                 <span>{{ file.title }}</span>
                                                             </a>
                                                         </td>
                                                         {% if file.canEdit %}
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=edit" target="_blank">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=edit&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=edit" target="_blank">
+                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=edit&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=comment" target="_blank">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=comment&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                 </a>
                                                             </td>
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review" target="_blank">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">
                                                                         <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
                                                                     </a>
                                                                 </td>
                                                             {% elif file.type == 'cell' %}
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter" target="_blank">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter&directUrl={{ directUrl }}" target="_blank">
                                                                         <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                                                     </a>
                                                                 </td>
                                                             {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent" target="_blank">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent&directUrl={{ directUrl }}" target="_blank">
                                                                         <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                     </a>
                                                                 </td>
@@ -200,7 +203,7 @@
                                                             {% endif %}
                                                             {% if file.isFillFormDoc %}
                                                                 <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
                                                                         <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
                                                                 </td>
@@ -210,7 +213,7 @@
                                                         {% elif file.isFillFormDoc %}
                                                             <td class="contentCells contentCells-icon"></td>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms" target="_blank">
+                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
                                                                 </a>
                                                             </td>
@@ -218,7 +221,7 @@
                                                             <td class="contentCells contentCells-icon"></td>
                                                             <td class="contentCells contentCells-icon"></td>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms" target="_blank">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                 </a>
                                                             </td>
@@ -226,17 +229,17 @@
                                                             <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                         {% endif %}
                                                         <td class="contentCells contentCells-icon firstContentCellViewers">
-                                                            <a href="edit?filename={{ file.title }}&type=desktop&mode=view" target="_blank">
+                                                            <a href="edit?filename={{ file.title }}&type=desktop&mode=view&directUrl={{ directUrl }}" target="_blank">
                                                                 <img src="{% static "images/desktop.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a href="edit?filename={{ file.title }}&type=mobile&mode=view" target="_blank">
+                                                            <a href="edit?filename={{ file.title }}&type=mobile&mode=view&directUrl={{ directUrl }}" target="_blank">
                                                                 <img src="{% static "images/mobile.svg" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
-                                                            <a href="edit?filename={{ file.title }}&type=embedded&mode=embedded" target="_blank">
+                                                            <a href="edit?filename={{ file.title }}&type=embedded&mode=embedded&directUrl={{ directUrl }}" target="_blank">
                                                                 <img src="{% static "images/embeded.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                             </a>
                                                         </td>

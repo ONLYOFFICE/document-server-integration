@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ public class User extends AbstractModel {
     private String group;
 
     // the user configuration parameters
-    public void configure(int id, String name, String group){
-        this.id = "uid-"+id;  // the user id
-        this.name = name;  // the user name
-        this.group = group;  // the group the user belongs to
+    public void configure(final int idParam, final String nameParam, final String groupParam) {
+        this.id = "uid-" + idParam;  // the user id
+        this.name = nameParam;  // the user name
+        this.group = groupParam;  // the group the user belongs to
     }
 }

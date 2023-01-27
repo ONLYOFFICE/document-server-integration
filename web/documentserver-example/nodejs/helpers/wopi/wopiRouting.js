@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ const docManager = require("../docManager");
 const fileUtility = require("../fileUtility");
 const config = require('config');
 const configServer = config.get('server');
-const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
+const siteUrl = configServer.get("siteUrl");  // the path to the editors installation
 const users = require("../users");
 
 exports.registerRoutes = function(app) {
@@ -33,24 +33,10 @@ exports.registerRoutes = function(app) {
 
         req.docManager = new docManager(req, res);
 
-        let absSiteUrl = siteUrl;
-        if (absSiteUrl.indexOf("/") === 0) {
-            absSiteUrl = req.docManager.getServerHost() + siteUrl;
-
-            //todo: remove
-            if (absSiteUrl.indexOf("example") !== -1) {
-                let host = req.get("host");
-                let pos = host.indexOf("/", "https://".length);
-                if (pos > -1)
-                {
-                    host = host.substring(0, pos);
-                }
-                absSiteUrl = req.docManager.getProtocol() + "://" + host + siteUrl;
-            }
-        }
+        await utils.initWopi(req.docManager);
 
         // get the wopi discovery information
-        let actions = await utils.getDiscoveryInfo(absSiteUrl);
+        let actions = await utils.getDiscoveryInfo();
         let wopiEnable = actions.length != 0 ? true : false;
         let docsExtEdit = [];    // Supported extensions for WOPI
 
@@ -110,6 +96,8 @@ exports.registerRoutes = function(app) {
     app.get("/wopi-action/:id", async function(req, res) {
         try {
             req.docManager = new docManager(req, res);
+
+            await utils.initWopi(req.docManager);
 
             var fileName = req.docManager.getCorrectName(req.params['id'])
             var fileExt = fileUtility.getFileExtension(fileName, true);  // get the file extension from the request
