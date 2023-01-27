@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -441,6 +441,12 @@ namespace OnlineEditorsExampleMVC.Helpers
                 languages.Add(tmp[0],tmp[1]);
             }
             return languages;
+        }
+
+        public static string GetDirectUrl()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return isEnabledDirectUrl != null ? isEnabledDirectUrl : "false";
         }
     }
 }

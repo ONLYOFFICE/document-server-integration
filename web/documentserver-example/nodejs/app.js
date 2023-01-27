@@ -1,7 +1,7 @@
 ﻿"use strict";
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,17 +130,19 @@ app.get("/download", function(req, res) {  // define a handler for downloading f
     var fileName = fileUtility.getFileName(req.query.fileName);
     var userAddress = req.query.useraddress;
 
-    if ((cfgSignatureEnable && cfgSignatureUseForRequest)) {
+    if (!!userAddress
+        && cfgSignatureEnable && cfgSignatureUseForRequest) {
         var authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
             var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
-            try {
-                var decoded = jwt.verify(token, cfgSignatureSecret);
-            } catch (err) {
-                console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
-                res.sendStatus(403);
-                return;
-            }
+        }
+
+        try {
+            var decoded = jwt.verify(token, cfgSignatureSecret);
+        } catch (err) {
+            console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
+            res.sendStatus(403);
+            return;
         }
     }
 
@@ -469,6 +471,62 @@ app.get("/csv", function (req, res) {  // define a handler for downloading csv f
     filestream.pipe(res);  // send file information to the response by streams
 })
 
+app.post("/reference", function (req, res) { //define a handler for renaming file
+
+    req.docManager = new docManager(req, res);
+
+    var result = function(data) {
+        res.writeHead(200, {"Content-Type": "application/json" });
+        res.write(JSON.stringify(data));
+        res.end();
+    };
+
+    var referenceData = req.body.referenceData;
+    if (!!referenceData) {
+        var instanceId = referenceData.instanceId;
+
+        if (instanceId === req.docManager.getInstanceId()) {
+            var fileKey = JSON.parse(referenceData.fileKey);
+            var userAddress = fileKey.userAddress;
+
+            if (userAddress === req.docManager.curUserHostAddress()
+                && req.docManager.existsSync(req.docManager.storagePath(fileKey.fileName, userAddress))) {
+                var fileName = fileKey.fileName;
+            }
+        }
+    }
+
+    if (!fileName && !!req.body.path) {
+        var path = fileUtility.getFileName(req.body.path);
+
+        if (req.docManager.existsSync(req.docManager.storagePath(path, userAddress))) {
+            fileName = path;
+        }
+    }
+
+    if (!fileName) {
+        result({ "error": "File is not found" });
+        return;
+    }
+
+    var data = {
+        fileType: fileUtility.getFileExtension(fileName).slice(1),
+        url: req.docManager.getDownloadUrl(fileName, true),
+        directUrl: req.body.directUrl ? req.docManager.getDownloadUrl(fileName) : null,
+        referenceData: {
+            fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            instanceId: req.docManager.getServerUrl()
+        },
+        path: fileName,
+    };
+
+    if (cfgSignatureEnable) {
+        data.token = jwt.sign(data, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});  // sign token with given data using signature secret
+    }
+
+    result(data);
+});
+
 app.post("/track", async function (req, res) {  // define a handler for tracking file changes
 
     req.docManager = new docManager(req, res);
@@ -553,9 +611,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
             var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
             var downloadExt = "." + body.filetype; // get the extension of the downloaded file
 
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
-
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -594,9 +649,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
                 if (status != 200) throw new Error("Document editing service returned status: " + status);
 
                 var downloadExt = "." + body.fileType;
-
-                /// TODO [Delete in version 7.0 or higher]
-                if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
                 var isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
@@ -647,9 +699,6 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
 
             var curExt = fileUtility.getFileExtension(fileName);
             var downloadExt = "." + body.filetype;
-
-            // TODO [Delete in version 7.0 or higher]
-            if (downloadExt == ".") downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
@@ -779,6 +828,14 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
             }
         }
 
+        var type = req.query.type || ""; // type: embedded/mobile/desktop
+        if (type == "") {
+            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
+        } else if (type != "mobile"
+            && type != "embedded") {
+                type = "desktop";
+        }
+
         var templatesImageUrl = req.docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
         var createUrl = req.docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
         var templates = [
@@ -819,14 +876,6 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var url = req.docManager.getDownloadUrl(fileName, true);
         var directUrl = req.docManager.getDownloadUrl(fileName);
         var mode = req.query.mode || "edit"; // mode: view/edit/review/comment/fillForms/embedded
-
-        var type = req.query.type || ""; // type: embedded/mobile/desktop
-        if (type == "") {
-            type = new RegExp(configServer.get("mobileRegEx"), "i").test(req.get('User-Agent')) ? "mobile" : "desktop";
-        } else if (type != "mobile"
-            && type != "embedded") {
-                type = "desktop";
-        }
 
         var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == "edit" || mode == "fillForms") && configServer.get('fillDocs').indexOf(fileExt) != -1) {
@@ -886,6 +935,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         } else {  // if history path is empty
             history.push(req.docManager.getHistory(fileName, changes, keyVersion, countVersion));  // write the history information about the last file version
             historyData.push({
+                fileType: fileExt.slice(1),
                 version: countVersion,
                 key: key,
                 url: url,
@@ -945,7 +995,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 fileChoiceUrl: fileChoiceUrl,
                 submitForm: submitForm,
                 plugins: JSON.stringify(plugins),
-                actionData: actionData
+                actionData: actionData,
+                fileKey: userid != "uid-0" ? JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
+                instanceId: userid != "uid-0" ? req.docManager.getInstanceId() : null
             },
             history: history,
             historyData: historyData,

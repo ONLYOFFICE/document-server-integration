@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.5.0
+- nodejs: added wopi putRelativeFile action
+- nodejs: wopi editnew action for exisiting file
+- nodejs: fix wopi actions after restart
+- setting an unavailable language
+- description in the tooltip on the main page
+- nodejs: referenceData
+- option to send directUrl
+
 ## 1.4.0
 - nodejs: option to send directUrl
 - opening file on client by directUrl
@@ -33,7 +42,6 @@
 ## 1.1.0
 - creating docxf
 - opening docxf, oform
-
 
 ## 1.0.0
 - added java spring

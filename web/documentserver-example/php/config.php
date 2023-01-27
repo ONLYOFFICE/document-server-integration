@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['version'] = "1.4.0";
+$GLOBALS['version'] = "1.5.0";
 
 $GLOBALS['FILE_SIZE_MAX'] = 5242880;
 $GLOBALS['STORAGE_PATH'] = "";
@@ -84,6 +84,7 @@ $GLOBALS['LANGUAGES'] = array(
     'sv' => 'Swedish',
     'tr' => 'Turkish',
     'uk' => 'Ukrainian',
-    'vi' => 'Vietnamese'
+    'vi' => 'Vietnamese',
+    'aa-AA' => 'Test Language'
 );
 ?>

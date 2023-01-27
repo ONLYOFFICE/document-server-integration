@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,16 @@ import org.springframework.stereotype.Component;
 @Setter
 public class Document {  // the parameters pertaining to the document (title, url, file type, etc.)
     @Autowired
-    private Info info;  // additional parameters for the document (document owner, folder where the document is stored, uploading date, sharing settings)
+    private Info info;  /* additional parameters for the document (document owner, folder where the document is stored,
+     uploading date, sharing settings) */
     @Autowired
     private Permission permissions;  // the permission for the document to be edited and downloaded or not
     private String fileType;  //  the file type for the source viewed or edited document
     private String key;  // the unique document identifier used by the service to recognize the document
-    private String urlUser;  // the absolute URL that will allow the document to be saved onto the user personal computer
-    private String title;  // the desired file name for the viewed or edited document which will also be used as file name when the document is downloaded
+    private String urlUser;  /* the absolute URL that will allow the document to be saved
+    onto the user personal computer */
+    private String title;  /* the desired file name for the viewed or edited document which will also be used
+    as file name when the document is downloaded */
     private String url;  // the absolute URL where the source viewed or edited document is stored
     private String directUrl;
 }

@@ -1,6 +1,6 @@
 import os
 
-VERSION = '1.4.0'
+VERSION = '1.5.0'
 
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
@@ -91,7 +91,8 @@ LANGUAGES = {
     'sv': 'Swedish',
     'tr': 'Turkish',
     'uk': 'Ukrainian',
-    'vi': 'Vietnamese'
+    'vi': 'Vietnamese',
+    'aa-AA': 'Test Language'
 }
 
 if os.environ.get("EXAMPLE_DOMAIN"):  # generates a link for example domain

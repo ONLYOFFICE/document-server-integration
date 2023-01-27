@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ namespace OnlineEditorsExampleMVC.Models
     {
         public string Mode { get; set; }  // editor mode
         public string Type { get; set; }  // editor type
+        public bool IsEnabledDirectUrl { get; set; }  // is enabled direct url
 
         // get file url for Document Server
         public string FileUri
@@ -126,7 +127,7 @@ namespace OnlineEditorsExampleMVC.Models
                             {
                                 { "title", FileName },
                                 { "url", DownloadUrl },
-                                { "directUrl", directUrl },
+                                { "directUrl", IsEnabledDirectUrl ? directUrl : "" },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -286,7 +287,10 @@ namespace OnlineEditorsExampleMVC.Models
                     }
 
                     dataObj.Add("url", prevFileUrl);
-                    dataObj.Add("directUrl", directPrevFileUrl);
+                    if (IsEnabledDirectUrl)
+                    {
+                        dataObj.Add("directUrl", directPrevFileUrl);
+                    }
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
@@ -304,11 +308,15 @@ namespace OnlineEditorsExampleMVC.Models
                         obj.Add("user", change.Count > 0 ? change["user"] : null);
 
                         var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-                        dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
+                        dataObj.Add("previous", IsEnabledDirectUrl ? new Dictionary<string, object>() {  // write information about previous file version to the data object with direct url
                             { "fileType", prev["fileType"] },
                             { "key", prev["key"] },  // write key and url information about previous file version
                             { "url", prev["url"] },
                             { "directUrl", prev["directUrl"] },
+                        } : new Dictionary<string, object>() {  // write information about previous file version to the data object without direct url
+                            { "fileType", prev["fileType"] },
+                            { "key", prev["key"] },  // write key and url information about previous file version
+                            { "url", prev["url"] },
                         });
                         // write the path to the diff.zip archive with differences in this file version
                         var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(FileName, (i - 1).ToString(), "diff.zip");
@@ -359,9 +367,13 @@ namespace OnlineEditorsExampleMVC.Models
             var dataCompareFile = new Dictionary<string, object>
             {
                 { "fileType", "docx" },
-                { "url", compareFileUrl.ToString() },
-                { "directUrl", directCompareFileUrl.ToString()}
+                { "url", compareFileUrl.ToString() }
             };
+
+            if (IsEnabledDirectUrl)
+            {
+                dataCompareFile.Add("directUrl", directCompareFileUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -396,9 +408,13 @@ namespace OnlineEditorsExampleMVC.Models
             var logoConfig = new Dictionary<string, object>
             {
                 { "fileType", "png"},
-                { "url", mailMergeUrl.ToString()},
-                { "directUrl", directMailMergeUrl.ToString()}
+                { "url", mailMergeUrl.ToString()}
             };
+
+            if (IsEnabledDirectUrl)
+            {
+                logoConfig.Add("directUrl", directMailMergeUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -437,9 +453,13 @@ namespace OnlineEditorsExampleMVC.Models
             var mailMergeConfig = new Dictionary<string, object>
             {
                 { "fileType", "csv" },
-                { "url", mailMergeUrl.ToString()},
-                { "directUrl", directMailMergeUrl.ToString()}
+                { "url", mailMergeUrl.ToString()}
             };
+
+            if (IsEnabledDirectUrl)
+            {
+                mailMergeConfig.Add("directUrl", directMailMergeUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {

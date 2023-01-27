@@ -1,7 +1,7 @@
 "use strict";
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -494,6 +494,10 @@ docManager.prototype.getFilesInfo = function (fileId) {
         else return "File not found";
     }
     else return responseArray;
+};
+
+docManager.prototype.getInstanceId = function () {
+    return this.getServerUrl();
 };
 
 // save all the functions to the docManager module to export it later in other files

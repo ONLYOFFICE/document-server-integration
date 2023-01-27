@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,19 +48,26 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
     @Autowired
     private ServiceConverter serviceConverter;
 
-    public void configure(Document document, DefaultDocumentWrapper wrapper){  // define the document configurer
+    public void configure(final Document document,
+                          final DefaultDocumentWrapper wrapper) {  // define the document configurer
         String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
         Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
 
         document.setTitle(fileName);  // set the title to the document config
-        document.setUrl(documentManager.getDownloadUrl(fileName, true));  // set the URL to download a file to the document config
-        document.setUrlUser(documentManager.getFileUri(fileName, false));  // set the file URL to the document config
-        document.setDirectUrl(documentManager.getDownloadUrl(fileName, false));
-        document.setFileType(fileUtility.getFileExtension(fileName).replace(".",""));  // set the file type to the document config
+
+        // set the URL to download a file to the document config
+        document.setUrl(documentManager.getDownloadUrl(fileName, true));
+        document.setUrlUser(documentManager
+                .getFileUri(fileName, false));  // set the file URL to the document config
+        document.setDirectUrl(wrapper.getIsEnableDirectUrl() ? documentManager
+                .getDownloadUrl(fileName, false) : "");
+        document.setFileType(fileUtility.getFileExtension(fileName)
+                .replace(".", ""));  // set the file type to the document config
         document.getInfo().setFavorite(wrapper.getFavorite());  // set the favorite parameter to the document config
 
-        String key =  serviceConverter.  // get the document key
-                        generateRevisionId(storagePathBuilder.getStorageLocation()
+        // get the document key
+        String key = serviceConverter
+                .generateRevisionId(storagePathBuilder.getStorageLocation()
                         + "/" + fileName + "/"
                         + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 

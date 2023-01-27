@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "log": {
     "appenders": [
       {
@@ -84,7 +84,8 @@
       "sv": "Swedish",
       "tr": "Turkish",
       "uk": "Ukrainian",
-      "vi": "Vietnamese"
+      "vi": "Vietnamese",
+      "aa-AA": "Test Language"
     }
   },
   "plugins": {

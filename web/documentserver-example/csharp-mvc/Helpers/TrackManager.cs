@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             // check if the document token is enabled
             if (JwtManager.Enabled)
             {
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                 string token = null;
 
@@ -92,15 +92,13 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) {
+            if (string.IsNullOrEmpty((string)fileData["url"])) {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
-            var downloadExt = fileData.ContainsKey("filetype")
-                ? "." + (string)fileData["filetype"]
-                : Path.GetExtension(downloadUri).ToLower() ?? ""; // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+            var downloadExt = "." + (string)fileData["filetype"]; // get the extension of the downloaded file
 
             var newFileName = fileName;
 
@@ -169,16 +167,14 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file force saving process
         public static int processForceSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (fileData["url"].Equals(null)) {
+            if ( string.IsNullOrEmpty((string)fileData["url"])) {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
 
-            var downloadExt = fileData.ContainsKey("filetype")
-                ? "." + (string)fileData["filetype"]
-                : Path.GetExtension(downloadUri).ToLower(); // TODO: Delete in version 7.0 or higher. Support for versions below 7.0
+            var downloadExt = "." + (string)fileData["filetype"];  // get the extension of the downloaded file
 
             Boolean newFileName = false;
 
@@ -228,7 +224,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                 }
                 forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, false);
-                if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
+                if (string.IsNullOrEmpty(forcesavePath))  // create forcesave path if it doesn't exist
                 {
                     forcesavePath = DocManagerHelper.ForcesavePath(fileName, userAddress, true);
                 }
@@ -279,7 +275,7 @@ namespace OnlineEditorsExampleMVC.Helpers
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 
                 body.Add("token", bodyToken);
@@ -321,6 +317,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified
 
             var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Timeout = 5000;
             using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
             {
                 if (stream == null) throw new Exception("stream is null");

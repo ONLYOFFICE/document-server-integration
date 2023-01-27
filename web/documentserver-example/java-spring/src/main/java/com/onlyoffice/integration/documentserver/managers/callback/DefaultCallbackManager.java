@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,23 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-//TODO: Refactoring
+import static com.onlyoffice.integration.documentserver.util.Constants.FILE_SAVE_TIMEOUT;
+
+// todo: Refactoring
 @Component
 @Primary
 public class DefaultCallbackManager implements CallbackManager {
@@ -70,13 +76,24 @@ public class DefaultCallbackManager implements CallbackManager {
     private ServiceConverter serviceConverter;
 
     // save file information from the URL to the file specified
-    private void downloadToFile(String url, Path path) throws Exception {
-        if (url == null || url.isEmpty()) throw new RuntimeException("Url argument is not specified");  // URL isn't specified
-        if (path == null) throw new RuntimeException("Path argument is not specified");  // file isn't specified
+    private void downloadToFile(final String url, final Path path) throws Exception {
+        if (url == null || url.isEmpty()) {
+            throw new RuntimeException("Url argument is not specified");  // URL isn't specified
+        }
+        if (path == null) {
+            throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        }
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
+        connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
         InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
+
+        int statusCode = connection.getResponseCode();
+        if (statusCode != HttpStatus.OK.value()) {  // checking status code
+            connection.disconnect();
+            throw new RuntimeException("Document editing service returned status: " + statusCode);
+        }
 
         if (stream == null) {
             connection.disconnect();
@@ -87,7 +104,7 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @SneakyThrows
-    public void processSave(Track body, String fileName) {  // file saving process
+    public void processSave(final Track body, final String fileName) {  // file saving process
         String downloadUri = body.getUrl();
         String changesUri = body.getChangesurl();
         String key = body.getKey();
@@ -96,46 +113,56 @@ public class DefaultCallbackManager implements CallbackManager {
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
         String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
 
-        // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "." + null) downloadExt = fileUtility.getFileExtension(downloadUri); // Support for versions below 7.0
-
-        //TODO: Refactoring
-        if (!curExt.equals(downloadExt)) {  // convert downloaded file to the file with the current extension if these extensions aren't equal
+        // todo: Refactoring
+        // convert downloaded file to the file with the current extension if these extensions aren't equal
+        if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert a file and get URL to a new file
+                String newFileUri = serviceConverter
+                        .getConvertedUri(downloadUri, downloadExt, curExt,
+                                serviceConverter.generateRevisionId(downloadUri), null, false,
+                                null);  // convert a file and get URL to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = documentManager
-                            .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);  // get the correct file name if it already exists
+                            .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName)
+                                    + downloadExt);  // get the correct file name if it already exists
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
-                newFileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
+            } catch (Exception e) {
+                newFileName = documentManager
+                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
         }
 
         String storagePath = storagePathBuilder.getFileLocation(newFileName);  // get the path to a new file
-        Path lastVersion = Paths.get(storagePathBuilder.getFileLocation(fileName));  // get the path to the last file version
+        Path lastVersion = Paths.get(storagePathBuilder
+                .getFileLocation(fileName));  // get the path to the last file version
 
         if (lastVersion.toFile().exists()) {  // if the last file version exists
             Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));  // get the history directory
             storageMutator.createDirectory(histDir);  // and create it
 
-            String versionDir = documentManager.versionDir(histDir.toAbsolutePath().toString(),  // get the file version directory
-                    storagePathBuilder.getFileVersion(histDir.toAbsolutePath().toString(), false), true);
+            String versionDir = documentManager
+                    .versionDir(histDir.toAbsolutePath().toString(),  // get the file version directory
+                    storagePathBuilder
+                            .getFileVersion(histDir.toAbsolutePath().toString(), false), true);
 
             Path ver = Paths.get(versionDir);
             Path toSave = Paths.get(storagePath);
 
             storageMutator.createDirectory(ver);  // create the file version directory
-            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));  // move the last file version to the file version directory with the "prev" postfix
+
+            // move the last file version to the file version directory with the "prev" postfix
+            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));
 
             downloadToFile(downloadUri, toSave);  // save file to the storage path
-            downloadToFile(changesUri, Path.of(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
+            downloadToFile(changesUri, Path
+                    .of(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
             jsonChanges.put("changes", body.getHistory().getChanges());  // put the changes to the json object
-            jsonChanges.put("serverVersion", body.getHistory().getServerVersion());  // put the server version to the json object
+            jsonChanges.put("serverVersion", body.getHistory()
+                    .getServerVersion());  // put the server version to the json object
             String history = objectMapper.writeValueAsString(jsonChanges);
 
             if (history == null && body.getHistory() != null) {
@@ -143,20 +170,26 @@ public class DefaultCallbackManager implements CallbackManager {
             }
 
             if (history != null && !history.isEmpty()) {
-                storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);  // write the history changes to the changes.json file
+                // write the history changes to the changes.json file
+                storageMutator.writeToFile(versionDir + File.separator + "changes.json", history);
             }
 
-            storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);  // write the key value to the key.txt file
-            storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));  // get the path to the forcesaved file version and remove it
+            // write the key value to the key.txt file
+            storageMutator.writeToFile(versionDir + File.separator + "key.txt", key);
+
+            // get the path to the forcesaved file version and remove it
+            storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
         }
     }
 
-    //TODO: Replace (String method) with (Enum method)
+    // todo: Replace (String method) with (Enum method)
     @SneakyThrows
-    public void commandRequest(String method, String key, HashMap meta) {  // create a command request
-        String DocumentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
+    public void commandRequest(final String method,
+                               final String key,
+                               final HashMap meta) {  // create a command request
+        String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
-        URL url = new URL(DocumentCommandUrl);
+        URL url = new URL(documentCommandUrl);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
 
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -168,12 +201,14 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String headerToken;
-        if (jwtManager.tokenEnabled())  // check if a secret key to generate token exists or not
-        {
+        if (jwtManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
             Map<String, Object> payloadMap = new HashMap<>();
             payloadMap.put("payload", params);
             headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token
-            connection.setRequestProperty(documentJwtHeader.equals("") ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);  // add a header Authorization with a header token and Authorization prefix in it
+
+            // add a header Authorization with a header token and Authorization prefix in it
+            connection.setRequestProperty(documentJwtHeader.equals("")
+                    ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);
 
             String token = jwtManager.createToken(params);  // encode a payload object into a body token
             params.put("token", token);
@@ -184,7 +219,8 @@ public class DefaultCallbackManager implements CallbackManager {
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
 
         connection.setRequestMethod("POST");  // set the request method
-        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
+        connection
+                .setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
         connection.setDoOutput(true);  // set the doOutput field to true
         connection.connect();
 
@@ -194,76 +230,81 @@ public class DefaultCallbackManager implements CallbackManager {
 
         InputStream stream = connection.getInputStream();  // get input stream
 
-        if (stream == null) throw new RuntimeException("Could not get an answer");
+        if (stream == null) {
+            throw new RuntimeException("Could not get an answer");
+        }
 
         String jsonString = serviceConverter.convertStreamToString(stream);  // convert stream to json string
         connection.disconnect();
 
         JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
-        //TODO: Add errors ENUM
+        // todo: Add errors ENUM
         String responseCode = response.get("error").toString();
-        switch(responseCode) {
+        switch (responseCode) {
             case "0":
-            case "4": {
+            case "4":
                 break;
-            }
-            default: {
+            default:
                 throw new RuntimeException(response.toJSONString());
-            }
         }
     }
 
     @SneakyThrows
-    public void processForceSave(Track body, String fileName) {  // file force saving process
+    public void processForceSave(final Track body, final String fileNameParam) {  // file force saving process
 
         String downloadUri = body.getUrl();
+        String fileName = fileNameParam;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "."+body.getFiletype();  // get an extension of the downloaded file
+        String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
 
-        // Todo [Delete in version 7.0 or higher]
-        if (downloadExt != "."+null) downloadExt = fileUtility.getFileExtension(downloadUri);    // Support for versions below 7.0
-        
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
-        //TODO: Extract function
+        // todo: Extract function
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = serviceConverter.getConvertedUri(downloadUri, downloadExt,
-                        curExt, serviceConverter.generateRevisionId(downloadUri), null, false, null);  // convert file and get URL to a new file
+                // convert file and get URL to a new file
+                String newFileUri = serviceConverter
+                        .getConvertedUri(downloadUri, downloadExt, curExt, serviceConverter
+                                .generateRevisionId(downloadUri), null, false, null);
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {
                     downloadUri = newFileUri;
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 newFileName = true;
             }
         }
 
         String forcesavePath = "";
 
-        //TODO: Use ENUMS
-        //TODO: Pointless toString conversion
+        // todo: Use ENUMS
+        // todo: Pointless toString conversion
         boolean isSubmitForm = body.getForcesavetype().toString().equals("3");
 
-        //TODO: Extract function
+        // todo: Extract function
         if (isSubmitForm) {  // if the form is submitted
-            if (newFileName){
+            if (newFileName) {
+                // get the correct file name if it already exists
                 fileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + downloadExt);  // get the correct file name if it already exists
+                        .getCorrectName(fileUtility
+                                .getFileNameWithoutExtension(fileName) + "-form" + downloadExt);
             } else {
-                fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt);
+                fileName = documentManager
+                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt);
             }
             forcesavePath = storagePathBuilder.getFileLocation(fileName);  // create forcesave path if it doesn't exist
             List<Action> actions =  body.getActions();
             Action action = actions.get(0);
             String user = action.getUserid();  // get the user ID
-            storageMutator.createMeta(fileName, user, "Filling Form");  // create meta data for the forcesaved file
+            // create meta data for the forcesaved file
+            storageMutator.createMeta(fileName, user, "Filling Form");
         } else {
-            if (newFileName){
-                fileName = documentManager.getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
+            if (newFileName) {
+                fileName = documentManager
+                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
             }
 
             forcesavePath = storagePathBuilder.getForcesavePath(fileName, false);

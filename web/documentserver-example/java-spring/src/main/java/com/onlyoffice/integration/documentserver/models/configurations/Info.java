@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ import java.util.Locale;
 @Scope("prototype")
 @Getter
 @Setter
-public class Info {  // the additional parameters for the document (document owner, folder where the document is stored, uploading date, sharing settings)
+/* The additional parameters for the document (document owner, folder where the document is stored,
+ uploading date, sharing settings) */
+public class Info {
     private String owner = "Me";  // the name of the document owner/creator
     private Boolean favorite = null;  // the highlighting state of the Favorite icon
     private String uploaded = getDate();  // the document uploading date

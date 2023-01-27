@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,9 +57,13 @@ const requestHeaders = Object.freeze({
     "LockFailureReason": "X-WOPI-LockFailureReason",
     "LockedByOtherInterface": "X-WOPI-LockedByOtherInterface",
 
+    "FileConversion": "X-WOPI-FileConversion",
+
     "SuggestedTarget": "X-WOPI-SuggestedTarget",
     "RelativeTarget": "X-WOPI-RelativeTarget",
     "OverwriteRelativeTarget": "X-WOPI-OverwriteRelativeTarget",
+
+    "ValidRelativeTarget": "X-WOPI-ValidRelativeTarget",
 });
 
 module.exports = {

@@ -1,26 +1,18 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2023
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
@@ -152,7 +144,7 @@ def getMeta(storagePath):
     return None
 
 # get the document history of a given file
-def getHistoryObject(storagePath, filename, docKey, docUrl, req):
+def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, req):
     histDir = getHistoryDir(storagePath)
     version = getFileVersion(histDir)
     if version > 0: # if the file was modified (the file version is greater than 0)
@@ -184,7 +176,8 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                         }
                     
                 dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req) # write file url to the data object
-                dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False) # write file direct url to the data object
+                if isEnableDirectUrl:
+                    dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False) # write file direct url to the data object
 
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
@@ -201,6 +194,10 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                         'key': prev['key'],
                         'url': prev['url'],
                         'directUrl': prev['directUrl']
+                    } if isEnableDirectUrl else { # write key and url information about previous file version
+                        'fileType': prev['fileType'],
+                        'key': prev['key'],
+                        'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo # write information about previous file version to the data object
                     dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req) # write the path to the diff.zip archive with differences in this file version

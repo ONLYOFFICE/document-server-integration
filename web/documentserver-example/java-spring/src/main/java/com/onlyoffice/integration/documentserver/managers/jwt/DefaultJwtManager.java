@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class DefaultJwtManager implements JwtManager {
     private JSONParser parser;
 
     // create document token
-    public String createToken(Map<String, Object> payloadClaims) {
+    public String createToken(final Map<String, Object> payloadClaims) {
         try {
             // build a HMAC signer using a SHA-256 hash
             Signer signer = HMACSigner.newSHA256Signer(tokenSecret);
@@ -63,18 +63,20 @@ public class DefaultJwtManager implements JwtManager {
     }
 
     // read document token
-    public JWT readToken(String token) {
+    public JWT readToken(final String token) {
         try {
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
-            return JWT.getDecoder().decode(token, verifier);  // verify and decode the encoded string JWT to a rich object
+
+            // verify and decode the encoded string JWT to a rich object
+            return JWT.getDecoder().decode(token, verifier);
         } catch (Exception exception) {
             return null;
         }
     }
 
     // parse the body
-    public JSONObject parseBody(String payload, String header) {
+    public JSONObject parseBody(final String payload, final String header) {
         JSONObject body;
         try {
             Object obj = parser.parse(payload);  // get body parameters by parsing the payload
@@ -86,7 +88,9 @@ public class DefaultJwtManager implements JwtManager {
             String token = (String) body.get("token");  // get token from the body
             if (token == null) {  // if token is empty
                 if (header != null && !header.isBlank()) {  // and the header is defined
-                    token = header.startsWith("Bearer ") ? header.substring(7) : header;  // get token from the header (it is placed after the Bearer prefix if it exists)
+
+                    // get token from the header (it is placed after the Bearer prefix if it exists)
+                    token = header.startsWith("Bearer ") ? header.substring("Bearer ".length()) : header;
                 }
             }
             if (token == null || token.isBlank()) {
@@ -100,7 +104,7 @@ public class DefaultJwtManager implements JwtManager {
             if (jwt.getObject("payload") != null) {  // get payload from the token and check if it is not empty
                 try {
                     @SuppressWarnings("unchecked") LinkedHashMap<String, Object> jwtPayload =
-                            (LinkedHashMap<String, Object>)jwt.getObject("payload");
+                            (LinkedHashMap<String, Object>) jwt.getObject("payload");
 
                     jwt.claims = jwtPayload;
                 } catch (Exception ex) {

@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2021
+# (c) Copyright Ascensio System SIA 2023
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ class ServiceConverter
         DocumentHelper.verify_ssl(@@document_converter_url, http)
 
         http.read_timeout = @@convert_timeout
+        http.open_timeout = 5
         req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
         req.add_field("Accept", "application/json")  # set headers
         req.add_field("Content-Type", "application/json")
@@ -66,6 +67,12 @@ class ServiceConverter
 
         req.body = payload.to_json
         res = http.request(req)  # get the response
+
+        status_code = res.code
+        if status_code != 200  # checking status code
+          raise "Conversion service returned status: #{status_code}"
+        end
+
         data = res.body  # and take its body
       rescue TimeoutError
         # try again

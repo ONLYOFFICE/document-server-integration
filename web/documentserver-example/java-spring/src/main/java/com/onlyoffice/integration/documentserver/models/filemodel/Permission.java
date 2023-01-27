@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ public class Permission extends AbstractModel {  // the permission for the docum
     private Boolean edit = true;  // if the document can be edited or only viewed
     private Boolean print = true;  // if the document can be printed or not
     private Boolean fillForms = true;  // if the forms can be filled
-    private Boolean modifyFilter = true;  // if the filter can applied globally (true) affecting all the other users, or locally (false)
+    private Boolean modifyFilter = true;  /* if the filter can applied globally (true) affecting all the
+     other users, or locally (false) */
     private Boolean modifyContentControl = true;  // if the content control settings can be changed
     private Boolean review = true;  // if the document can be reviewed or not
     private Boolean chat = true;  // if a chat can be used
