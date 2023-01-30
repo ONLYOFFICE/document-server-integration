@@ -8,6 +8,8 @@
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
     <NameMvc>$(To)DotNet (Csharp MVC) Example</NameMvc>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+    <NameMvcReact>$(To)DotNet (Csharp MVC react) Example</NameMvcReact>
+    <DirMvcReact>$(RootDir)web\documentserver-example\csharp-mvc-react\</DirMvcReact>
     <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
     <NameSpring>$(To)Java Spring Example</NameSpring>
@@ -36,6 +38,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />
+
+    <ItemGroup>
+      <ZipFilesMVCreact Include="$(DirMvcReact)**" Exclude="$(DirMvcReact).vs\**;$(DirMvcReact)bin\*.pdb;$(DirMvcReact)bin\*.xml;$(DirMvcReact)obj\**;$(DirMvcReact)packages\**;$(DirMvcReact)**\.git;$(DirMvcReact)Scripts\React\node_modules\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ZipFilesMVCreact)" DestinationFiles="@(ZipFilesMVCreact->'$(NameMvcReact)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameMvcReact)" WorkingDirectory="$(To)" ZipFileName="$(NameMvcReact).zip" />
 
     <ItemGroup>
       <ZipFilesJava Include="$(DirJava)**" Exclude="$(DirJava)**\.git" />

@@ -6,11 +6,13 @@
     <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+    <DirMvcReact>$(RootDir)web\documentserver-example\csharp-mvc-react\</DirMvcReact>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectToBuild Include="$(DirCSharp)OnlineEditorsExample.sln"/>
     <ProjectToBuild Include="$(DirMvc)OnlineEditorsExampleMVC.sln"/>
+    <ProjectToBuild Include="$(DirMvcReact)OnlineEditorsExampleMVCreact.sln"/>
   </ItemGroup>
 
   <Target Name="Build">
