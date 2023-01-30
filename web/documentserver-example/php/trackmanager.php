@@ -26,7 +26,7 @@ function readBody() {
     $result["error"] = 0;
 
     // get the body of the post request and check if it is correct
-    if (($body_stream = file_get_contents('php://input')) === FALSE) {
+    if (($body_stream = file_get_contents('php://input')) === false) {
         $result["error"] = "Bad Request";
         return $result;
     }
@@ -34,7 +34,7 @@ function readBody() {
     $data = json_decode($body_stream, false);
 
     // check if the response is correct
-    if ($data === NULL) {
+    if ($data === null) {
         $result["error"] = "Bad Response";
         return $result;
     }
@@ -94,7 +94,7 @@ function processSave($data, $fileName, $userAddress) {
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
             $convertedUri;  // convert file and give url to a new file
-            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
+            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;
             } else {
@@ -112,7 +112,7 @@ function processSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
+            stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
         $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
         $histDir = getHistoryDir($storagePath);  // get the path to the history direction
         $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
@@ -169,7 +169,7 @@ function processForceSave($data, $fileName, $userAddress) {
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
             $convertedUri;  // convert file and give url to a new file
-            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, FALSE, $convertedUri);
+            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;
             } else {
@@ -186,7 +186,7 @@ function processForceSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === FALSE)) {
+            stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
         $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
@@ -253,13 +253,13 @@ function commandRequest($method, $key, $meta = null) {
     ]];
 
     if (substr($documentCommandUrl, 0, strlen("https")) === "https") {
-        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
-            $opts['ssl'] = [ 'verify_peer' => FALSE, 'verify_peer_name' => FALSE ];
+        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+            $opts['ssl'] = [ 'verify_peer' => false, 'verify_peer_name' => false ];
         }
     }
 
     $context = stream_context_create($opts);
-    $response_data = file_get_contents($documentCommandUrl, FALSE, $context);
+    $response_data = file_get_contents($documentCommandUrl, false, $context);
 
     return $response_data;
 }

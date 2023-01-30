@@ -167,13 +167,13 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         ];
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
-        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
-            $opts['ssl'] = [ 'verify_peer' => FALSE, 'verify_peer_name' => FALSE ];
+        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+            $opts['ssl'] = [ 'verify_peer' => false, 'verify_peer_name' => false ];
         }
     }
  
     $context = stream_context_create($opts);
-    $response_data = file_get_contents($urlToConverter, FALSE, $context);
+    $response_data = file_get_contents($urlToConverter, false, $context);
 
     return $response_data;
 }
@@ -201,13 +201,13 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
 
     // if an error occurs, then display an error message
     $errorElement = $json["error"];
-    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($errorElement);
+    if ($errorElement != null && $errorElement != "") ProcessConvServResponceError($errorElement);
 
     $isEndConvert = $json["endConvert"];
     $percent = $json["percent"];
 
     // if the conversion is completed successfully
-    if ($isEndConvert != NULL && $isEndConvert == true) {
+    if ($isEndConvert != null && $isEndConvert == true) {
         // then get the file url
         $converted_document_uri = $json["fileUrl"];
         $percent = 100;
@@ -237,15 +237,15 @@ function GetResponseUri($document_response, &$response_uri) {
 
     // if an error occurs, then display an error message
     $errorElement = $document_response->Error;
-    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($document_response->Error);
+    if ($errorElement != null && $errorElement != "") ProcessConvServResponceError($document_response->Error);
 
     $endConvert = $document_response->EndConvert;
-    if ($endConvert != NULL && $endConvert == "") throw new Exception("Invalid answer format");
+    if ($endConvert != null && $endConvert == "") throw new Exception("Invalid answer format");
 
     // if the conversion is completed successfully
-    if ($endConvert != NULL && strtolower($endConvert) == true) {
+    if ($endConvert != null && strtolower($endConvert) == true) {
         $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == NULL || $fileUrl == "") throw new Exception("Invalid answer format");
+        if ($fileUrl == null || $fileUrl == "") throw new Exception("Invalid answer format");
 
         // get the response file url
         $response_uri = $fileUrl;
@@ -255,7 +255,7 @@ function GetResponseUri($document_response, &$response_uri) {
     else {
         $percent = $document_response->Percent;
 
-        if ($percent != NULL && $percent != "")
+        if ($percent != null && $percent != "")
             $resultPercent = $percent;
         if ($resultPercent >= 100)
             $resultPercent = 99;
