@@ -1,6 +1,6 @@
 import os
 
-VERSION = '1.4.0'
+VERSION = '1.5.0'
 
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
