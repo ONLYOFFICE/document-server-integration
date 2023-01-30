@@ -33,7 +33,7 @@ function sendlog($msg, $logFileName) {
 function guid() {
     if (function_exists('com_create_guid')) {
         return com_create_guid();
-    } else {
+    }  
         mt_srand((double)microtime()*10000);  // optional for php 4.2.0 and up
         $charid = strtoupper(md5(uniqid(rand(), true)));
         $hyphen = chr(45);  // "-"
@@ -45,7 +45,7 @@ function guid() {
                 .substr($charid,20,12)
                 .chr(125);  // "}"
         return $uuid;
-    }
+    
 }
 
 if(!function_exists('mime_content_type')) {
@@ -119,9 +119,9 @@ if(!function_exists('mime_content_type')) {
             finfo_close($finfo);
             return $mimetype;
         }
-        else {
+         
             return 'application/octet-stream';
-        }
+        
     }
 }
 
@@ -153,9 +153,9 @@ function getCurUserHostAddress($userAddress = NULL) {
     if ($GLOBALS['ALONE']) {
         if (empty($GLOBALS['STORAGE_PATH'])) {
             return "Storage";
-        } else {
+        }  
             return "";
-        }
+        
     }
     if (is_null($userAddress)) {$userAddress = getClientIp();}
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
@@ -401,11 +401,11 @@ function getFileInfo($fileId){
 
     if ($fileId != null){
         if (count($resultID) != 0) return $resultID;
-        else return "File not found";
+         return "File not found";
     }
-    else {
+     
         return $result;
-    }
+    
 }
 
 // get all the supported file extensions

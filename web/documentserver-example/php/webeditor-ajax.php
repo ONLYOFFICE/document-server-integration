@@ -303,12 +303,11 @@ function convert() {
         if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === FALSE) {
             $result["error"] = 'Bad Request';
             return $result;
-        } else {
+        }  
             file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
             $user = getUser($_GET["user"]);
             createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
-        }
-
+        
         // delete the original file and its history
         $stPath = getStoragePath($fileName);
         unlink($stPath);
