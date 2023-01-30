@@ -24,10 +24,10 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
-using OnlineEditorsExampleMVC.Models;
+using OnlineEditorsExampleMVCreact.Models;
 using System.Net;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCreact.Helpers
 {
     public class DocManagerHelper
     {

@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCreact.Helpers
 {
     public class Users
     {

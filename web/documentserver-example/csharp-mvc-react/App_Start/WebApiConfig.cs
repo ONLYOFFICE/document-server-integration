@@ -18,7 +18,7 @@
 
 using System.Web.Http;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCreact
 {
     public static class WebApiConfig
     {

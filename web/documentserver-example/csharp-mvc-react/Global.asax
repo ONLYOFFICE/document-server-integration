@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="OnlineEditorsExampleMVC.MvcApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="OnlineEditorsExampleMVCreact.MvcApplication" Language="C#" %>

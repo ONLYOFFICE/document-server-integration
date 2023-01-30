@@ -18,7 +18,7 @@
 
 using System.Web;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCreact.Helpers
 {
     public static class Utils
     {

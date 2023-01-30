@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="WebEditor.ashx.cs" Class="OnlineEditorsExampleMVC.WebEditor" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="WebEditor.ashx.cs" Class="OnlineEditorsExampleMVCreact.WebEditor" %>

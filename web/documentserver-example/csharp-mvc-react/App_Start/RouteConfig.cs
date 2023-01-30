@@ -19,7 +19,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCreact
 {
     public class RouteConfig
     {
