@@ -49,7 +49,7 @@
 
     $fileuri = FileUri($filename, true);
     $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
-    $directUrl = getDownloadUrl($filename, FALSE);
+    $directUrl = getDownloadUrl($filename, false);
     $docKey = getDocEditorKey($filename);
     $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -205,7 +205,7 @@
 
     // get the callback url
     function getCallbackUrl($fileName) {
-        return serverPath(TRUE) . '/'
+        return serverPath(true) . '/'
                     . "webeditor-ajax.php"
                     . "?type=track"
                     . "&fileName=" . urlencode($fileName)
@@ -222,7 +222,7 @@
                 . "&type=" . $type;
     }
 
-    function getHistoryDownloadUrl($fileName, $version, $file, $isServer = TRUE) {
+    function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true) {
         $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
         return serverPath($isServer) . '/'
             . "webeditor-ajax.php"
@@ -234,7 +234,7 @@
     }
 
     // get url to download a file
-    function getDownloadUrl($fileName, $isServer = TRUE) {
+    function getDownloadUrl($fileName, $isServer = true) {
         $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
         return serverPath($isServer) . '/'
             . "webeditor-ajax.php"
@@ -281,12 +281,12 @@
                 $dataObj["fileType"] = $fileExe;
                 $dataObj["key"] = $key;
 
-                $directUrl =  $i == $curVer ? FileUri($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
+                $directUrl =  $i == $curVer ? FileUri($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
                 $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if (realpath($storagePath) === $storagePath) {
                     $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                     if ($isEnableDirectUrl) {
-                        $directUrl =  $i == $curVer ? getDownloadUrl($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
+                        $directUrl =  $i == $curVer ? getDownloadUrl($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
                     }
                 }
 

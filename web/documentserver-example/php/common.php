@@ -142,14 +142,14 @@ function getClientIp() {
 }
 
 // get server url
-function serverPath($forDocumentServer = NULL) {
+function serverPath($forDocumentServer = null) {
     return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
         ? $GLOBALS['EXAMPLE_URL']
         : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
 // get current user host address
-function getCurUserHostAddress($userAddress = NULL) {
+function getCurUserHostAddress($userAddress = null) {
     if ($GLOBALS['ALONE']) {
         if (empty($GLOBALS['STORAGE_PATH'])) {
             return "Storage";
@@ -200,7 +200,7 @@ function getScheme() {
 }
 
 // get the storage path of the given file
-function getStoragePath($fileName, $userAddress = NULL) {
+function getStoragePath($fileName, $userAddress = null) {
     $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
         mkdir($storagePath);
@@ -355,7 +355,7 @@ function getVirtualPath($forDocumentServer) {
 }
 
 // get a file with meta information
-function createMeta($fileName, $uid, $uname, $userAddress = NULL) {
+function createMeta($fileName, $uid, $uname, $userAddress = null) {
     $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));  // get the history directory
 
     // turn the file information into the json format
@@ -370,7 +370,7 @@ function createMeta($fileName, $uid, $uname, $userAddress = NULL) {
 }
 
 // get the file url
-function FileUri($file_name, $forDocumentServer = NULL) {
+function FileUri($file_name, $forDocumentServer = null) {
     $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
     return $uri;
 }
@@ -414,7 +414,7 @@ function getFileExts() {
 }
 
 // get the correct file name if such a name already exists
-function GetCorrectName($fileName, $userAddress = NULL) {
+function GetCorrectName($fileName, $userAddress = null) {
     $path_parts = pathinfo($fileName);
 
     $ext = strtolower($path_parts['extension']);

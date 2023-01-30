@@ -40,7 +40,7 @@ $_trackerStatus = [
 ];
 
 // ignore self-signed certificate
-if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
+if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
     stream_context_set_default( [
         'ssl' => [
             'verify_peer' => false,
@@ -231,7 +231,7 @@ function track() {
         case "Editing":  // status == 1
             if ($data->actions && $data->actions[0]->type == 0) {   // finished edit
                 $user = $data->actions[0]->userid;  // the user who finished editing
-                if (array_search($user, $data->users) === FALSE) {
+                if (array_search($user, $data->users) === false) {
                     $commandRequest = commandRequest("forcesave", $data->key);  // create a command request with the forcasave method
                     sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
                 }
@@ -264,8 +264,8 @@ function convert() {
     if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
 
         $fileUri = $post["fileUri"];
-        if ($fileUri == NULL || $fileUri == "") {
-            $fileUri =  $fileUri=serverPath(TRUE) . '/'
+        if ($fileUri == null || $fileUri == "") {
+            $fileUri =  $fileUri=serverPath(true) . '/'
                 . "webeditor-ajax.php"
                 . "?type=download"
                 . "&fileName=" . urlencode($fileName)
@@ -279,7 +279,7 @@ function convert() {
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri, $filePass, $lang);
+            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, true, $newFileUri, $filePass, $lang);
         }
         catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
@@ -299,7 +299,7 @@ function convert() {
         // get the correct file name with an index if the file with such a name already exists
         $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
 
-        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === FALSE) {
+        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === false) {
             $result["error"] = 'Bad Request';
             return $result;
         }  
