@@ -166,6 +166,9 @@
     <Content Include="Scripts\jquery.fileupload.js" />
     <Content Include="Scripts\jquery.iframe-transport.js" />
     <Content Include="Scripts\jscript.js" />
+    <Content Include="Scripts\React\src\app.js" />
+    <Content Include="Scripts\React\src\main.js" />
+    <Content Include="Scripts\React\webpack.config.js" />
     <Content Include="Views\Home\Editor.aspx" />
     <Content Include="Views\Home\Index.aspx" />
     <Content Include="Web.config">
@@ -194,6 +197,7 @@
     <Content Include="assets\sample\sample.pptx" />
     <Content Include="assets\sample\sample.xlsx" />
     <None Include="packages.config" />
+    <Content Include="Scripts\React\package.json" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
