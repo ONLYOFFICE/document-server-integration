@@ -157,7 +157,9 @@ function getCurUserHostAddress($userAddress = NULL) {
             return "";
         
     }
-    if (is_null($userAddress)) {$userAddress = getClientIp();}
+    if (is_null($userAddress)) {
+    $userAddress = getClientIp();
+    }
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
 
@@ -210,8 +212,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
         $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
     }
 
-    if ($storagePath != "")
-    {
+    if ($storagePath != "") {
         $directory =  $directory  . DIRECTORY_SEPARATOR;
 
         // if the file directory doesn't exist, make it
@@ -303,8 +304,7 @@ function getStoredFiles() {
 
     // get the storage path and check if it exists
     $result = [];
-    if ($storagePath != "")
-    {
+    if ($storagePath != "") {
         $directory =  $directory . DIRECTORY_SEPARATOR;
 
         if (!file_exists($directory) && !is_dir($directory)) {
@@ -376,13 +376,13 @@ function FileUri($file_name, $forDocumentServer = NULL) {
 }
 
 // get file information
-function getFileInfo($fileId){
+function getFileInfo($fileId) {
     $storedFiles = getStoredFiles();
     $result = [];
     $resultID = [];
 
     // run through all the stored files
-    foreach ($storedFiles as $key => $value){
+    foreach ($storedFiles as $key => $value) {
         $result[$key] = (object) [  // write all the parameters to the map
             "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
             "id" => getDocEditorKey($value->name),
@@ -392,14 +392,14 @@ function getFileInfo($fileId){
             "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
         ];
         // get file information by its id
-        if ($fileId != null){
-            if ($fileId == getDocEditorKey($value->name)){
+        if ($fileId != null) {
+            if ($fileId == getDocEditorKey($value->name)) {
                 $resultID[count($resultID)] = $result[$key];
             }
         }
     }
 
-    if ($fileId != null){
+    if ($fileId != null) {
         if (count($resultID) != 0) return $resultID;
          return "File not found";
     }
@@ -422,9 +422,8 @@ function GetCorrectName($fileName, $userAddress = NULL) {
     $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);  // get file name from the basename without extension
     $name = $baseNameWithoutExt . "." . $ext;
 
-    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++)  // if a file with such a name already exists in this directory
-    {
-        $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
+    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++) {  // if a file with such a name already exists in this directory
+    $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
     }
     return $name;
 }

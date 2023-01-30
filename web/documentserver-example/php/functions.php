@@ -26,14 +26,12 @@ function DoUpload($fileUri) {
 
     // check if file extension is supported by the editor
     $ext = strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, getFileExts()))
-    {
+    if (!in_array($ext, getFileExts())) {
         throw new Exception("File type is not supported");
     }
 
     // check if the file copy operation is successful
-    if(!@copy($fileUri, getStoragePath($_fileName)))
-    {
+    if(!@copy($fileUri, getStoragePath($_fileName))) {
         $errors= error_get_last();
         $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
         throw new Exception($err);
@@ -54,8 +52,7 @@ function ProcessConvServResponceError($errorCode) {
     $errorMessage = '';
 
     // add the error message to the error message template depending on the error code
-    switch ($errorCode)
-    {
+    switch ($errorCode) {
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;
@@ -116,8 +113,7 @@ function GenerateRevisionId($expected_key) {
 * @return Document request result of conversion
 */
 function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
-    if (empty($from_extension))
-    {
+    if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
         $from_extension = strtolower($path_parts['extension']);
     }
@@ -211,8 +207,7 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
     $percent = $json["percent"];
 
     // if the conversion is completed successfully
-    if ($isEndConvert != NULL && $isEndConvert == true)
-    {
+    if ($isEndConvert != NULL && $isEndConvert == true) {
         // then get the file url
         $converted_document_uri = $json["fileUrl"];
         $percent = 100;
@@ -248,8 +243,7 @@ function GetResponseUri($document_response, &$response_uri) {
     if ($endConvert != NULL && $endConvert == "") throw new Exception("Invalid answer format");
 
     // if the conversion is completed successfully
-    if ($endConvert != NULL && strtolower($endConvert) == true)
-    {
+    if ($endConvert != NULL && strtolower($endConvert) == true) {
         $fileUrl = $document_response->FileUrl;
         if ($fileUrl == NULL || $fileUrl == "") throw new Exception("Invalid answer format");
 
@@ -258,8 +252,7 @@ function GetResponseUri($document_response, &$response_uri) {
         $resultPercent = 100;
     }
     // otherwise, get the percentage of conversion completion
-    else
-    {
+    else {
         $percent = $document_response->Percent;
 
         if ($percent != NULL && $percent != "")

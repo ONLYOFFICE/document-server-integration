@@ -204,10 +204,10 @@
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=blockcontent&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                                                         echo ' </td>';
-                                                                    } else{
+                                                                    } else {
                                                                        echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell"){
+                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell") {
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
                                                                     if ($storeFile->isFillFormDoc) {

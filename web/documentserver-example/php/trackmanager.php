@@ -191,14 +191,14 @@ function processForceSave($data, $fileName, $userAddress) {
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
         if ($isSubmitForm) {
-            if ($newFileName){
+            if ($newFileName) {
                 $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
             } else {
                 $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
             }
             $forcesavePath = getStoragePath($fileName, $userAddress);
         } else {
-            if ($newFileName){
+            if ($newFileName) {
                 $fileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
             // create forcesave path if it doesn't exist
@@ -224,7 +224,7 @@ function processForceSave($data, $fileName, $userAddress) {
 }
 
 // create a command request
-function commandRequest($method, $key, $meta = null){
+function commandRequest($method, $key, $meta = null) {
     $documentCommandUrl = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
 
     $arr = [

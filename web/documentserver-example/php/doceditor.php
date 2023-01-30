@@ -28,19 +28,16 @@
 
     // get the file url and upload it
     $externalUrl = isset($_GET["fileUrl"]) ? $_GET["fileUrl"] : "";
-    if (!empty($externalUrl))
-    {
+    if (!empty($externalUrl)) {
         $filename = DoUpload($externalUrl);
     }
     // if the file url doesn't exist, get file name and file extension
-    else
-    {
+    else {
         $filename = basename($_GET["fileID"]);
     }
     $createExt = isset($_GET["fileExt"]) ? $_GET["fileExt"] : "";
 
-    if (!empty($createExt))
-    {
+    if (!empty($createExt)) {
         // and get demo file name by the extension
         $filename = tryGetDefaultByType($createExt, $user);
 
@@ -195,8 +192,7 @@
         $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
-        {
+        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             // Copy error!!!
         }

@@ -171,8 +171,7 @@ function upload() {
     }
 
     // check if the file was uploaded using HTTP POST
-    if (is_uploaded_file($tmp))
-    {
+    if (is_uploaded_file($tmp)) {
         $filesize = $_FILES['files']['size'];  // get the file size
         $ext = strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
@@ -216,7 +215,7 @@ function track() {
     // get the body of the post request and check if it is correct
     $data = readBody();
 
-    if (!empty($data->error)){
+    if (!empty($data->error)) {
         return $data;
     }
 
@@ -286,8 +285,7 @@ function convert() {
             return $result;
         }
 
-        if ($percent != 100)
-        {
+        if ($percent != 100) {
             $result["step"] = $percent;
             $result["filename"] = $fileName;
             $result["fileUri"] = $fileUri;
@@ -473,7 +471,7 @@ function renamefile() {
 
     $curExt = strtolower(array_pop(explode('.', $newfilename)));
     $origExt = $post["ext"];
-    if($origExt !== $curExt){
+    if($origExt !== $curExt) {
         $newfilename .= '.' . $origExt;
     }
 
