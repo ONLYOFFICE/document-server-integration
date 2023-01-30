@@ -1,0 +1,18 @@
+{
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "friendsofphp/php-cs-fixer": "^3.14"
+    },
+    "scripts": {
+        "code-sniffer": [
+            "./vendor/bin/phpcs --config-set default_standard phpcs.xml",
+            "./vendor/bin/phpcs --config-set colors 1"
+        ],
+        "post-install-cmd": [
+            "@code-sniffer"
+        ],
+        "post-update-cmd": [
+            "@code-sniffer"
+        ]
+    }
+}
