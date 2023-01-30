@@ -154,7 +154,8 @@ function saveas() {
 
 // uploading a file
 function upload() {
-    $result; $filename;
+    $result;
+    $filename;
 
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
@@ -391,7 +392,8 @@ function historyDownload() {
 
         $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
 
-        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;;
+        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;
+        ;
 
         downloadFile($filePath);  // download this file
     } catch (Exception $e) {
