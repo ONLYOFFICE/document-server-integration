@@ -345,7 +345,6 @@ function getVirtualPath($forDocumentServer) {
     $storagePath = trim(str_replace(['/','\\'], '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
-
     if (realpath($storagePath) === $storagePath) {
         $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . '/';
     } else {

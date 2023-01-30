@@ -23,7 +23,6 @@
     require_once( dirname(__FILE__) . '/jwtmanager.php' );
     require_once( dirname(__FILE__) . '/users.php' );
 
-
     $user = getUser($_GET["user"]);
     $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
@@ -278,7 +277,6 @@
                         "name" => $json["name"]
                     ];
                 }
-
 
                 $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 

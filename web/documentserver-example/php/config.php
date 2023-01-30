@@ -13,7 +13,6 @@ $GLOBALS['DOC_SERV_CONVERT'] = [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt
 
 $GLOBALS['DOC_SERV_TIMEOUT'] = "120000";
 
-
 $GLOBALS['DOC_SERV_SITE_URL'] = "http://documentserver/";
 
 $GLOBALS['DOC_SERV_CONVERTER_URL'] = "ConvertService.ashx";
@@ -29,7 +28,6 @@ $GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] = TRUE;
 $GLOBALS['EXAMPLE_URL'] = "";
 
 $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
-
 
 $GLOBALS['ExtsSpreadsheet'] = [".xls", ".xlsx", ".xlsm", ".xlsb",
                                     ".xlt", ".xltx", ".xltm",

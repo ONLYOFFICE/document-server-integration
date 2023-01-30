@@ -21,7 +21,6 @@ require_once( dirname(__FILE__) . '/jwtmanager.php' );
 require_once( dirname(__FILE__) . '/common.php' );
 require_once( dirname(__FILE__) . '/config.php' );
 
-
 // read request body
 function readBody() {
     $result["error"] = 0;

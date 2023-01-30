@@ -41,7 +41,6 @@ function nocache_headers() {
 	];
 	$headers['Last-Modified'] = false;
 
-
 	unset( $headers['Last-Modified'] );
 
 	// In PHP 5.3+, make sure we are not sending a Last-Modified header.

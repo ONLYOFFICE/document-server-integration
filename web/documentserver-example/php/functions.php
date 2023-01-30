@@ -20,7 +20,6 @@
 require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/jwtmanager.php' );
 
-
 // file uploading
 function DoUpload($fileUri) {
     $_fileName = GetCorrectName($fileUri);
@@ -42,7 +41,6 @@ function DoUpload($fileUri) {
 
     return $_fileName;
 }
-
 
 /**
 * Generate an error code table
@@ -92,7 +90,6 @@ function ProcessConvServResponceError($errorCode) {
     throw new Exception($errorMessage);
 }
 
-
 /**
 * Translation key to a supported form.
 *
@@ -106,7 +103,6 @@ function GenerateRevisionId($expected_key) {
     $key = substr($key, 0, min([strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
 }
-
 
 /**
 * Request for conversion to a service.
@@ -186,7 +182,6 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     return $response_data;
 }
 
-
 /**
 * The method is to convert the file to the required format.
 *
@@ -228,7 +223,6 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
 
     return $percent;
 }
-
 
 /**
 * Processing document received from the editing service.
