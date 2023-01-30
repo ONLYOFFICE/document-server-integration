@@ -51,7 +51,7 @@ function guid() {
 if(!function_exists('mime_content_type')) {
     function mime_content_type($filename) {
 
-        $mime_types = array(
+        $mime_types = [
 
             'txt' => 'text/plain',
             'htm' => 'text/html',
@@ -105,7 +105,7 @@ if(!function_exists('mime_content_type')) {
             // open office
             'odt' => 'application/vnd.oasis.opendocument.text',
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
-        );
+        ];
 
         // check if the file extension is in the mime type array
         $ext = strtolower(array_pop(explode('.',$filename)));
@@ -199,7 +199,7 @@ function getScheme() {
 
 // get the storage path of the given file
 function getStoragePath($fileName, $userAddress = NULL) {
-    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
         mkdir($storagePath);
     }
@@ -233,7 +233,7 @@ function getStoragePath($fileName, $userAddress = NULL) {
 
 // get the path to the forcesaved file version
 function getForcesavePath($fileName, $userAddress, $create) {
-    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
 
     // create the directory to this file version
     if (realpath($storagePath) === $storagePath) {
@@ -279,7 +279,7 @@ function getFileVersion($histDir) {
     $cdir = scandir($histDir);
     $ver = 1;
     foreach($cdir as $key => $fileName) {
-        if (!in_array($fileName,array(".", ".."))) {
+        if (!in_array($fileName,[".", ".."])) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
                 $ver++;
             }
@@ -290,7 +290,7 @@ function getFileVersion($histDir) {
 
 // get all the stored files from the folder
 function getStoredFiles() {
-    $storagePath = trim(str_replace(array('/','\\'), DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
         mkdir($storagePath);
     }
@@ -302,7 +302,7 @@ function getStoredFiles() {
     }
 
     // get the storage path and check if it exists
-    $result = array();
+    $result = [];
     if ($storagePath != "")
     {
         $directory =  $directory . DIRECTORY_SEPARATOR;
@@ -321,18 +321,18 @@ function getStoredFiles() {
     }
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
-    $result = array();
+    $result = [];
     foreach($cdir as $key => $fileName) {  // run through all the file and folder names
-        if (!in_array($fileName,array(".", ".."))) {
+        if (!in_array($fileName,[".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
                 $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
-                $result[$dat] = (object) array(  // and write the file to the result
+                $result[$dat] = (object) [  // and write the file to the result
                         "name" => $fileName,
                         "documentType" => getDocumentType($fileName),
                         "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
                         "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
-                    );
+                    ];
             }
         }
     }
@@ -342,7 +342,7 @@ function getStoredFiles() {
 
 // get the virtual path
 function getVirtualPath($forDocumentServer) {
-    $storagePath = trim(str_replace(array('/','\\'), '/', $GLOBALS['STORAGE_PATH']), '/');
+    $storagePath = trim(str_replace(['/','\\'], '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
 
@@ -379,19 +379,19 @@ function FileUri($file_name, $forDocumentServer = NULL) {
 // get file information
 function getFileInfo($fileId){
     $storedFiles = getStoredFiles();
-    $result = array();
-    $resultID = array();
+    $result = [];
+    $resultID = [];
 
     // run through all the stored files
     foreach ($storedFiles as $key => $value){
-        $result[$key] = (object) array(  // write all the parameters to the map
+        $result[$key] = (object) [  // write all the parameters to the map
             "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
             "id" => getDocEditorKey($value->name),
             "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
             "pureContentLength" => filesize(getStoragePath($value->name)),
             "title" => $value->name,
             "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
-        );
+        ];
         // get file information by its id
         if ($fileId != null){
             if ($fileId == getDocEditorKey($value->name)){

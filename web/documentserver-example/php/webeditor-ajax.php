@@ -29,7 +29,7 @@ require_once( dirname(__FILE__) . '/trackmanager.php' );
 require_once( dirname(__FILE__) . '/users.php' );
 
 // define tracker status
-$_trackerStatus = array(
+$_trackerStatus = [
     0 => 'NotFound',
     1 => 'Editing',
     2 => 'MustSave',
@@ -37,7 +37,7 @@ $_trackerStatus = array(
     4 => 'Closed',
     6 => 'MustForceSave',
     7 => 'CorruptedForceSave'
-);
+];
 
 // ignore self-signed certificate
 if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
@@ -460,7 +460,7 @@ function downloadFile($filePath) {
 function delTree($dir) {
     if (!file_exists($dir) || !is_dir($dir)) return;
 
-    $files = array_diff(scandir($dir), array('.','..'));
+    $files = array_diff(scandir($dir), ['.','..']);
     foreach ($files as $file) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
@@ -484,7 +484,7 @@ function renamefile() {
     $commandRequest = commandRequest("meta", $dockey, $meta);  // create a command request with the forcasave method
     sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
 
-    return array("result" => $commandRequest);
+    return ["result" => $commandRequest];
 }
 
 ?>

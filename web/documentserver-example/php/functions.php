@@ -103,7 +103,7 @@ function ProcessConvServResponceError($errorCode) {
 function GenerateRevisionId($expected_key) {
     if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
-    $key = substr($key, 0, min(array(strlen($key), 20)));  // the resulting key length is 20 or less
+    $key = substr($key, 0, min([strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
 }
 
@@ -164,19 +164,19 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     $data = json_encode($arr);
 
     // request parameters
-    $opts = array('http' => array(
+    $opts = ['http' => [
                 'method'  => 'POST',
                 'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
                 'header'=> "Content-type: application/json\r\n" . 
                             "Accept: application/json\r\n" .
                             (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
                 'content' => $data
-            )
-        );
+            ]
+        ];
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
         if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
-            $opts['ssl'] = array( 'verify_peer' => FALSE, 'verify_peer_name' => FALSE );
+            $opts['ssl'] = [ 'verify_peer' => FALSE, 'verify_peer_name' => FALSE ];
         }
     }
  

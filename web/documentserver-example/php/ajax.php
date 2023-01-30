@@ -34,11 +34,11 @@ function get_http_origin() {
 
 // set headers that prevent caching in all the browsers
 function nocache_headers() {
-    $headers = array(
+    $headers = [
 		'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
 		'Cache-Control' => 'no-cache, must-revalidate, max-age=0',
 		'Pragma' => 'no-cache',
-	);
+	];
 	$headers['Last-Modified'] = false;
 
 

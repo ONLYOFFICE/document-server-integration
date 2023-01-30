@@ -70,18 +70,18 @@
 
     $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
     $createUrl = getCreateUrl($filename, $user->id, $type);
-    $templates = array(
-        array (
+    $templates = [
+         [
             "image" => "",
             "title" => "Blank",
             "url" => $createUrl
-        ),
-        array (
+        ],
+         [
             "image" => $templatesImageUrl,
             "title" => "With sample content",
             "url" => $createUrl . "&sample=true"
-        )
-    );
+        ]
+    ];
 
     // specify the document config
     $config = [

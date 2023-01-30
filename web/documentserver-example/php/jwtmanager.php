@@ -36,7 +36,7 @@ function jwtEncode($payload) {
 // decode a token into a payload object using a secret key
 function jwtDecode($token) {
     try {
-        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["DOC_SERV_JWT_SECRET"], array("HS256"));
+        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["DOC_SERV_JWT_SECRET"], ["HS256"]);
     } catch (\UnexpectedValueException $e) {
         $payload = "";
     }
