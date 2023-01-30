@@ -226,4 +226,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>call "$(ProjectDir)Scripts\React\build.bat"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
