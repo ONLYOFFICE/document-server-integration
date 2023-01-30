@@ -447,7 +447,7 @@ function downloadFile($filePath) {
 
         if ($fd = fopen($filePath, 'rb')) {
             while (!feof($fd)) {
-                print fread($fd, 1024);
+                echo fread($fd, 1024);
             }
             fclose($fd);
         }
