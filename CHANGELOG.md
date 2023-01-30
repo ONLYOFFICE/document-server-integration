@@ -1,5 +1,7 @@
 # Change Log
 
+- added csharp mvc with react
+
 ## 1.5.0
 - nodejs: added wopi putRelativeFile action
 - nodejs: wopi editnew action for exisiting file
