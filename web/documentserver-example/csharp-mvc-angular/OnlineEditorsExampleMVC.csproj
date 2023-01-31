@@ -159,6 +159,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="LICENSE" />
+    <Content Include="Scripts\Angular\webpack.config.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
@@ -194,6 +195,18 @@
     <Content Include="assets\sample\sample.pptx" />
     <Content Include="assets\sample\sample.xlsx" />
     <None Include="packages.config" />
+    <Content Include="Scripts\Angular\package.json" />
+    <Content Include="Scripts\Angular\tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\Angular\src\app\app.component.ts" />
+    <TypeScriptCompile Include="Scripts\Angular\src\app\app.module.ts" />
+    <TypeScriptCompile Include="Scripts\Angular\src\main.ts" />
+    <TypeScriptCompile Include="Scripts\Angular\src\polyfills.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>

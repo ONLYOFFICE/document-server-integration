@@ -34,7 +34,7 @@ body {
     text-decoration: none;
 }
 
-.form {
+#root {
     height: 100%;
 }
 
