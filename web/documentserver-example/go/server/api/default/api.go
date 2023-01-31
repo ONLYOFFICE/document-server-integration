@@ -343,7 +343,11 @@ func (srv *DefaultServerEndpointsHandler) Callback(w http.ResponseWriter, r *htt
 
 	body.Filename = filename
 	body.UserAddress = userAddress
-	srv.CallbackRegistry.HandleIncomingCode(&body)
+	if err := srv.CallbackRegistry.HandleIncomingCode(&body); err != nil {
+		shared.SendDocumentServerRespose(w, true)
+		return
+	}
+
 	shared.SendDocumentServerRespose(w, false)
 }
 
