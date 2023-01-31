@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  * limitations under the License.
  *
  */
-
 package models
 
 type User struct {
 	Id          string   `json:"id"`
 	Username    string   `json:"name"`
-	Description []string `json:",omitempty"`
+	Description []string `json:"description,omitempty"`
 }

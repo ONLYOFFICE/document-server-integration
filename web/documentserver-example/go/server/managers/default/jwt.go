@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  * limitations under the License.
  *
  */
-
-package default_managers
+package dmanager
 
 import (
 	"errors"
@@ -29,6 +28,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 )
+
+var _ErrJwtSigning = errors.New("jwt could not create a signed string with the given key")
+var _ErrJwtEmpty = errors.New("jwt string is empty")
+var _ErrUnexpectedJwtSigningMethod = errors.New("unexpected JWT signing method")
+var _ErrJwtInvalid = errors.New("jwt token is not valid")
+var _ErrCallbackJwtProcessing = errors.New("could not process JWT in callback body")
 
 type DefaultJwtManager struct {
 	config config.ApplicationConfig
@@ -45,23 +50,22 @@ func NewDefaultJwtManager(config config.ApplicationConfig, logger *zap.SugaredLo
 func (jm *DefaultJwtManager) JwtSign(payload jwt.Claims, key []byte) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	ss, err := token.SignedString(key)
-
 	if err != nil {
-		return "", errors.New("jwt could not create a signed string with the given key")
+		return "", _ErrJwtSigning
 	}
+
 	return ss, nil
 }
 
 func (jm *DefaultJwtManager) JwtDecode(jwtString string, key []byte) (jwt.MapClaims, error) {
 	if jwtString == "" {
-		return nil, errors.New("jwt string is empty")
+		return nil, _ErrJwtEmpty
 	}
 
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected JWT signing method")
+			return nil, _ErrUnexpectedJwtSigningMethod
 		}
-
 		return key, nil
 	})
 
@@ -72,30 +76,29 @@ func (jm *DefaultJwtManager) JwtDecode(jwtString string, key []byte) (jwt.MapCla
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	} else {
-		return nil, errors.New("jwt token is not valid")
+		return nil, _ErrJwtInvalid
 	}
 }
 
-func (jm *DefaultJwtManager) ParseCallback(body *models.Callback, token_header string) error {
+func (jm *DefaultJwtManager) ParseCallback(body *models.Callback, theader string) error {
+	var (
+		decodedCallback jwt.MapClaims
+		jwtDecodingErr  error
+	)
 	secret := strings.TrimSpace(jm.config.JwtSecret)
 	if secret != "" && jm.config.JwtEnabled {
-		var decodedCallback jwt.MapClaims
-		var jwtDecodingErr error
-
-		if token_header == "" {
+		if theader == "" {
 			decodedCallback, jwtDecodingErr = jm.JwtDecode(body.Token, []byte(secret))
 		} else {
-			decodedCallback, jwtDecodingErr = jm.JwtDecode(strings.Split(token_header, " ")[1], []byte(secret))
+			decodedCallback, jwtDecodingErr = jm.JwtDecode(strings.Split(theader, " ")[1], []byte(secret))
 		}
 
 		if jwtDecodingErr != nil {
-			return errors.New("could not process JWT in callback body")
+			return jwtDecodingErr
 		}
 
-		err := mapstructure.Decode(decodedCallback, &body)
-
-		if err != nil {
-			return errors.New("could not populate callback body with decoded JWT")
+		if err := mapstructure.Decode(decodedCallback, &body); err != nil {
+			return err
 		}
 	}
 	return nil

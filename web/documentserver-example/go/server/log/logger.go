@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package log
 
 import (
@@ -30,7 +29,7 @@ func New(config config.ApplicationConfig) *zap.SugaredLogger {
 	} else {
 		logger, _ = zap.NewProduction()
 	}
-	sugar_logger := logger.Sugar()
+	sugarLogger := logger.Sugar()
 
-	return sugar_logger
+	return sugarLogger
 }

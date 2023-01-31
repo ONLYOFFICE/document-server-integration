@@ -35,7 +35,7 @@ func Initialize(
 		fx.Hook{
 			OnStart: func(c context.Context) error {
 				go server.Run()
-				logger.Infof("Go server %s is up", server.Config.ServerHost+":"+server.Config.ServerPort)
+				logger.Infof("Go server %s is up", server.Config.ServerAddress)
 				return nil
 			},
 			OnStop: func(c context.Context) error {

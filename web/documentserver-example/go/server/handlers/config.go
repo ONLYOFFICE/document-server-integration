@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,9 @@
  * limitations under the License.
  *
  */
-
 package handlers
 
 import (
-	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
@@ -29,7 +26,7 @@ import (
 
 type CallbackHandler interface {
 	GetCode() int
-	Handle(body *models.Callback)
+	Handle(body *models.Callback) error
 }
 
 type CallbackRegistry struct {
@@ -47,19 +44,25 @@ func New(logger *zap.SugaredLogger) *CallbackRegistry {
 	return reg
 }
 
-func (cr *CallbackRegistry) RegisterCallbackHandler(callback_handler CallbackHandler) error {
-	if _, exists := cr.CallbackHandlers[callback_handler.GetCode()]; exists {
-		return errors.New("A Handler with code " + fmt.Sprint(callback_handler.GetCode()) + " exists")
+func (cr *CallbackRegistry) RegisterCallbackHandler(chandler CallbackHandler) error {
+	if _, exists := cr.CallbackHandlers[chandler.GetCode()]; exists {
+		return &HandlerExistsError{
+			Code: chandler.GetCode(),
+		}
 	}
-	cr.CallbackHandlers[callback_handler.GetCode()] = callback_handler
+	cr.CallbackHandlers[chandler.GetCode()] = chandler
 	return nil
 }
 
-func (cr *CallbackRegistry) HandleIncomingCode(callback_body *models.Callback) {
+func (cr *CallbackRegistry) HandleIncomingCode(cbody *models.Callback) error {
 	for _, handler := range cr.CallbackHandlers {
-		if handler.GetCode() == callback_body.Status {
-			cr.logger.Debugf("Processing an incoming callback request with code %d", callback_body.Status)
-			go handler.Handle(callback_body)
+		if handler.GetCode() == cbody.Status {
+			cr.logger.Debugf("Processing an incoming callback request with code %d", cbody.Status)
+			if err := handler.Handle(cbody); err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
 }

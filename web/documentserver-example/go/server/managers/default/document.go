@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  * limitations under the License.
  *
  */
-
-package default_managers
+package dmanager
 
 import (
 	"fmt"
@@ -52,20 +51,20 @@ const (
 )
 
 func NewDefaultDocumentManager(config config.ApplicationConfig, specification config.SpecificationConfig,
-	logger *zap.SugaredLogger, storage_manager managers.StorageManager, user_manager managers.UserManager,
-	conversion_manager managers.ConversionManager, jwt_manager managers.JwtManager) managers.DocumentManager {
+	logger *zap.SugaredLogger, smanager managers.StorageManager, umanager managers.UserManager,
+	cmanager managers.ConversionManager, jmanager managers.JwtManager) managers.DocumentManager {
 	return &DefaultDocumentManager{
 		config,
 		specification,
 		logger,
-		storage_manager,
-		user_manager,
-		conversion_manager,
-		jwt_manager,
+		smanager,
+		umanager,
+		cmanager,
+		jmanager,
 	}
 }
 
-//TODO: Use 'enums' instead of strings
+// TODO: Use 'enums' instead of strings
 func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.Editor) {
 	parameters.PermissionsMode = parameters.Mode
 	parameters.Mode = "view"
@@ -85,23 +84,28 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 	}
 }
 
-func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor, remote_address string) (*models.Config, error) {
-	user, _ := dm.GetUserById(parameters.UserId)
+func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor, remoteAddress string) (*models.Config, error) {
+	user, err := dm.GetUserById(parameters.UserId)
+	if err != nil {
+		return nil, err
+	}
 
 	dm.logger.Debugf("Generating file %s config", parameters.Filename)
-
 	dm.sanitizeEditorParameters(&parameters)
-
-	file_uri := dm.StorageManager.GenerateFileUri(parameters.Filename, remote_address, managers.FileMeta{})
+	furi := dm.StorageManager.GenerateFileUri(parameters.Filename, remoteAddress, managers.FileMeta{})
+	docKey, err := dm.StorageManager.GenerateFileHash(parameters.Filename, remoteAddress)
+	if err != nil {
+		return nil, err
+	}
 
 	config := models.Config{
 		Type:         parameters.Type,
 		DocumentType: dm.ConversionManager.GetFileType(parameters.Filename),
 		Document: models.Document{
 			Title:    parameters.Filename,
-			Url:      file_uri,
+			Url:      furi,
 			FileType: strings.ReplaceAll(utils.GetFileExt(parameters.Filename), ".", ""),
-			Key:      dm.StorageManager.GenerateFileHash(parameters.Filename, remote_address),
+			Key:      docKey,
 			Info: models.MetaInfo{
 				Author:  user.Username,
 				Created: time.Now().Format(time.RFC3339),
@@ -122,12 +126,12 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 		EditorConfig: models.EditorConfig{
 			Mode:        parameters.Mode,
 			Lang:        parameters.Language,
-			CallbackUrl: dm.generate_callback_url(parameters.Filename, remote_address),
+			CallbackUrl: dm.generateCallbackUrl(parameters.Filename, remoteAddress),
 			User:        user,
 			Embedded: models.Embedded{
-				SaveUrl:       file_uri,
-				EmbedUrl:      file_uri,
-				ShareUrl:      file_uri,
+				SaveUrl:       furi,
+				EmbedUrl:      furi,
+				ShareUrl:      furi,
 				ToolbarDocked: "top",
 			},
 			Customization: models.Customization{
@@ -156,13 +160,11 @@ func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {
 		utils.IsInList(ext, dm.specification.Extensions.Edited) || utils.IsInList(ext, dm.specification.Extensions.Converted)
 }
 
-func (dm DefaultDocumentManager) generate_callback_url(file_name string, remote_address string) string {
+func (dm DefaultDocumentManager) generateCallbackUrl(filename string, remoteAddress string) string {
 	return fmt.Sprintf(
-		"%s://%s:%s/callback?filename=%s&user_address=%s",
-		dm.config.ServerProtocol,
-		dm.config.ServerHost,
-		dm.config.ServerPort,
-		file_name,
-		remote_address,
+		"%s/callback?filename=%s&user_address=%s",
+		dm.config.ServerAddress,
+		filename,
+		remoteAddress,
 	)
 }

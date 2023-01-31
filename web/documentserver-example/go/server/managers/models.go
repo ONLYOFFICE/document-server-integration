@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package managers
 
 import (
@@ -25,7 +24,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// ----------------- //
+var ErrInvalidFilename = errors.New("invalid filename")
 
 type HistoryRefresh struct {
 	CurrentVersion string           `json:"currentVersion"`
@@ -47,14 +46,10 @@ type HistoryPrevious struct {
 	Url string `json:"url"`
 }
 
-// ----------------- //
-
 type FileMeta struct {
 	Version         int
 	DestinationPath string
 }
-
-// ----------------- //
 
 type Editor struct {
 	Filename        string `json:"filename"`
@@ -69,14 +64,11 @@ type Editor struct {
 
 func (ep *Editor) IsValid() error {
 	if ep.Filename == "" {
-		return errors.New("invalid filename")
+		return ErrInvalidFilename
 	}
 	return nil
 }
 
-// ----------------- //
-
-//TODO: Refactoring
 type ConvertRequest struct {
 	Filename string `schema:"filename"`
 	Filepass string `schema:"filePass"`

@@ -15,12 +15,13 @@
  * limitations under the License.
  *
  */
-package log
 
-import (
-	"go.uber.org/fx"
-)
+package dhandlers
 
-var LoggingModule = fx.Options(
-	fx.Provide(New),
+import "go.uber.org/fx"
+
+var DefaultHandlersModule = fx.Options(
+	fx.Invoke(NewDefaultSaveHandler),
+	fx.Invoke(NewDefaultSavingErrorHandler),
+	fx.Invoke(NewDefaultNoChangesHandler),
 )

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package server
 
 import (
@@ -57,7 +56,7 @@ func New(config config.ApplicationConfig, specification config.SpecificationConf
 
 	server := &http.Server{
 		Handler:      r,
-		Addr:         config.ServerHost + ":" + config.ServerPort,
+		Addr:         ":" + config.ServerPort,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -74,7 +73,7 @@ func (server *Server) Run() {
 	}
 }
 
-func init_fileserver(allow_origins ...string) http.Handler {
+func initFileserver(allow_origins ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, origin := range allow_origins {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -86,7 +85,7 @@ func init_fileserver(allow_origins ...string) http.Handler {
 func (srv *Server) configureRouter() *mux.Router {
 	r := mux.NewRouter()
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", init_fileserver(srv.Config.DocumentServerHost)))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", initFileserver(srv.Config.DocumentServerHost)))
 
 	r.HandleFunc("/", srv.ServerAPI.Index).Methods(http.MethodGet)
 	r.HandleFunc("/editor", srv.ServerAPI.Editor).Methods(http.MethodGet)

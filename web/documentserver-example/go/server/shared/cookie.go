@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,20 @@
  * limitations under the License.
  *
  */
+package shared
 
-package default_api
+import "net/http"
 
-import "go.uber.org/fx"
-
-var DefaultServerEndpointsHandlerModule = fx.Options(
-	fx.Provide(NewDefaultServerEndpointsHandler),
-)
+func GetCookiesInfo(cookies []*http.Cookie) (string, string) {
+	lang := "en"
+	userId := "uid-1"
+	for _, cookie := range cookies {
+		if cookie.Name == "ulang" {
+			lang = cookie.Value
+		}
+		if cookie.Name == "uid" {
+			userId = cookie.Value
+		}
+	}
+	return lang, userId
+}

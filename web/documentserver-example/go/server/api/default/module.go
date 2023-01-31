@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,10 @@
  * limitations under the License.
  *
  */
-
-package default_managers
+package dapi
 
 import "go.uber.org/fx"
 
-var DefaultManagersModule = fx.Options(
-	fx.Provide(NewDefaultDocumentManager),
-	fx.Provide(NewDefaultHistoryManager),
-	fx.Provide(NewDefaultStorageManager),
-	fx.Provide(NewDefaultUserManager),
-	fx.Provide(NewDefaultJwtManager),
-	fx.Provide(NewDefaultConversionManager),
+var DefaultServerEndpointsHandlerModule = fx.Options(
+	fx.Provide(NewDefaultServerEndpointsHandler),
 )

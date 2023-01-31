@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package managers
 
 import (
@@ -26,43 +25,42 @@ import (
 )
 
 type DocumentManager interface {
-	BuildDocumentConfig(parameters Editor, storage_address string) (*models.Config, error)
+	BuildDocumentConfig(parameters Editor, storageAddress string) (*models.Config, error)
 	IsDocumentConvertable(filename string) bool
 }
 
 type HistoryManager interface {
-	GetHistory(filename string, storage_address string) (HistoryRefresh, []HistorySet)
-	CreateMeta(filename string, storage_address string, changes []models.Changes)
-	CreateHistory(callback_body models.Callback, storage_address string) error
+	GetHistory(filename string, storageAddress string) (HistoryRefresh, []HistorySet, error)
+	CreateMeta(filename string, storageAddress string, changes []models.Changes) error
+	CreateHistory(cbody models.Callback, storageAddress string) error
 }
 
-//TODO: Refactoring
 type StorageManager interface {
-	GetRootFolder(storage_address string) string
-	GenerateFilePath(file_name string, storage_address string) string
-	GetStoredFiles(storage_address string) []models.Document
-	GenerateFileHash(file_name string, storage_address string) string
-	GenerateFileUri(original_filename string, storage_address string, meta FileMeta) string
-	GeneratePublicFileUri(original_filename string, storage_address string, meta FileMeta) string
-	GenerateVersionedFilename(filename string, storage_address string) string
+	GetRootFolder(storageAddress string) (string, error)
+	GenerateFilePath(filename string, storageAddress string) (string, error)
+	GetStoredFiles(storageAddress string) ([]models.Document, error)
+	GenerateFileHash(filename string, storageAddress string) (string, error)
+	GenerateFileUri(originalName string, storageAddress string, meta FileMeta) string
+	GeneratePublicFileUri(originalName string, meta FileMeta) string
+	GenerateVersionedFilename(filename string, storageAddress string) (string, error)
 	CreateFile(stream io.Reader, path string) error
 	CreateDirectory(path string) error
 	PathExists(path string) bool
-	RemoveFile(filename string, storage_address string) error
-	ReadFile(file_path string) ([]byte, error)
+	RemoveFile(filename string, storageAddress string) error
+	ReadFile(filePath string) ([]byte, error)
 	MoveFile(from string, to string) error
 	SaveFileFromUri(body models.Callback) error
 }
 
 type UserManager interface {
 	GetUsers() []models.User
-	GetUserById(user_id string) (models.User, error)
+	GetUserById(uid string) (models.User, error)
 }
 
 type JwtManager interface {
 	JwtSign(claims jwt.Claims, key []byte) (string, error)
 	JwtDecode(jwtString string, key []byte) (jwt.MapClaims, error)
-	ParseCallback(body *models.Callback, token_header string) error
+	ParseCallback(body *models.Callback, tokenHeader string) error
 }
 
 type ConversionManager interface {
@@ -81,15 +79,15 @@ type Managers struct {
 	ConversionManager
 }
 
-func New(user_manager UserManager, storage_manager StorageManager,
-	history_manager HistoryManager, document_manager DocumentManager,
-	jwt_manager JwtManager, conversion_manager ConversionManager) *Managers {
+func New(umanager UserManager, smanager StorageManager,
+	hmanager HistoryManager, dmanager DocumentManager,
+	jmanager JwtManager, cmanager ConversionManager) *Managers {
 	return &Managers{
-		HistoryManager:    history_manager,
-		StorageManager:    storage_manager,
-		DocumentManager:   document_manager,
-		UserManager:       user_manager,
-		JwtManager:        jwt_manager,
-		ConversionManager: conversion_manager,
+		HistoryManager:    hmanager,
+		StorageManager:    smanager,
+		DocumentManager:   dmanager,
+		UserManager:       umanager,
+		JwtManager:        jmanager,
+		ConversionManager: cmanager,
 	}
 }

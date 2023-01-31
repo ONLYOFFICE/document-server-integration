@@ -22,13 +22,13 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server"
 	"github.com/ONLYOFFICE/document-server-integration/server/api"
-	default_api "github.com/ONLYOFFICE/document-server-integration/server/api/default_module"
+	defaultApi "github.com/ONLYOFFICE/document-server-integration/server/api/default"
 	bootstrapper "github.com/ONLYOFFICE/document-server-integration/server/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/handlers"
-	default_handlers "github.com/ONLYOFFICE/document-server-integration/server/handlers/default_module"
+	dhandlers "github.com/ONLYOFFICE/document-server-integration/server/handlers/default"
 	"github.com/ONLYOFFICE/document-server-integration/server/log"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
-	default_managers "github.com/ONLYOFFICE/document-server-integration/server/managers/default_module"
+	dmanagers "github.com/ONLYOFFICE/document-server-integration/server/managers/default"
 	"go.uber.org/fx"
 )
 
@@ -41,8 +41,8 @@ func main() {
 		fx.Invoke(bootstrapper.Initialize),
 		config.ConfigurationModule,
 		log.LoggingModule,
-		default_handlers.DefaultHandlersModule,
-		default_managers.DefaultManagersModule,
-		default_api.DefaultServerEndpointsHandlerModule,
+		dhandlers.DefaultHandlersModule,
+		dmanagers.DefaultManagersModule,
+		defaultApi.DefaultServerEndpointsHandlerModule,
 	).Run()
 }

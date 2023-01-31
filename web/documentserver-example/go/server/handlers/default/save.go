@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  * limitations under the License.
  *
  */
-
-package default_handlers
+package dhandlers
 
 import (
 	"github.com/ONLYOFFICE/document-server-integration/server/handlers"
@@ -32,37 +31,32 @@ type DefaultSaveHandler struct {
 	reg *handlers.CallbackRegistry
 }
 
-func NewDefaultSaveHandler(logger *zap.SugaredLogger, storage_manager managers.StorageManager,
-	history_manager managers.HistoryManager, reg *handlers.CallbackRegistry) *DefaultSaveHandler {
-	save_handler := DefaultSaveHandler{
+func NewDefaultSaveHandler(logger *zap.SugaredLogger, smanager managers.StorageManager,
+	hmanager managers.HistoryManager, reg *handlers.CallbackRegistry) *DefaultSaveHandler {
+	shandler := DefaultSaveHandler{
 		logger,
-		storage_manager,
-		history_manager,
+		smanager,
+		hmanager,
 		reg,
 	}
-	save_handler.reg.RegisterCallbackHandler(save_handler)
-	return &save_handler
+	shandler.reg.RegisterCallbackHandler(shandler)
+	return &shandler
 }
 
 func (sh DefaultSaveHandler) GetCode() int {
 	return 2
 }
 
-func (sh DefaultSaveHandler) Handle(callback_body *models.Callback) {
-	sh.logger.Debugf("Trying to save %s", callback_body.Filename)
-	hist_err := sh.HistoryManager.CreateHistory(*callback_body, callback_body.UserAddress)
-
-	if hist_err != nil {
-		sh.logger.Errorf("An error occured while trying to save: %s", hist_err.Error())
-		return
+func (sh DefaultSaveHandler) Handle(cbody *models.Callback) error {
+	sh.logger.Debugf("Trying to save %s", cbody.Filename)
+	if err := sh.HistoryManager.CreateHistory(*cbody, cbody.UserAddress); err != nil {
+		return err
 	}
 
-	file_err := sh.StorageManager.SaveFileFromUri(*callback_body)
-
-	if file_err != nil {
-		sh.logger.Errorf("An error occured while trying to save: %s", file_err.Error())
-		return
+	if err := sh.StorageManager.SaveFileFromUri(*cbody); err != nil {
+		return err
 	}
 
-	sh.logger.Debugf("Saved %s successfully", callback_body.Filename)
+	sh.logger.Debugf("Saved %s successfully", cbody.Filename)
+	return nil
 }

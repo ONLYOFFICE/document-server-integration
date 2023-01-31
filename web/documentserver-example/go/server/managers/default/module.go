@@ -15,12 +15,15 @@
  * limitations under the License.
  *
  */
-package log
+package dmanager
 
-import (
-	"go.uber.org/fx"
-)
+import "go.uber.org/fx"
 
-var LoggingModule = fx.Options(
-	fx.Provide(New),
+var DefaultManagersModule = fx.Options(
+	fx.Provide(NewDefaultDocumentManager),
+	fx.Provide(NewDefaultHistoryManager),
+	fx.Provide(NewDefaultStorageManager),
+	fx.Provide(NewDefaultUserManager),
+	fx.Provide(NewDefaultJwtManager),
+	fx.Provide(NewDefaultConversionManager),
 )

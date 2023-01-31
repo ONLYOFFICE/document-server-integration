@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  */
+package shared
 
-package default_handlers
-
-import "go.uber.org/fx"
-
-var DefaultHandlersModule = fx.Options(
-	fx.Invoke(NewDefaultSaveHandler),
-	fx.Invoke(NewDefaultSavingErrorHandler),
-	fx.Invoke(NewDefaultNoChangesHandler),
+const (
+	ONLYOFFICE_DOCUMENT        = "word"
+	ONLYOFFICE_SPREADSHEET     = "cell"
+	ONLYOFFICE_PRESENTATION    = "slide"
+	ONLYOFFICE_HISTORY_POSTFIX = "-hist"
 )

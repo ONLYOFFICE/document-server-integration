@@ -15,30 +15,31 @@
  * limitations under the License.
  *
  */
-package api
+package shared
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-type ServerEndpointsHandler interface {
-	Index(w http.ResponseWriter, r *http.Request)
-	Editor(w http.ResponseWriter, r *http.Request)
-	Remove(w http.ResponseWriter, r *http.Request)
-	Upload(w http.ResponseWriter, r *http.Request)
-	Download(w http.ResponseWriter, r *http.Request)
-	History(w http.ResponseWriter, r *http.Request)
-	Convert(w http.ResponseWriter, r *http.Request)
-	Callback(w http.ResponseWriter, r *http.Request)
-	Create(w http.ResponseWriter, r *http.Request)
-}
-
-type ServerAPI struct {
-	ServerEndpointsHandler
-}
-
-func New(endpointsHandler ServerEndpointsHandler) *ServerAPI {
-	return &ServerAPI{
-		endpointsHandler,
+func SendDocumentServerRespose(w http.ResponseWriter, isError bool) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if isError {
+		w.Write([]byte("{\"error\": 1}"))
+	} else {
+		w.Write([]byte("{\"error\": 0}"))
 	}
+}
+
+func SendCustomErrorResponse(w http.ResponseWriter, msg string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	fmt.Fprintf(w, "{\"error\":\"%s\"}", msg)
+}
+
+func SendResponse(w http.ResponseWriter, data interface{}) {
+	body, _ := json.Marshal(data)
+	fmt.Fprint(w, string(body))
 }

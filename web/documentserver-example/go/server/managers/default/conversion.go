@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  * limitations under the License.
  *
  */
-
-package default_managers
+package dmanager
 
 import (
 	"bytes"
@@ -28,14 +27,9 @@ import (
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
+	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
 	"go.uber.org/zap"
-)
-
-const (
-	ONLYOFFICE_DOCUMENT     = "word"
-	ONLYOFFICE_SPREADSHEET  = "cell"
-	ONLYOFFICE_PRESENTATION = "slide"
 )
 
 type DefaultConversionManager struct {
@@ -46,12 +40,12 @@ type DefaultConversionManager struct {
 }
 
 func NewDefaultConversionManager(config config.ApplicationConfig, spec config.SpecificationConfig,
-	logger *zap.SugaredLogger, jwt_manager managers.JwtManager) managers.ConversionManager {
+	logger *zap.SugaredLogger, jmanager managers.JwtManager) managers.ConversionManager {
 	return &DefaultConversionManager{
 		config,
 		spec,
 		logger,
-		jwt_manager,
+		jmanager,
 	}
 }
 
@@ -61,25 +55,25 @@ func (cm DefaultConversionManager) GetFileType(filename string) string {
 	exts := cm.specification.ExtensionTypes
 
 	if utils.IsInList(ext, exts.Document) {
-		return ONLYOFFICE_DOCUMENT
+		return shared.ONLYOFFICE_DOCUMENT
 	}
 	if utils.IsInList(ext, exts.Spreadsheet) {
-		return ONLYOFFICE_SPREADSHEET
+		return shared.ONLYOFFICE_SPREADSHEET
 	}
 	if utils.IsInList(ext, exts.Presentation) {
-		return ONLYOFFICE_PRESENTATION
+		return shared.ONLYOFFICE_PRESENTATION
 	}
 
-	return ONLYOFFICE_DOCUMENT
+	return shared.ONLYOFFICE_DOCUMENT
 }
 
 func (cm DefaultConversionManager) GetInternalExtension(fileType string) string {
 	switch fileType {
-	case ONLYOFFICE_DOCUMENT:
+	case shared.ONLYOFFICE_DOCUMENT:
 		return ".docx"
-	case ONLYOFFICE_SPREADSHEET:
+	case shared.ONLYOFFICE_SPREADSHEET:
 		return ".xlsx"
-	case ONLYOFFICE_PRESENTATION:
+	case shared.ONLYOFFICE_PRESENTATION:
 		return ".pptx"
 	default:
 		return ".docx"
@@ -90,41 +84,40 @@ func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }
 
-//TODO: Refactoring
 func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri)
 	}
 
-	title := utils.GetFileName(docUri)
-
 	payload := managers.ConvertRequestPayload{
 		DocUrl:     docUri,
 		OutputType: strings.Replace(toExt, ".", "", -1),
 		FileType:   strings.Replace(fromExt, ".", "", -1),
-		Title:      title,
+		Title:      utils.GetFileName(docUri),
 		Key:        docKey,
 		Async:      isAsync,
 	}
 
 	var headerToken string
+	var err error
+
 	secret := strings.TrimSpace(cm.config.JwtSecret)
 	if secret != "" && cm.config.JwtEnabled {
 		headerPayload := managers.ConvertRequestHeaderPayload{Payload: payload}
-		var err error
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))
 		if err != nil {
 			return "", err
 		}
+
 		bodyToken, err := cm.JwtManager.JwtSign(payload, []byte(secret))
 		if err != nil {
 			return "", err
 		}
+
 		payload.JwtToken = bodyToken
 	}
 
 	requestBody, err := json.Marshal(payload)
-
 	if err != nil {
 		return "", err
 	}
@@ -140,21 +133,21 @@ func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string
 		req.Header.Set(cm.config.JwtHeader, "Bearer "+headerToken)
 	}
 
-	client := &http.Client{}
-	response, err := client.Do(req)
-	defer client.CloseIdleConnections()
-
+	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
 	}
 
+	defer response.Body.Close()
 	jsonBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return "", err
 	}
 
 	var body managers.ConvertPayload
-	json.Unmarshal(jsonBody, &body)
+	if err := json.Unmarshal(jsonBody, &body); err != nil {
+		return "", err
+	}
 
 	return getResponseUri(body)
 }

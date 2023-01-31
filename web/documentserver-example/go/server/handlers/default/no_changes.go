@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  *
  */
 
-package default_handlers
+package dhandlers
 
 import (
 	"github.com/ONLYOFFICE/document-server-integration/server/handlers"
@@ -42,6 +42,7 @@ func (nh DefaultNoChangesHandler) GetCode() int {
 	return 4
 }
 
-func (nh DefaultNoChangesHandler) Handle(callback_body *models.Callback) {
-	nh.logger.Debugf("No %s changes", callback_body.Filename)
+func (nh DefaultNoChangesHandler) Handle(cbody *models.Callback) error {
+	nh.logger.Debugf("No %s changes", cbody.Filename)
+	return nil
 }

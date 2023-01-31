@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package config
 
 import (
@@ -27,8 +26,7 @@ import (
 )
 
 type ApplicationConfig struct {
-	ServerHost              string `mapstructure:"SERVER_HOST"`
-	ServerProtocol          string `mapstructure:"SERVER_PROTOCOL"`
+	ServerAddress           string `mapstructure:"SERVER_ADDRESS"`
 	ServerPort              string `mapstructure:"SERVER_PORT"`
 	DocumentServerHost      string `mapstructure:"DOC_SERVER_HOST"`
 	DocumentServerConverter string `mapstructure:"DOC_SERVER_CONVERTER_URL"`

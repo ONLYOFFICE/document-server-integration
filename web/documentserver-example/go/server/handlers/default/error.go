@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  * limitations under the License.
  *
  */
-
-package default_handlers
+package dhandlers
 
 import (
 	"github.com/ONLYOFFICE/document-server-integration/server/handlers"
@@ -31,28 +30,26 @@ type DefaultSavingErrorHandler struct {
 	reg *handlers.CallbackRegistry
 }
 
-func NewDefaultSavingErrorHandler(logger *zap.SugaredLogger, storage_manager managers.StorageManager, reg *handlers.CallbackRegistry) *DefaultSavingErrorHandler {
-	save_handler := DefaultSavingErrorHandler{
+func NewDefaultSavingErrorHandler(logger *zap.SugaredLogger, smanager managers.StorageManager, reg *handlers.CallbackRegistry) *DefaultSavingErrorHandler {
+	shandler := DefaultSavingErrorHandler{
 		logger,
-		storage_manager,
+		smanager,
 		reg,
 	}
-	save_handler.reg.RegisterCallbackHandler(save_handler)
-	return &save_handler
+	shandler.reg.RegisterCallbackHandler(shandler)
+	return &shandler
 }
 
 func (sh DefaultSavingErrorHandler) GetCode() int {
 	return 3
 }
 
-func (sh DefaultSavingErrorHandler) Handle(callback_body *models.Callback) {
-	sh.logger.Debugf("Trying to save %s with callback status 3", callback_body.Filename)
-	err := sh.StorageManager.SaveFileFromUri(*callback_body)
-
-	if err != nil {
-		sh.logger.Errorf("An error occured while trying to save: %s", err.Error())
-		return
+func (sh DefaultSavingErrorHandler) Handle(cbody *models.Callback) error {
+	sh.logger.Debugf("Trying to save %s with callback status 3", cbody.Filename)
+	if err := sh.StorageManager.SaveFileFromUri(*cbody); err != nil {
+		return err
 	}
 
-	sh.logger.Debugf("Saved %s successfully", callback_body.Filename)
+	sh.logger.Debugf("Saved %s successfully", cbody.Filename)
+	return nil
 }
