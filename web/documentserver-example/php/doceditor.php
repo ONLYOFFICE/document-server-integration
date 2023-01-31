@@ -192,7 +192,7 @@
         $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
         $demoFilename = GetCorrectName($demoName);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
+        if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
             sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
             // Copy error!!!
         }
@@ -544,8 +544,8 @@
     $historyData = $out[1];
     ?>
 
-            <?php if ($user->id != "uid-0"): ?>
-                <?php if ($history != null && $historyData != null): ?>
+            <?php if ($user->id != "uid-0") { ?>
+                <?php if ($history != null && $historyData != null) { ?>
                     // the user is trying to show the document version history
                     config.events['onRequestHistory'] = function () {
                         docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
@@ -560,7 +560,7 @@
                     config.events['onRequestHistoryClose'] = function () {
                         document.location.reload();
                     };
-                <?php endif; ?>
+                <?php } ?>
                 // add mentions for not anonymous users
                 config.events['onRequestUsers'] = function () {
                     docEditor.setUsers({  // set a list of users to mention in the comments
@@ -575,7 +575,7 @@
                 };
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
-            <?php endif; ?>
+            <?php } ?>
 
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;

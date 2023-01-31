@@ -90,7 +90,7 @@
                                                     <span class="select-user">Username</span>
                                                     <img id="info" class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
-                                                        <?php foreach(getAllUsers() as $user_l) {
+                                                        <?php foreach (getAllUsers() as $user_l) {
                                                             $name = $user_l->name ? $user_l->name : "Anonymous";
                                                             echo '<option value="'.$user_l->id.'">'.$name.'</option>';
                                                         } ?>
@@ -126,11 +126,11 @@
                                 <div class="main-panel">
                                     <?php
                                     $storedFiles = getStoredFiles();
-    if (!empty($storedFiles)): ?>
+    if (!empty($storedFiles)) { ?>
                                         <div id="portal-info" style="display: none">
-                                    <?php else: ?>
+                                    <?php } else { ?>
                                         <div id="portal-info" style="display: table-cell">
-                                    <?php endif; ?>
+                                    <?php } ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
                                             Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
@@ -138,7 +138,7 @@
                                         </span>
                                         <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                         <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
-                                        <?php foreach(getAllUsers() as $user_l) {
+                                        <?php foreach (getAllUsers() as $user_l) {
                                             $name = $user_l->name ? $user_l->name : "Anonymous";
                                             echo '<div class="user-descr">';
                                             echo '<b>'.$name.'</b>';
@@ -207,7 +207,7 @@
                                                                     } else {
                                                                         echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
-                                                                    if($storeFile->documentType!="word" && $storeFile->documentType!="cell") {
+                                                                    if ($storeFile->documentType!="word" && $storeFile->documentType!="cell") {
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
                                                                     if ($storeFile->isFillFormDoc) {
