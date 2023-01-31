@@ -27,8 +27,8 @@ function is_ajax() {
 // get the http origin
 function get_http_origin() {
     $origin = '';
-    if ( ! empty ( $_SERVER[ 'HTTP_ORIGIN' ] ) ) {
-        $origin = $_SERVER[ 'HTTP_ORIGIN' ];
+    if ( ! empty ( $_SERVER['HTTP_ORIGIN'] ) ) {
+        $origin = $_SERVER['HTTP_ORIGIN'];
     }
     return $origin;
 }
