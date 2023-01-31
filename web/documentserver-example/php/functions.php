@@ -149,7 +149,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
     if (isJwtEnabled()) {
-        $headerToken = jwtEncode([ "payload" => $arr ]);
+        $headerToken = jwtEncode(["payload" => $arr]);
         $arr["token"] = jwtEncode($arr);
     }
 
@@ -168,7 +168,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
         if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
-            $opts['ssl'] = [ 'verify_peer' => false, 'verify_peer_name' => false ];
+            $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
  

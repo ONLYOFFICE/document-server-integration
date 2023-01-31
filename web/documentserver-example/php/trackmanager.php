@@ -239,7 +239,7 @@ function commandRequest($method, $key, $meta = null) {
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
     if (isJwtEnabled()) {  // check if a secret key to generate token exists or not
-        $headerToken = jwtEncode([ "payload" => $arr ]);  // encode a payload object into a header token
+        $headerToken = jwtEncode(["payload" => $arr]);  // encode a payload object into a header token
         $arr["token"] = jwtEncode($arr);  // encode a payload object into a body token
     }
 
@@ -254,7 +254,7 @@ function commandRequest($method, $key, $meta = null) {
 
     if (substr($documentCommandUrl, 0, strlen("https")) === "https") {
         if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
-            $opts['ssl'] = [ 'verify_peer' => false, 'verify_peer_name' => false ];
+            $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
 
