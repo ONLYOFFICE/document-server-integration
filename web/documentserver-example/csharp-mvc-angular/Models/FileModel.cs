@@ -24,9 +24,9 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using OnlineEditorsExampleMVC.Helpers;
+using OnlineEditorsExampleMVCAngular.Helpers;
 
-namespace OnlineEditorsExampleMVC.Models
+namespace OnlineEditorsExampleMVCAngular.Models
 {
     // create file model
     public class FileModel

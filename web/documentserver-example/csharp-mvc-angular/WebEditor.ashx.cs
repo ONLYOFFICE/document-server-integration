@@ -26,11 +26,11 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using System.Web.Configuration;
-using OnlineEditorsExampleMVC.Helpers;
-using OnlineEditorsExampleMVC.Models;
+using OnlineEditorsExampleMVCAngular.Helpers;
+using OnlineEditorsExampleMVCAngular.Models;
 using System.Diagnostics;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCAngular
 {
     [WebService(Namespace = "http://tempuri.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]

@@ -1,7 +1,7 @@
-﻿<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVC.Models.FileModel>" %>
+﻿<%@ Page Title="ONLYOFFICE" Language="C#" Inherits="System.Web.Mvc.ViewPage<OnlineEditorsExampleMVCAngular.Models.FileModel>" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web.Configuration" %>
-<%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
+<%@ Import Namespace="OnlineEditorsExampleMVCAngular.Helpers" %>
 
 <!DOCTYPE html>
 

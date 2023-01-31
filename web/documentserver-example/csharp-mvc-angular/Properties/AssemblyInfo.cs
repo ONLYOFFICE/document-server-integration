@@ -2,11 +2,11 @@
 using System.Runtime.InteropServices;
 
 
-[assembly: AssemblyTitle("OnlineEditorsExampleMVC")]
+[assembly: AssemblyTitle("OnlineEditorsExampleMVCAngular")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ascensio System SIA")]
-[assembly: AssemblyProduct("OnlineEditorsExampleMVC")]
+[assembly: AssemblyProduct("OnlineEditorsExampleMVCAngular")]
 [assembly: AssemblyCopyright("Ascensio System SIA 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

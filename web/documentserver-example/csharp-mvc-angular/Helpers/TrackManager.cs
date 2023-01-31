@@ -26,7 +26,7 @@ using System.Linq;
 using System.Web;
 using System.Text;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCAngular.Helpers
 {
     public class TrackManager
     {

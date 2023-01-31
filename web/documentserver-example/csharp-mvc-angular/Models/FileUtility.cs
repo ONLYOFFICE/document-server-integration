@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace OnlineEditorsExampleMVC.Models
+namespace OnlineEditorsExampleMVCAngular.Models
 {
     public static class FileUtility
     {

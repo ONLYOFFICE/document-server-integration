@@ -19,10 +19,10 @@
 using System;
 using System.IO;
 using System.Web.Mvc;
-using OnlineEditorsExampleMVC.Helpers;
-using OnlineEditorsExampleMVC.Models;
+using OnlineEditorsExampleMVCAngular.Helpers;
+using OnlineEditorsExampleMVCAngular.Models;
 
-namespace OnlineEditorsExampleMVC.Controllers
+namespace OnlineEditorsExampleMVCAngular.Controllers
 {
     public class HomeController : Controller
     {

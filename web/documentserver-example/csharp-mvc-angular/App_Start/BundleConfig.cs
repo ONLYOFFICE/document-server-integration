@@ -18,7 +18,7 @@
 
 using System.Web.Optimization;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCAngular
 {
     public class BundleConfig
     {

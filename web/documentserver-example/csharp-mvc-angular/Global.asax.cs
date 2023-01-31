@@ -22,7 +22,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCAngular
 {
     public class MvcApplication : HttpApplication
     {

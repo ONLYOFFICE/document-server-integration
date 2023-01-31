@@ -23,7 +23,7 @@ using JWT.Serializers;
 using System.Collections.Generic;
 using System.Web.Configuration;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCAngular.Helpers
 {
     public static class JwtManager
     {

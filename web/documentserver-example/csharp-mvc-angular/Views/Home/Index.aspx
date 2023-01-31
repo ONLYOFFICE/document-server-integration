@@ -2,8 +2,8 @@
 
 <%@ Import Namespace="System.IO" %>
 <%@ Import Namespace="System.Web.Configuration" %>
-<%@ Import Namespace="OnlineEditorsExampleMVC.Helpers" %>
-<%@ Import Namespace="OnlineEditorsExampleMVC.Models" %>
+<%@ Import Namespace="OnlineEditorsExampleMVCAngular.Helpers" %>
+<%@ Import Namespace="OnlineEditorsExampleMVCAngular.Models" %>
 <%@ Import Namespace="System.Collections.Generic" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

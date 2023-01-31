@@ -18,7 +18,7 @@
 
 using System.Web.Mvc;
 
-namespace OnlineEditorsExampleMVC
+namespace OnlineEditorsExampleMVCAngular
 {
     public class FilterConfig
     {

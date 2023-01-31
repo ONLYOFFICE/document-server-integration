@@ -26,7 +26,7 @@ using System.Web.Configuration;
 using System.Web.Helpers;
 using System.Web.Script.Serialization;
 
-namespace OnlineEditorsExampleMVC.Helpers
+namespace OnlineEditorsExampleMVCAngular.Helpers
 {
     /// <summary>
     /// Class service api conversion
