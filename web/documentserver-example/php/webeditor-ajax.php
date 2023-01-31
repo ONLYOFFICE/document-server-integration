@@ -20,13 +20,13 @@
 /**
  * WebEditor AJAX Process Execution.
  */
-require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/ajax.php' );
-require_once( dirname(__FILE__) . '/common.php' );
-require_once( dirname(__FILE__) . '/functions.php' );
-require_once( dirname(__FILE__) . '/jwtmanager.php' );
-require_once( dirname(__FILE__) . '/trackmanager.php' );
-require_once( dirname(__FILE__) . '/users.php' );
+require_once(dirname(__FILE__) . '/config.php');
+require_once(dirname(__FILE__) . '/ajax.php');
+require_once(dirname(__FILE__) . '/common.php');
+require_once(dirname(__FILE__) . '/functions.php');
+require_once(dirname(__FILE__) . '/jwtmanager.php');
+require_once(dirname(__FILE__) . '/trackmanager.php');
+require_once(dirname(__FILE__) . '/users.php');
 
 // define tracker status
 $_trackerStatus = [
@@ -41,7 +41,7 @@ $_trackerStatus = [
 
 // ignore self-signed certificate
 if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
-    stream_context_set_default( [
+    stream_context_set_default([
         'ssl' => [
             'verify_peer' => false,
             'verify_peer_name' => false,
@@ -52,9 +52,9 @@ if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
 // check if type value exists
 if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $response_array;
-    @header( 'Content-Type: application/json; charset==utf-8');
-    @header( 'X-Robots-Tag: noindex' );
-    @header( 'X-Content-Type-Options: nosniff' );
+    @header('Content-Type: application/json; charset==utf-8');
+    @header('X-Robots-Tag: noindex');
+    @header('X-Content-Type-Options: nosniff');
 
     // set headers that prevent caching in all the browsers
     nocache_headers();
@@ -189,7 +189,7 @@ function upload() {
         }
 
         $filename = GetCorrectName($_FILES['files']['name']);  // get the correct file name with an index if the file with such a name already exists
-        if (!move_uploaded_file($tmp,  getStoragePath($filename)) ) {
+        if (!move_uploaded_file($tmp,  getStoragePath($filename))) {
             $result["error"] = 'Upload failed';  // file upload error
             return $result;
         }
@@ -208,7 +208,7 @@ function upload() {
 // tracking file changes
 function track() {
     sendlog("Track START", "webedior-ajax.log");
-    sendlog("   _GET params: " . serialize( $_GET ), "webedior-ajax.log");
+    sendlog("   _GET params: " . serialize($_GET), "webedior-ajax.log");
 
     $result["error"] = 0;
 
@@ -335,7 +335,7 @@ function delete() {
 // get file information
 function files() {
     try {
-        @header( "Content-Type", "application/json" );
+        @header("Content-Type", "application/json");
 
         $fileId = $_GET["fileId"];
         $result = getFileInfo($fileId);

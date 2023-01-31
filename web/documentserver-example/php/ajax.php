@@ -17,7 +17,7 @@
  *
  */
 
-require( dirname(__FILE__) . '/config.php' );
+require(dirname(__FILE__) . '/config.php');
     
 // check if the request is an AJAX request
 function is_ajax() {
@@ -27,7 +27,7 @@ function is_ajax() {
 // get the http origin
 function get_http_origin() {
     $origin = '';
-    if ( ! empty ( $_SERVER['HTTP_ORIGIN'] ) ) {
+    if (! empty ($_SERVER['HTTP_ORIGIN'])) {
         $origin = $_SERVER['HTTP_ORIGIN'];
     }
     return $origin;
@@ -42,23 +42,23 @@ function nocache_headers() {
     ];
     $headers['Last-Modified'] = false;
 
-    unset( $headers['Last-Modified'] );
+    unset($headers['Last-Modified']);
 
     // In PHP 5.3+, make sure we are not sending a Last-Modified header.
-    if ( function_exists( 'header_remove' ) ) {
-        @header_remove( 'Last-Modified' );
+    if (function_exists('header_remove')) {
+        @header_remove('Last-Modified');
     } else {
         // In PHP 5.2, send an empty Last-Modified header, but only as a
         // last resort to override a header already sent. #WP23021
-        foreach ( headers_list() as $header ) {
-            if ( 0 === stripos( $header, 'Last-Modified' ) ) {
+        foreach (headers_list() as $header) {
+            if (0 === stripos($header, 'Last-Modified')) {
                 $headers['Last-Modified'] = '';
                 break;
             }
         }
     }
 
-    foreach ( $headers as $name => $field_value ) {
+    foreach ($headers as $name => $field_value) {
         @header("{$name}: {$field_value}");
     }
 }

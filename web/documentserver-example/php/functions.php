@@ -17,8 +17,8 @@
  *
  */
 
-require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/jwtmanager.php' );
+require_once(dirname(__FILE__) . '/config.php');
+require_once(dirname(__FILE__) . '/jwtmanager.php');
 
 // file uploading
 function DoUpload($fileUri) {
@@ -96,7 +96,7 @@ function ProcessConvServResponceError($errorCode) {
  */
 function GenerateRevisionId($expected_key) {
     if (strlen($expected_key) > 20) {
-        $expected_key = crc32( $expected_key);
+        $expected_key = crc32($expected_key);
     }  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
     $key = substr($key, 0, min([strlen($key), 20]));  // the resulting key length is 20 or less

@@ -17,8 +17,8 @@
  *
  */
 
-require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/functions.php' );
+require_once(dirname(__FILE__) . '/config.php');
+require_once(dirname(__FILE__) . '/functions.php');
 
 // put log files into the log folder
 function sendlog($msg, $logFileName) {
@@ -408,10 +408,10 @@ function getFileInfo($fileId) {
         $result[$key] = (object) [  // write all the parameters to the map
             "version" => getFileVersion(getHistoryDir(getStoragePath($value->name))),
             "id" => getDocEditorKey($value->name),
-            "contentLength" => number_format( filesize(getStoragePath($value->name)) / 1024, 2 )." KB",
+            "contentLength" => number_format(filesize(getStoragePath($value->name)) / 1024, 2)." KB",
             "pureContentLength" => filesize(getStoragePath($value->name)),
             "title" => $value->name,
-            "updated" => date( DATE_ATOM, filemtime(getStoragePath($value->name))),
+            "updated" => date(DATE_ATOM, filemtime(getStoragePath($value->name))),
         ];
         // get file information by its id
         if ($fileId != null) {
