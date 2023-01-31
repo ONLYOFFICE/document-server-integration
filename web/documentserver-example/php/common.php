@@ -33,7 +33,7 @@ function sendlog($msg, $logFileName) {
 function guid() {
     if (function_exists('com_create_guid')) {
         return com_create_guid();
-    }  
+    }
     mt_srand((double) microtime()*10000);  // optional for php 4.2.0 and up
     $charid = strtoupper(md5(uniqid(rand(), true)));
     $hyphen = chr(45);  // "-"
@@ -150,7 +150,7 @@ function getCurUserHostAddress($userAddress = null) {
     if ($GLOBALS['ALONE']) {
         if (empty($GLOBALS['STORAGE_PATH'])) {
             return "Storage";
-        }  
+        }
         return "";
     }
     if (is_null($userAddress)) {
@@ -241,7 +241,7 @@ function getStoragePath($fileName, $userAddress = null) {
 
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
-    } 
+    }
     sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
     return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
 }

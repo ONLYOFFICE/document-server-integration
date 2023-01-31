@@ -161,7 +161,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     $opts = ['http' => [
         'method'  => 'POST',
         'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-        'header'=> "Content-type: application/json\r\n" . 
+        'header'=> "Content-type: application/json\r\n" .
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
         'content' => $data,

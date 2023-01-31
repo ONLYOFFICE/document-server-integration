@@ -116,7 +116,7 @@
             "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
             "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
-                "mode" => "strict", 
+                "mode" => "strict",
                 "change" => false,
             ] : null,
             "createUrl" => $user->id != "uid-0" ? $createUrl : null,
@@ -218,7 +218,7 @@
         return serverPath(false) . '/'
                 . "doceditor.php"
                 . "?fileExt=" . $ext
-                . "&user=" . $uid 
+                . "&user=" . $uid
                 . "&type=" . $type;
     }
 
