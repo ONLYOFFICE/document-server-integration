@@ -482,5 +482,3 @@ function renamefile() {
 
     return ["result" => $commandRequest];
 }
-
-?>

@@ -136,4 +136,3 @@ function getUsersForMentions($id) {
     }
     return $usersData;
 }
-?>

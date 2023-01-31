@@ -266,5 +266,3 @@ function commandRequest($method, $key, $meta = null) {
 
     return $response_data;
 }
-
-?>

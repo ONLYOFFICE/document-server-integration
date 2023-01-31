@@ -62,5 +62,3 @@ function nocache_headers() {
         @header("{$name}: {$field_value}");
     }
 }
-
-?>

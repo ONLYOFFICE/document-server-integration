@@ -276,5 +276,3 @@ function GetResponseUri($document_response, &$response_uri) {
 
     return $resultPercent;
 }
-
-?>

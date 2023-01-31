@@ -458,5 +458,3 @@ function getDocEditorKey($fileName) {
     $key = $key . $stat;  // and add it to the document key
     return GenerateRevisionId($key);  // generate the document key value
 }
-
-?>
