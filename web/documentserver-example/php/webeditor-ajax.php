@@ -40,7 +40,7 @@ $_trackerStatus = [
 ];
 
 // ignore self-signed certificate
-if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
     stream_context_set_default( [
         'ssl' => [
             'verify_peer' => false,
@@ -117,39 +117,39 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
 
 // save copy as...
 function saveas() {
-   try {
-       $result;
-       $post = json_decode(file_get_contents('php://input'), true);
-       $fileurl = $post["url"];
-       $title = $post["title"];
-       $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
-       $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
-       $filename = GetCorrectName($title);
+    try {
+        $result;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $fileurl = $post["url"];
+        $title = $post["title"];
+        $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
+        $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
+        $filename = GetCorrectName($title);
 
-       if (!in_array("." . $extension, $allexts)) {
-           $result["error"] = "File type is not supported";
-           return $result;
-       }
-       $headers = get_headers($fileurl, 1);
-       $content_length = $headers["Content-Length"];
-       $data = file_get_contents(str_replace(" ","%20",$fileurl));
+        if (!in_array("." . $extension, $allexts)) {
+            $result["error"] = "File type is not supported";
+            return $result;
+        }
+        $headers = get_headers($fileurl, 1);
+        $content_length = $headers["Content-Length"];
+        $data = file_get_contents(str_replace(" ","%20",$fileurl));
 
-       if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
-           $result["error"] = "File size is incorrect";
-           return $result;
-       }
+        if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
+            $result["error"] = "File size is incorrect";
+            return $result;
+        }
 
-       file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
-       $user = getUser($_GET["user"]);
-       createMeta($filename, $user->id, $user->name);  // and create meta data for this file
+        file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
+        $user = getUser($_GET["user"]);
+        createMeta($filename, $user->id, $user->name);  // and create meta data for this file
 
-       $result["file"] = $filename;
-       return $result;
-   } catch (Exception $e) {
-       sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
-       $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
-       return $result;
-   }
+        $result["file"] = $filename;
+        return $result;
+    } catch (Exception $e) {
+        sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
+        return $result;
+    }
 }
 
 // uploading a file
@@ -195,7 +195,6 @@ function upload() {
         }
         $user = getUser($_GET["user"]);
         createMeta($filename, $user->id, $user->name);  // create file meta data
-
     } else {
         $result["error"] = 'Upload failed';
         return $result;
@@ -262,7 +261,6 @@ function convert() {
 
     // check if the file with such an extension can be converted
     if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
-
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
             $fileUri =  $fileUri=serverPath(true) . '/'
@@ -280,8 +278,7 @@ function convert() {
         try {
             // convert file and get the percentage of the conversion completion
             $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, true, $newFileUri, $filePass, $lang);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
             return $result;
         }
@@ -303,9 +300,9 @@ function convert() {
             $result["error"] = 'Bad Request';
             return $result;
         }  
-            file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
-            $user = getUser($_GET["user"]);
-            createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
+        file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
+        $user = getUser($_GET["user"]);
+        createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
         
         // delete the original file and its history
         $stPath = getStoragePath($fileName);
@@ -328,8 +325,7 @@ function delete() {
 
         unlink($filePath);  // delete a file
         delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
@@ -345,8 +341,7 @@ function files() {
         $result = getFileInfo($fileId);
 
         return $result;
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         sendlog("Files ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
@@ -457,7 +452,9 @@ function downloadFile($filePath) {
 
 // delete all the elements from the directory
 function delTree($dir) {
-    if (!file_exists($dir) || !is_dir($dir)) return;
+    if (!file_exists($dir) || !is_dir($dir)) {
+        return;
+    }
 
     $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
@@ -473,7 +470,7 @@ function renamefile() {
 
     $curExt = strtolower(array_pop(explode('.', $newfilename)));
     $origExt = $post["ext"];
-    if($origExt !== $curExt) {
+    if ($origExt !== $curExt) {
         $newfilename .= '.' . $origExt;
     }
 

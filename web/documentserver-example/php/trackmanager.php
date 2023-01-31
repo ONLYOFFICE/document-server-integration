@@ -68,7 +68,9 @@ function readBody() {
             return $result;
         }
 
-        if ($inHeader) $data = $data->payload;
+        if ($inHeader) {
+            $data = $data->payload;
+        }
     }
 
     return $data;
@@ -112,7 +114,7 @@ function processSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
+        stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
         $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
         $histDir = getHistoryDir($storagePath);  // get the path to the history direction
         $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
@@ -186,7 +188,7 @@ function processForceSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
+        stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
         $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
@@ -232,8 +234,9 @@ function commandRequest($method, $key, $meta = null) {
         "key" => $key
     ];
 
-    if($meta)
+    if ($meta) {
         $arr["meta"] = $meta;
+    }
 
     $headerToken = "";
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
@@ -253,7 +256,7 @@ function commandRequest($method, $key, $meta = null) {
     ]];
 
     if (substr($documentCommandUrl, 0, strlen("https")) === "https") {
-        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+        if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }

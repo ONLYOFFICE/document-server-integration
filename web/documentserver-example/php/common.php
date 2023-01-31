@@ -34,23 +34,21 @@ function guid() {
     if (function_exists('com_create_guid')) {
         return com_create_guid();
     }  
-        mt_srand((double) microtime()*10000);  // optional for php 4.2.0 and up
-        $charid = strtoupper(md5(uniqid(rand(), true)));
-        $hyphen = chr(45);  // "-"
-        $uuid = chr(123)  // "{"
-                .substr($charid, 0, 8).$hyphen
-                .substr($charid, 8, 4).$hyphen
-                .substr($charid,12, 4).$hyphen
-                .substr($charid,16, 4).$hyphen
-                .substr($charid,20,12)
-                .chr(125);  // "}"
-        return $uuid;
-    
+    mt_srand((double) microtime()*10000);  // optional for php 4.2.0 and up
+    $charid = strtoupper(md5(uniqid(rand(), true)));
+    $hyphen = chr(45);  // "-"
+    $uuid = chr(123)  // "{"
+            .substr($charid, 0, 8).$hyphen
+            .substr($charid, 8, 4).$hyphen
+            .substr($charid,12, 4).$hyphen
+            .substr($charid,16, 4).$hyphen
+            .substr($charid,20,12)
+            .chr(125);  // "}"
+    return $uuid;
 }
 
-if(!function_exists('mime_content_type')) {
+if (!function_exists('mime_content_type')) {
     function mime_content_type($filename) {
-
         $mime_types = [
 
             'txt' => 'text/plain',
@@ -120,8 +118,7 @@ if(!function_exists('mime_content_type')) {
             return $mimetype;
         }
          
-            return 'application/octet-stream';
-        
+        return 'application/octet-stream';
     }
 }
 
@@ -154,11 +151,10 @@ function getCurUserHostAddress($userAddress = null) {
         if (empty($GLOBALS['STORAGE_PATH'])) {
             return "Storage";
         }  
-            return "";
-        
+        return "";
     }
     if (is_null($userAddress)) {
-    $userAddress = getClientIp();
+        $userAddress = getClientIp();
     }
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
@@ -167,9 +163,15 @@ function getCurUserHostAddress($userAddress = null) {
 function getInternalExtension($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return ".docx";  // .docx for text document extensions
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return ".xlsx";  // .xlsx for spreadsheet extensions
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return ".pptx";  // .pptx for presentation extensions
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) {
+        return ".docx";
+    }  // .docx for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) {
+        return ".xlsx";
+    }  // .xlsx for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) {
+        return ".pptx";
+    }  // .pptx for presentation extensions
     return "";
 }
 
@@ -178,9 +180,15 @@ function getTemplateImageUrl($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/css/images/";
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return $path . "file_docx.svg";  // for text document extensions
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return $path . "file_xlsx.svg";  // for spreadsheet extensions
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return $path . "file_pptx.svg";  // for presentation extensions
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) {
+        return $path . "file_docx.svg";
+    }  // for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) {
+        return $path . "file_xlsx.svg";
+    }  // for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) {
+        return $path . "file_pptx.svg";
+    }  // for presentation extensions
     return $path . "file_docx.svg";
 }
 
@@ -188,9 +196,15 @@ function getTemplateImageUrl($filename) {
 function getDocumentType($filename) {
     $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-    if (in_array($ext, $GLOBALS['ExtsDocument'])) return "word";  // word for text document extensions
-    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) return "cell";  // cell for spreadsheet extensions
-    if (in_array($ext, $GLOBALS['ExtsPresentation'])) return "slide";  // slide for presentation extensions
+    if (in_array($ext, $GLOBALS['ExtsDocument'])) {
+        return "word";
+    }  // word for text document extensions
+    if (in_array($ext, $GLOBALS['ExtsSpreadsheet'])) {
+        return "cell";
+    }  // cell for spreadsheet extensions
+    if (in_array($ext, $GLOBALS['ExtsPresentation'])) {
+        return "slide";
+    }  // slide for presentation extensions
     return "word";
 }
 
@@ -243,17 +257,23 @@ function getForcesavePath($fileName, $userAddress, $create) {
         $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
     }
 
-    if (!is_dir($directory)) return "";
+    if (!is_dir($directory)) {
+        return "";
+    }
 
     // create the directory to the history of this file version
     $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
-    if (!$create && !is_dir($directory))  return "";
+    if (!$create && !is_dir($directory)) {
+        return "";
+    }
 
     if (!file_exists($directory) && !is_dir($directory)) {
         mkdir($directory);
     }
     $directory = $directory . $fileName;
-    if (!$create && !file_exists($directory)) return "";
+    if (!$create && !file_exists($directory)) {
+        return "";
+    }
 
     return $directory;
 }
@@ -275,11 +295,13 @@ function getVersionDir($histDir, $version) {
 
 // get a number of the last file version from the history directory
 function getFileVersion($histDir) {
-    if (!file_exists($histDir) || !is_dir($histDir)) return 1;  // check if the history directory exists
+    if (!file_exists($histDir) || !is_dir($histDir)) {
+        return 1;
+    }  // check if the history directory exists
 
     $cdir = scandir($histDir);
     $ver = 1;
-    foreach($cdir as $key => $fileName) {
+    foreach ($cdir as $key => $fileName) {
         if (!in_array($fileName,[".", ".."])) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
                 $ver++;
@@ -322,7 +344,7 @@ function getStoredFiles() {
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
-    foreach($cdir as $key => $fileName) {  // run through all the file and folder names
+    foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName,[".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
                 $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
@@ -400,12 +422,13 @@ function getFileInfo($fileId) {
     }
 
     if ($fileId != null) {
-        if (count($resultID) != 0) return $resultID;
-         return "File not found";
+        if (count($resultID) != 0) {
+            return $resultID;
+        }
+        return "File not found";
     }
      
-        return $result;
-    
+    return $result;
 }
 
 // get all the supported file extensions
@@ -423,7 +446,7 @@ function GetCorrectName($fileName, $userAddress = null) {
     $name = $baseNameWithoutExt . "." . $ext;
 
     for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++) {  // if a file with such a name already exists in this directory
-    $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
+        $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
     }
     return $name;
 }

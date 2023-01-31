@@ -31,7 +31,7 @@ function DoUpload($fileUri) {
     }
 
     // check if the file copy operation is successful
-    if(!@copy($fileUri, getStoragePath($_fileName))) {
+    if (!@copy($fileUri, getStoragePath($_fileName))) {
         $errors= error_get_last();
         $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
         throw new Exception($err);
@@ -95,7 +95,9 @@ function ProcessConvServResponceError($errorCode) {
  * @return Supported key
  */
 function GenerateRevisionId($expected_key) {
-    if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
+    if (strlen($expected_key) > 20) {
+        $expected_key = crc32( $expected_key);
+    }  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
     $key = substr($key, 0, min([strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
@@ -167,7 +169,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     ];
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
-        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+        if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
@@ -201,7 +203,9 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
 
     // if an error occurs, then display an error message
     $errorElement = $json["error"];
-    if ($errorElement != null && $errorElement != "") ProcessConvServResponceError($errorElement);
+    if ($errorElement != null && $errorElement != "") {
+        ProcessConvServResponceError($errorElement);
+    }
 
     $isEndConvert = $json["endConvert"];
     $percent = $json["percent"];
@@ -213,8 +217,9 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
         $percent = 100;
     }
     // otherwise, get the percentage of conversion completion
-    else if ($percent >= 100)
+    else if ($percent >= 100) {
         $percent = 99;
+    }
 
     return $percent;
 }
@@ -237,15 +242,21 @@ function GetResponseUri($document_response, &$response_uri) {
 
     // if an error occurs, then display an error message
     $errorElement = $document_response->Error;
-    if ($errorElement != null && $errorElement != "") ProcessConvServResponceError($document_response->Error);
+    if ($errorElement != null && $errorElement != "") {
+        ProcessConvServResponceError($document_response->Error);
+    }
 
     $endConvert = $document_response->EndConvert;
-    if ($endConvert != null && $endConvert == "") throw new Exception("Invalid answer format");
+    if ($endConvert != null && $endConvert == "") {
+        throw new Exception("Invalid answer format");
+    }
 
     // if the conversion is completed successfully
     if ($endConvert != null && strtolower($endConvert) == true) {
         $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == null || $fileUrl == "") throw new Exception("Invalid answer format");
+        if ($fileUrl == null || $fileUrl == "") {
+            throw new Exception("Invalid answer format");
+        }
 
         // get the response file url
         $response_uri = $fileUrl;
@@ -255,10 +266,12 @@ function GetResponseUri($document_response, &$response_uri) {
     else {
         $percent = $document_response->Percent;
 
-        if ($percent != null && $percent != "")
+        if ($percent != null && $percent != "") {
             $resultPercent = $percent;
-        if ($resultPercent >= 100)
+        }
+        if ($resultPercent >= 100) {
             $resultPercent = 99;
+        }
     }
 
     return $resultPercent;

@@ -319,7 +319,6 @@
 
                     // write the path to the diff.zip archive with differences in this file version
                     $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
-
                 }
 
                 if (isJwtEnabled()) {
@@ -341,7 +340,7 @@
         }
     }
 
-?>
+    ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -516,10 +515,10 @@
         var сonnectEditor = function () {
 
             <?php
-                if (!file_exists(getStoragePath($filename))) {
-                    echo "alert('File not found'); return;";
-                }
-            ?>
+                    if (!file_exists(getStoragePath($filename))) {
+                        echo "alert('File not found'); return;";
+                    }
+    ?>
 
             config = <?php echo json_encode($config) ?>;
 
@@ -540,10 +539,10 @@
             };
 
             <?php
-                $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
-                $history = $out[0];
-                $historyData = $out[1];
-            ?>
+        $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
+    $history = $out[0];
+    $historyData = $out[1];
+    ?>
 
             <?php if ($user->id != "uid-0"): ?>
                 <?php if ($history != null && $historyData != null): ?>

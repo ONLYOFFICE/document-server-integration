@@ -24,7 +24,7 @@
 
     $user = isset($_GET["user"]) ? $_GET["user"] : "";
     $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
-?>
+    ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
@@ -126,7 +126,7 @@
                                 <div class="main-panel">
                                     <?php
                                     $storedFiles = getStoredFiles();
-                                    if (!empty($storedFiles)): ?>
+    if (!empty($storedFiles)): ?>
                                         <div id="portal-info" style="display: none">
                                     <?php else: ?>
                                         <div id="portal-info" style="display: table-cell">
@@ -205,7 +205,7 @@
                                                                         echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
                                                                         echo ' </td>';
                                                                     } else {
-                                                                       echo ' <td class="contentCells contentCells-icon"></td> ';
+                                                                        echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
                                                                     if($storeFile->documentType!="word" && $storeFile->documentType!="cell") {
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
@@ -218,7 +218,7 @@
                                                                     } else {
                                                                         echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
                                                                     }
-                                                                 } else if ($storeFile->isFillFormDoc) {
+                                                                } else if ($storeFile->isFillFormDoc) {
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     echo ' <td class="contentCells contentCells-icon">';
                                                                     echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=fillForms&type=desktop" target="_blank">';
