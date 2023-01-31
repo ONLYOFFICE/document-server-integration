@@ -8,6 +8,8 @@
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
     <NameMvc>$(To)DotNet (Csharp MVC) Example</NameMvc>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
+    <NameMvcAngular>$(To)DotNet (Csharp MVC Angular) Example</NameMvcAngular>
+    <DirMvcAngular>$(RootDir)web\documentserver-example\csharp-mvc-angular\</DirMvcAngular>
     <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
     <NameSpring>$(To)Java Spring Example</NameSpring>
@@ -36,6 +38,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />
+
+    <ItemGroup>
+      <ZipFilesMVCAngular Include="$(DirMvcAngular)**" Exclude="$(DirMvcAngular).vs\**;$(DirMvcAngular)bin\*.pdb;$(DirMvcAngular)bin\*.xml;$(DirMvcAngular)obj\**;$(DirMvcAngular)packages\**;$(DirMvcAngular)**\.git;$(DirMvcAngular)Scripts\Angular\node_modules\**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ZipFilesMVCAngular)" DestinationFiles="@(ZipFilesMVCAngular->'$(NameMvcAngular)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameMvcAngular)" WorkingDirectory="$(To)" ZipFileName="$(NameMvcAngular).zip" />
 
     <ItemGroup>
       <ZipFilesJava Include="$(DirJava)**" Exclude="$(DirJava)**\.git" />
