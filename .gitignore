@@ -14,3 +14,7 @@
 /web/documentserver-example/java/target/
 /web/documentserver-example/csharp/packages
 /web/documentserver-example/csharp-mvc/packages
+/web/documentserver-example/csharp-mvc-angular/packages
+/web/documentserver-example/csharp-mvc-angular/Scripts/Angular/node_modules
+/web/documentserver-example/csharp-mvc-angular/Scripts/Angular/public
+
