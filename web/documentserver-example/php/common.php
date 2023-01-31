@@ -201,7 +201,7 @@ function getScheme() {
 
 // get the storage path of the given file
 function getStoragePath($fileName, $userAddress = null) {
-    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
         mkdir($storagePath);
     }
@@ -234,7 +234,7 @@ function getStoragePath($fileName, $userAddress = null) {
 
 // get the path to the forcesaved file version
 function getForcesavePath($fileName, $userAddress, $create) {
-    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
 
     // create the directory to this file version
     if (realpath($storagePath) === $storagePath) {
@@ -291,7 +291,7 @@ function getFileVersion($histDir) {
 
 // get all the stored files from the folder
 function getStoredFiles() {
-    $storagePath = trim(str_replace(['/','\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
+    $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
     if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
         mkdir($storagePath);
     }
@@ -342,7 +342,7 @@ function getStoredFiles() {
 
 // get the virtual path
 function getVirtualPath($forDocumentServer) {
-    $storagePath = trim(str_replace(['/','\\'], '/', $GLOBALS['STORAGE_PATH']), '/');
+    $storagePath = trim(str_replace(['/', '\\'], '/', $GLOBALS['STORAGE_PATH']), '/');
     $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
     if (realpath($storagePath) === $storagePath) {

@@ -459,7 +459,7 @@ function downloadFile($filePath) {
 function delTree($dir) {
     if (!file_exists($dir) || !is_dir($dir)) return;
 
-    $files = array_diff(scandir($dir), ['.','..']);
+    $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
