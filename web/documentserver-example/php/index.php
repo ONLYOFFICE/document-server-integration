@@ -193,7 +193,7 @@
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=review&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>';
                                                                         echo ' </td>';
-                                                                    } else if ($storeFile->documentType == "cell") {
+                                                                    } elseif ($storeFile->documentType == "cell") {
                                                                         echo ' <td class="contentCells contentCells-icon">';
                                                                         echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=filter&type=desktop" target="_blank">';
                                                                         echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
@@ -218,7 +218,7 @@
                                                                     } else {
                                                                         echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
                                                                     }
-                                                                } else if ($storeFile->isFillFormDoc) {
+                                                                } elseif ($storeFile->isFillFormDoc) {
                                                                     echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     echo ' <td class="contentCells contentCells-icon">';
                                                                     echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=fillForms&type=desktop" target="_blank">';

@@ -217,7 +217,7 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
         $percent = 100;
     }
     // otherwise, get the percentage of conversion completion
-    else if ($percent >= 100) {
+    elseif ($percent >= 100) {
         $percent = 99;
     }
 
