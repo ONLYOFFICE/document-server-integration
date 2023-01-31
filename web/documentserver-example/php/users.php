@@ -19,7 +19,7 @@
 
 class User
 {
-    function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates) {
+    public function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
