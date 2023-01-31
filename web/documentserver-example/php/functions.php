@@ -41,12 +41,12 @@ function DoUpload($fileUri) {
 }
 
 /**
-* Generate an error code table
-*
-* @param string $errorCode   Error code
-*
-* @return null
-*/
+ * Generate an error code table
+ *
+ * @param string $errorCode   Error code
+ *
+ * @return null
+ */
 function ProcessConvServResponceError($errorCode) {
     $errorMessageTemplate = "Error occurred in the document service: ";
     $errorMessage = '';
@@ -88,12 +88,12 @@ function ProcessConvServResponceError($errorCode) {
 }
 
 /**
-* Translation key to a supported form.
-*
-* @param string $expected_key  Expected key
-*
-* @return Supported key
-*/
+ * Translation key to a supported form.
+ *
+ * @param string $expected_key  Expected key
+ *
+ * @return Supported key
+ */
 function GenerateRevisionId($expected_key) {
     if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
@@ -102,16 +102,16 @@ function GenerateRevisionId($expected_key) {
 }
 
 /**
-* Request for conversion to a service.
-*
-* @param string $document_uri            Uri for the document to convert
-* @param string $from_extension          Document extension
-* @param string $to_extension            Extension to which to convert
-* @param string $document_revision_id    Key for caching on service
-* @param bool   $is_async                Perform conversions asynchronously
-*
-* @return Document request result of conversion
-*/
+ * Request for conversion to a service.
+ *
+ * @param string $document_uri            Uri for the document to convert
+ * @param string $from_extension          Document extension
+ * @param string $to_extension            Extension to which to convert
+ * @param string $document_revision_id    Key for caching on service
+ * @param bool   $is_async                Perform conversions asynchronously
+ *
+ * @return Document request result of conversion
+ */
 function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
@@ -157,14 +157,14 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     // request parameters
     $opts = ['http' => [
-                'method'  => 'POST',
-                'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-                'header'=> "Content-type: application/json\r\n" . 
-                            "Accept: application/json\r\n" .
-                            (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
-                'content' => $data
-            ]
-        ];
+        'method'  => 'POST',
+        'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
+        'header'=> "Content-type: application/json\r\n" . 
+                    "Accept: application/json\r\n" .
+                    (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
+        'content' => $data
+    ]
+    ];
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
         if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
@@ -179,21 +179,21 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 }
 
 /**
-* The method is to convert the file to the required format.
-*
-* Example:
-* string convertedDocumentUri;
-* GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
-* 
-* @param string $document_uri            Uri for the document to convert
-* @param string $from_extension          Document extension
-* @param string $to_extension            Extension to which to convert
-* @param string $document_revision_id    Key for caching on service
-* @param bool   $is_async                Perform conversions asynchronously
-* @param string $converted_document_uri  Uri to the converted document
-*
-* @return The percentage of completion of conversion
-*/
+ * The method is to convert the file to the required format.
+ *
+ * Example:
+ * string convertedDocumentUri;
+ * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
+ * 
+ * @param string $document_uri            Uri for the document to convert
+ * @param string $from_extension          Document extension
+ * @param string $to_extension            Extension to which to convert
+ * @param string $document_revision_id    Key for caching on service
+ * @param bool   $is_async                Perform conversions asynchronously
+ * @param string $converted_document_uri  Uri to the converted document
+ *
+ * @return The percentage of completion of conversion
+ */
 function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang) {
     $converted_document_uri = "";
     $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang);
@@ -220,13 +220,13 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
 }
 
 /**
-* Processing document received from the editing service.
-*
-* @param string $document_response     The result from editing service
-* @param string $response_uri          Uri to the converted document
-*
-* @return The percentage of completion of conversion
-*/
+ * Processing document received from the editing service.
+ *
+ * @param string $document_response     The result from editing service
+ * @param string $response_uri          Uri to the converted document
+ *
+ * @return The percentage of completion of conversion
+ */
 function GetResponseUri($document_response, &$response_uri) {
     $response_uri = "";
     $resultPercent = 0;

@@ -328,11 +328,11 @@ function getStoredFiles() {
                 $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) [  // and write the file to the result
-                        "name" => $fileName,
-                        "documentType" => getDocumentType($fileName),
-                        "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
-                        "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
-                    ];
+                    "name" => $fileName,
+                    "documentType" => getDocumentType($fileName),
+                    "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
+                    "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+                ];
             }
         }
     }

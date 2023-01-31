@@ -67,12 +67,12 @@
     $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
     $createUrl = getCreateUrl($filename, $user->id, $type);
     $templates = [
-         [
+        [
             "image" => "",
             "title" => "Blank",
             "url" => $createUrl
         ],
-         [
+        [
             "image" => $templatesImageUrl,
             "title" => "With sample content",
             "url" => $createUrl . "&sample=true"
@@ -333,9 +333,9 @@
             // write history information about the current file version
             $out = [];
             array_push($out, [
-                    "currentVersion" => $curVer,
-                    "history" => $hist
-                ],
+                "currentVersion" => $curVer,
+                "history" => $hist
+            ],
                 $histData);
             return $out;
         }

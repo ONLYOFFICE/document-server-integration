@@ -30,19 +30,19 @@ $GLOBALS['EXAMPLE_URL'] = "";
 $GLOBALS['MOBILE_REGEX'] = "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino";
 
 $GLOBALS['ExtsSpreadsheet'] = [".xls", ".xlsx", ".xlsm", ".xlsb",
-                                    ".xlt", ".xltx", ".xltm",
-                                    ".ods", ".fods", ".ots", ".csv"];
+    ".xlt", ".xltx", ".xltm",
+    ".ods", ".fods", ".ots", ".csv"];
 
 $GLOBALS['ExtsPresentation'] = [".pps", ".ppsx", ".ppsm",
-                                     ".ppt", ".pptx", ".pptm",
-                                     ".pot", ".potx", ".potm",
-                                     ".odp", ".fodp", ".otp"];
+    ".ppt", ".pptx", ".pptm",
+    ".pot", ".potx", ".potm",
+    ".odp", ".fodp", ".otp"];
 
 $GLOBALS['ExtsDocument'] = [".doc", ".docx", ".docm",
-                                 ".dot", ".dotx", ".dotm",
-                                 ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                                 ".html", ".htm", ".mht", ".xml",
-                                 ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"];
+    ".dot", ".dotx", ".dotm",
+    ".odt", ".fodt", ".ott", ".rtf", ".txt",
+    ".html", ".htm", ".mht", ".xml",
+    ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"];
 
 $GLOBALS['LANGUAGES'] = [
     'en' => 'English',
