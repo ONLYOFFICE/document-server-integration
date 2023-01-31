@@ -129,7 +129,7 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress string, file
 
 	if version > 1 {
 		prevHistPath := path.Join(storagePath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1))
-		prevKey, err := hm.readHistoryFileKey(prevHistPath)
+		prevKey, err := hm.readHistoryFileKey(path.Join(prevHistPath, "key.txt"))
 		if err != nil {
 			return hresp, hsresp, err
 		}
