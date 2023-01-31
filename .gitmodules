@@ -30,3 +30,7 @@
 	path = web/documentserver-example/java-spring/src/main/resources/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/csharp-mvc-angular/assets"]
+	path = web/documentserver-example/csharp-mvc-angular/assets
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
