@@ -235,4 +235,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>call "$(ProjectDir)Scripts\Angular\build.bat"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
