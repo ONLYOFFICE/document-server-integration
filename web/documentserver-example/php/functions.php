@@ -186,7 +186,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
  * Example:
  * string convertedDocumentUri;
  * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
- * 
+ *
  * @param string $document_uri            Uri for the document to convert
  * @param string $from_extension          Document extension
  * @param string $to_extension            Extension to which to convert
