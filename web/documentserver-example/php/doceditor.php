@@ -70,13 +70,13 @@
         [
             "image" => "",
             "title" => "Blank",
-            "url" => $createUrl
+            "url" => $createUrl,
         ],
         [
             "image" => $templatesImageUrl,
             "title" => "With sample content",
-            "url" => $createUrl . "&sample=true"
-        ]
+            "url" => $createUrl . "&sample=true",
+        ],
     ];
 
     // specify the document config
@@ -92,7 +92,7 @@
             "info" => [
                 "owner" => "Me",
                 "uploaded" => date('d.m.y'),
-                "favorite" => $user->favorite
+                "favorite" => $user->favorite,
             ],
             "permissions" => [  // the permission for the document to be edited and downloaded or not
                 "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
@@ -107,8 +107,8 @@
                 "chat" => $user->id != "uid-0",
                 "reviewGroups" => $user->reviewGroups,
                 "commentGroups" => $user->commentGroups,
-                "userInfoGroups" => $user->userInfoGroups
-            ]
+                "userInfoGroups" => $user->userInfoGroups,
+            ],
         ],
         "editorConfig" => [
             "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
@@ -117,14 +117,14 @@
             "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
             "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
                 "mode" => "strict", 
-                "change" => false
+                "change" => false,
             ] : null,
             "createUrl" => $user->id != "uid-0" ? $createUrl : null,
             "templates" => $user->templates ? $templates : null,
             "user" => [  // the user currently viewing or editing the document
                 "id" => $user->id != "uid-0" ? $user->id : null,
                 "name" => $user->name,
-                "group" => $user->group
+                "group" => $user->group,
             ],
             "embedded" => [  // the parameters for the embedded document type
                 "saveUrl" => $directUrl,  // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -140,39 +140,39 @@
                 "submitForm" => $submitForm,  // if the Submit form button is displayed or not
                 "goback" => [  // settings for the Open file location menu button and upper right corner button
                     "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ];
 
     // an image for inserting
     $dataInsertImage = $isEnableDirectUrl ? [
         "fileType" => "png",
         "url" => serverPath(true) . "/css/images/logo.png",
-        "directUrl" => serverPath(false) . "/css/images/logo.png"
+        "directUrl" => serverPath(false) . "/css/images/logo.png",
     ] : [
         "fileType" => "png",
-        "url" => serverPath(true) . "/css/images/logo.png"
+        "url" => serverPath(true) . "/css/images/logo.png",
     ];
 
     // a document for comparing
     $dataCompareFile = $isEnableDirectUrl ? [
         "fileType" => "docx",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
-        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx"
+        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx",
     ] : [
         "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
     ];
 
     // recipients data for mail merging
     $dataMailMergeRecipients = $isEnableDirectUrl ? [
         "fileType" =>"csv",
         "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
-        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv"
+        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
     ]  : [
         "fileType" =>"csv",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
+        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
     ];
     
     // users data for mentions
@@ -270,7 +270,7 @@
                     $obj["created"] = $json["created"];
                     $obj["user"] = [
                         "id" => $json["uid"],
-                        "name" => $json["name"]
+                        "name" => $json["name"],
                     ];
                 }
 
@@ -310,11 +310,11 @@
                         "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
                         "url" => $prev["url"],
-                        "directUrl" => $prev["directUrl"]
+                        "directUrl" => $prev["directUrl"],
                     ] : [
                         "fileType" => $prev["fileType"],
                         "key" => $prev["key"],
-                        "url" => $prev["url"]
+                        "url" => $prev["url"],
                     ];
 
                     // write the path to the diff.zip archive with differences in this file version
@@ -333,7 +333,7 @@
             $out = [];
             array_push($out, [
                 "currentVersion" => $curVer,
-                "history" => $hist
+                "history" => $hist,
             ],
                 $histData);
             return $out;

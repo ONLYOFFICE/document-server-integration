@@ -41,7 +41,7 @@ $descr_user_1 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can create files from templates using data from the editor",
-    "Can see the information about all users"
+    "Can see the information about all users",
 ];
 
 $descr_user_2 = [
@@ -50,7 +50,7 @@ $descr_user_2 = [
     "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
     "This file is marked as favorite",
     "Can create new files from the editor",
-    "Can see the information about users from Group2 and users who don’t belong to any group"
+    "Can see the information about users from Group2 and users who don’t belong to any group",
 ];
 
 $descr_user_3 = [
@@ -62,7 +62,7 @@ $descr_user_3 = [
     "Can’t download the file",
     "Can’t print the file",
     "Can create new files from the editor",
-    "Can see the information about Group2 users"
+    "Can see the information about Group2 users",
 ];
 
 $descr_user_0 = [
@@ -87,7 +87,7 @@ $users = [
         "group-2", ["group-2", ""], [
             "view" => "",
             "edit" => ["group-2", ""],
-            "remove" => ["group-2"]
+            "remove" => ["group-2"],
         ],
         ["group-2", ""],
         true, [], $descr_user_2, false),
@@ -95,13 +95,13 @@ $users = [
         "group-3", ["group-2"], [
             "view" => ["group-3", "group-2"],
             "edit" => ["group-2"],
-            "remove" => []
+            "remove" => [],
         ],
         ["group-2"],
         false, ["copy", "download", "print"], $descr_user_3, false),
     new User("uid-0", null, null,
         "", null, [], [],
-        null, [], $descr_user_0, false)
+        null, [], $descr_user_0, false),
 ];
 
 // get a list of all the users
@@ -130,7 +130,7 @@ function getUsersForMentions($id) {
         if ($user->id != $id && $user->name != null && $user->email != null) {
             array_push($usersData,[
                 "name" => $user->name,
-                "email" => $user->email
+                "email" => $user->email,
             ]);
         }
     }

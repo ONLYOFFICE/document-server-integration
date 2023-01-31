@@ -231,7 +231,7 @@ function commandRequest($method, $key, $meta = null) {
 
     $arr = [
         "c" => $method,
-        "key" => $key
+        "key" => $key,
     ];
 
     if ($meta) {
@@ -252,7 +252,7 @@ function commandRequest($method, $key, $meta = null) {
         'method'  => 'POST',
         'header'=> "Content-type: application/json\r\n" .
             (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),  // add a header Authorization with a header token and Authorization prefix in it
-        'content' => $data
+        'content' => $data,
     ]];
 
     if (substr($documentCommandUrl, 0, strlen("https")) === "https") {

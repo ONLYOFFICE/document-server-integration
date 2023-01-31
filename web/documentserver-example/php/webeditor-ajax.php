@@ -36,7 +36,7 @@ $_trackerStatus = [
     3 => 'Corrupted',
     4 => 'Closed',
     6 => 'MustForceSave',
-    7 => 'CorruptedForceSave'
+    7 => 'CorruptedForceSave',
 ];
 
 // ignore self-signed certificate

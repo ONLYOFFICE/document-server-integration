@@ -83,5 +83,5 @@ $GLOBALS['LANGUAGES'] = [
     'tr' => 'Turkish',
     'uk' => 'Ukrainian',
     'vi' => 'Vietnamese',
-    'aa-AA' => 'Test Language'
+    'aa-AA' => 'Test Language',
 ];

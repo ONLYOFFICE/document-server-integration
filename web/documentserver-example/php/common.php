@@ -353,7 +353,7 @@ function getStoredFiles() {
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
                     "canEdit" => in_array($ext, $GLOBALS['DOC_SERV_EDITED']),
-                    "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+                    "isFillFormDoc" => in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS']),
                 ];
             }
         }

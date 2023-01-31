@@ -143,7 +143,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         "title" => $title,
         "key" => $document_revision_id,
         "password" => $filePass,
-        "region" => $lang
+        "region" => $lang,
     ];
 
     // add header token
@@ -164,8 +164,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
         'header'=> "Content-type: application/json\r\n" . 
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
-        'content' => $data
-    ]
+        'content' => $data,
+    ],
     ];
 
     if (substr($urlToConverter, 0, strlen("https")) === "https") {
