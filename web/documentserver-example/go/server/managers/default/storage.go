@@ -54,9 +54,8 @@ func NewDefaultStorageManager(config config.ApplicationConfig, specification con
 	}
 }
 
-func (sm DefaultStorageManager) GetRootFolder(remoteAddress string) (string, error) {
-	remoteAddress = sanitiazeRemoteAddress(remoteAddress)
-	dir := path.Join("./static", sm.config.StoragePath, remoteAddress)
+func (sm DefaultStorageManager) GetRootFolder() (string, error) {
+	dir := path.Join("./static", sm.config.StoragePath)
 
 	if err := sm.CreateDirectory(dir); err != nil {
 		return "", err
@@ -65,9 +64,8 @@ func (sm DefaultStorageManager) GetRootFolder(remoteAddress string) (string, err
 	return dir, nil
 }
 
-func (sm DefaultStorageManager) GenerateFilePath(fileName string, remoteAddress string) (string, error) {
-	remoteAddress = sanitiazeRemoteAddress(remoteAddress)
-	dir, err := sm.GetRootFolder(remoteAddress)
+func (sm DefaultStorageManager) GenerateFilePath(fileName string) (string, error) {
+	dir, err := sm.GetRootFolder()
 	if err != nil {
 		return "", err
 	}
@@ -77,8 +75,7 @@ func (sm DefaultStorageManager) GenerateFilePath(fileName string, remoteAddress 
 
 func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.Document, error) {
 	var documents []models.Document
-	remoteAddress = sanitiazeRemoteAddress(remoteAddress)
-	dir, err := sm.GetRootFolder(remoteAddress)
+	dir, err := sm.GetRootFolder()
 	if err != nil {
 		return documents, err
 	}
@@ -100,7 +97,7 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 		documents = append(documents, models.Document{
 			FileType: sm.ConversionManager.GetFileType(filename),
 			Title:    filename,
-			Url:      sm.GenerateFileUri(filename, remoteAddress, managers.FileMeta{}),
+			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename)),
 		})
 	}
@@ -109,9 +106,8 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 	return documents, nil
 }
 
-func (sm DefaultStorageManager) GenerateFileHash(filename string, remoteAddress string) (string, error) {
-	remoteAddress = sanitiazeRemoteAddress(remoteAddress)
-	fpath, err := sm.GenerateFilePath(filename, remoteAddress)
+func (sm DefaultStorageManager) GenerateFileHash(filename string) (string, error) {
+	fpath, err := sm.GenerateFilePath(filename)
 	if err != nil {
 		return "", err
 	}
@@ -124,36 +120,31 @@ func (sm DefaultStorageManager) GenerateFileHash(filename string, remoteAddress 
 	return fmt.Sprintf("%x", md5.Sum([]byte(filename+stat.ModTime().Format(time.RFC3339)))), nil
 }
 
-func (sm DefaultStorageManager) GenerateFileUri(originalName string, remoteAddress string, meta managers.FileMeta) string {
-	remoteAddress = sanitiazeRemoteAddress(remoteAddress)
+func (sm DefaultStorageManager) GenerateFilestoreUri(originalName string, meta managers.FileMeta) string {
 	if (managers.FileMeta{}) == meta {
 		sm.logger.Debugf("Generating file %s uri", originalName)
 		return fmt.Sprintf(
-			"%s/static/%s/%s/%s",
-			sm.config.ServerAddress,
+			"/static/%s/%s",
 			sm.config.StoragePath,
-			remoteAddress,
 			originalName,
 		)
 	}
 	sm.logger.Debugf("Generating file %s uri", meta.DestinationPath)
 	return fmt.Sprintf(
-		"%s/static/%s/%s/%s/%s/%s",
-		sm.config.ServerAddress,
+		"/static/%s/%s/%s/%s",
 		sm.config.StoragePath,
-		remoteAddress,
 		originalName+shared.ONLYOFFICE_HISTORY_POSTFIX,
 		fmt.Sprint(meta.Version),
 		meta.DestinationPath,
 	)
 }
 
-func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, meta managers.FileMeta) string {
+func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, remoteAddress string, meta managers.FileMeta) string {
 	if meta.Version == 0 || meta.DestinationPath == "" {
 		sm.logger.Debugf("Generating file %s uri", originalName)
 		return fmt.Sprintf(
 			"%s/download?%s",
-			sm.config.ServerAddress,
+			remoteAddress,
 			"fileName="+originalName,
 		)
 	}
@@ -161,14 +152,14 @@ func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, meta 
 	sm.logger.Debugf("Generating file %s uri", meta.DestinationPath)
 	return fmt.Sprintf(
 		"%s/history?%s&%s&%s",
-		sm.config.ServerAddress,
+		remoteAddress,
 		"fileName="+originalName,
 		"file="+meta.DestinationPath,
 		"ver="+fmt.Sprint(meta.Version),
 	)
 }
 
-func (sm DefaultStorageManager) GenerateVersionedFilename(filename string, remoteAddress string) (string, error) {
+func (sm DefaultStorageManager) GenerateVersionedFilename(filename string) (string, error) {
 	basename := utils.GetFileNameWithoutExt(filename)
 	ext := utils.GetFileExt(filename)
 	name := fmt.Sprintf("%s%s", basename, ext)
@@ -176,7 +167,7 @@ func (sm DefaultStorageManager) GenerateVersionedFilename(filename string, remot
 	i := 1
 
 	for {
-		fpath, err := sm.GenerateFilePath(name, remoteAddress)
+		fpath, err := sm.GenerateFilePath(name)
 		if err != nil {
 			return "", err
 		}
@@ -223,8 +214,8 @@ func (sm DefaultStorageManager) PathExists(path string) bool {
 	return false
 }
 
-func (sm DefaultStorageManager) RemoveFile(filename string, remoteAddress string) error {
-	fpath, err := sm.GenerateFilePath(filename, remoteAddress)
+func (sm DefaultStorageManager) RemoveFile(filename string) error {
+	fpath, err := sm.GenerateFilePath(filename)
 	if err != nil {
 		return err
 	}
@@ -233,7 +224,7 @@ func (sm DefaultStorageManager) RemoveFile(filename string, remoteAddress string
 		return err
 	}
 
-	rootPath, err := sm.GetRootFolder(remoteAddress)
+	rootPath, err := sm.GetRootFolder()
 	if err != nil {
 		return err
 	}
@@ -267,7 +258,7 @@ func (sm DefaultStorageManager) SaveFileFromUri(body models.Callback) error {
 	}
 	defer resp.Body.Close()
 
-	fpath, err := sm.GenerateFilePath(body.Filename, body.UserAddress)
+	fpath, err := sm.GenerateFilePath(body.Filename)
 	if err != nil {
 		return err
 	}

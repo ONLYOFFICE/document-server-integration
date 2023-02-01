@@ -30,25 +30,25 @@ type DocumentManager interface {
 }
 
 type HistoryManager interface {
-	GetHistory(filename string, storageAddress string) (HistoryRefresh, []HistorySet, error)
-	CreateMeta(filename string, storageAddress string, changes []models.Changes) error
-	CreateHistory(cbody models.Callback, storageAddress string) error
+	GetHistory(filename, storageAddress string) (HistoryRefresh, []HistorySet, error)
+	CreateMeta(filename string, changes []models.Changes) error
+	CreateHistory(cbody models.Callback) error
 }
 
 type StorageManager interface {
-	GetRootFolder(storageAddress string) (string, error)
-	GenerateFilePath(filename string, storageAddress string) (string, error)
+	GetRootFolder() (string, error)
+	GenerateFilePath(filename string) (string, error)
 	GetStoredFiles(storageAddress string) ([]models.Document, error)
-	GenerateFileHash(filename string, storageAddress string) (string, error)
-	GenerateFileUri(originalName string, storageAddress string, meta FileMeta) string
-	GeneratePublicFileUri(originalName string, meta FileMeta) string
-	GenerateVersionedFilename(filename string, storageAddress string) (string, error)
+	GenerateFileHash(filename string) (string, error)
+	GenerateFilestoreUri(originalName string, meta FileMeta) string
+	GeneratePublicFileUri(originalName, storageAddress string, meta FileMeta) string
+	GenerateVersionedFilename(filename string) (string, error)
 	CreateFile(stream io.Reader, path string) error
 	CreateDirectory(path string) error
 	PathExists(path string) bool
-	RemoveFile(filename string, storageAddress string) error
+	RemoveFile(filename string) error
 	ReadFile(filePath string) ([]byte, error)
-	MoveFile(from string, to string) error
+	MoveFile(from, to string) error
 	SaveFileFromUri(body models.Callback) error
 }
 
@@ -67,7 +67,7 @@ type ConversionManager interface {
 	GetFileType(filename string) string
 	GetInternalExtension(fileType string) string
 	IsCanConvert(ext string) bool
-	GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, error)
+	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, error)
 }
 
 type Managers struct {

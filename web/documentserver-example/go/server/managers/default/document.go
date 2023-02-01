@@ -92,8 +92,8 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 
 	dm.logger.Debugf("Generating file %s config", parameters.Filename)
 	dm.sanitizeEditorParameters(&parameters)
-	furi := dm.StorageManager.GenerateFileUri(parameters.Filename, remoteAddress, managers.FileMeta{})
-	docKey, err := dm.StorageManager.GenerateFileHash(parameters.Filename, remoteAddress)
+	furi := dm.StorageManager.GeneratePublicFileUri(parameters.Filename, remoteAddress, managers.FileMeta{})
+	docKey, err := dm.StorageManager.GenerateFileHash(parameters.Filename)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {
 func (dm DefaultDocumentManager) generateCallbackUrl(filename string, remoteAddress string) string {
 	return fmt.Sprintf(
 		"%s/callback?filename=%s&user_address=%s",
-		dm.config.ServerAddress,
+		remoteAddress,
 		filename,
 		remoteAddress,
 	)

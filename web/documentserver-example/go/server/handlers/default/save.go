@@ -49,7 +49,7 @@ func (sh DefaultSaveHandler) GetCode() int {
 
 func (sh DefaultSaveHandler) Handle(cbody *models.Callback) error {
 	sh.logger.Debugf("Trying to save %s", cbody.Filename)
-	if err := sh.HistoryManager.CreateHistory(*cbody, cbody.UserAddress); err != nil {
+	if err := sh.HistoryManager.CreateHistory(*cbody); err != nil {
 		return err
 	}
 

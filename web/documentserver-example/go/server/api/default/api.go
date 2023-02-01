@@ -63,75 +63,17 @@ func NewDefaultServerEndpointsHandler(logger *zap.SugaredLogger, config config.A
 	}
 }
 
-func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.Request) {
-	srv.logger.Debug("A new index call")
-	files, err := srv.Managers.StorageManager.GetStoredFiles(srv.config.ServerAddress)
-	if err != nil {
-		srv.logger.Errorf("could not fetch files: %s", err.Error())
+func generateUrl(r *http.Request) string {
+	scheme := "http"
+	if r.Header.Get("X-Forwarded-Proto") != "" {
+		scheme = r.Header.Get("X-Forwarded-Proto")
 	}
 
-	data := map[string]interface{}{
-		"Extensions": srv.specification.Extensions,
-		"Users":      srv.Managers.UserManager.GetUsers(),
-		"Files":      files,
-		"Preloader":  srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,
+	if r.TLS != nil {
+		scheme = "https"
 	}
 
-	indexTemplate.Execute(w, data)
-}
-
-func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.Request) {
-	var editorParameters managers.Editor
-	if err := decoder.Decode(&editorParameters, r.URL.Query()); err != nil {
-		srv.logger.Error("Invalid query parameters")
-		return
-	}
-
-	if err := editorParameters.IsValid(); err != nil {
-		srv.logger.Errorf("Editor parameters are invalid: %s", err.Error())
-		return
-	}
-
-	srv.logger.Debug("A new editor call")
-	editorParameters.Language, editorParameters.UserId = shared.GetCookiesInfo(r.Cookies())
-	config, err := srv.Managers.DocumentManager.BuildDocumentConfig(editorParameters, srv.config.ServerAddress)
-	if err != nil {
-		srv.logger.Errorf("A document manager error has occured: %s", err.Error())
-		return
-	}
-
-	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, srv.config.ServerAddress)
-	if err != nil {
-		srv.logger.Warnf("could not get file history: %s", err.Error())
-	}
-
-	data := map[string]interface{}{
-		"apijs":      srv.config.DocumentServerHost + srv.config.DocumentServerApi,
-		"config":     config,
-		"actionLink": editorParameters.ActionLink,
-		"docType":    config.DocumentType,
-		"refHist":    refHist,
-		"setHist":    setHist,
-	}
-
-	editorTemplate.Execute(w, data)
-}
-
-func (srv *DefaultServerEndpointsHandler) Remove(w http.ResponseWriter, r *http.Request) {
-	filename := r.URL.Query().Get("filename")
-	if filename == "" {
-		shared.SendDocumentServerRespose(w, true)
-		return
-	}
-
-	if err := srv.StorageManager.RemoveFile(filename, srv.config.ServerAddress); err != nil {
-		srv.logger.Error(err.Error())
-		shared.SendDocumentServerRespose(w, true)
-		return
-	}
-
-	srv.logger.Debug("A new remove call")
-	shared.SendDocumentServerRespose(w, false)
+	return fmt.Sprintf("%s://%s", scheme, r.Host)
 }
 
 func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.Request) {
@@ -151,14 +93,14 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 		return
 	}
 
-	fileName, err := srv.StorageManager.GenerateVersionedFilename(handler.Filename, srv.config.ServerAddress)
+	fileName, err := srv.StorageManager.GenerateVersionedFilename(handler.Filename)
 	if err != nil {
 		srv.logger.Error(err.Error())
 		shared.SendCustomErrorResponse(w, err.Error())
 		return
 	}
 
-	fpath, err := srv.StorageManager.GenerateFilePath(fileName, srv.config.ServerAddress)
+	fpath, err := srv.StorageManager.GenerateFilePath(fileName)
 	if err != nil {
 		srv.logger.Error(err.Error())
 		shared.SendCustomErrorResponse(w, err.Error())
@@ -179,7 +121,7 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 		return
 	}
 
-	srv.HistoryManager.CreateMeta(fileName, srv.config.ServerAddress, []models.Changes{
+	srv.HistoryManager.CreateMeta(fileName, []models.Changes{
 		{
 			Created: time.Now().Format("2006-02-1 15:04:05"),
 			User:    user,
@@ -187,6 +129,23 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 	})
 
 	fmt.Fprintf(w, "{\"filename\":\"%s\"}", fileName)
+}
+
+func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new index call")
+	files, err := srv.Managers.StorageManager.GetStoredFiles(r.Host)
+	if err != nil {
+		srv.logger.Errorf("could not fetch files: %s", err.Error())
+	}
+
+	data := map[string]interface{}{
+		"Extensions": srv.specification.Extensions,
+		"Users":      srv.Managers.UserManager.GetUsers(),
+		"Files":      files,
+		"Preloader":  srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,
+	}
+
+	indexTemplate.Execute(w, data)
 }
 
 func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *http.Request) {
@@ -198,13 +157,74 @@ func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *htt
 		return
 	}
 
-	fileUrl := srv.StorageManager.GenerateFileUri(filename, srv.config.ServerAddress, managers.FileMeta{})
+	var meta managers.FileMeta
+	fileUrl := srv.StorageManager.GenerateFilestoreUri(filename, meta)
 	if fileUrl == "" {
 		shared.SendDocumentServerRespose(w, true)
 		return
 	}
 
-	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
+	http.Redirect(w, r, fileUrl, http.StatusMovedPermanently)
+}
+
+func (srv *DefaultServerEndpointsHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	filename := r.URL.Query().Get("filename")
+	if filename == "" {
+		shared.SendDocumentServerRespose(w, true)
+		return
+	}
+
+	if err := srv.StorageManager.RemoveFile(filename); err != nil {
+		srv.logger.Error(err.Error())
+		shared.SendDocumentServerRespose(w, true)
+		return
+	}
+
+	srv.logger.Debug("A new remove call")
+	shared.SendDocumentServerRespose(w, false)
+}
+
+func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.Request) {
+	var editorParameters managers.Editor
+	if err := decoder.Decode(&editorParameters, r.URL.Query()); err != nil {
+		srv.logger.Error("Invalid query parameters")
+		return
+	}
+
+	if err := editorParameters.IsValid(); err != nil {
+		srv.logger.Errorf("Editor parameters are invalid: %s", err.Error())
+		return
+	}
+
+	srv.logger.Debug("A new editor call")
+	editorParameters.Language, editorParameters.UserId = shared.GetCookiesInfo(r.Cookies())
+
+	remoteAddr := generateUrl(r)
+	if srv.config.ServerAddress != "" {
+		remoteAddr = srv.config.ServerAddress
+	}
+
+	config, err := srv.Managers.DocumentManager.BuildDocumentConfig(editorParameters, remoteAddr)
+	if err != nil {
+		srv.logger.Errorf("A document manager error has occured: %s", err.Error())
+		return
+	}
+
+	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, r.Host)
+	if err != nil {
+		srv.logger.Warnf("could not get file history: %s", err.Error())
+	}
+
+	data := map[string]interface{}{
+		"apijs":      srv.config.DocumentServerHost + srv.config.DocumentServerApi,
+		"config":     config,
+		"actionLink": editorParameters.ActionLink,
+		"docType":    config.DocumentType,
+		"refHist":    refHist,
+		"setHist":    setHist,
+	}
+
+	editorTemplate.Execute(w, data)
 }
 
 func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http.Request) {
@@ -224,7 +244,12 @@ func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http
 		return
 	}
 
-	fileUrl := srv.StorageManager.GenerateFileUri(filename, srv.config.ServerAddress, managers.FileMeta{
+	remoteAddr := generateUrl(r)
+	if srv.config.ServerAddress != "" {
+		remoteAddr = srv.config.ServerAddress
+	}
+
+	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{
 		Version:         version,
 		DestinationPath: file,
 	})
@@ -273,13 +298,18 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 	response := managers.ConvertResponse{Filename: filename}
 	defer shared.SendResponse(w, &response)
 
-	fileUrl := srv.StorageManager.GenerateFileUri(filename, srv.config.ServerAddress, managers.FileMeta{})
+	remoteAddr := generateUrl(r)
+	if srv.config.ServerAddress != "" {
+		remoteAddr = srv.config.ServerAddress
+	}
+
+	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{})
 	fileExt := utils.GetFileExt(filename)
 	fileType := srv.ConversionManager.GetFileType(filename)
 	newExt := srv.ConversionManager.GetInternalExtension(fileType)
 
 	if srv.DocumentManager.IsDocumentConvertable(filename) {
-		key, err := srv.StorageManager.GenerateFileHash(filename, srv.config.ServerAddress)
+		key, err := srv.StorageManager.GenerateFileHash(filename)
 		if err != nil {
 			response.Error = err.Error()
 			srv.logger.Errorf("File conversion error: %s", err.Error())
@@ -296,7 +326,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		if newUrl == "" {
 			response.Step = 1
 		} else {
-			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename)+newExt, srv.config.ServerAddress)
+			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + newExt)
 			if err != nil {
 				response.Error = err.Error()
 				srv.logger.Errorf("File conversion error: %s", err.Error())
@@ -306,11 +336,11 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			srv.StorageManager.SaveFileFromUri(models.Callback{
 				Url:         newUrl,
 				Filename:    correctName,
-				UserAddress: srv.config.ServerAddress,
+				UserAddress: r.Host,
 			})
-			srv.StorageManager.RemoveFile(filename, srv.config.ServerAddress)
+			srv.StorageManager.RemoveFile(filename)
 			response.Filename = correctName
-			srv.HistoryManager.CreateMeta(response.Filename, srv.config.ServerAddress, []models.Changes{
+			srv.HistoryManager.CreateMeta(response.Filename, []models.Changes{
 				{
 					Created: time.Now().Format("2006-02-1 15:04:05"),
 					User:    user,
@@ -384,14 +414,14 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	file, _ := os.Open(path.Join("assets", filename))
 	defer file.Close()
 
-	filename, err = srv.StorageManager.GenerateVersionedFilename(filename, srv.config.ServerAddress)
+	filename, err = srv.StorageManager.GenerateVersionedFilename(filename)
 	if err != nil {
 		srv.logger.Errorf("could not generated versioned filename: %s", filename)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	fpath, err := srv.StorageManager.GenerateFilePath(filename, srv.config.ServerAddress)
+	fpath, err := srv.StorageManager.GenerateFilePath(filename)
 	if err != nil {
 		srv.logger.Errorf("could not generated file path: %s", filename)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -399,7 +429,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	srv.StorageManager.CreateFile(file, fpath)
-	srv.HistoryManager.CreateMeta(filename, srv.config.ServerAddress, []models.Changes{
+	srv.HistoryManager.CreateMeta(filename, []models.Changes{
 		{
 			Created: time.Now().Format("2006-02-1 15:04:05"),
 			User:    user,
