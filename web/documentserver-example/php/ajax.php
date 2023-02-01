@@ -20,12 +20,14 @@
 require(dirname(__FILE__) . '/config.php');
 
 // check if the request is an AJAX request
-function is_ajax() {
+function is_ajax()
+{
     return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 }
 
 // get the http origin
-function get_http_origin() {
+function get_http_origin()
+{
     $origin = '';
     if (!empty($_SERVER['HTTP_ORIGIN'])) {
         $origin = $_SERVER['HTTP_ORIGIN'];
@@ -34,7 +36,8 @@ function get_http_origin() {
 }
 
 // set headers that prevent caching in all the browsers
-function nocache_headers() {
+function nocache_headers()
+{
     $headers = [
         'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
         'Cache-Control' => 'no-cache, must-revalidate, max-age=0',

@@ -24,17 +24,20 @@ require_once(dirname(__FILE__) . '/lib/jwt/JWT.php');
 require_once(dirname(__FILE__) . '/config.php');
 
 // check if a secret key to generate token exists or not
-function isJwtEnabled() {
+function isJwtEnabled()
+{
     return !empty($GLOBALS['DOC_SERV_JWT_SECRET']);
 }
 
 // encode a payload object into a token using a secret key
-function jwtEncode($payload) {
+function jwtEncode($payload)
+{
     return \Firebase\JWT\JWT::encode($payload, $GLOBALS["DOC_SERV_JWT_SECRET"]);
 }
 
 // decode a token into a payload object using a secret key
-function jwtDecode($token) {
+function jwtDecode($token)
+{
     try {
         $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["DOC_SERV_JWT_SECRET"], ["HS256"]);
     } catch (\UnexpectedValueException $e) {

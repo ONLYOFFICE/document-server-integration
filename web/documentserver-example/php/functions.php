@@ -21,7 +21,8 @@ require_once(dirname(__FILE__) . '/config.php');
 require_once(dirname(__FILE__) . '/jwtmanager.php');
 
 // file uploading
-function DoUpload($fileUri) {
+function DoUpload($fileUri)
+{
     $_fileName = GetCorrectName($fileUri);
 
     // check if file extension is supported by the editor
@@ -47,7 +48,8 @@ function DoUpload($fileUri) {
  *
  * @return null
  */
-function ProcessConvServResponceError($errorCode) {
+function ProcessConvServResponceError($errorCode)
+{
     $errorMessageTemplate = "Error occurred in the document service: ";
     $errorMessage = '';
 
@@ -94,7 +96,8 @@ function ProcessConvServResponceError($errorCode) {
  *
  * @return Supported key
  */
-function GenerateRevisionId($expected_key) {
+function GenerateRevisionId($expected_key)
+{
     if (mb_strlen($expected_key) > 20) {
         $expected_key = crc32($expected_key);
     }  // if the expected key length is greater than 20, calculate the crc32 for it
@@ -114,7 +117,8 @@ function GenerateRevisionId($expected_key) {
  *
  * @return Document request result of conversion
  */
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
+function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang)
+{
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
         $from_extension = mb_strtolower($path_parts['extension']);
@@ -196,7 +200,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
  *
  * @return The percentage of completion of conversion
  */
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang) {
+function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang)
+{
     $converted_document_uri = "";
     $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang);
     $json = json_decode($responceFromConvertService, true);
@@ -232,7 +237,8 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
  *
  * @return The percentage of completion of conversion
  */
-function GetResponseUri($document_response, &$response_uri) {
+function GetResponseUri($document_response, &$response_uri)
+{
     $response_uri = "";
     $resultPercent = 0;
 

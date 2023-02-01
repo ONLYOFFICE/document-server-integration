@@ -116,7 +116,8 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
 }
 
 // save copy as...
-function saveas() {
+function saveas()
+{
     try {
         $result;
         $post = json_decode(file_get_contents('php://input'), true);
@@ -153,7 +154,8 @@ function saveas() {
 }
 
 // uploading a file
-function upload() {
+function upload()
+{
     $result;
     $filename;
 
@@ -206,7 +208,8 @@ function upload() {
 }
 
 // tracking file changes
-function track() {
+function track()
+{
     sendlog("Track START", "webedior-ajax.log");
     sendlog("   _GET params: " . serialize($_GET), "webedior-ajax.log");
 
@@ -251,7 +254,8 @@ function track() {
 }
 
 // converting a file
-function convert() {
+function convert()
+{
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
@@ -317,7 +321,8 @@ function convert() {
 }
 
 // removing a file
-function delete() {
+function delete()
+{
     try {
         $fileName = basename($_GET["fileName"]);
 
@@ -333,7 +338,8 @@ function delete() {
 }
 
 // get file information
-function files() {
+function files()
+{
     try {
         @header("Content-Type", "application/json");
 
@@ -349,21 +355,24 @@ function files() {
 }
 
 // download assets
-function assets() {
+function assets()
+{
     $fileName = basename($_GET["name"]);
     $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
 // download a csv file
-function csv() {
+function csv()
+{
     $fileName = "csv.csv";
     $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
 // download a file from history
-function historyDownload() {
+function historyDownload()
+{
     try {
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
@@ -399,7 +408,8 @@ function historyDownload() {
 }
 
 // download a file
-function download() {
+function download()
+{
     try {
         $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
@@ -429,7 +439,8 @@ function download() {
 }
 
 // download the specified file
-function downloadFile($filePath) {
+function downloadFile($filePath)
+{
     if (file_exists($filePath)) {
         if (ob_get_level()) {
             ob_end_clean();
@@ -451,7 +462,8 @@ function downloadFile($filePath) {
 }
 
 // delete all the elements from the directory
-function delTree($dir) {
+function delTree($dir)
+{
     if (!file_exists($dir) || !is_dir($dir)) {
         return;
     }
@@ -464,7 +476,8 @@ function delTree($dir) {
 }
 
 // rename...
-function renamefile() {
+function renamefile()
+{
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
 

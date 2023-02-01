@@ -187,7 +187,8 @@ if (isJwtEnabled()) {
 }
 
 // get demo file name by the extension
-function tryGetDefaultByType($createExt, $user) {
+function tryGetDefaultByType($createExt, $user)
+{
     $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
     $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
     $demoFilename = GetCorrectName($demoName);
@@ -204,7 +205,8 @@ function tryGetDefaultByType($createExt, $user) {
 }
 
 // get the callback url
-function getCallbackUrl($fileName) {
+function getCallbackUrl($fileName)
+{
     return serverPath(true) . '/'
                 . "webeditor-ajax.php"
                 . "?type=track"
@@ -213,7 +215,8 @@ function getCallbackUrl($fileName) {
 }
 
 // get url to the created file
-function getCreateUrl($fileName, $uid, $type) {
+function getCreateUrl($fileName, $uid, $type)
+{
     $ext = trim(getInternalExtension($fileName), '.');
     return serverPath(false) . '/'
             . "doceditor.php"
@@ -222,7 +225,8 @@ function getCreateUrl($fileName, $uid, $type) {
             . "&type=" . $type;
 }
 
-function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true) {
+function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
+{
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
     return serverPath($isServer) . '/'
         . "webeditor-ajax.php"
@@ -234,7 +238,8 @@ function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true) {
 }
 
 // get url to download a file
-function getDownloadUrl($fileName, $isServer = true) {
+function getDownloadUrl($fileName, $isServer = true)
+{
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
     return serverPath($isServer) . '/'
         . "webeditor-ajax.php"
@@ -244,7 +249,8 @@ function getDownloadUrl($fileName, $isServer = true) {
 }
 
 // get document history
-function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl) {
+function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
+{
     $storagePath = $GLOBALS['STORAGE_PATH'];
     $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 

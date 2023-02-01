@@ -22,7 +22,8 @@ require_once(dirname(__FILE__) . '/common.php');
 require_once(dirname(__FILE__) . '/config.php');
 
 // read request body
-function readBody() {
+function readBody()
+{
     $result["error"] = 0;
 
     // get the body of the post request and check if it is correct
@@ -77,7 +78,8 @@ function readBody() {
 }
 
 // file saving process
-function processSave($data, $fileName, $userAddress) {
+function processSave($data, $fileName, $userAddress)
+{
     $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
@@ -158,7 +160,8 @@ function processSave($data, $fileName, $userAddress) {
 }
 
 // file force saving process
-function processForceSave($data, $fileName, $userAddress) {
+function processForceSave($data, $fileName, $userAddress)
+{
     $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
@@ -235,7 +238,8 @@ function processForceSave($data, $fileName, $userAddress) {
 }
 
 // create a command request
-function commandRequest($method, $key, $meta = null) {
+function commandRequest($method, $key, $meta = null)
+{
     $documentCommandUrl = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
 
     $arr = [

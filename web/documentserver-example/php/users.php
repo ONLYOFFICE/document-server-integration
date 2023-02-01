@@ -19,7 +19,8 @@
 
 final class User
 {
-    public function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates) {
+    public function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates)
+    {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
@@ -143,13 +144,15 @@ $users = [
 ];
 
 // get a list of all the users
-function getAllUsers() {
+function getAllUsers()
+{
     global $users;
     return $users;
 }
 
 // get a user by id specified
-function getUser($id) {
+function getUser($id)
+{
     global $users;
     foreach ($users as $user) {
         if ($user->id == $id) {
@@ -161,7 +164,8 @@ function getUser($id) {
 }
 
 // get a list of users with their names and emails for mentions
-function getUsersForMentions($id) {
+function getUsersForMentions($id)
+{
     global $users;
     $usersData = [];
     foreach ($users as $user) {
