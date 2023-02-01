@@ -263,7 +263,7 @@ function convert() {
     if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
-            $fileUri =  $fileUri=serverPath(true) . '/'
+            $fileUri = $fileUri = serverPath(true) . '/'
                 . "webeditor-ajax.php"
                 . "?type=download"
                 . "&fileName=" . urlencode($fileName)
@@ -357,7 +357,7 @@ function assets() {
 
 // download a csv file
 function csv() {
-    $fileName =  "csv.csv";
+    $fileName = "csv.csv";
     $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }

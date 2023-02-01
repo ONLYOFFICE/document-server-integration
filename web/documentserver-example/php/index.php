@@ -207,7 +207,7 @@ if (!empty($storedFiles)) { ?>
                                                                     } else {
                                                                         echo ' <td class="contentCells contentCells-icon"></td> ';
                                                                     }
-                                                                    if ($storeFile->documentType!="word" && $storeFile->documentType!="cell") {
+                                                                    if ($storeFile->documentType != "word" && $storeFile->documentType != "cell") {
                                                                         echo ' <td class="contentCells contentCells-icon"></td>';
                                                                     }
                                                                     if ($storeFile->isFillFormDoc) {

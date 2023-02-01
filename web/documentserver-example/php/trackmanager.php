@@ -114,7 +114,7 @@ function processSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-        stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
+        stream_context_create(["http" => ["timeout" => 5]]))) === false)) {
         $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
         $histDir = getHistoryDir($storagePath);  // get the path to the history direction
         $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
@@ -125,7 +125,7 @@ function processSave($data, $fileName, $userAddress) {
         file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
         if ($changesData = file_get_contents($data->changesurl, false,
-            stream_context_create(["http"=>["timeout"=>5]]))) {
+            stream_context_create(["http" => ["timeout" => 5]]))) {
             file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
         }
 
@@ -188,7 +188,7 @@ function processForceSave($data, $fileName, $userAddress) {
     $saved = 1;
 
     if (!(($new_data = file_get_contents($downloadUri, false,
-        stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
+        stream_context_create(["http" => ["timeout" => 5]]))) === false)) {
         $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
@@ -249,8 +249,8 @@ function commandRequest($method, $key, $meta = null) {
     $data = json_encode($arr);
 
     $opts = ['http' => [
-        'method'  => 'POST',
-        'header'=> "Content-type: application/json\r\n" .
+        'method' => 'POST',
+        'header' => "Content-type: application/json\r\n" .
             (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),  // add a header Authorization with a header token and Authorization prefix in it
         'content' => $data,
     ]];

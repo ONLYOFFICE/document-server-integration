@@ -34,7 +34,7 @@ function guid() {
     if (function_exists('com_create_guid')) {
         return com_create_guid();
     }
-    mt_srand((float) microtime()*10000);  // optional for php 4.2.0 and up
+    mt_srand((float) microtime() * 10000);  // optional for php 4.2.0 and up
     $charid = mb_strtoupper(md5(uniqid(rand(), true)));
     $hyphen = chr(45);  // "-"
     $uuid = chr(123)  // "{"
@@ -227,7 +227,7 @@ function getStoragePath($fileName, $userAddress = null) {
     }
 
     if ($storagePath != "") {
-        $directory =  $directory  . DIRECTORY_SEPARATOR;
+        $directory = $directory  . DIRECTORY_SEPARATOR;
 
         // if the file directory doesn't exist, make it
         if (!file_exists($directory) && !is_dir($directory)) {
@@ -327,7 +327,7 @@ function getStoredFiles() {
     // get the storage path and check if it exists
     $result = [];
     if ($storagePath != "") {
-        $directory =  $directory . DIRECTORY_SEPARATOR;
+        $directory = $directory . DIRECTORY_SEPARATOR;
 
         if (!file_exists($directory) && !is_dir($directory)) {
             return $result;

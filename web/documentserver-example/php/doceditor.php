@@ -167,11 +167,11 @@ $dataCompareFile = $isEnableDirectUrl ? [
 
 // recipients data for mail merging
 $dataMailMergeRecipients = $isEnableDirectUrl ? [
-    "fileType" =>"csv",
+    "fileType" => "csv",
     "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
     "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
 ] : [
-    "fileType" =>"csv",
+    "fileType" => "csv",
     "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
 ];
     
@@ -281,12 +281,12 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $dataObj["fileType"] = $fileExe;
             $dataObj["key"] = $key;
 
-            $directUrl =  $i == $curVer ? FileUri($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+            $directUrl = $i == $curVer ? FileUri($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
             $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
             if (realpath($storagePath) === $storagePath) {
                 $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if ($isEnableDirectUrl) {
-                    $directUrl =  $i == $curVer ? getDownloadUrl($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+                    $directUrl = $i == $curVer ? getDownloadUrl($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
                 }
             }
 

@@ -128,7 +128,7 @@ function getUsersForMentions($id) {
     $usersData = [];
     foreach ($users as $user) {
         if ($user->id != $id && $user->name != null && $user->email != null) {
-            $usersData[] =[
+            $usersData[] = [
                 "name" => $user->name,
                 "email" => $user->email,
             ];

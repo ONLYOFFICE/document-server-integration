@@ -32,7 +32,7 @@ function DoUpload($fileUri) {
 
     // check if the file copy operation is successful
     if (!@copy($fileUri, getStoragePath($_fileName))) {
-        $errors= error_get_last();
+        $errors = error_get_last();
         $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
         throw new Exception($err);
     }
@@ -159,9 +159,9 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
 
     // request parameters
     $opts = ['http' => [
-        'method'  => 'POST',
+        'method' => 'POST',
         'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-        'header'=> "Content-type: application/json\r\n" .
+        'header' => "Content-type: application/json\r\n" .
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
         'content' => $data,
