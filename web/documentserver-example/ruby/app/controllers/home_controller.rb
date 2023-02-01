@@ -272,17 +272,17 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded == nil
+      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]
             hdr.slice!(0, "Bearer ".length)
             token = JwtHelper.decode(hdr)
-            if !token || token.eql?("")
-              render plain: "JWT validation failed", :status => 403
-              return
-            end
-          end
+        end
+        if !token || token.eql?("")
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
       end
 
       file_path = DocumentHelper.forcesave_path(file_name, user_address, false)  # get the path to the force saved document version
