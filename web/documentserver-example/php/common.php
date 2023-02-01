@@ -117,7 +117,7 @@ if (!function_exists('mime_content_type')) {
             finfo_close($finfo);
             return $mimetype;
         }
-         
+
         return 'application/octet-stream';
     }
 }
@@ -427,7 +427,7 @@ function getFileInfo($fileId) {
         }
         return "File not found";
     }
-     
+
     return $result;
 }
 

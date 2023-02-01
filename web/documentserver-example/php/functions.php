@@ -173,7 +173,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
- 
+
     $context = stream_context_create($opts);
     $response_data = file_get_contents($urlToConverter, false, $context);
 
