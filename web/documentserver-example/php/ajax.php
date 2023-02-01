@@ -21,7 +21,7 @@ require(dirname(__FILE__) . '/config.php');
     
 // check if the request is an AJAX request
 function is_ajax() {
-    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 }
 
 // get the http origin
@@ -51,7 +51,7 @@ function nocache_headers() {
         // In PHP 5.2, send an empty Last-Modified header, but only as a
         // last resort to override a header already sent. #WP23021
         foreach (headers_list() as $header) {
-            if (0 === stripos($header, 'Last-Modified')) {
+            if (0 === mb_stripos($header, 'Last-Modified')) {
                 $headers['Last-Modified'] = '';
                 break;
             }

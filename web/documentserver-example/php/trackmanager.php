@@ -53,7 +53,7 @@ function readBody() {
             $data = jwtDecode($data["token"]);  // decode it
             sendlog("   jwt in body", "webedior-ajax.log");
         } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-            $data = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));  // decode its part after Authorization prefix
+            $data = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));  // decode its part after Authorization prefix
             $inHeader = true;
             sendlog("   jwt in header", "webedior-ajax.log");
         } else {  // otherwise, an error occurs
@@ -84,8 +84,8 @@ function processSave($data, $fileName, $userAddress) {
         return $result;
     }
 
-    $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
+    $curExt = mb_strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
+    $downloadExt = mb_strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
     $newFileName = $fileName;
 
@@ -101,12 +101,12 @@ function processSave($data, $fileName, $userAddress) {
                 $downloadUri = $convertedUri;
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
-                $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
+                $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
                 $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);  // get the correct file name if it already exists
             }
         } catch (Exception $e) {
             sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
-            $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
+            $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
             $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
         }
     }
@@ -159,8 +159,8 @@ function processForceSave($data, $fileName, $userAddress) {
         return $result;
     }
 
-    $curExt = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
-    $downloadExt = strtolower('.' . $data->filetype);  // get the extension of the downloaded file
+    $curExt = mb_strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));  // get current file extension
+    $downloadExt = mb_strtolower('.' . $data->filetype);  // get the extension of the downloaded file
 
     $newFileName = false;
 
@@ -176,7 +176,7 @@ function processForceSave($data, $fileName, $userAddress) {
                 $downloadUri = $convertedUri;
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
-                $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
+                $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
                 $newFileName = true;
             }
         } catch (Exception $e) {
@@ -189,7 +189,7 @@ function processForceSave($data, $fileName, $userAddress) {
 
     if (!(($new_data = file_get_contents($downloadUri, false,
         stream_context_create(["http"=>["timeout"=>5]]))) === false)) {
-        $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($curExt));
+        $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
         if ($isSubmitForm) {
@@ -255,7 +255,7 @@ function commandRequest($method, $key, $meta = null) {
         'content' => $data,
     ]];
 
-    if (substr($documentCommandUrl, 0, strlen("https")) === "https") {
+    if (mb_substr($documentCommandUrl, 0, mb_strlen("https")) === "https") {
         if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }

@@ -122,7 +122,7 @@ function saveas() {
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
-        $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
+        $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
         $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
         $filename = GetCorrectName($title);
 
@@ -174,7 +174,7 @@ function upload() {
     // check if the file was uploaded using HTTP POST
     if (is_uploaded_file($tmp)) {
         $filesize = $_FILES['files']['size'];  // get the file size
-        $ext = strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
+        $ext = mb_strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
         if ($filesize <= 0 || $filesize > $GLOBALS['FILE_SIZE_MAX']) {
@@ -256,7 +256,7 @@ function convert() {
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"];
-    $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = trim(getInternalExtension($fileName),'.');
 
     // check if the file with such an extension can be converted
@@ -291,7 +291,7 @@ function convert() {
         }
 
         // get file name without extension
-        $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($extension) - 1);
+        $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($extension) - 1);
 
         // get the correct file name with an index if the file with such a name already exists
         $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
@@ -374,7 +374,7 @@ function historyDownload() {
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
-                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
                 if (empty($token)) {
                     http_response_code(403);
                     die("Invalid JWT signature");
@@ -408,7 +408,7 @@ function download() {
         if (isJwtEnabled() && $isEmbedded == null) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
-                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
                 if (empty($token)) {
                     http_response_code(403);
                     die("Invalid JWT signature");
@@ -468,7 +468,7 @@ function renamefile() {
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
 
-    $curExt = strtolower(array_pop(explode('.', $newfilename)));
+    $curExt = mb_strtolower(array_pop(explode('.', $newfilename)));
     $origExt = $post["ext"];
     if ($origExt !== $curExt) {
         $newfilename .= '.' . $origExt;

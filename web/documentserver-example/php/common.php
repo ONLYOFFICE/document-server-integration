@@ -35,14 +35,14 @@ function guid() {
         return com_create_guid();
     }
     mt_srand((float) microtime()*10000);  // optional for php 4.2.0 and up
-    $charid = strtoupper(md5(uniqid(rand(), true)));
+    $charid = mb_strtoupper(md5(uniqid(rand(), true)));
     $hyphen = chr(45);  // "-"
     $uuid = chr(123)  // "{"
-            .substr($charid, 0, 8).$hyphen
-            .substr($charid, 8, 4).$hyphen
-            .substr($charid,12, 4).$hyphen
-            .substr($charid,16, 4).$hyphen
-            .substr($charid,20,12)
+            .mb_substr($charid, 0, 8).$hyphen
+            .mb_substr($charid, 8, 4).$hyphen
+            .mb_substr($charid,12, 4).$hyphen
+            .mb_substr($charid,16, 4).$hyphen
+            .mb_substr($charid,20,12)
             .chr(125);  // "}"
     return $uuid;
 }
@@ -106,7 +106,7 @@ if (!function_exists('mime_content_type')) {
         ];
 
         // check if the file extension is in the mime type array
-        $ext = strtolower(array_pop(explode('.',$filename)));
+        $ext = mb_strtolower(array_pop(explode('.',$filename)));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];  // get the mime type of this extension
         }
@@ -161,7 +161,7 @@ function getCurUserHostAddress($userAddress = null) {
 
 // get an internal file extension
 function getInternalExtension($filename) {
-    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
     if (in_array($ext, $GLOBALS['ExtsDocument'])) {
         return ".docx";
@@ -177,7 +177,7 @@ function getInternalExtension($filename) {
 
 // get image url for templates
 function getTemplateImageUrl($filename) {
-    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/css/images/";
 
     if (in_array($ext, $GLOBALS['ExtsDocument'])) {
@@ -194,7 +194,7 @@ function getTemplateImageUrl($filename) {
 
 // get the document type
 function getDocumentType($filename) {
-    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
     if (in_array($ext, $GLOBALS['ExtsDocument'])) {
         return "word";
@@ -347,7 +347,7 @@ function getStoredFiles() {
     foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName,[".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
-                $ext = strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
+                $ext = mb_strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) [  // and write the file to the result
                     "name" => $fileName,
@@ -440,9 +440,9 @@ function getFileExts() {
 function GetCorrectName($fileName, $userAddress = null) {
     $path_parts = pathinfo($fileName);
 
-    $ext = strtolower($path_parts['extension']);
+    $ext = mb_strtolower($path_parts['extension']);
     $name = $path_parts['basename'];
-    $baseNameWithoutExt = substr($name, 0, strlen($name) - strlen($ext) - 1);  // get file name from the basename without extension
+    $baseNameWithoutExt = mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1);  // get file name from the basename without extension
     $name = $baseNameWithoutExt . "." . $ext;
 
     for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++) {  // if a file with such a name already exists in this directory

@@ -51,9 +51,9 @@ $fileuri = FileUri($filename, true);
 $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
 $directUrl = getDownloadUrl($filename, false);
 $docKey = getDocEditorKey($filename);
-$filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+$filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-$ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+$ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
 $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
 if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
@@ -274,10 +274,10 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                 ];
             }
 
-            $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $fileExe = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
             $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
-            $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
+            $prevFileName = mb_substr($prevFileName, mb_strlen(getStoragePath("")));
             $dataObj["fileType"] = $fileExe;
             $dataObj["key"] = $key;
 
@@ -462,7 +462,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         var onRequestInsertImage = function(event) {
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
-                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, mb_strlen(json_encode($dataInsertImage)) - 2)?>
             })
         };
 

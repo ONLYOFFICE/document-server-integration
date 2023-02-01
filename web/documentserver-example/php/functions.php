@@ -25,7 +25,7 @@ function DoUpload($fileUri) {
     $_fileName = GetCorrectName($fileUri);
 
     // check if file extension is supported by the editor
-    $ext = strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
+    $ext = mb_strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
     if (!in_array($ext, getFileExts())) {
         throw new Exception("File type is not supported");
     }
@@ -95,11 +95,11 @@ function ProcessConvServResponceError($errorCode) {
  * @return Supported key
  */
 function GenerateRevisionId($expected_key) {
-    if (strlen($expected_key) > 20) {
+    if (mb_strlen($expected_key) > 20) {
         $expected_key = crc32($expected_key);
     }  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
-    $key = substr($key, 0, min([strlen($key), 20]));  // the resulting key length is 20 or less
+    $key = mb_substr($key, 0, min([mb_strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
 }
 
@@ -117,7 +117,7 @@ function GenerateRevisionId($expected_key) {
 function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
-        $from_extension = strtolower($path_parts['extension']);
+        $from_extension = mb_strtolower($path_parts['extension']);
     }
 
     // if title is undefined, then replace it with a random guid
@@ -168,7 +168,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     ],
     ];
 
-    if (substr($urlToConverter, 0, strlen("https")) === "https") {
+    if (mb_substr($urlToConverter, 0, mb_strlen("https")) === "https") {
         if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
@@ -252,7 +252,7 @@ function GetResponseUri($document_response, &$response_uri) {
     }
 
     // if the conversion is completed successfully
-    if ($endConvert != null && strtolower($endConvert) == true) {
+    if ($endConvert != null && mb_strtolower($endConvert) == true) {
         $fileUrl = $document_response->FileUrl;
         if ($fileUrl == null || $fileUrl == "") {
             throw new Exception("Invalid answer format");
