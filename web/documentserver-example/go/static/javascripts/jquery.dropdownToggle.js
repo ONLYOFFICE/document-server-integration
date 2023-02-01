@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 
 ;(function() {
-    var 
+    var
       dropdownToggleHash = {};
     jQuery.extend({
         dropdownToggle: function(options) {
@@ -55,8 +55,8 @@
 
                     var elemPosLeft = targetPos.left;
                     var elemPosTop = targetPos.top + jq(anchorSelector || switcherObj).outerHeight();
-                    if (options.rightPos) {                    
-                            elemPosLeft = Math.max(0,targetPos.left - dropdownItem.outerWidth() + jq(anchorSelector || switcherObj).outerWidth());                      
+                    if (options.rightPos) {
+                            elemPosLeft = Math.max(0,targetPos.left - dropdownItem.outerWidth() + jq(anchorSelector || switcherObj).outerWidth());
                     }
 
                     var w = jq(window);
