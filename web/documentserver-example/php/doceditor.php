@@ -325,7 +325,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                 $dataObj["token"] = jwtEncode($dataObj);
             }
 
-            array_push($hist, $obj);  // add object dictionary to the hist list
+            $hist[] = $obj;  // add object dictionary to the hist list
             $histData[$i - 1] = $dataObj;  // write data object information to the history data
         }
 
