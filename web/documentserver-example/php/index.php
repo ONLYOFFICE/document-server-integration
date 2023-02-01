@@ -91,7 +91,7 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                                     <img id="info" class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
                                                         <?php foreach (getAllUsers() as $user_l) {
-                                                            $name = $user_l->name ? $user_l->name : "Anonymous";
+                                                            $name = $user_l->name ?: "Anonymous";
                                                             echo '<option value="'.$user_l->id.'">'.$name.'</option>';
                                                         } ?>
                                                     </select>
@@ -139,7 +139,7 @@ if (!empty($storedFiles)) { ?>
                                         <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                         <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                         <?php foreach (getAllUsers() as $user_l) {
-                                            $name = $user_l->name ? $user_l->name : "Anonymous";
+                                            $name = $user_l->name ?: "Anonymous";
                                             echo '<div class="user-descr">';
                                             echo '<b>'.$name.'</b>';
                                             echo '<ul>';
