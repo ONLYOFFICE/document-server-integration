@@ -17,7 +17,7 @@
  *
  */
 
-class User
+final class User
 {
     public function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates) {
         $this->id = $id;
