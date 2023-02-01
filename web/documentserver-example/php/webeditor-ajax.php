@@ -132,7 +132,7 @@ function saveas() {
         }
         $headers = get_headers($fileurl, 1);
         $content_length = $headers["Content-Length"];
-        $data = file_get_contents(str_replace(" ","%20",$fileurl));
+        $data = file_get_contents(str_replace(" ", "%20", $fileurl));
 
         if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
             $result["error"] = "File size is incorrect";
@@ -189,7 +189,7 @@ function upload() {
         }
 
         $filename = GetCorrectName($_FILES['files']['name']);  // get the correct file name with an index if the file with such a name already exists
-        if (!move_uploaded_file($tmp,  getStoragePath($filename))) {
+        if (!move_uploaded_file($tmp, getStoragePath($filename))) {
             $result["error"] = 'Upload failed';  // file upload error
             return $result;
         }
@@ -257,7 +257,7 @@ function convert() {
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"];
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $internalExtension = trim(getInternalExtension($fileName),'.');
+    $internalExtension = trim(getInternalExtension($fileName), '.');
 
     // check if the file with such an extension can be converted
     if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
@@ -296,7 +296,7 @@ function convert() {
         // get the correct file name with an index if the file with such a name already exists
         $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
 
-        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === false) {
+        if (($data = file_get_contents(str_replace(" ", "%20", $newFileUri))) === false) {
             $result["error"] = 'Bad Request';
             return $result;
         }

@@ -138,7 +138,7 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     $arr = [
         "async" => $is_async,
         "url" => $document_uri,
-        "outputtype" => trim($to_extension,'.'),
+        "outputtype" => trim($to_extension, '.'),
         "filetype" => trim($from_extension, '.'),
         "title" => $title,
         "key" => $document_revision_id,

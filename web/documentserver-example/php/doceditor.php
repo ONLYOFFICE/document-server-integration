@@ -174,7 +174,7 @@ $dataMailMergeRecipients = $isEnableDirectUrl ? [
     "fileType" => "csv",
     "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
 ];
-    
+
 // users data for mentions
 $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
 
@@ -214,7 +214,7 @@ function getCallbackUrl($fileName) {
 
 // get url to the created file
 function getCreateUrl($fileName, $uid, $type) {
-    $ext = trim(getInternalExtension($fileName),'.');
+    $ext = trim(getInternalExtension($fileName), '.');
     return serverPath(false) . '/'
             . "doceditor.php"
             . "?fileExt=" . $ext
@@ -331,11 +331,14 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 
         // write history information about the current file version
         $out = [];
-        array_push($out, [
-            "currentVersion" => $curVer,
-            "history" => $hist,
-        ],
-            $histData);
+        array_push(
+            $out,
+            [
+                "currentVersion" => $curVer,
+                "history" => $hist,
+            ],
+            $histData
+        );
         return $out;
     }
 }

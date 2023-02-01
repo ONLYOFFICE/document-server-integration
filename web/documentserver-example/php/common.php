@@ -40,9 +40,9 @@ function guid() {
     $uuid = chr(123)  // "{"
             .mb_substr($charid, 0, 8).$hyphen
             .mb_substr($charid, 8, 4).$hyphen
-            .mb_substr($charid,12, 4).$hyphen
-            .mb_substr($charid,16, 4).$hyphen
-            .mb_substr($charid,20,12)
+            .mb_substr($charid, 12, 4).$hyphen
+            .mb_substr($charid, 16, 4).$hyphen
+            .mb_substr($charid, 20, 12)
             .chr(125);  // "}"
     return $uuid;
 }
@@ -106,7 +106,7 @@ if (!function_exists('mime_content_type')) {
         ];
 
         // check if the file extension is in the mime type array
-        $ext = mb_strtolower(array_pop(explode('.',$filename)));
+        $ext = mb_strtolower(array_pop(explode('.', $filename)));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];  // get the mime type of this extension
         }
@@ -302,7 +302,7 @@ function getFileVersion($histDir) {
     $cdir = scandir($histDir);
     $ver = 1;
     foreach ($cdir as $key => $fileName) {
-        if (!in_array($fileName,[".", ".."])) {
+        if (!in_array($fileName, [".", ".."])) {
             if (is_dir($histDir . DIRECTORY_SEPARATOR . $fileName)) {
                 $ver++;
             }
@@ -345,7 +345,7 @@ function getStoredFiles() {
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
     foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
-        if (!in_array($fileName,[".", ".."])) {
+        if (!in_array($fileName, [".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
                 $ext = mb_strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
