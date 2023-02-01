@@ -18,11 +18,14 @@ Download the [Go example](https://api.onlyoffice.com/editors/demopreview) from o
 To connect the editors to your website, specify the path to the editors installation, server protocol, address and port  in the *configuration.env* file:
 
 ```
- SERVER_HOST=address
- SERVER_PROTOCOL=http
- SERVER_PORT=port
+SERVER_ADDRESS=http(s)://address (optional)
+SERVER_PORT=port
 
- DOC_SERVER_HOST=https://documentserver/
+DOC_SERVER_HOST=http://documentserver/
+
+JWT_IS_ENABLED=flag
+JWT_SECRET=secret
+JWT_HEADER=Authorization
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
