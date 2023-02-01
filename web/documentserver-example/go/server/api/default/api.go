@@ -406,14 +406,20 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	srv.logger.Debugf("Creating a new %s file", fileExt)
-	filename := "new." + fileExt
+	sampleType := "new"
 	if strings.TrimSpace(isSample) != "" {
-		filename = "sample." + fileExt
+		sampleType = "sample"
 	}
 
-	file, _ := os.Open(path.Join("assets", filename))
-	defer file.Close()
+	filename := fmt.Sprintf("%s.%s", sampleType, fileExt)
+	file, err := os.Open(path.Join("static/assets", sampleType, filename))
+	if err != nil {
+		srv.logger.Errorf("could not create a new file: %s", err.Error())
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
+	defer file.Close()
 	filename, err = srv.StorageManager.GenerateVersionedFilename(filename)
 	if err != nil {
 		srv.logger.Errorf("could not generated versioned filename: %s", filename)
