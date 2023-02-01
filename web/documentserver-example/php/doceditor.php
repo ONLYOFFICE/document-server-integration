@@ -27,7 +27,7 @@ $user = getUser($_GET["user"]);
 $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
 // get the file url and upload it
-$externalUrl = isset($_GET["fileUrl"]) ? $_GET["fileUrl"] : "";
+$externalUrl = $_GET["fileUrl"] ?? "";
 if (!empty($externalUrl)) {
     $filename = DoUpload($externalUrl);
 }
@@ -35,7 +35,7 @@ if (!empty($externalUrl)) {
 else {
     $filename = basename($_GET["fileID"]);
 }
-$createExt = isset($_GET["fileExt"]) ? $_GET["fileExt"] : "";
+$createExt = $_GET["fileExt"] ?? "";
 
 if (!empty($createExt)) {
     // and get demo file name by the extension

@@ -22,7 +22,7 @@ require_once(dirname(__FILE__) . '/common.php');
 require_once(dirname(__FILE__) . '/functions.php');
 require_once(dirname(__FILE__) . '/users.php');
 
-$user = isset($_GET["user"]) ? $_GET["user"] : "";
+$user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
 ?>
 
