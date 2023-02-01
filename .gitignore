@@ -14,3 +14,4 @@
 /web/documentserver-example/java/target/
 /web/documentserver-example/csharp/packages
 /web/documentserver-example/csharp-mvc/packages
+.DS_Store
