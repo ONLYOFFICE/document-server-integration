@@ -125,12 +125,12 @@ if (!function_exists('mime_content_type')) {
 // get ip address
 function getClientIp() {
     $ipaddress =
-        getenv('HTTP_CLIENT_IP')?:
-        getenv('HTTP_X_FORWARDED_FOR')?:
-        getenv('HTTP_X_FORWARDED')?:
-        getenv('HTTP_FORWARDED_FOR')?:
-        getenv('HTTP_FORWARDED')?:
-        getenv('REMOTE_ADDR')?:
+        getenv('HTTP_CLIENT_IP') ?:
+        getenv('HTTP_X_FORWARDED_FOR') ?:
+        getenv('HTTP_X_FORWARDED') ?:
+        getenv('HTTP_FORWARDED_FOR') ?:
+        getenv('HTTP_FORWARDED') ?:
+        getenv('REMOTE_ADDR') ?:
         'Storage';
 
     $ipaddress = preg_replace("/[^0-9a-zA-Z.=]/", "_", $ipaddress);

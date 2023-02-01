@@ -170,7 +170,7 @@ $dataMailMergeRecipients = $isEnableDirectUrl ? [
     "fileType" =>"csv",
     "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
     "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
-]  : [
+] : [
     "fileType" =>"csv",
     "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
 ];
