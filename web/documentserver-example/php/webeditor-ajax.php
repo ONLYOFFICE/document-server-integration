@@ -69,45 +69,45 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         case "upload":
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "download":
             $response_array = download();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "history":
             $response_array = historyDownload();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "track":
             $response_array = track();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "delete":
             $response_array = delete();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "assets":
             $response_array = assets();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "csv":
             $response_array = csv();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "files":
             $response_array = files();
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "saveas":
             $response_array = saveas();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "rename":
             $response_array = renamefile();
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
