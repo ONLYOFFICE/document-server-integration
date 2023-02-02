@@ -34,7 +34,7 @@ function isJwtEnabled()
 /**
  * Encode a payload object into a token using a secret key
  *
- * @param string $payload
+ * @param array $payload
  *
  * @return string
  */

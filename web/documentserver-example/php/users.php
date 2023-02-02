@@ -17,7 +17,25 @@
 
 final class User
 {
-    public function __construct($id,
+    /**
+     * Constructor
+     *
+     * @param string $id
+     * @param string $name
+     * @param string $email
+     * @param string $group
+     * @param array|null $reviewGroups
+     * @param array $commentGroups
+     * @param array|null $userInfoGroups
+     * @param bool|null $favorite
+     * @param array $deniedPermissions
+     * @param array $descriptions
+     * @param bool $templates
+     *
+     * @return void
+     */
+    public function __construct(
+        $id,
         $name,
         $email,
         $group,

@@ -122,10 +122,13 @@ function GenerateRevisionId($expected_key)
  * @param string $to_extension         Extension to which to convert
  * @param string $document_revision_id Key for caching on service
  * @param bool   $is_async             Perform conversions asynchronously
+ * @param string   $filePass
+ * @param string   $lang
  *
  * @return string request result of conversion
  */
-function SendRequestToConvertService($document_uri,
+function SendRequestToConvertService(
+    $document_uri,
     $from_extension,
     $to_extension,
     $document_revision_id,
@@ -220,7 +223,8 @@ function SendRequestToConvertService($document_uri,
  *
  * @return int percentage of completion of conversion
  */
-function GetConvertedUri($document_uri,
+function GetConvertedUri(
+    $document_uri,
     $from_extension,
     $to_extension,
     $document_revision_id,
@@ -263,7 +267,7 @@ function GetConvertedUri($document_uri,
 /**
  * Processing document received from the editing service.
  *
- * @param string $document_response The result from editing service
+ * @param Response $document_response The result from editing service
  * @param string $response_uri      Uri to the converted document
  *
  * @throws Exception if an error occurs

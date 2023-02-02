@@ -59,6 +59,13 @@ function guid()
 }
 
 if (!function_exists('mime_content_type')) {
+    /**
+     * Create new uuid
+     *
+     * @param string  $filename
+     *
+     * @return string
+     */
     function mime_content_type($filename)
     {
         $mime_types = [
@@ -139,8 +146,7 @@ if (!function_exists('mime_content_type')) {
  */
 function getClientIp()
 {
-    $ipaddress =
-        getenv('HTTP_CLIENT_IP') ?:
+    $ipaddress = getenv('HTTP_CLIENT_IP') ?:
         getenv('HTTP_X_FORWARDED_FOR') ?:
         getenv('HTTP_X_FORWARDED') ?:
         getenv('HTTP_FORWARDED_FOR') ?:
