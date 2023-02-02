@@ -28,9 +28,7 @@ $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], 
 $externalUrl = $_GET["fileUrl"] ?? "";
 if (!empty($externalUrl)) {
     $filename = DoUpload($externalUrl);
-}
-// if the file url doesn't exist, get file name and file extension
-else {
+} else { // if the file url doesn't exist, get file name and file extension
     $filename = basename($_GET["fileID"]);
 }
 $createExt = $_GET["fileExt"] ?? "";

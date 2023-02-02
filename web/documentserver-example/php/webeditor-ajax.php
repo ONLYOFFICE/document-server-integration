@@ -63,7 +63,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $type = $_GET["type"];
 
     // switch case for type value
-    switch($type) {
+    switch ($type) {
         case "upload":
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';

@@ -218,9 +218,7 @@ function GetConvertedUri($document_uri, $from_extension, $to_extension, $documen
         // then get the file url
         $converted_document_uri = $json["fileUrl"];
         $percent = 100;
-    }
-    // otherwise, get the percentage of conversion completion
-    elseif ($percent >= 100) {
+    } elseif ($percent >= 100) { // otherwise, get the percentage of conversion completion
         $percent = 99;
     }
 
@@ -265,9 +263,7 @@ function GetResponseUri($document_response, &$response_uri)
         // get the response file url
         $response_uri = $fileUrl;
         $resultPercent = 100;
-    }
-    // otherwise, get the percentage of conversion completion
-    else {
+    } else { // otherwise, get the percentage of conversion completion
         $percent = $document_response->Percent;
 
         if ($percent != null && $percent != "") {

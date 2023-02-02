@@ -110,9 +110,7 @@ if (!function_exists('mime_content_type')) {
         $ext = mb_strtolower(array_pop(explode('.', $filename)));
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];  // get the mime type of this extension
-        }
-        // or get the mime type from the file information
-        elseif (function_exists('finfo_open')) {
+        } elseif (function_exists('finfo_open')) { // or get the mime type from the file information
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
