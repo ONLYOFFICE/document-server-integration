@@ -18,7 +18,14 @@
 require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/functions.php';
 
-// put log files into the log folder
+/**
+ * Put log files into the log folder
+ *
+ * @param string  $msg
+ * @param integer $logFileName
+ *
+ * @return void
+ */
 function sendlog($msg, $logFileName)
 {
     $logsFolder = "logs/";
@@ -28,7 +35,11 @@ function sendlog($msg, $logFileName)
     file_put_contents($logsFolder . $logFileName, $msg . PHP_EOL, FILE_APPEND);
 }
 
-// create new uuid
+/**
+ * Create new uuid
+ *
+ * @return string
+ */
 function guid()
 {
     if (function_exists('com_create_guid')) {
@@ -121,7 +132,12 @@ if (!function_exists('mime_content_type')) {
     }
 }
 
-// get ip address
+
+/**
+ * Get ip address
+ *
+ * @return string
+ */
 function getClientIp()
 {
     $ipaddress =
@@ -138,7 +154,13 @@ function getClientIp()
     return $ipaddress;
 }
 
-// get server url
+/**
+ * Get server url
+ *
+ * @param string  $forDocumentServer
+ *
+ * @return string
+ */
 function serverPath($forDocumentServer = null)
 {
     return $forDocumentServer && isset($GLOBALS['EXAMPLE_URL']) && $GLOBALS['EXAMPLE_URL'] != ""
@@ -146,7 +168,13 @@ function serverPath($forDocumentServer = null)
         : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
-// get current user host address
+/**
+ * Get current user host address
+ *
+ * @param string  $userAddress
+ *
+ * @return string
+ */
 function getCurUserHostAddress($userAddress = null)
 {
     if ($GLOBALS['ALONE']) {
@@ -161,7 +189,13 @@ function getCurUserHostAddress($userAddress = null)
     return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
 }
 
-// get an internal file extension
+/**
+ * Get an internal file extension
+ *
+ * @param string  $filename
+ *
+ * @return string
+ */
 function getInternalExtension($filename)
 {
     $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
@@ -178,7 +212,13 @@ function getInternalExtension($filename)
     return "";
 }
 
-// get image url for templates
+/**
+ * Get image url for templates
+ *
+ * @param string  $filename
+ *
+ * @return string
+ */
 function getTemplateImageUrl($filename)
 {
     $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
@@ -196,7 +236,13 @@ function getTemplateImageUrl($filename)
     return $path . "file_docx.svg";
 }
 
-// get the document type
+/**
+ * Get the document type
+ *
+ * @param string  $filename
+ *
+ * @return string
+ */
 function getDocumentType($filename)
 {
     $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
@@ -213,13 +259,24 @@ function getDocumentType($filename)
     return "word";
 }
 
-// get the protocol
+/**
+ * Get the protocol
+ *
+ * @return string
+ */
 function getScheme()
 {
     return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 }
 
-// get the storage path of the given file
+/**
+ * Get the storage path of the given file
+ *
+ * @param string  $fileName
+ * @param string  $userAddress
+ *
+ * @return string
+ */
 function getStoragePath($fileName, $userAddress = null)
 {
     $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
@@ -253,7 +310,15 @@ function getStoragePath($fileName, $userAddress = null)
     return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
 }
 
-// get the path to the forcesaved file version
+/**
+ * Get the path to the forcesaved file version
+ *
+ * @param string  $fileName
+ * @param string  $userAddress
+ * @param bool    $create
+ *
+ * @return string
+ */
 function getForcesavePath($fileName, $userAddress, $create)
 {
     $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
@@ -286,7 +351,13 @@ function getForcesavePath($fileName, $userAddress, $create)
     return $directory;
 }
 
-// get the path to the file history
+/**
+ * Get the path to the file history
+ *
+ * @param string  $storagePath
+ *
+ * @return string
+ */
 function getHistoryDir($storagePath)
 {
     $directory = $storagePath . "-hist";
@@ -297,13 +368,26 @@ function getHistoryDir($storagePath)
     return $directory;
 }
 
-// get the path to the specified file version
+/**
+ * Get the path to the specified file version
+ *
+ * @param string  $histDir
+ * @param string  $version
+ *
+ * @return string
+ */
 function getVersionDir($histDir, $version)
 {
     return $histDir . DIRECTORY_SEPARATOR . $version;
 }
 
-// get a number of the last file version from the history directory
+/**
+ * Get a number of the last file version from the history directory
+ *
+ * @param string $histDir
+ *
+ * @return int
+ */
 function getFileVersion($histDir)
 {
     if (!file_exists($histDir) || !is_dir($histDir)) {
@@ -322,7 +406,11 @@ function getFileVersion($histDir)
     return $ver;
 }
 
-// get all the stored files from the folder
+/**
+ * Get all the stored files from the folder
+ *
+ * @return array
+ */
 function getStoredFiles()
 {
     $storagePath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $GLOBALS['STORAGE_PATH']), DIRECTORY_SEPARATOR);
@@ -374,7 +462,13 @@ function getStoredFiles()
     return array_reverse($result);
 }
 
-// get the virtual path
+/**
+ * Get the virtual path
+ *
+ * @param string $forDocumentServer
+ *
+ * @return string
+ */
 function getVirtualPath($forDocumentServer)
 {
     $storagePath = trim(str_replace(['/', '\\'], '/', $GLOBALS['STORAGE_PATH']), '/');
@@ -389,7 +483,16 @@ function getVirtualPath($forDocumentServer)
     return $virtPath;
 }
 
-// get a file with meta information
+/**
+ * Get a file with meta information
+ *
+ * @param string $fileName
+ * @param string $uid
+ * @param string $uname
+ * @param string $userAddress
+ *
+ * @return void
+ */
 function createMeta($fileName, $uid, $uname, $userAddress = null)
 {
     $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));  // get the history directory
@@ -405,14 +508,27 @@ function createMeta($fileName, $uid, $uname, $userAddress = null)
     file_put_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json", json_encode($json, JSON_PRETTY_PRINT));
 }
 
-// get the file url
+/**
+ * Get the file url
+ *
+ * @param string $file_name
+ * @param string $forDocumentServer
+ *
+ * @return string
+ */
 function FileUri($file_name, $forDocumentServer = null)
 {
     $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
     return $uri;
 }
 
-// get file information
+/**
+ * Get file information
+ *
+ * @param string $fileId
+ *
+ * @return array|string
+ */
 function getFileInfo($fileId)
 {
     $storedFiles = getStoredFiles();
@@ -447,13 +563,24 @@ function getFileInfo($fileId)
     return $result;
 }
 
-// get all the supported file extensions
+/**
+ * Get all the supported file extensions
+ *
+ * @return array
+ */
 function getFileExts()
 {
     return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_FILLFORMS']);
 }
 
-// get the correct file name if such a name already exists
+/**
+ * Get the correct file name if such a name already exists
+ *
+ * @param string $fileName
+ * @param string $userAddress
+ *
+ * @return string
+ */
 function GetCorrectName($fileName, $userAddress = null)
 {
     $path_parts = pathinfo($fileName);
@@ -469,7 +596,13 @@ function GetCorrectName($fileName, $userAddress = null)
     return $name;
 }
 
-// get document key
+/**
+ * Get document key
+ *
+ * @param string $fileName
+ *
+ * @return string
+ */
 function getDocEditorKey($fileName)
 {
     $key = getCurUserHostAddress() . FileUri($fileName);  // get document key by adding local file url to the current user host address

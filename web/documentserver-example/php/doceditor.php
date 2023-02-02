@@ -182,7 +182,14 @@ if (isJwtEnabled()) {
     $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);  // encode the dataMailMergeRecipients object into the token
 }
 
-// get demo file name by the extension
+/**
+ * Get demo file name by the extension
+ *
+ * @param string $createExt
+ * @param string $user
+ *
+ * @return string
+ */
 function tryGetDefaultByType($createExt, $user)
 {
     $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
@@ -200,7 +207,13 @@ function tryGetDefaultByType($createExt, $user)
     return $demoFilename;
 }
 
-// get the callback url
+/**
+ * Get the callback url
+ *
+ * @param string $fileName
+ *
+ * @return string
+ */
 function getCallbackUrl($fileName)
 {
     return serverPath(true) . '/'
@@ -210,7 +223,15 @@ function getCallbackUrl($fileName)
                 . "&userAddress=" . getClientIp();
 }
 
-// get url to the created file
+/**
+ * Get url to the created file
+ *
+ * @param string $fileName
+ * @param string $uid
+ * @param string $type
+ *
+ * @return string
+ */
 function getCreateUrl($fileName, $uid, $type)
 {
     $ext = trim(getInternalExtension($fileName), '.');
@@ -221,6 +242,16 @@ function getCreateUrl($fileName, $uid, $type)
             . "&type=" . $type;
 }
 
+/**
+ * Get url for history download
+ *
+ * @param string $fileName
+ * @param string $version
+ * @param string $file
+ * @param bool $isServer
+ *
+ * @return string
+ */
 function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
 {
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
@@ -233,7 +264,14 @@ function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
         . $userAddress;
 }
 
-// get url to download a file
+/**
+ * Get url to download a file
+ *
+ * @param string $fileName
+ * @param bool $isServer
+ *
+ * @return string
+ */
 function getDownloadUrl($fileName, $isServer = true)
 {
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
@@ -244,7 +282,17 @@ function getDownloadUrl($fileName, $isServer = true)
         . $userAddress;
 }
 
-// get document history
+/**
+ * Get document history
+ *
+ * @param string $filename
+ * @param string $filetype
+ * @param string $docKey
+ * @param string $fileuri
+ * @param bool $isEnableDirectUrl
+ *
+ * @return array
+ */
 function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 {
     $storagePath = $GLOBALS['STORAGE_PATH'];

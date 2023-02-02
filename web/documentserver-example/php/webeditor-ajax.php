@@ -113,7 +113,11 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     }
 }
 
-// save copy as...
+/**
+ * Save copy as...
+ *
+ * @return array
+ */
 function saveas()
 {
     try {
@@ -151,7 +155,11 @@ function saveas()
     }
 }
 
-// uploading a file
+/**
+ * Uploading a file
+ *
+ * @return array
+ */
 function upload()
 {
     $result;
@@ -205,7 +213,11 @@ function upload()
     return $result;
 }
 
-// tracking file changes
+/**
+ * Tracking file changes
+ *
+ * @return array|int
+ */
 function track()
 {
     sendlog("Track START", "webedior-ajax.log");
@@ -251,7 +263,11 @@ function track()
     return $result;
 }
 
-// converting a file
+/**
+ * Converting a file
+ *
+ * @return array
+ */
 function convert()
 {
     $post = json_decode(file_get_contents('php://input'), true);
@@ -318,7 +334,11 @@ function convert()
     return $result;
 }
 
-// removing a file
+/**
+ * Removing a file
+ *
+ * @return array|void
+ */
 function delete()
 {
     try {
@@ -335,7 +355,11 @@ function delete()
     }
 }
 
-// get file information
+/**
+ * Get file information
+ *
+ * @return array
+ */
 function files()
 {
     try {
@@ -352,7 +376,11 @@ function files()
     }
 }
 
-// download assets
+/**
+ * Download assets
+ *
+ * @return void
+ */
 function assets()
 {
     $fileName = basename($_GET["name"]);
@@ -360,7 +388,11 @@ function assets()
     downloadFile($filePath);
 }
 
-// download a csv file
+/**
+ * Download a csv file
+ *
+ * @return void
+ */
 function csv()
 {
     $fileName = "csv.csv";
@@ -368,7 +400,11 @@ function csv()
     downloadFile($filePath);
 }
 
-// download a file from history
+/**
+ * Download a file from history
+ *
+ * @return array|void
+ */
 function historyDownload()
 {
     try {
@@ -405,7 +441,11 @@ function historyDownload()
     }
 }
 
-// download a file
+/**
+ * Download a file
+ *
+ * @return array|void
+ */
 function download()
 {
     try {
@@ -436,7 +476,13 @@ function download()
     }
 }
 
-// download the specified file
+/**
+ * Download the specified file
+ *
+ * @param string $filePath
+ *
+ * @return void
+ */
 function downloadFile($filePath)
 {
     if (file_exists($filePath)) {
@@ -459,7 +505,13 @@ function downloadFile($filePath)
     }
 }
 
-// delete all the elements from the directory
+/**
+ * Delete all the elements from the directory
+ *
+ * @param string $dir
+ *
+ * @return void|bool
+ */
 function delTree($dir)
 {
     if (!file_exists($dir) || !is_dir($dir)) {
@@ -473,7 +525,11 @@ function delTree($dir)
     return rmdir($dir);
 }
 
-// rename...
+/**
+ * Rename file
+ *
+ * @return array
+ */
 function renamefile()
 {
     $post = json_decode(file_get_contents('php://input'), true);

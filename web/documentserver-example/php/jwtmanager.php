@@ -21,19 +21,35 @@ require_once dirname(__FILE__) . '/lib/jwt/SignatureInvalidException.php';
 require_once dirname(__FILE__) . '/lib/jwt/JWT.php';
 require_once dirname(__FILE__) . '/config.php';
 
-// check if a secret key to generate token exists or not
+/**
+ * Check if a secret key to generate token exists or not.
+ *
+ * @return bool
+ */
 function isJwtEnabled()
 {
     return !empty($GLOBALS['DOC_SERV_JWT_SECRET']);
 }
 
-// encode a payload object into a token using a secret key
+/**
+ * Encode a payload object into a token using a secret key
+ *
+ * @param string $payload
+ *
+ * @return string
+ */
 function jwtEncode($payload)
 {
     return \Firebase\JWT\JWT::encode($payload, $GLOBALS["DOC_SERV_JWT_SECRET"]);
 }
 
-// decode a token into a payload object using a secret key
+/**
+ * Decode a token into a payload object using a secret key
+ *
+ * @param string $token
+ *
+ * @return string
+ */
 function jwtDecode($token)
 {
     try {

@@ -141,14 +141,24 @@ $users = [
     ),
 ];
 
-// get a list of all the users
+/**
+ * Get a list of all the users
+ *
+ * @return array
+ */
 function getAllUsers()
 {
     global $users;
     return $users;
 }
 
-// get a user by id specified
+/**
+ * Get a user by id specified
+ *
+ * @param string $id
+ *
+ * @return array
+ */
 function getUser($id)
 {
     global $users;
@@ -161,7 +171,13 @@ function getUser($id)
     return $users[0];
 }
 
-// get a list of users with their names and emails for mentions
+/**
+ * Get a list of users with their names and emails for mentions
+ *
+ * @param string $id
+ *
+ * @return array
+ */
 function getUsersForMentions($id)
 {
     global $users;

@@ -19,7 +19,11 @@ require_once dirname(__FILE__) . '/jwtmanager.php';
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/config.php';
 
-// read request body
+/**
+ * Read request body
+ *
+ * @return int|array
+ */
 function readBody()
 {
     $result["error"] = 0;
@@ -75,7 +79,15 @@ function readBody()
     return $data;
 }
 
-// file saving process
+/**
+ * File saving process
+ *
+ * @param string $data
+ * @param string $fileName
+ * @param string $userAddress
+ *
+ * @return array
+ */
 function processSave($data, $fileName, $userAddress)
 {
     $downloadUri = $data->url;
@@ -157,7 +169,15 @@ function processSave($data, $fileName, $userAddress)
     return $result;
 }
 
-// file force saving process
+/**
+ * File force saving process
+ *
+ * @param string $data
+ * @param string $fileName
+ * @param string $userAddress
+ *
+ * @return array
+ */
 function processForceSave($data, $fileName, $userAddress)
 {
     $downloadUri = $data->url;
@@ -235,7 +255,15 @@ function processForceSave($data, $fileName, $userAddress)
     return $result;
 }
 
-// create a command request
+/**
+ * Create a command request
+ *
+ * @param string $method
+ * @param string $key
+ * @param string $meta
+ *
+ * @return false|string
+ */
 function commandRequest($method, $key, $meta = null)
 {
     $documentCommandUrl = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];

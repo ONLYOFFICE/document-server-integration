@@ -17,13 +17,21 @@
 
 require dirname(__FILE__) . '/config.php';
 
-// check if the request is an AJAX request
+/**
+ * Check if the request is an AJAX request
+ *
+ * @return bool
+ */
 function is_ajax()
 {
     return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 }
 
-// get the http origin
+/**
+ * Get the http origin
+ *
+ * @return string
+ */
 function get_http_origin()
 {
     $origin = '';
@@ -33,7 +41,11 @@ function get_http_origin()
     return $origin;
 }
 
-// set headers that prevent caching in all the browsers
+/**
+ * Set headers that prevent caching in all the browsers
+ *
+ * @return void
+ */
 function nocache_headers()
 {
     $headers = [
