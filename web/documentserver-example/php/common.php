@@ -522,7 +522,7 @@ function createMeta($fileName, $uid, $uname, $userAddress = null)
  *
  * @return string
  */
-function FileUri($file_name, $forDocumentServer = null)
+function fileUri($file_name, $forDocumentServer = null)
 {
     $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
     return $uri;
@@ -617,8 +617,8 @@ function GetCorrectName($fileName, $userAddress = null)
 function getDocEditorKey($fileName)
 {
     // get document key by adding local file url to the current user host address
-    $key = getCurUserHostAddress() . FileUri($fileName);
+    $key = getCurUserHostAddress() . fileUri($fileName);
     $stat = filemtime(getStoragePath($fileName));  // get creation time
     $key = $key . $stat;  // and add it to the document key
-    return GenerateRevisionId($key);  // generate the document key value
+    return generateRevisionId($key);  // generate the document key value
 }

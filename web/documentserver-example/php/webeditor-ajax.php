@@ -55,7 +55,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     @header('X-Content-Type-Options: nosniff');
 
     // set headers that prevent caching in all the browsers
-    nocache_headers();
+    nocacheHeaders();
 
     // write the request result to the log file
     sendlog(serialize($_GET), "webedior-ajax.log");
@@ -301,7 +301,7 @@ function convert()
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = GetConvertedUri($fileUri,
+            $percent = getConvertedUri($fileUri,
                 $extension,
                 $internalExtension,
                 $key,

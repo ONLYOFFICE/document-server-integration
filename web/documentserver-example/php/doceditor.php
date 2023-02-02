@@ -27,7 +27,7 @@ $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], 
 // get the file url and upload it
 $externalUrl = $_GET["fileUrl"] ?? "";
 if (!empty($externalUrl)) {
-    $filename = DoUpload($externalUrl);
+    $filename = doUpload($externalUrl);
 } else { // if the file url doesn't exist, get file name and file extension
     $filename = basename($_GET["fileID"]);
 }
@@ -43,9 +43,9 @@ if (!empty($createExt)) {
     exit;
 }
 
-$fileuri = FileUri($filename, true);
+$fileuri = fileUri($filename, true);
 $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ?
-    getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
+    getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
 $directUrl = getDownloadUrl($filename, false);
 $docKey = getDocEditorKey($filename);
 $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -349,7 +349,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $dataObj["fileType"] = $fileExe;
             $dataObj["key"] = $key;
 
-            $directUrl = $i == $curVer ? FileUri($filename, false) :
+            $directUrl = $i == $curVer ? fileUri($filename, false) :
                 getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
             $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
             if (realpath($storagePath) === $storagePath) {

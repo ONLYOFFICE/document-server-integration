@@ -27,7 +27,7 @@ require_once dirname(__FILE__) . '/jwtmanager.php';
  *
  * @return null
  */
-function DoUpload($fileUri)
+function doUpload($fileUri)
 {
     $_fileName = GetCorrectName($fileUri);
 
@@ -56,7 +56,7 @@ function DoUpload($fileUri)
  *
  * @return null
  */
-function ProcessConvServResponceError($errorCode)
+function processConvServResponceError($errorCode)
 {
     $errorMessageTemplate = "Error occurred in the document service: ";
     $errorMessage = '';
@@ -104,7 +104,7 @@ function ProcessConvServResponceError($errorCode)
  *
  * @return string key
  */
-function GenerateRevisionId($expected_key)
+function generateRevisionId($expected_key)
 {
     if (mb_strlen($expected_key) > 20) {
         $expected_key = crc32($expected_key);
@@ -127,7 +127,7 @@ function GenerateRevisionId($expected_key)
  *
  * @return string request result of conversion
  */
-function SendRequestToConvertService(
+function sendRequestToConvertService(
     $document_uri,
     $from_extension,
     $to_extension,
@@ -153,7 +153,7 @@ function SendRequestToConvertService(
     }
 
     // generate document token
-    $document_revision_id = GenerateRevisionId($document_revision_id);
+    $document_revision_id = generateRevisionId($document_revision_id);
 
     $urlToConverter = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_CONVERTER_URL'];
 
@@ -207,7 +207,7 @@ function SendRequestToConvertService(
  *
  * Example:
  * string convertedDocumentUri;
- * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
+ * getConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
  * ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
  *
  * @param string $document_uri           Uri for the document to convert
@@ -223,7 +223,7 @@ function SendRequestToConvertService(
  *
  * @return int percentage of completion of conversion
  */
-function GetConvertedUri(
+function getConvertedUri(
     $document_uri,
     $from_extension,
     $to_extension,
@@ -234,7 +234,7 @@ function GetConvertedUri(
     $lang
 ) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri,
+    $responceFromConvertService = sendRequestToConvertService($document_uri,
         $from_extension,
         $to_extension,
         $document_revision_id,
@@ -246,7 +246,7 @@ function GetConvertedUri(
     // if an error occurs, then display an error message
     $errorElement = $json["error"];
     if ($errorElement != null && $errorElement != "") {
-        ProcessConvServResponceError($errorElement);
+        processConvServResponceError($errorElement);
     }
 
     $isEndConvert = $json["endConvert"];
@@ -274,7 +274,7 @@ function GetConvertedUri(
  *
  * @return int percentage of completion of conversion
  */
-function GetResponseUri($document_response, &$response_uri)
+function getResponseUri($document_response, &$response_uri)
 {
     $response_uri = "";
     $resultPercent = 0;
@@ -286,7 +286,7 @@ function GetResponseUri($document_response, &$response_uri)
     // if an error occurs, then display an error message
     $errorElement = $document_response->Error;
     if ($errorElement != null && $errorElement != "") {
-        ProcessConvServResponceError($document_response->Error);
+        processConvServResponceError($document_response->Error);
     }
 
     $endConvert = $document_response->EndConvert;

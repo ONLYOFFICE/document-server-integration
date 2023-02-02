@@ -22,7 +22,7 @@ require dirname(__FILE__) . '/config.php';
  *
  * @return bool
  */
-function is_ajax()
+function isAjax()
 {
     return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
         && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
@@ -33,7 +33,7 @@ function is_ajax()
  *
  * @return string
  */
-function get_http_origin()
+function getHttpOrigin()
 {
     $origin = '';
     if (!empty($_SERVER['HTTP_ORIGIN'])) {
@@ -47,7 +47,7 @@ function get_http_origin()
  *
  * @return void
  */
-function nocache_headers()
+function nocacheHeaders()
 {
     $headers = [
         'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',

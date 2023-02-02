@@ -104,12 +104,12 @@ function processSave($data, $fileName, $userAddress)
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
     if ($downloadExt != $curExt) {
-        $key = GenerateRevisionId($downloadUri);
+        $key = generateRevisionId($downloadUri);
 
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
             $convertedUri;  // convert file and give url to a new file
-            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
+            $percent = getConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;
             } else {
@@ -207,12 +207,12 @@ function processForceSave($data, $fileName, $userAddress)
 
     // convert downloaded file to the file with the current extension if these extensions aren't equal
     if ($downloadExt != $curExt) {
-        $key = GenerateRevisionId($downloadUri);
+        $key = generateRevisionId($downloadUri);
 
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
             $convertedUri;  // convert file and give url to a new file
-            $percent = GetConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
+            $percent = getConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;
             } else {
