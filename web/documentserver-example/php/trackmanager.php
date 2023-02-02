@@ -56,7 +56,8 @@ function readBody()
             $data = jwtDecode($data["token"]);  // decode it
             sendlog("   jwt in body", "webedior-ajax.log");
         } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-            $data = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));  // decode its part after Authorization prefix
+            $data = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader],
+                mb_strlen("Bearer ")));  // decode its part after Authorization prefix
             $inHeader = true;
             sendlog("   jwt in header", "webedior-ajax.log");
         } else {  // otherwise, an error occurs
@@ -114,7 +115,9 @@ function processSave($data, $fileName, $userAddress)
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                 $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
-                $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);  // get the correct file name if it already exists
+
+                // get the correct file name if it already exists
+                $newFileName = GetCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
         } catch (Exception $e) {
             sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
@@ -129,22 +132,28 @@ function processSave($data, $fileName, $userAddress)
         $downloadUri,
         false,
         stream_context_create(["http" => ["timeout" => 5]])
-    )) === false)) {
+    )) === false)
+    ) {
         $storagePath = getStoragePath($newFileName, $userAddress);  // get the file path
         $histDir = getHistoryDir($storagePath);  // get the path to the history direction
         $verDir = getVersionDir($histDir, getFileVersion($histDir));  // get the path to the file version
 
         mkdir($verDir);  // if the path doesn't exist, create it
 
-        rename(getStoragePath($fileName, $userAddress), $verDir . DIRECTORY_SEPARATOR . "prev" . $curExt);  // get the path to the previous file version and rename the storage path with it
+        // get the path to the previous file version and rename the storage path with it
+        rename(getStoragePath($fileName, $userAddress), $verDir .
+            DIRECTORY_SEPARATOR . "prev" . $curExt);
         file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
         if ($changesData = file_get_contents(
             $data->changesurl,
             false,
             stream_context_create(["http" => ["timeout" => 5]])
-        )) {
-            file_put_contents($verDir . DIRECTORY_SEPARATOR . "diff.zip", $changesData, LOCK_EX);  // save file changes to the diff.zip archive
+        )
+        ) {
+            // save file changes to the diff.zip archive
+            file_put_contents($verDir . DIRECTORY_SEPARATOR .
+                "diff.zip", $changesData, LOCK_EX);
         }
 
         $histData = empty($data->changeshistory) ? null : $data->changeshistory;
@@ -152,11 +161,16 @@ function processSave($data, $fileName, $userAddress)
             $histData = json_encode($data->history, JSON_PRETTY_PRINT);
         }
         if (!empty($histData)) {
-            file_put_contents($verDir . DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);  // write the history changes to the changes.json file
+            // write the history changes to the changes.json file
+            file_put_contents($verDir .
+                DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);
         }
-        file_put_contents($verDir . DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);  // write the key value to the key.txt file
+            // write the key value to the key.txt file
+            file_put_contents($verDir .
+                DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);
 
-        $forcesavePath = getForcesavePath($newFileName, $userAddress, false);  // get the path to the forcesaved file version
+        // get the path to the forcesaved file version
+        $forcesavePath = getForcesavePath($newFileName, $userAddress, false);
         if ($forcesavePath != "") {  // if the forcesaved file version exists
             unlink($forcesavePath);  // remove it
         }
@@ -218,13 +232,15 @@ function processForceSave($data, $fileName, $userAddress)
         $downloadUri,
         false,
         stream_context_create(["http" => ["timeout" => 5]])
-    )) === false)) {
+    )) === false)
+    ) {
         $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
         $isSubmitForm = $data->forcesavetype == 3;  // SubmitForm
 
         if ($isSubmitForm) {
             if ($newFileName) {
-                $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
+                $fileName = GetCorrectName($baseNameWithoutExt .
+                    "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
             } else {
                 $fileName = GetCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
             }
@@ -290,7 +306,9 @@ function commandRequest($method, $key, $meta = null)
     $opts = ['http' => [
         'method' => 'POST',
         'header' => "Content-type: application/json\r\n" .
-            (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),  // add a header Authorization with a header token and Authorization prefix in it
+            // add a header Authorization with a header token and Authorization prefix in it
+            (empty($headerToken) ? "" : $jwtHeader.
+                ": Bearer $headerToken\r\n"),
         'content' => $data,
     ]];
 

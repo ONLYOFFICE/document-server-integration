@@ -17,8 +17,18 @@
 
 final class User
 {
-    public function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates)
-    {
+    public function __construct($id,
+        $name,
+        $email,
+        $group,
+        $reviewGroups,
+        $commentGroups,
+        $userInfoGroups,
+        $favorite,
+        $deniedPermissions,
+        $descriptions,
+        $templates
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
@@ -46,7 +56,8 @@ $descr_user_1 = [
 $descr_user_2 = [
     "Belongs to Group2",
     "Can review only his own changes or changes made by users with no group",
-    "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+    "Can view comments, edit his own comments and comments left by users with no group. 
+        Can remove his own comments only",
     "This file is marked as favorite",
     "Can create new files from the editor",
     "Can see the information about users from Group2 and users who don’t belong to any group",

@@ -24,7 +24,8 @@ $user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
 
     <head>
@@ -60,25 +61,36 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                         <div class="create-panel clearFix">
                                             <ul class="try-editor-list clearFix">
                                                 <li>
-                                                    <a class="try-editor word reload-page" target="_blank" href="doceditor.php?fileExt=docx&user=<?php echo htmlentities($user); ?>">Document</a>
+                                                    <a class="try-editor word reload-page" target="_blank"
+                                                       href="doceditor.php?fileExt=docx&user=
+                                                       <?php echo htmlentities($user); ?>">Document</a>
                                                 </li>
                                                 <li>
-                                                    <a class="try-editor cell reload-page" target="_blank" href="doceditor.php?fileExt=xlsx&user=<?php echo htmlentities($user); ?>">Spreadsheet</a>
+                                                    <a class="try-editor cell reload-page" target="_blank"
+                                                       href="doceditor.php?fileExt=xlsx&user=
+                                                       <?php echo htmlentities($user); ?>">Spreadsheet</a>
                                                 </li>
                                                 <li>
-                                                    <a class="try-editor slide reload-page" target="_blank" href="doceditor.php?fileExt=pptx&user=<?php echo htmlentities($user); ?>">Presentation</a>
+                                                    <a class="try-editor slide reload-page" target="_blank"
+                                                       href="doceditor.php?fileExt=pptx&user=
+                                                       <?php echo htmlentities($user); ?>">Presentation</a>
                                                 </li>
                                                 <li>
-                                                    <a class="try-editor form reload-page" target="_blank" href="doceditor.php?fileExt=docxf&user=<?php echo htmlentities($user); ?>">Form template</a>
+                                                    <a class="try-editor form reload-page" target="_blank"
+                                                       href="doceditor.php?fileExt=docxf&user=
+                                                       <?php echo htmlentities($user); ?>">Form template</a>
                                                 </li>
                                             </ul>
                                             <label class="side-option">
-                                                <input type="checkbox" id="createSample" class="checkbox" />With sample content
+                                                <input type="checkbox" id="createSample" class="checkbox" />
+                                                With sample content
                                             </label>
                                         </div>
                                         <div class="upload-panel clearFix">
                                             <a class="file-upload">Upload file
-                                                <input type="file" id="fileupload" name="files" data-url="webeditor-ajax.php?type=upload&user=<?php echo htmlentities($user); ?>" />
+                                                <input type="file" id="fileupload" name="files"
+                                                       data-url="webeditor-ajax.php?type=upload&user=
+                                                       <?php echo htmlentities($user); ?>" />
                                             </a>
                                         </div>
 
@@ -111,8 +123,13 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                             <tr>
                                                 <td valign="middle">
                                                     <label class="side-option">
-                                                        <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
-                                                        <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="css/images/info.svg" />
+                                                        <input id="directUrl" type="checkbox" class="checkbox" />
+                                                        Try opening on client
+                                                        <img id="directUrlInfo" class="info info-tooltip"
+                                                             data-id="directUrlInfo" data-tooltip=
+                                                             "Some files can be opened in the user's
+                                                             browser without connecting to the document server."
+                                                             src="css/images/info.svg" />
                                                     </label>
                                                 </td>
                                             </tr>
@@ -124,18 +141,30 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                 <div class="main-panel">
                                     <?php
                                     $storedFiles = getStoredFiles();
-if (!empty($storedFiles)) { ?>
+                                    if (!empty($storedFiles)) { ?>
                                         <div id="portal-info" style="display: none">
                                     <?php } else { ?>
                                         <div id="portal-info" style="display: table-cell">
                                     <?php } ?>
                                         <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                         <span class="portal-descr">
-                                            Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                            <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                            Get started with a demo-sample of ONLYOFFICE Document Editors,
+                                            the first html5-based editors.
+                                            <br /> You may upload your own documents for testing using the
+                                            "<b>Upload file</b>" button and <b>selecting</b>
+                                            the necessary files on your PC.
                                         </span>
-                                        <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
-                                        <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                        <span class="portal-descr">
+                                            Please do NOT use this integration example on your own server without
+                                            proper code modifications, it is intended for testing purposes only.
+                                            In case you enabled this test example, disable it before going for
+                                            production.
+                                        </span>
+                                        <span class="portal-descr">
+                                            You can open the same document using different
+                                            users in different Web browser sessions, so you can check out multi-user
+                                            editing functions.
+                                        </span>
                                         <?php foreach (getAllUsers() as $user_l) {
                                             $name = $user_l->name ?: "Anonymous";
                                             echo '<div class="user-descr">';
@@ -149,17 +178,28 @@ if (!empty($storedFiles)) { ?>
                                         } ?>
                                     </div>
                                     <?php
-                                        if (!empty($storedFiles)) { ?>
+                                    if (!empty($storedFiles)) { ?>
                                             <div class="stored-list">
                                                 <span class="header-list">Your documents</span>
                                                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                                     <thead>
                                                     <tr>
-                                                        <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                                        <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
-                                                        <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                                        <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                                        <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                                        <td class="tableHeaderCell tableHeaderCellFileName">
+                                                            Filename
+                                                        </td>
+                                                        <td class="tableHeaderCell tableHeaderCellEditors
+                                                        contentCells-shift">
+                                                            Editors
+                                                        </td>
+                                                        <td class="tableHeaderCell tableHeaderCellViewers">
+                                                            Viewers
+                                                        </td>
+                                                        <td class="tableHeaderCell tableHeaderCellDownload">
+                                                            Download
+                                                        </td>
+                                                        <td class="tableHeaderCell tableHeaderCellRemove">
+                                                            Remove
+                                                        </td>
                                                     </tr>
                                                     </thead>
                                                 </table>
@@ -167,90 +207,231 @@ if (!empty($storedFiles)) { ?>
                                                     <table cellspacing="0" cellpadding="0" width="100%">
                                                         <tbody>
                                                             <?php foreach ($storedFiles as &$storeFile) {
-                                                                echo '<tr class="tableRow" title="'.$storeFile->name.' ['.getFileVersion(getHistoryDir(getStoragePath($storeFile->name))).']">';
+                                                                echo '<tr class="tableRow" title="'.
+                                                                    $storeFile->name.' ['.
+                                                                    getFileVersion(getHistoryDir(
+                                                                            getStoragePath($storeFile->name))).
+                                                                    ']">';
                                                                 echo ' <td class="contentCells">';
-                                                                echo '  <a class="stored-edit '.$storeFile->documentType.'" href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user) . $directUrlArg .'" target="_blank">';
+                                                                echo '  <a class="stored-edit '.
+                                                                    $storeFile->documentType.
+                                                                    '" href="doceditor.php?fileID='.
+                                                                    urlencode($storeFile->name) .
+                                                                    '&user='.htmlentities($user) .
+                                                                    $directUrlArg .'" target="_blank">';
                                                                 echo '   <span>'.$storeFile->name.'</span>';
                                                                 echo '  </a>';
                                                                 echo ' </td>';
                                                                 if ($storeFile->canEdit) {
                                                                     echo ' <td class="contentCells contentCells-icon">';
-                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=edit&type=desktop" target="_blank">';
-                                                                    echo '   <img src="css/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>';
+                                                                    echo '  <a href="doceditor.php?fileID=' .
+                                                                        urlencode($storeFile->name) .
+                                                                        '&user=' . htmlentities($user) .
+                                                                        $directUrlArg .
+                                                                        '&action=edit&type=desktop" target="_blank">';
+                                                                    echo '   <img src="css/images/desktop.svg" 
+                                                                            alt="Open in editor for full size screens" 
+                                                                            title="Open in editor for full size screens"
+                                                                            /></a>';
                                                                     echo ' </td>';
                                                                     echo ' <td class="contentCells contentCells-icon">';
-                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=edit&type=mobile" target="_blank">';
-                                                                    echo '   <img src="css/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>';
+                                                                    echo '  <a href="doceditor.php?fileID=' .
+                                                                        urlencode($storeFile->name) .
+                                                                        '&user=' . htmlentities($user) .
+                                                                        $directUrlArg .
+                                                                        '&action=edit&type=mobile" target="_blank">';
+                                                                    echo '   <img src="css/images/mobile.svg" 
+                                                                            alt="Open in editor for mobile devices" 
+                                                                            title="Open in editor for mobile devices"
+                                                                            /></a>';
                                                                     echo ' </td>';
                                                                     echo ' <td class="contentCells contentCells-icon">';
-                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=comment&type=desktop" target="_blank">';
-                                                                    echo '   <img src="css/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>';
+                                                                    echo '  <a href="doceditor.php?fileID=' .
+                                                                        urlencode($storeFile->name) .
+                                                                        '&user=' .
+                                                                        htmlentities($user) .
+                                                                        $directUrlArg .
+                                                                        '&action=comment&type=desktop" target="_blank">'
+                                                                    ;
+                                                                    echo '   <img src="css/images/comment.svg"
+                                                                        alt="Open in editor for comment" 
+                                                                        title="Open in editor for comment" />
+                                                                        </a>';
                                                                     echo ' </td>';
                                                                     if ($storeFile->documentType == "word") {
-                                                                        echo ' <td class="contentCells contentCells-icon">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=review&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>';
+                                                                        echo ' <td 
+                                                                            class="contentCells contentCells-icon">';
+                                                                        echo '  <a href="doceditor.php?fileID=' .
+                                                                            urlencode($storeFile->name) .
+                                                                            '&user=' .
+                                                                            htmlentities($user) .
+                                                                            $directUrlArg .
+                                                                            '&action=review&type=desktop"
+                                                                                target="_blank">';
+                                                                        echo '   <img src="css/images/review.svg" 
+                                                                            alt="Open in editor for review" 
+                                                                            title="Open in editor for review" />
+                                                                            </a>';
                                                                         echo ' </td>';
                                                                     } elseif ($storeFile->documentType == "cell") {
-                                                                        echo ' <td class="contentCells contentCells-icon">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=filter&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>';
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-icon">';
+                                                                        echo '  <a href="doceditor.php?fileID=' .
+                                                                            urlencode($storeFile->name) .
+                                                                            '&user=' .
+                                                                            htmlentities($user) .
+                                                                            $directUrlArg .
+                                                                            '&action=filter&type=desktop" 
+                                                                            target="_blank">';
+                                                                        echo '   <img src="css/images/filter.svg" 
+                                                                            alt="Open in editor without 
+                                                                            access to change the filter"
+                                                                            title="Open in editor without 
+                                                                            access to change the filter" /></a>';
                                                                         echo ' </td>';
                                                                     }
                                                                     if ($storeFile->documentType == "word") {
-                                                                        echo ' <td class="contentCells contentCells-icon ">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=blockcontent&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>';
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-icon ">';
+                                                                        echo '  <a href="doceditor.php?fileID=' .
+                                                                            urlencode($storeFile->name) .
+                                                                            '&user=' .
+                                                                            htmlentities($user) .
+                                                                            $directUrlArg .
+                                                                            '&action=blockcontent&type=desktop" 
+                                                                            target="_blank">';
+                                                                        echo '   <img src="css/images/block-content.svg"
+                                                                            alt="Open in editor without 
+                                                                            content control modification"
+                                                                            title="Open in editor without
+                                                                            content control modification" /></a>';
                                                                         echo ' </td>';
                                                                     } else {
-                                                                        echo ' <td class="contentCells contentCells-icon"></td> ';
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-icon"></td> ';
                                                                     }
-                                                                    if ($storeFile->documentType != "word" && $storeFile->documentType != "cell") {
-                                                                        echo ' <td class="contentCells contentCells-icon"></td>';
+                                                                    if ($storeFile->documentType != "word"
+                                                                        && $storeFile->documentType != "cell"
+                                                                    ) {
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-icon"></td>';
                                                                     }
                                                                     if ($storeFile->isFillFormDoc) {
-                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
-                                                                        echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=fillForms&type=desktop" target="_blank">';
-                                                                        echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-shift contentCells-icon 
+                                                                            firstContentCellShift">';
+                                                                        echo '  <a href="doceditor.php?fileID=' .
+                                                                            urlencode($storeFile->name) .
+                                                                            '&user=' .
+                                                                            htmlentities($user) .
+                                                                            $directUrlArg .
+                                                                            '&action=fillForms&type=desktop"
+                                                                            target="_blank">';
+                                                                        echo '   <img src="css/images/fill-forms.svg"
+                                                                            alt="Open in editor for filling in forms"
+                                                                            title="Open in editor for filling in forms" 
+                                                                            /></a>';
                                                                         echo ' </td>';
                                                                     } else {
-                                                                        echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td> ';
+                                                                        echo ' <td class="contentCells 
+                                                                            contentCells-shift contentCells-icon 
+                                                                            firstContentCellShift"></td> ';
                                                                     }
                                                                 } elseif ($storeFile->isFillFormDoc) {
-                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
-                                                                    echo ' <td class="contentCells contentCells-icon">';
-                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=fillForms&type=desktop" target="_blank">';
-                                                                    echo '   <img src="css/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>';
+                                                                    echo ' <td class="contentCells 
+                                                                            contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells 
+                                                                            contentCells-icon">';
+                                                                    echo '  <a href="doceditor.php?fileID=' .
+                                                                        urlencode($storeFile->name) .
+                                                                        '&user=' .
+                                                                        htmlentities($user) .
+                                                                        $directUrlArg .
+                                                                        '&action=fillForms&type=desktop"
+                                                                        target="_blank">';
+                                                                    echo '   <img src="css/images/mobile-fill-forms.svg"
+                                                                        alt="Open in editor for filling in forms 
+                                                                        for mobile devices" 
+                                                                        title="Open in editor for filling in forms 
+                                                                        for mobile devices" /></a>';
                                                                     echo ' </td>';
-                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
-                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
-                                                                    echo ' <td class="contentCells contentCells-icon"></td>';
-                                                                    echo ' <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">';
-                                                                    echo '  <a href="doceditor.php?fileID=' . urlencode($storeFile->name) . '&user=' . htmlentities($user) . $directUrlArg . '&action=fillForms&type=desktop" target="_blank">';
-                                                                    echo '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>';
+                                                                    echo ' <td class="contentCells 
+                                                                        contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells 
+                                                                        contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells 
+                                                                        contentCells-icon"></td>';
+                                                                    echo ' <td class="contentCells 
+                                                                        contentCells-shift contentCells-icon 
+                                                                        firstContentCellShift">';
+                                                                    echo '  <a href="doceditor.php?fileID=' .
+                                                                        urlencode($storeFile->name) .
+                                                                        '&user=' .
+                                                                        htmlentities($user) .
+                                                                        $directUrlArg .
+                                                                        '&action=fillForms&type=desktop"
+                                                                        target="_blank">';
+                                                                    echo '   <img src="css/images/fill-forms.svg"
+                                                                        alt="Open in editor for filling in forms"
+                                                                        title="Open in editor for filling in forms"
+                                                                        /></a>';
                                                                     echo ' </td>';
                                                                 } else {
-                                                                    echo '<td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>';
+                                                                    echo '<td class="contentCells 
+                                                                        contentCells-shift contentCells-icon 
+                                                                        contentCellsEmpty" colspan="6"></td>';
                                                                 }
-                                                                echo ' <td class="contentCells contentCells-icon firstContentCellViewers">';
-                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user) . $directUrlArg . '&action=view&type=desktop" target="_blank">';
-                                                                echo '   <img src="css/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>';
+                                                                echo ' <td class="contentCells 
+                                                                        contentCells-icon firstContentCellViewers">';
+                                                                echo '  <a href="doceditor.php?fileID='.
+                                                                    urlencode($storeFile->name).
+                                                                    '&user='.htmlentities($user).
+                                                                    $directUrlArg.
+                                                                    '&action=view&type=desktop" target="_blank">';
+                                                                echo '   <img src="css/images/desktop.svg" 
+                                                                    alt="Open in viewer for full size screens" 
+                                                                    title="Open in viewer for full size screens" 
+                                                                    /></a>';
                                                                 echo ' </td>';
                                                                 echo ' <td class="contentCells contentCells-icon">';
-                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user) . $directUrlArg . '&action=view&type=mobile" target="_blank">';
-                                                                echo '   <img src="css/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>';
+                                                                echo '  <a href="doceditor.php?fileID='.
+                                                                    urlencode($storeFile->name).
+                                                                    '&user='.htmlentities($user).
+                                                                    $directUrlArg.
+                                                                    '&action=view&type=mobile" target="_blank">';
+                                                                echo '   <img src="css/images/mobile.svg" 
+                                                                    alt="Open in viewer for mobile devices" 
+                                                                    title="Open in viewer for mobile devices" /></a>';
                                                                 echo ' </td>';
-                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift">';
-                                                                echo '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user) . $directUrlArg . '&action=embedded&type=embedded" target="_blank">';
-                                                                echo '   <img src="css/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>';
+                                                                echo ' <td class="contentCells 
+                                                                    contentCells-icon contentCells-shift">';
+                                                                echo '  <a href="doceditor.php?fileID='.
+                                                                    urlencode($storeFile->name).
+                                                                    '&user='.
+                                                                    htmlentities($user).
+                                                                    $directUrlArg.
+                                                                    '&action=embedded&type=embedded" target="_blank">';
+                                                                echo '   <img src="css/images/embeded.svg" 
+                                                                    alt="Open in embedded mode" 
+                                                                    title="Open in embedded mode" /></a>';
                                                                 echo ' </td>';
-                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">';
-                                                                echo '  <a href="webeditor-ajax.php?type=download&fileName='.urlencode($storeFile->name).'">';
-                                                                echo '   <img class="icon-download" src="css/images/download.svg" alt="Download" title="Download" /></a>';
+                                                                echo ' <td class="contentCells 
+                                                                    contentCells-icon contentCells-shift 
+                                                                    downloadContentCellShift">';
+                                                                echo '  <a href="
+                                                                    webeditor-ajax.php?type=download&fileName='.
+                                                                    urlencode($storeFile->name).'">';
+                                                                echo '   <img class="icon-download" 
+                                                                    src="css/images/download.svg"
+                                                                    alt="Download" title="Download" /></a>';
                                                                 echo ' </td>';
-                                                                echo ' <td class="contentCells contentCells-icon contentCells-shift">';
-                                                                echo '  <a class="delete-file" data="'.$storeFile->name.'">';
-                                                                echo '   <img class="icon-delete" src="css/images/delete.svg" alt="Delete" title="Delete" /></a>';
+                                                                echo ' <td class="contentCells 
+                                                                    contentCells-icon contentCells-shift">';
+                                                                echo '  <a class="delete-file" data="'.
+                                                                    $storeFile->name.'">';
+                                                                echo '   <img class="icon-delete" 
+                                                                    src="css/images/delete.svg" 
+                                                                    alt="Delete" title="Delete" /></a>';
                                                                 echo ' </td>';
                                                                 echo '</tr>';
                                                             } ?>
@@ -258,8 +439,8 @@ if (!empty($storedFiles)) { ?>
                                                     </table>
                                                 </div>
                                             </div>
-                                    <?php
-                                        } ?>
+                                        <?php
+                                    } ?>
                                 </div>
                             </td>
                         </tr>
@@ -272,7 +453,8 @@ if (!empty($storedFiles)) { ?>
                     <span id="uploadFileName" class="uploadFileName"></span>
                     <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                     <span id="step1" class="step">1. Loading the file.</span>
-                    <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                    <span class="step-descr">The loading speed depends on file size
+                        and additional elements it contains.</span>
                     <br />
                     <span id="step2" class="step">2. Conversion.</span>
                     <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -292,7 +474,8 @@ if (!empty($storedFiles)) { ?>
                     <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                     <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                     <br />
-                    <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
+                    <span class="progress-descr">Note the speed of all operations depends
+                        on your connection quality and server location.</span>
                     <br />
                     <div class="error-message">
                         <b>Upload error: </b><span></span>
@@ -300,7 +483,8 @@ if (!empty($storedFiles)) { ?>
                         Please select another file and try again.
                     </div>
                 </div>
-                <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
+                <iframe id="embeddedView" src="" height="345px" width="432px"
+                        frameborder="0" scrolling="no" allowtransparency></iframe>
                 <br />
                 <div class="buttonsMobile">
                     <?php if (($GLOBALS['MODE']) != "view") { ?>
@@ -312,7 +496,9 @@ if (!empty($storedFiles)) { ?>
                 </div>
             </div>
 
-            <span id="loadScripts" data-docs="<?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>"></span>
+            <span id="loadScripts" data-docs="
+            <?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>
+            "></span>
 
             <footer>
                 <div class="center">
@@ -320,7 +506,9 @@ if (!empty($storedFiles)) { ?>
                         <tbody>
                         <tr>
                             <td>
-                                <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation</a>
+                                <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">
+                                    API Documentation
+                                </a>
                             </td>
                             <td>
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>

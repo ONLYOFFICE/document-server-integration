@@ -29,7 +29,7 @@ require_once dirname(__FILE__) . '/functions.php';
 function sendlog($msg, $logFileName)
 {
     $logsFolder = "logs/";
-    if (!file_exists($logsFolder)) {  // if log folder does't exist, make it
+    if (!file_exists($logsFolder)) {  // if log folder doesn't exist, make it
         mkdir($logsFolder);
     }
     file_put_contents($logsFolder . $logFileName, $msg . PHP_EOL, FILE_APPEND);
@@ -131,7 +131,6 @@ if (!function_exists('mime_content_type')) {
         return 'application/octet-stream';
     }
 }
-
 
 /**
  * Get ip address
@@ -327,7 +326,8 @@ function getForcesavePath($fileName, $userAddress, $create)
     if (realpath($storagePath) === $storagePath) {
         $directory = $storagePath . DIRECTORY_SEPARATOR;
     } else {
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) .
+            DIRECTORY_SEPARATOR;
     }
 
     if (!is_dir($directory)) {
@@ -570,7 +570,10 @@ function getFileInfo($fileId)
  */
 function getFileExts()
 {
-    return array_merge($GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_FILLFORMS']);
+    return array_merge($GLOBALS['DOC_SERV_VIEWD'],
+        $GLOBALS['DOC_SERV_EDITED'],
+        $GLOBALS['DOC_SERV_CONVERT'],
+        $GLOBALS['DOC_SERV_FILLFORMS']);
 }
 
 /**
@@ -587,10 +590,12 @@ function GetCorrectName($fileName, $userAddress = null)
 
     $ext = mb_strtolower($path_parts['extension']);
     $name = $path_parts['basename'];
-    $baseNameWithoutExt = mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1);  // get file name from the basename without extension
+    // get file name from the basename without extension
+    $baseNameWithoutExt = mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1);
     $name = $baseNameWithoutExt . "." . $ext;
 
-    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++) {  // if a file with such a name already exists in this directory
+    // if a file with such a name already exists in this directory
+    for ($i = 1; file_exists(getStoragePath($name, $userAddress)); $i++) {
         $name = $baseNameWithoutExt . " (" . $i . ")." . $ext;  // add an index after its base name
     }
     return $name;
@@ -605,7 +610,8 @@ function GetCorrectName($fileName, $userAddress = null)
  */
 function getDocEditorKey($fileName)
 {
-    $key = getCurUserHostAddress() . FileUri($fileName);  // get document key by adding local file url to the current user host address
+    // get document key by adding local file url to the current user host address
+    $key = getCurUserHostAddress() . FileUri($fileName);
     $stat = filemtime(getStoragePath($fileName));  // get creation time
     $key = $key . $stat;  // and add it to the document key
     return GenerateRevisionId($key);  // generate the document key value

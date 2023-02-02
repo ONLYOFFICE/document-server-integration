@@ -125,7 +125,14 @@ function GenerateRevisionId($expected_key)
  *
  * @return string request result of conversion
  */
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang)
+function SendRequestToConvertService($document_uri,
+    $from_extension,
+    $to_extension,
+    $document_revision_id,
+    $is_async,
+    $filePass,
+    $lang
+)
 {
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
@@ -197,7 +204,8 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
  *
  * Example:
  * string convertedDocumentUri;
- * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
+ * GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
+ * ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
  *
  * @param string $document_uri           Uri for the document to convert
  * @param string $from_extension         Document extension
@@ -205,15 +213,30 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
  * @param string $document_revision_id   Key for caching on service
  * @param bool   $is_async               Perform conversions asynchronously
  * @param string $converted_document_uri Uri to the converted document
+ * @param string $filePass               File pass
+ * @param string $lang                   Language
  *
  * @throws Exception if an error occurs
  *
  * @return int percentage of completion of conversion
  */
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang)
-{
+function GetConvertedUri($document_uri,
+    $from_extension,
+    $to_extension,
+    $document_revision_id,
+    $is_async,
+    &$converted_document_uri,
+    $filePass,
+    $lang
+) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang);
+    $responceFromConvertService = SendRequestToConvertService($document_uri,
+        $from_extension,
+        $to_extension,
+        $document_revision_id,
+        $is_async,
+        $filePass,
+        $lang);
     $json = json_decode($responceFromConvertService, true);
 
     // if an error occurs, then display an error message

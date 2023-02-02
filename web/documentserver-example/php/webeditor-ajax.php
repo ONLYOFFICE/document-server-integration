@@ -126,7 +126,11 @@ function saveas()
         $fileurl = $post["url"];
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
-        $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
+        $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'],
+            $GLOBALS['DOC_SERV_EDITED'],
+            $GLOBALS['DOC_SERV_VIEWD'],
+            $GLOBALS['DOC_SERV_FILLFORMS']
+        );
         $filename = GetCorrectName($title);
 
         if (!in_array("." . $extension, $allexts)) {
@@ -196,7 +200,8 @@ function upload()
             return $result;
         }
 
-        $filename = GetCorrectName($_FILES['files']['name']);  // get the correct file name with an index if the file with such a name already exists
+        // get the correct file name with an index if the file with such a name already exists
+        $filename = GetCorrectName($_FILES['files']['name']);
         if (!move_uploaded_file($tmp, getStoragePath($filename))) {
             $result["error"] = 'Upload failed';  // file upload error
             return $result;
@@ -244,7 +249,8 @@ function track()
             if ($data->actions && $data->actions[0]->type == 0) {   // finished edit
                 $user = $data->actions[0]->userid;  // the user who finished editing
                 if (array_search($user, $data->users) === false) {
-                    $commandRequest = commandRequest("forcesave", $data->key);  // create a command request with the forcasave method
+                    // create a command request with the forcasave method
+                    $commandRequest = commandRequest("forcesave", $data->key);
                     sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
                 }
             }
@@ -295,7 +301,15 @@ function convert()
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, true, $newFileUri, $filePass, $lang);
+            $percent = GetConvertedUri($fileUri,
+                $extension,
+                $internalExtension,
+                $key,
+                true,
+                $newFileUri,
+                $filePass,
+                $lang
+            );
         } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
             return $result;
@@ -384,7 +398,8 @@ function files()
 function assets()
 {
     $fileName = basename($_GET["name"]);
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = dirname(__FILE__) .
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
@@ -396,7 +411,8 @@ function assets()
 function csv()
 {
     $fileName = "csv.csv";
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = dirname(__FILE__) .
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
@@ -449,7 +465,8 @@ function historyDownload()
 function download()
 {
     try {
-        $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
+        $fileName = realpath($GLOBALS['STORAGE_PATH'])
+        === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 

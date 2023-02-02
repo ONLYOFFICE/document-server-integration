@@ -44,7 +44,8 @@ if (!empty($createExt)) {
 }
 
 $fileuri = FileUri($filename, true);
-$fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
+$fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ?
+    getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
 $directUrl = getDownloadUrl($filename, false);
 $docKey = getDocEditorKey($filename);
 $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -52,11 +53,16 @@ $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
 $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
-if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
+if ((!$canEdit && $editorsMode == "edit"
+    || $editorsMode == "fillForms")
+    && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+) {
     $editorsMode = "fillForms";
     $canEdit = true;
 }
-$submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;  // check if the Submit form button is displayed or not
+
+// check if the Submit form button is displayed or not
+$submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
 $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
 $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
@@ -91,12 +97,15 @@ $config = [
             "favorite" => $user->favorite,
         ],
         "permissions" => [  // the permission for the document to be edited and downloaded or not
-            "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+            "comment" => $editorsMode != "view" && $editorsMode
+                != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
             "copy" => !in_array("copy", $user->deniedPermissions),
             "download" => !in_array("download", $user->deniedPermissions),
-            "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
+            "edit" => $canEdit && ($editorsMode == "edit" ||
+                    $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
             "print" => !in_array("print", $user->deniedPermissions),
-            "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+            "fillForms" => $editorsMode != "view" && $editorsMode != "comment"
+                && $editorsMode != "embedded" && $editorsMode != "blockcontent",
             "modifyFilter" => $editorsMode != "filter",
             "modifyContentControl" => $editorsMode != "blockcontent",
             "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
@@ -123,19 +132,25 @@ $config = [
             "group" => $user->group,
         ],
         "embedded" => [  // the parameters for the embedded document type
-            "saveUrl" => $directUrl,  // the absolute URL that will allow the document to be saved onto the user personal computer
-            "embedUrl" => $directUrl,  // the absolute URL to the document serving as a source file for the document embedded into the web page
-            "shareUrl" => $directUrl,  // the absolute URL that will allow other users to share this document
+            // the absolute URL that will allow the document to be saved onto the user personal computer
+            "saveUrl" => $directUrl,
+            // the absolute URL to the document serving as a source file for the document embedded into the web page
+            "embedUrl" => $directUrl,
+            // the absolute URL that will allow other users to share this document
+            "shareUrl" => $directUrl,
             "toolbarDocked" => "top",  // the place for the embedded viewer toolbar (top or bottom)
         ],
         "customization" => [  // the parameters for the editor interface
             "about" => true,  // the About section display
             "comments" => true,
             "feedback" => true,  // the Feedback & Support menu button display
-            "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
+            // adds the request for the forced file saving to the callback handler when saving the document
+            "forcesave" => false,
             "submitForm" => $submitForm,  // if the Submit form button is displayed or not
             "goback" => [  // settings for the Open file location menu button and upper right corner button
-                "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                // the absolute URL to the website address which will be opened
+                // when clicking the Open file location menu button
+                "url" => serverPath(),
             ],
         ],
     ],
@@ -179,7 +194,8 @@ if (isJwtEnabled()) {
     $config["token"] = jwtEncode($config);  // encode config into the token
     $dataInsertImage["token"] = jwtEncode($dataInsertImage);  // encode the dataInsertImage object into the token
     $dataCompareFile["token"] = jwtEncode($dataCompareFile);  // encode the dataCompareFile object into the token
-    $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);  // encode the dataMailMergeRecipients object into the token
+    // encode the dataMailMergeRecipients object into the token
+    $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
 }
 
 /**
@@ -309,12 +325,14 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $dataObj = [];
             $verDir = getVersionDir($histDir, $i);  // get the path to the file version
 
-            $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");  // get document key
+            // get document key
+            $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
             $obj["key"] = $key;
             $obj["version"] = $i;
 
             if ($i == 1) {  // check if the version number is equal to 1
-                $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");  // get meta data of this file
+                // get meta data of this file
+                $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
                 $json = json_decode($createdInfo, true);  // decode the meta data from the createdInfo.json file
 
                 $obj["created"] = $json["created"];
@@ -331,12 +349,15 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $dataObj["fileType"] = $fileExe;
             $dataObj["key"] = $key;
 
-            $directUrl = $i == $curVer ? FileUri($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+            $directUrl = $i == $curVer ? FileUri($filename, false) :
+                getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
             $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
             if (realpath($storagePath) === $storagePath) {
-                $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :
+                    getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
                 if ($isEnableDirectUrl) {
-                    $directUrl = $i == $curVer ? getDownloadUrl($filename, false) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+                    $directUrl = $i == $curVer ? getDownloadUrl($filename, false) :
+                        getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
                 }
             }
 
@@ -347,16 +368,19 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $dataObj["version"] = $i;
 
             if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
-                $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
+                $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) .
+                    DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
                 $change = $changes["changes"][0];
 
-                $obj["changes"] = $changes ? $changes["changes"] : null;  // write information about changes to the object
+                // write information about changes to the object
+                $obj["changes"] = $changes ? $changes["changes"] : null;
                 $obj["serverVersion"] = $changes["serverVersion"];
                 $obj["created"] = $change ? $change["created"] : null;
                 $obj["user"] = $change ? $change["user"] : null;
 
                 $prev = $histData[$i - 2];  // get the history data from the previous file version
-                $dataObj["previous"] = $isEnableDirectUrl ? [  // write information about previous file version to the data object
+                // write information about previous file version to the data object
+                $dataObj["previous"] = $isEnableDirectUrl ? [
                     "fileType" => $prev["fileType"],
                     "key" => $prev["key"],
                     "url" => $prev["url"],
@@ -395,11 +419,13 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,
+            maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="css/images/<?php echo getDocumentType($filename) ?>.ico" type="image/x-icon" />
@@ -434,7 +460,9 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         }
     </style>
 
-    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>"></script>
+    <script type="text/javascript" src="
+        <?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>">
+    </script>
 
     <script type="text/javascript">
 
@@ -482,7 +510,8 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             if (actionIndex != -1) {
                 var endIndex = href.indexOf("&", actionIndex + "&actionLink=".length);
                 if (endIndex != -1) {
-                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) +
+                        "&actionLink=" + encodeURIComponent(linkParam);
                 } else {
                     link = href.substring(0, actionIndex) + "&actionLink=" + encodeURIComponent(linkParam);
                 }
@@ -492,11 +521,13 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             return link;
         }
 
-        // the user is trying to get link for opening the document which contains a bookmark, scrolling to the bookmark position
+        // the user is trying to get link for opening the document which contains a bookmark,
+        // scrolling to the bookmark position
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
-            docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+            // set the link to the document which contains a bookmark
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
         // the meta information of the document is changed via the meta command
@@ -515,7 +546,9 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         var onRequestInsertImage = function(event) {
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
-                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, mb_strlen(json_encode($dataInsertImage)) - 2)?>
+                <?php echo mb_strimwidth(json_encode($dataInsertImage),
+                    1,
+                    mb_strlen(json_encode($dataInsertImage)) - 2)?>
             })
         };
 
@@ -526,7 +559,8 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 
         // the user is trying to select recipients data by clicking the Mail merge button
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
+            // insert recipient data for mail merge into the file
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -567,11 +601,11 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 
         var сonnectEditor = function () {
 
-            <?php
-                if (!file_exists(getStoragePath($filename))) {
-                    echo "alert('File not found'); return;";
-                }
-?>
+        <?php
+        if (!file_exists(getStoragePath($filename))) {
+            echo "alert('File not found'); return;";
+        }
+        ?>
 
             config = <?php echo json_encode($config) ?>;
 
@@ -601,13 +635,15 @@ $historyData = $out[1];
                 <?php if ($history != null && $historyData != null) { ?>
                     // the user is trying to show the document version history
                     config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
+                        // show the document version history
+                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);
                     };
                     // the user is trying to click the specific document version in the document version history
                     config.events['onRequestHistoryData'] = function (event) {
                         var ver = event.data;
                         var histData = <?php echo json_encode($historyData) ?>;
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                        // send the link to the document for viewing the version history
+                        docEditor.setHistoryData(histData[ver - 1]);
                     };
                     // the user is trying to go back to the document from viewing the document version history
                     config.events['onRequestHistoryClose'] = function () {
