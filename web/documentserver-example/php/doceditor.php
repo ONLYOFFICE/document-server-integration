@@ -17,11 +17,11 @@
  *
  */
 
-require_once(dirname(__FILE__) . '/config.php');
-require_once(dirname(__FILE__) . '/common.php');
-require_once(dirname(__FILE__) . '/functions.php');
-require_once(dirname(__FILE__) . '/jwtmanager.php');
-require_once(dirname(__FILE__) . '/users.php');
+require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/common.php';
+require_once dirname(__FILE__) . '/functions.php';
+require_once dirname(__FILE__) . '/jwtmanager.php';
+require_once dirname(__FILE__) . '/users.php';
 
 $user = getUser($_GET["user"]);
 $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;

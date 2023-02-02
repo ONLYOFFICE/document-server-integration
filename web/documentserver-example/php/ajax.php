@@ -17,7 +17,7 @@
  *
  */
 
-require(dirname(__FILE__) . '/config.php');
+require dirname(__FILE__) . '/config.php';
 
 // check if the request is an AJAX request
 function is_ajax()

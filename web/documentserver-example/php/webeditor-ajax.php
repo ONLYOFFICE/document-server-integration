@@ -20,13 +20,13 @@
 /**
  * WebEditor AJAX Process Execution.
  */
-require_once(dirname(__FILE__) . '/config.php');
-require_once(dirname(__FILE__) . '/ajax.php');
-require_once(dirname(__FILE__) . '/common.php');
-require_once(dirname(__FILE__) . '/functions.php');
-require_once(dirname(__FILE__) . '/jwtmanager.php');
-require_once(dirname(__FILE__) . '/trackmanager.php');
-require_once(dirname(__FILE__) . '/users.php');
+require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/ajax.php';
+require_once dirname(__FILE__) . '/common.php';
+require_once dirname(__FILE__) . '/functions.php';
+require_once dirname(__FILE__) . '/jwtmanager.php';
+require_once dirname(__FILE__) . '/trackmanager.php';
+require_once dirname(__FILE__) . '/users.php';
 
 // define tracker status
 $_trackerStatus = [

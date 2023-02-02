@@ -17,11 +17,11 @@
  *
  */
 
-require_once(dirname(__FILE__) . '/lib/jwt/BeforeValidException.php');
-require_once(dirname(__FILE__) . '/lib/jwt/ExpiredException.php');
-require_once(dirname(__FILE__) . '/lib/jwt/SignatureInvalidException.php');
-require_once(dirname(__FILE__) . '/lib/jwt/JWT.php');
-require_once(dirname(__FILE__) . '/config.php');
+require_once dirname(__FILE__) . '/lib/jwt/BeforeValidException.php';
+require_once dirname(__FILE__) . '/lib/jwt/ExpiredException.php';
+require_once dirname(__FILE__) . '/lib/jwt/SignatureInvalidException.php';
+require_once dirname(__FILE__) . '/lib/jwt/JWT.php';
+require_once dirname(__FILE__) . '/config.php';
 
 // check if a secret key to generate token exists or not
 function isJwtEnabled()
