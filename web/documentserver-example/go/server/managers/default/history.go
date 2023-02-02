@@ -49,18 +49,18 @@ func NewDefaultHistoryManager(logger *zap.SugaredLogger, sm managers.StorageMana
 	}
 }
 
-func (hm DefaultHistoryManager) readHistoryChanges(cpath string) ([]models.Changes, error) {
-	var mchanges []models.Changes
+func (hm DefaultHistoryManager) readHistory(cpath string) (models.History, error) {
+	var hist models.History
 	changes, err := hm.StorageManager.ReadFile(cpath)
 	if err != nil {
-		return mchanges, err
+		return hist, err
 	}
 
-	if err := json.Unmarshal(changes, &mchanges); err != nil {
-		return mchanges, err
+	if err := json.Unmarshal(changes, &hist); err != nil {
+		return hist, err
 	}
 
-	return mchanges, nil
+	return hist, nil
 }
 
 func (hm DefaultHistoryManager) readHistoryFileKey(keyPath string) (string, error) {
@@ -72,13 +72,24 @@ func (hm DefaultHistoryManager) readHistoryFileKey(keyPath string) (string, erro
 	return string(key[:]), nil
 }
 
-func (hm DefaultHistoryManager) buildNextHistory(mchanges []models.Changes, key string, version int) models.History {
+func (hm DefaultHistoryManager) buildNextHistory(hist models.History, key string, version int) models.History {
+	if version == 1 {
+		return models.History{
+			Changes:       nil,
+			Key:           key,
+			Created:       hist.Changes[len(hist.Changes)-1].Created,
+			User:          &hist.Changes[len(hist.Changes)-1].User,
+			ServerVersion: hist.ServerVersion,
+			Version:       version,
+		}
+	}
 	return models.History{
-		Changes: mchanges,
-		Key:     key,
-		Created: mchanges[len(mchanges)-1].Created,
-		User:    mchanges[len(mchanges)-1].User,
-		Version: version,
+		Changes:       hist.Changes,
+		Key:           key,
+		Created:       hist.Changes[len(hist.Changes)-1].Created,
+		User:          &hist.Changes[len(hist.Changes)-1].User,
+		ServerVersion: hist.ServerVersion,
+		Version:       version,
 	}
 }
 
@@ -106,7 +117,7 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 	}
 
 	histPath := path.Join(storagePath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version))
-	mchanges, err := hm.readHistoryChanges(path.Join(histPath, "changes.json"))
+	mchanges, err := hm.readHistory(path.Join(histPath, "changes.json"))
 	if err != nil {
 		return hresp, hsresp, err
 	}
@@ -122,11 +133,6 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 		DestinationPath: "prev" + utils.GetFileExt(filename),
 	})
 
-	changesUrl := hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
-		Version:         version,
-		DestinationPath: "diff.zip",
-	})
-
 	if version > 1 {
 		prevHistPath := path.Join(storagePath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1))
 		prevKey, err := hm.readHistoryFileKey(path.Join(prevHistPath, "key.txt"))
@@ -139,22 +145,26 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 			DestinationPath: "prev" + utils.GetFileExt(filename),
 		})
 
+		changesUrl := hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
+			Version:         version - 1,
+			DestinationPath: "diff.zip",
+		})
+
 		hset = managers.HistorySet{
 			ChangesUrl: changesUrl,
 			Key:        key,
 			Url:        url,
 			Version:    version,
-			Previous: managers.HistoryPrevious{
+			Previous: &managers.HistoryPrevious{
 				Key: prevKey,
 				Url: prevUrl,
 			},
 		}
 	} else {
 		hset = managers.HistorySet{
-			ChangesUrl: changesUrl,
-			Key:        key,
-			Url:        url,
-			Version:    version,
+			Key:     key,
+			Url:     url,
+			Version: version,
 		}
 	}
 
@@ -194,7 +204,7 @@ func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (mana
 	}
 
 	rhist.CurrentVersion = fmt.Sprint(version)
-	currMeta, err := hm.readHistoryChanges(path.Join(rootPath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, filename+".json"))
+	currMeta, err := hm.readHistory(path.Join(rootPath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, filename+".json"))
 	if err != nil {
 		return rhist, setHist, err
 	}
@@ -204,18 +214,29 @@ func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (mana
 		return rhist, setHist, err
 	}
 
-	rhist.History = append(rhist.History, models.History{
-		Changes: currMeta,
-		User:    currMeta[len(currMeta)-1].User,
-		Created: currMeta[len(currMeta)-1].Created,
-		Key:     docKey,
-		Version: version,
-	})
-
 	currSet := managers.HistorySet{
 		Key:     docKey,
 		Url:     hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 		Version: version,
+		ChangesUrl: hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
+			Version:         version - 1,
+			DestinationPath: "diff.zip",
+		}),
+	}
+
+	if version > 1 {
+		rhist.History = append(rhist.History, models.History{
+			Changes:       currMeta.Changes,
+			User:          &currMeta.Changes[len(currMeta.Changes)-1].User,
+			Created:       currMeta.Changes[len(currMeta.Changes)-1].Created,
+			Key:           docKey,
+			Version:       version,
+			ServerVersion: currMeta.ServerVersion,
+		})
+		currSet.Previous = &managers.HistoryPrevious{
+			Key: setHist[len(setHist)-1].Key,
+			Url: setHist[len(setHist)-1].Url,
+		}
 	}
 
 	if err := hm.signHistorySet(&currSet); err != nil {
@@ -226,14 +247,14 @@ func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (mana
 	return rhist, setHist, nil
 }
 
-func (hm DefaultHistoryManager) CreateMeta(filename string, changes []models.Changes) error {
+func (hm DefaultHistoryManager) CreateMeta(filename string, history models.History) error {
 	rootPath, err := hm.StorageManager.GetRootFolder()
 	if err != nil {
 		return err
 	}
 
 	hpath := path.Join(rootPath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX)
-	bdata, err := json.MarshalIndent(changes, " ", "")
+	bdata, err := json.MarshalIndent(history, " ", "")
 	if err != nil {
 		return err
 	}
@@ -276,10 +297,8 @@ func (hm DefaultHistoryManager) CreateHistory(cbody models.Callback) error {
 		histDirVersion := path.Join(hdir, fmt.Sprint(version))
 		if !hm.StorageManager.PathExists(histDirVersion) {
 			hm.StorageManager.CreateDirectory(histDirVersion)
-
 			hm.StorageManager.MoveFile(path.Join(hdir, cbody.Filename+".json"), path.Join(histDirVersion, "changes.json"))
-
-			cbytes, err := json.Marshal(cbody.History.Changes)
+			cbytes, err := json.Marshal(cbody.History)
 			if err != nil {
 				return err
 			}

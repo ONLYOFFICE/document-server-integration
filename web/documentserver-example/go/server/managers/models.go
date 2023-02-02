@@ -32,12 +32,12 @@ type HistoryRefresh struct {
 }
 
 type HistorySet struct {
-	ChangesUrl string          `json:"changesUrl"`
-	Key        string          `json:"key"`
-	Previous   HistoryPrevious `json:"previous,omitempty"`
-	Url        string          `json:"url"`
-	Version    int             `json:"version"`
-	Token      string          `json:"token,omitempty"`
+	ChangesUrl string           `json:"changesUrl,omitempty"`
+	Key        string           `json:"key"`
+	Previous   *HistoryPrevious `json:"previous,omitempty"`
+	Url        string           `json:"url"`
+	Version    int              `json:"version"`
+	Token      string           `json:"token,omitempty"`
 	jwt.StandardClaims
 }
 

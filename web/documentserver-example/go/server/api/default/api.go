@@ -121,10 +121,16 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 		return
 	}
 
-	srv.HistoryManager.CreateMeta(fileName, []models.Changes{
-		{
-			Created: time.Now().Format("2006-02-1 15:04:05"),
-			User:    user,
+	srv.HistoryManager.CreateMeta(fileName, models.History{
+		ServerVersion: "0.0.0",
+		Changes: []models.Changes{
+			{
+				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+				User: models.User{
+					Id:       user.Id,
+					Username: user.Username,
+				},
+			},
 		},
 	})
 
@@ -210,7 +216,7 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		return
 	}
 
-	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, r.Host)
+	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, remoteAddr)
 	if err != nil {
 		srv.logger.Warnf("could not get file history: %s", err.Error())
 	}
@@ -237,19 +243,14 @@ func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http
 		return
 	}
 
-	srv.logger.Debugf("A new download call (%s)", filename)
+	srv.logger.Debugf("A new history call (%s)", filename)
 	if filename == "" {
 		srv.logger.Errorf("filename parameter is blank")
 		shared.SendDocumentServerRespose(w, true)
 		return
 	}
 
-	remoteAddr := generateUrl(r)
-	if srv.config.ServerAddress != "" {
-		remoteAddr = srv.config.ServerAddress
-	}
-
-	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{
+	fileUrl := srv.StorageManager.GenerateFilestoreUri(filename, managers.FileMeta{
 		Version:         version,
 		DestinationPath: file,
 	})
@@ -340,10 +341,16 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			})
 			srv.StorageManager.RemoveFile(filename)
 			response.Filename = correctName
-			srv.HistoryManager.CreateMeta(response.Filename, []models.Changes{
-				{
-					Created: time.Now().Format("2006-02-1 15:04:05"),
-					User:    user,
+			srv.HistoryManager.CreateMeta(response.Filename, models.History{
+				ServerVersion: "0.0.0",
+				Changes: []models.Changes{
+					{
+						Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+						User: models.User{
+							Id:       user.Id,
+							Username: user.Username,
+						},
+					},
 				},
 			})
 		}
@@ -435,10 +442,16 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	srv.StorageManager.CreateFile(file, fpath)
-	srv.HistoryManager.CreateMeta(filename, []models.Changes{
-		{
-			Created: time.Now().Format("2006-02-1 15:04:05"),
-			User:    user,
+	srv.HistoryManager.CreateMeta(filename, models.History{
+		ServerVersion: "0.0.0",
+		Changes: []models.Changes{
+			{
+				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+				User: models.User{
+					Id:       user.Id,
+					Username: user.Username,
+				},
+			},
 		},
 	})
 

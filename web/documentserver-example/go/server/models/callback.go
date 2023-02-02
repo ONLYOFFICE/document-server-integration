@@ -35,11 +35,11 @@ type Callback struct {
 }
 
 type History struct {
-	Changes       []Changes `json:"changes"`
-	ServerVersion string    `json:"serverVersion"`
+	Changes       []Changes `json:"changes,omitempty"`
+	ServerVersion string    `json:"serverVersion,omitempty"`
 	Created       string    `json:"created,omitempty"`
 	Key           string    `json:"key,omitempty"`
-	User          User      `json:"user,omitempty"`
+	User          *User     `json:"user,omitempty"`
 	Version       int       `json:"version,omitempty"`
 }
 

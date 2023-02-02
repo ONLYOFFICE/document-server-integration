@@ -31,7 +31,7 @@ type DocumentManager interface {
 
 type HistoryManager interface {
 	GetHistory(filename, storageAddress string) (HistoryRefresh, []HistorySet, error)
-	CreateMeta(filename string, changes []models.Changes) error
+	CreateMeta(filename string, history models.History) error
 	CreateHistory(cbody models.Callback) error
 }
 

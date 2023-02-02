@@ -83,10 +83,7 @@
         var onRequestHistoryData = function(event) {
             var version = event.data;
             var history = {{.setHist}};
-            var hist_version = history.find((hist) => hist.version === version);
-            if (hist_version) {
-                docEditor.setHistoryData(hist_version);
-            }
+            docEditor.setHistoryData(history[version-1]);
         };
 
         var replaceActionLink = function (href, linkParam) {
