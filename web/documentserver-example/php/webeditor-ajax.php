@@ -1,4 +1,7 @@
 <?php
+
+namespace PhpExample;
+
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
