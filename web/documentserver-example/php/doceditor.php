@@ -546,9 +546,11 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         var onRequestInsertImage = function(event) {
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
-                <?php echo mb_strimwidth(json_encode($dataInsertImage),
+                <?php echo mb_strimwidth(
+                    json_encode($dataInsertImage),
                     1,
-                    mb_strlen(json_encode($dataInsertImage)) - 2)?>
+                    mb_strlen(json_encode($dataInsertImage)) - 2
+                )?>
             })
         };
 
@@ -602,10 +604,10 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         var сonnectEditor = function () {
 
         <?php
-        if (!file_exists(getStoragePath($filename))) {
-            echo "alert('File not found'); return;";
-        }
-        ?>
+                        if (!file_exists(getStoragePath($filename))) {
+                            echo "alert('File not found'); return;";
+                        }
+?>
 
             config = <?php echo json_encode($config) ?>;
 

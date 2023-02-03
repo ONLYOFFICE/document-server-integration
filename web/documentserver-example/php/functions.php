@@ -135,8 +135,7 @@ function sendRequestToConvertService(
     $is_async,
     $filePass,
     $lang
-)
-{
+) {
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
         $from_extension = mb_strtolower($path_parts['extension']);
@@ -234,13 +233,15 @@ function getConvertedUri(
     $lang
 ) {
     $converted_document_uri = "";
-    $responceFromConvertService = sendRequestToConvertService($document_uri,
+    $responceFromConvertService = sendRequestToConvertService(
+        $document_uri,
         $from_extension,
         $to_extension,
         $document_revision_id,
         $is_async,
         $filePass,
-        $lang);
+        $lang
+    );
     $json = json_decode($responceFromConvertService, true);
 
     // if an error occurs, then display an error message

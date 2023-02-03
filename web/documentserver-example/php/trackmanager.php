@@ -56,8 +56,12 @@ function readBody()
             $data = jwtDecode($data["token"]);  // decode it
             sendlog("   jwt in body", "webedior-ajax.log");
         } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-            $data = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader],
-                mb_strlen("Bearer ")));  // decode its part after Authorization prefix
+            $data = jwtDecode(
+                mb_substr(
+                    apache_request_headers()[$jwtHeader],
+                    mb_strlen("Bearer ")
+                )
+            );  // decode its part after Authorization prefix
             $inHeader = true;
             sendlog("   jwt in header", "webedior-ajax.log");
         } else {  // otherwise, an error occurs
@@ -165,9 +169,9 @@ function processSave($data, $fileName, $userAddress)
             file_put_contents($verDir .
                 DIRECTORY_SEPARATOR . "changes.json", $histData, LOCK_EX);
         }
-            // write the key value to the key.txt file
-            file_put_contents($verDir .
-                DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);
+        // write the key value to the key.txt file
+        file_put_contents($verDir .
+            DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);
 
         // get the path to the forcesaved file version
         $forcesavePath = getForcesavePath($newFileName, $userAddress, false);

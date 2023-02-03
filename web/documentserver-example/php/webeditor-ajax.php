@@ -126,7 +126,8 @@ function saveas()
         $fileurl = $post["url"];
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
-        $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'],
+        $allexts = array_merge(
+            $GLOBALS['DOC_SERV_CONVERT'],
             $GLOBALS['DOC_SERV_EDITED'],
             $GLOBALS['DOC_SERV_VIEWD'],
             $GLOBALS['DOC_SERV_FILLFORMS']
@@ -301,7 +302,8 @@ function convert()
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = getConvertedUri($fileUri,
+            $percent = getConvertedUri(
+                $fileUri,
                 $extension,
                 $internalExtension,
                 $key,

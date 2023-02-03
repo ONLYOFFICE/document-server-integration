@@ -576,10 +576,12 @@ function getFileInfo($fileId)
  */
 function getFileExts()
 {
-    return array_merge($GLOBALS['DOC_SERV_VIEWD'],
+    return array_merge(
+        $GLOBALS['DOC_SERV_VIEWD'],
         $GLOBALS['DOC_SERV_EDITED'],
         $GLOBALS['DOC_SERV_CONVERT'],
-        $GLOBALS['DOC_SERV_FILLFORMS']);
+        $GLOBALS['DOC_SERV_FILLFORMS']
+    );
 }
 
 /**
