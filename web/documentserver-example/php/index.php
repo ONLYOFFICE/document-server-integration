@@ -142,7 +142,7 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                 <div class="main-panel">
                                     <?php
                                     $storedFiles = getStoredFiles();
-if (!empty($storedFiles)) { ?>
+                                    if (!empty($storedFiles)) { ?>
                                         <div id="portal-info" style="display: none">
                                     <?php } else { ?>
                                         <div id="portal-info" style="display: table-cell">

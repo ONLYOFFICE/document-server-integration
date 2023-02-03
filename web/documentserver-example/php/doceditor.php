@@ -604,10 +604,10 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
         var сonnectEditor = function () {
 
         <?php
-                        if (!file_exists(getStoragePath($filename))) {
-                            echo "alert('File not found'); return;";
-                        }
-?>
+        if (!file_exists(getStoragePath($filename))) {
+            echo "alert('File not found'); return;";
+        }
+        ?>
 
             config = <?php echo json_encode($config) ?>;
 
@@ -628,10 +628,10 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             };
 
             <?php
-    $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
-$history = $out[0];
-$historyData = $out[1];
-?>
+            $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
+            $history = $out[0];
+            $historyData = $out[1];
+            ?>
 
             <?php if ($user->id != "uid-0") { ?>
                 <?php if ($history != null && $historyData != null) { ?>
