@@ -285,16 +285,19 @@ public class FileController {
 
     @GetMapping(path = "${url.download}")
     public ResponseEntity<Resource> download(final HttpServletRequest request,  // download a file
-                                             @RequestParam("fileName") final String fileName) {
+                                             @RequestParam("fileName") final String fileName,
+                                             @RequestParam(value = "userAddress", required = false) final String userAddress){
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled()) {
-                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
+            if (jwtManager.tokenEnabled() && userAddress != null) {
+                String header = request.getHeader(documentJwtHeader == null // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
+                } else {
+                    return null;
                 }
             }
             return downloadFile(fileName);  // download data from the specified file

@@ -397,18 +397,22 @@ def csv(request):
 def download(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
-        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None):
+        if (jwtManager.isEnabled() and isEmbedded == None and userAddress):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
                 token = token[len('Bearer '):]
-                try:
-                    body = jwtManager.decode(token)
-                except Exception:
-                    return HttpResponse('JWT validation failed', status=403)
+
+            try:
+                body = jwtManager.decode(token)
+            except Exception:
+                return HttpResponse('JWT validation failed', status=403)
+
+        if (userAddress == None):
+            userAddress = request
 
         filePath = docManager.getForcesavePath(fileName, userAddress, False)  # get the path to the forcesaved file version
         if (filePath == ""):

@@ -475,7 +475,7 @@ function download()
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 
-        if (isJwtEnabled() && $isEmbedded == null) {
+        if (isJwtEnabled() && $isEmbedded == null && $userAddress) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
@@ -485,7 +485,6 @@ function download()
                 }
             }
         }
-
         $filePath = getForcesavePath($fileName, $userAddress, false);  // get the path to the forcesaved file version
         if ($filePath == "") {
             $filePath = getStoragePath($fileName, $userAddress);  // get file from the storage directory
