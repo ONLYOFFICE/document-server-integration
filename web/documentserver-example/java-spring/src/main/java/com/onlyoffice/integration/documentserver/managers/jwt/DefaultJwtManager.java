@@ -90,7 +90,7 @@ public class DefaultJwtManager implements JwtManager {
         } catch (Exception ex) {
             throw new RuntimeException("{\"error\":1,\"message\":\"JSON Parsing error\"}");
         }
-        if (tokenEnabled()) {  // check if the token is enabled
+        if (tokenEnabled() && tokenUseForRequest()) {  // check if the token is enabled
             String token = (String) body.get("token");  // get token from the body
             if (token == null) {  // if token is empty
                 if (header != null && !header.isBlank()) {  // and the header is defined
