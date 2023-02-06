@@ -37,6 +37,8 @@ import java.util.Map;
 public class DefaultJwtManager implements JwtManager {
     @Value("${files.docservice.secret}")
     private String tokenSecret;
+    @Value("${files.docservice.token-use-for-request}")
+    private String tokenUseForRequest;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -60,6 +62,10 @@ public class DefaultJwtManager implements JwtManager {
     // check if the token is enabled
     public boolean tokenEnabled() {
         return tokenSecret != null && !tokenSecret.isEmpty();
+    }
+
+    public boolean tokenUseForRequest() {
+        return Boolean.parseBoolean(tokenUseForRequest) && !tokenUseForRequest.isEmpty();
     }
 
     // read document token
