@@ -23,6 +23,10 @@ import jwt
 def isEnabled():
     return bool(config.DOC_SERV_JWT_SECRET)
 
+# check if a secret key to generate token exists or not
+def useForRequest():
+    return bool(config.DOC_SERV_JWT_USE_FOR_REQUEST)
+
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
     return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256')
