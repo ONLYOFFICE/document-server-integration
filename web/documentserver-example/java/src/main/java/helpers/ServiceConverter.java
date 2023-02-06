@@ -168,7 +168,7 @@ public final class ServiceConverter {
         }
 
         String headerToken = "";
-        if (DocumentManager.tokenEnabled()) {
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
             map.put("url", body.getUrl());

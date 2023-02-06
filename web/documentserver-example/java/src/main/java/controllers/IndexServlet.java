@@ -472,7 +472,7 @@ public class IndexServlet extends HttpServlet {
                                         final HttpServletResponse response,
                                         final PrintWriter writer) {
         try {
-            if (DocumentManager.tokenEnabled()) {
+            if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
@@ -516,10 +516,9 @@ public class IndexServlet extends HttpServlet {
             String fileName = FileUtility.getFileName(request.getParameter("fileName"));
             String userAddress = request.getParameter("userAddress");
             String isEmbedded = request.getParameter("dmode");
-            String tokenUseForRequest = ConfigManager.getProperty("files.docservice.token-use-for-request");
 
             if (DocumentManager.tokenEnabled() && isEmbedded == null && userAddress != null
-                    && Boolean.parseBoolean(tokenUseForRequest)) {
+                    && DocumentManager.tokenUseForRequest()) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
