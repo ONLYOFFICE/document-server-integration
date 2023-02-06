@@ -378,7 +378,7 @@ function historyDownload() {
         $ver = $_GET["ver"];
         $file = $_GET["file"];
 
-        if (isJwtEnabled()) {
+        if (isJwtEnabled() && $GLOBALS['DOC_SERV_JWT_USE_FOR_REQUEST']) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
