@@ -153,7 +153,7 @@ class HomeController < ApplicationController
       file = params[:file]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled
+      if JwtHelper.is_enabled && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
@@ -272,7 +272,7 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && Rails.configuration.token_use_for_request
+      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]

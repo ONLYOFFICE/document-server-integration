@@ -31,7 +31,7 @@ class TrackHelper
             file_data = JSON.parse(body)  # parse file data
 
             # check if a secret key to generate token exists or not
-            if JwtHelper.is_enabled
+            if JwtHelper.is_enabled && JwtHelper.use_for_request
                 inHeader = false
                 token = nil
                 jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get the authorization header from the config
@@ -234,7 +234,7 @@ class TrackHelper
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
                 req.add_field("Content-Type", "application/json")  # set headers
 
-                if JwtHelper.is_enabled  # if the signature is enabled
+                if JwtHelper.is_enabled && JwtHelper.use_for_request  # if the signature is enabled
                     payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
                     jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get signature authorization header
                     req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
