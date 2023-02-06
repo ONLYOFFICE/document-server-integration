@@ -28,6 +28,11 @@ function isJwtEnabled() {
     return !empty($GLOBALS['DOC_SERV_JWT_SECRET']);
 }
 
+// check if a secret key use for request
+function tokenUseForRequest() {
+    return $GLOBALS['DOC_SERV_JWT_USE_FOR_REQUEST'] ?: false;
+}
+
 // encode a payload object into a token using a secret key
 function jwtEncode($payload) {
     return \Firebase\JWT\JWT::encode($payload, $GLOBALS["DOC_SERV_JWT_SECRET"]);
