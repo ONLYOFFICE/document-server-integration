@@ -26,7 +26,7 @@ from . import jwtManager, docManager, historyManager, fileUtils, serviceConverte
 # read request body
 def readBody(request):
     body = json.loads(request.body)
-    if (jwtManager.isEnabled()): # if the secret key to generate token exists
+    if (jwtManager.isEnabled() and jwtManager.useForRequest()): # if the secret key to generate token exists
         token = body.get('token') # get the document token
 
         if (not token): # if JSON web token is not received
@@ -165,7 +165,7 @@ def commandRequest(method, key, meta = None):
 
     headers={'accept': 'application/json'}
 
-    if jwtManager.isEnabled(): # check if a secret key to generate token exists or not
+    if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
         jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
         headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
