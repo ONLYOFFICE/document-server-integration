@@ -29,11 +29,13 @@ namespace OnlineEditorsExample
     {
         private static readonly string Secret;
         public static readonly bool Enabled;
+        public static readonly bool SignatureUseForRequest;
 
         static JwtManager()
         {
             Secret = WebConfigurationManager.AppSettings["files.docservice.secret"] ?? "";  // get token secret from the config parameters
             Enabled = !string.IsNullOrEmpty(Secret);  // check if the token is enabled
+            SignatureUseForRequest = bool.Parse(WebConfigurationManager.AppSettings["files.docservice.token.useforrequest"]);
         }
 
         // encode a payload object into a token using a secret key
