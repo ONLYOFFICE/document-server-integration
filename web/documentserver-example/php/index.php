@@ -1,6 +1,8 @@
 <?php
 
-namespace PhpExample;
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -21,10 +23,11 @@ namespace PhpExample;
 require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/functions.php';
-require_once dirname(__FILE__) . '/users.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
+$users = new ExampleUsers();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -104,7 +107,7 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                                     <span class="select-user">Username</span>
                                                     <img id="info" class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
-                                                        <?php foreach (getAllUsers() as $user_l) {
+                                                        <?php foreach ($users->getAllUsers() as $user_l) {
                                                             $name = $user_l->name ?: "Anonymous";
                                                             echo '<option value="'.$user_l->id.'">'.$name.'</option>';
                                                         } ?>
@@ -169,7 +172,7 @@ $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] :
                                             users in different Web browser sessions, so you can check out multi-user
                                             editing functions.
                                         </span>
-                                        <?php foreach (getAllUsers() as $user_l) {
+                                        <?php foreach ($users->getAllUsers() as $user_l) {
                                             $name = $user_l->name ?: "Anonymous";
                                             echo '<div class="user-descr">';
                                             echo '<b>'.$name.'</b>';

@@ -2,6 +2,8 @@
 
 namespace PhpExample;
 
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -27,7 +29,7 @@ require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/jwtmanager.php';
 require_once dirname(__FILE__) . '/trackmanager.php';
-require_once dirname(__FILE__) . '/users.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 // define tracker status
 $_trackerStatus = [
@@ -151,7 +153,8 @@ function saveas()
         }
 
         file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
-        $user = getUser($_GET["user"]);
+        $users = new ExampleUsers();
+        $user = $users->getUser($_GET["user"]);
         createMeta($filename, $user->id, $user->name);  // and create meta data for this file
 
         $result["file"] = $filename;
@@ -210,7 +213,8 @@ function upload()
             $result["error"] = 'Upload failed';  // file upload error
             return $result;
         }
-        $user = getUser($_GET["user"]);
+        $users = new ExampleUsers();
+        $user = $users->getUser($_GET["user"]);
         createMeta($filename, $user->id, $user->name);  // create file meta data
     } else {
         $result["error"] = 'Upload failed';
@@ -338,7 +342,8 @@ function convert()
             return $result;
         }
         file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
-        $user = getUser($_GET["user"]);
+        $users = new ExampleUsers();
+        $user = $users->getUser($_GET["user"]);
         createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
 
         // delete the original file and its history

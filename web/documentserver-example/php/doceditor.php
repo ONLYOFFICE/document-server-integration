@@ -1,6 +1,9 @@
 <?php
 
-namespace PhpExample;
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+use OnlineEditorsExamplePhp\Helpers\Users;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -22,9 +25,10 @@ require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/jwtmanager.php';
-require_once dirname(__FILE__) . '/users.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-$user = getUser($_GET["user"]);
+$users = new ExampleUsers();
+$user = $users->getUser($_GET["user"]);
 $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
 // get the file url and upload it
@@ -190,7 +194,7 @@ $dataMailMergeRecipients = $isEnableDirectUrl ? [
 ];
 
 // users data for mentions
-$usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
+$usersForMentions = $user->id != "uid-0" ? $users->getUsersForMentions($user->id) : null;
 
 // check if the secret key to generate token exists
 if (isJwtEnabled()) {
@@ -205,7 +209,7 @@ if (isJwtEnabled()) {
  * Get demo file name by the extension
  *
  * @param string $createExt
- * @param string $user
+ * @param Users $user
  *
  * @return string
  */
