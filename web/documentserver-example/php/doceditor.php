@@ -25,8 +25,6 @@ use OnlineEditorsExamplePhp\Helpers\Utils;
  * limitations under the License.
  */
 
-require_once dirname(__FILE__) . '/common.php';
-require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $users = new ExampleUsers();
@@ -58,9 +56,9 @@ if (!empty($createExt)) {
     exit;
 }
 
-$fileuri = fileUri($filename, true);
+$fileuri = $fileUtility->fileUri($filename, true);
 $fileuriUser = realpath($configManager->getConfig("storagePath")) === $configManager->getConfig("storagePath") ?
-    $fileUtility->getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
+    $fileUtility->getDownloadUrl($filename) . "&dmode=emb" : $fileUtility->fileUri($filename);
 $directUrl = $fileUtility->getDownloadUrl($filename, false);
 $docKey = $fileUtility->getDocEditorKey($filename);
 $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));

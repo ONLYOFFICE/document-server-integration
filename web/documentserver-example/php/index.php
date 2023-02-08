@@ -223,9 +223,11 @@ $utils = new Utils();
                                                             <?php foreach ($storedFiles as &$storeFile) {
                                                                 echo '<tr class="tableRow" title="'.
                                                                     $storeFile->name.' ['.
-                                                                    getFileVersion(
-                                                                        getHistoryDir(
-                                                                            getStoragePath($storeFile->name)
+                                                                    $fileUtility->getFileVersion(
+                                                                        $fileUtility->getHistoryDir(
+                                                                            $fileUtility->getStoragePath(
+                                                                                $storeFile->name
+                                                                            )
                                                                         )
                                                                     ).
                                                                     ']">';

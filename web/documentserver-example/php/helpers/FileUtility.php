@@ -227,7 +227,7 @@ final class FileUtility
         if (realpath($storagePath) === $storagePath) {
             $directory = $storagePath;
         } else {
-            $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+            $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR . $storagePath;
         }
 
         if ($storagePath != "") {
@@ -275,7 +275,8 @@ final class FileUtility
         if (realpath($storagePath) === $storagePath) {
             $directory = $storagePath . DIRECTORY_SEPARATOR;
         } else {
-            $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . $this->getCurUserHostAddress($userAddress) .
+            $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR . $storagePath .
+                $this->getCurUserHostAddress($userAddress) .
                 DIRECTORY_SEPARATOR;
         }
 
@@ -378,7 +379,7 @@ final class FileUtility
         if (realpath($storagePath) === $storagePath) {
             $directory = $storagePath;
         } else {
-            $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+            $directory = dirname(__DIR__) . DIRECTORY_SEPARATOR . $storagePath;
         }
 
         // get the storage path and check if it exists

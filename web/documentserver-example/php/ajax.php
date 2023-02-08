@@ -18,9 +18,13 @@ namespace OnlineEditorsExamplePhp;
  * limitations under the License.
  */
 
+use Exception;
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use OnlineEditorsExamplePhp\Helpers\FileUtility;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
+use OnlineEditorsExamplePhp\Helpers\TrackManager;
+use OnlineEditorsExamplePhp\Helpers\Utils;
 
 /**
  * Check if the request is an AJAX request
@@ -89,19 +93,21 @@ function nocacheHeaders()
  */
 function saveas()
 {
+    $fileUtility = new FileUtility();
     try {
         $result;
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
+        $configManager = new ConfigManager();
         $allexts = array_merge(
-            $GLOBALS['DOC_SERV_CONVERT'],
-            $GLOBALS['DOC_SERV_EDITED'],
-            $GLOBALS['DOC_SERV_VIEWD'],
-            $GLOBALS['DOC_SERV_FILLFORMS']
+            $configManager->getConfig("docServConvert"),
+            $configManager->getConfig("docServEdited"),
+            $configManager->getConfig("docServViewd"),
+            $configManager->getConfig("docServFillforms")
         );
-        $filename = getCorrectName($title);
+        $filename = $fileUtility->getCorrectName($title);
 
         if (!in_array("." . $extension, $allexts)) {
             $result["error"] = "File type is not supported";
@@ -111,20 +117,20 @@ function saveas()
         $content_length = $headers["Content-Length"];
         $data = file_get_contents(str_replace(" ", "%20", $fileurl));
 
-        if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
+        if ($data === false || $content_length <= 0 || $content_length > $configManager->getConfig("fileSizeMax")) {
             $result["error"] = "File size is incorrect";
             return $result;
         }
 
-        file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
+        file_put_contents($fileUtility->getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
         $users = new ExampleUsers();
         $user = $users->getUser($_GET["user"]);
-        createMeta($filename, $user->id, $user->name);  // and create meta data for this file
+        $fileUtility->createMeta($filename, $user->id, $user->name);  // and create meta data for this file
 
         $result["file"] = $filename;
         return $result;
     } catch (Exception $e) {
-        sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
+        $fileUtility->sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
         return $result;
     }
@@ -160,7 +166,8 @@ function upload()
         $ext = mb_strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
-        if ($filesize <= 0 || $filesize > $GLOBALS['FILE_SIZE_MAX']) {
+        $configManager = new ConfigManager();
+        if ($filesize <= 0 || $filesize > $configManager->getConfig("fileSizeMax")) {
             $result["error"] = 'File size is incorrect';  // if not, then an error occurs
             return $result;
         }
@@ -193,17 +200,19 @@ function upload()
 /**
  * Tracking file changes
  *
- * @return array|int
+ * @return mixed
  */
 function track()
 {
-    sendlog("Track START", "webedior-ajax.log");
-    sendlog("   _GET params: " . serialize($_GET), "webedior-ajax.log");
+    $fileUtility = new FileUtility();
+    $trackManager = new TrackManager();
+    $fileUtility->sendlog("Track START", "webedior-ajax.log");
+    $fileUtility->sendlog("   _GET params: " . serialize($_GET), "webedior-ajax.log");
 
     $result["error"] = 0;
 
     // get the body of the post request and check if it is correct
-    $data = readBody();
+    $data = $trackManager->readBody();
 
     if (!empty($data->error)) {
         return $data;
@@ -215,25 +224,28 @@ function track()
     $userAddress = $_GET["userAddress"];
     $fileName = basename($_GET["fileName"]);
 
-    sendlog("   CommandRequest status: " . $data->status, "webedior-ajax.log");
+    $fileUtility->sendlog("   CommandRequest status: " . $data->status, "webedior-ajax.log");
     switch ($status) {
         case "Editing":  // status == 1
             if ($data->actions && $data->actions[0]->type == 0) {   // finished edit
                 $user = $data->actions[0]->userid;  // the user who finished editing
                 if (array_search($user, $data->users) === false) {
                     // create a command request with the forcasave method
-                    $commandRequest = commandRequest("forcesave", $data->key);
-                    sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
+                    $commandRequest = $trackManager->commandRequest("forcesave", $data->key);
+                    $fileUtility->sendlog(
+                        "   CommandRequest forcesave: " . serialize($commandRequest),
+                        "webedior-ajax.log"
+                    );
                 }
             }
             break;
         case "MustSave":  // status == 2
         case "Corrupted":  // status == 3
-            $result = processSave($data, $fileName, $userAddress);
+            $result = $trackManager->processSave($data, $fileName, $userAddress);
             break;
         case "MustForceSave":  // status == 6
         case "CorruptedForceSave":  // status == 7
-            $result = processForceSave($data, $fileName, $userAddress);
+            $result = $trackManager->processForceSave($data, $fileName, $userAddress);
             break;
     }
 
@@ -254,19 +266,21 @@ function convert()
     $lang = $_COOKIE["ulang"];
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = trim(getInternalExtension($fileName), '.');
+    $fileUtility = new FileUtility();
 
     // check if the file with such an extension can be converted
-    if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
+    $configManager = new ConfigManager();
+    if (in_array("." . $extension, $configManager->getConfig("docServConvert")) && $internalExtension != "") {
         $fileUri = $post["fileUri"];
         $fileUtility = new FileUtility();
         if ($fileUri == null || $fileUri == "") {
-            $fileUri = $fileUri = serverPath(true) . '/'
+            $fileUri = $fileUtility->serverPath(true) . '/'
                 . "webeditor-ajax.php"
                 . "?type=download"
                 . "&fileName=" . urlencode($fileName)
                 . "&userAddress=" . $fileUtility->getClientIp();
         }
-        $key = getDocEditorKey($fileName);
+        $key = $fileUtility->getDocEditorKey($fileName);
 
         $newFileUri;
         $result;
@@ -274,7 +288,8 @@ function convert()
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = getConvertedUri(
+            $utils = new Utils();
+            $percent = $utils->getConvertedUri(
                 $fileUri,
                 $extension,
                 $internalExtension,
@@ -300,19 +315,19 @@ function convert()
         $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($extension) - 1);
 
         // get the correct file name with an index if the file with such a name already exists
-        $newFileName = getCorrectName($baseNameWithoutExt . "." . $internalExtension);
+        $newFileName = $fileUtility->getCorrectName($baseNameWithoutExt . "." . $internalExtension);
 
         if (($data = file_get_contents(str_replace(" ", "%20", $newFileUri))) === false) {
             $result["error"] = 'Bad Request';
             return $result;
         }
-        file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
+        file_put_contents($fileUtility->getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
         $users = new ExampleUsers();
         $user = $users->getUser($_GET["user"]);
-        createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
+        $fileUtility->createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
 
         // delete the original file and its history
-        $stPath = getStoragePath($fileName);
+        $stPath = $fileUtility->getStoragePath($fileName);
         unlink($stPath);
         \PhpExample\delTree(getHistoryDir($stPath));
 
@@ -407,9 +422,11 @@ function historyDownload()
         $file = $_GET["file"];
 
         if ($jwtManager->isJwtEnabled()) {
-            $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+            $configManager = new ConfigManager();
+            $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ?
+                "Authorization" : $configManager->getConfig("docServJwtHeader");
             if (!empty(apache_request_headers()[$jwtHeader])) {
-                $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
+                $token = $jwtManager->jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
                 if (empty($token)) {
                     http_response_code(403);
                     die("Invalid JWT signature");
@@ -441,14 +458,17 @@ function historyDownload()
 function download()
 {
     try {
-        $fileName = realpath($GLOBALS['STORAGE_PATH'])
-        === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
+        $configManager = new ConfigManager();
+        $fileName = realpath($configManager->getConfig("storagePath"))
+        === $configManager->getConfig("storagePath") ? $_GET["fileName"] :
+            basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
         $jwtManager = new JwtManager();
 
         if ($jwtManager->isJwtEnabled() && $isEmbedded == null && $userAddress) {
-            $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+            $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ?
+                "Authorization" : $configManager->getConfig("docServJwtHeader");
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
                 if (empty($token)) {
