@@ -2,7 +2,9 @@
 
 namespace OnlineEditorsExamplePhp;
 
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+use OnlineEditorsExamplePhp\Helpers\JwtManager;
 use OnlineEditorsExamplePhp\Helpers\Users;
 
 /**
@@ -21,13 +23,12 @@ use OnlineEditorsExamplePhp\Helpers\Users;
  * limitations under the License.
  */
 
-require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/functions.php';
-require_once dirname(__FILE__) . '/jwtmanager.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $users = new ExampleUsers();
+$configManager = new ConfigManager();
 $user = $users->getUser($_GET["user"]);
 $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
@@ -51,7 +52,7 @@ if (!empty($createExt)) {
 }
 
 $fileuri = fileUri($filename, true);
-$fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ?
+$fileuriUser = realpath($configManager->getConfig("storagePath")) === $configManager->getConfig("storagePath") ?
     getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
 $directUrl = getDownloadUrl($filename, false);
 $docKey = getDocEditorKey($filename);
@@ -59,10 +60,10 @@ $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
 $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
-$canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
+$canEdit = in_array($ext, $configManager->getConfig("docServEdited"));  // check if the file can be edited
 if ((!$canEdit && $editorsMode == "edit"
     || $editorsMode == "fillForms")
-    && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+    && in_array($ext, $configManager->getConfig("docServFillforms"))
 ) {
     $editorsMode = "fillForms";
     $canEdit = true;
@@ -197,12 +198,15 @@ $dataMailMergeRecipients = $isEnableDirectUrl ? [
 $usersForMentions = $user->id != "uid-0" ? $users->getUsersForMentions($user->id) : null;
 
 // check if the secret key to generate token exists
-if (isJwtEnabled()) {
+$jwtManager = new JwtManager();
+if ($jwtManager->isJwtEnabled()) {
     $config["token"] = jwtEncode($config);  // encode config into the token
-    $dataInsertImage["token"] = jwtEncode($dataInsertImage);  // encode the dataInsertImage object into the token
-    $dataCompareFile["token"] = jwtEncode($dataCompareFile);  // encode the dataCompareFile object into the token
+    // encode the dataInsertImage object into the token
+    $dataInsertImage["token"] = $jwtManager->jwtEncode($dataInsertImage);
+    // encode the dataCompareFile object into the token
+    $dataCompareFile["token"] = $jwtManager->jwtEncode($dataCompareFile);
     // encode the dataMailMergeRecipients object into the token
-    $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
+    $dataMailMergeRecipients["token"] = $jwtManager->jwtEncode($dataMailMergeRecipients);
 }
 
 /**
@@ -318,7 +322,8 @@ function getDownloadUrl($fileName, $isServer = true)
  */
 function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 {
-    $storagePath = $GLOBALS['STORAGE_PATH'];
+    $configManager = new ConfigManager();
+    $storagePath = $configManager->getConfig("storagePath");
     $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
     if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
@@ -402,8 +407,9 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                 $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
             }
 
-            if (isJwtEnabled()) {
-                $dataObj["token"] = jwtEncode($dataObj);
+            $jwtManager = new JwtManager();
+            if ($jwtManager->isJwtEnabled()) {
+                $dataObj["token"] = $jwtManager->jwtEncode($dataObj);
             }
 
             $hist[] = $obj;  // add object dictionary to the hist list
@@ -468,7 +474,8 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
     </style>
 
     <script type="text/javascript" src="
-        <?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>">
+        <?php echo $configManager->getConfig("docServSiteUrl").
+            $configManager->getConfig("docServApiUrl") ?>">
     </script>
 
     <script type="text/javascript">

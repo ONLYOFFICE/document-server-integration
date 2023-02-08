@@ -2,6 +2,7 @@
 
 namespace OnlineEditorsExamplePhp;
 
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 
 /**
@@ -20,7 +21,6 @@ use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
  * limitations under the License.
  */
 
-require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
@@ -28,6 +28,7 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 $user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
 $users = new ExampleUsers();
+$configManager = new ConfigManager();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -121,7 +122,9 @@ $users = new ExampleUsers();
                                                  data-tooltip="Choose the language for ONLYOFFICE editors interface"
                                                  src="css/images/info.svg" />
                                                     <select class="select-user" id="language">
-                                                        <?php foreach ($GLOBALS['LANGUAGES'] as $key => $language) { ?>
+                                                        <?php
+                                                        foreach ($configManager->getConfig("languages") as $key => $language) {
+                                                            ?>
                                                             <option value="<?=$key?>"><?=$language?></option>
                                                         <?php } ?>
                                                     </select>
@@ -497,7 +500,7 @@ $users = new ExampleUsers();
                         frameborder="0" scrolling="no" allowtransparency></iframe>
                 <br />
                 <div class="buttonsMobile">
-                    <?php if (($GLOBALS['MODE']) != "view") { ?>
+                    <?php if ($configManager->getConfig("mode") != "view") { ?>
                         <div id="beginEdit" class="button orange disable">Edit</div>
                     <?php } ?>
                     <div id="beginView" class="button gray disable">View</div>
@@ -507,7 +510,9 @@ $users = new ExampleUsers();
             </div>
 
             <span id="loadScripts" data-docs="
-            <?php echo $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_PRELOADER_URL'] ?>
+            <?php
+            echo $configManager->getConfig("docServSiteUrl").$configManager->getConfig("docServPreloaderUrl");
+            ?>
             "></span>
 
             <footer>
@@ -541,9 +546,9 @@ $users = new ExampleUsers();
         <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
         <script type="text/javascript" src="js/jscript.js"></script>
         <script type="text/javascript">
-            var FillFormsExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_FILLFORMS"]) ?>';
-            var ConverExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_CONVERT"]) ?>';
-            var EditedExtList = '<?php echo implode(",", $GLOBALS["DOC_SERV_EDITED"]) ?>';
+            var FillFormsExtList = '<?php echo implode(",", $configManager->getConfig("docServFillforms")) ?>';
+            var ConverExtList = '<?php echo implode(",", $configManager->getConfig("docServConvert")) ?>';
+            var EditedExtList = '<?php echo implode(",", $configManager->getConfig("docServEdited")) ?>';
         </script>
     </body>
 </html>
