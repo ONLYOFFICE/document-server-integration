@@ -22,17 +22,6 @@ use Exception;
 
 final class Utils
 {
-    private ConfigManager $configManager;
-    private JwtManager $jwtManager;
-    private FileUtility $fileUtility;
-
-    public function __construct()
-    {
-        $this->configManager = new ConfigManager();
-        $this->jwtManager = new JwtManager();
-        $this->fileUtility = new FileUtility();
-    }
-
     /**
      * File uploading
      *
@@ -44,16 +33,17 @@ final class Utils
      */
     public function doUpload($fileUri)
     {
-        $_fileName = GetCorrectName($fileUri);
+        $fileUtility = new FileUtility();
+        $_fileName = $fileUtility->getCorrectName($fileUri);
 
         // check if file extension is supported by the editor
         $ext = mb_strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
-        if (!in_array($ext, $this->fileUtility->getFileExts())) {
+        if (!in_array($ext, $fileUtility->getFileExts())) {
             throw new Exception("File type is not supported");
         }
 
         // check if the file copy operation is successful
-        if (!@copy($fileUri, $this->fileUtility->getStoragePath($_fileName))) {
+        if (!@copy($fileUri, $fileUtility->getStoragePath($_fileName))) {
             $errors = error_get_last();
             $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
             throw new Exception($err);
@@ -159,7 +149,8 @@ final class Utils
         // if title is undefined, then replace it with a random guid
         $title = basename($document_uri);
         if (empty($title)) {
-            $title = guid();
+            $fileUtility = new FileUtility();
+            $title = $fileUtility->guid();
         }
 
         if (empty($document_revision_id)) {
@@ -167,10 +158,11 @@ final class Utils
         }
 
         // generate document token
-        $document_revision_id = generateRevisionId($document_revision_id);
+        $document_revision_id = $this->generateRevisionId($document_revision_id);
 
-        $urlToConverter = $this->configManager->getConfig("docServSiteUrl").
-            $this->configManager->getConfig("docServConverterUrl");
+        $configManager = new ConfigManager();
+        $urlToConverter = $configManager->getConfig("docServSiteUrl").
+            $configManager->getConfig("docServConverterUrl");
 
         $arr = [
             "async" => $is_async,
@@ -185,12 +177,13 @@ final class Utils
 
         // add header token
         $headerToken = "";
-        $jwtHeader = $this->configManager->getConfig("docServJwtHeader") == "" ?
-            "Authorization" : $this->configManager->getConfig("docServJwtHeader");
+        $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ?
+            "Authorization" : $configManager->getConfig("docServJwtHeader");
 
-        if ($this->jwtManager->isJwtEnabled()) {
-            $headerToken = $this->jwtManager->jwtEncode(["payload" => $arr]);
-            $arr["token"] = $this->jwtManager->jwtEncode($arr);
+        $jwtManager = new JwtManager();
+        if ($jwtManager->isJwtEnabled()) {
+            $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);
+            $arr["token"] = $jwtManager->jwtEncode($arr);
         }
 
         $data = json_encode($arr);
@@ -198,7 +191,7 @@ final class Utils
         // request parameters
         $opts = ['http' => [
             'method' => 'POST',
-            'timeout' => $this->configManager->getConfig("docServTimeout"),
+            'timeout' => $configManager->getConfig("docServTimeout"),
             'header' => "Content-type: application/json\r\n" .
                 "Accept: application/json\r\n" .
                 (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
@@ -207,7 +200,7 @@ final class Utils
         ];
 
         if (mb_substr($urlToConverter, 0, mb_strlen("https")) === "https") {
-            if ($this->configManager->getConfig("docServVerifyPeerOff") === true) {
+            if ($configManager->getConfig("docServVerifyPeerOff") === true) {
                 $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
             }
         }

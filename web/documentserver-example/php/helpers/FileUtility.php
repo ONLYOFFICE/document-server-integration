@@ -20,15 +20,6 @@ namespace OnlineEditorsExamplePhp\Helpers;
 
 final class FileUtility
 {
-    private ConfigManager $configManager;
-    private $utils;
-
-    public function __construct()
-    {
-        $this->configManager = new ConfigManager();
-        $this->utils = new Utils();
-    }
-
     /**
      * Put log files into the log folder
      *
@@ -98,9 +89,10 @@ final class FileUtility
      */
     public function serverPath($forDocumentServer = null)
     {
-        return $forDocumentServer && $this->configManager->getConfig("exampleUrl") !== null
-        && $this->configManager->getConfig("exampleUrl") != ""
-            ? $this->configManager->getConfig("exampleUrl")
+        $configManager = new ConfigManager();
+        return $forDocumentServer && $configManager->getConfig("exampleUrl") !== null
+        && $configManager->getConfig("exampleUrl") != ""
+            ? $configManager->getConfig("exampleUrl")
             : ($this->getScheme() . '://' . $_SERVER['HTTP_HOST']);
     }
 
@@ -113,14 +105,15 @@ final class FileUtility
      */
     public function getCurUserHostAddress($userAddress = null)
     {
-        if ($this->configManager->getConfig("alone")) {
-            if (empty($this->configManager->getConfig("storagePath"))) {
+        $configManager = new ConfigManager();
+        if ($configManager->getConfig("alone")) {
+            if (empty($configManager->getConfig("storagePath"))) {
                 return "Storage";
             }
             return "";
         }
         if (is_null($userAddress)) {
-            $userAddress = getClientIp();
+            $userAddress = $this->getClientIp();
         }
         return preg_replace("[^0-9a-zA-Z.=]", '_', $userAddress);
     }
@@ -134,15 +127,16 @@ final class FileUtility
      */
     public function getInternalExtension($filename)
     {
+        $configManager = new ConfigManager();
         $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-        if (in_array($ext, $this->configManager->getConfig("extsDocument"))) {
+        if (in_array($ext, $configManager->getConfig("extsDocument"))) {
             return ".docx";
         }  // .docx for text document extensions
-        if (in_array($ext, $this->configManager->getConfig("extsSpreadsheet"))) {
+        if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
             return ".xlsx";
         }  // .xlsx for spreadsheet extensions
-        if (in_array($ext, $this->configManager->getConfig("extsPresentation"))) {
+        if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
             return ".pptx";
         }  // .pptx for presentation extensions
         return "";
@@ -157,16 +151,17 @@ final class FileUtility
      */
     public function getTemplateImageUrl($filename)
     {
+        $configManager = new ConfigManager();
         $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
-        $path = serverPath(true) . "/css/images/";
+        $path = $this->serverPath(true) . "/css/images/";
 
-        if (in_array($ext, $this->configManager->getConfig("extsDocument"))) {
+        if (in_array($ext, $configManager->getConfig("extsDocument"))) {
             return $path . "file_docx.svg";
         }  // for text document extensions
-        if (in_array($ext, $this->configManager->getConfig("extsSpreadsheet"))) {
+        if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
             return $path . "file_xlsx.svg";
         }  // for spreadsheet extensions
-        if (in_array($ext, $this->configManager->getConfig("extsPresentation"))) {
+        if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
             return $path . "file_pptx.svg";
         }  // for presentation extensions
         return $path . "file_docx.svg";
@@ -181,15 +176,16 @@ final class FileUtility
      */
     public function getDocumentType($filename)
     {
+        $configManager = new ConfigManager();
         $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 
-        if (in_array($ext, $this->configManager->getConfig("extsDocument"))) {
+        if (in_array($ext, $configManager->getConfig("extsDocument"))) {
             return "word";
         }  // word for text document extensions
-        if (in_array($ext, $this->configManager->getConfig("extsSpreadsheet"))) {
+        if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
             return "cell";
         }  // cell for spreadsheet extensions
-        if (in_array($ext, $this->configManager->getConfig("extsPresentation"))) {
+        if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
             return "slide";
         }  // slide for presentation extensions
         return "word";
@@ -215,11 +211,12 @@ final class FileUtility
      */
     public function getStoragePath($fileName, $userAddress = null)
     {
+        $configManager = new ConfigManager();
         $storagePath = trim(
             str_replace(
                 ['/', '\\'],
                 DIRECTORY_SEPARATOR,
-                $this->configManager->getConfig("storagePath")
+                $configManager->getConfig("storagePath")
             ),
             DIRECTORY_SEPARATOR
         );
@@ -243,13 +240,13 @@ final class FileUtility
         }
 
         if (realpath($storagePath) !== $storagePath) {
-            $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
+            $directory = $directory . $this->getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
         }
 
         if (!file_exists($directory) && !is_dir($directory)) {
             mkdir($directory);
         }
-        sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
+        $this->sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
         return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
     }
 
@@ -264,11 +261,12 @@ final class FileUtility
      */
     public function getForcesavePath($fileName, $userAddress, $create)
     {
+        $configManager = new ConfigManager();
         $storagePath = trim(
             str_replace(
                 ['/', '\\'],
                 DIRECTORY_SEPARATOR,
-                $this->configManager->getConfig("storagePath")
+                $configManager->getConfig("storagePath")
             ),
             DIRECTORY_SEPARATOR
         );
@@ -277,7 +275,7 @@ final class FileUtility
         if (realpath($storagePath) === $storagePath) {
             $directory = $storagePath . DIRECTORY_SEPARATOR;
         } else {
-            $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) .
+            $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . $this->getCurUserHostAddress($userAddress) .
                 DIRECTORY_SEPARATOR;
         }
 
@@ -364,11 +362,12 @@ final class FileUtility
      */
     public function getStoredFiles()
     {
+        $configManager = new ConfigManager();
         $storagePath = trim(
             str_replace(
                 ['/', '\\'],
                 DIRECTORY_SEPARATOR,
-                $this->configManager->getConfig("storagePath")
+                $configManager->getConfig("storagePath")
             ),
             DIRECTORY_SEPARATOR
         );
@@ -393,7 +392,7 @@ final class FileUtility
         }
 
         if (realpath($storagePath) !== $storagePath) {
-            $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
+            $directory = $directory . $this->getCurUserHostAddress() . DIRECTORY_SEPARATOR;
         }
 
         if (!file_exists($directory) && !is_dir($directory)) {
@@ -410,9 +409,9 @@ final class FileUtility
                     $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);
                     $result[$dat] = (object) [  // and write the file to the result
                         "name" => $fileName,
-                        "documentType" => getDocumentType($fileName),
-                        "canEdit" => in_array($ext, $this->configManager->getConfig("docServEdited")),
-                        "isFillFormDoc" => in_array($ext, $this->configManager->getConfig("docServFillforms")),
+                        "documentType" => $this->getDocumentType($fileName),
+                        "canEdit" => in_array($ext, $configManager->getConfig("docServEdited")),
+                        "isFillFormDoc" => in_array($ext, $configManager->getConfig("docServFillforms")),
                     ];
                 }
             }
@@ -430,15 +429,17 @@ final class FileUtility
      */
     public function getVirtualPath($forDocumentServer)
     {
-        $storagePath = trim(str_replace(['/', '\\'], '/', $this->configManager->getConfig("storagePath")), '/');
+        $configManager = new ConfigManager();
+        $storagePath = trim(str_replace(['/', '\\'], '/', $configManager->getConfig("storagePath")), '/');
         $storagePath = $storagePath != "" ? $storagePath . '/' : "";
 
         if (realpath($storagePath) === $storagePath) {
-            $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . '/';
+            $virtPath = $this->serverPath($forDocumentServer) . '/' . $storagePath . '/';
         } else {
-            $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
+            $virtPath = $this->serverPath($forDocumentServer) . '/' .
+                $storagePath . $this->getCurUserHostAddress() . '/';
         }
-        sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
+        $this->sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
         return $virtPath;
     }
 
@@ -454,7 +455,7 @@ final class FileUtility
      */
     public function createMeta($fileName, $uid, $uname, $userAddress = null)
     {
-        $histDir = getHistoryDir($this->getStoragePath($fileName, $userAddress));  // get the history directory
+        $histDir = $this->getHistoryDir($this->getStoragePath($fileName, $userAddress));  // get the history directory
 
         // turn the file information into the json format
         $json = [
@@ -477,7 +478,8 @@ final class FileUtility
      */
     public function fileUri($file_name, $forDocumentServer = null)
     {
-        $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
+        // add encoded file name to the virtual path
+        $uri = $this->getVirtualPath($forDocumentServer) . rawurlencode($file_name);
         return $uri;
     }
 
@@ -490,15 +492,15 @@ final class FileUtility
      */
     public function getFileInfo($fileId)
     {
-        $storedFiles = getStoredFiles();
+        $storedFiles = $this->getStoredFiles();
         $result = [];
         $resultID = [];
 
         // run through all the stored files
         foreach ($storedFiles as $key => $value) {
             $result[$key] = (object) [  // write all the parameters to the map
-                "version" => getFileVersion(getHistoryDir($this->getStoragePath($value->name))),
-                "id" => getDocEditorKey($value->name),
+                "version" => $this->getFileVersion($this->getHistoryDir($this->getStoragePath($value->name))),
+                "id" => $this->getDocEditorKey($value->name),
                 "contentLength" => number_format(filesize($this->getStoragePath($value->name)) / 1024, 2)." KB",
                 "pureContentLength" => filesize($this->getStoragePath($value->name)),
                 "title" => $value->name,
@@ -506,7 +508,7 @@ final class FileUtility
             ];
             // get file information by its id
             if ($fileId != null) {
-                if ($fileId == getDocEditorKey($value->name)) {
+                if ($fileId == $this->getDocEditorKey($value->name)) {
                     $resultID[count($resultID)] = $result[$key];
                 }
             }
@@ -529,11 +531,12 @@ final class FileUtility
      */
     public function getFileExts()
     {
+        $configManager = new ConfigManager();
         return array_merge(
-            $this->configManager->getConfig("docServViewd"),
-            $this->configManager->getConfig("docServEdited"),
-            $this->configManager->getConfig("docServConvert"),
-            $this->configManager->getConfig("docServFillforms"),
+            $configManager->getConfig("docServViewd"),
+            $configManager->getConfig("docServEdited"),
+            $configManager->getConfig("docServConvert"),
+            $configManager->getConfig("docServFillforms"),
         );
     }
 
@@ -545,7 +548,7 @@ final class FileUtility
      *
      * @return string
      */
-    public function GetCorrectName($fileName, $userAddress = null)
+    public function getCorrectName($fileName, $userAddress = null)
     {
         $path_parts = pathinfo($fileName);
 
@@ -571,10 +574,240 @@ final class FileUtility
      */
     public function getDocEditorKey($fileName)
     {
+        $utils = new Utils();
         // get document key by adding local file url to the current user host address
-        $key = getCurUserHostAddress() . fileUri($fileName);
+        $key = $this->getCurUserHostAddress() . $this->fileUri($fileName);
         $stat = filemtime($this->getStoragePath($fileName));  // get creation time
         $key = $key . $stat;  // and add it to the document key
-        return generateRevisionId($key);  // generate the document key value
+        return $utils->generateRevisionId($key);  // generate the document key value
+    }
+
+    /**
+     * Get demo file name by the extension
+     *
+     * @param string $createExt
+     * @param Users $user
+     *
+     * @return string
+     */
+    public function tryGetDefaultByType($createExt, $user)
+    {
+        $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
+        $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
+        $demoFilename = $this->getCorrectName($demoName);
+
+        if (!@copy(
+            dirname(__FILE__) .
+            DIRECTORY_SEPARATOR .
+            $demoPath .
+            $demoName,
+            $this->getStoragePath($demoFilename)
+        )) {
+            $this->sendlog("Copy file error to ". $this->getStoragePath($demoFilename), "common.log");
+            // Copy error!!!
+        }
+
+        // create demo file meta information
+        $this->createMeta($demoFilename, $user->id, $user->name);
+
+        return $demoFilename;
+    }
+
+    /**
+     * Get the callback url
+     *
+     * @param string $fileName
+     *
+     * @return string
+     */
+    public function getCallbackUrl($fileName)
+    {
+        return $this->serverPath(true) . '/'
+            . "webeditor-ajax.php"
+            . "?type=track"
+            . "&fileName=" . urlencode($fileName)
+            . "&userAddress=" . $this->getClientIp();
+    }
+
+    /**
+     * Get url to the created file
+     *
+     * @param string $fileName
+     * @param string $uid
+     * @param string $type
+     *
+     * @return string
+     */
+    public function getCreateUrl($fileName, $uid, $type)
+    {
+        $ext = trim($this->getInternalExtension($fileName), '.');
+        return $this->serverPath(false) . '/'
+            . "doceditor.php"
+            . "?fileExt=" . $ext
+            . "&user=" . $uid
+            . "&type=" . $type;
+    }
+
+    /**
+     * Get url for history download
+     *
+     * @param string $fileName
+     * @param string $version
+     * @param string $file
+     * @param bool $isServer
+     *
+     * @return string
+     */
+    public function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
+    {
+        $userAddress = $isServer ? "&userAddress=" . $this->getClientIp() : "";
+        return $this->serverPath($isServer) . '/'
+            . "webeditor-ajax.php"
+            . "?type=history"
+            . "&fileName=" . urlencode($fileName)
+            . "&ver=" . $version
+            . "&file=" . urlencode($file)
+            . $userAddress;
+    }
+
+    /**
+     * Get url to download a file
+     *
+     * @param string $fileName
+     * @param bool $isServer
+     *
+     * @return string
+     */
+    public function getDownloadUrl($fileName, $isServer = true)
+    {
+        $userAddress = $isServer ? "&userAddress=" . $this->getClientIp() : "";
+        return $this->serverPath($isServer) . '/'
+            . "webeditor-ajax.php"
+            . "?type=download"
+            . "&fileName=" . urlencode($fileName)
+            . $userAddress;
+    }
+
+    /**
+     * Get document history
+     *
+     * @param string $filename
+     * @param string $filetype
+     * @param string $docKey
+     * @param string $fileuri
+     * @param bool $isEnableDirectUrl
+     *
+     * @return array
+     */
+    public function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
+    {
+        $configManager = new ConfigManager();
+        $storagePath = $configManager->getConfig("storagePath");
+        $histDir = $this->getHistoryDir($this->getStoragePath($filename));  // get the path to the file history
+
+        // check if the file was modified (the file version is greater than 0)
+        if ($this->getFileVersion($histDir) > 0) {
+            $curVer = $this->getFileVersion($histDir);
+
+            $hist = [];
+            $histData = [];
+
+            for ($i = 1; $i <= $curVer; $i++) {  // run through all the file versions
+                $obj = [];
+                $dataObj = [];
+                $verDir = $this->getVersionDir($histDir, $i);  // get the path to the file version
+
+                // get document key
+                $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
+                $obj["key"] = $key;
+                $obj["version"] = $i;
+
+                if ($i == 1) {  // check if the version number is equal to 1
+                    // get meta data of this file
+                    $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
+                    $json = json_decode($createdInfo, true);  // decode the meta data from the createdInfo.json file
+
+                    $obj["created"] = $json["created"];
+                    $obj["user"] = [
+                        "id" => $json["uid"],
+                        "name" => $json["name"],
+                    ];
+                }
+
+                $fileExe = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+                $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
+                $prevFileName = mb_substr($prevFileName, mb_strlen($this->getStoragePath("")));
+                $dataObj["fileType"] = $fileExe;
+                $dataObj["key"] = $key;
+
+                $directUrl = $i == $curVer ? $this->fileUri($filename, false) :
+                    $this->getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+                $prevFileUrl = $i == $curVer ? $fileuri : $this->getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                if (realpath($storagePath) === $storagePath) {
+                    $prevFileUrl = $i == $curVer ? $this->getDownloadUrl($filename) :
+                        $this->getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                    if ($isEnableDirectUrl) {
+                        $directUrl = $i == $curVer ? $this->getDownloadUrl($filename, false) :
+                            $this->getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+                    }
+                }
+
+                $dataObj["url"] = $prevFileUrl;  // write file url to the data object
+                if ($isEnableDirectUrl) {
+                    $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
+                }
+                $dataObj["version"] = $i;
+
+                if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
+                    $changes = json_decode(file_get_contents($this->getVersionDir($histDir, $i - 1) .
+                        DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
+                    $change = $changes["changes"][0];
+
+                    // write information about changes to the object
+                    $obj["changes"] = $changes ? $changes["changes"] : null;
+                    $obj["serverVersion"] = $changes["serverVersion"];
+                    $obj["created"] = $change ? $change["created"] : null;
+                    $obj["user"] = $change ? $change["user"] : null;
+
+                    $prev = $histData[$i - 2];  // get the history data from the previous file version
+                    // write information about previous file version to the data object
+                    $dataObj["previous"] = $isEnableDirectUrl ? [
+                        "fileType" => $prev["fileType"],
+                        "key" => $prev["key"],
+                        "url" => $prev["url"],
+                        "directUrl" => $prev["directUrl"],
+                    ] : [
+                        "fileType" => $prev["fileType"],
+                        "key" => $prev["key"],
+                        "url" => $prev["url"],
+                    ];
+
+                    // write the path to the diff.zip archive with differences in this file version
+                    $dataObj["changesUrl"] = $this->getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+                }
+
+                $jwtManager = new JwtManager();
+                if ($jwtManager->isJwtEnabled()) {
+                    $dataObj["token"] = $jwtManager->jwtEncode($dataObj);
+                }
+
+                $hist[] = $obj;  // add object dictionary to the hist list
+                $histData[$i - 1] = $dataObj;  // write data object information to the history data
+            }
+
+            // write history information about the current file version
+            $out = [];
+            array_push(
+                $out,
+                [
+                    "currentVersion" => $curVer,
+                    "history" => $hist,
+                ],
+                $histData
+            );
+            return $out;
+        }
+        return [];
     }
 }

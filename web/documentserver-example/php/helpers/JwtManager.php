@@ -20,12 +20,6 @@ namespace OnlineEditorsExamplePhp\Helpers;
 
 final class JwtManager
 {
-    private $configManager;
-
-    public function __construct()
-    {
-        $this->configManager = new ConfigManager();
-    }
     /**
      * Check if a secret key to generate token exists or not.
      *
@@ -33,7 +27,8 @@ final class JwtManager
      */
     public function isJwtEnabled(): bool
     {
-        return !empty($this->configManager->getConfig("docServJwtSecret"));
+        $configManager = new ConfigManager();
+        return !empty($configManager->getConfig("docServJwtSecret"));
     }
 
     /**
@@ -43,7 +38,8 @@ final class JwtManager
      */
     public function tokenUseForRequest(): bool
     {
-        return $this->configManager->getConfig("docServJwtUseForRequest") ?: false;
+        $configManager = new ConfigManager();
+        return $configManager->getConfig("docServJwtUseForRequest") ?: false;
     }
 
     /**
@@ -55,7 +51,8 @@ final class JwtManager
      */
     public function jwtEncode($payload)
     {
-        return \Firebase\JWT\JWT::encode($payload, $this->configManager->getConfig("docServJwtSecret"));
+        $configManager = new ConfigManager();
+        return \Firebase\JWT\JWT::encode($payload, $configManager->getConfig("docServJwtSecret"));
     }
 
     /**
@@ -67,10 +64,11 @@ final class JwtManager
      */
     public function jwtDecode($token)
     {
+        $configManager = new ConfigManager();
         try {
             $payload = \Firebase\JWT\JWT::decode(
                 $token,
-                $this->configManager->getConfig("docServJwtSecret"),
+                $configManager->getConfig("docServJwtSecret"),
                 ["HS256"]
             );
         } catch (\UnexpectedValueException $e) {

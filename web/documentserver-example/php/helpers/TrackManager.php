@@ -22,19 +22,6 @@ use Exception;
 
 final class TrackManager
 {
-    private $configManager;
-    private $fileUtility;
-    private $jwtManager;
-    private $utils;
-
-    public function __construct()
-    {
-        $this->configManager = new ConfigManager();
-        $this->fileUtility = new FileUtility();
-        $this->jwtManager = new JwtManager();
-        $this->utils = new Utils();
-    }
-
     /**
      * Read request body
      *
@@ -58,37 +45,40 @@ final class TrackManager
             return $result;
         }
 
-        $this->fileUtility->sendlog("   InputStream data: " . serialize($data), "webedior-ajax.log");
+        $fileUtility = new FileUtility();
+        $fileUtility->sendlog("   InputStream data: " . serialize($data), "webedior-ajax.log");
 
         // check if the document token is enabled
-        if ($this->jwtManager->isJwtEnabled()) {
-            $this->fileUtility->sendlog("   jwt enabled, checking tokens", "webedior-ajax.log");
+        $jwtManager = new JwtManager();
+        if ($jwtManager->isJwtEnabled()) {
+            $fileUtility->sendlog("   jwt enabled, checking tokens", "webedior-ajax.log");
 
             $inHeader = false;
             $data = "";
-            $jwtHeader = $this->configManager->getConfig("docServJwtHeader") ==
-            "" ? "Authorization" : $this->configManager->getConfig("docServJwtHeader");
+            $configManager = new ConfigManager();
+            $jwtHeader = $configManager->getConfig("docServJwtHeader") ==
+            "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
 
             if (!empty($data["token"])) {  // if the document token is in the data
-                $data = $this->jwtManager->jwtDecode($data["token"]);  // decode it
-                $this->fileUtility->sendlog("   jwt in body", "webedior-ajax.log");
+                $data = $jwtManager->jwtDecode($data["token"]);  // decode it
+                $fileUtility->sendlog("   jwt in body", "webedior-ajax.log");
             } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-                $data = $this->jwtManager->jwtDecode(
+                $data = $jwtManager->jwtDecode(
                     mb_substr(
                         apache_request_headers()[$jwtHeader],
                         mb_strlen("Bearer ")
                     )
                 );  // decode its part after Authorization prefix
                 $inHeader = true;
-                $this->fileUtility->sendlog("   jwt in header", "webedior-ajax.log");
+                $fileUtility->sendlog("   jwt in header", "webedior-ajax.log");
             } else {  // otherwise, an error occurs
-                $this->fileUtility->sendlog("   jwt token wasn't found in body or headers", "webedior-ajax.log");
+                $fileUtility->sendlog("   jwt token wasn't found in body or headers", "webedior-ajax.log");
                 $result["error"] = "Expected JWT";
                 return $result;
             }
 
             if ($data === "") {  // invalid signature error
-                $this->fileUtility->sendlog("   token was found but signature is invalid", "webedior-ajax.log");
+                $fileUtility->sendlog("   token was found but signature is invalid", "webedior-ajax.log");
                 $result["error"] = "Invalid JWT signature";
                 return $result;
             }
@@ -125,13 +115,15 @@ final class TrackManager
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if ($downloadExt != $curExt) {
-            $key = $this->utils->generateRevisionId($downloadUri);
+            $utils = new Utils();
+            $key = $utils->generateRevisionId($downloadUri);
 
             try {
-                $this->fileUtility->sendlog("   Convert " . $downloadUri . " from " .
+                $fileUtility = new FileUtility();
+                $fileUtility->sendlog("   Convert " . $downloadUri . " from " .
                     $downloadExt . " to " . $curExt, "webedior-ajax.log");
                 $convertedUri;  // convert file and give url to a new file
-                $percent = $this->utils->getConvertedUri(
+                $percent = $utils->getConvertedUri(
                     $downloadUri,
                     $downloadExt,
                     $curExt,
@@ -142,16 +134,16 @@ final class TrackManager
                 if (!empty($convertedUri)) {
                     $downloadUri = $convertedUri;
                 } else {
-                    $this->fileUtility->sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
+                    $fileUtility->sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                     $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
 
                     // get the correct file name if it already exists
-                    $newFileName = $this->fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
+                    $newFileName = $fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
                 }
             } catch (Exception $e) {
-                $this->fileUtility->sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
+                $fileUtility->sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
                 $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
-                $newFileName = $this->fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
+                $newFileName = $fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
             }
         }
 
@@ -163,15 +155,15 @@ final class TrackManager
             stream_context_create(["http" => ["timeout" => 5]])
         )) === false)
         ) {
-            $storagePath = $this->fileUtility->getStoragePath($newFileName, $userAddress);  // get the file path
-            $histDir = $this->fileUtility->getHistoryDir($storagePath);  // get the path to the history direction
+            $storagePath = $fileUtility->getStoragePath($newFileName, $userAddress);  // get the file path
+            $histDir = $fileUtility->getHistoryDir($storagePath);  // get the path to the history direction
             // get the path to the file version
-            $verDir = $this->fileUtility->getVersionDir($histDir, $this->fileUtility->getFileVersion($histDir));
+            $verDir = $fileUtility->getVersionDir($histDir, $fileUtility->getFileVersion($histDir));
 
             mkdir($verDir);  // if the path doesn't exist, create it
 
             // get the path to the previous file version and rename the storage path with it
-            rename($this->fileUtility->getStoragePath($fileName, $userAddress), $verDir .
+            rename($fileUtility->getStoragePath($fileName, $userAddress), $verDir .
                 DIRECTORY_SEPARATOR . "prev" . $curExt);
             file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
 
@@ -200,7 +192,7 @@ final class TrackManager
                 DIRECTORY_SEPARATOR . "key.txt", $data->key, LOCK_EX);
 
             // get the path to the forcesaved file version
-            $forcesavePath = $this->fileUtility->getForcesavePath($newFileName, $userAddress, false);
+            $forcesavePath = $fileUtility->getForcesavePath($newFileName, $userAddress, false);
             if ($forcesavePath != "") {  // if the forcesaved file version exists
                 unlink($forcesavePath);  // remove it
             }
@@ -217,14 +209,15 @@ final class TrackManager
      * File force saving process
      *
      * @param mixed $data
-     * @param string $fileName
-     * @param string $userAddress
+     * @param mixed $fileName
+     * @param mixed $userAddress
      *
      * @return array
      */
     public function processForceSave($data, $fileName, $userAddress)
     {
         $downloadUri = $data->url;
+        $fileUtility = new FileUtility();
         if ($downloadUri === null) {
             $result["error"] = 1;
             return $result;
@@ -237,13 +230,14 @@ final class TrackManager
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if ($downloadExt != $curExt) {
-            $key = $this->utils->generateRevisionId($downloadUri);
+            $utils = new Utils();
+            $key = $utils->generateRevisionId($downloadUri);
 
             try {
-                $this->fileUtility->sendlog("   Convert " . $downloadUri . " from " .
+                $fileUtility->sendlog("   Convert " . $downloadUri . " from " .
                     $downloadExt . " to " . $curExt, "webedior-ajax.log");
                 $convertedUri;  // convert file and give url to a new file
-                $percent = $this->utils->getConvertedUri(
+                $percent = $utils->getConvertedUri(
                     $downloadUri,
                     $downloadExt,
                     $curExt,
@@ -254,12 +248,12 @@ final class TrackManager
                 if (!empty($convertedUri)) {
                     $downloadUri = $convertedUri;
                 } else {
-                    $this->fileUtility->sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
+                    $fileUtility->sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                     $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
                     $newFileName = true;
                 }
             } catch (Exception $e) {
-                $this->fileUtility->sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
+                $fileUtility->sendlog("   Convert after save ".$e->getMessage(), "webedior-ajax.log");
                 $newFileName = true;
             }
         }
@@ -277,21 +271,21 @@ final class TrackManager
 
             if ($isSubmitForm) {
                 if ($newFileName) {
-                    $fileName = $this->fileUtility->getCorrectName($baseNameWithoutExt .
+                    $fileName = $fileUtility->getCorrectName($baseNameWithoutExt .
                         "-form" . $downloadExt, $userAddress);  // get the correct file name if it already exists
                 } else {
                     $fileName =
-                        $this->fileUtility->getCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
+                        $fileUtility->getCorrectName($baseNameWithoutExt . "-form" . $curExt, $userAddress);
                 }
-                $forcesavePath = $this->fileUtility->getStoragePath($fileName, $userAddress);
+                $forcesavePath = $fileUtility->getStoragePath($fileName, $userAddress);
             } else {
                 if ($newFileName) {
-                    $fileName = $this->fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
+                    $fileName = $fileUtility->getCorrectName($baseNameWithoutExt . $downloadExt, $userAddress);
                 }
                 // create forcesave path if it doesn't exist
-                $forcesavePath = $this->fileUtility->getForcesavePath($fileName, $userAddress, false);
+                $forcesavePath = $fileUtility->getForcesavePath($fileName, $userAddress, false);
                 if ($forcesavePath == "") {
-                    $forcesavePath = $this->fileUtility->getForcesavePath($fileName, $userAddress, true);
+                    $forcesavePath = $fileUtility->getForcesavePath($fileName, $userAddress, true);
                 }
             }
 
@@ -300,7 +294,7 @@ final class TrackManager
             if ($isSubmitForm) {
                 $uid = $data->actions[0]->userid;  // get the user id
                 // create meta data for the forcesaved file
-                $this->fileUtility->createMeta($fileName, $uid, "Filling Form", $userAddress);
+                $fileUtility->createMeta($fileName, $uid, "Filling Form", $userAddress);
             }
 
             $saved = 0;
@@ -322,8 +316,9 @@ final class TrackManager
      */
     public function commandRequest($method, $key, $meta = null)
     {
-        $documentCommandUrl = $this->configManager->getConfig("docServSiteUrl").
-            $this->configManager->getConfig("docServCommandUrl");
+        $configManager = new ConfigManager();
+        $documentCommandUrl = $configManager->getConfig("docServSiteUrl").
+            $configManager->getConfig("docServCommandUrl");
 
         $arr = [
             "c" => $method,
@@ -335,13 +330,14 @@ final class TrackManager
         }
 
         $headerToken = "";
-        $jwtHeader = $this->configManager->getConfig("docServJwtHeader") ==
-        "" ? "Authorization" : $this->configManager->getConfig("docServJwtHeader");
+        $jwtHeader = $configManager->getConfig("docServJwtHeader") ==
+        "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
 
-        if ($this->jwtManager->isJwtEnabled()) {  // check if a secret key to generate token exists or not
+        $jwtManager = new JwtManager();
+        if ($jwtManager->isJwtEnabled()) {  // check if a secret key to generate token exists or not
             // encode a payload object into a header token
-            $headerToken = $this->jwtManager->jwtEncode(["payload" => $arr]);
-            $arr["token"] = $this->jwtManager->jwtEncode($arr);  // encode a payload object into a body token
+            $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);
+            $arr["token"] = $jwtManager->jwtEncode($arr);  // encode a payload object into a body token
         }
 
         $data = json_encode($arr);
@@ -356,7 +352,7 @@ final class TrackManager
         ]];
 
         if (mb_substr($documentCommandUrl, 0, mb_strlen("https")) === "https") {
-            if ($this->configManager->getConfig("docServVerifyPeerOff") === true) {
+            if ($configManager->getConfig("docServVerifyPeerOff") === true) {
                 $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
             }
         }

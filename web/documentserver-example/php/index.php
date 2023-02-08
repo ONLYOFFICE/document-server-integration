@@ -4,6 +4,10 @@ namespace OnlineEditorsExamplePhp;
 
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+use OnlineEditorsExamplePhp\Helpers\FileUtility;
+use OnlineEditorsExamplePhp\Helpers\JwtManager;
+use OnlineEditorsExamplePhp\Helpers\TrackManager;
+use OnlineEditorsExamplePhp\Helpers\Utils;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -21,14 +25,14 @@ use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
  * limitations under the License.
  */
 
-require_once dirname(__FILE__) . '/common.php';
-require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
 $users = new ExampleUsers();
 $configManager = new ConfigManager();
+$fileUtility = new FileUtility();
+$utils = new Utils();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -150,7 +154,7 @@ $configManager = new ConfigManager();
                             <td class="section">
                                 <div class="main-panel">
                                     <?php
-                                    $storedFiles = getStoredFiles();
+                                    $storedFiles = $fileUtility->getStoredFiles();
                                     if (!empty($storedFiles)) { ?>
                                         <div id="portal-info" style="display: none">
                                     <?php } else { ?>
