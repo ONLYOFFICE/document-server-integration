@@ -14,14 +14,14 @@
     ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"],
 
   "docServTimeout": "120000",
-  "docServSiteUrl": "http://127.0.0.1/",
+  "docServSiteUrl": "https://documentserver/",
 
   "docServConverterUrl": "ConvertService.ashx",
   "docServApiUrl": "web-apps/apps/api/documents/api.js",
   "docServPreloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
   "docServCommandUrl": "coauthoring/CommandService.ashx",
 
-  "docServJwtSecret": "9GKkwG4oUrswxS0sp1RJ",
+  "docServJwtSecret": "",
   "docServJwtHeader": "Authorization",
   "docServJwtUseForRequest": true,
 
