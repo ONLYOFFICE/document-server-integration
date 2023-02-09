@@ -2,6 +2,10 @@
 <ruleset name="CustomRuleset">
     <description>This standard changes the line length</description>
 
+
+    <rule ref="PSR1">
+        <exclude name="PSR1.Files.SideEffects" />
+    </rule>
     <!-- Insert all sniff from PSR2 standard -->
     <rule ref="PSR2"/>
 
