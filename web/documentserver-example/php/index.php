@@ -1,10 +1,4 @@
 <?php
-
-namespace OnlineEditorsExamplePhp;
-
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -20,6 +14,11 @@ use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';

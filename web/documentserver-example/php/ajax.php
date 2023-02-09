@@ -1,7 +1,4 @@
 <?php
-
-namespace OnlineEditorsExamplePhp;
-
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -17,6 +14,8 @@ namespace OnlineEditorsExamplePhp;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace OnlineEditorsExamplePhp;
 
 /**
  * Check if the request is an AJAX request

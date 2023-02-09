@@ -1,9 +1,4 @@
 <?php
-
-namespace OnlineEditorsExamplePhp;
-
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -19,6 +14,10 @@ use OnlineEditorsExamplePhp\Helpers\ConfigManager;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 
 /**
  * WebEditor AJAX Process Execution.

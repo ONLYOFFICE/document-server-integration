@@ -1,11 +1,4 @@
 <?php
-
-namespace OnlineEditorsExamplePhp;
-
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
-
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -21,6 +14,12 @@ use OnlineEditorsExamplePhp\Helpers\JwtManager;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+use OnlineEditorsExamplePhp\Helpers\JwtManager;
 
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
