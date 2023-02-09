@@ -1,6 +1,7 @@
 {
     "require-dev": {
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+      "ext-mbstring": "*"
     },
     "scripts": {
         "code-sniffer": [
@@ -18,8 +19,6 @@
         "psr-4": {
             "OnlineEditorsExamplePhp\\" : "",
             "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
-            "OnlineEditorsExamplePhp\\Controllers\\" : "controllers/",
-            "OnlineEditorsExamplePhp\\Views\\" : "views/",
             "Firebase\\JWT\\" : "lib/jwt/"
         }
     }

@@ -4,10 +4,6 @@ namespace OnlineEditorsExamplePhp;
 
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\FileUtility;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
-use OnlineEditorsExamplePhp\Helpers\TrackManager;
-use OnlineEditorsExamplePhp\Helpers\Utils;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -25,14 +21,13 @@ use OnlineEditorsExamplePhp\Helpers\Utils;
  * limitations under the License.
  */
 
+require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 $user = $_GET["user"] ?? "";
 $directUrlArg = isset($_GET["directUrl"]) ? "&directUrl=" . $_GET["directUrl"] : "";
-$users = new ExampleUsers();
+$userList = new ExampleUsers();
 $configManager = new ConfigManager();
-$fileUtility = new FileUtility();
-$utils = new Utils();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -112,7 +107,7 @@ $utils = new Utils();
                                                     <span class="select-user">Username</span>
                                                     <img id="info" class="info" src="css/images/info.svg" />
                                                     <select class="select-user" id="user">
-                                                        <?php foreach ($users->getAllUsers() as $user_l) {
+                                                        <?php foreach ($userList->getAllUsers() as $user_l) {
                                                             $name = $user_l->name ?: "Anonymous";
                                                             echo '<option value="'.$user_l->id.'">'.$name.'</option>';
                                                         } ?>
@@ -126,11 +121,9 @@ $utils = new Utils();
                                                  data-tooltip="Choose the language for ONLYOFFICE editors interface"
                                                  src="css/images/info.svg" />
                                                     <select class="select-user" id="language">
-                                                        <?php
-                                                        foreach ($configManager->getConfig("languages") as $key => $language) {
-                                                            ?>
+                                <?php foreach ($configManager->getConfig("languages") as $key => $language) { ?>
                                                             <option value="<?=$key?>"><?=$language?></option>
-                                                        <?php } ?>
+                                <?php } ?>
                                                     </select>
                                                 </td>
                                             </tr>
@@ -154,7 +147,7 @@ $utils = new Utils();
                             <td class="section">
                                 <div class="main-panel">
                                     <?php
-                                    $storedFiles = $fileUtility->getStoredFiles();
+                                    $storedFiles = getStoredFiles();
                                     if (!empty($storedFiles)) { ?>
                                         <div id="portal-info" style="display: none">
                                     <?php } else { ?>
@@ -179,7 +172,7 @@ $utils = new Utils();
                                             users in different Web browser sessions, so you can check out multi-user
                                             editing functions.
                                         </span>
-                                        <?php foreach ($users->getAllUsers() as $user_l) {
+                                        <?php foreach ($userList->getAllUsers() as $user_l) {
                                             $name = $user_l->name ?: "Anonymous";
                                             echo '<div class="user-descr">';
                                             echo '<b>'.$name.'</b>';
@@ -223,11 +216,9 @@ $utils = new Utils();
                                                             <?php foreach ($storedFiles as &$storeFile) {
                                                                 echo '<tr class="tableRow" title="'.
                                                                     $storeFile->name.' ['.
-                                                                    $fileUtility->getFileVersion(
-                                                                        $fileUtility->getHistoryDir(
-                                                                            $fileUtility->getStoragePath(
-                                                                                $storeFile->name
-                                                                            )
+                                                                    getFileVersion(
+                                                                        getHistoryDir(
+                                                                            getStoragePath($storeFile->name)
                                                                         )
                                                                     ).
                                                                     ']">';
@@ -506,7 +497,7 @@ $utils = new Utils();
                         frameborder="0" scrolling="no" allowtransparency></iframe>
                 <br />
                 <div class="buttonsMobile">
-                    <?php if ($configManager->getConfig("mode") != "view") { ?>
+                    <?php if (($configManager->getConfig("mode")) != "view") { ?>
                         <div id="beginEdit" class="button orange disable">Edit</div>
                     <?php } ?>
                     <div id="beginView" class="button gray disable">View</div>
@@ -516,9 +507,8 @@ $utils = new Utils();
             </div>
 
             <span id="loadScripts" data-docs="
-            <?php
-            echo $configManager->getConfig("docServSiteUrl").$configManager->getConfig("docServPreloaderUrl");
-            ?>
+            <?php echo $configManager->getConfig("docServSiteUrl").
+                $configManager->getConfig("docServPreloaderUrl") ?>
             "></span>
 
             <footer>

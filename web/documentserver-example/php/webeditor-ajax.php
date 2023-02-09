@@ -3,8 +3,6 @@
 namespace OnlineEditorsExamplePhp;
 
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\FileUtility;
-use OnlineEditorsExamplePhp\Helpers\Utils;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -25,9 +23,13 @@ use OnlineEditorsExamplePhp\Helpers\Utils;
 /**
  * WebEditor AJAX Process Execution.
  */
+
 require_once dirname(__FILE__) . '/ajax.php';
+require_once dirname(__FILE__) . '/functions.php';
+require_once dirname(__FILE__) . '/trackmanager.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
+$configManager = new ConfigManager();
 // define tracker status
 $_trackerStatus = [
     0 => 'NotFound',
@@ -39,9 +41,6 @@ $_trackerStatus = [
     7 => 'CorruptedForceSave',
 ];
 
-$fileUtility = new FileUtility();
-$utils = new Utils();
-$configManager = new ConfigManager();
 // ignore self-signed certificate
 if ($configManager->getConfig("docServVerifyPeerOff") === true) {
     stream_context_set_default([
@@ -63,7 +62,7 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     nocacheHeaders();
 
     // write the request result to the log file
-    $fileUtility->sendlog(serialize($_GET), "webedior-ajax.log");
+    sendlog(serialize($_GET), "webedior-ajax.log");
 
     $type = $_GET["type"];
 

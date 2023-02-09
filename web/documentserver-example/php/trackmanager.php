@@ -1,4 +1,10 @@
 <?php
+
+namespace OnlineEditorsExamplePhp;
+
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
+use OnlineEditorsExamplePhp\Helpers\JwtManager;
+
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -15,10 +21,6 @@
  * limitations under the License.
  */
 
-require_once dirname(__FILE__) . '/jwtmanager.php';
-require_once dirname(__FILE__) . '/common.php';
-require_once dirname(__FILE__) . '/config.php';
-
 /**
  * Read request body
  *
@@ -27,7 +29,8 @@ require_once dirname(__FILE__) . '/config.php';
 function readBody()
 {
     $result["error"] = 0;
-
+    $configManager = new ConfigManager();
+    $jwtManager = new JwtManager();
     // get the body of the post request and check if it is correct
     if (($body_stream = file_get_contents('php://input')) === false) {
         $result["error"] = "Bad Request";
@@ -45,18 +48,19 @@ function readBody()
     sendlog("   InputStream data: " . serialize($data), "webedior-ajax.log");
 
     // check if the document token is enabled
-    if (isJwtEnabled()) {
+    if ($jwtManager->isJwtEnabled()) {
         sendlog("   jwt enabled, checking tokens", "webedior-ajax.log");
 
         $inHeader = false;
         $data = "";
-        $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+        $jwtHeader = $configManager->getConfig("docServJwtHeader") ==
+        "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
 
         if (!empty($data["token"])) {  // if the document token is in the data
-            $data = jwtDecode($data["token"]);  // decode it
+            $data = $jwtManager->jwtDecode($data["token"]);  // decode it
             sendlog("   jwt in body", "webedior-ajax.log");
         } elseif (!empty(apache_request_headers()[$jwtHeader])) {  // if the Authorization header exists
-            $data = jwtDecode(
+            $data = $jwtManager->jwtDecode(
                 mb_substr(
                     apache_request_headers()[$jwtHeader],
                     mb_strlen("Bearer ")
@@ -286,7 +290,10 @@ function processForceSave($data, $fileName, $userAddress)
  */
 function commandRequest($method, $key, $meta = null)
 {
-    $documentCommandUrl = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_COMMAND_URL'];
+    $configManager = new ConfigManager();
+    $jwtManager = new JwtManager();
+    $documentCommandUrl = $configManager->getConfig("docServSiteUrl").
+        $configManager->getConfig("docServCommandUrl");
 
     $arr = [
         "c" => $method,
@@ -298,11 +305,12 @@ function commandRequest($method, $key, $meta = null)
     }
 
     $headerToken = "";
-    $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
+    $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ? "Authorization" :
+        $configManager->getConfig("docServJwtHeader");
 
-    if (isJwtEnabled()) {  // check if a secret key to generate token exists or not
-        $headerToken = jwtEncode(["payload" => $arr]);  // encode a payload object into a header token
-        $arr["token"] = jwtEncode($arr);  // encode a payload object into a body token
+    if ($jwtManager->isJwtEnabled()) {  // check if a secret key to generate token exists or not
+        $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);  // encode a payload object into a header token
+        $arr["token"] = $jwtManager->jwtEncode($arr);  // encode a payload object into a body token
     }
 
     $data = json_encode($arr);
@@ -317,7 +325,7 @@ function commandRequest($method, $key, $meta = null)
     ]];
 
     if (mb_substr($documentCommandUrl, 0, mb_strlen("https")) === "https") {
-        if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+        if ($configManager->getConfig("docServVerifyPeerOff") === true) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }

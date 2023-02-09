@@ -155,7 +155,6 @@ final class ExampleUsers
     {
         foreach ($this->users as $user) {
             if ($user->id == $id) {
-                sendlog("User ". $user->id, "common.log");
                 return $user;
             }
         }

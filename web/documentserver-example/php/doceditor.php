@@ -4,10 +4,7 @@ namespace OnlineEditorsExamplePhp;
 
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\FileUtility;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
-use OnlineEditorsExamplePhp\Helpers\Users;
-use OnlineEditorsExamplePhp\Helpers\Utils;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -25,22 +22,19 @@ use OnlineEditorsExamplePhp\Helpers\Utils;
  * limitations under the License.
  */
 
+require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-$users = new ExampleUsers();
-$configManager = new ConfigManager();
-$fileUtility = new FileUtility();
-$utils = new Utils();
-$user = $users->getUser($_GET["user"]);
+$userList = new ExampleUsers();
+$confgManager = new ConfigManager();
+$jwtManager = new JwtManager();
+$user = $userList->getUser($_GET["user"]);
 $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
 // get the file url and upload it
 $externalUrl = $_GET["fileUrl"] ?? "";
 if (!empty($externalUrl)) {
-    try {
-        $filename = $utils->doUpload($externalUrl);
-    } catch (\Exception $e) {
-    }
+    $filename = doUpload($externalUrl);
 } else { // if the file url doesn't exist, get file name and file extension
     $filename = basename($_GET["fileID"]);
 }
@@ -48,7 +42,7 @@ $createExt = $_GET["fileExt"] ?? "";
 
 if (!empty($createExt)) {
     // and get demo file name by the extension
-    $filename = $fileUtility->tryGetDefaultByType($createExt, $user);
+    $filename = tryGetDefaultByType($createExt, $user);
 
     // create the demo file url
     $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
@@ -56,19 +50,20 @@ if (!empty($createExt)) {
     exit;
 }
 
-$fileuri = $fileUtility->fileUri($filename, true);
-$fileuriUser = realpath($configManager->getConfig("storagePath")) === $configManager->getConfig("storagePath") ?
-    $fileUtility->getDownloadUrl($filename) . "&dmode=emb" : $fileUtility->fileUri($filename);
-$directUrl = $fileUtility->getDownloadUrl($filename, false);
-$docKey = $fileUtility->getDocEditorKey($filename);
+$fileuri = fileUri($filename, true);
+$fileuriUser = realpath($confgManager->getConfig("storagePath")) ===
+    $confgManager->getConfig("storagePath") ?
+    getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
+$directUrl = getDownloadUrl($filename, false);
+$docKey = getDocEditorKey($filename);
 $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
 $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
 $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
-$canEdit = in_array($ext, $configManager->getConfig("docServEdited"));  // check if the file can be edited
+$canEdit = in_array($ext, $confgManager->getConfig("docServEdited"));  // check if the file can be edited
 if ((!$canEdit && $editorsMode == "edit"
-        || $editorsMode == "fillForms")
-    && in_array($ext, $configManager->getConfig("docServFillforms"))
+    || $editorsMode == "fillForms")
+    && in_array($ext, $confgManager->getConfig("docServFillforms"))
 ) {
     $editorsMode = "fillForms";
     $canEdit = true;
@@ -79,8 +74,8 @@ $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
 $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
 $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
 
-$templatesImageUrl = $fileUtility->getTemplateImageUrl($filename); // templates image url in the "From Template" section
-$createUrl = $fileUtility->getCreateUrl($filename, $user->id, $type);
+$templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
+$createUrl = getCreateUrl($filename, $user->id, $type);
 $templates = [
     [
         "image" => "",
@@ -97,10 +92,10 @@ $templates = [
 // specify the document config
 $config = [
     "type" => $type,
-    "documentType" => $fileUtility->getDocumentType($filename),
+    "documentType" => getDocumentType($filename),
     "document" => [
         "title" => $filename,
-        "url" => $fileUtility->getDownloadUrl($filename),
+        "url" => getDownloadUrl($filename),
         "directUrl" => $isEnableDirectUrl ? $directUrl : "",
         "fileType" => $filetype,
         "key" => $docKey,
@@ -132,7 +127,7 @@ $config = [
         "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
         "mode" => $mode,
         "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
-        "callbackUrl" => $fileUtility->getCallbackUrl($filename),  // absolute URL to the document storage service
+        "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
         "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
             "mode" => "strict",
             "change" => false,
@@ -163,7 +158,7 @@ $config = [
             "goback" => [  // settings for the Open file location menu button and upper right corner button
                 // the absolute URL to the website address which will be opened
                 // when clicking the Open file location menu button
-                "url" => $fileUtility->serverPath(),
+                "url" => serverPath(),
             ],
         ],
     ],
@@ -172,38 +167,37 @@ $config = [
 // an image for inserting
 $dataInsertImage = $isEnableDirectUrl ? [
     "fileType" => "png",
-    "url" => $fileUtility->serverPath(true) . "/css/images/logo.png",
-    "directUrl" => $fileUtility->serverPath(false) . "/css/images/logo.png",
+    "url" => serverPath(true) . "/css/images/logo.png",
+    "directUrl" => serverPath(false) . "/css/images/logo.png",
 ] : [
     "fileType" => "png",
-    "url" => $fileUtility->serverPath(true) . "/css/images/logo.png",
+    "url" => serverPath(true) . "/css/images/logo.png",
 ];
 
 // a document for comparing
 $dataCompareFile = $isEnableDirectUrl ? [
     "fileType" => "docx",
-    "url" => $fileUtility->serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
-    "directUrl" => $fileUtility->serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+    "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx",
 ] : [
     "fileType" => "docx",
-    "url" => $fileUtility->serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
 ];
 
 // recipients data for mail merging
 $dataMailMergeRecipients = $isEnableDirectUrl ? [
     "fileType" => "csv",
-    "url" => $fileUtility->serverPath(true) . "/webeditor-ajax.php?type=csv",
-    "directUrl" => $fileUtility->serverPath(false) . "/webeditor-ajax.php?type=csv",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
+    "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
 ] : [
     "fileType" => "csv",
-    "url" => $fileUtility->serverPath(true) . "/webeditor-ajax.php?type=csv",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
 ];
 
 // users data for mentions
-$usersForMentions = $user->id != "uid-0" ? $users->getUsersForMentions($user->id) : null;
+$usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
 
 // check if the secret key to generate token exists
-$jwtManager = new JwtManager();
 if ($jwtManager->isJwtEnabled()) {
     $config["token"] = $jwtManager->jwtEncode($config);  // encode config into the token
     // encode the dataInsertImage object into the token
@@ -225,7 +219,7 @@ if ($jwtManager->isJwtEnabled()) {
             maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="css/images/<?php echo $fileUtility->getDocumentType($filename) ?>.ico" type="image/x-icon" />
+    <link rel="icon" href="css/images/<?php echo getDocumentType($filename) ?>.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
@@ -258,8 +252,8 @@ if ($jwtManager->isJwtEnabled()) {
     </style>
 
     <script type="text/javascript" src="
-        <?php echo $configManager->getConfig("docServSiteUrl").
-        $configManager->getConfig("docServApiUrl") ?>">
+        <?php echo $confgManager->getConfig("docServSiteUrl").
+        $confgManager->getConfig("docServApiUrl") ?>">
     </script>
 
     <script type="text/javascript">
@@ -401,11 +395,11 @@ if ($jwtManager->isJwtEnabled()) {
 
         var сonnectEditor = function () {
 
-            <?php
-            if (!file_exists($fileUtility->getStoragePath($filename))) {
-                echo "alert('File not found'); return;";
-            }
-            ?>
+        <?php
+        if (!file_exists(getStoragePath($filename))) {
+            echo "alert('File not found'); return;";
+        }
+        ?>
 
             config = <?php echo json_encode($config) ?>;
 
@@ -426,44 +420,44 @@ if ($jwtManager->isJwtEnabled()) {
             };
 
             <?php
-            $out = $fileUtility->getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
+            $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
             $history = $out[0];
             $historyData = $out[1];
             ?>
 
             <?php if ($user->id != "uid-0") { ?>
-            <?php if ($history != null && $historyData != null) { ?>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                // show the document version history
-                docEditor.refreshHistory(<?php echo json_encode($history) ?>);
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <?php echo json_encode($historyData) ?>;
-                // send the link to the document for viewing the version history
-                docEditor.setHistoryData(histData[ver - 1]);
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            <?php } ?>
-            // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <?php echo json_encode($usersForMentions) ?>
-                });
-            };
-            // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
-            // prevent file renaming for anonymous users
-            config.events['onRequestRename'] = onRequestRename;
+                <?php if ($history != null && $historyData != null) { ?>
+                    // the user is trying to show the document version history
+                    config.events['onRequestHistory'] = function () {
+                        // show the document version history
+                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);
+                    };
+                    // the user is trying to click the specific document version in the document version history
+                    config.events['onRequestHistoryData'] = function (event) {
+                        var ver = event.data;
+                        var histData = <?php echo json_encode($historyData) ?>;
+                        // send the link to the document for viewing the version history
+                        docEditor.setHistoryData(histData[ver - 1]);
+                    };
+                    // the user is trying to go back to the document from viewing the document version history
+                    config.events['onRequestHistoryClose'] = function () {
+                        document.location.reload();
+                    };
+                <?php } ?>
+                // add mentions for not anonymous users
+                config.events['onRequestUsers'] = function () {
+                    docEditor.setUsers({  // set a list of users to mention in the comments
+                        "users": <?php echo json_encode($usersForMentions) ?>
+                    });
+                };
+                // the user is mentioned in a comment
+                config.events['onRequestSendNotify'] = function (event) {
+                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+                    var data = JSON.stringify(event.data);
+                    innerAlert("onRequestSendNotify: " + data);
+                };
+                // prevent file renaming for anonymous users
+                config.events['onRequestRename'] = onRequestRename;
             <?php } ?>
 
             if (config.editorConfig.createUrl) {
@@ -488,9 +482,9 @@ if ($jwtManager->isJwtEnabled()) {
     </script>
 </head>
 <body>
-<form id="form1">
-    <div id="iframeEditor">
-    </div>
-</form>
+    <form id="form1">
+        <div id="iframeEditor">
+        </div>
+    </form>
 </body>
 </html>
