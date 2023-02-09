@@ -1,6 +1,8 @@
 <?php
+
+namespace PhpExample;
+
 /**
- *
  * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +16,40 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-class User {
-    function __construct($id, $name, $email, $group, $reviewGroups, $commentGroups, $userInfoGroups, $favorite, $deniedPermissions, $descriptions, $templates)
-    {
+final class User
+{
+    /**
+     * Constructor
+     *
+     * @param string $id
+     * @param string $name
+     * @param string $email
+     * @param string $group
+     * @param array|null $reviewGroups
+     * @param array $commentGroups
+     * @param array|null $userInfoGroups
+     * @param bool|null $favorite
+     * @param array $deniedPermissions
+     * @param array $descriptions
+     * @param bool $templates
+     *
+     * @return void
+     */
+    public function __construct(
+        $id,
+        $name,
+        $email,
+        $group,
+        $reviewGroups,
+        $commentGroups,
+        $userInfoGroups,
+        $favorite,
+        $deniedPermissions,
+        $descriptions,
+        $templates
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
@@ -41,16 +71,17 @@ $descr_user_1 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can create files from templates using data from the editor",
-    "Can see the information about all users"
+    "Can see the information about all users",
 ];
 
 $descr_user_2 = [
     "Belongs to Group2",
     "Can review only his own changes or changes made by users with no group",
-    "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+    "Can view comments, edit his own comments and comments left by users with no group. 
+        Can remove his own comments only",
     "This file is marked as favorite",
     "Can create new files from the editor",
-    "Can see the information about users from Group2 and users who don’t belong to any group"
+    "Can see the information about users from Group2 and users who don’t belong to any group",
 ];
 
 $descr_user_3 = [
@@ -62,7 +93,7 @@ $descr_user_3 = [
     "Can’t download the file",
     "Can’t print the file",
     "Can create new files from the editor",
-    "Can see the information about Group2 users"
+    "Can see the information about Group2 users",
 ];
 
 $descr_user_0 = [
@@ -80,40 +111,90 @@ $descr_user_0 = [
 ];
 
 $users = [
-    new User("uid-1", "John Smith", "smith@example.com",
-            "", null, [], null,
-            null, [], $descr_user_1, true),
-    new User("uid-2", "Mark Pottato", "pottato@example.com",
-            "group-2", ["group-2", ""], [
-                "view" => "",
-                "edit" => ["group-2", ""],
-                "remove" => ["group-2"]
-            ],
-            ["group-2", ""],
-            true, [], $descr_user_2, false),
-    new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
-            "group-3", ["group-2"], [
-                "view" => ["group-3", "group-2"],
-                "edit" => ["group-2"],
-                "remove" => []
-            ],
-            ["group-2"],
-            false, ["copy", "download", "print"], $descr_user_3, false),
-    new User("uid-0", null, null,
-            "", null, [], [],
-            null, [], $descr_user_0, false)
+    new User(
+        "uid-1",
+        "John Smith",
+        "smith@example.com",
+        "",
+        null,
+        [],
+        null,
+        null,
+        [],
+        $descr_user_1,
+        true
+    ),
+    new User(
+        "uid-2",
+        "Mark Pottato",
+        "pottato@example.com",
+        "group-2",
+        ["group-2", ""],
+        [
+            "view" => "",
+            "edit" => ["group-2", ""],
+            "remove" => ["group-2"],
+        ],
+        ["group-2", ""],
+        true,
+        [],
+        $descr_user_2,
+        false
+    ),
+    new User(
+        "uid-3",
+        "Hamish Mitchell",
+        "mitchell@example.com",
+        "group-3",
+        ["group-2"],
+        [
+            "view" => ["group-3", "group-2"],
+            "edit" => ["group-2"],
+            "remove" => [],
+        ],
+        ["group-2"],
+        false,
+        ["copy", "download", "print"],
+        $descr_user_3,
+        false
+    ),
+    new User(
+        "uid-0",
+        null,
+        null,
+        "",
+        null,
+        [],
+        [],
+        null,
+        [],
+        $descr_user_0,
+        false
+    ),
 ];
 
-// get a list of all the users
-function getAllUsers() {
+/**
+ * Get a list of all the users
+ *
+ * @return array
+ */
+function getAllUsers()
+{
     global $users;
     return $users;
 }
 
-// get a user by id specified
-function getUser($id) {
+/**
+ * Get a user by id specified
+ *
+ * @param string $id
+ *
+ * @return array
+ */
+function getUser($id)
+{
     global $users;
-    foreach ($users as $user){
+    foreach ($users as $user) {
         if ($user->id == $id) {
             sendlog("User ". $user->id, "common.log");
             return $user;
@@ -122,18 +203,24 @@ function getUser($id) {
     return $users[0];
 }
 
-// get a list of users with their names and emails for mentions
-function getUsersForMentions($id) {
+/**
+ * Get a list of users with their names and emails for mentions
+ *
+ * @param string $id
+ *
+ * @return array
+ */
+function getUsersForMentions($id)
+{
     global $users;
     $usersData = [];
     foreach ($users as $user) {
         if ($user->id != $id && $user->name != null && $user->email != null) {
-            array_push($usersData,[
+            $usersData[] = [
                 "name" => $user->name,
-                "email" => $user->email
-            ]);
+                "email" => $user->email,
+            ];
         }
     }
     return $usersData;
 }
-?>

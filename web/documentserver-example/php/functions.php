@@ -1,6 +1,5 @@
 <?php
 /**
- *
  * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,28 +13,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/jwtmanager.php' );
+require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/jwtmanager.php';
 
-
-// file uploading
-function DoUpload($fileUri) {
+/**
+ * File uploading
+ *
+ * @param string $fileUri
+ *
+ * @throws Exception If file type is not supported or copy operation is unsuccessful
+ *
+ * @return null
+ */
+function doUpload($fileUri)
+{
     $_fileName = GetCorrectName($fileUri);
 
     // check if file extension is supported by the editor
-    $ext = strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, getFileExts()))
-    {
+    $ext = mb_strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
+    if (!in_array($ext, getFileExts())) {
         throw new Exception("File type is not supported");
     }
 
     // check if the file copy operation is successful
-    if(!@copy($fileUri, getStoragePath($_fileName)))
-    {
-        $errors= error_get_last();
+    if (!@copy($fileUri, getStoragePath($_fileName))) {
+        $errors = error_get_last();
         $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
         throw new Exception($err);
     }
@@ -43,21 +47,22 @@ function DoUpload($fileUri) {
     return $_fileName;
 }
 
-
 /**
-* Generate an error code table
-*
-* @param string $errorCode   Error code
-*
-* @return null
-*/
-function ProcessConvServResponceError($errorCode) {
+ * Generate an error code table
+ *
+ * @param string $errorCode Error code
+ *
+ * @throws Exception If error code is unknown
+ *
+ * @return null
+ */
+function processConvServResponceError($errorCode)
+{
     $errorMessageTemplate = "Error occurred in the document service: ";
     $errorMessage = '';
 
     // add the error message to the error message template depending on the error code
-    switch ($errorCode)
-    {
+    switch ($errorCode) {
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;
@@ -92,38 +97,48 @@ function ProcessConvServResponceError($errorCode) {
     throw new Exception($errorMessage);
 }
 
-
 /**
-* Translation key to a supported form.
-*
-* @param string $expected_key  Expected key
-*
-* @return Supported key
-*/
-function GenerateRevisionId($expected_key) {
-    if (strlen($expected_key) > 20) $expected_key = crc32( $expected_key);  // if the expected key length is greater than 20, calculate the crc32 for it
+ * Translation key to a supported form.
+ *
+ * @param string $expected_key Expected key
+ *
+ * @return string key
+ */
+function generateRevisionId($expected_key)
+{
+    if (mb_strlen($expected_key) > 20) {
+        $expected_key = crc32($expected_key);
+    }  // if the expected key length is greater than 20, calculate the crc32 for it
     $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
-    $key = substr($key, 0, min(array(strlen($key), 20)));  // the resulting key length is 20 or less
+    $key = mb_substr($key, 0, min([mb_strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
 }
 
-
 /**
-* Request for conversion to a service.
-*
-* @param string $document_uri            Uri for the document to convert
-* @param string $from_extension          Document extension
-* @param string $to_extension            Extension to which to convert
-* @param string $document_revision_id    Key for caching on service
-* @param bool   $is_async                Perform conversions asynchronously
-*
-* @return Document request result of conversion
-*/
-function SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang) {
-    if (empty($from_extension))
-    {
+ * Request for conversion to a service.
+ *
+ * @param string $document_uri         Uri for the document to convert
+ * @param string $from_extension       Document extension
+ * @param string $to_extension         Extension to which to convert
+ * @param string $document_revision_id Key for caching on service
+ * @param bool   $is_async             Perform conversions asynchronously
+ * @param string   $filePass
+ * @param string   $lang
+ *
+ * @return string request result of conversion
+ */
+function sendRequestToConvertService(
+    $document_uri,
+    $from_extension,
+    $to_extension,
+    $document_revision_id,
+    $is_async,
+    $filePass,
+    $lang
+) {
+    if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
-        $from_extension = strtolower($path_parts['extension']);
+        $from_extension = mb_strtolower($path_parts['extension']);
     }
 
     // if title is undefined, then replace it with a random guid
@@ -137,19 +152,19 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     }
 
     // generate document token
-    $document_revision_id = GenerateRevisionId($document_revision_id);
+    $document_revision_id = generateRevisionId($document_revision_id);
 
     $urlToConverter = $GLOBALS['DOC_SERV_SITE_URL'].$GLOBALS['DOC_SERV_CONVERTER_URL'];
 
     $arr = [
         "async" => $is_async,
         "url" => $document_uri,
-        "outputtype" => trim($to_extension,'.'),
+        "outputtype" => trim($to_extension, '.'),
         "filetype" => trim($from_extension, '.'),
         "title" => $title,
         "key" => $document_revision_id,
         "password" => $filePass,
-        "region" => $lang
+        "region" => $lang,
     ];
 
     // add header token
@@ -157,88 +172,111 @@ function SendRequestToConvertService($document_uri, $from_extension, $to_extensi
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
     if (isJwtEnabled()) {
-        $headerToken = jwtEncode([ "payload" => $arr ]);
+        $headerToken = jwtEncode(["payload" => $arr]);
         $arr["token"] = jwtEncode($arr);
     }
 
     $data = json_encode($arr);
 
     // request parameters
-    $opts = array('http' => array(
-                'method'  => 'POST',
-                'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
-                'header'=> "Content-type: application/json\r\n" . 
-                            "Accept: application/json\r\n" .
-                            (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
-                'content' => $data
-            )
-        );
+    $opts = ['http' => [
+        'method' => 'POST',
+        'timeout' => $GLOBALS['DOC_SERV_TIMEOUT'],
+        'header' => "Content-type: application/json\r\n" .
+                    "Accept: application/json\r\n" .
+                    (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
+        'content' => $data,
+    ],
+    ];
 
-    if (substr($urlToConverter, 0, strlen("https")) === "https") {
-        if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
-            $opts['ssl'] = array( 'verify_peer' => FALSE, 'verify_peer_name' => FALSE );
+    if (mb_substr($urlToConverter, 0, mb_strlen("https")) === "https") {
+        if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+            $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
- 
+
     $context = stream_context_create($opts);
-    $response_data = file_get_contents($urlToConverter, FALSE, $context);
+    $response_data = file_get_contents($urlToConverter, false, $context);
 
     return $response_data;
 }
 
-
 /**
-* The method is to convert the file to the required format.
-*
-* Example:
-* string convertedDocumentUri;
-* GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
-* 
-* @param string $document_uri            Uri for the document to convert
-* @param string $from_extension          Document extension
-* @param string $to_extension            Extension to which to convert
-* @param string $document_revision_id    Key for caching on service
-* @param bool   $is_async                Perform conversions asynchronously
-* @param string $converted_document_uri  Uri to the converted document
-*
-* @return The percentage of completion of conversion
-*/
-function GetConvertedUri($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, &$converted_document_uri, $filePass, $lang) {
+ * The method is to convert the file to the required format.
+ *
+ * Example:
+ * string convertedDocumentUri;
+ * getConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
+ * ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
+ *
+ * @param string $document_uri           Uri for the document to convert
+ * @param string $from_extension         Document extension
+ * @param string $to_extension           Extension to which to convert
+ * @param string $document_revision_id   Key for caching on service
+ * @param bool   $is_async               Perform conversions asynchronously
+ * @param string $converted_document_uri Uri to the converted document
+ * @param string $filePass               File pass
+ * @param string $lang                   Language
+ *
+ * @throws Exception if an error occurs
+ *
+ * @return int percentage of completion of conversion
+ */
+function getConvertedUri(
+    $document_uri,
+    $from_extension,
+    $to_extension,
+    $document_revision_id,
+    $is_async,
+    &$converted_document_uri,
+    $filePass,
+    $lang
+) {
     $converted_document_uri = "";
-    $responceFromConvertService = SendRequestToConvertService($document_uri, $from_extension, $to_extension, $document_revision_id, $is_async, $filePass, $lang);
+    $responceFromConvertService = sendRequestToConvertService(
+        $document_uri,
+        $from_extension,
+        $to_extension,
+        $document_revision_id,
+        $is_async,
+        $filePass,
+        $lang
+    );
     $json = json_decode($responceFromConvertService, true);
 
     // if an error occurs, then display an error message
     $errorElement = $json["error"];
-    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($errorElement);
+    if ($errorElement != null && $errorElement != "") {
+        processConvServResponceError($errorElement);
+    }
 
     $isEndConvert = $json["endConvert"];
     $percent = $json["percent"];
 
     // if the conversion is completed successfully
-    if ($isEndConvert != NULL && $isEndConvert == true)
-    {
+    if ($isEndConvert != null && $isEndConvert == true) {
         // then get the file url
         $converted_document_uri = $json["fileUrl"];
         $percent = 100;
-    }
-    // otherwise, get the percentage of conversion completion
-    else if ($percent >= 100)
+    } elseif ($percent >= 100) { // otherwise, get the percentage of conversion completion
         $percent = 99;
+    }
 
     return $percent;
 }
 
-
 /**
-* Processing document received from the editing service.
-*
-* @param string $document_response     The result from editing service
-* @param string $response_uri          Uri to the converted document
-*
-* @return The percentage of completion of conversion
-*/
-function GetResponseUri($document_response, &$response_uri) {
+ * Processing document received from the editing service.
+ *
+ * @param Response $document_response The result from editing service
+ * @param string $response_uri      Uri to the converted document
+ *
+ * @throws Exception if an error occurs
+ *
+ * @return int percentage of completion of conversion
+ */
+function getResponseUri($document_response, &$response_uri)
+{
     $response_uri = "";
     $resultPercent = 0;
 
@@ -248,33 +286,35 @@ function GetResponseUri($document_response, &$response_uri) {
 
     // if an error occurs, then display an error message
     $errorElement = $document_response->Error;
-    if ($errorElement != NULL && $errorElement != "") ProcessConvServResponceError($document_response->Error);
+    if ($errorElement != null && $errorElement != "") {
+        processConvServResponceError($document_response->Error);
+    }
 
     $endConvert = $document_response->EndConvert;
-    if ($endConvert != NULL && $endConvert == "") throw new Exception("Invalid answer format");
+    if ($endConvert != null && $endConvert == "") {
+        throw new Exception("Invalid answer format");
+    }
 
     // if the conversion is completed successfully
-    if ($endConvert != NULL && strtolower($endConvert) == true)
-    {
+    if ($endConvert != null && mb_strtolower($endConvert) == true) {
         $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == NULL || $fileUrl == "") throw new Exception("Invalid answer format");
+        if ($fileUrl == null || $fileUrl == "") {
+            throw new Exception("Invalid answer format");
+        }
 
         // get the response file url
         $response_uri = $fileUrl;
         $resultPercent = 100;
-    }
-    // otherwise, get the percentage of conversion completion
-    else
-    {
+    } else { // otherwise, get the percentage of conversion completion
         $percent = $document_response->Percent;
 
-        if ($percent != NULL && $percent != "")
+        if ($percent != null && $percent != "") {
             $resultPercent = $percent;
-        if ($resultPercent >= 100)
+        }
+        if ($resultPercent >= 100) {
             $resultPercent = 99;
+        }
     }
 
     return $resultPercent;
 }
-
-?>

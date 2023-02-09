@@ -1,6 +1,8 @@
 <?php
+
+namespace PhpExample;
+
 /**
- *
  * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,34 +16,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 /**
  * WebEditor AJAX Process Execution.
  */
-require_once( dirname(__FILE__) . '/config.php' );
-require_once( dirname(__FILE__) . '/ajax.php' );
-require_once( dirname(__FILE__) . '/common.php' );
-require_once( dirname(__FILE__) . '/functions.php' );
-require_once( dirname(__FILE__) . '/jwtmanager.php' );
-require_once( dirname(__FILE__) . '/trackmanager.php' );
-require_once( dirname(__FILE__) . '/users.php' );
+require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/ajax.php';
+require_once dirname(__FILE__) . '/common.php';
+require_once dirname(__FILE__) . '/functions.php';
+require_once dirname(__FILE__) . '/jwtmanager.php';
+require_once dirname(__FILE__) . '/trackmanager.php';
+require_once dirname(__FILE__) . '/users.php';
 
 // define tracker status
-$_trackerStatus = array(
+$_trackerStatus = [
     0 => 'NotFound',
     1 => 'Editing',
     2 => 'MustSave',
     3 => 'Corrupted',
     4 => 'Closed',
     6 => 'MustForceSave',
-    7 => 'CorruptedForceSave'
-);
+    7 => 'CorruptedForceSave',
+];
 
 // ignore self-signed certificate
-if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
-    stream_context_set_default( [
+if ($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === true) {
+    stream_context_set_default([
         'ssl' => [
             'verify_peer' => false,
             'verify_peer_name' => false,
@@ -52,12 +53,12 @@ if($GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] === TRUE) {
 // check if type value exists
 if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $response_array;
-    @header( 'Content-Type: application/json; charset==utf-8');
-    @header( 'X-Robots-Tag: noindex' );
-    @header( 'X-Content-Type-Options: nosniff' );
+    @header('Content-Type: application/json; charset==utf-8');
+    @header('X-Robots-Tag: noindex');
+    @header('X-Content-Type-Options: nosniff');
 
     // set headers that prevent caching in all the browsers
-    nocache_headers();
+    nocacheHeaders();
 
     // write the request result to the log file
     sendlog(serialize($_GET), "webedior-ajax.log");
@@ -65,49 +66,49 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     $type = $_GET["type"];
 
     // switch case for type value
-    switch($type) {
+    switch ($type) {
         case "upload":
             $response_array = upload();
             $response_array['status'] = isset($response_array['error']) ? 'error' : 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "download":
             $response_array = download();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "history":
             $response_array = historyDownload();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "convert":
             $response_array = convert();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "track":
             $response_array = track();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "delete":
             $response_array = delete();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "assets":
             $response_array = assets();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "csv":
             $response_array = csv();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "files":
             $response_array = files();
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "saveas":
             $response_array = saveas();
             $response_array['status'] = 'success';
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         case "rename":
             $response_array = renamefile();
-            die (json_encode($response_array));
+            die(json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';
@@ -115,46 +116,62 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
     }
 }
 
-// save copy as...
-function saveas() {
-   try {
-       $result;
-       $post = json_decode(file_get_contents('php://input'), true);
-       $fileurl = $post["url"];
-       $title = $post["title"];
-       $extension = strtolower(pathinfo($title, PATHINFO_EXTENSION));
-       $allexts = array_merge($GLOBALS['DOC_SERV_CONVERT'], $GLOBALS['DOC_SERV_EDITED'], $GLOBALS['DOC_SERV_VIEWD'], $GLOBALS['DOC_SERV_FILLFORMS']);
-       $filename = GetCorrectName($title);
+/**
+ * Save copy as...
+ *
+ * @return array
+ */
+function saveas()
+{
+    try {
+        $result;
+        $post = json_decode(file_get_contents('php://input'), true);
+        $fileurl = $post["url"];
+        $title = $post["title"];
+        $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
+        $allexts = array_merge(
+            $GLOBALS['DOC_SERV_CONVERT'],
+            $GLOBALS['DOC_SERV_EDITED'],
+            $GLOBALS['DOC_SERV_VIEWD'],
+            $GLOBALS['DOC_SERV_FILLFORMS']
+        );
+        $filename = GetCorrectName($title);
 
-       if (!in_array("." . $extension, $allexts)) {
-           $result["error"] = "File type is not supported";
-           return $result;
-       }
-       $headers = get_headers($fileurl, 1);
-       $content_length = $headers["Content-Length"];
-       $data = file_get_contents(str_replace(" ","%20",$fileurl));
+        if (!in_array("." . $extension, $allexts)) {
+            $result["error"] = "File type is not supported";
+            return $result;
+        }
+        $headers = get_headers($fileurl, 1);
+        $content_length = $headers["Content-Length"];
+        $data = file_get_contents(str_replace(" ", "%20", $fileurl));
 
-       if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
-           $result["error"] = "File size is incorrect";
-           return $result;
-       }
+        if ($data === false || $content_length <= 0 || $content_length > $GLOBALS['FILE_SIZE_MAX']) {
+            $result["error"] = "File size is incorrect";
+            return $result;
+        }
 
-       file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
-       $user = getUser($_GET["user"]);
-       createMeta($filename, $user->id, $user->name);  // and create meta data for this file
+        file_put_contents(getStoragePath($filename), $data, LOCK_EX);  // write data to the new file
+        $user = getUser($_GET["user"]);
+        createMeta($filename, $user->id, $user->name);  // and create meta data for this file
 
-       $result["file"] = $filename;
-       return $result;
-   } catch (Exception $e) {
-       sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
-       $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
-       return $result;
-   }
+        $result["file"] = $filename;
+        return $result;
+    } catch (Exception $e) {
+        sendlog("SaveAs: ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: " . 1 . "message:" . $e->getMessage();
+        return $result;
+    }
 }
 
-// uploading a file
-function upload() {
-    $result; $filename;
+/**
+ * Uploading a file
+ *
+ * @return array
+ */
+function upload()
+{
+    $result;
+    $filename;
 
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
@@ -171,10 +188,9 @@ function upload() {
     }
 
     // check if the file was uploaded using HTTP POST
-    if (is_uploaded_file($tmp))
-    {
+    if (is_uploaded_file($tmp)) {
         $filesize = $_FILES['files']['size'];  // get the file size
-        $ext = strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
+        $ext = mb_strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
         if ($filesize <= 0 || $filesize > $GLOBALS['FILE_SIZE_MAX']) {
@@ -188,14 +204,14 @@ function upload() {
             return $result;
         }
 
-        $filename = GetCorrectName($_FILES['files']['name']);  // get the correct file name with an index if the file with such a name already exists
-        if (!move_uploaded_file($tmp,  getStoragePath($filename)) ) {
+        // get the correct file name with an index if the file with such a name already exists
+        $filename = GetCorrectName($_FILES['files']['name']);
+        if (!move_uploaded_file($tmp, getStoragePath($filename))) {
             $result["error"] = 'Upload failed';  // file upload error
             return $result;
         }
         $user = getUser($_GET["user"]);
         createMeta($filename, $user->id, $user->name);  // create file meta data
-
     } else {
         $result["error"] = 'Upload failed';
         return $result;
@@ -206,17 +222,22 @@ function upload() {
     return $result;
 }
 
-// tracking file changes
-function track() {
+/**
+ * Tracking file changes
+ *
+ * @return array|int
+ */
+function track()
+{
     sendlog("Track START", "webedior-ajax.log");
-    sendlog("   _GET params: " . serialize( $_GET ), "webedior-ajax.log");
+    sendlog("   _GET params: " . serialize($_GET), "webedior-ajax.log");
 
     $result["error"] = 0;
 
     // get the body of the post request and check if it is correct
     $data = readBody();
 
-    if (!empty($data->error)){
+    if (!empty($data->error)) {
         return $data;
     }
 
@@ -231,8 +252,9 @@ function track() {
         case "Editing":  // status == 1
             if ($data->actions && $data->actions[0]->type == 0) {   // finished edit
                 $user = $data->actions[0]->userid;  // the user who finished editing
-                if (array_search($user, $data->users) === FALSE) {
-                    $commandRequest = commandRequest("forcesave", $data->key);  // create a command request with the forcasave method
+                if (array_search($user, $data->users) === false) {
+                    // create a command request with the forcasave method
+                    $commandRequest = commandRequest("forcesave", $data->key);
                     sendlog("   CommandRequest forcesave: " . serialize($commandRequest), "webedior-ajax.log");
                 }
             }
@@ -251,21 +273,25 @@ function track() {
     return $result;
 }
 
-// converting a file
-function convert() {
+/**
+ * Converting a file
+ *
+ * @return array
+ */
+function convert()
+{
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"];
-    $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $internalExtension = trim(getInternalExtension($fileName),'.');
+    $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    $internalExtension = trim(getInternalExtension($fileName), '.');
 
     // check if the file with such an extension can be converted
     if (in_array("." . $extension, $GLOBALS['DOC_SERV_CONVERT']) && $internalExtension != "") {
-
         $fileUri = $post["fileUri"];
-        if ($fileUri == NULL || $fileUri == "") {
-            $fileUri =  $fileUri=serverPath(TRUE) . '/'
+        if ($fileUri == null || $fileUri == "") {
+            $fileUri = $fileUri = serverPath(true) . '/'
                 . "webeditor-ajax.php"
                 . "?type=download"
                 . "&fileName=" . urlencode($fileName)
@@ -279,15 +305,22 @@ function convert() {
 
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = GetConvertedUri($fileUri, $extension, $internalExtension, $key, TRUE, $newFileUri, $filePass, $lang);
-        }
-        catch (Exception $e) {
+            $percent = getConvertedUri(
+                $fileUri,
+                $extension,
+                $internalExtension,
+                $key,
+                true,
+                $newFileUri,
+                $filePass,
+                $lang
+            );
+        } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
             return $result;
         }
 
-        if ($percent != 100)
-        {
+        if ($percent != 100) {
             $result["step"] = $percent;
             $result["filename"] = $fileName;
             $result["fileUri"] = $fileUri;
@@ -295,19 +328,18 @@ function convert() {
         }
 
         // get file name without extension
-        $baseNameWithoutExt = substr($fileName, 0, strlen($fileName) - strlen($extension) - 1);
+        $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($extension) - 1);
 
         // get the correct file name with an index if the file with such a name already exists
         $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
 
-        if (($data = file_get_contents(str_replace(" ","%20",$newFileUri))) === FALSE) {
+        if (($data = file_get_contents(str_replace(" ", "%20", $newFileUri))) === false) {
             $result["error"] = 'Bad Request';
             return $result;
-        } else {
-            file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
-            $user = getUser($_GET["user"]);
-            createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
         }
+        file_put_contents(getStoragePath($newFileName), $data, LOCK_EX);  // write data to the new file
+        $user = getUser($_GET["user"]);
+        createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
 
         // delete the original file and its history
         $stPath = getStoragePath($fileName);
@@ -321,8 +353,13 @@ function convert() {
     return $result;
 }
 
-// removing a file
-function delete() {
+/**
+ * Removing a file
+ *
+ * @return array|void
+ */
+function delete()
+{
     try {
         $fileName = basename($_GET["fileName"]);
 
@@ -330,47 +367,67 @@ function delete() {
 
         unlink($filePath);  // delete a file
         delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
 }
 
-// get file information
-function files() {
+/**
+ * Get file information
+ *
+ * @return array
+ */
+function files()
+{
     try {
-        @header( "Content-Type", "application/json" );
+        @header("Content-Type", "application/json");
 
         $fileId = $_GET["fileId"];
         $result = getFileInfo($fileId);
 
         return $result;
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         sendlog("Files ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
 }
 
-// download assets
-function assets() {
+/**
+ * Download assets
+ *
+ * @return void
+ */
+function assets()
+{
     $fileName = basename($_GET["name"]);
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = dirname(__FILE__) .
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
-// download a csv file
-function csv() {
-    $fileName =  "csv.csv";
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+/**
+ * Download a csv file
+ *
+ * @return void
+ */
+function csv()
+{
+    $fileName = "csv.csv";
+    $filePath = dirname(__FILE__) .
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
-// download a file from history
-function historyDownload() {
+/**
+ * Download a file from history
+ *
+ * @return array|void
+ */
+function historyDownload()
+{
     try {
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
@@ -381,7 +438,7 @@ function historyDownload() {
         if (isJwtEnabled()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
-                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
+                $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
                 if (empty($token)) {
                     http_response_code(403);
                     die("Invalid JWT signature");
@@ -394,7 +451,8 @@ function historyDownload() {
 
         $histDir = getHistoryDir(getStoragePath($fileName, $userAddress));
 
-        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;;
+        $filePath = getVersionDir($histDir, $ver) . DIRECTORY_SEPARATOR . $file;
+        ;
 
         downloadFile($filePath);  // download this file
     } catch (Exception $e) {
@@ -404,21 +462,27 @@ function historyDownload() {
     }
 }
 
-// download a file
-function download() {
+/**
+ * Download a file
+ *
+ * @return array|void
+ */
+function download()
+{
     try {
-        $fileName = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
+        $fileName = realpath($GLOBALS['STORAGE_PATH'])
+        === $GLOBALS['STORAGE_PATH'] ? $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 
         if (isJwtEnabled() && $isEmbedded == null && $userAddress) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
-                $token = jwtDecode(substr(apache_request_headers()[$jwtHeader], strlen("Bearer ")));
-            }
-            if (empty($token)) {
-                http_response_code(403);
-                die("Invalid JWT signature");
+                $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
+                if (empty($token)) {
+                    http_response_code(403);
+                    die("Invalid JWT signature");
+                }
             }
         }
         $filePath = getForcesavePath($fileName, $userAddress, false);  // get the path to the forcesaved file version
@@ -433,8 +497,15 @@ function download() {
     }
 }
 
-// download the specified file
-function downloadFile($filePath) {
+/**
+ * Download the specified file
+ *
+ * @param string $filePath
+ *
+ * @return void
+ */
+function downloadFile($filePath)
+{
     if (file_exists($filePath)) {
         if (ob_get_level()) {
             ob_end_clean();
@@ -447,7 +518,7 @@ function downloadFile($filePath) {
 
         if ($fd = fopen($filePath, 'rb')) {
             while (!feof($fd)) {
-                print fread($fd, 1024);
+                echo fread($fd, 1024);
             }
             fclose($fd);
         }
@@ -455,25 +526,39 @@ function downloadFile($filePath) {
     }
 }
 
-// delete all the elements from the directory
-function delTree($dir) {
-    if (!file_exists($dir) || !is_dir($dir)) return;
+/**
+ * Delete all the elements from the directory
+ *
+ * @param string $dir
+ *
+ * @return void|bool
+ */
+function delTree($dir)
+{
+    if (!file_exists($dir) || !is_dir($dir)) {
+        return;
+    }
 
-    $files = array_diff(scandir($dir), array('.','..'));
+    $files = array_diff(scandir($dir), ['.', '..']);
     foreach ($files as $file) {
         (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
     }
     return rmdir($dir);
 }
 
-// rename...
-function renamefile() {
+/**
+ * Rename file
+ *
+ * @return array
+ */
+function renamefile()
+{
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
 
-    $curExt = strtolower(array_pop(explode('.', $newfilename)));
+    $curExt = mb_strtolower(array_pop(explode('.', $newfilename)));
     $origExt = $post["ext"];
-    if($origExt !== $curExt){
+    if ($origExt !== $curExt) {
         $newfilename .= '.' . $origExt;
     }
 
@@ -483,5 +568,5 @@ function renamefile() {
     $commandRequest = commandRequest("meta", $dockey, $meta);  // create a command request with the forcasave method
     sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
 
-    return array("result" => $commandRequest);
+    return ["result" => $commandRequest];
 }
