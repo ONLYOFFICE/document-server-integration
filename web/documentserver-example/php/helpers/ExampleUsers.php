@@ -2,6 +2,8 @@
 
 namespace OnlineEditorsExamplePhp\Helpers;
 
+use function OnlineEditorsExamplePhp\sendlog;
+
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -155,6 +157,7 @@ final class ExampleUsers
     {
         foreach ($this->users as $user) {
             if ($user->id == $id) {
+                sendlog("User ". $user->id, "common.log");
                 return $user;
             }
         }
