@@ -6,7 +6,7 @@ on:
     branches: [master, main]
     paths: ['web/documentserver-example/php/**']
   pull_request:
-    branches: [master, main, develop]
+    branches: [master, main]
     paths: ['web/documentserver-example/php/**']
 
 jobs:
@@ -22,8 +22,10 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           tools: cs2pr, phpcs
           
       - name: Run phpcs
-        run: phpcs -q --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml --ignore=node_modules,bower_components,vendor ./
+        run: |
+          phpcs --version
+          phpcs -q --extensions=php,module,inc,install,test,profile,theme,info --ignore=node_modules,bower_components,vendor,css,js,lib --standard=./ruleset.xml ./

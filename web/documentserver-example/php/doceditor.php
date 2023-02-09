@@ -1,359 +1,434 @@
 <?php
-    /**
-     *
-     * (c) Copyright Ascensio System SIA 2023
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     *
-     */
 
-    require_once( dirname(__FILE__) . '/config.php' );
-    require_once( dirname(__FILE__) . '/common.php' );
-    require_once( dirname(__FILE__) . '/functions.php' );
-    require_once( dirname(__FILE__) . '/jwtmanager.php' );
-    require_once( dirname(__FILE__) . '/users.php' );
+namespace PhpExample;
 
+/**
+ * (c) Copyright Ascensio System SIA 2023
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-    $user = getUser($_GET["user"]);
-    $isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
+require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/common.php';
+require_once dirname(__FILE__) . '/functions.php';
+require_once dirname(__FILE__) . '/jwtmanager.php';
+require_once dirname(__FILE__) . '/users.php';
 
-    // get the file url and upload it
-    $externalUrl = isset($_GET["fileUrl"]) ? $_GET["fileUrl"] : "";
-    if (!empty($externalUrl))
-    {
-        $filename = DoUpload($externalUrl);
-    }
-    // if the file url doesn't exist, get file name and file extension
-    else
-    {
-        $filename = basename($_GET["fileID"]);
-    }
-    $createExt = isset($_GET["fileExt"]) ? $_GET["fileExt"] : "";
+$user = getUser($_GET["user"]);
+$isEnableDirectUrl = isset($_GET["directUrl"]) ? filter_var($_GET["directUrl"], FILTER_VALIDATE_BOOLEAN) : false;
 
-    if (!empty($createExt))
-    {
-        // and get demo file name by the extension
-        $filename = tryGetDefaultByType($createExt, $user);
+// get the file url and upload it
+$externalUrl = $_GET["fileUrl"] ?? "";
+if (!empty($externalUrl)) {
+    $filename = doUpload($externalUrl);
+} else { // if the file url doesn't exist, get file name and file extension
+    $filename = basename($_GET["fileID"]);
+}
+$createExt = $_GET["fileExt"] ?? "";
 
-        // create the demo file url
-        $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
-        header('Location: ' . $new_url, true);
-        exit;
-    }
+if (!empty($createExt)) {
+    // and get demo file name by the extension
+    $filename = tryGetDefaultByType($createExt, $user);
 
-    $fileuri = FileUri($filename, true);
-    $fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ? getDownloadUrl($filename) . "&dmode=emb" : FileUri($filename);
-    $directUrl = getDownloadUrl($filename, FALSE);
-    $docKey = getDocEditorKey($filename);
-    $filetype = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    // create the demo file url
+    $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $_GET["user"];
+    header('Location: ' . $new_url, true);
+    exit;
+}
 
-    $ext = strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
-    $editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
-    $canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
-    if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])) {
-        $editorsMode = "fillForms";
-        $canEdit = true;
-    }
-    $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;  // check if the Submit form button is displayed or not
-    $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
-    $type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
+$fileuri = fileUri($filename, true);
+$fileuriUser = realpath($GLOBALS['STORAGE_PATH']) === $GLOBALS['STORAGE_PATH'] ?
+    getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
+$directUrl = getDownloadUrl($filename, false);
+$docKey = getDocEditorKey($filename);
+$filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
-    $createUrl = getCreateUrl($filename, $user->id, $type);
-    $templates = array(
-        array (
-            "image" => "",
-            "title" => "Blank",
-            "url" => $createUrl
-        ),
-        array (
-            "image" => $templatesImageUrl,
-            "title" => "With sample content",
-            "url" => $createUrl . "&sample=true"
-        )
-    );
+$ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+$editorsMode = empty($_GET["action"]) ? "edit" : $_GET["action"];  // get the editors mode
+$canEdit = in_array($ext, $GLOBALS['DOC_SERV_EDITED']);  // check if the file can be edited
+if ((!$canEdit && $editorsMode == "edit"
+    || $editorsMode == "fillForms")
+    && in_array($ext, $GLOBALS['DOC_SERV_FILLFORMS'])
+) {
+    $editorsMode = "fillForms";
+    $canEdit = true;
+}
 
-    // specify the document config
-    $config = [
-        "type" => $type,
-        "documentType" => getDocumentType($filename),
-        "document" => [
-            "title" => $filename,
-            "url" => getDownloadUrl($filename),
-            "directUrl" => $isEnableDirectUrl ? $directUrl : "",
-            "fileType" => $filetype,
-            "key" => $docKey,
-            "info" => [
-                "owner" => "Me",
-                "uploaded" => date('d.m.y'),
-                "favorite" => $user->favorite
-            ],
-            "permissions" => [  // the permission for the document to be edited and downloaded or not
-                "comment" => $editorsMode != "view" && $editorsMode != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
-                "copy" => !in_array("copy", $user->deniedPermissions),
-                "download" => !in_array("download", $user->deniedPermissions),
-                "edit" => $canEdit && ($editorsMode == "edit" || $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
-                "print" => !in_array("print", $user->deniedPermissions),
-                "fillForms" => $editorsMode != "view" && $editorsMode != "comment" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
-                "modifyFilter" => $editorsMode != "filter",
-                "modifyContentControl" => $editorsMode != "blockcontent",
-                "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
-                "chat" => $user->id != "uid-0",
-                "reviewGroups" => $user->reviewGroups,
-                "commentGroups" => $user->commentGroups,
-                "userInfoGroups" => $user->userInfoGroups
-            ]
+// check if the Submit form button is displayed or not
+$submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
+$mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
+$type = empty($_GET["type"]) ? "desktop" : $_GET["type"];
+
+$templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
+$createUrl = getCreateUrl($filename, $user->id, $type);
+$templates = [
+    [
+        "image" => "",
+        "title" => "Blank",
+        "url" => $createUrl,
+    ],
+    [
+        "image" => $templatesImageUrl,
+        "title" => "With sample content",
+        "url" => $createUrl . "&sample=true",
+    ],
+];
+
+// specify the document config
+$config = [
+    "type" => $type,
+    "documentType" => getDocumentType($filename),
+    "document" => [
+        "title" => $filename,
+        "url" => getDownloadUrl($filename),
+        "directUrl" => $isEnableDirectUrl ? $directUrl : "",
+        "fileType" => $filetype,
+        "key" => $docKey,
+        "info" => [
+            "owner" => "Me",
+            "uploaded" => date('d.m.y'),
+            "favorite" => $user->favorite,
         ],
-        "editorConfig" => [
-            "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
-            "mode" => $mode,
-            "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
-            "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
-            "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
-                "mode" => "strict", 
-                "change" => false
-            ] : null,
-            "createUrl" => $user->id != "uid-0" ? $createUrl : null,
-            "templates" => $user->templates ? $templates : null,
-            "user" => [  // the user currently viewing or editing the document
-                "id" => $user->id != "uid-0" ? $user->id : null,
-                "name" => $user->name,
-                "group" => $user->group
+        "permissions" => [  // the permission for the document to be edited and downloaded or not
+            "comment" => $editorsMode != "view" && $editorsMode
+                != "fillForms" && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+            "copy" => !in_array("copy", $user->deniedPermissions),
+            "download" => !in_array("download", $user->deniedPermissions),
+            "edit" => $canEdit && ($editorsMode == "edit" ||
+                    $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
+            "print" => !in_array("print", $user->deniedPermissions),
+            "fillForms" => $editorsMode != "view" && $editorsMode != "comment"
+                && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+            "modifyFilter" => $editorsMode != "filter",
+            "modifyContentControl" => $editorsMode != "blockcontent",
+            "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
+            "chat" => $user->id != "uid-0",
+            "reviewGroups" => $user->reviewGroups,
+            "commentGroups" => $user->commentGroups,
+            "userInfoGroups" => $user->userInfoGroups,
+        ],
+    ],
+    "editorConfig" => [
+        "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
+        "mode" => $mode,
+        "lang" => empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"],
+        "callbackUrl" => getCallbackUrl($filename),  // absolute URL to the document storage service
+        "coEditing" => $editorsMode == "view" && $user->id == "uid-0" ? [
+            "mode" => "strict",
+            "change" => false,
+        ] : null,
+        "createUrl" => $user->id != "uid-0" ? $createUrl : null,
+        "templates" => $user->templates ? $templates : null,
+        "user" => [  // the user currently viewing or editing the document
+            "id" => $user->id != "uid-0" ? $user->id : null,
+            "name" => $user->name,
+            "group" => $user->group,
+        ],
+        "embedded" => [  // the parameters for the embedded document type
+            // the absolute URL that will allow the document to be saved onto the user personal computer
+            "saveUrl" => $directUrl,
+            // the absolute URL to the document serving as a source file for the document embedded into the web page
+            "embedUrl" => $directUrl,
+            // the absolute URL that will allow other users to share this document
+            "shareUrl" => $directUrl,
+            "toolbarDocked" => "top",  // the place for the embedded viewer toolbar (top or bottom)
+        ],
+        "customization" => [  // the parameters for the editor interface
+            "about" => true,  // the About section display
+            "comments" => true,
+            "feedback" => true,  // the Feedback & Support menu button display
+            // adds the request for the forced file saving to the callback handler when saving the document
+            "forcesave" => false,
+            "submitForm" => $submitForm,  // if the Submit form button is displayed or not
+            "goback" => [  // settings for the Open file location menu button and upper right corner button
+                // the absolute URL to the website address which will be opened
+                // when clicking the Open file location menu button
+                "url" => serverPath(),
             ],
-            "embedded" => [  // the parameters for the embedded document type
-                "saveUrl" => $directUrl,  // the absolute URL that will allow the document to be saved onto the user personal computer
-                "embedUrl" => $directUrl,  // the absolute URL to the document serving as a source file for the document embedded into the web page
-                "shareUrl" => $directUrl,  // the absolute URL that will allow other users to share this document
-                "toolbarDocked" => "top",  // the place for the embedded viewer toolbar (top or bottom)
-            ],
-            "customization" => [  // the parameters for the editor interface
-                "about" => true,  // the About section display
-                "comments" => true,
-                "feedback" => true,  // the Feedback & Support menu button display
-                "forcesave" => false,  // adds the request for the forced file saving to the callback handler when saving the document
-                "submitForm" => $submitForm,  // if the Submit form button is displayed or not
-                "goback" => [  // settings for the Open file location menu button and upper right corner button
-                    "url" => serverPath(),  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                ]
-            ]
-        ]
-    ];
+        ],
+    ],
+];
 
-    // an image for inserting
-    $dataInsertImage = $isEnableDirectUrl ? [
-        "fileType" => "png",
-        "url" => serverPath(true) . "/css/images/logo.png",
-        "directUrl" => serverPath(false) . "/css/images/logo.png"
-    ] : [
-        "fileType" => "png",
-        "url" => serverPath(true) . "/css/images/logo.png"
-    ];
+// an image for inserting
+$dataInsertImage = $isEnableDirectUrl ? [
+    "fileType" => "png",
+    "url" => serverPath(true) . "/css/images/logo.png",
+    "directUrl" => serverPath(false) . "/css/images/logo.png",
+] : [
+    "fileType" => "png",
+    "url" => serverPath(true) . "/css/images/logo.png",
+];
 
-    // a document for comparing
-    $dataCompareFile = $isEnableDirectUrl ? [
-        "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
-        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx"
-    ] : [
-        "fileType" => "docx",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx"
-    ];
+// a document for comparing
+$dataCompareFile = $isEnableDirectUrl ? [
+    "fileType" => "docx",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+    "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+] : [
+    "fileType" => "docx",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+];
 
-    // recipients data for mail merging
-    $dataMailMergeRecipients = $isEnableDirectUrl ? [
-        "fileType" =>"csv",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
-        "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv"
-    ]  : [
-        "fileType" =>"csv",
-        "url" => serverPath(true) . "/webeditor-ajax.php?type=csv"
-    ];
-    
-    // users data for mentions
-    $usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
+// recipients data for mail merging
+$dataMailMergeRecipients = $isEnableDirectUrl ? [
+    "fileType" => "csv",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
+    "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
+] : [
+    "fileType" => "csv",
+    "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
+];
 
-    // check if the secret key to generate token exists
-    if (isJwtEnabled()) {
-        $config["token"] = jwtEncode($config);  // encode config into the token
-        $dataInsertImage["token"] = jwtEncode($dataInsertImage);  // encode the dataInsertImage object into the token
-        $dataCompareFile["token"] = jwtEncode($dataCompareFile);  // encode the dataCompareFile object into the token
-        $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);  // encode the dataMailMergeRecipients object into the token
+// users data for mentions
+$usersForMentions = $user->id != "uid-0" ? getUsersForMentions($user->id) : null;
+
+// check if the secret key to generate token exists
+if (isJwtEnabled()) {
+    $config["token"] = jwtEncode($config);  // encode config into the token
+    $dataInsertImage["token"] = jwtEncode($dataInsertImage);  // encode the dataInsertImage object into the token
+    $dataCompareFile["token"] = jwtEncode($dataCompareFile);  // encode the dataCompareFile object into the token
+    // encode the dataMailMergeRecipients object into the token
+    $dataMailMergeRecipients["token"] = jwtEncode($dataMailMergeRecipients);
+}
+
+/**
+ * Get demo file name by the extension
+ *
+ * @param string $createExt
+ * @param string $user
+ *
+ * @return string
+ */
+function tryGetDefaultByType($createExt, $user)
+{
+    $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
+    $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
+    $demoFilename = GetCorrectName($demoName);
+
+    if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
+        sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
+        // Copy error!!!
     }
 
-    // get demo file name by the extension
-    function tryGetDefaultByType($createExt, $user) {
-        $demoName = ($_GET["sample"] ? "sample." : "new.") . $createExt;
-        $demoPath = "assets" . DIRECTORY_SEPARATOR . ($_GET["sample"] ? "sample" : "new") . DIRECTORY_SEPARATOR;
-        $demoFilename = GetCorrectName($demoName);
+    // create demo file meta information
+    createMeta($demoFilename, $user->id, $user->name);
 
-        if(!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename)))
-        {
-            sendlog("Copy file error to ". getStoragePath($demoFilename), "common.log");
-            // Copy error!!!
-        }
+    return $demoFilename;
+}
 
-        // create demo file meta information
-        createMeta($demoFilename, $user->id, $user->name);
+/**
+ * Get the callback url
+ *
+ * @param string $fileName
+ *
+ * @return string
+ */
+function getCallbackUrl($fileName)
+{
+    return serverPath(true) . '/'
+                . "webeditor-ajax.php"
+                . "?type=track"
+                . "&fileName=" . urlencode($fileName)
+                . "&userAddress=" . getClientIp();
+}
 
-        return $demoFilename;
-    }
+/**
+ * Get url to the created file
+ *
+ * @param string $fileName
+ * @param string $uid
+ * @param string $type
+ *
+ * @return string
+ */
+function getCreateUrl($fileName, $uid, $type)
+{
+    $ext = trim(getInternalExtension($fileName), '.');
+    return serverPath(false) . '/'
+            . "doceditor.php"
+            . "?fileExt=" . $ext
+            . "&user=" . $uid
+            . "&type=" . $type;
+}
 
-    // get the callback url
-    function getCallbackUrl($fileName) {
-        return serverPath(TRUE) . '/'
-                    . "webeditor-ajax.php"
-                    . "?type=track"
-                    . "&fileName=" . urlencode($fileName)
-                    . "&userAddress=" . getClientIp();
-    }
+/**
+ * Get url for history download
+ *
+ * @param string $fileName
+ * @param string $version
+ * @param string $file
+ * @param bool $isServer
+ *
+ * @return string
+ */
+function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
+{
+    $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
+    return serverPath($isServer) . '/'
+        . "webeditor-ajax.php"
+        . "?type=history"
+        . "&fileName=" . urlencode($fileName)
+        . "&ver=" . $version
+        . "&file=" . urlencode($file)
+        . $userAddress;
+}
 
-    // get url to the created file
-    function getCreateUrl($fileName, $uid, $type) {
-        $ext = trim(getInternalExtension($fileName),'.');
-        return serverPath(false) . '/'
-                . "doceditor.php"
-                . "?fileExt=" . $ext
-                . "&user=" . $uid 
-                . "&type=" . $type;
-    }
+/**
+ * Get url to download a file
+ *
+ * @param string $fileName
+ * @param bool $isServer
+ *
+ * @return string
+ */
+function getDownloadUrl($fileName, $isServer = true)
+{
+    $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
+    return serverPath($isServer) . '/'
+        . "webeditor-ajax.php"
+        . "?type=download"
+        . "&fileName=" . urlencode($fileName)
+        . $userAddress;
+}
 
-    function getHistoryDownloadUrl($fileName, $version, $file, $isServer = TRUE) {
-        $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
-        return serverPath($isServer) . '/'
-            . "webeditor-ajax.php"
-            . "?type=history"
-            . "&fileName=" . urlencode($fileName)
-            . "&ver=" . $version
-            . "&file=" . urlencode($file)
-            . $userAddress;
-    }
+/**
+ * Get document history
+ *
+ * @param string $filename
+ * @param string $filetype
+ * @param string $docKey
+ * @param string $fileuri
+ * @param bool $isEnableDirectUrl
+ *
+ * @return array
+ */
+function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
+{
+    $storagePath = $GLOBALS['STORAGE_PATH'];
+    $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
-    // get url to download a file
-    function getDownloadUrl($fileName, $isServer = TRUE) {
-        $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
-        return serverPath($isServer) . '/'
-            . "webeditor-ajax.php"
-            . "?type=download"
-            . "&fileName=" . urlencode($fileName)
-            . $userAddress;
-    }
+    if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
+        $curVer = getFileVersion($histDir);
 
-    // get document history
-    function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl) {
-        $storagePath = $GLOBALS['STORAGE_PATH'];
-        $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
+        $hist = [];
+        $histData = [];
 
-        if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
-            $curVer = getFileVersion($histDir);
+        for ($i = 1; $i <= $curVer; $i++) {  // run through all the file versions
+            $obj = [];
+            $dataObj = [];
+            $verDir = getVersionDir($histDir, $i);  // get the path to the file version
 
-            $hist = [];
-            $histData = [];
+            // get document key
+            $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");
+            $obj["key"] = $key;
+            $obj["version"] = $i;
 
-            for ($i = 1; $i <= $curVer; $i++) {  // run through all the file versions
-                $obj = [];
-                $dataObj = [];
-                $verDir = getVersionDir($histDir, $i);  // get the path to the file version
+            if ($i == 1) {  // check if the version number is equal to 1
+                // get meta data of this file
+                $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");
+                $json = json_decode($createdInfo, true);  // decode the meta data from the createdInfo.json file
 
-                $key = $i == $curVer ? $docKey : file_get_contents($verDir . DIRECTORY_SEPARATOR . "key.txt");  // get document key
-                $obj["key"] = $key;
-                $obj["version"] = $i;
-
-                if ($i == 1) {  // check if the version number is equal to 1
-                    $createdInfo = file_get_contents($histDir . DIRECTORY_SEPARATOR . "createdInfo.json");  // get meta data of this file
-                    $json = json_decode($createdInfo, true);  // decode the meta data from the createdInfo.json file
-
-                    $obj["created"] = $json["created"];
-                    $obj["user"] = [
-                        "id" => $json["uid"],
-                        "name" => $json["name"]
-                    ];
-                }
-
-
-                $fileExe = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
-                $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
-                $prevFileName = substr($prevFileName, strlen(getStoragePath("")));
-                $dataObj["fileType"] = $fileExe;
-                $dataObj["key"] = $key;
-
-                $directUrl =  $i == $curVer ? FileUri($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
-                $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
-                if (realpath($storagePath) === $storagePath) {
-                    $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
-                    if ($isEnableDirectUrl) {
-                        $directUrl =  $i == $curVer ? getDownloadUrl($filename, FALSE) : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, FALSE);
-                    }
-                }
-
-                $dataObj["url"] = $prevFileUrl;  // write file url to the data object
-                if ($isEnableDirectUrl) {
-                    $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
-                }
-                $dataObj["version"] = $i;
-
-                if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
-                    $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) . DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
-                    $change = $changes["changes"][0];
-
-                    $obj["changes"] = $changes ? $changes["changes"] : null;  // write information about changes to the object
-                    $obj["serverVersion"] = $changes["serverVersion"];
-                    $obj["created"] = $change ? $change["created"] : null;
-                    $obj["user"] = $change ? $change["user"] : null;
-
-                    $prev = $histData[$i - 2];  // get the history data from the previous file version
-                    $dataObj["previous"] = $isEnableDirectUrl ? [  // write information about previous file version to the data object
-                        "fileType" => $prev["fileType"],
-                        "key" => $prev["key"],
-                        "url" => $prev["url"],
-                        "directUrl" => $prev["directUrl"]
-                    ] : [
-                        "fileType" => $prev["fileType"],
-                        "key" => $prev["key"],
-                        "url" => $prev["url"]
-                    ];
-
-                    // write the path to the diff.zip archive with differences in this file version
-                    $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
-
-                }
-
-                if (isJwtEnabled()) {
-                    $dataObj["token"] = jwtEncode($dataObj);
-                }
-
-                array_push($hist, $obj);  // add object dictionary to the hist list
-                $histData[$i - 1] = $dataObj;  // write data object information to the history data
+                $obj["created"] = $json["created"];
+                $obj["user"] = [
+                    "id" => $json["uid"],
+                    "name" => $json["name"],
+                ];
             }
 
-            // write history information about the current file version
-            $out = [];
-            array_push($out, [
-                    "currentVersion" => $curVer,
-                    "history" => $hist
-                ],
-                $histData);
-            return $out;
+            $fileExe = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+            $prevFileName = $verDir . DIRECTORY_SEPARATOR . "prev." . $filetype;
+            $prevFileName = mb_substr($prevFileName, mb_strlen(getStoragePath("")));
+            $dataObj["fileType"] = $fileExe;
+            $dataObj["key"] = $key;
+
+            $directUrl = $i == $curVer ? fileUri($filename, false) :
+                getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+            $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+            if (realpath($storagePath) === $storagePath) {
+                $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :
+                    getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+                if ($isEnableDirectUrl) {
+                    $directUrl = $i == $curVer ? getDownloadUrl($filename, false) :
+                        getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
+                }
+            }
+
+            $dataObj["url"] = $prevFileUrl;  // write file url to the data object
+            if ($isEnableDirectUrl) {
+                $dataObj["directUrl"] = $directUrl;  // write direct url to the data object
+            }
+            $dataObj["version"] = $i;
+
+            if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
+                $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) .
+                    DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
+                $change = $changes["changes"][0];
+
+                // write information about changes to the object
+                $obj["changes"] = $changes ? $changes["changes"] : null;
+                $obj["serverVersion"] = $changes["serverVersion"];
+                $obj["created"] = $change ? $change["created"] : null;
+                $obj["user"] = $change ? $change["user"] : null;
+
+                $prev = $histData[$i - 2];  // get the history data from the previous file version
+                // write information about previous file version to the data object
+                $dataObj["previous"] = $isEnableDirectUrl ? [
+                    "fileType" => $prev["fileType"],
+                    "key" => $prev["key"],
+                    "url" => $prev["url"],
+                    "directUrl" => $prev["directUrl"],
+                ] : [
+                    "fileType" => $prev["fileType"],
+                    "key" => $prev["key"],
+                    "url" => $prev["url"],
+                ];
+
+                // write the path to the diff.zip archive with differences in this file version
+                $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+            }
+
+            if (isJwtEnabled()) {
+                $dataObj["token"] = jwtEncode($dataObj);
+            }
+
+            $hist[] = $obj;  // add object dictionary to the hist list
+            $histData[$i - 1] = $dataObj;  // write data object information to the history data
         }
+
+        // write history information about the current file version
+        $out = [];
+        array_push(
+            $out,
+            [
+                "currentVersion" => $curVer,
+                "history" => $hist,
+            ],
+            $histData
+        );
+        return $out;
     }
+}
 
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,
+            maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="css/images/<?php echo getDocumentType($filename) ?>.ico" type="image/x-icon" />
@@ -388,7 +463,9 @@
         }
     </style>
 
-    <script type="text/javascript" src="<?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>"></script>
+    <script type="text/javascript" src="
+        <?php echo $GLOBALS["DOC_SERV_SITE_URL"].$GLOBALS["DOC_SERV_API_URL"] ?>">
+    </script>
 
     <script type="text/javascript">
 
@@ -436,7 +513,8 @@
             if (actionIndex != -1) {
                 var endIndex = href.indexOf("&", actionIndex + "&actionLink=".length);
                 if (endIndex != -1) {
-                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&actionLink=" + encodeURIComponent(linkParam);
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) +
+                        "&actionLink=" + encodeURIComponent(linkParam);
                 } else {
                     link = href.substring(0, actionIndex) + "&actionLink=" + encodeURIComponent(linkParam);
                 }
@@ -446,11 +524,13 @@
             return link;
         }
 
-        // the user is trying to get link for opening the document which contains a bookmark, scrolling to the bookmark position
+        // the user is trying to get link for opening the document which contains a bookmark,
+        // scrolling to the bookmark position
         var onMakeActionLink = function (event) {
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
-            docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+            // set the link to the document which contains a bookmark
+            docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
         // the meta information of the document is changed via the meta command
@@ -469,7 +549,11 @@
         var onRequestInsertImage = function(event) {
             docEditor.insertImage({  // insert an image into the file
                 "c": event.data.c,
-                <?php echo mb_strimwidth(json_encode($dataInsertImage), 1, strlen(json_encode($dataInsertImage)) - 2)?>
+                <?php echo mb_strimwidth(
+                    json_encode($dataInsertImage),
+                    1,
+                    mb_strlen(json_encode($dataInsertImage)) - 2
+                )?>
             })
         };
 
@@ -480,7 +564,8 @@
 
         // the user is trying to select recipients data by clicking the Mail merge button
         var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);  // insert recipient data for mail merge into the file
+            // insert recipient data for mail merge into the file
+            docEditor.setMailMergeRecipients(<?php echo json_encode($dataMailMergeRecipients) ?>);
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -521,11 +606,11 @@
 
         var сonnectEditor = function () {
 
-            <?php
-                if (!file_exists(getStoragePath($filename))) {
-                    echo "alert('File not found'); return;";
-                }
-            ?>
+        <?php
+        if (!file_exists(getStoragePath($filename))) {
+            echo "alert('File not found'); return;";
+        }
+        ?>
 
             config = <?php echo json_encode($config) ?>;
 
@@ -546,28 +631,30 @@
             };
 
             <?php
-                $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
-                $history = $out[0];
-                $historyData = $out[1];
+            $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
+            $history = $out[0];
+            $historyData = $out[1];
             ?>
 
-            <?php if ($user->id != "uid-0"): ?>
-                <?php if ($history != null && $historyData != null): ?>
+            <?php if ($user->id != "uid-0") { ?>
+                <?php if ($history != null && $historyData != null) { ?>
                     // the user is trying to show the document version history
                     config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);  // show the document version history
+                        // show the document version history
+                        docEditor.refreshHistory(<?php echo json_encode($history) ?>);
                     };
                     // the user is trying to click the specific document version in the document version history
                     config.events['onRequestHistoryData'] = function (event) {
                         var ver = event.data;
                         var histData = <?php echo json_encode($historyData) ?>;
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+                        // send the link to the document for viewing the version history
+                        docEditor.setHistoryData(histData[ver - 1]);
                     };
                     // the user is trying to go back to the document from viewing the document version history
                     config.events['onRequestHistoryClose'] = function () {
                         document.location.reload();
                     };
-                <?php endif; ?>
+                <?php } ?>
                 // add mentions for not anonymous users
                 config.events['onRequestUsers'] = function () {
                     docEditor.setUsers({  // set a list of users to mention in the comments
@@ -582,7 +669,7 @@
                 };
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
-            <?php endif; ?>
+            <?php } ?>
 
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
