@@ -1112,7 +1112,6 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 function saveas()
 {
     try {
-        $result;
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
@@ -1161,9 +1160,6 @@ function saveas()
  */
 function upload()
 {
-    $result;
-    $filename;
-
     $configManager = new ConfigManager();
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
@@ -1293,11 +1289,6 @@ function convert()
                 . "&userAddress=" . getClientIp();
         }
         $key = getDocEditorKey($fileName);
-
-        $newFileUri;
-        $result;
-        $percent;
-
         try {
             // convert file and get the percentage of the conversion completion
             $percent = getConvertedUri(
@@ -1565,7 +1556,8 @@ function renamefile()
     $post = json_decode(file_get_contents('php://input'), true);
     $newfilename = $post["newfilename"];
 
-    $curExt = mb_strtolower(array_pop(explode('.', $newfilename)));
+    $newfilenameArr = explode('.', $newfilename);
+    $curExt = mb_strtolower(array_pop($newfilenameArr));
     $origExt = $post["ext"];
     if ($origExt !== $curExt) {
         $newfilename .= '.' . $origExt;

@@ -116,7 +116,7 @@ function processSave($data, $fileName, $userAddress)
 
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
-            $convertedUri;  // convert file and give url to a new file
+            // convert file and give url to a new file
             $percent = getConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;
@@ -219,7 +219,7 @@ function processForceSave($data, $fileName, $userAddress)
 
         try {
             sendlog("   Convert " . $downloadUri . " from " . $downloadExt . " to " . $curExt, "webedior-ajax.log");
-            $convertedUri;  // convert file and give url to a new file
+            // convert file and give url to a new file
             $percent = getConvertedUri($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
                 $downloadUri = $convertedUri;

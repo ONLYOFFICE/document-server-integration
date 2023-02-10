@@ -52,7 +52,6 @@ if ($configManager->getConfig("docServVerifyPeerOff") === true) {
 
 // check if type value exists
 if (isset($_GET["type"]) && !empty($_GET["type"])) {
-    $response_array;
     @header('Content-Type: application/json; charset==utf-8');
     @header('X-Robots-Tag: noindex');
     @header('X-Content-Type-Options: nosniff');
