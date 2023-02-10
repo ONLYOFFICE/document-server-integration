@@ -40,6 +40,7 @@ $GLOBALS['DOC_SERV_COMMAND_URL'] = "coauthoring/CommandService.ashx";
 
 $GLOBALS['DOC_SERV_JWT_SECRET'] = "";
 $GLOBALS['DOC_SERV_JWT_HEADER'] = "Authorization";
+$GLOBALS['DOC_SERV_JWT_USE_FOR_REQUEST'] = true;
 
 $GLOBALS['DOC_SERV_VERIFY_PEER_OFF'] = true;
 

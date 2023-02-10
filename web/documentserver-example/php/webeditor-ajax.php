@@ -435,7 +435,7 @@ function historyDownload()
         $ver = $_GET["ver"];
         $file = $_GET["file"];
 
-        if (isJwtEnabled()) {
+        if (isJwtEnabled() && tokenUseForRequest()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));
@@ -475,7 +475,7 @@ function download()
         $userAddress = $_GET["userAddress"];
         $isEmbedded = $_GET["&dmode"];
 
-        if (isJwtEnabled() && $isEmbedded == null && $userAddress) {
+        if (isJwtEnabled() && $isEmbedded == null && $userAddress && tokenUseForRequest()) {
             $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = jwtDecode(mb_substr(apache_request_headers()[$jwtHeader], mb_strlen("Bearer ")));

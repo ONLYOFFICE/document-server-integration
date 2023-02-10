@@ -47,6 +47,7 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.jwtSecret = ""
     Rails.configuration.header="Authorization"
+    Rails.configuration.token_use_for_request=true
 
     Rails.configuration.verify_peer_off = "true"
 

@@ -461,7 +461,7 @@ namespace OnlineEditorsExampleMVC
                 var userAddress = context.Request["userAddress"];
                 var isEmbedded = context.Request["dmode"];
 
-                if (JwtManager.Enabled && isEmbedded == null && userAddress != null)
+                if (JwtManager.Enabled && isEmbedded == null && userAddress != null && JwtManager.SignatureUseForRequest)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
@@ -519,7 +519,7 @@ namespace OnlineEditorsExampleMVC
                 var version = System.Convert.ToInt32(context.Request["ver"]);
                 var file = Path.GetFileName(context.Request["file"]);
 
-                if (JwtManager.Enabled)
+                if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
