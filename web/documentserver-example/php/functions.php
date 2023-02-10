@@ -735,7 +735,7 @@ function sendRequestToConvertService(
     "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
 
     $jwtManager = new JwtManager();
-    if ($jwtManager->isJwtEnabled()) {
+    if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
         $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);
         $arr["token"] = $jwtManager->jwtEncode($arr);
     }

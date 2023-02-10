@@ -48,7 +48,7 @@ function readBody()
     sendlog("   InputStream data: " . serialize($data), "webedior-ajax.log");
 
     // check if the document token is enabled
-    if ($jwtManager->isJwtEnabled()) {
+    if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
         sendlog("   jwt enabled, checking tokens", "webedior-ajax.log");
 
         $inHeader = false;
@@ -308,7 +308,7 @@ function commandRequest($method, $key, $meta = null)
     $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ? "Authorization" :
         $configManager->getConfig("docServJwtHeader");
 
-    if ($jwtManager->isJwtEnabled()) {  // check if a secret key to generate token exists or not
+    if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {  // check if a secret key to generate token exists or not
         $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);  // encode a payload object into a header token
         $arr["token"] = $jwtManager->jwtEncode($arr);  // encode a payload object into a body token
     }

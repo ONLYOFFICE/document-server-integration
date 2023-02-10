@@ -53,7 +53,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             var fileData = jss.Deserialize<Dictionary<string, object>>(body);
 
             // check if the document token is enabled
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
                 string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
@@ -285,7 +285,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
 
             // check if a secret key to generate token exists or not
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
                 var payload = new Dictionary<string, object>
                     {
