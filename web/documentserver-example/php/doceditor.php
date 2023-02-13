@@ -117,6 +117,13 @@ $config = [
             "commentGroups" => $user->commentGroups,
             "userInfoGroups" => $user->userInfoGroups,
         ],
+        "referenceData" => [
+                "fileKey" => $user->id != "uid-0" ? json_encode([
+                        "fileName" => $filename,
+                        "userAddress" =>  getCurUserHostAddress()
+                ]) : null,
+                "instanceId" => serverPath(),
+        ],
     ],
     "editorConfig" => [
         "actionLink" => empty($_GET["actionLink"]) ? null : json_decode($_GET["actionLink"]),
@@ -280,24 +287,6 @@ function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
         . "&fileName=" . urlencode($fileName)
         . "&ver=" . $version
         . "&file=" . urlencode($file)
-        . $userAddress;
-}
-
-/**
- * Get url to download a file
- *
- * @param string $fileName
- * @param bool $isServer
- *
- * @return string
- */
-function getDownloadUrl($fileName, $isServer = true)
-{
-    $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
-    return serverPath($isServer) . '/'
-        . "webeditor-ajax.php"
-        . "?type=download"
-        . "&fileName=" . urlencode($fileName)
         . $userAddress;
 }
 
@@ -604,6 +593,21 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             }
         };
 
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData: " + JSON.stringify(event.data));
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                console.log(JSON.parse(xhr.responseText));
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         var сonnectEditor = function () {
 
         <?php
@@ -669,6 +673,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                 };
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
+                config.events['onRequestReferenceData'] = onRequestReferenceData;
             <?php } ?>
 
             if (config.editorConfig.createUrl) {

@@ -624,3 +624,21 @@ function getDocEditorKey($fileName)
     $key = $key . $stat;  // and add it to the document key
     return generateRevisionId($key);  // generate the document key value
 }
+
+/**
+ * Get url to download a file
+ *
+ * @param string $fileName
+ * @param bool $isServer
+ *
+ * @return string
+ */
+function getDownloadUrl($fileName, $isServer = true)
+{
+    $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
+    return serverPath($isServer) . '/'
+        . "webeditor-ajax.php"
+        . "?type=download"
+        . "&fileName=" . urlencode($fileName)
+        . $userAddress;
+}
