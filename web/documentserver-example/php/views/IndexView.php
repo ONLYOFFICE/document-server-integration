@@ -17,10 +17,83 @@
 
 namespace OnlineEditorsExamplePhp\Views;
 
+use OnlineEditorsExamplePhp\Helpers\ConfigManager;
+use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
+use function OnlineEditorsExamplePhp\getStoredFiles;
+use function OnlineEditorsExamplePhp\getFileVersion;
+use function OnlineEditorsExamplePhp\getHistoryDir;
+use function OnlineEditorsExamplePhp\getStoragePath;
+
 final class IndexView extends View
 {
+    private $tagsValues;
+
     public function __construct($tempName = "index")
     {
         parent::__construct($tempName);
+        $this->tagsValues = [
+            "user" => htmlentities($_GET["user"]) ?? "",
+            "userOpts" => $this->getUserListOptionsLayout(),
+            "langs" => $this->getLanguageListOptionsLayout(),
+            "portalInfoDisplay" => $this->getPortalInfoStyleDisplay(),
+            "userDescr" => $this->getUserDescriptionLayout(),
+        ];
+    }
+
+    private function getUserListOptionsLayout()
+    {
+        $layout = "";
+        $userList = new ExampleUsers();
+        foreach ($userList->getAllUsers() as $userL) {
+            $name = $userL->name ?: "Anonymous";
+            $layout .= '<option value="'.$userL->id.'">'.$name.'</option>'.PHP_EOL;
+        }
+        return $layout;
+    }
+
+    private function getLanguageListOptionsLayout()
+    {
+        $layout = "";
+        $configManager = new ConfigManager();
+        foreach ($configManager->getConfig("languages") as $key => $language) {
+            $layout .= '<option value="'.$key.'">'.$language.'</option>'.PHP_EOL;
+        }
+        return $layout;
+    }
+
+    private function getPortalInfoStyleDisplay()
+    {
+        $layout = "";
+        $storedFiles = getStoredFiles();
+        if (!empty($storedFiles)) {
+            return "none";
+        }
+        return "table-cell";
+    }
+
+    private function getUserDescriptionLayout()
+    {
+        $layout = "";
+        $userList = new ExampleUsers();
+        foreach ($userList->getAllUsers() as $userL) {
+            $name = $userL->name ?: "Anonymous";
+            $layout .= '<div class="user-descr"><br><b>'.$name.'</b><br><ul>';
+            foreach ($userL->descriptions as $description) {
+                $layout .= '<li>'.$description.'</li>';
+            }
+            $layout .= '</ul><br></div>';
+        }
+        return $layout;
+    }
+
+    private function getStoredListLayout()
+    {
+        $storedList = new IndexStoredListView();
+        return $storedList->getParsedTemplate();
+    }
+
+    public function render()
+    {
+        $this->renderTemplate($this->tagsValues);
     }
 }

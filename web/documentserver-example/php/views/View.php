@@ -20,10 +20,12 @@ namespace OnlineEditorsExamplePhp\Views;
 class View
 {
     private $template;
+    private $html;
 
     const TEMPNAMES = [
         "index" => "index",
         "docEditor" => "doceditor",
+        "storedList" => "storedList",
     ];
 
     public function __construct($tempName)
@@ -36,12 +38,17 @@ class View
         }
     }
 
-    public function parseTemplate($tagsValues = [])
+    protected function parseTemplate($tagsValues = []): array|bool|string
     {
         $parsedTemplate = $this->template;
         foreach ($tagsValues as $tag => $value) {
-            $parsedTemplate = str_replace($tag, $value, $parsedTemplate);
+            $parsedTemplate = str_replace("{".$tag."}", $value, $parsedTemplate);
         }
         return $parsedTemplate;
+    }
+
+    public function renderTemplate($tagsValues)
+    {
+        echo ($this->parseTemplate($tagsValues));
     }
 }
