@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.documentserver.models.filemodel;
 
+import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.models.configurations.Info;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,4 +44,5 @@ public class Document {  // the parameters pertaining to the document (title, ur
     as file name when the document is downloaded */
     private String url;  // the absolute URL where the source viewed or edited document is stored
     private String directUrl;
+    private ReferenceData referenceData;
 }

@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
@@ -443,6 +444,39 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
+        }
+    }
+
+    @PostMapping("/reference")
+    @ResponseBody
+    public String reference(@RequestBody final JSONObject body) {
+        try {
+            String instanceId = (String) body.get("instanceId");
+            JSONObject fileKey = (JSONObject) body.get("fileKey");
+            Gson gson = new Gson();
+            String fileKeyValue = gson.toJson(fileKey);
+
+            String fileName = (String) fileKey.get("fileName");
+            String userAddress = (String) fileKey.get("userAddress");
+            HashMap<String, Object> referenceData = new HashMap<>();
+            referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
+            referenceData.put("fileKey", fileKeyValue);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("url", documentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", documentManager.getDownloadUrl(fileName, true));
+            data.put("referenceData", referenceData);
+            data.put("path", referenceData);
+
+            if (jwtManager.tokenEnabled()) {
+                String token = jwtManager.createToken(data);
+                data.put("token", token);
+            }
+            return gson.toJson(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
     }
 }
