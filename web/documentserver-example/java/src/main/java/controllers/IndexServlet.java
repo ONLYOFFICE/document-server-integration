@@ -19,6 +19,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import entities.FileType;
 import entities.User;
 import helpers.ConfigManager;
@@ -117,6 +118,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "rename":
                 rename(request, response, writer);
+                break;
+            case "reference":
+                reference(request, response, writer);
                 break;
             default:
                 break;
@@ -633,6 +637,47 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
+    // reference data
+    private static void reference(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+            String instanceId = (String) body.get("instanceId");
+            JSONObject fileKey = (JSONObject) body.get("fileKey");
+            String fileKeyValue = gson.toJson(fileKey);
+
+            String fileName = (String) fileKey.get("fileName");
+            String userAddress = (String) fileKey.get("userAddress");
+
+            HashMap<String, Object> referenceData = new HashMap<>();
+            referenceData.put("instanceId", DocumentManager.getServerUrl(true));
+            referenceData.put("fileKey", fileKeyValue);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("fileType", FileUtility.getFileExtension(fileName));
+            data.put("url", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("referenceData", referenceData);
+            data.put("path", referenceData);
+
+            if (DocumentManager.tokenEnabled()) {
+                String token = DocumentManager.createToken(data);
+                data.put("token", token);
+            }
+            writer.write(gson.toJson(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+        }
+    }
 
     // process get request
     @Override

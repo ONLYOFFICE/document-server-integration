@@ -77,6 +77,7 @@ public class FileModel {
                         .lastModified())));
         document.setInfo(new Info());
         document.getInfo().setFavorite(user.getFavorite());
+        document.setReferenceData(new ReferenceData(fileName, DocumentManager.curUserHostAddress(null), user));
 
         String templatesImageUrl = DocumentManager.getTemplateImageUrl(FileUtility.getFileType(fileName));
         List<Map<String, String>> templates = new ArrayList<>();
@@ -302,6 +303,7 @@ public class FileModel {
         private String key;
         private Info info;
         private Permissions permissions;
+        private ReferenceData referenceData;
 
         public String getTitle() {
             return title;
@@ -354,6 +356,13 @@ public class FileModel {
         public void setPermissions(final Permissions permissionsParam) {
             this.permissions = permissionsParam;
         }
+
+        public ReferenceData getReferenceData() {
+            return referenceData;
+        }
+        public void setReferenceData(final ReferenceData referenceDataParam) {
+            this.referenceData = referenceDataParam;
+        }
     }
 
     // the permissions parameters
@@ -394,6 +403,21 @@ public class FileModel {
         }
     }
 
+    public class ReferenceData {
+        private final String instanceId;
+        private final Map<String, String> fileKey;
+        public ReferenceData(final String fileName, final String curUserHostAddress, final User user) {
+            instanceId = DocumentManager.getServerUrl(true);
+            Map<String, String> fileKeyList = new HashMap<>();
+            if (!user.getId().equals("uid-0")) {
+                fileKeyList.put("fileName", fileName);
+                fileKeyList.put("userAddress", curUserHostAddress);
+            } else {
+                fileKeyList = null;
+            }
+            fileKey = fileKeyList;
+        }
+    }
     // the Favorite icon state
     public class Info {
         private String owner = "Me";

@@ -161,6 +161,19 @@
             }
         };
 
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "IndexServlet?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -215,6 +228,7 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
+            config.events['onRequestReferenceData'] = onRequestReferenceData;
         }
 
         if (config.editorConfig.createUrl) {
