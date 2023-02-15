@@ -455,7 +455,8 @@ namespace OnlineEditorsExample
                         },
                         {"instanceId", _Default.GetServerUrl(false) }
                     } 
-                }
+                },
+                { "path", fileName }
                 };
 
                 if (JwtManager.Enabled)
