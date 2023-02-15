@@ -636,7 +636,8 @@ namespace OnlineEditorsExampleMVC
                         })
                         },
                         {"instanceId", _Default.GetServerUrl(false) }
-                    } 
+                    },
+                { "path", fileName } 
                 }
                 };
 
