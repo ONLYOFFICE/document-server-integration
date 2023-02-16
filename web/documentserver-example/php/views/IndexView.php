@@ -20,23 +20,31 @@ namespace OnlineEditorsExamplePhp\Views;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use function OnlineEditorsExamplePhp\getStoredFiles;
-use function OnlineEditorsExamplePhp\getFileVersion;
-use function OnlineEditorsExamplePhp\getHistoryDir;
-use function OnlineEditorsExamplePhp\getStoragePath;
 
 final class IndexView extends View
 {
     private $tagsValues;
 
-    public function __construct($tempName = "index")
+    public function __construct($request, $tempName = "index")
     {
         parent::__construct($tempName);
+        $storedList = new IndexStoredListView($request);
+        $configManager = new ConfigManager();
+        $portalInfo = $this->getPortalInfoStyleDisplay();
+
         $this->tagsValues = [
-            "user" => htmlentities($_GET["user"]) ?? "",
+            "user" => isset($request["user"]) ? htmlentities($request["user"]) : "",
             "userOpts" => $this->getUserListOptionsLayout(),
             "langs" => $this->getLanguageListOptionsLayout(),
-            "portalInfoDisplay" => $this->getPortalInfoStyleDisplay(),
+            "portalInfoDisplay" => $portalInfo,
             "userDescr" => $this->getUserDescriptionLayout(),
+            "storedList" => $portalInfo == "none" ? $storedList->getParsedTemplate() : "",
+            "editButton" => $this->getEditButton(),
+            "dataDocs" => $this->getPreloaderUrl(),
+            "date" => date("Y"),
+            "fillFormsExtList" => implode(",", $configManager->getConfig("docServFillforms")),
+            "converExtList" => implode(",", $configManager->getConfig("docServConvert")),
+            "editedExtList" => implode(",", $configManager->getConfig("docServEdited")),
         ];
     }
 
@@ -63,7 +71,6 @@ final class IndexView extends View
 
     private function getPortalInfoStyleDisplay()
     {
-        $layout = "";
         $storedFiles = getStoredFiles();
         if (!empty($storedFiles)) {
             return "none";
@@ -90,6 +97,21 @@ final class IndexView extends View
     {
         $storedList = new IndexStoredListView();
         return $storedList->getParsedTemplate();
+    }
+
+    private function getPreloaderUrl()
+    {
+        $configManager = new ConfigManager();
+
+        return $configManager->getConfig("docServSiteUrl").
+        $configManager->getConfig("docServPreloaderUrl");
+    }
+
+    private function getEditButton()
+    {
+        $configManager = new ConfigManager();
+        return $configManager->getConfig("mode") != "view" ?
+        '<div id="beginEdit" class="button orange disable">Edit</div>' : "";
     }
 
     public function render()

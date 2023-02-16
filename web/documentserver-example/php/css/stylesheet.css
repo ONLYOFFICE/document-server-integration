@@ -467,6 +467,8 @@ footer table tr td:first-child {
 .stored-edit span {
     font-size: 12px;
     line-height: 12px;
+    bottom: 35%;
+    position: relative;
 }
 
 .stored-edit:hover span {
