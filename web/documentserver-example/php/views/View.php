@@ -22,15 +22,9 @@ class View
     private $template;
     protected $tagsValues;
 
-    const TEMPNAMES = [
-        "index" => "index",
-        "docEditor" => "doceditor",
-        "storedList" => "storedList",
-    ];
-
     public function __construct($tempName)
     {
-        $pathToTemplate = "./templates/".self::TEMPNAMES[$tempName].".tpl";
+        $pathToTemplate = "./templates/".$tempName.".tpl";
         if (file_exists($pathToTemplate)) {
             $this->template = file_get_contents($pathToTemplate);
         } else {
