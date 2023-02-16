@@ -363,4 +363,43 @@ class HomeController < ApplicationController
       json_data = TrackHelper.command_request("meta", dockey, meta)
       render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
     end
+
+    #ReferenceData
+    def reference
+      body = JSON.parse(request.body.read)
+      referenceData = body["referenceData"]
+
+      if referenceData != nil
+        instanceId = referenceData["instanceId"]
+        if instanceId == DocumentHelper.get_server_url(false)
+          fileKey = JSON.parse(referenceData["fileKey"])
+          userAddress = fileKey["userAddress"]
+          if userAddress == DocumentHelper.cur_user_host_address(nil)
+            fileName = fileKey["fileName"]
+          end
+        end
+      end
+
+      if !fileName || fileName.eql?("")
+        render plain: '{ "error": "File not found"}'
+        return
+      end
+
+      data = {
+        :fileType => DocumentHelper.get_internal_extension(fileName),
+        :url => DocumentHelper.get_download_url(fileName),
+        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName) : DocumentHelper.get_download_url(fileName,false),
+        :referenceData => {
+          :instanceId => DocumentHelper.get_server_url(false),
+          :fileKey => fileKey.to_json
+        },
+        :path => fileName
+      }
+
+      if JwtHelper.is_enabled
+        data["token"] = JwtHelper.encode(data)
+      end
+
+      render plain: data.to_json
+    end
 end

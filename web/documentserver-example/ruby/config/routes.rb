@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   match '/files',    to: 'home#files',    via: 'get'
   match '/saveas',    to: 'home#saveas',    via: 'post'
   match '/rename',    to: 'home#rename',    via: 'post'
+  match '/reference',    to: 'home#reference',    via: 'post'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

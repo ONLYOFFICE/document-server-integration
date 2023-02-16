@@ -105,6 +105,11 @@ class FileModel
       }
     ]
 
+    fileKey = {
+      :fileName => @file_name,
+      :userAddress => DocumentHelper.cur_user_host_address(nil) 
+    }
+
     config = {
       :type => type(),
       :documentType => document_type,
@@ -133,6 +138,10 @@ class FileModel
           :reviewGroups => @user.reviewGroups,
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups
+        },
+        :referenceData => {
+          :instanceId => DocumentHelper.get_server_url(false),
+          :fileKey => !@user.id.eql?("uid-0") ? fileKey.to_json : nil
         }
       },
       :editorConfig => {
