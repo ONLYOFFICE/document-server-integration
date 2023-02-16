@@ -245,6 +245,10 @@ def edit(request):
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups
+            },
+            'referenceData' : {
+                'instanceId' : docManager.getServerUrl(False, request),
+                'fileKey' : json.dumps({'fileName' : filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
             }
         },
         'editorConfig': {
@@ -449,6 +453,39 @@ def downloadhistory(request):
 
         response = docManager.download(filePath)  # download this file
         return response
+    except Exception:
+        response = {}
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+# referenceData
+def reference(request):
+    try:
+        body = json.loads(request.body)
+        referenceData = body['referenceData']
+
+        if referenceData:
+            instanceId = referenceData['instanceId']
+            if instanceId == docManager.getServerUrl(False, request):
+                fileKey = json.loads(referenceData['fileKey'])
+                userAddress = fileKey['userAddress']
+                if userAddress == request.META['REMOTE_ADDR']:
+                    fileName = fileKey['fileName']
+        data = {
+            'fileType' : fileUtils.getFileExt(fileName),
+            'url' : docManager.getDownloadUrl(fileName, request),
+            'directUrl' : docManager.getDownloadUrl(fileName, request) if body["directUrl"] else docManager.getDownloadUrl(fileName, request, False),
+            'referenceData' : {
+                'instanceId' : docManager.getServerUrl(False, request),
+                'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
+            },
+            'path' : fileName
+        }
+
+        if (jwtManager.isEnabled()):
+            data['token'] = jwtManager.encode(data)
+        
+        return HttpResponse(json.dumps(data), content_type='application/json')
     except Exception:
         response = {}
         response.setdefault('error', 'File not found')
