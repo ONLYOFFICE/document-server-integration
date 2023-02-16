@@ -19,8 +19,10 @@ namespace OnlineEditorsExamplePhp\Views;
 
 final class DocEditorView extends View
 {
-    public function __construct($tempName = "docEditor")
+    public function __construct($request, $tempName = "docEditor")
     {
         parent::__construct($tempName);
+        $this->tagsValues = [
+            ];
     }
 }

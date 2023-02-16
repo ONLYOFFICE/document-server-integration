@@ -23,7 +23,6 @@ use function OnlineEditorsExamplePhp\getStoredFiles;
 
 final class IndexView extends View
 {
-    private $tagsValues;
 
     public function __construct($request, $tempName = "index")
     {
@@ -114,8 +113,4 @@ final class IndexView extends View
         '<div id="beginEdit" class="button orange disable">Edit</div>' : "";
     }
 
-    public function render()
-    {
-        $this->renderTemplate($this->tagsValues);
-    }
 }

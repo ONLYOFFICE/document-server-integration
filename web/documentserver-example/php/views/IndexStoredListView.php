@@ -24,7 +24,6 @@ use function OnlineEditorsExamplePhp\getStoragePath;
 
 class IndexStoredListView extends View
 {
-    private $tagsValues;
     private $request;
 
     public function __construct($request, $tempName = "storedList")
@@ -35,11 +34,6 @@ class IndexStoredListView extends View
             "user" =>  isset($this->request["user"]) ? htmlentities($this->request["user"]) : "",
             "fileListTable" => $this->getStoredListLayout(),
         ];
-    }
-
-    public function getParsedTemplate()
-    {
-        return $this->parseTemplate($this->tagsValues);
     }
 
     public function getStoredListLayout()

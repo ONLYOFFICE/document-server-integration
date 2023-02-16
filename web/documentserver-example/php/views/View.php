@@ -20,7 +20,7 @@ namespace OnlineEditorsExamplePhp\Views;
 class View
 {
     private $template;
-    private $html;
+    protected $tagsValues;
 
     const TEMPNAMES = [
         "index" => "index",
@@ -38,7 +38,7 @@ class View
         }
     }
 
-    protected function parseTemplate($tagsValues = []): array|bool|string
+    private function parseTemplate($tagsValues = []): array|bool|string
     {
         $parsedTemplate = $this->template;
         foreach ($tagsValues as $tag => $value) {
@@ -47,8 +47,18 @@ class View
         return $parsedTemplate;
     }
 
-    public function renderTemplate($tagsValues)
+    protected function getParsedTemplate()
+    {
+        return $this->parseTemplate($this->tagsValues);
+    }
+
+    private function renderTemplate($tagsValues)
     {
         echo ($this->parseTemplate($tagsValues));
+    }
+
+    public function render()
+    {
+        $this->renderTemplate($this->tagsValues);
     }
 }
