@@ -16,14 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [PHP example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.php* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.json* file:
 
 ```
-$GLOBALS['STORAGE_PATH'] = "";
-$GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
+"storagePath" = "";
+"docServSiteUrl" = "https://documentserver/";
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storagePath** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *doceditor.php* file.
 
@@ -116,13 +116,18 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 
 ### Step 2. Install the prerequisites and run the website with the editors
 
-1. Install **Apache** and **PHP**:
+1. Install **Apache** **PHP**:
 
     ```
     apt-get install -y apache2 php7.0 libapache2-mod-php7.0
     ```
+2. Install **Composer**:
 
-2. Download the archive with the PHP example and unpack the archive:
+    ```
+    instructions should be here
+    ```
+
+3. Download the archive with the PHP example and unpack the archive:
 
     ```
     cd /var/www/html
@@ -136,40 +141,45 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     unzip PHP\ Example.zip
     ```
 
-3. Change the current directory for the project directory:
+4. Change the current directory for the project directory:
 
     ```
     cd PHP\ Example/
     ```
 
-4. Edit the *config.php* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+5. Edit the *config.json* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
     ```
-    nano config.php
+    nano config.json
     ```
 
 	Edit the following lines:
 
     ```
-    $GLOBALS['STORAGE_PATH'] = "";
-    $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
+    "storagePath" = "";
+    "docServSiteUrl" = "https://documentserver/";
     ```
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
 
-5. Set permission for site:
+6. Run *composer install*:
+
+    ```
+    php composer.phar install
+    ```
+7. Set permission for site:
 
     ```
     chown -R www-data:www-data /var/www/html
     ```
 
-6. Restart apache:
+8. Restart apache:
 
     ```
     service apache2 restart
     ```
 
-7. See the result in your browser using the address:
+9. See the result in your browser using the address:
 
     ```
     http://localhost/PHP%20Example/
