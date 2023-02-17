@@ -451,11 +451,18 @@ namespace OnlineEditorsExample
 
             if (fileName == "" && userAddress != "")
             {
-                var path = (string)body["path"];
-                path = Path.GetFileName(path);
-                if (File.Exists(_Default.StoragePath(path, userAddress)))
+                try
                 {
-                    fileName = path;
+                    var path = (string)body["path"];
+                    path = Path.GetFileName(path);
+                    if (File.Exists(_Default.StoragePath(path, userAddress)))
+                    {
+                        fileName = path;
+                    }
+                }
+                catch {
+                    context.Response.Write("{ \"error\": \"Path not found!\"}");
+                    return;
                 }
             }
 
