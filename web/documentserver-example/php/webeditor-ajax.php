@@ -599,7 +599,14 @@ function reference()
         }
     }
 
-    if (!$fileName) {
+    if (!isset($filename) && isset($post["path"]) && isset($userAddress)) {
+        $path = basename($post["path"]);
+        if (file_exists(getStoragePath($path, $userAddress))) {
+            $fileName = $path;
+        }
+    }
+
+    if (!isset($fileName)) {
         return ["error" => "File is not found"];
     }
 
