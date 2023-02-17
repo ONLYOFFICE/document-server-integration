@@ -50,7 +50,7 @@
 
 <body>
 
-    <form id="office_form" name="office_form" target="office_frame" action="<%= actionUrl %>" method="post">
+    <form id="office_form" name="office_form" target="office_frame" action="<%= actionUrl %><%= params %>" method="post">
         <input name="access_token" value="<%= token %><%= params %>" type="hidden" />
         <input name="access_token_ttl" value="<%= tokenTtl %>" type="hidden" />
     </form>
