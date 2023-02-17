@@ -308,7 +308,8 @@ function commandRequest($method, $key, $meta = null)
     $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ? "Authorization" :
         $configManager->getConfig("docServJwtHeader");
 
-    if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {  // check if a secret key to generate token exists or not
+    // check if a secret key to generate token exists or not
+    if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
         $headerToken = $jwtManager->jwtEncode(["payload" => $arr]);  // encode a payload object into a header token
         $arr["token"] = $jwtManager->jwtEncode($arr);  // encode a payload object into a body token
     }

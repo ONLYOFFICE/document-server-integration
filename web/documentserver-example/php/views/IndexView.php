@@ -112,5 +112,4 @@ final class IndexView extends View
         return $configManager->getConfig("mode") != "view" ?
         '<div id="beginEdit" class="button orange disable">Edit</div>' : "";
     }
-
 }
