@@ -614,46 +614,72 @@ namespace OnlineEditorsExampleMVC
 
             var jss = new JavaScriptSerializer();
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
-            var referenceData = jss.Deserialize <Dictionary<string, object>> (jss.Serialize(body["referenceData"]));
+            var referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
             var instanceId = (string)referenceData["instanceId"];
             var fileKey = (string)referenceData["fileKey"];
+            var fileName = "";
+            var userAddress = "";
 
-            try
+            if (instanceId == _Default.GetServerUrl(false))
             {
                 var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
-                var fileName = (string)fileKeyObj["fileName"];
-                var userAddress = (string)fileKeyObj["userAddress"];
-
-                var data = new Dictionary<string, object>() {
-                { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
-                { "url",  DocEditor.getDownloadUrl(fileName)},
-                { "directUrl",  DocEditor.getDownloadUrl(fileName) },
-                { "referenceData", new Dictionary<string, string>()
-                    {
-                        { "fileKey", jss.Serialize(new Dictionary<string, object>{
-                                {"fileName", fileName},
-                                {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
-                        })
-                        },
-                        {"instanceId", _Default.GetServerUrl(false) }
-                    },
-                { "path", fileName } 
-                }
-                };
-
-                if (JwtManager.Enabled)
+                userAddress = (string)fileKeyObj["userAddress"];
+                if (userAddress == HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
                 {
-                    var token = JwtManager.Encode(data);
-                    data.Add("token", token);
+                    fileName = (string)fileKeyObj["fileName"];
                 }
-
-                context.Response.Write(jss.Serialize(data).Replace(@"\u0026", "&"));
             }
-            catch (Exception e)
+
+            if (fileName == "" && userAddress != "")
+            {
+                try
+                {
+                    var path = (string)body["path"];
+                    path = Path.GetFileName(path);
+                    if (File.Exists(_Default.StoragePath(path, userAddress)))
+                    {
+                        fileName = path;
+                    }
+                }
+                catch
+                {
+                    context.Response.Write("{ \"error\": \"Path not found!\"}");
+                    return;
+                }
+            }
+
+            if (fileName == "")
             {
                 context.Response.Write("{ \"error\": \"File not found!\"}");
+                return;
             }
 
+            var data = new Dictionary<string, object>() {
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
+            { "url",  DocEditor.getDownloadUrl(fileName)},
+            { "directUrl",  DocEditor.getDownloadUrl(fileName) },
+            { "referenceData", new Dictionary<string, string>()
+                {
+                    { "fileKey", jss.Serialize(new Dictionary<string, object>{
+                            {"fileName", fileName},
+                            {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                    })
+                    },
+                    {"instanceId", _Default.GetServerUrl(false) }
+                }
+            },
+            { "path", fileName }
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(data);
+                data.Add("token", token);
+            }
+
+            context.Response.Write(jss.Serialize(data).Replace(@"\u0026", "&"));
         }
+
+    }
     }
 }
