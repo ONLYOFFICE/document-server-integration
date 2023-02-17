@@ -460,9 +460,12 @@ def downloadhistory(request):
 
 # referenceData
 def reference(request):
+    response = {}
     try:
         body = json.loads(request.body)
         referenceData = body['referenceData']
+        fileName = None
+        userAddress = None
 
         if referenceData:
             instanceId = referenceData['instanceId']
@@ -471,6 +474,20 @@ def reference(request):
                 userAddress = fileKey['userAddress']
                 if userAddress == request.META['REMOTE_ADDR']:
                     fileName = fileKey['fileName']
+        
+        if fileName is None and userAddress is not None:
+            try:
+                path = fileUtils.getFileName(body['path'])
+                if os.path.exists(docManager.getStoragePath(path,request)):
+                   fileName = path 
+            except KeyError:
+                response.setdefault('error', 'Path not found')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+        
+        if fileName is None:
+            response.setdefault('error', 'File not found')
+            return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+        
         data = {
             'fileType' : fileUtils.getFileExt(fileName),
             'url' : docManager.getDownloadUrl(fileName, request),
@@ -487,6 +504,5 @@ def reference(request):
         
         return HttpResponse(json.dumps(data), content_type='application/json')
     except Exception:
-        response = {}
-        response.setdefault('error', 'File not found')
+        response.setdefault('error', 'Reference data is not correct')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
