@@ -20,6 +20,7 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
@@ -52,8 +53,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -451,13 +454,39 @@ public class FileController {
     @ResponseBody
     public String reference(@RequestBody final JSONObject body) {
         try {
-            String instanceId = (String) body.get("instanceId");
-            JSONObject fileKey = (JSONObject) body.get("fileKey");
-            Gson gson = new Gson();
-            String fileKeyValue = gson.toJson(fileKey);
+            JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            String instanceId = (String) referenceDataObj.get("instanceId");
+            String fileKeyValue = "";
+            String userAddress = "";
+            String fileName = "";
 
-            String fileName = (String) fileKey.get("fileName");
-            String userAddress = (String) fileKey.get("userAddress");
+            if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
+                JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
+                fileKeyValue = gson.toJson(fileKey);
+                userAddress = (String) fileKey.get("userAddress");
+                if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
+                    fileName = (String) fileKey.get("fileName");
+                }
+            }
+
+            if (fileName.equals("") && !userAddress.equals("")) {
+                try {
+                    String path = (String) body.get("path");
+                    path = fileUtility.getFileName(path);
+                    File f = new File(storagePathBuilder.getFileLocation(path));
+                    if (f.exists()) {
+                        fileName = path;
+                    }
+                } catch (Exception e) {
+                    return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+                }
+            }
+
+            if (fileName.equals("")) {
+                return "{ \"error\": \"File not found\"}";
+            }
+
             HashMap<String, Object> referenceData = new HashMap<>();
             referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
             referenceData.put("fileKey", fileKeyValue);
