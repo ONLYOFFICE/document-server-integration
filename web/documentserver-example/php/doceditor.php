@@ -17,14 +17,10 @@
 
 namespace OnlineEditorsExamplePhp;
 
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
 use OnlineEditorsExamplePhp\Views\DocEditorView;
 
 require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
-
 
 $docEditorView = new DocEditorView($_REQUEST);
 $docEditorView->render();
