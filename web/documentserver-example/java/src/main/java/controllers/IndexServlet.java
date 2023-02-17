@@ -64,7 +64,6 @@ import java.util.Scanner;
 
 import static utils.Constants.KILOBYTE_SIZE;
 
-
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet {
@@ -650,15 +649,43 @@ public class IndexServlet extends HttpServlet {
 
             JSONParser parser = new JSONParser();
             JSONObject body = (JSONObject) parser.parse(bodyString);
-            String instanceId = (String) body.get("instanceId");
-            JSONObject fileKey = (JSONObject) body.get("fileKey");
-            String fileKeyValue = gson.toJson(fileKey);
+            JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+            String instanceId = (String) referenceDataObj.get("instanceId");
 
-            String fileName = (String) fileKey.get("fileName");
-            String userAddress = (String) fileKey.get("userAddress");
+            String fileKeyValue = "";
+            String userAddress = "";
+            String fileName = "";
+
+            if (instanceId.equals(DocumentManager.getServerUrl(false))) {
+                JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
+                fileKeyValue = gson.toJson(fileKey);
+                userAddress = (String) fileKey.get("userAddress");
+                if (userAddress.equals(DocumentManager.curUserHostAddress(null))) {
+                    fileName = (String) fileKey.get("fileName");
+                }
+            }
+
+            if (fileName.equals("") && !userAddress.equals("")) {
+                try {
+                    String path = (String) body.get("path");
+                    path = FileUtility.getFileName(path);
+                    File f = new File(DocumentManager.storagePath(path, userAddress));
+                    if (f.exists()) {
+                        fileName = path;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+                }
+            }
+
+            if (fileName.equals("")) {
+                writer.write("{ \"error\": \"File not found\"}");
+                return;
+            }
 
             HashMap<String, Object> referenceData = new HashMap<>();
-            referenceData.put("instanceId", DocumentManager.getServerUrl(true));
+            referenceData.put("instanceId", DocumentManager.getServerUrl(false));
             referenceData.put("fileKey", fileKeyValue);
 
             HashMap<String, Object> data = new HashMap<>();
