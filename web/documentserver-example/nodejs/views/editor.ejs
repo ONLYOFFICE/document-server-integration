@@ -232,6 +232,11 @@
             config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
+        if (new URL(window.location).searchParams.get("oform") == "false") {
+            config.document.options = config.document.options || {};
+            config.document.options["oform"] = false;
+        }
+
         var connectEditor = function () {
 
             if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
