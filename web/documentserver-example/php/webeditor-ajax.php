@@ -586,7 +586,7 @@ function reference()
 
     @header("Content-Type: application/json");
 
-    $referenceData = $post["referenceData"];
+    $referenceData = $post["referenceData"] ?? null;
 
     if ($referenceData) {
         $instanceId = $referenceData["instanceId"];
@@ -599,9 +599,9 @@ function reference()
         }
     }
 
-    if (!isset($filename) && isset($post["path"]) && isset($userAddress)) {
+    if (!isset($filename) && isset($post["path"])) {
         $path = basename($post["path"]);
-        if (file_exists(getStoragePath($path, $userAddress))) {
+        if (file_exists(getStoragePath($path))) {
             $fileName = $path;
         }
     }
