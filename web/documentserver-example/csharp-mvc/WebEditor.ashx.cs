@@ -614,29 +614,33 @@ namespace OnlineEditorsExampleMVC
 
             var jss = new JavaScriptSerializer();
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
-            var referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
-            var instanceId = (string)referenceData["instanceId"];
-            var fileKey = (string)referenceData["fileKey"];
+            Dictionary<string, object> referenceData = null;
             var fileName = "";
             var userAddress = "";
 
-            if (instanceId == _Default.GetServerUrl(false))
+            if (body.ContainsKey("referenceData"))
             {
-                var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
-                userAddress = (string)fileKeyObj["userAddress"];
-                if (userAddress == HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
+                referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
+                var instanceId = (string)referenceData["instanceId"];
+                var fileKey = (string)referenceData["fileKey"];
+                if (instanceId == _Default.GetServerUrl(false))
                 {
-                    fileName = (string)fileKeyObj["fileName"];
+                    var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
+                    userAddress = (string)fileKeyObj["userAddress"];
+                    if (userAddress == HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
+                    {
+                        fileName = (string)fileKeyObj["fileName"];
+                    }
                 }
             }
 
-            if (fileName == "" && userAddress != "")
+            if (fileName != "")
             {
                 try
                 {
                     var path = (string)body["path"];
                     path = Path.GetFileName(path);
-                    if (File.Exists(_Default.StoragePath(path, userAddress)))
+                    if (File.Exists(_Default.StoragePath(path, null)))
                     {
                         fileName = path;
                     }
