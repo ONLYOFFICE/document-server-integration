@@ -645,31 +645,39 @@ public class IndexServlet extends HttpServlet {
             scanner.useDelimiter("\\A");
             String bodyString = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
-            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-
-            JSONParser parser = new JSONParser();
-            JSONObject body = (JSONObject) parser.parse(bodyString);
-            JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
-            String instanceId = (String) referenceDataObj.get("instanceId");
 
             String fileKeyValue = "";
             String userAddress = "";
             String fileName = "";
+            boolean incorrectFileKey = false;
 
-            if (instanceId.equals(DocumentManager.getServerUrl(false))) {
-                JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
-                fileKeyValue = gson.toJson(fileKey);
-                userAddress = (String) fileKey.get("userAddress");
-                if (userAddress.equals(DocumentManager.curUserHostAddress(null))) {
-                    fileName = (String) fileKey.get("fileName");
+            JSONParser parser = new JSONParser();
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            if (body.containsKey("referenceData")) {
+                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                String instanceId = (String) referenceDataObj.get("instanceId");
+
+                if (instanceId.equals(DocumentManager.getServerUrl(false))) {
+                    try {
+                        JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
+                        userAddress = (String) fileKey.get("userAddress");
+
+                        if (userAddress.equals(DocumentManager.curUserHostAddress(null))) {
+                            fileName = (String) fileKey.get("fileName");
+                        }
+                    } catch (Exception e) {
+                        incorrectFileKey = true; //data from DocEditor can give incorrect fileKey param in java Example
+                    }
                 }
             }
 
-            if (fileName.equals("") && !userAddress.equals("")) {
+            if (fileName.equals("")) {
                 try {
                     String path = (String) body.get("path");
                     path = FileUtility.getFileName(path);
-                    File f = new File(DocumentManager.storagePath(path, userAddress));
+                    File f = new File(DocumentManager.storagePath(path, null));
                     if (f.exists()) {
                         fileName = path;
                     }
@@ -684,16 +692,20 @@ public class IndexServlet extends HttpServlet {
                 return;
             }
 
+            HashMap<String, Object> fileKey = new HashMap<>();
+            fileKey.put("fileName", fileName);
+            fileKey.put("userAddress", DocumentManager.curUserHostAddress(null));
+
             HashMap<String, Object> referenceData = new HashMap<>();
             referenceData.put("instanceId", DocumentManager.getServerUrl(false));
-            referenceData.put("fileKey", fileKeyValue);
+            referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", FileUtility.getFileExtension(fileName));
             data.put("url", DocumentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", DocumentManager.getDownloadUrl(fileName, true));
             data.put("referenceData", referenceData);
-            data.put("path", referenceData);
+            data.put("path", fileName);
 
             if (DocumentManager.tokenEnabled()) {
                 String token = DocumentManager.createToken(data);

@@ -162,7 +162,6 @@
         };
 
         var onRequestReferenceData = function(event) {  // user refresh external data source
-
             event.data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "IndexServlet?type=reference");
