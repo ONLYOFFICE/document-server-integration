@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+
 @Component
 @Scope("prototype")
 @Getter
@@ -44,5 +46,5 @@ public class Document {  // the parameters pertaining to the document (title, ur
     as file name when the document is downloaded */
     private String url;  // the absolute URL where the source viewed or edited document is stored
     private String directUrl;
-    private ReferenceData referenceData;
+    private HashMap<String, Object> referenceData;
 }

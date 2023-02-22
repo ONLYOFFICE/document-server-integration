@@ -454,23 +454,27 @@ public class FileController {
     @ResponseBody
     public String reference(@RequestBody final JSONObject body) {
         try {
-            JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-            String instanceId = (String) referenceDataObj.get("instanceId");
-            String fileKeyValue = "";
+
             String userAddress = "";
             String fileName = "";
 
-            if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
-                JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
-                fileKeyValue = gson.toJson(fileKey);
-                userAddress = (String) fileKey.get("userAddress");
-                if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
-                    fileName = (String) fileKey.get("fileName");
+            if (body.containsKey("referenceData")) {
+                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                String instanceId = (String) referenceDataObj.get("instanceId");
+
+                if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
+                    JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
+                    userAddress = (String) fileKey.get("userAddress");
+                    if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
+                        fileName = (String) fileKey.get("fileName");
+                    }
                 }
             }
 
-            if (fileName.equals("") && !userAddress.equals("")) {
+
+            if (fileName.equals("")) {
                 try {
                     String path = (String) body.get("path");
                     path = fileUtility.getFileName(path);
@@ -487,16 +491,20 @@ public class FileController {
                 return "{ \"error\": \"File not found\"}";
             }
 
+            HashMap<String, Object> fileKey = new HashMap<>();
+            fileKey.put("fileName", fileName);
+            fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
+
             HashMap<String, Object> referenceData = new HashMap<>();
             referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
-            referenceData.put("fileKey", fileKeyValue);
+            referenceData.put("fileKey", fileKey);
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", fileUtility.getFileExtension(fileName));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", documentManager.getDownloadUrl(fileName, true));
             data.put("referenceData", referenceData);
-            data.put("path", referenceData);
+            data.put("path", fileName);
 
             if (jwtManager.tokenEnabled()) {
                 String token = jwtManager.createToken(data);

@@ -18,8 +18,10 @@
 
 package com.onlyoffice.integration.services.configurers.implementations;
 
+import com.google.gson.Gson;
 import com.onlyoffice.integration.documentserver.models.filemodel.Document;
 import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
+import com.onlyoffice.integration.documentserver.models.filemodel.ReferenceData;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.services.configurers.DocumentConfigurer;
 import com.onlyoffice.integration.services.configurers.wrappers.DefaultDocumentWrapper;
@@ -31,6 +33,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.util.HashMap;
 
 @Service
 @Primary
@@ -52,6 +56,7 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
                           final DefaultDocumentWrapper wrapper) {  // define the document configurer
         String fileName = wrapper.getFileName();  // get the fileName parameter from the document wrapper
         Permission permission = wrapper.getPermission();  // get the permission parameter from the document wrapper
+        //ReferenceData referenceData = wrapper.getReferenceData();
 
         document.setTitle(fileName);  // set the title to the document config
 
@@ -71,7 +76,21 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
                         + "/" + fileName + "/"
                         + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 
+        Gson gson = new Gson();
+        HashMap<String, String> fileKey = new HashMap<>();
+        fileKey.put("fileName", fileName);
+        try {
+            fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        HashMap<String, Object> referenceData = new HashMap<>();
+        referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
+        referenceData.put("fileKey", gson.toJson(fileKey));
+
         document.setKey(key);  // set the key to the document config
         document.setPermissions(permission);  // set the permission parameters to the document config
+        document.setReferenceData(referenceData);
     }
 }

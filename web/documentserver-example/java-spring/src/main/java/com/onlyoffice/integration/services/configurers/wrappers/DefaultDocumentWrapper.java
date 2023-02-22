@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.services.configurers.wrappers;
 
 import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
+import com.onlyoffice.integration.documentserver.models.filemodel.ReferenceData;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,4 +30,5 @@ public class DefaultDocumentWrapper {
     private String fileName;
     private Boolean favorite;
     private Boolean isEnableDirectUrl;
+    private ReferenceData referenceData;
 }
