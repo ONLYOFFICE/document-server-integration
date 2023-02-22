@@ -85,7 +85,7 @@ var users = [
             false, ["copy", "download", "print"], descr_user_3, false),  // other group only
     new User("uid-0", null, null,
             null, null, {}, [],
-            null, [], descr_user_0, false),
+            null, ["protect"], descr_user_0, false),
 ];
 
 function User(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates) {
