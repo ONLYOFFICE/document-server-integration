@@ -154,7 +154,8 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "chat", !user.id.Equals("uid-0") },
                                             { "reviewGroups", user.reviewGroups },
                                             { "commentGroups", user.commentGroups },
-                                            { "userInfoGroups", user.userInfoGroups }
+                                            { "userInfoGroups", user.userInfoGroups },
+                                            { "protect", !user.deniedPermissions.Contains("protect") }
                                         }
                                 }
                             }

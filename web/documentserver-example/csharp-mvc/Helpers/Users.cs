@@ -131,7 +131,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     new Dictionary<string,object>(),
                     new List<string>(),
                     null,
-                    new List<string>(),
+                    new List<string>() { "protect" },
                     descr_user_0,
                     false
                 )
