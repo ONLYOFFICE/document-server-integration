@@ -57,7 +57,8 @@ public class UserServices {
                            final List<String> editGroups,
                            final List<String> removeGroups,
                            final List<String> userInfoGroups, final Boolean favoriteDoc,
-                           final Boolean chat) {
+                           final Boolean chat,
+                           final Boolean protect) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
@@ -81,7 +82,8 @@ public class UserServices {
                         commentGroupsEdit,
                         commentGroupsRemove,
                         usInfoGroups,
-                        chat);  // specify permissions for the current user
+                        chat,
+                        protect);  // specify permissions for the current user
         newUser.setPermissions(permission);
 
         userRepository.save(newUser); // save a new user
