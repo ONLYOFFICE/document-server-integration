@@ -116,6 +116,7 @@ $config = [
             "reviewGroups" => $user->reviewGroups,
             "commentGroups" => $user->commentGroups,
             "userInfoGroups" => $user->userInfoGroups,
+            "protect" => !in_array("protect", $user->deniedPermissions),
         ],
     ],
     "editorConfig" => [

@@ -167,7 +167,7 @@ $users = [
         [],
         [],
         null,
-        [],
+        ["protect"],
         $descr_user_0,
         false
     ),
