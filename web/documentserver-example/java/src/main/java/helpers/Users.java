@@ -90,7 +90,7 @@ public final class Users {
                 descriptionUserThird, false));
         add(new User("uid-0", null, null,
                 "", null, new CommentGroups(), new ArrayList<String>(),
-                null, new ArrayList<String>(), descriptionUserZero, false));
+                null, Arrays.asList("protect"), descriptionUserZero, false));
     }};
 
     private Users() { }
