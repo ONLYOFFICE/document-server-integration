@@ -72,6 +72,7 @@ public final class Users {
         add("Can’t see anyone’s information");
         add("Can't rename files from the editor");
         add("Can't view chat");
+        add("Can't protect file");
         add("View file without collaboration");
     }};
 
@@ -90,7 +91,7 @@ public final class Users {
                 descriptionUserThird, false));
         add(new User("uid-0", null, null,
                 "", null, new CommentGroups(), new ArrayList<String>(),
-                null, new ArrayList<String>(), descriptionUserZero, false));
+                null, Arrays.asList("protect"), descriptionUserZero, false));
     }};
 
     private Users() { }

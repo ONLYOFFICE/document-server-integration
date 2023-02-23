@@ -244,7 +244,8 @@ def edit(request):
                 'chat': user.id !='uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
-                'userInfoGroups': user.userInfoGroups
+                'userInfoGroups': user.userInfoGroups,
+                'protect': 'protect' not in user.deniedPermissions
             }
         },
         'editorConfig': {
