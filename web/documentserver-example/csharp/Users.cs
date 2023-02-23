@@ -68,6 +68,7 @@ namespace OnlineEditorsExample
             "Can’t see anyone’s information",
             "Can't rename files from the editor",
             "Can't view chat",
+            "Can't protect file",
             "View file without collaboration",
         };
 

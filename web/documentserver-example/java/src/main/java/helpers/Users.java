@@ -72,6 +72,7 @@ public final class Users {
         add("Can’t see anyone’s information");
         add("Can't rename files from the editor");
         add("Can't view chat");
+        add("Can't protect file");
         add("View file without collaboration");
     }};
 
