@@ -270,7 +270,7 @@ public class FileController {
                                              @RequestParam("file") final String file) { // history file
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled()) {
+            if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
@@ -293,7 +293,7 @@ public class FileController {
                                              @RequestParam(value = "userAddress", required = false) final String userAddress){
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && userAddress != null) {
+            if (jwtManager.tokenEnabled() && userAddress != null && jwtManager.tokenUseForRequest()) {
                 String header = request.getHeader(documentJwtHeader == null // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {

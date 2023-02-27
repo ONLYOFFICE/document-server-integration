@@ -1,5 +1,7 @@
 # Change Log
 
+- anonymous can't protect file
+- separate setting for checking the token in requests
 - php: linter refactoring
 
 ## 1.5.0

@@ -27,5 +27,6 @@ public enum Action {
     comment,
     chat,
     fillForms,
-    blockcontent
+    blockcontent,
+    protect
 }

@@ -155,7 +155,7 @@ public class DefaultServiceConverter implements ServiceConverter {
         }
 
         String headerToken = "";
-        if (jwtManager.tokenEnabled()) {
+        if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
             map.put("url", body.getUrl());

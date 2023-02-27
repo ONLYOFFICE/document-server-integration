@@ -32,6 +32,16 @@ function isJwtEnabled()
 }
 
 /**
+ * Check if a secret key use for request
+ *
+ * @return bool
+ */
+function tokenUseForRequest()
+{
+    return $GLOBALS['DOC_SERV_JWT_USE_FOR_REQUEST'] ?: false;
+}
+
+/**
  * Encode a payload object into a token using a secret key
  *
  * @param array $payload
@@ -40,7 +50,7 @@ function isJwtEnabled()
  */
 function jwtEncode($payload)
 {
-    return \Firebase\JWT\JWT::encode($payload, $GLOBALS["DOC_SERV_JWT_SECRET"]);
+    return \Firebase\JWT\JWT::encode($payload, $GLOBALS['DOC_SERV_JWT_SECRET']);
 }
 
 /**
@@ -53,7 +63,7 @@ function jwtEncode($payload)
 function jwtDecode($token)
 {
     try {
-        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS["DOC_SERV_JWT_SECRET"], ["HS256"]);
+        $payload = \Firebase\JWT\JWT::decode($token, $GLOBALS['DOC_SERV_JWT_SECRET'], ['HS256']);
     } catch (\UnexpectedValueException $e) {
         $payload = "";
     }

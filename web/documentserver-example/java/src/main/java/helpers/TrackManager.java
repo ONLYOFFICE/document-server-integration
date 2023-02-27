@@ -87,7 +87,7 @@ public final class TrackManager {
         }
 
         // if the secret key to generate token exists
-        if (DocumentManager.tokenEnabled()) {
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             String token = (String) body.get("token");  // get the document token
 
             if (token == null) {  // if JSON web token is not received
@@ -388,7 +388,8 @@ public final class TrackManager {
         }
 
         String headerToken = "";
-        if (DocumentManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
+        // check if a secret key to generate token exists or not
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", params);
             headerToken = DocumentManager.createToken(payloadMap);  // encode a payload object into a header token

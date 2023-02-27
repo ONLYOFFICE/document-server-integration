@@ -380,6 +380,7 @@ public class FileModel {
         private final List<String> reviewGroups;
         private final CommentGroups commentGroups;
         private final List<String> userInfoGroups;
+        private final Boolean protect;
         //public Gson gson = new Gson();
 
         // defines what can be done with a document
@@ -400,6 +401,7 @@ public class FileModel {
             reviewGroups = user.getReviewGroups();
             commentGroups = user.getCommentGroups();
             userInfoGroups = user.getUserInfoGroups();
+            protect = !user.getDeniedPermissions().contains("protect");
         }
     }
 

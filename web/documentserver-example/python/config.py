@@ -29,6 +29,7 @@ EXAMPLE_DOMAIN = None
 
 DOC_SERV_JWT_SECRET = ''  # the secret key for generating token
 DOC_SERV_JWT_HEADER = 'Authorization'
+DOC_SERV_JWT_USE_FOR_REQUEST = True
 
 DOC_SERV_VERIFY_PEER = False
 

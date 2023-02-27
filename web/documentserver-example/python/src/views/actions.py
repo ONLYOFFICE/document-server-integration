@@ -244,7 +244,8 @@ def edit(request):
                 'chat': user.id !='uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
-                'userInfoGroups': user.userInfoGroups
+                'userInfoGroups': user.userInfoGroups,
+                'protect': 'protect' not in user.deniedPermissions
             },
             'referenceData' : {
                 'instanceId' : docManager.getServerUrl(False, request),
@@ -404,7 +405,7 @@ def download(request):
         userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and userAddress):
+        if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
@@ -437,7 +438,7 @@ def downloadhistory(request):
         version = fileUtils.getFileName(request.GET['ver'])
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None):
+        if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:

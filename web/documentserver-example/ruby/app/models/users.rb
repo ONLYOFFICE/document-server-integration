@@ -75,6 +75,7 @@ class Users
         "Can’t see anyone’s information",
         "Can't rename files from the editor",
         "Can't view chat",
+        "Can't protect file",
         "View file without collaboration"
     ];
 
@@ -100,7 +101,7 @@ class Users
                 false, ["copy", "download", "print"], @@descr_user_3, false),
         User.new("uid-0", nil, nil,
                 "", nil, {}, [],
-                nil, [], @@descr_user_0, false)
+                nil, ["protect"], @@descr_user_0, false)
     ]
 
     class << self

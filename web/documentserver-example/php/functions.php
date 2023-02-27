@@ -171,7 +171,7 @@ function sendRequestToConvertService(
     $headerToken = "";
     $jwtHeader = $GLOBALS['DOC_SERV_JWT_HEADER'] == "" ? "Authorization" : $GLOBALS['DOC_SERV_JWT_HEADER'];
 
-    if (isJwtEnabled()) {
+    if (isJwtEnabled() && tokenUseForRequest()) {
         $headerToken = jwtEncode(["payload" => $arr]);
         $arr["token"] = jwtEncode($arr);
     }
