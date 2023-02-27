@@ -500,7 +500,7 @@ namespace OnlineEditorsExample
                 data.Add("token", token);
             }
 
-            context.Response.Write(jss.Serialize(data).Replace(@"\u0026", "&"));
+            context.Response.Write(jss.Serialize(data));
         }
     }
 }
