@@ -623,24 +623,24 @@ namespace OnlineEditorsExampleMVC
                 referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
                 var instanceId = (string)referenceData["instanceId"];
                 var fileKey = (string)referenceData["fileKey"];
-                if (instanceId == _Default.GetServerUrl(false))
+                if (instanceId == DocManagerHelper.GetServerUrl(false))
                 {
                     var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
                     userAddress = (string)fileKeyObj["userAddress"];
-                    if (userAddress == HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
+                    if (userAddress == HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
                     {
                         fileName = (string)fileKeyObj["fileName"];
                     }
                 }
             }
 
-            if (fileName != "")
+            if (fileName == "")
             {
                 try
                 {
                     var path = (string)body["path"];
                     path = Path.GetFileName(path);
-                    if (File.Exists(_Default.StoragePath(path, null)))
+                    if (File.Exists(DocManagerHelper.StoragePath(path, null)))
                     {
                         fileName = path;
                     }
@@ -660,16 +660,16 @@ namespace OnlineEditorsExampleMVC
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
-            { "url",  DocEditor.getDownloadUrl(fileName)},
-            { "directUrl",  DocEditor.getDownloadUrl(fileName) },
+            { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
+            { "directUrl",  DocManagerHelper.GetDownloadUrl(fileName) },
             { "referenceData", new Dictionary<string, string>()
                 {
                     { "fileKey", jss.Serialize(new Dictionary<string, object>{
                             {"fileName", fileName},
-                            {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                            {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
                     })
                     },
-                    {"instanceId", _Default.GetServerUrl(false) }
+                    {"instanceId", DocManagerHelper.GetServerUrl(false) }
                 }
             },
             { "path", fileName }
@@ -685,5 +685,5 @@ namespace OnlineEditorsExampleMVC
         }
 
     }
-    }
+ 
 }

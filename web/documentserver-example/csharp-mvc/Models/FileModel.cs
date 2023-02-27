@@ -144,9 +144,9 @@ namespace OnlineEditorsExampleMVC.Models
                                         { "fileKey", !user.id.Equals("uid-0") ?
                                             jss.Serialize(new Dictionary<string, object>{
                                                 {"fileName", FileName},
-                                                {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                                {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
                                         }) : null },
-                                        {"instanceId", _Default.GetServerUrl(false) }
+                                        {"instanceId", DocManagerHelper.GetServerUrl(false) }
                                     }
                                 },
                                 {
