@@ -453,7 +453,7 @@ namespace OnlineEditorsExample
                 }
             }
 
-            if (fileName != "")
+            if (fileName == "")
             {
                 try
                 {
