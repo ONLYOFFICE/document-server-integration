@@ -76,6 +76,9 @@
     .contentCells-shift{
         padding-right: 26px;
     }
+    .contentCells-wopi{
+        width: unset;
+    }
 }
 @media (max-width: 769px) and (min-width: 593px){
     .tableRow td:first-child{
@@ -99,5 +102,30 @@
         width: 90%;
         top: 65px;
         height: 1%;
+    }
+}
+@media (max-width: 769px) and (min-width: 320px){
+    .contentCells-icon {
+        width: 1%;
+    }
+}
+@media (max-width: 390px) {
+    .downloadContentCells {
+         margin-left: unset;
+    }
+    .contentCells-wopi {
+        width: 100%;
+    }
+    .contentCells-icon {
+    width: 1%;
+    }
+    .contentCells-shift {
+        padding-right: 30px;
+        padding-left: 3px;
+    }
+    .tableRow td:last-child:after{
+        top: 95px;
+        height: 1%;
+        width: 100%;
     }
 }
