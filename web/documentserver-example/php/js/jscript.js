@@ -102,7 +102,7 @@ if (typeof jQuery != "undefined") {
         if (timer != null) {
             clearTimeout(timer);
         }
-        
+
         if (!jq("#mainProgress").is(":visible")) {
             return;
         }
@@ -310,19 +310,17 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq(document).on("click", "#createSample", function () {
-        jq(".try-editor").each(function () {
-            var href = jq(this).attr("href");
-            if (jq("#createSample").is(":checked")) {
-                href += "&sample=true";
-            } else {
-                href = href.replace("&sample=true", "");
-            }
-            jq(this).attr("href", href);
-        });
+    jq(document).on("click", ".try-editor", function (e) {
+        var url = "webeditor-ajax.php?type=" + e.target.attributes["data-type"].value;
+        if (jq("#createSample").is(":checked")) {
+            url += "&sample=true";
+        }
+        var w = window.open(url, "_blank");
+        w.onload = function () {
+            window.location.reload();
+        }
     });
 
-    
     function showUserTooltip (isMobile) {
         if ( jq("div#portal-info").is(":hidden") ) {
             jq("div#portal-info").show();
