@@ -308,16 +308,15 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq("#createSample").click(function () {
-        jq(".try-editor").each(function () {
-            var href = jq(this).attr("href");
-            if (jq("#createSample").is(":checked")) {
-                href += "&sample=true";
-            } else {
-                href = href.replace("&sample=true", "");
-            }
-            jq(this).attr("href", href);
-        });
+    jq(document).on("click", ".try-editor", function (e) {
+        var url = "doceditor.aspx?type=" + e.target.attributes["data-type"].value;
+        if (jq("#createSample").is(":checked")) {
+            url += "&sample=true";
+        }
+        var w = window.open(url, "_blank");
+        w.onload = function () {
+            window.location.reload();
+        }
     });
 
     function showUserTooltip (isMobile) {
