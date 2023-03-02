@@ -118,4 +118,3 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             die(json_encode($response_array));
     }
 }
-
