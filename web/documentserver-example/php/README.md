@@ -39,60 +39,60 @@ You can use any web server capable of running PHP code to run the example. We wi
 
 1. **PHP Manager for IIS** configuration.
 
-	After PHP Manager for IIS installation is complete, launch the **IIS Manager:**
+    After PHP Manager for IIS installation is complete, launch the **IIS Manager:**
 
-	**Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
+    **Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
 
-	and find the **PHP Manager** feature in the **Features View** in IIS.
+    and find the **PHP Manager** feature in the **Features View** in IIS.
 
-	![manager](screenshots/manager.png)
+    ![manager](screenshots/manager.png)
 
-	You need to register the installed PHP version in IIS using PHP Manager.
+    You need to register the installed PHP version in IIS using PHP Manager.
 
-	Double-click **PHP Manager** to open it, click the **Register new PHP version** task and specify the full path to the main PHP executable file location. For example: *C:\Program Files\PHP\php-cgi.exe*.
+    Double-click **PHP Manager** to open it, click the **Register new PHP version** task and specify the full path to the main PHP executable file location. For example: *C:\Program Files\PHP\php-cgi.exe*.
 
-	![php-version-1](screenshots/php-version-1.jpg)
+    ![php-version-1](screenshots/php-version-1.jpg)
 
-	After clicking **OK**, the new **PHP version** will be registered with IIS and will become active.
+    After clicking **OK**, the new **PHP version** will be registered with IIS and will become active.
 
-	![php-version-2](screenshots/php-version-2.jpg)
+    ![php-version-2](screenshots/php-version-2.jpg)
 
 2. Configure IIS to handle PHP requests.
 
-	For IIS to host PHP applications, you must add handler mapping that tells IIS to pass all the PHP-specific requests to the PHP application framework by using the **FastCGI** protocol.
+    For IIS to host PHP applications, you must add handler mapping that tells IIS to pass all the PHP-specific requests to the PHP application framework by using the **FastCGI** protocol.
 
-	Double-click the **Handler Mappings** feature:
-	
-	![handlerclick](screenshots/handlerclick.png)
+    Double-click the **Handler Mappings** feature:
 
-	In the **Action** panel, click **Add Module Mapping**. In the **Add Module Mapping** dialog box, specify the configuration settings as follows:
+    ![handlerclick](screenshots/handlerclick.png)
 
-	* **Request path**: *.php,
-	* **Module**: FastCgiModule,
-	* **Executable**: "C:\[Path to your PHP installation]\php-cgi.exe",
-	* **Name**: PHP via FastCGI.
+    In the **Action** panel, click **Add Module Mapping**. In the **Add Module Mapping** dialog box, specify the configuration settings as follows:
 
-	Click **OK**.
-	
-	![handler-add](screenshots/handler-add.png)
+    * **Request path**: *.php,
+    * **Module**: FastCgiModule,
+    * **Executable**: "C:\[Path to your PHP installation]\php-cgi.exe",
+    * **Name**: PHP via FastCGI.
 
-	After IIS manager configuration is complete, everything is ready for running the PHP example.
+    Click **OK**.
+
+    ![handler-add](screenshots/handler-add.png)
+
+    After IIS manager configuration is complete, everything is ready for running the PHP example.
 
 ### Step 5. Run your website with the editors
 
 1. Add your website in the IIS Manager.
 
-	On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
+    On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
 
-	![add](screenshots/add.png)  
+    ![add](screenshots/add.png)  
 
 2. In the **Add Website** dialog box, specify the name of the folder with the PHP project in the **Site name** box.
 
-	Specify the path to the folder with your project in the **Physical path** box.
+    Specify the path to the folder with your project in the **Physical path** box.
 
-	Specify the unique value used only for this website in the **Port** box.
+    Specify the unique value used only for this website in the **Port** box.
 
-	![php-add](screenshots/php-add.png)  
+    ![php-add](screenshots/php-add.png)  
 
 3. Browse your website with the IIS manager:
 
@@ -116,11 +116,12 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 
 ### Step 2. Install the prerequisites and run the website with the editors
 
-1. Install **Apache** **PHP**:
+1. Install **Apache** and **PHP**:
 
     ```
     apt-get install -y apache2 php7.0 libapache2-mod-php7.0
     ```
+
 2. Install **Composer**:
 
     ```
@@ -153,14 +154,14 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     nano config.json
     ```
 
-	Edit the following lines:
+    Edit the following lines:
 
     ```
     "storagePath" = "";
     "docServSiteUrl" = "https://documentserver/";
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
+    where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
 
 6. Run *composer install*:
 

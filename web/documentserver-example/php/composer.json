@@ -1,7 +1,7 @@
 {
     "require-dev": {
         "squizlabs/php_codesniffer": "*",
-      "ext-mbstring": "*"
+        "ext-mbstring": "*"
     },
     "scripts": {
         "code-sniffer": [
