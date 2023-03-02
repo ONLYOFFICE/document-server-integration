@@ -19,6 +19,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import entities.FileType;
 import entities.User;
 import helpers.ConfigManager;
@@ -62,7 +63,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static utils.Constants.KILOBYTE_SIZE;
-
 
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
@@ -117,6 +117,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "rename":
                 rename(request, response, writer);
+                break;
+            case "reference":
+                reference(request, response, writer);
                 break;
             default:
                 break;
@@ -634,6 +637,87 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
+    // reference data
+    private static void reference(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            String fileKeyValue = "";
+            String userAddress = "";
+            String fileName = "";
+            boolean incorrectFileKey = false;
+
+            JSONParser parser = new JSONParser();
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            if (body.containsKey("referenceData")) {
+                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                String instanceId = (String) referenceDataObj.get("instanceId");
+
+                if (instanceId.equals(DocumentManager.getServerUrl(false))) {
+                    try {
+                        JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
+                        userAddress = (String) fileKey.get("userAddress");
+
+                        if (userAddress.equals(DocumentManager.curUserHostAddress(null))) {
+                            fileName = (String) fileKey.get("fileName");
+                        }
+                    } catch (Exception e) {
+                        incorrectFileKey = true; //data from DocEditor can give incorrect fileKey param in java Example
+                    }
+                }
+            }
+
+            if (fileName.equals("")) {
+                try {
+                    String path = (String) body.get("path");
+                    path = FileUtility.getFileName(path);
+                    File f = new File(DocumentManager.storagePath(path, null));
+                    if (f.exists()) {
+                        fileName = path;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+                }
+            }
+
+            if (fileName.equals("")) {
+                writer.write("{ \"error\": \"File not found\"}");
+                return;
+            }
+
+            HashMap<String, Object> fileKey = new HashMap<>();
+            fileKey.put("fileName", fileName);
+            fileKey.put("userAddress", DocumentManager.curUserHostAddress(null));
+
+            HashMap<String, Object> referenceData = new HashMap<>();
+            referenceData.put("instanceId", DocumentManager.getServerUrl(false));
+            referenceData.put("fileKey", gson.toJson(fileKey));
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("fileType", FileUtility.getFileExtension(fileName));
+            data.put("url", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("referenceData", referenceData);
+            data.put("path", fileName);
+
+            if (DocumentManager.tokenEnabled()) {
+                String token = DocumentManager.createToken(data);
+                data.put("token", token);
+            }
+            writer.write(gson.toJson(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+        }
+    }
 
     // process get request
     @Override

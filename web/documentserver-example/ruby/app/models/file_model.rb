@@ -134,6 +134,10 @@ class FileModel
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups,
           :protect => !@user.deniedPermissions.include?("protect")
+        },
+        :referenceData => {
+          :instanceId => DocumentHelper.get_server_url(false),
+          :fileKey => !@user.id.eql?("uid-0") ? {:fileName => @file_name,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json : nil
         }
       },
       :editorConfig => {

@@ -168,6 +168,21 @@
             }
         };
 
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData: " + JSON.stringify(event.data));
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                console.log(JSON.parse(xhr.responseText));
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -223,6 +238,7 @@
                 };
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
+                config.events['onRequestReferenceData'] = onRequestReferenceData;
 
             }
 

@@ -139,6 +139,17 @@ namespace OnlineEditorsExampleMVC.Models
                                         }
                                 },
                                 {
+                                    "referenceData", new Dictionary<string, string>()
+                                    {
+                                        { "fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", FileName},
+                                                {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                        }) : null },
+                                        {"instanceId", DocManagerHelper.GetServerUrl(false) }
+                                    }
+                                },
+                                {
                                     // the permission for the document to be edited and downloaded or not
                                     "permissions", new Dictionary<string, object>
                                         {

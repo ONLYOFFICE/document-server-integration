@@ -246,6 +246,10 @@ def edit(request):
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups,
                 'protect': 'protect' not in user.deniedPermissions
+            },
+            'referenceData' : {
+                'instanceId' : docManager.getServerUrl(False, request),
+                'fileKey' : json.dumps({'fileName' : filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
             }
         },
         'editorConfig': {
@@ -454,3 +458,53 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+# referenceData
+def reference(request):
+    response = {}
+    body = json.loads(request.body)
+    referenceData = None
+    fileName = None
+    userAddress = None
+
+    try:
+        referenceData = body['referenceData']
+    except Exception:
+        pass
+
+    if referenceData is not None:
+        instanceId = referenceData['instanceId']
+        if instanceId == docManager.getServerUrl(False, request):
+            fileKey = json.loads(referenceData['fileKey'])
+            userAddress = fileKey['userAddress']
+            if userAddress == request.META['REMOTE_ADDR']:
+                fileName = fileKey['fileName']
+    
+    if fileName is None:
+        try:
+            path = fileUtils.getFileName(body['path'])
+            if os.path.exists(docManager.getStoragePath(path,request)):
+                fileName = path 
+        except KeyError:
+            response.setdefault('error', 'Path not found')
+            return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+    
+    if fileName is None:
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+    
+    data = {
+        'fileType' : fileUtils.getFileExt(fileName),
+        'url' : docManager.getDownloadUrl(fileName, request),
+        'directUrl' : docManager.getDownloadUrl(fileName, request) if body["directUrl"] else docManager.getDownloadUrl(fileName, request, False),
+        'referenceData' : {
+            'instanceId' : docManager.getServerUrl(False, request),
+            'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
+        },
+        'path' : fileName
+    }
+
+    if (jwtManager.isEnabled()):
+        data['token'] = jwtManager.encode(data)
+    
+    return HttpResponse(json.dumps(data), content_type='application/json')

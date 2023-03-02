@@ -99,6 +99,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array = csv();
             $response_array['status'] = 'success';
             die(json_encode($response_array));
+        case "reference":
+            $response_array = reference();
+            $response_array['status'] = 'success';
+            die(json_encode($response_array));
         case "files":
             $response_array = files();
             die(json_encode($response_array));
@@ -569,4 +573,60 @@ function renamefile()
     sendlog("   CommandRequest rename: " . serialize($commandRequest), "webedior-ajax.log");
 
     return ["result" => $commandRequest];
+}
+
+/**
+ * Reference data
+ *
+ * @return array
+ */
+function reference()
+{
+    $post = json_decode(file_get_contents('php://input'), true);
+
+    @header("Content-Type: application/json");
+
+    $referenceData = $post["referenceData"] ?? null;
+
+    if ($referenceData) {
+        $instanceId = $referenceData["instanceId"];
+        if ($instanceId == serverPath()) {
+            $fileKey = json_decode($referenceData["fileKey"]);
+            $userAddress = $fileKey->userAddress;
+            if ($userAddress == getCurUserHostAddress()) {
+                $fileName = $fileKey->fileName;
+            }
+        }
+    }
+
+    if (!isset($filename) && isset($post["path"])) {
+        $path = basename($post["path"]);
+        if (file_exists(getStoragePath($path))) {
+            $fileName = $path;
+        }
+    }
+
+    if (!isset($fileName)) {
+        return ["error" => "File is not found"];
+    }
+
+    $data = [
+        "fileType" => getInternalExtension($fileName),
+        "url" => getDownloadUrl($fileName),
+        "directUrl" => $post["directUrl"] ? getDownloadUrl($fileName) : getDownloadUrl($fileName, false),
+        "referenceData" => [
+            "fileKey" => json_encode([
+                "fileName" => $fileName,
+                "userAddress" =>  getCurUserHostAddress()
+            ]),
+            "instanceId" => serverPath(),
+        ],
+        "path" => $fileName
+    ];
+
+    if (isJwtEnabled()) {
+        $data["token"] = jwtEncode($data);
+    }
+
+    return $data;
 }
