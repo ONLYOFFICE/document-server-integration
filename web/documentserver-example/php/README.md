@@ -16,14 +16,14 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [PHP example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.php* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config.json* file:
 
 ```
-$GLOBALS['STORAGE_PATH'] = "";
-$GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
+"storagePath" = "";
+"docServSiteUrl" = "https://documentserver/";
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
+where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storagePath** is the path where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *doceditor.php* file.
 
@@ -39,60 +39,60 @@ You can use any web server capable of running PHP code to run the example. We wi
 
 1. **PHP Manager for IIS** configuration.
 
-	After PHP Manager for IIS installation is complete, launch the **IIS Manager:**
+    After PHP Manager for IIS installation is complete, launch the **IIS Manager:**
 
-	**Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
+    **Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
 
-	and find the **PHP Manager** feature in the **Features View** in IIS.
+    and find the **PHP Manager** feature in the **Features View** in IIS.
 
-	![manager](screenshots/manager.png)
+    ![manager](screenshots/manager.png)
 
-	You need to register the installed PHP version in IIS using PHP Manager.
+    You need to register the installed PHP version in IIS using PHP Manager.
 
-	Double-click **PHP Manager** to open it, click the **Register new PHP version** task and specify the full path to the main PHP executable file location. For example: *C:\Program Files\PHP\php-cgi.exe*.
+    Double-click **PHP Manager** to open it, click the **Register new PHP version** task and specify the full path to the main PHP executable file location. For example: *C:\Program Files\PHP\php-cgi.exe*.
 
-	![php-version-1](screenshots/php-version-1.jpg)
+    ![php-version-1](screenshots/php-version-1.jpg)
 
-	After clicking **OK**, the new **PHP version** will be registered with IIS and will become active.
+    After clicking **OK**, the new **PHP version** will be registered with IIS and will become active.
 
-	![php-version-2](screenshots/php-version-2.jpg)
+    ![php-version-2](screenshots/php-version-2.jpg)
 
 2. Configure IIS to handle PHP requests.
 
-	For IIS to host PHP applications, you must add handler mapping that tells IIS to pass all the PHP-specific requests to the PHP application framework by using the **FastCGI** protocol.
+    For IIS to host PHP applications, you must add handler mapping that tells IIS to pass all the PHP-specific requests to the PHP application framework by using the **FastCGI** protocol.
 
-	Double-click the **Handler Mappings** feature:
-	
-	![handlerclick](screenshots/handlerclick.png)
+    Double-click the **Handler Mappings** feature:
 
-	In the **Action** panel, click **Add Module Mapping**. In the **Add Module Mapping** dialog box, specify the configuration settings as follows:
+    ![handlerclick](screenshots/handlerclick.png)
 
-	* **Request path**: *.php,
-	* **Module**: FastCgiModule,
-	* **Executable**: "C:\[Path to your PHP installation]\php-cgi.exe",
-	* **Name**: PHP via FastCGI.
+    In the **Action** panel, click **Add Module Mapping**. In the **Add Module Mapping** dialog box, specify the configuration settings as follows:
 
-	Click **OK**.
-	
-	![handler-add](screenshots/handler-add.png)
+    * **Request path**: *.php,
+    * **Module**: FastCgiModule,
+    * **Executable**: "C:\[Path to your PHP installation]\php-cgi.exe",
+    * **Name**: PHP via FastCGI.
 
-	After IIS manager configuration is complete, everything is ready for running the PHP example.
+    Click **OK**.
+
+    ![handler-add](screenshots/handler-add.png)
+
+    After IIS manager configuration is complete, everything is ready for running the PHP example.
 
 ### Step 5. Run your website with the editors
 
 1. Add your website in the IIS Manager.
 
-	On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
+    On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
 
-	![add](screenshots/add.png)  
+    ![add](screenshots/add.png)  
 
 2. In the **Add Website** dialog box, specify the name of the folder with the PHP project in the **Site name** box.
 
-	Specify the path to the folder with your project in the **Physical path** box.
+    Specify the path to the folder with your project in the **Physical path** box.
 
-	Specify the unique value used only for this website in the **Port** box.
+    Specify the unique value used only for this website in the **Port** box.
 
-	![php-add](screenshots/php-add.png)  
+    ![php-add](screenshots/php-add.png)  
 
 3. Browse your website with the IIS manager:
 
@@ -122,7 +122,13 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     apt-get install -y apache2 php7.0 libapache2-mod-php7.0
     ```
 
-2. Download the archive with the PHP example and unpack the archive:
+2. Install **Composer**:
+
+    ```
+    instructions should be here
+    ```
+
+3. Download the archive with the PHP example and unpack the archive:
 
     ```
     cd /var/www/html
@@ -136,40 +142,45 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     unzip PHP\ Example.zip
     ```
 
-3. Change the current directory for the project directory:
+4. Change the current directory for the project directory:
 
     ```
     cd PHP\ Example/
     ```
 
-4. Edit the *config.php* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+5. Edit the *config.json* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
     ```
-    nano config.php
+    nano config.json
     ```
 
-	Edit the following lines:
+    Edit the following lines:
 
     ```
-    $GLOBALS['STORAGE_PATH'] = "";
-    $GLOBALS['DOC_SERV_SITE_URL'] = "https://documentserver/";
+    "storagePath" = "";
+    "docServSiteUrl" = "https://documentserver/";
     ```
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
+    where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **STORAGE_PATH** is the path where files will be created and stored. You can set an absolute path.
 
-5. Set permission for site:
+6. Run *composer install*:
+
+    ```
+    php composer.phar install
+    ```
+7. Set permission for site:
 
     ```
     chown -R www-data:www-data /var/www/html
     ```
 
-6. Restart apache:
+8. Restart apache:
 
     ```
     service apache2 restart
     ```
 
-7. See the result in your browser using the address:
+9. See the result in your browser using the address:
 
     ```
     http://localhost/PHP%20Example/

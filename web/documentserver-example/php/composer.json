@@ -1,6 +1,7 @@
 {
     "require-dev": {
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "ext-mbstring": "*"
     },
     "scripts": {
         "code-sniffer": [
@@ -13,5 +14,13 @@
         "post-update-cmd": [
             "@code-sniffer"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OnlineEditorsExamplePhp\\" : "",
+            "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
+            "OnlineEditorsExamplePhp\\Views\\" : "views/",
+            "Firebase\\JWT\\" : "lib/jwt/"
+        }
     }
 }
