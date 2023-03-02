@@ -605,6 +605,7 @@ footer table tr td:first-child {
 
 .contentCells-wopi a {
     text-decoration: none;
+    margin-right: 8px;
 }
 
 .select-user {
