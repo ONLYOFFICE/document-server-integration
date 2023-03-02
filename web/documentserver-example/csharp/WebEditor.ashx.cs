@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Web.Configuration;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 
 namespace OnlineEditorsExample
 {
@@ -70,6 +71,9 @@ namespace OnlineEditorsExample
                     break;
                 case "rename":
                     Rename(context);
+                    break;
+                case "reference":
+                    Reference(context);
                     break;
             }
         }
@@ -408,6 +412,95 @@ namespace OnlineEditorsExample
             };
             TrackManager.commandRequest("meta", docKey, meta);
             context.Response.Write("{ \"result\": \"OK\"}");
+        }
+
+        private static void Reference(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            Dictionary<string, object> referenceData = null;
+            var fileName = "";
+            var userAddress = "";
+
+            if (body.ContainsKey("referenceData"))
+            {
+                referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
+                var instanceId = (string)referenceData["instanceId"];
+                var fileKey = (string)referenceData["fileKey"];
+                if (instanceId == _Default.GetServerUrl(false))
+                {
+                    var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
+                    userAddress = (string)fileKeyObj["userAddress"];
+                    if (userAddress == HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
+                    {
+                        fileName = (string)fileKeyObj["fileName"];
+                    }
+                }
+            }
+
+            if (fileName == "")
+            {
+                try
+                {
+                    var path = (string)body["path"];
+                    path = Path.GetFileName(path);
+                    if (File.Exists(_Default.StoragePath(path, null)))
+                    {
+                        fileName = path;
+                    }
+                }
+                catch
+                {
+                    context.Response.Write("{ \"error\": \"Path not found!\"}");
+                    return;
+                }
+            }
+
+            if (fileName == "")
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+                return;
+            }
+
+            var data = new Dictionary<string, object>() {
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
+            { "url",  DocEditor.getDownloadUrl(fileName)},
+            { "directUrl",  DocEditor.getDownloadUrl(fileName) },
+            { "referenceData", new Dictionary<string, string>()
+                {
+                    { "fileKey", jss.Serialize(new Dictionary<string, object>{
+                            {"fileName", fileName},
+                            {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                    })
+                    },
+                    {"instanceId", _Default.GetServerUrl(false) }
+                }
+            },
+            { "path", fileName }
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(data);
+                data.Add("token", token);
+            }
+
+            context.Response.Write(jss.Serialize(data));
         }
     }
 }

@@ -549,3 +549,61 @@ function renamefile()
 
     return ["result" => $commandRequest];
 }
+
+/**
+ * Reference data
+ *
+ * @return array
+ */
+function reference()
+{
+    $post = json_decode(file_get_contents('php://input'), true);
+
+    @header("Content-Type: application/json");
+
+    $referenceData = $post["referenceData"] ?? null;
+
+    $jwtManager = new JwtManager();
+
+    if ($referenceData) {
+        $instanceId = $referenceData["instanceId"];
+        if ($instanceId == serverPath()) {
+            $fileKey =  json_decode(str_replace("'", "\"", $referenceData["fileKey"]));
+            $userAddress = $fileKey->userAddress;
+            if ($userAddress == getCurUserHostAddress()) {
+                $fileName = $fileKey->fileName;
+            }
+        }
+    }
+
+    if (!isset($filename) && isset($post["path"])) {
+        $path = basename($post["path"]);
+        if (file_exists(getStoragePath($path))) {
+            $fileName = $path;
+        }
+    }
+
+    if (!isset($fileName)) {
+        return ["error" => "File is not found"];
+    }
+
+    $data = [
+        "fileType" => getInternalExtension($fileName),
+        "url" => getDownloadUrl($fileName),
+        "directUrl" => $post["directUrl"] ? getDownloadUrl($fileName) : getDownloadUrl($fileName, false),
+        "referenceData" => [
+            "fileKey" => json_encode([
+                "fileName" => $fileName,
+                "userAddress" =>  getCurUserHostAddress()
+            ]),
+            "instanceId" => serverPath(),
+        ],
+        "path" => $fileName
+    ];
+
+    if ($jwtManager->isJwtEnabled()) {
+        $data["token"] = $jwtManager->jwtEncode($data);
+    }
+
+    return $data;
+}

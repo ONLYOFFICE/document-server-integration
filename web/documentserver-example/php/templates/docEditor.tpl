@@ -98,6 +98,21 @@
             return link;
         };
 
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData: " + JSON.stringify(event.data));
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor-ajax.php?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                console.log(JSON.parse(xhr.responseText));
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         // the user is trying to get link for opening the document which contains a bookmark,
         // scrolling to the bookmark position
         var onMakeActionLink = function (event) {
@@ -193,6 +208,7 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+                'onRequestReferenceData': onRequestReferenceData,
             };
 
                 {history}

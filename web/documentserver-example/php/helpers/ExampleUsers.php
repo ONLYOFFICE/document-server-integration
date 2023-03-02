@@ -129,7 +129,7 @@ final class ExampleUsers
                 [],
                 [],
                 null,
-                [],
+                ["protect"],
                 $this->descr_user_0,
                 false
             ),

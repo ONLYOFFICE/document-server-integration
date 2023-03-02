@@ -98,6 +98,10 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             $response_array = csv();
             $response_array['status'] = 'success';
             die(json_encode($response_array));
+        case "reference":
+            $response_array = reference();
+            $response_array['status'] = 'success';
+            die(json_encode($response_array));
         case "files":
             $response_array = files();
             die(json_encode($response_array));
@@ -114,3 +118,4 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
             die(json_encode($response_array));
     }
 }
+

@@ -997,7 +997,8 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 plugins: JSON.stringify(plugins),
                 actionData: actionData,
                 fileKey: userid != "uid-0" ? JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
-                instanceId: userid != "uid-0" ? req.docManager.getInstanceId() : null
+                instanceId: userid != "uid-0" ? req.docManager.getInstanceId() : null,
+                protect: !user.deniedPermissions.includes("protect")
             },
             history: history,
             historyData: historyData,

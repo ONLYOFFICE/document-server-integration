@@ -52,4 +52,5 @@ public class Permission extends AbstractEntity {
     private List<Group> commentsRemoveGroups;
     @ManyToMany
     private List<Group> userInfoGroups;
+    private Boolean protect = true;
 }

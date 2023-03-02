@@ -32,6 +32,7 @@ use function OnlineEditorsExamplePhp\getStoragePath;
 use function OnlineEditorsExamplePhp\getTemplateImageUrl;
 use function OnlineEditorsExamplePhp\serverPath;
 use function OnlineEditorsExamplePhp\tryGetDefaultByType;
+use function OnlineEditorsExamplePhp\getCurUserHostAddress;
 
 final class DocEditorView extends View
 {
@@ -133,6 +134,14 @@ final class DocEditorView extends View
                     "reviewGroups" => $user->reviewGroups,
                     "commentGroups" => $user->commentGroups,
                     "userInfoGroups" => $user->userInfoGroups,
+                    "protect" => !in_array("protect", $user->deniedPermissions),
+                ],
+                "referenceData" => [
+                    "fileKey" => $user->id != "uid-0" ? json_encode([
+                        "fileName" => $filename,
+                        "userAddress" =>  getCurUserHostAddress()
+                    ]) : null,
+                    "instanceId" => serverPath(),
                 ],
             ],
             "editorConfig" => [

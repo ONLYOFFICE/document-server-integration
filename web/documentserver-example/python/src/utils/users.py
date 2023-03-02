@@ -74,6 +74,7 @@ descr_user_0 = [
     "Can’t see anyone’s information",
     "Can't rename files from the editor",
     "Can't view chat",
+    "Can't protect file",
     "View file without collaboration",
 ]
 
@@ -98,7 +99,7 @@ USERS = [
         False, ["copy", "download", "print"], descr_user_3, False),
     User('uid-0', None, None,
         '', None, {}, [],
-        None, [], descr_user_0, False)
+        None, ["protect"], descr_user_0, False)
 ]
 
 DEFAULT_USER = USERS[0]

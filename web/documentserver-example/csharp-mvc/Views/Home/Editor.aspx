@@ -178,6 +178,18 @@
             }
         };
 
+        var onRequestReferenceData = function (event) {  // user refresh external data source
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor.ashx?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -239,6 +251,7 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
+            config.events['onRequestReferenceData'] = onRequestReferenceData;
         }
 
         if (config.editorConfig.createUrl) {
