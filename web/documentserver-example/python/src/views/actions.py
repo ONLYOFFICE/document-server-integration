@@ -21,7 +21,6 @@ import config
 import json
 import os
 import urllib.parse
-import magic
 
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
