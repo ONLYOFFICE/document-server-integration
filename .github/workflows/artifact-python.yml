@@ -1,0 +1,33 @@
+name: Artifact Python
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/python/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/python/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cwd=$(pwd)
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/python
+          mkdir -p ./deploy/'Python Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'Python Example'
+          cd ./deploy/'Python Example'/assets
+          rm -rf ./.git/
+          rm .git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Python.Example
+          path: ${{ github.workspace }}/web/documentserver-example/python/deploy
