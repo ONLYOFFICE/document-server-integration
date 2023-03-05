@@ -290,31 +290,31 @@ def edit(request):
     # an image which will be inserted into the document
     dataInsertImage = {
         'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
     } if isEnableDirectUrl else {
         'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
     }
 
     # a document which will be compared with the current document
     dataCompareFile = {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + 'static/sample.docx',
-        'directUrl': docManager.getServerUrl(False, request) + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/static/sample.docx',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/sample.docx'
     } if isEnableDirectUrl else {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/static/sample.docx'
     }
 
     # recipient data for mail merging
     dataMailMergeRecipients = {
         'fileType': 'csv',
-        'url': docManager.getServerUrl(True, request) + 'csv',
-        'directUrl': docManager.getServerUrl(False, request) + 'csv'
+        'url': docManager.getServerUrl(True, request) + '/csv',
+        'directUrl': docManager.getServerUrl(False, request) + '/csv'
     } if isEnableDirectUrl else {
         'fileType': 'csv',
-        'url': docManager.getServerUrl(True, request) + 'csv'
+        'url': docManager.getServerUrl(True, request) + '/csv'
     }
 
     # users data for mentions
