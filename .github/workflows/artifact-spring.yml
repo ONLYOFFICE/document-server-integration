@@ -21,7 +21,6 @@ jobs:
           cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/java-spring
-          rm .gitignore
           mkdir -p ./deploy/'Java Spring Example'
           rsync -av --exclude='deploy' ./ ./deploy/'Java Spring Example'
           cd ./deploy/'Java Spring Example'/src/main/resources/assets

@@ -21,7 +21,6 @@ jobs:
           cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/ruby
-          rm .gitignore
           mkdir -p ./deploy/'Ruby Example'
           rsync -av --exclude='deploy' ./ ./deploy/'Ruby Example'
           cd ./deploy/'Ruby Example'/public/assets

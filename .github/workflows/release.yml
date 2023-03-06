@@ -94,7 +94,6 @@ jobs:
           cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/ruby
-          rm .gitignore
           mkdir -p ./'Ruby Example'
           rsync -av --exclude='Ruby Example' ./ ./'Ruby Example'
           cd ./'Ruby Example'/public/assets
@@ -106,7 +105,6 @@ jobs:
           cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/java-spring
-          rm .gitignore
           mkdir -p ./'Java Spring Example'
           rsync -av --exclude='Java Spring Example' ./ ./'Java Spring Example'
           cd ./'Java Spring Example'/src/main/resources/assets
