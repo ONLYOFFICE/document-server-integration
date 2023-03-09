@@ -150,11 +150,15 @@ namespace OnlineEditorsExample
 
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
-            
+
             if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && _Default.FillFormsExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
-            }            
+            }
+            if (user.email.Equals(null))
+            {
+                canEdit = false;
+            }
             var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
@@ -246,7 +250,7 @@ namespace OnlineEditorsExample
                                 { "mode", mode },
                                 { "lang", Request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? 
+                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ?
                                     new Dictionary<string, object>{
                                         {"mode", "strict"},
                                         {"change", false}
@@ -323,7 +327,7 @@ namespace OnlineEditorsExample
 
                 Dictionary<string, object> hist;
                 Dictionary<string, object> histData;
-  
+
                 // get the document history
                 GetHistory(out hist, out histData);
                 if (hist != null && histData != null)
@@ -393,12 +397,12 @@ namespace OnlineEditorsExample
                     if (IsEnabledDirectUrl())
                     {
                         dataObj.Add("directUrl", directPrevFileUrl); // write direct url to the data object
-                    } 
+                    }
 
                     dataObj.Add("version", i);
                     if (i > 1)  // check if the version number is greater than 1 (the file was modified)
                     {
-                        // get the path to the changes.json file 
+                        // get the path to the changes.json file
                         var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
                         var changesArray = (ArrayList)changes["changes"];
                         var change = changesArray.Count > 0
@@ -584,7 +588,7 @@ namespace OnlineEditorsExample
         // create the public url
         private string MakePublicUrl(string fullPath)
         {
-            var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"] 
+            var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"]
                 : HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
         }
@@ -642,7 +646,7 @@ namespace OnlineEditorsExample
         // create a json file with file meta data
         public static void CreateMeta(string fileName, string uid, string uname, string userAddress)
         {
-            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, userAddress)); 
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, userAddress));
             Directory.CreateDirectory(histDir);
             // create the meta data object and write the information into the createdInfo.json file
             File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
