@@ -208,6 +208,7 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
+            "onRequestEditRights": onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -216,9 +217,6 @@
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
-        if (config.editorConfig.user.id != "") {
-            config.events.onRequestEditRights = onRequestEditRights;
-        }
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
             config.events.onRequestHistory = onRequestHistory;

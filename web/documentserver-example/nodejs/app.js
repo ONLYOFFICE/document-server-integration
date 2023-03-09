@@ -885,7 +885,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         if (!canEdit && mode == "edit") {
             mode = "view";
         }
-        if (user.email == null) {
+        if (user.id == "uid-0" && mode == "view") {
             canEdit = false;
         }
         var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
