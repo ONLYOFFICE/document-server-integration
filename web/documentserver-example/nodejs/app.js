@@ -215,7 +215,7 @@ app.post("/upload", function (req, res) {  // define a handler for uploading fil
     form.uploadDir = uploadDirTmp;  // and write there all the necessary parameters
     form.keepExtensions = true;
 
-    form.parse(req, function (err, fields, files) {  // parse this form 
+    form.parse(req, function (err, fields, files) {  // parse this form
     	if (err) {  // if an error occurs
 			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
 			res.writeHead(200, { "Content-Type": "text/plain" });  // and write the error status and message to the response
@@ -383,7 +383,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
             var historyPath = req.docManager.historyPath(fileName, userAddress, true);
             var correctHistoryPath = req.docManager.historyPath(correctName, userAddress, true);  // get the history path to the file with a new extension
 
-            fileSystem.renameSync(historyPath, correctHistoryPath);  // change the previous history path 
+            fileSystem.renameSync(historyPath, correctHistoryPath);  // change the previous history path
 
             fileSystem.renameSync(path.join(correctHistoryPath, fileName + ".txt"), path.join(correctHistoryPath, correctName + ".txt"));  // change the name of the .txt file with document information
 
@@ -413,7 +413,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
 
 app.get("/files", function(req, res) {  // define a handler for getting files information
     try {
-        req.docManager = new docManager(req, res); 
+        req.docManager = new docManager(req, res);
         const filesInDirectoryInfo = req.docManager.getFilesInfo();  // get the information about the files from the storage path
         res.setHeader("Content-Type", "application/json");
         res.write(JSON.stringify(filesInDirectoryInfo));  // transform files information into the json string
@@ -821,7 +821,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         var actionData = "null";
         if (req.query.action){
             try {
-                actionData = JSON.stringify(JSON.parse(req.query.action)); 
+                actionData = JSON.stringify(JSON.parse(req.query.action));
             }
             catch (ex) {
                 console.log(ex);
@@ -868,7 +868,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
 
         var userAddress = req.docManager.curUserHostAddress();
         if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
-            throw { 
+            throw {
                 "message": "File not found: " + fileName  // display error message
             };
         }
@@ -884,6 +884,9 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
         }
         if (!canEdit && mode == "edit") {
             mode = "view";
+        }
+        if (user.email == null) {
+            canEdit = false;
         }
         var submitForm = mode == "fillForms" && userid == "uid-1" && !1;
 
@@ -926,7 +929,7 @@ app.get("/editor", function (req, res) {  // define a handler for editing docume
                 }
 
                 historyData.push(historyD);
-                
+
                 if (i < countVersion) {
                     var changesFile = req.docManager.changesPath(fileName, userAddress, i);  // get the path to the file with document changes
                     changes = req.docManager.getChanges(changesFile);  // get changes made in the file
