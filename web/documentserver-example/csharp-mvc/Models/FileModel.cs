@@ -84,10 +84,14 @@ namespace OnlineEditorsExampleMVC.Models
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
-            
+
             if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
+            }
+            if (user.email.Equals(null))
+            {
+                canEdit = false;
             }
             var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
@@ -178,7 +182,7 @@ namespace OnlineEditorsExampleMVC.Models
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
-                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? 
+                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ?
                                     new Dictionary<string, object>{
                                         {"mode", "strict"},
                                         {"change", false}
@@ -238,7 +242,7 @@ namespace OnlineEditorsExampleMVC.Models
 
         // get the document history
         public void GetHistory(out string history, out string historyData)
-        {            
+        {
             var storagePath = WebConfigurationManager.AppSettings["storage-path"];
             var jss = new JavaScriptSerializer();
             var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
