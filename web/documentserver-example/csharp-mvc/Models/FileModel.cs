@@ -89,7 +89,7 @@ namespace OnlineEditorsExampleMVC.Models
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            if (user.email.Equals(null))
+            if (user.email.Equals(null) && editorsMode.Equals("view"))
             {
                 canEdit = false;
             }
