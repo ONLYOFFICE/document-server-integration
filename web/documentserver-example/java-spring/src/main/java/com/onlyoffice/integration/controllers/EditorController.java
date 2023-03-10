@@ -136,6 +136,10 @@ public class EditorController {
                         .build()
         );
 
+        if (user.getId() == ANONYMOUS_USER_ID && action.name().equals("view")) {
+            fileModel.getDocument().getPermissions().setEdit(false);
+        }
+
         // add attributes to the specified model
         // add file model with the default parameters to the original model
         model.addAttribute("model", fileModel);
