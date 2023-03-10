@@ -181,6 +181,8 @@ def edit(request):
         canEdit = True
     submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
+    if (user.id == 'uid-0' and mode == 'view') :
+        canEdit = False
 
     types = ['desktop', 'mobile', 'embedded']
     edType = request.GET.get('type') if request.GET.get('type') in types else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
