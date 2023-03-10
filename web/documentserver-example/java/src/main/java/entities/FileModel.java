@@ -147,6 +147,10 @@ public class FileModel {
         // set the mode parameter: change it to view if the document can't be edited
         editorConfig.setMode(canEdit && !mode.equals("view") ? "edit" : "view");
 
+        if (user.getId().equals("uid-0") && mode.equals("view")) {
+            canEdit = false;
+        }
+
         // set document permissions
         document.setPermissions(new Permissions(mode, type, canEdit, user));
 
