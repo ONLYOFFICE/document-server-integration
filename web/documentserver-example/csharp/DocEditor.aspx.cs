@@ -155,7 +155,7 @@ namespace OnlineEditorsExample
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            if (user.email.Equals(null) && editorsMode.Equals("view"))
+            if (user.id.Equals("uid-0") && editorsMode.Equals("view"))
             {
                 canEdit = false;
             }
