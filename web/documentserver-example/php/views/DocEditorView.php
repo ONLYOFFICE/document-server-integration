@@ -86,6 +86,9 @@ final class DocEditorView extends View
         $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
+        if ($user->id == "uid-0" && $editorsMode == "view") {
+            $canEdit = false;
+        }
 
         $templatesImageUrl = getTemplateImageUrl($filename); // templates image url in the "From Template" section
         $createUrl = getCreateUrl($filename, $user->id, $type);
