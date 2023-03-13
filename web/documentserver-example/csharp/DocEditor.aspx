@@ -232,7 +232,7 @@
                     var histData = <%= HistoryData %>;
                     docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
                 };
-                config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
                     document.location.reload();
                 };
             <% } %>
