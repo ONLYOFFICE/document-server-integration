@@ -1,5 +1,6 @@
 # Change Log
 
+- anonymous can't change viewer to edit
 - referenceData
 - anonymous can't protect file
 - separate setting for checking the token in requests
