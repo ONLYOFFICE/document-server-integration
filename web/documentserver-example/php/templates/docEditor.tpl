@@ -200,7 +200,6 @@
             config.events = {
                 'onAppReady': onAppReady,
                 'onDocumentStateChange': onDocumentStateChange,
-                'onRequestEditRights': onRequestEditRights,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
@@ -212,6 +211,11 @@
             };
 
                 {history}
+
+            if (config.editorConfig.user.id) {
+                // prevent switch the document from the viewing into the editing mode for anonymous users
+                config.events['onRequestEditRights'] = onRequestEditRights;
+            }
 
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
