@@ -179,7 +179,6 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
-            'onRequestEditRights': onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -228,6 +227,8 @@
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
+            // prevent switch the document from the viewing into the editing mode for anonymous users
+            config.events['onRequestEditRights'] = onRequestEditRights;
         }
 
         if (config.editorConfig.createUrl) {
