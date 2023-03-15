@@ -212,11 +212,6 @@
 
                 {history}
 
-            if (config.editorConfig.user.id) {
-                // prevent switch the document from the viewing into the editing mode for anonymous users
-                config.events['onRequestEditRights'] = onRequestEditRights;
-            }
-
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
             };
