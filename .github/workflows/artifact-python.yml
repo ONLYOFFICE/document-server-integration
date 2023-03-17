@@ -6,7 +6,7 @@ on:
     branches: [master, main]
     paths: ['web/documentserver-example/python/**']
   pull_request:
-    branches: [master, main, develop]
+    branches: [master, main]
     paths: ['web/documentserver-example/python/**']
 
 jobs:
