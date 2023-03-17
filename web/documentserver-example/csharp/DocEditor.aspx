@@ -153,7 +153,7 @@
         var onRequestMailMergeRecipients = function (event) {
             docEditor.setMailMergeRecipients(<%= DataMailMergeRecipients %>);  // insert recipient data for mail merge into the file
         };
-        
+
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
             var title = event.data.title;
             var url = event.data.url;
@@ -211,7 +211,6 @@
         config.events = {
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
-            'onRequestEditRights': onRequestEditRights,
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
@@ -256,6 +255,8 @@
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
+            // prevent switch the document from the viewing into the editing mode for anonymous users
+            config.events['onRequestEditRights'] = onRequestEditRights;
         }
 
         if (config.editorConfig.createUrl) {

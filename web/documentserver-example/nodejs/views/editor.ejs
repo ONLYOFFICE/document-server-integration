@@ -208,7 +208,6 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
-            "onRequestEditRights": onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -219,6 +218,7 @@
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
             config.events.onRequestHistoryClose = onRequestHistoryClose;

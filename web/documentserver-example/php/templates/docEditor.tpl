@@ -200,7 +200,6 @@
             config.events = {
                 'onAppReady': onAppReady,
                 'onDocumentStateChange': onDocumentStateChange,
-                'onRequestEditRights': onRequestEditRights,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,

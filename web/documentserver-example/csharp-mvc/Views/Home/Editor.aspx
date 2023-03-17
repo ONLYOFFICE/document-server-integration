@@ -31,7 +31,7 @@
     -->
     <link rel="icon" href="<%= "content/images/" + Model.DocumentType + ".ico" %>" type="image/x-icon" />
     <title><%= Model.FileName + " - ONLYOFFICE" %></title>
-    
+
     <%: Styles.Render("~/Content/editor") %>
 
 </head>
@@ -40,7 +40,7 @@
         <div id="iframeEditor">
         </div>
     </div>
-    
+
     <%: Scripts.Render(new []{ WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.api"] }) %>
 
     <script type="text/javascript" language="javascript">
@@ -141,7 +141,7 @@
             <% Model.GetMailMergeConfig(out dataMailMergeRecipients); %>
             docEditor.setMailMergeRecipients(<%= dataMailMergeRecipients%>);  // insert recipient data for mail merge into the file
         };
-        
+
          var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
              var title = event.data.title;
              var url = event.data.url;
@@ -198,7 +198,6 @@
         config.events = {
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
-            'onRequestEditRights': onRequestEditRights,
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -252,6 +251,8 @@
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
+            // prevent switch the document from the viewing into the editing mode for anonymous users
+            config.events['onRequestEditRights'] = onRequestEditRights;
         }
 
         if (config.editorConfig.createUrl) {
