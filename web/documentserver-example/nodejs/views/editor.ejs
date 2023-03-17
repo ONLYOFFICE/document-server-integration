@@ -232,7 +232,10 @@
             config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
-        if (new URL(window.location).searchParams.get("oform") == "false") {
+        try {
+            var oformParam = new URL(window.location).searchParams.get("oform");
+        } catch (e) {}
+        if (oformParam == "false") {
             config.document.options = config.document.options || {};
             config.document.options["oform"] = false;
         }

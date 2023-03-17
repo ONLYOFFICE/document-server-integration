@@ -21,7 +21,6 @@ import config
 import json
 import os
 import urllib.parse
-import magic
 
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
@@ -80,7 +79,7 @@ def convert(request):
             else:
                 correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + newExt, request)  # otherwise, create a new name with the necessary extension
                 path = docManager.getStoragePath(correctName, request)
-                docManager.saveFileFromUri(newUri, path, request, True)  # save the file from the new url in the storage directory
+                docManager.downloadFileFromUri(newUri, path, True)  # save the file from the new url in the storage directory
                 docManager.removeFile(filename, request)  # remove the original file
                 response.setdefault('filename', correctName)  # pass the name of the converted file to the response
         else:
@@ -130,7 +129,7 @@ def saveAs(request):
             response.setdefault('error', 'File type is not supported')
             raise Exception('File type is not supported')
 
-        docManager.saveFileFromUri(saveAsFileUrl, path, request, True)  # save the file from the new url in the storage directory
+        docManager.downloadFileFromUri(saveAsFileUrl, path, True)  # save the file from the new url in the storage directory
 
         response.setdefault('file', filename)
     except Exception as e:
@@ -244,7 +243,12 @@ def edit(request):
                 'chat': user.id !='uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
-                'userInfoGroups': user.userInfoGroups
+                'userInfoGroups': user.userInfoGroups,
+                'protect': 'protect' not in user.deniedPermissions
+            },
+            'referenceData' : {
+                'instanceId' : docManager.getServerUrl(False, request),
+                'fileKey' : json.dumps({'fileName' : filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
             }
         },
         'editorConfig': {
@@ -286,31 +290,31 @@ def edit(request):
     # an image which will be inserted into the document
     dataInsertImage = {
         'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
     } if isEnableDirectUrl else {
         'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + 'static/images/logo.png'
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
     }
 
     # a document which will be compared with the current document
     dataCompareFile = {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + 'static/sample.docx',
-        'directUrl': docManager.getServerUrl(False, request) + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/static/sample.docx',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/sample.docx'
     } if isEnableDirectUrl else {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + 'static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/static/sample.docx'
     }
 
     # recipient data for mail merging
     dataMailMergeRecipients = {
         'fileType': 'csv',
-        'url': docManager.getServerUrl(True, request) + 'csv',
-        'directUrl': docManager.getServerUrl(False, request) + 'csv'
+        'url': docManager.getServerUrl(True, request) + '/csv',
+        'directUrl': docManager.getServerUrl(False, request) + '/csv'
     } if isEnableDirectUrl else {
         'fileType': 'csv',
-        'url': docManager.getServerUrl(True, request) + 'csv'
+        'url': docManager.getServerUrl(True, request) + '/csv'
     }
 
     # users data for mentions
@@ -397,18 +401,22 @@ def csv(request):
 def download(request):
     try:
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
-        userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
+        userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None):
+        if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
                 token = token[len('Bearer '):]
-                try:
-                    body = jwtManager.decode(token)
-                except Exception:
-                    return HttpResponse('JWT validation failed', status=403)
+
+            try:
+                body = jwtManager.decode(token)
+            except Exception:
+                return HttpResponse('JWT validation failed', status=403)
+
+        if (userAddress == None):
+            userAddress = request
 
         filePath = docManager.getForcesavePath(fileName, userAddress, False)  # get the path to the forcesaved file version
         if (filePath == ""):
@@ -429,7 +437,7 @@ def downloadhistory(request):
         version = fileUtils.getFileName(request.GET['ver'])
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None):
+        if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
             if token:
@@ -449,3 +457,53 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+# referenceData
+def reference(request):
+    response = {}
+    body = json.loads(request.body)
+    referenceData = None
+    fileName = None
+    userAddress = None
+
+    try:
+        referenceData = body['referenceData']
+    except Exception:
+        pass
+
+    if referenceData is not None:
+        instanceId = referenceData['instanceId']
+        if instanceId == docManager.getServerUrl(False, request):
+            fileKey = json.loads(referenceData['fileKey'])
+            userAddress = fileKey['userAddress']
+            if userAddress == request.META['REMOTE_ADDR']:
+                fileName = fileKey['fileName']
+    
+    if fileName is None:
+        try:
+            path = fileUtils.getFileName(body['path'])
+            if os.path.exists(docManager.getStoragePath(path,request)):
+                fileName = path 
+        except KeyError:
+            response.setdefault('error', 'Path not found')
+            return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+    
+    if fileName is None:
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+    
+    data = {
+        'fileType' : fileUtils.getFileExt(fileName),
+        'url' : docManager.getDownloadUrl(fileName, request),
+        'directUrl' : docManager.getDownloadUrl(fileName, request) if body["directUrl"] else docManager.getDownloadUrl(fileName, request, False),
+        'referenceData' : {
+            'instanceId' : docManager.getServerUrl(False, request),
+            'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
+        },
+        'path' : fileName
+    }
+
+    if (jwtManager.isEnabled()):
+        data['token'] = jwtManager.encode(data)
+    
+    return HttpResponse(json.dumps(data), content_type='application/json')

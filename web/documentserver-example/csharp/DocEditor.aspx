@@ -190,6 +190,19 @@
             }
         };
 
+        var onRequestReferenceData = function (event) {  // user refresh external data source
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor.ashx?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -219,7 +232,7 @@
                     var histData = <%= HistoryData %>;
                     docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
                 };
-                config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
                     document.location.reload();
                 };
             <% } %>
@@ -242,6 +255,7 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
+            config.events['onRequestReferenceData'] = onRequestReferenceData;
         }
 
         if (config.editorConfig.createUrl) {

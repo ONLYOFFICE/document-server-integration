@@ -19,6 +19,8 @@
 package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
@@ -51,8 +53,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -266,7 +270,7 @@ public class FileController {
                                              @RequestParam("file") final String file) { // history file
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled()) {
+            if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
@@ -285,16 +289,19 @@ public class FileController {
 
     @GetMapping(path = "${url.download}")
     public ResponseEntity<Resource> download(final HttpServletRequest request,  // download a file
-                                             @RequestParam("fileName") final String fileName) {
+                                             @RequestParam("fileName") final String fileName,
+                                             @RequestParam(value = "userAddress", required = false) final String userAddress){
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled()) {
-                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
+            if (jwtManager.tokenEnabled() && userAddress != null && jwtManager.tokenUseForRequest()) {
+                String header = request.getHeader(documentJwtHeader == null // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
                     jwtManager.readToken(token);  // read the token
+                } else {
+                    return null;
                 }
             }
             return downloadFile(fileName);  // download data from the specified file
@@ -440,6 +447,73 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
+        }
+    }
+
+    @PostMapping("/reference")
+    @ResponseBody
+    public String reference(@RequestBody final JSONObject body) {
+        try {
+
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+            String userAddress = "";
+            String fileName = "";
+
+            if (body.containsKey("referenceData")) {
+                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                String instanceId = (String) referenceDataObj.get("instanceId");
+
+                if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
+                    JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
+                    userAddress = (String) fileKey.get("userAddress");
+                    if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
+                        fileName = (String) fileKey.get("fileName");
+                    }
+                }
+            }
+
+
+            if (fileName.equals("")) {
+                try {
+                    String path = (String) body.get("path");
+                    path = fileUtility.getFileName(path);
+                    File f = new File(storagePathBuilder.getFileLocation(path));
+                    if (f.exists()) {
+                        fileName = path;
+                    }
+                } catch (Exception e) {
+                    return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+                }
+            }
+
+            if (fileName.equals("")) {
+                return "{ \"error\": \"File not found\"}";
+            }
+
+            HashMap<String, Object> fileKey = new HashMap<>();
+            fileKey.put("fileName", fileName);
+            fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
+
+            HashMap<String, Object> referenceData = new HashMap<>();
+            referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
+            referenceData.put("fileKey", fileKey);
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("url", documentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", documentManager.getDownloadUrl(fileName, true));
+            data.put("referenceData", referenceData);
+            data.put("path", fileName);
+
+            if (jwtManager.tokenEnabled()) {
+                String token = jwtManager.createToken(data);
+                data.put("token", token);
+            }
+            return gson.toJson(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
     }
 }

@@ -565,9 +565,20 @@ public final class DocumentManager {
         return secret != null && !secret.isEmpty();
     }
 
+    // check if the token is enabled for request
+    public static Boolean tokenUseForRequest() {
+        String tokenUseForRequest = getTokenUseForRequest();
+        return Boolean.parseBoolean(tokenUseForRequest) && !tokenUseForRequest.isEmpty();
+    }
+
     // get token secret from the config parameters
     public static String getTokenSecret() {
         return ConfigManager.getProperty("files.docservice.secret");
+    }
+
+    // get config request jwt
+    public static String getTokenUseForRequest() {
+        return ConfigManager.getProperty("files.docservice.token-use-for-request");
     }
 
     // get languages

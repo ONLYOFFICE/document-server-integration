@@ -45,6 +45,7 @@ public class ExampleData {
                 "Can’t see anyone’s information",
                 "Can't rename files from the editor",
                 "Can't view chat",
+                "Can't protect file",
                 "View file without collaboration"
         );
 
@@ -92,22 +93,23 @@ public class ExampleData {
         userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null, true);
+                List.of(FilterState.NULL.toString()), null, true, true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
-                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true);
+                List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
+                true);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", "mitchell@example.com", descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
-                new ArrayList<>(), List.of("group-2"), false, true);
+                new ArrayList<>(), List.of("group-2"), false, true, true);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false);
+                new ArrayList<>(), null, false, false);
     }
 }

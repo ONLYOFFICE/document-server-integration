@@ -121,7 +121,7 @@ namespace ASC.Api.DocumentConverter
                 { "region", lang }
             };
 
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
                 // create payload object
                 var payload = new Dictionary<string, object>

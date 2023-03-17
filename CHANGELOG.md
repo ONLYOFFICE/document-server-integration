@@ -1,5 +1,10 @@
 # Change Log
 
+- referenceData
+- anonymous can't protect file
+- separate setting for checking the token in requests
+- php: linter refactoring
+
 ## 1.5.0
 - nodejs: added wopi putRelativeFile action
 - nodejs: wopi editnew action for exisiting file

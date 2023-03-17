@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,13 +76,11 @@ public class DefaultCallbackManager implements CallbackManager {
     @Autowired
     private ServiceConverter serviceConverter;
 
-    // save file information from the URL to the file specified
-    private void downloadToFile(final String url, final Path path) throws Exception {
+    // download file from url
+    @SneakyThrows
+    private byte[] getDownloadFile(final String url) {
         if (url == null || url.isEmpty()) {
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
-        }
-        if (path == null) {
-            throw new RuntimeException("Path argument is not specified");  // file isn't specified
         }
 
         URL uri = new URL(url);
@@ -100,7 +99,17 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Input stream is null");
         }
 
-        storageMutator.createOrUpdateFile(path, stream);  // update a file or create a new one
+        return stream.readAllBytes();
+    }
+
+    // file saving
+    @SneakyThrows
+    private void saveFile(final byte[] byteArray, final Path path) {
+        if (path == null) {
+            throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        }
+        // update a file or create a new one
+        storageMutator.createOrUpdateFile(path, new ByteArrayInputStream(byteArray));
     }
 
     @SneakyThrows
@@ -134,6 +143,8 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
+
         String storagePath = storagePathBuilder.getFileLocation(newFileName);  // get the path to a new file
         Path lastVersion = Paths.get(storagePathBuilder
                 .getFileLocation(fileName));  // get the path to the last file version
@@ -152,12 +163,11 @@ public class DefaultCallbackManager implements CallbackManager {
 
             storageMutator.createDirectory(ver);  // create the file version directory
 
-            // move the last file version to the file version directory with the "prev" postfix
-            storageMutator.moveFile(lastVersion, Paths.get(versionDir + File.separator + "prev" + curExt));
+            saveFile(byteArrayFile, toSave); // save document file
 
-            downloadToFile(downloadUri, toSave);  // save file to the storage path
-            downloadToFile(changesUri, Path
-                    .of(versionDir + File.separator + "diff.zip"));  // save file changes to the diff.zip archive
+            byte[] byteArrayChanges = getDownloadFile(changesUri); // download file changes
+            saveFile(byteArrayChanges, Path
+                    .of(versionDir + File.separator + "diff.zip")); // save file changes to the diff.zip archive
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
             jsonChanges.put("changes", body.getHistory().getChanges());  // put the changes to the json object
@@ -201,7 +211,8 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
         String headerToken;
-        if (jwtManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
+        // check if a secret key to generate token exists or not
+        if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
             Map<String, Object> payloadMap = new HashMap<>();
             payloadMap.put("payload", params);
             headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token
@@ -246,8 +257,8 @@ public class DefaultCallbackManager implements CallbackManager {
                 break;
             default:
                 throw new RuntimeException(response.toJSONString());
+            }
         }
-    }
 
     @SneakyThrows
     public void processForceSave(final Track body, final String fileNameParam) {  // file force saving process
@@ -278,6 +289,7 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
         String forcesavePath = "";
 
         // todo: Use ENUMS
@@ -313,6 +325,6 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        downloadToFile(downloadUri, Path.of(forcesavePath));
+        saveFile(byteArrayFile, Path.of(forcesavePath));
     }
 }

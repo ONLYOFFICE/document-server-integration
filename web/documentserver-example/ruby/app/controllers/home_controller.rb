@@ -153,7 +153,7 @@ class HomeController < ApplicationController
       file = params[:file]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled
+      if JwtHelper.is_enabled && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
@@ -272,17 +272,17 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded == nil
+      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]
             hdr.slice!(0, "Bearer ".length)
             token = JwtHelper.decode(hdr)
-            if !token || token.eql?("")
-              render plain: "JWT validation failed", :status => 403
-              return
-            end
-          end
+        end
+        if !token || token.eql?("")
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
       end
 
       file_path = DocumentHelper.forcesave_path(file_name, user_address, false)  # get the path to the force saved document version
@@ -362,5 +362,53 @@ class HomeController < ApplicationController
 
       json_data = TrackHelper.command_request("meta", dockey, meta)
       render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    end
+
+    #ReferenceData
+    def reference
+      body = JSON.parse(request.body.read)
+      fileName = ""
+      
+
+      if body.key?("referenceData")
+        referenceData = body["referenceData"]
+        instanceId = referenceData["instanceId"]
+        if instanceId == DocumentHelper.get_server_url(false)
+          fileKey = JSON.parse(referenceData["fileKey"])
+          userAddress = fileKey["userAddress"]
+          if userAddress == DocumentHelper.cur_user_host_address(nil)
+            fileName = fileKey["fileName"]
+          end
+        end
+      end
+
+      if fileName.empty? and body.key?("path")
+        path = File.basename(body["path"])
+        if File.exist?(DocumentHelper.storage_path(path, nil))
+          fileName = path
+        end
+      end
+
+      if fileName.empty?
+        render plain: '{ "error": "File not found"}'
+        return
+      end
+
+      data = {
+        :fileType => DocumentHelper.get_internal_extension(fileName),
+        :url => DocumentHelper.get_download_url(fileName),
+        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName) : DocumentHelper.get_download_url(fileName,false),
+        :referenceData => {
+          :instanceId => DocumentHelper.get_server_url(false),
+          :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
+        },
+        :path => fileName
+      }
+
+      if JwtHelper.is_enabled
+        data["token"] = JwtHelper.encode(data)
+      end
+
+      render plain: data.to_json
     end
 end

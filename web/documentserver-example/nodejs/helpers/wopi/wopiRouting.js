@@ -26,6 +26,19 @@ const configServer = config.get('server');
 const siteUrl = configServer.get("siteUrl");  // the path to the editors installation
 const users = require("../users");
 
+getCustomWopiParams = function (query) {
+    let tokenParams = "";
+    let actionParams = "";
+
+    const userid = query.userid;  // user id
+    tokenParams += (userid ? "&userid=" + userid : "");
+
+    const lang = query.lang;  // language
+    actionParams += (lang ? "&ui=" + lang : "");
+
+    return { "tokenParams": tokenParams, "actionParams": actionParams };
+};
+
 exports.registerRoutes = function(app) {
 
     // define a handler for the default wopi page
@@ -115,7 +128,7 @@ exports.registerRoutes = function(app) {
                 actionUrl: utils.getActionUrl(req.docManager.getServerUrl(true), req.docManager.curUserHostAddress(), action, req.params['id']),
                 token: "test",
                 tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
-                params: req.docManager.getCustomParams(),
+                params: getCustomWopiParams(req.query),
             });
 
         } catch (ex) {

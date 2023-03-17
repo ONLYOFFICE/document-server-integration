@@ -19,11 +19,17 @@ require 'jwt'
 class JwtHelper
 
     @jwt_secret = Rails.configuration.jwtSecret
+    @token_use_for_request = Rails.configuration.token_use_for_request
   
     class << self
         # check if a secret key to generate token exists or not
         def is_enabled
             return @jwt_secret && !@jwt_secret.empty? ? true : false
+        end
+
+        # check if a secret key used for request
+        def use_for_request
+            return @token_use_for_request
         end
 
         # encode a payload object into a token using a secret key

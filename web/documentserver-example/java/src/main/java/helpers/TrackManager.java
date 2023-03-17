@@ -26,19 +26,26 @@ import org.primeframework.jwt.domain.JWT;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import static utils.Constants.BUFFER_SIZE;
 import static utils.Constants.FILE_SAVE_TIMEOUT;
 import static utils.Constants.KILOBYTE_SIZE;
 
@@ -80,7 +87,7 @@ public final class TrackManager {
         }
 
         // if the secret key to generate token exists
-        if (DocumentManager.tokenEnabled()) {
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             String token = (String) body.get("token");  // get the document token
 
             if (token == null) {  // if JSON web token is not received
@@ -167,6 +174,8 @@ public final class TrackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
+
         String storagePath = DocumentManager.storagePath(newFileName, userAddress);  // get the file path
         File histDir = new File(DocumentManager.historyDir(storagePath));  // get the path to the history direction
         if (!histDir.exists()) {
@@ -177,7 +186,7 @@ public final class TrackManager {
                 .getFileVersion(histDir.getAbsolutePath()));  // get the path to the file version
         File ver = new File(versionDir);
         File lastVersion = new File(DocumentManager.storagePath(fileName, userAddress));
-        File toSave = new File(storagePath);
+        Path toSave = Paths.get(storagePath);
 
         if (!ver.exists()) {
             ver.mkdirs();
@@ -186,10 +195,10 @@ public final class TrackManager {
         // get the path to the previous file version and rename the last file version with it
         lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));
 
-        downloadToFile(downloadUri, toSave);  // save file to the storage path
+        saveFile(byteArrayFile, toSave); // save document file
 
-        // save file changes to the diff.zip archive
-        downloadToFile(changesUri, new File(versionDir + File.separator + "diff.zip"));
+        byte[] byteArrayChanges = getDownloadFile(changesUri);
+        saveFile(byteArrayChanges, Paths.get(versionDir + File.separator + "diff.zip"));
 
         String history = (String) body.get("changeshistory");
         if (history == null && body.containsKey("history")) {
@@ -248,6 +257,7 @@ public final class TrackManager {
             }
         }
 
+        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
         String forcesavePath = "";
         boolean isSubmitForm = body.get("forcesavetype").toString().equals("3");  // SubmitForm
 
@@ -274,8 +284,7 @@ public final class TrackManager {
             }
         }
 
-        File toSave = new File(forcesavePath);
-        downloadToFile(downloadUri, toSave);
+        saveFile(byteArrayFile, Paths.get(forcesavePath));
 
         if (isSubmitForm) {
             JSONArray actions = (JSONArray) body.get("actions");
@@ -287,43 +296,79 @@ public final class TrackManager {
         }
     }
 
-    // save file information from the url to the file specified
-    private static void downloadToFile(final String url, final File file) throws Exception {
-        if (url == null || url.isEmpty()) {
-            throw new Exception("argument url");  // url isn't specified
+    // create a new file if it does not exist
+    private static boolean createFile(final byte[] byteArray, final Path path) {
+        if (Files.exists(path)) {
+            return true;
         }
-        if (file == null) {
-            throw new Exception("argument path");  // file isn't specified
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray)) {
+            File file = Files.createFile(path).toFile();  // create a new file in the specified path
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                int read;
+                final byte[] bytes = new byte[KILOBYTE_SIZE];
+                while ((read = byteArrayInputStream.read(bytes)) != -1) {
+                    out.write(bytes, 0, read);  // write bytes to the output stream
+                }
+                out.flush();  // force write data to the output stream that can be cached in the current thread
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // get byte array from stream
+    private static byte[] getAllBytes(final InputStream is) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buffer = new byte[BUFFER_SIZE];
+        for (int len = is.read(buffer); len != -1; len = is.read(buffer)) {
+            os.write(buffer, 0, len);
+        }
+        return os.toByteArray();
+    }
+
+    // save file
+    private static boolean saveFile(final byte[] byteArray, final Path path) {
+        if (path == null) {
+            throw new RuntimeException("Path argument is not specified");  // file isn't specified
+        }
+        if (!Files.exists(path)) { // if the specified file does not exist
+            return createFile(byteArray, path);  // create it in the specified directory
+        } else {
+            try {
+                Files.write(path, byteArray);  // otherwise, write new information in the bytes format to the file
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    // download file from url
+    private static byte[] getDownloadFile(final String url) throws Exception {
+        if (url == null || url.isEmpty()) {
+            throw new RuntimeException("Url argument is not specified");  // URL isn't specified
         }
 
         URL uri = new URL(url);
         java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
         connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
+        InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
 
         int statusCode = connection.getResponseCode();
+
         if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new RuntimeException("Document editing service returned status: " + statusCode);
         }
 
-        InputStream stream = connection.getInputStream();  // get input stream of the file information from the url
-
         if (stream == null) {
-            throw new Exception("Stream is null");
+            connection.disconnect();
+            throw new RuntimeException("Input stream is null");
         }
 
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            int read;
-            final byte[] bytes = new byte[KILOBYTE_SIZE];
-            while ((read = stream.read(bytes)) != -1) {
-                out.write(bytes, 0, read);  // write bytes to the output stream
-            }
-
-            // force write data to the output stream that can be cached in the current thread
-            out.flush();
-        }
-
-        connection.disconnect();
+        return getAllBytes(stream);
     }
 
     // create a command request
@@ -343,7 +388,8 @@ public final class TrackManager {
         }
 
         String headerToken = "";
-        if (DocumentManager.tokenEnabled()) {  // check if a secret key to generate token exists or not
+        // check if a secret key to generate token exists or not
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             Map<String, Object> payloadMap = new HashMap<String, Object>();
             payloadMap.put("payload", params);
             headerToken = DocumentManager.createToken(payloadMap);  // encode a payload object into a header token

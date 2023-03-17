@@ -1,0 +1,26 @@
+{
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "ext-mbstring": "*"
+    },
+    "scripts": {
+        "code-sniffer": [
+            "./vendor/bin/phpcs --config-set default_standard ruleset.xml",
+            "./vendor/bin/phpcs --config-set colors 1"
+        ],
+        "post-install-cmd": [
+            "@code-sniffer"
+        ],
+        "post-update-cmd": [
+            "@code-sniffer"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OnlineEditorsExamplePhp\\" : "",
+            "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
+            "OnlineEditorsExamplePhp\\Views\\" : "views/",
+            "Firebase\\JWT\\" : "lib/jwt/"
+        }
+    }
+}

@@ -32,10 +32,10 @@ module OnlineEditorsExampleRuby
     Rails.configuration.storagePath="app_data"
     Rails.configuration.timeout=120
 
-    Rails.configuration.fillDocs=".oform|.docx"
-    Rails.configuration.viewedDocs=".pdf|.djvu|.xps|.oxps"
-    Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.txt|.docxf"
-    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xlsb|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
+    Rails.configuration.fillDocs=".docx|.oform"
+    Rails.configuration.viewedDocs=".djvu|.oxps|.pdf|.xps"
+    Rails.configuration.editedDocs=".csv|.docm|.docx|.docxf|.dotm|.dotx|.epub|.fb2|.html|.odp|.ods|.odt|.otp|.ots|.ott|.potm|.potx|.ppsm|.ppsx|.pptm|.pptx|.rtf|.txt|.xlsm|.xlsx|.xltm|.xltx"
+    Rails.configuration.convertDocs=".doc|.dot|.dps|.dpt|.epub|.et|.ett|.fb2|.fodp|.fods|.fodt|.htm|.html|.mht|.mhtml|.odp|.ods|.odt|.otp|.ots|.ott|.pot|.pps|.ppt|.rtf|.stw|.sxc|.sxi|.sxw|.wps|.wpt|.xls|.xlsb|.xlt|.xml"
 
     Rails.configuration.urlSite="http://documentserver/"
     Rails.configuration.urlConverter="ConvertService.ashx"
@@ -47,6 +47,7 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.jwtSecret = ""
     Rails.configuration.header="Authorization"
+    Rails.configuration.token_use_for_request=true
 
     Rails.configuration.verify_peer_off = "true"
 
