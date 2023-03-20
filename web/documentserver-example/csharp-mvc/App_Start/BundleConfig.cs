@@ -28,6 +28,7 @@ namespace OnlineEditorsExampleMVC
             // create a jquery script bundle
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                 "~/Scripts/jquery-{version}.js",
+                "~/Scripts/jquery-migrate-{version}.js",
                 "~/Scripts/jquery-ui.js",
                 "~/Scripts/jquery.blockUI.js",
                 "~/Scripts/jquery.iframe-transport.js",
