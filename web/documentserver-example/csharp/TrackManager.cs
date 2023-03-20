@@ -110,8 +110,9 @@ namespace OnlineEditorsExample
                 try
                 {
                     // convert file and give url to a new file
-                    string newFileUri;
-                    ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
+                    Dictionary<string, string> newFileData;
+                    ServiceConverter.GetConvertedData(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileData);
+                    var newFileUri = newFileData["fileUrl"];
                     if (string.IsNullOrEmpty(newFileUri))
                     {
                         // get the correct file name if it already exists
@@ -197,8 +198,9 @@ namespace OnlineEditorsExample
                 try
                 {
                     // convert file and give url to a new file
-                    string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
+                    Dictionary<string, string> newFileData;
+                    var result = ServiceConverter.GetConvertedData(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileData);
+                    var newFileUri = newFileData["fileUrl"];
                     if (string.IsNullOrEmpty(newFileUri))
                     {
                         newFileName = true;
