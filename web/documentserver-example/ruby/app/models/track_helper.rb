@@ -77,7 +77,7 @@ class TrackHelper
             unless cur_ext.eql?(download_ext)
                 key = ServiceConverter.generate_revision_id(download_uri) # get the document key
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+                    percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
                     if new_file_uri == nil || new_file_uri.empty?
                         new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) # get the correct file name if it already exists
                     else
@@ -156,7 +156,7 @@ class TrackHelper
             unless cur_ext.eql?(download_ext)
                 key = ServiceConverter.generate_revision_id(download_uri) # get the document key
                 begin
-                    percent, new_file_uri = ServiceConverter.get_converted_uri(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+                    percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
                     if new_file_uri == nil || new_file_uri.empty?
                         new_file_name = true
                     else
