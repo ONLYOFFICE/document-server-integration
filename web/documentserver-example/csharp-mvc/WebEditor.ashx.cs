@@ -233,8 +233,7 @@ namespace OnlineEditorsExampleMVC
                 var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
 
                 // check if the file with such an extension can be converted
-                if (DocManagerHelper.ConvertExts.Contains("." + extension)
-                    && !string.IsNullOrEmpty(internalExtension))
+                if (DocManagerHelper.ConvertExts.Contains("." + extension))
                 {
                     // generate document key
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
@@ -247,9 +246,11 @@ namespace OnlineEditorsExampleMVC
                         Query = "type=download&fileName=" + HttpUtility.UrlEncode(fileName)
                     };
 
-                    // get the url to the converted file
-                    string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(downloadUri.ToString(), extension, internalExtension, key, true, out newFileUri, filePass, lang);
+                    // get the url and file type of the converted file
+                    Dictionary<string, string> newFileData;
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, internalExtension, key, true, out newFileData, filePass, lang);
+                    var newFileUri = newFileData["fileUrl"];
+                    var newFileType = "." + newFileData["fileType"];
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
@@ -257,7 +258,7 @@ namespace OnlineEditorsExampleMVC
                     }
 
                     // get a file name of an internal file extension with an index if the file with such a name already exists
-                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
+                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + newFileType);
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
