@@ -124,6 +124,26 @@ public class FileModel {
         changeType(mode, type, user, fileName);
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public EditorConfig getEditorConfig() {
+        return editorConfig;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
     // change the document type
     public void changeType(final String modeParam, final String typeParam, final User user, final String fileName) {
         if (modeParam != null) {
@@ -329,6 +349,10 @@ public class FileModel {
             this.directUrl = directUrlParam;
         }
 
+        public String getFileType() {
+            return fileType;
+        }
+
         public void setFileType(final String fileTypeParam) {
             this.fileType = fileTypeParam;
         }
@@ -403,6 +427,62 @@ public class FileModel {
             userInfoGroups = user.getUserInfoGroups();
             protect = !user.getDeniedPermissions().contains("protect");
         }
+
+        public Boolean getComment() {
+            return comment;
+        }
+
+        public Boolean getCopy() {
+            return copy;
+        }
+
+        public Boolean getDownload() {
+            return download;
+        }
+
+        public Boolean getEdit() {
+            return edit;
+        }
+
+        public Boolean getPrint() {
+            return print;
+        }
+
+        public Boolean getFillForms() {
+            return fillForms;
+        }
+
+        public Boolean getModifyFilter() {
+            return modifyFilter;
+        }
+
+        public Boolean getModifyContentControl() {
+            return modifyContentControl;
+        }
+
+        public Boolean getReview() {
+            return review;
+        }
+
+        public Boolean getChat() {
+            return chat;
+        }
+
+        public List<String> getReviewGroups() {
+            return reviewGroups;
+        }
+
+        public CommentGroups getCommentGroups() {
+            return commentGroups;
+        }
+
+        public List<String> getUserInfoGroups() {
+            return userInfoGroups;
+        }
+
+        public Boolean getProtect() {
+            return protect;
+        }
     }
 
     public class ReferenceData {
@@ -419,6 +499,14 @@ public class FileModel {
             }
             fileKey = fileKeyList;
         }
+
+        public String getInstanceId() {
+            return instanceId;
+        }
+
+        public Map<String, String> getFileKey() {
+            return fileKey;
+        }
     }
     // the Favorite icon state
     public class Info {
@@ -426,13 +514,25 @@ public class FileModel {
         private Boolean favorite;
         private String uploaded = getDate();
 
-        private String getDate() {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
-            return simpleDateFormat.format(new Date());
+        public String getOwner() {
+            return owner;
+        }
+
+        public Boolean getFavorite() {
+            return favorite;
         }
 
         public void setFavorite(final Boolean favoriteParam) {
             this.favorite = favoriteParam;
+        }
+
+        public String getUploaded() {
+            return uploaded;
+        }
+
+        private String getDate() {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd yyyy", Locale.US);
+            return simpleDateFormat.format(new Date());
         }
     }
     // the editor config parameters
@@ -456,6 +556,34 @@ public class FileModel {
             }
             user = new User();
             customization = new Customization();
+        }
+
+        public HashMap<String, Object> getActionLink() {
+            return actionLink;
+        }
+
+        public String getCallbackUrl() {
+            return callbackUrl;
+        }
+
+        public HashMap<String, Object> getCoEditing() {
+            return coEditing;
+        }
+
+        public String getLang() {
+            return lang;
+        }
+
+        public String getCreateUrl() {
+            return createUrl;
+        }
+
+        public List<Map<String, String>> getTemplates() {
+            return templates;
+        }
+
+        public Embedded getEmbedded() {
+            return embedded;
         }
 
         // set parameters for the embedded document
@@ -555,10 +683,6 @@ public class FileModel {
             private Boolean comments;
             private Boolean feedback;
 
-            public Goback getGoback() {
-                return goback;
-            }
-
             public void setSubmitForm(final Boolean submitFormParam) {
                 this.submitForm = submitFormParam;
             }
@@ -569,6 +693,30 @@ public class FileModel {
                 feedback = true;
                 forcesave = false;
                 goback = new Goback();
+            }
+
+            public Goback getGoback() {
+                return goback;
+            }
+
+            public Boolean getForcesave() {
+                return forcesave;
+            }
+
+            public Boolean getSubmitForm() {
+                return submitForm;
+            }
+
+            public Boolean getAbout() {
+                return about;
+            }
+
+            public Boolean getComments() {
+                return comments;
+            }
+
+            public Boolean getFeedback() {
+                return feedback;
             }
 
             public class Goback {
@@ -591,16 +739,32 @@ public class FileModel {
             private String shareUrl;
             private String toolbarDocked;
 
+            public String getSaveUrl() {
+                return saveUrl;
+            }
+
             public void setSaveUrl(final String saveUrlParam) {
                 this.saveUrl = saveUrlParam;
+            }
+
+            public String getEmbedUrl() {
+                return embedUrl;
             }
 
             public void setEmbedUrl(final String embedUrlParam) {
                 this.embedUrl = embedUrlParam;
             }
 
+            public String getShareUrl() {
+                return shareUrl;
+            }
+
             public void setShareUrl(final String shareUrlParam) {
                 this.shareUrl = shareUrlParam;
+            }
+
+            public String getToolbarDocked() {
+                return toolbarDocked;
             }
 
             public void setToolbarDocked(final String toolbarDockedParam) {
