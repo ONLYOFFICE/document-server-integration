@@ -21,6 +21,18 @@ package entities;
 import java.util.List;
 
 public class CommentGroups {
+    public List<String> getView() {
+        return view;
+    }
+
+    public List<String> getEdit() {
+        return edit;
+    }
+
+    public List<String> getRemove() {
+        return remove;
+    }
+
     private List<String> view;
     private List<String> edit;
     private List<String> remove;
