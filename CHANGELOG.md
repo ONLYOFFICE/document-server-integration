@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.5.1
 - update jquery
 
 ## 1.5.0

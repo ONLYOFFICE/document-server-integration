@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['version'] = "1.5.0";
+$GLOBALS['version'] = "1.5.1";
 
 $GLOBALS['FILE_SIZE_MAX'] = 5242880;
 $GLOBALS['STORAGE_PATH'] = "";
