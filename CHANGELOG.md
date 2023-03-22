@@ -5,6 +5,7 @@
 - anonymous can't protect file
 - separate setting for checking the token in requests
 - php: linter refactoring
+- horizontal scroll fix for Internet Explorer
 
 ## 1.5.1
 - update jquery
