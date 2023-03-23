@@ -669,3 +669,8 @@
         max-width:15%;
     }
 }
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .tableRow td:first-child{
+        max-width: none;
+    }
+}
