@@ -211,14 +211,10 @@ if (typeof jQuery !== "undefined") {
             setCookie("ulang", langSel.val());
         });
         if(!userId){
-            jq(document).on("ready",function(){
-                setCookie("uid",1)
-            })
+            setCookie("uid",1);
         }
         if(!langId){
-            jq(document).on("ready",function () {
-                setCookie("ulang","en")
-            })
+            setCookie("ulang","en");
         }
     };
 
