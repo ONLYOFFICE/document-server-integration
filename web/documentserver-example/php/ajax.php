@@ -252,7 +252,7 @@ function convert()
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"];
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-    $internalExtension = trim(getInternalExtension($fileName), '.');
+    $internalExtension = "ooxml";
     $configManager = new ConfigManager();
 
     // check if the file with such an extension can be converted
