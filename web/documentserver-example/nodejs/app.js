@@ -329,7 +329,7 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
     var fileUri = req.docManager.getDownloadUrl(fileName, true);
     var fileExt = fileUtility.getFileExtension(fileName);
     var fileType = fileUtility.getFileType(fileName);
-    var internalFileExt = req.docManager.getInternalExtension(fileType);
+    var internalFileExt = 'ooxml';
     var response = res;
 
     var writeResult = function (filename, step, error) {
