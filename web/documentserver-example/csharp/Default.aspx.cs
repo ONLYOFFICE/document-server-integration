@@ -471,7 +471,7 @@ namespace OnlineEditorsExample
             var lang = context.Request.Cookies.GetOrDefault("ulang", null);
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
-            var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
+            var internalExtension = "ooxml";
 
             // check if the file with such an extension can be converted
             if (ConvertExts.Contains("." + extension)
