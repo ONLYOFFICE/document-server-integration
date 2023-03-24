@@ -269,7 +269,7 @@ function convert()
         $key = getDocEditorKey($fileName);
         try {
             // convert file and get the percentage of the conversion completion
-            $percent = getConvertedUri(
+            $convertedData = getConvertedData(
                 $fileUri,
                 $extension,
                 $internalExtension,
@@ -284,8 +284,8 @@ function convert()
             return $result;
         }
 
-        if ($percent != 100) {
-            $result["step"] = $percent;
+        if ($convertedData["percent"] != 100) {
+            $result["step"] = $convertedData["percent"];
             $result["filename"] = $fileName;
             $result["fileUri"] = $fileUri;
             return $result;
@@ -295,7 +295,7 @@ function convert()
         $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($extension) - 1);
 
         // get the correct file name with an index if the file with such a name already exists
-        $newFileName = GetCorrectName($baseNameWithoutExt . "." . $internalExtension);
+        $newFileName = GetCorrectName($baseNameWithoutExt . "." . $convertedData["fileType"]);
 
         if (($data = file_get_contents(str_replace(" ", "%20", $newFileUri))) === false) {
             $result["error"] = 'Bad Request';
