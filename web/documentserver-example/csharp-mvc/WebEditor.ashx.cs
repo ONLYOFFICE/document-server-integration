@@ -230,7 +230,7 @@ namespace OnlineEditorsExampleMVC
                 var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
 
                 var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
-                var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
+                var internalExtension = "ooxml";
 
                 // check if the file with such an extension can be converted
                 if (DocManagerHelper.ConvertExts.Contains("." + extension)
