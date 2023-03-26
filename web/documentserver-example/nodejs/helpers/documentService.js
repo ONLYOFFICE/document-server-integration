@@ -150,20 +150,23 @@ documentService.getResponseUri = function (json) {
 
     var percent = parseInt(fileResult.percent);  // get the conversion percentage
     var uri = null;
+    var fileType = null;
 
     if (isEndConvert) {  // if the conversion is completed
         if (!fileResult.fileUrl)  // and the file url doesn't exist
             throw { message: "FileUrl is null" };  // the file url is null
 
         uri = fileResult.fileUrl;  // otherwise, get the file url
+        fileType = fileResult.fileType;  // get the file type
         percent = 100;
     } else {  // if the conversion isn't completed
         percent = percent >= 100 ? 99 : percent;  // get the percentage value
     }
 
     return {
-        key: percent,
-        value: uri
+        percent : percent,
+        uri : uri,
+        fileType : fileType
     };
 };
 

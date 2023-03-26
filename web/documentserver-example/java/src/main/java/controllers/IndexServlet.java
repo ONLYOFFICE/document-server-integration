@@ -272,9 +272,11 @@ public class IndexServlet extends HttpServlet {
                 // generate document key
                 String key = ServiceConverter.generateRevisionId(fileUri);
 
-                // get the url to the converted file
-                String newFileUri = ServiceConverter
-                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                // get the url and file type to the converted file
+                Map<String, String> newFileData = ServiceConverter
+                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                String newFileUri = newFileData.get("fileUrl");
+                String newFileType = "." + newFileData.get("fileType");
 
                 if (newFileUri.isEmpty()) {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
@@ -284,7 +286,7 @@ public class IndexServlet extends HttpServlet {
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
                 String correctName = DocumentManager.getCorrectName(FileUtility
-                                .getFileNameWithoutExtension(fileName) + internalFileExt, null);
+                                .getFileNameWithoutExtension(fileName) + newFileType, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();

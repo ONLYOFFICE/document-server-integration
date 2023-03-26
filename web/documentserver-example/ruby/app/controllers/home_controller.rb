@@ -102,7 +102,7 @@ class HomeController < ApplicationController
 
       if DocumentHelper.convert_exts.include? (extension)  # check if the file with such an extension can be converted
         key = ServiceConverter.generate_revision_id(file_uri)  # generate document key
-        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang)  # get the url of the converted file and the conversion percentage
+        percent, new_file_uri, new_file_type  = ServiceConverter.get_converted_data(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang)  # get the url and file type of the converted file and the conversion percentage
 
         # if the conversion isn't completed, write file name and step values to the response
         if percent != 100
@@ -111,7 +111,7 @@ class HomeController < ApplicationController
         end
 
         # get the correct file name if such a name already exists
-        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + internal_extension, nil)
+        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + "." + new_file_type, nil)
 
         uri = URI.parse(new_file_uri)  # create the request url
         http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server

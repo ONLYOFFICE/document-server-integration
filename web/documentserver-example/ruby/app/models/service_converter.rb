@@ -22,7 +22,7 @@ class ServiceConverter
   class << self
 
     # get the url of the converted file
-    def get_converted_uri(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
+    def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
 
       from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext  # get the current document extension
 
@@ -81,7 +81,7 @@ class ServiceConverter
       end
 
       json_data = JSON.parse(data)  # parse response body
-      return get_response_uri(json_data)  # get response url
+      return get_response_data(json_data)  # get response url
     end
 
     # generate the document key value
@@ -132,7 +132,7 @@ class ServiceConverter
     end
 
     # get the response url
-    def get_response_uri(json_data)
+    def get_response_data(json_data)
 
       file_result = json_data
 
@@ -145,16 +145,19 @@ class ServiceConverter
 
       result_percent = 0  # the conversion percentage
       response_uri = ''
+      response_file_type = ''
 
       if is_end_convert  # if the conversion is completed
 
         file_url_element = file_result['fileUrl']
+        file_type_element = file_result['fileType']
 
         if file_url_element == nil  # and the file url doesn't exist
           raise 'Invalid answer format'  # get ann error message
         end
 
         response_uri = file_url_element  # otherwise, get the file url
+        response_file_type = file_type_element  # get the file type
         result_percent = 100
 
       else  # if the conversion isn't completed
@@ -169,7 +172,7 @@ class ServiceConverter
 
       end
 
-      return result_percent, response_uri
+      return result_percent, response_uri, response_file_type
     end
 
   end

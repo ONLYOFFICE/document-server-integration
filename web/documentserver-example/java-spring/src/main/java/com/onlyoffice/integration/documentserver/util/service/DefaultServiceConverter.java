@@ -23,6 +23,7 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.ConvertErrorType;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.dto.Convert;
+import com.onlyoffice.integration.dto.ConvertedData;
 import lombok.SneakyThrows;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -125,9 +126,9 @@ public class DefaultServiceConverter implements ServiceConverter {
     }
 
     // get the URL to the converted file
-    public String getConvertedUri(final String documentUri, final String fromExtension,
-                                  final String toExtension, final String documentRevisionId,
-                                  final String filePass, final Boolean isAsync, final String lang) {
+    public ConvertedData getConvertedData(final String documentUri, final String fromExtension,
+                                          final String toExtension, final String documentRevisionId,
+                                          final String filePass, final Boolean isAsync, final String lang) {
         // check if the fromExtension parameter is defined; if not, get it from the document url
         String fromExt = fromExtension == null || fromExtension.isEmpty()
                 ? fileUtility.getFileExtension(documentUri) : fromExtension;
@@ -179,7 +180,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
         String jsonString = postToServer(body, headerToken);
 
-        return getResponseUri(jsonString);
+        return getResponseData(jsonString);
     }
 
     // generate document key
@@ -203,7 +204,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
     // get the response URL
     @SneakyThrows
-    private String getResponseUri(final String jsonString) {
+    private ConvertedData getResponseData(final String jsonString) {
         JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
@@ -216,10 +217,15 @@ public class DefaultServiceConverter implements ServiceConverter {
 
         Long resultPercent = 0L;
         String responseUri = null;
+        String responseFileType = null;
+        ConvertedData convertedData = new ConvertedData("", "");
 
         if (isEndConvert) {  // if the conversion is completed
             resultPercent = FULL_LOADING_IN_PERCENT;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file URL
+            responseFileType = (String) jsonObj.get("fileType");  // get the file type
+            convertedData.setUri(responseUri);
+            convertedData.setFileType(responseFileType);
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
 
@@ -227,7 +233,7 @@ public class DefaultServiceConverter implements ServiceConverter {
             resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;
         }
 
-        return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
+        return convertedData;
     }
 
     // convert stream to string

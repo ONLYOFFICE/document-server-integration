@@ -156,9 +156,9 @@ public final class TrackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = ServiceConverter
-                        .getConvertedUri(downloadUri, downloadExt, curExt,
+                        .getConvertedData(downloadUri, downloadExt, curExt,
                                 ServiceConverter.generateRevisionId(downloadUri),
-                                null, false, null);  // convert file and get url to a new file
+                                null, false, null).get("fileUrl");  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
 
                     // get the correct file name if it already exists
@@ -244,9 +244,9 @@ public final class TrackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 String newFileUri = ServiceConverter
-                        .getConvertedUri(downloadUri, downloadExt, curExt,
+                        .getConvertedData(downloadUri, downloadExt, curExt,
                                 ServiceConverter.generateRevisionId(downloadUri), null,
-                                false, null);  // convert file and get url to a new file
+                                false, null).get("fileUrl");  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {
