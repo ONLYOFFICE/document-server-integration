@@ -265,7 +265,7 @@ public class IndexServlet extends HttpServlet {
             String fileUri = DocumentManager.getDownloadUrl(fileName, true);
             String fileExt = FileUtility.getFileExtension(fileName);
             FileType fileType = FileUtility.getFileType(fileName);
-            String internalFileExt = DocumentManager.getInternalExtension(fileType);
+            String internalFileExt = "ooxml";
 
             // check if the file with such an extension can be converted
             if (DocumentManager.getConvertExts().contains(fileExt)) {

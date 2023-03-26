@@ -65,8 +65,7 @@ def convert(request):
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename,request)
         fileExt = fileUtils.getFileExt(filename)
-        fileType = fileUtils.getFileType(filename)
-        newExt = docManager.getInternalExtension(fileType)  # internal editor extensions: .docx, .xlsx or .pptx
+        newExt = 'ooxml'  # convert to .ooxml
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key

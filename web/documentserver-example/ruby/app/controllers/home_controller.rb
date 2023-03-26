@@ -98,7 +98,7 @@ class HomeController < ApplicationController
       file_pass = body["filePass"] ? body["filePass"] : nil
       file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
-      internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
+      internal_extension = 'ooxml'
 
       if DocumentHelper.convert_exts.include? (extension)  # check if the file with such an extension can be converted
         key = ServiceConverter.generate_revision_id(file_uri)  # generate document key

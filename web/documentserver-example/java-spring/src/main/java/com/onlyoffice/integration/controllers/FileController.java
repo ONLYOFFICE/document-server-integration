@@ -203,8 +203,8 @@ public class FileController {
         // get document type (word, cell or slide)
         DocumentType type = fileUtility.getDocumentType(fileName);
 
-        // get an editor internal extension (".docx", ".xlsx" or ".pptx")
-        String internalFileExt = fileUtility.getInternalExtension(type);
+        // convert to .ooxml
+        String internalFileExt = "ooxml";
 
         try {
             // check if the file with such an extension can be converted
