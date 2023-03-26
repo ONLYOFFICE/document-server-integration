@@ -70,15 +70,15 @@ def convert(request):
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
-            newUri = serviceConverter.getConverterUri(fileUri, fileExt, newExt, key, True, filePass, lang)  # get the url of the converted file
+            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)  # get the url of the converted file
 
-            if not newUri:  # if the converter url is not received, the original file name is passed to the response
+            if not convertedData:  # if the converter url is not received, the original file name is passed to the response
                 response.setdefault('step', '0')
                 response.setdefault('filename', filename)
             else:
-                correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + newExt, request)  # otherwise, create a new name with the necessary extension
+                correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request)  # otherwise, create a new name with the necessary extension
                 path = docManager.getStoragePath(correctName, request)
-                docManager.downloadFileFromUri(newUri, path, True)  # save the file from the new url in the storage directory
+                docManager.downloadFileFromUri(convertedData['uri'], path, True)  # save the file from the new url in the storage directory
                 docManager.removeFile(filename, request)  # remove the original file
                 response.setdefault('filename', correctName)  # pass the name of the converted file to the response
         else:

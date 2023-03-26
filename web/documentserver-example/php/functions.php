@@ -770,7 +770,7 @@ function sendRequestToConvertService(
  *
  * Example:
  * string convertedDocumentUri;
- * getConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
+ * getConvertedData("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
  * ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
  *
  * @param string $document_uri           Uri for the document to convert
@@ -784,9 +784,9 @@ function sendRequestToConvertService(
  *
  * @throws Exception if an error occurs
  *
- * @return int percentage of completion of conversion
+ * @return array percentage of completion of conversion and fileType from Convert service
  */
-function getConvertedUri(
+function getConvertedData(
     $document_uri,
     $from_extension,
     $to_extension,
@@ -809,24 +809,26 @@ function getConvertedUri(
     $json = json_decode($responceFromConvertService, true);
 
     // if an error occurs, then display an error message
-    $errorElement = $json["error"];
+    $errorElement = $json["error"] ?? "";
     if ($errorElement != null && $errorElement != "") {
         processConvServResponceError($errorElement);
     }
 
     $isEndConvert = $json["endConvert"];
     $percent = $json["percent"];
+    $fileType = "";
 
     // if the conversion is completed successfully
     if ($isEndConvert != null && $isEndConvert == true) {
         // then get the file url
         $converted_document_uri = $json["fileUrl"];
+        $fileType = $json["fileType"];
         $percent = 100;
     } elseif ($percent >= 100) { // otherwise, get the percentage of conversion completion
         $percent = 99;
     }
 
-    return $percent;
+    return ["percent" => $percent, "fileType" => $fileType];
 }
 
 /**

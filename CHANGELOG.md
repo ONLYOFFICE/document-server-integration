@@ -6,6 +6,7 @@
 - separate setting for checking the token in requests
 - php: linter refactoring
 - horizontal scroll fix for Internet Explorer
+- save file with extension from response after conversation
 
 ## 1.5.1
 - update jquery

@@ -23,7 +23,7 @@ import config
 from . import fileUtils, jwtManager
 
 # convert file and give url to a new file
-def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
+def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
     if not fromExt: # check if the extension from the request matches the real file extension
         fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
 
@@ -66,7 +66,7 @@ def getResponseUri(json):
         processError(error)
 
     if isEnd:
-        return json.get('fileUrl')
+        return { 'uri': json.get('fileUrl'), 'fileType': json.get('fileType') }
 
 # display an error that occurs during conversion
 def processError(error):

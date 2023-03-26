@@ -58,11 +58,11 @@ def processSave(body, filename, usAddr):
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
         try:
-            newUri = serviceConverter.getConverterUri(download, downloadExt, curExt, docManager.generateRevisionId(download), False) # convert file and give url to a new file
-            if not newUri:
+            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt, docManager.generateRevisionId(download), False) # convert file and give url to a new file
+            if not convertedData:
                 newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr) # get the correct file name if it already exists
             else:
-                download = newUri
+                download = convertedData['uri']
         except Exception:
             newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
 
@@ -116,11 +116,11 @@ def processForceSave(body, filename, usAddr):
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
         try:
-            newUri = serviceConverter.getConverterUri(download, downloadExt, curExt, docManager.generateRevisionId(download), False) # convert file and give url to a new file
-            if not newUri:
+            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt, docManager.generateRevisionId(download), False) # convert file and give url to a new file
+            if not convertedData:
                 newFilename = True
             else:
-                download = newUri
+                download = convertedData['uri']
         except Exception:
             newFilename = True
 

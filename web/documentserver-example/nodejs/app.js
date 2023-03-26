@@ -361,16 +361,17 @@ app.post("/convert", function (req, res) {  // define a handler for converting f
         }
 
         try {
-            var responseUri = documentService.getResponseUri(res.toString());
-            var result = responseUri.key;
-            var newFileUri = responseUri.value;  // get the callback url
+            var responseData = documentService.getResponseUri(res.toString());
+            var result = responseData.percent;
+            var newFileUri = responseData.uri;  // get the callback url
+            var newFileType = "." + responseData.fileType;  // get the file type
 
             if (result != 100) {  // if the status isn't 100
                 writeResult(fileName, result, null);  // write the origin file to the result object
                 return;
             }
 
-            var correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + internalFileExt);  // get the file name with a new extension
+            var correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);  // get the file name with a new extension
 
             const {status, data} = await urllib.request(newFileUri, {method: "GET"});
 
@@ -625,7 +626,7 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            await callbackProcessSave(res.value, body, fileName, userAddress, fileName);
+                            await callbackProcessSave(res.uri, body, fileName, userAddress, fileName);
                             return;
                         } catch (ex) {
                             console.log(ex);
@@ -711,7 +712,7 @@ app.post("/track", async function (req, res) {  // define a handler for tracking
                         }
                         try {
                             var res = documentService.getResponseUri(data);
-                            await callbackProcessForceSave(res.value, body, fileName, userAddress, false);
+                            await callbackProcessForceSave(res.uri, body, fileName, userAddress, false);
                             return;
                         } catch (ex) {
                             console.log(ex);

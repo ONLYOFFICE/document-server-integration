@@ -70,24 +70,24 @@ namespace ASC.Api.DocumentConverter
         /// <param name="toExtension">Extension to which to convert</param>
         /// <param name="documentRevisionId">Key for caching on service</param>
         /// <param name="isAsync">Perform conversions asynchronously</param>
-        /// <param name="convertedDocumentUri">Uri to the converted document</param>
+        /// <param name="convertedDocumentData">Uri and file type of the converted document</param>
         /// <returns>The percentage of conversion completion</returns>
         /// <example>
-        /// string convertedDocumentUri;
-        /// GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
+        /// Dictionary<string, string> convertedDocumentData;
+        /// GetConvertedData("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentData);
         /// </example>
         /// <exception>
         /// </exception>
-        public static int GetConvertedUri(string documentUri,
+        public static int GetConvertedData(string documentUri,
                                           string fromExtension,
                                           string toExtension,
                                           string documentRevisionId,
                                           bool isAsync,
-                                          out string convertedDocumentUri,
+                                          out Dictionary<string, string> convertedDocumentData,
                                           string filePass = null,
                                           string lang = null)
         {
-            convertedDocumentUri = string.Empty;
+            convertedDocumentData = new Dictionary<string, string>();
 
             // check if the fromExtension parameter is defined; if not, get it from the document url
             fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
@@ -159,7 +159,7 @@ namespace ASC.Api.DocumentConverter
                 }
             }
 
-            return GetResponseUri(dataResponse, out convertedDocumentUri);
+            return GetResponseData(dataResponse, out convertedDocumentData);
         }
 
         /// <summary>
@@ -183,9 +183,9 @@ namespace ASC.Api.DocumentConverter
         /// Processing document received from the editing service
         /// </summary>
         /// <param name="jsonDocumentResponse">The resulting json from editing service</param>
-        /// <param name="responseUri">Uri to the converted document</param>
+        /// <param name="responseData">Uri and file type of the converted document</param>
         /// <returns>The percentage of conversion completion</returns>
-        private static int GetResponseUri(string jsonDocumentResponse, out string responseUri)
+        private static int GetResponseData(string jsonDocumentResponse, out Dictionary<string, string> responseData)
         {
             if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
 
@@ -199,14 +199,20 @@ namespace ASC.Api.DocumentConverter
             var isEndConvert = responseFromService.endConvert;
 
             int resultPercent;
-            responseUri = string.Empty;
+            responseData = new Dictionary<string, string>(); 
+            var responseUri = string.Empty;
+            var responseFileType = string.Empty;
             if (isEndConvert)  // if the conversion is completed
             {
                 responseUri = responseFromService.fileUrl;  // get the file url
+                responseFileType = responseFromService.fileType;  // get the file type
+                responseData.Add("fileUrl", responseUri);
+                responseData.Add("fileType", responseFileType);
                 resultPercent = 100;
             }
             else  // if the conversion isn't completed
             {
+                responseData.Add("fileUrl", "");
                 resultPercent = responseFromService.percent;  // get the percentage value
                 if (resultPercent >= 100) resultPercent = 99;
             }

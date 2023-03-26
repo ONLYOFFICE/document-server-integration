@@ -26,6 +26,7 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
+import com.onlyoffice.integration.dto.ConvertedData;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
@@ -209,8 +210,11 @@ public class FileController {
             // check if the file with such an extension can be converted
             if (fileUtility.getConvertExts().contains(fileExt)) {
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
-                String newFileUri = serviceConverter  // get the URL to the converted file
-                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                ConvertedData response = serviceConverter  // get the URL to the converted file
+                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+
+                String newFileUri = response.getUri();
+                String newFileType = "." + response.getFileType();
 
                 if (newFileUri.isEmpty()) {
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
@@ -218,7 +222,7 @@ public class FileController {
 
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
-                String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + internalFileExt;
+                String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + newFileType;
                 String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
                 URL url = new URL(newFileUri);
