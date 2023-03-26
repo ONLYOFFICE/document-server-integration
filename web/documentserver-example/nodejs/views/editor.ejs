@@ -254,6 +254,9 @@
 
         // get the editor sizes
         var fixSize = function () {
+            if (config.type !== "mobile") {
+                return;
+            }
             var wrapEl = document.getElementsByClassName("form");
             if (wrapEl.length) {
                 wrapEl[0].style.height = screen.availHeight + "px";
