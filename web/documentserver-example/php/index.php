@@ -337,7 +337,8 @@
             </footer>
         </form>
 
-        <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+        <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+        <script type="text/javascript" src="js/jquery-migrate-3.4.1.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.blockUI.js"></script>
         <script type="text/javascript" src="js/jquery.iframe-transport.js"></script>

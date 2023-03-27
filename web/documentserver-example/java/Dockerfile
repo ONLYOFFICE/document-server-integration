@@ -1,6 +1,5 @@
 FROM maven:3.6.1-jdk-8-alpine AS MVN_BLDR
-COPY pom.xml /tmp/
-COPY src /tmp/src/
+COPY ./ /tmp/
 WORKDIR /tmp/
 RUN mvn package
 
