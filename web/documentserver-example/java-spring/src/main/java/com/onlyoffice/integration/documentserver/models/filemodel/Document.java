@@ -18,7 +18,6 @@
 
 package com.onlyoffice.integration.documentserver.models.filemodel;
 
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.models.configurations.Info;
 import lombok.Getter;
 import lombok.Setter;
