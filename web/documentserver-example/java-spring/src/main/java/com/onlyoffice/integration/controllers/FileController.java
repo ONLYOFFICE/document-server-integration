@@ -294,7 +294,8 @@ public class FileController {
     @GetMapping(path = "${url.download}")
     public ResponseEntity<Resource> download(final HttpServletRequest request,  // download a file
                                              @RequestParam("fileName") final String fileName,
-                                             @RequestParam(value = "userAddress", required = false) final String userAddress){
+                                             @RequestParam(value = "userAddress", required = false)
+                                                 final String userAddress) {
         try {
             // check if a token is enabled or not
             if (jwtManager.tokenEnabled() && userAddress != null && jwtManager.tokenUseForRequest()) {
