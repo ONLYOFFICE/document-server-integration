@@ -287,7 +287,7 @@ app.post('/create', function (req, res) {
         urllib.request(fileUrl, {method: 'GET'},function(err, data) {
             if (configServer.get('maxFileSize') < data.length || data.length <= 0) {  // check if the file size exceeds the maximum file size
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.write(JSON.stringify({ 'error': 'File size is incorrect' }));
+                res.write(JSON.stringify({ error: 'File size is incorrect' }));
                 res.end();
                 return;
             }
@@ -297,7 +297,7 @@ app.post('/create', function (req, res) {
 
             if (exts.indexOf(curExt) == -1) {  // check if the file extension is supported
                 res.writeHead(200, { 'Content-Type': 'application/json' });  // and write the error status and message to the response
-                res.write(JSON.stringify({ 'error': 'File type is not supported' }));
+                res.write(JSON.stringify({ error: 'File type is not supported' }));
                 res.end();
                 return;
             }
@@ -305,7 +305,7 @@ app.post('/create', function (req, res) {
             fileSystem.writeFileSync(req.docManager.storagePath(fileName), data);
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.write(JSON.stringify({ 'file' : fileName }));
+            res.write(JSON.stringify({ file : fileName }));
             res.end();
 
         });
@@ -506,7 +506,7 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
     }
 
     if (!fileName) {
-        result({ 'error': 'File is not found' });
+        result({ error: 'File is not found' });
         return;
     }
 
@@ -841,14 +841,14 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         let createUrl = req.docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
         let templates = [
             {
-                'image': '',
-                'title': 'Blank',
-                'url': createUrl
+                image: '',
+                title: 'Blank',
+                url: createUrl
             },
             {
-                'image': templatesImageUrl,
-                'title': 'With sample content',
-                'url': createUrl + '&sample=true'
+                image: templatesImageUrl,
+                title: 'With sample content',
+                url: createUrl + '&sample=true'
             }
         ];
 
@@ -870,7 +870,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         let userAddress = req.docManager.curUserHostAddress();
         if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
             throw {
-                'message': 'File not found: ' + fileName  // display error message
+                message: 'File not found: ' + fileName  // display error message
             };
         }
         let key = req.docManager.getKey(fileName);
@@ -1059,7 +1059,7 @@ app.post('/rename', function (req, res) { //define a handler for renaming file
 
     let result = function(err, data, ress) {
         res.writeHead(200, {'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ 'result': ress }));
+        res.write(JSON.stringify({ result: ress }));
         res.end();
     };
 

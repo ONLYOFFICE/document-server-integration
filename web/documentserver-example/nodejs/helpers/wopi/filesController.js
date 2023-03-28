@@ -277,11 +277,11 @@ function putRelativeFile(wopi, req, res, userHost) {
         const fileActionUrl = serverUrl + '/wopi-action/' + filename + '?action=';
 
         const fileInfo = {
-            'Name': filename,
-            'Url': serverUrl + '/wopi/files/' + filename,
-            'HostViewUrl': fileActionUrl + 'view',
-            'HostEditNewUrl': fileActionUrl + 'editnew',
-            'HostEditUrl': fileActionUrl + 'edit',
+            Name: filename,
+            Url: serverUrl + '/wopi/files/' + filename,
+            HostViewUrl: fileActionUrl + 'view',
+            HostEditNewUrl: fileActionUrl + 'editnew',
+            HostEditUrl: fileActionUrl + 'edit',
         };
         res.status(200).send(fileInfo);
     });
@@ -299,16 +299,16 @@ function checkFileInfo(wopi, req, res, userHost) {
 
     // create the file information object
     const fileInfo = {
-        'BaseFileName': wopi.id,
-        'OwnerId': req.docManager.getFileData(wopi.id, userAddress)[1],
-        'Size': fileSystem.statSync(path).size,
-        'UserId': user.id,
-        'UserFriendlyName': user.name,
-        'Version': version,
-        'UserCanWrite': true,
-        'SupportsGetLock': true,
-        'SupportsLocks': true,
-        'SupportsUpdate': true,
+        BaseFileName: wopi.id,
+        OwnerId: req.docManager.getFileData(wopi.id, userAddress)[1],
+        Size: fileSystem.statSync(path).size,
+        UserId: user.id,
+        UserFriendlyName: user.name,
+        Version: version,
+        UserCanWrite: true,
+        SupportsGetLock: true,
+        SupportsLocks: true,
+        SupportsUpdate: true,
     };
     res.status(200).send(fileInfo);
 }
@@ -372,14 +372,14 @@ exports.fileRequestHandler = (req, res) => {
 
     // an error of the unknown request type
     if (wopiData.requestType == reqConsts.requestType.None) {
-        res.status(500).send({ 'title': 'fileHandler', 'method': req.method, 'id': req.params['id'], 'error': 'unknown' });
+        res.status(500).send({ title: 'fileHandler', method: req.method, id: req.params['id'], error: 'unknown' });
         return;
     }
 
     // an error of the unsupported request type
     const action = actionMapping[wopiData.requestType];
     if (!action) {
-        res.status(501).send({ 'title': 'fileHandler', 'method': req.method, 'id': req.params['id'], 'error': 'unsupported' });
+        res.status(501).send({ title: 'fileHandler', method: req.method, id: req.params['id'], error: 'unsupported' });
         return;
     }
 

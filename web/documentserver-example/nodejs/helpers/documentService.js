@@ -65,7 +65,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     let uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
     let headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        Accept: 'application/json'
     };
 
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {  // if the signature is enabled and it can be used for request
