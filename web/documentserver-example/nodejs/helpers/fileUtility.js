@@ -44,7 +44,7 @@ fileUtility.getFileExtension = function (url, withoutDot) {
 
     let parts = fileName.toLowerCase().split('.');
 
-    return withoutDot ? parts.pop() : '.' + parts.pop();  // get the extension from the file name with or without dot
+    return withoutDot ? parts.pop() : `.${  parts.pop()}`;  // get the extension from the file name with or without dot
 };
 
 // get file type from the given url

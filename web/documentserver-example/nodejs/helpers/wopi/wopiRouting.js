@@ -31,10 +31,10 @@ getCustomWopiParams = function (query) {
     let actionParams = '';
 
     const {userid} = query;  // user id
-    tokenParams += (userid ? '&userid=' + userid : '');
+    tokenParams += (userid ? `&userid=${  userid}` : '');
 
     const {lang} = query;  // language
-    actionParams += (lang ? '&ui=' + lang : '');
+    actionParams += (lang ? `&ui=${  lang}` : '');
 
     return { tokenParams, actionParams };
 };
@@ -54,7 +54,7 @@ exports.registerRoutes = function(app) {
         const docsExtEdit = [];    // Supported extensions for WOPI
 
         actions.forEach(el => {
-            if (el.name == 'edit') docsExtEdit.push('.'+el.ext);
+            if (el.name == 'edit') docsExtEdit.push(`.${el.ext}`);
         });
 
         const editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
@@ -99,8 +99,8 @@ exports.registerRoutes = function(app) {
         req.docManager = new docManager(req, res);
 
         if (fileExt != null) {  // if the file extension exists
-            let fileName = req.docManager.getCorrectName('new.' + fileExt)
-            let redirectPath = req.docManager.getServerUrl(true) + '/wopi-action/' + encodeURIComponent(fileName) + '?action=editnew' + req.docManager.getCustomParams();  // get the redirect path
+            let fileName = req.docManager.getCorrectName(`new.${  fileExt}`)
+            let redirectPath = `${req.docManager.getServerUrl(true)  }/wopi-action/${  encodeURIComponent(fileName)  }?action=editnew${  req.docManager.getCustomParams()}`;  // get the redirect path
             res.redirect(redirectPath);
             return;
         }

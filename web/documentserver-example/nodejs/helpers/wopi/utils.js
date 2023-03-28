@@ -133,7 +133,7 @@ async function getDefaultAction(ext) {
 
 // get the action url
 function getActionUrl(host, userAddress, action, filename) {
-    return action.urlsrc.replace(/<.*&>/g, '') + 'WOPISrc=' + host + '/wopi/files/' + filename + '@' + userAddress;
+    return `${action.urlsrc.replace(/<.*&>/g, '')  }WOPISrc=${  host  }/wopi/files/${  filename  }@${  userAddress}`;
 }
 
 exports.initWopi = initWopi;
