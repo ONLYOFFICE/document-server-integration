@@ -52,11 +52,11 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
 
     let params = {  // write all the conversion parameters to the params dictionary
-        async: async,
+        async,
         url: documentUri,
         outputtype: toExtension.replace('.', ''),
         filetype: fromExtension.replace('.', ''),
-        title: title,
+        title,
         key: documentRevisionId,
         password: filePass,
         region: lang,
@@ -77,7 +77,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     urllib.request(urlModule.parse(uri),
         {
             method: 'POST',
-            headers: headers,
+            headers,
             data: params
         },
         callback);
@@ -164,9 +164,9 @@ documentService.getResponseUri = function (json) {
     }
 
     return {
-        percent : percent,
-        uri : uri,
-        fileType : fileType
+        percent,
+        uri,
+        fileType
     };
 };
 
@@ -196,7 +196,7 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
     urllib.request(urlModule.parse(uri),
         {
             method: 'POST',
-            headers: headers,
+            headers,
             data: params
         },
         callback);

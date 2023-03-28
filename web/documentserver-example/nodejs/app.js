@@ -110,7 +110,7 @@ app.get('/', function (req, res) {  // define a handler for default page
             fillExts: configServer.get('fillDocs'),
             storedFiles: req.docManager.getStoredFiles(),
             params: req.docManager.getCustomParams(),
-            users: users,
+            users,
             serverUrl: req.docManager.getServerUrl(),
             languages: configServer.get('languages'),
         });
@@ -515,7 +515,7 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
         url: req.docManager.getDownloadUrl(fileName, true),
         directUrl: req.body.directUrl ? req.docManager.getDownloadUrl(fileName) : null,
         referenceData: {
-            fileKey: JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}),
+            fileKey: JSON.stringify({ fileName, userAddress: req.docManager.curUserHostAddress()}),
             instanceId: req.docManager.getServerUrl()
         },
         path: fileName,
@@ -938,8 +938,8 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
             historyData.push({
                 fileType: fileExt.slice(1),
                 version: countVersion,
-                key: key,
-                url: url,
+                key,
+                url,
                 directUrl: !userDirectUrl ? null : directUrl,
             });
         }
@@ -964,9 +964,9 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                 favorite: user.favorite != null ? user.favorite : 'null'
             },
             editor: {
-                type: type,
+                type,
                 documentType: fileUtility.getFileType(fileName),
-                key: key,
+                key,
                 token: '',
                 callbackUrl: req.docManager.getCallback(fileName),
                 createUrl: userid != 'uid-0' ? createUrl : null,
@@ -986,23 +986,23 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                 canBackToFolder: type != 'embedded',
                 backUrl: req.docManager.getServerUrl() + '/',
                 curUserHostAddress: req.docManager.curUserHostAddress(),
-                lang: lang,
+                lang,
                 userid: userid != 'uid-0' ? userid : null,
-                name: name,
-                userGroup: userGroup,
+                name,
+                userGroup,
                 reviewGroups: JSON.stringify(reviewGroups),
                 commentGroups: JSON.stringify(commentGroups),
                 userInfoGroups: JSON.stringify(userInfoGroups),
-                fileChoiceUrl: fileChoiceUrl,
-                submitForm: submitForm,
+                fileChoiceUrl,
+                submitForm,
                 plugins: JSON.stringify(plugins),
-                actionData: actionData,
-                fileKey: userid != 'uid-0' ? JSON.stringify({ fileName: fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
+                actionData,
+                fileKey: userid != 'uid-0' ? JSON.stringify({ fileName, userAddress: req.docManager.curUserHostAddress()}) : null,
                 instanceId: userid != 'uid-0' ? req.docManager.getInstanceId() : null,
                 protect: !user.deniedPermissions.includes('protect')
             },
-            history: history,
-            historyData: historyData,
+            history,
+            historyData,
             dataInsertImage: {
                 fileType: 'png',
                 url: req.docManager.getServerUrl(true) + '/images/logo.png',

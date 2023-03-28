@@ -309,7 +309,7 @@ docManager.prototype.getStoredFiles = function () {
 
             const time = stats.mtime.getTime();  // get the time of element modification
             const item = {  // create an object with element data
-                time: time,
+                time,
                 name: storedFiles[i],
                 documentType: fileUtility.getFileType(storedFiles[i]),
                 canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,

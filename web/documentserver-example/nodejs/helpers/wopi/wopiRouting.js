@@ -36,7 +36,7 @@ getCustomWopiParams = function (query) {
     const lang = query.lang;  // language
     actionParams += (lang ? '&ui=' + lang : '');
 
-    return { 'tokenParams': tokenParams, 'actionParams': actionParams };
+    return { tokenParams, actionParams };
 };
 
 exports.registerRoutes = function(app) {
@@ -73,15 +73,15 @@ exports.registerRoutes = function(app) {
 
             // render wopiIndex template with the parameters specified
             res.render('wopiIndex', {
-                wopiEnable : wopiEnable,
+                wopiEnable,
                 storedFiles: wopiEnable ? files : [],
                 params: req.docManager.getCustomParams(),
-                users: users,
+                users,
                 serverUrl: req.docManager.getServerUrl(),
                 preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
                 convertExts: configServer.get('convertedDocs'),
-                editedExts: editedExts,
-                fillExts: fillExts,
+                editedExts,
+                fillExts,
                 languages: configServer.get('languages'),
             });
 

@@ -62,8 +62,8 @@ function unlock(filePath) {
 }
 
 module.exports = {
-    hasLock: hasLock,
+    hasLock,
     getLock: getLockValue,
-    lock: lock,
-    unlock: unlock
+    lock,
+    unlock
 }
