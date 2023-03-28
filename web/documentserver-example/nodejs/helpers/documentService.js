@@ -17,11 +17,11 @@
  */
 
 // get all the necessary values and modules
-var urlModule = require("url");
-var urllib = require("urllib");
-var jwt = require("jsonwebtoken");
-var fileUtility = require("./fileUtility");
-var guidManager = require("./guidManager");
+var urlModule = require('url');
+var urllib = require('urllib');
+var jwt = require('jsonwebtoken');
+var fileUtility = require('./fileUtility');
+var guidManager = require('./guidManager');
 var configServer = require('config').get('server');
 var siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 var cfgSignatureEnable = configServer.get('token.enable');
@@ -54,8 +54,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     var params = {  // write all the conversion parameters to the params dictionary
         async: async,
         url: documentUri,
-        outputtype: toExtension.replace(".", ""),
-        filetype: fromExtension.replace(".", ""),
+        outputtype: toExtension.replace('.', ''),
+        filetype: fromExtension.replace('.', ''),
         title: title,
         key: documentRevisionId,
         password: filePass,
@@ -65,7 +65,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     var uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
     var headers = {
         'Content-Type': 'application/json',
-        "Accept": "application/json"
+        'Accept': 'application/json'
     };
 
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {  // if the signature is enabled and it can be used for request
@@ -76,7 +76,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
     urllib.request(urlModule.parse(uri),
         {
-            method: "POST",
+            method: 'POST',
             headers: headers,
             data: params
         },
@@ -90,49 +90,49 @@ documentService.generateRevisionId = function (expectedKey) {
         expectedKey = expectedKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
     } 
 
-    var key = expectedKey.replace(new RegExp("[^0-9-.a-zA-Z_=]", "g"), "_");
+    var key = expectedKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
     return key.substring(0, Math.min(key.length, maxKeyLength));  // the resulting key is of the max key length or less
 };
 
 // create an error message for the error code
 documentService.processConvertServiceResponceError = function (errorCode) {
-    var errorMessage = "";
-    var errorMessageTemplate = "Error occurred in the ConvertService: ";
+    var errorMessage = '';
+    var errorMessageTemplate = 'Error occurred in the ConvertService: ';
 
     // add the error message to the error message template depending on the error code
     switch (errorCode) {
         case -20:
-            errorMessage = errorMessageTemplate + "Error encrypt signature";
+            errorMessage = errorMessageTemplate + 'Error encrypt signature';
             break;
         case -8:
-            errorMessage = errorMessageTemplate + "Error document signature";
+            errorMessage = errorMessageTemplate + 'Error document signature';
             break;
         case -7:
-            errorMessage = errorMessageTemplate + "Error document request";
+            errorMessage = errorMessageTemplate + 'Error document request';
             break;
         case -6:
-            errorMessage = errorMessageTemplate + "Error database";
+            errorMessage = errorMessageTemplate + 'Error database';
             break;
         case -5:
-            errorMessage = errorMessageTemplate + "Incorrect password";
+            errorMessage = errorMessageTemplate + 'Incorrect password';
             break;
         case -4:
-            errorMessage = errorMessageTemplate + "Error download error";
+            errorMessage = errorMessageTemplate + 'Error download error';
             break;
         case -3:
-            errorMessage = errorMessageTemplate + "Error convertation error";
+            errorMessage = errorMessageTemplate + 'Error convertation error';
             break;
         case -2:
-            errorMessage = errorMessageTemplate + "Error convertation timeout";
+            errorMessage = errorMessageTemplate + 'Error convertation timeout';
             break;
         case -1:
-            errorMessage = errorMessageTemplate + "Error convertation unknown";
+            errorMessage = errorMessageTemplate + 'Error convertation unknown';
             break;
         case 0:  // if the error code is equal to 0, the error message is empty
             break;
         default:
-            errorMessage = "ErrorCode = " + errorCode;  // default value for the error message
+            errorMessage = 'ErrorCode = ' + errorCode;  // default value for the error message
             break;
     }
 
@@ -154,7 +154,7 @@ documentService.getResponseUri = function (json) {
 
     if (isEndConvert) {  // if the conversion is completed
         if (!fileResult.fileUrl)  // and the file url doesn't exist
-            throw { message: "FileUrl is null" };  // the file url is null
+            throw { message: 'FileUrl is null' };  // the file url is null
 
         uri = fileResult.fileUrl;  // otherwise, get the file url
         fileType = fileResult.fileType;  // get the file type
@@ -195,7 +195,7 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
     //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
     urllib.request(urlModule.parse(uri),
         {
-            method: "POST",
+            method: 'POST',
             headers: headers,
             data: params
         },

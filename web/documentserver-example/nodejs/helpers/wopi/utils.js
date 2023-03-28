@@ -16,19 +16,19 @@
  *
  */
 
-const config = require("config");
-const configServer = config.get("server");
-var urlModule = require("url");
-var urllib = require("urllib");
-const xmlParser = require("fast-xml-parser");
-const he = require("he");
-const siteUrl = configServer.get("siteUrl");  // the path to the editors installation
+const config = require('config');
+const configServer = config.get('server');
+var urlModule = require('url');
+var urllib = require('urllib');
+const xmlParser = require('fast-xml-parser');
+const he = require('he');
+const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 
 var cache = null;
 
 async function initWopi(docManager) {
     let absSiteUrl = siteUrl;
-    if (absSiteUrl.indexOf("/") === 0) {
+    if (absSiteUrl.indexOf('/') === 0) {
         absSiteUrl = docManager.getServerHost() + siteUrl;
     }
 
@@ -57,16 +57,16 @@ async function getDiscoveryInfo(siteUrl) {
 async function requestDiscovery(siteUrl) {
     return new Promise((resolve, reject) => {
         var actions = [];
-        urllib.request(urlModule.parse(siteUrl + configServer.get("wopi.discovery")), {method: "GET"}, (err, data) => {
+        urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
             if (data) {
                 let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
-                    attributeNamePrefix: "",
+                    attributeNamePrefix: '',
                     ignoreAttributes: false,
                     parseAttributeValue: true,
                     attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
                 });
-                if (discovery["wopi-discovery"]) {
-                    for (let app of discovery["wopi-discovery"]["net-zone"].app) {
+                if (discovery['wopi-discovery']) {
+                    for (let app of discovery['wopi-discovery']['net-zone'].app) {
                         if (!Array.isArray(app.action)) {
                             app.action = [app.action];
                         }
@@ -76,11 +76,11 @@ async function requestDiscovery(siteUrl) {
                                 favIconUrl: app.favIconUrl,
                                 checkLicense: app.checkLicense == 'true',
                                 name: action.name,
-                                ext: action.ext || "",
-                                progid: action.progid || "",
+                                ext: action.ext || '',
+                                progid: action.progid || '',
                                 isDefault: action.default ? true : false,
                                 urlsrc: action.urlsrc,
-                                requires: action.requires || ""
+                                requires: action.requires || ''
                             });
                         }
                     }
@@ -133,7 +133,7 @@ async function getDefaultAction(ext) {
 
 // get the action url
 function getActionUrl(host, userAddress, action, filename) {
-    return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
+    return action.urlsrc.replace(/<.*&>/g, '') + 'WOPISrc=' + host + '/wopi/files/' + filename + '@' + userAddress;
 }
 
 exports.initWopi = initWopi;

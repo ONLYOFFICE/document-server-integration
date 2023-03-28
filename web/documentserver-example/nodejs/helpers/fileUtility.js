@@ -20,17 +20,17 @@ var fileUtility = {};
 
 // get file name from the given url
 fileUtility.getFileName = function (url, withoutExtension) {
-    if (!url) return "";
+    if (!url) return '';
 
-    var parts = url.split("\\");
+    var parts = url.split('\\');
     parts = parts.pop();
-    parts = parts.split("/");
+    parts = parts.split('/');
     var fileName = parts.pop();  // get the file name from the last part of the url
-    fileName = fileName.split("?")[0];
+    fileName = fileName.split('?')[0];
 
     // get file name without extension
     if (withoutExtension) {
-        return fileName.substring(0, fileName.lastIndexOf("."));
+        return fileName.substring(0, fileName.lastIndexOf('.'));
     }
 
     return fileName;
@@ -42,9 +42,9 @@ fileUtility.getFileExtension = function (url, withoutDot) {
 
     var fileName = fileUtility.getFileName(url);  // get file name from the given url
 
-    var parts = fileName.toLowerCase().split(".");
+    var parts = fileName.toLowerCase().split('.');
 
-    return withoutDot ? parts.pop() : "." + parts.pop();  // get the extension from the file name with or without dot
+    return withoutDot ? parts.pop() : '.' + parts.pop();  // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
@@ -59,28 +59,28 @@ fileUtility.getFileType = function (url) {
 }
 
 fileUtility.fileType = {
-    word: "word",
-    cell: "cell",
-    slide: "slide"
+    word: 'word',
+    cell: 'cell',
+    slide: 'slide'
 }
 
 // the document extension list
-fileUtility.documentExts = [".doc", ".docx", ".oform", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".ott", ".rtf", ".txt", ".html", ".htm", ".mht", ".xml", ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"];
+fileUtility.documentExts = ['.doc', '.docx', '.oform', '.docm', '.dot', '.dotx', '.dotm', '.odt', '.fodt', '.ott', '.rtf', '.txt', '.html', '.htm', '.mht', '.xml', '.pdf', '.djvu', '.fb2', '.epub', '.xps', '.oxps'];
 
 // the spreadsheet extension list
-fileUtility.spreadsheetExts = [".xls", ".xlsx", ".xlsm", ".xlsb", ".xlt", ".xltx", ".xltm", ".ods", ".fods", ".ots", ".csv"];
+fileUtility.spreadsheetExts = ['.xls', '.xlsx', '.xlsm', '.xlsb', '.xlt', '.xltx', '.xltm', '.ods', '.fods', '.ots', '.csv'];
 
 // the presentation extension list
-fileUtility.presentationExts = [".pps", ".ppsx", ".ppsm", ".ppt", ".pptx", ".pptm", ".pot", ".potx", ".potm", ".odp", ".fodp", ".otp"];
+fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.pptm', '.pot', '.potx', '.potm', '.odp', '.fodp', '.otp'];
 
 // get url parameters
 function getUrlParams(url) {
     try {
-        var query = url.split("?").pop();  // take all the parameters which are placed after ? sign in the file url
-        var params = query.split("&");  // parameters are separated by & sign
+        var query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
+        var params = query.split('&');  // parameters are separated by & sign
         var map = {};  // write parameters and their values to the map dictionary
         for (var i = 0; i < params.length; i++) {
-            var parts = param.split("=");
+            var parts = param.split('=');
             map[parts[0]] = parts[1];
         }
         return map;

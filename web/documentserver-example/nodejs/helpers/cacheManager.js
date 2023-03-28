@@ -25,7 +25,7 @@ exports.put = function (key, value) {
 
 // check if the given key is in the cache
 exports.containsKey = function (key) {
-    if (typeof cache[key] == "undefined"){
+    if (typeof cache[key] == 'undefined'){
         return false;
     }
 

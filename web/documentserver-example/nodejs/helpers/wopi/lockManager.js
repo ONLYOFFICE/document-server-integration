@@ -34,7 +34,7 @@ function clearLockTimeout(lockObject) {
 function getLockValue(filePath) {
     let lock = getLockObject(filePath);  // get the lock object of the specified file
     if (lock) return lock.value;  // if it exists, get the lock value from it
-    return "";
+    return '';
 }
 
 // check if the specified file path has lock or not
