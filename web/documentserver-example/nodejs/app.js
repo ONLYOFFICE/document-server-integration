@@ -127,18 +127,18 @@ app.get('/', function (req, res) {  // define a handler for default page
 app.get('/download', function(req, res) {  // define a handler for downloading files
     req.docManager = new docManager(req, res);
 
-    var fileName = fileUtility.getFileName(req.query.fileName);
-    var userAddress = req.query.useraddress;
+    let fileName = fileUtility.getFileName(req.query.fileName);
+    let userAddress = req.query.useraddress;
 
     if (!!userAddress
         && cfgSignatureEnable && cfgSignatureUseForRequest) {
-        var authorization = req.get(cfgSignatureAuthorizationHeader);
+        let authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-            var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+            const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
         }
 
         try {
-            var decoded = jwt.verify(token, cfgSignatureSecret);
+            let decoded = jwt.verify(token, cfgSignatureSecret);
         } catch (err) {
             console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token)
             res.sendStatus(403);
@@ -146,7 +146,7 @@ app.get('/download', function(req, res) {  // define a handler for downloading f
         }
     }
 
-    var path = req.docManager.forcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
+    let path = req.docManager.forcesavePath(fileName, userAddress, false);  // get the path to the force saved document version
     if (path == '') {
         path = req.docManager.storagePath(fileName, userAddress);  // or to the original document
     }
@@ -156,18 +156,18 @@ app.get('/download', function(req, res) {  // define a handler for downloading f
 
     res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileName));
 
-    var filestream = fileSystem.createReadStream(path);
+    let filestream = fileSystem.createReadStream(path);
     filestream.pipe(res);  // send file information to the response by streams
 });
 
 app.get('/history', function (req, res) {
     req.docManager = new docManager(req, res);
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        var authorization = req.get(cfgSignatureAuthorizationHeader);
+        let authorization = req.get(cfgSignatureAuthorizationHeader);
         if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-            var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+            let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
             try {
-                var decoded = jwt.verify(token, cfgSignatureSecret);
+                let decoded = jwt.verify(token, cfgSignatureSecret);
             } catch (err) {
                 console.log('checkJwtHeader error: name = ' + err.name + ' message = ' + err.message + ' token = ' + token);
                 res.sendStatus(403);
@@ -179,15 +179,15 @@ app.get('/history', function (req, res) {
         }
     }
 
-    var fileName = req.query.fileName;
-    var userAddress = req.query.useraddress;
-    var ver = req.query.ver;
-    var file = req.query.file;
+    let fileName = req.query.fileName;
+    let userAddress = req.query.useraddress;
+    let ver = req.query.ver;
+    let file = req.query.file;
 
     if (file.includes('diff')) {
-        var Path = req.docManager.diffPath(fileName, userAddress, ver);
+        const Path = req.docManager.diffPath(fileName, userAddress, ver);
     } else if (file.includes('prev')) {
-        var Path = req.docManager.prevFilePath(fileName, userAddress, ver);
+        const Path = req.docManager.prevFilePath(fileName, userAddress, ver);
     } else {
         res.sendStatus(403);
         return;
@@ -197,7 +197,7 @@ app.get('/history', function (req, res) {
     res.setHeader('Content-Type', mime.getType(Path));
     res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(file));
 
-    var filestream = fileSystem.createReadStream(Path);
+    let filestream = fileSystem.createReadStream(Path);
     filestream.pipe(res);  // send file information to the response by streams
 })
 
@@ -215,7 +215,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
     form.uploadDir = uploadDirTmp;  // and write there all the necessary parameters
     form.keepExtensions = true;
 
-    form.parse(req, function (err, fields, files) {  // parse this form 
+    form.parse(req, function (err, fields, files) {  // parse this form
     	if (err) {  // if an error occurs
 			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
 			res.writeHead(200, { 'Content-Type': 'text/plain' });  // and write the error status and message to the response
@@ -263,7 +263,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
             } else {
                 res.write('{ "filename": "' + file.name + '", "documentType": "' + documentType + '" }');  // otherwise, write a new file name to the response
 
-                var user = users.getUser(req.query.userid); // get user id and name parameters or set them to the default values
+                let user = users.getUser(req.query.userid); // get user id and name parameters or set them to the default values
 
                 req.docManager.saveFileData(file.name, user.id, user.name);
             }
@@ -273,15 +273,15 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
 });
 
 app.post('/create', function (req, res) {
-    var title = req.body.title;
-    var fileUrl = req.body.url;
+    let title = req.body.title;
+    let fileUrl = req.body.url;
 
     try {
         req.docManager = new docManager(req, res);
         req.docManager.storagePath(''); // mkdir if not exist
 
-        var fileName = req.docManager.getCorrectName(title);
-        var userAddress = req.docManager.curUserHostAddress();
+        let fileName = req.docManager.getCorrectName(title);
+        let userAddress = req.docManager.curUserHostAddress();
         req.docManager.historyPath(fileName, userAddress, true);
 
         urllib.request(fileUrl, {method: 'GET'},function(err, data) {
@@ -323,17 +323,17 @@ app.post('/create', function (req, res) {
 app.post('/convert', function (req, res) {  // define a handler for converting files
     req.docManager = new docManager(req, res);
 
-    var fileName = fileUtility.getFileName(req.body.filename);
-    var filePass = req.body.filePass ? req.body.filePass : null;
-    var lang = req.body.lang ? req.body.lang : null;
-    var fileUri = req.docManager.getDownloadUrl(fileName, true);
-    var fileExt = fileUtility.getFileExtension(fileName);
-    var fileType = fileUtility.getFileType(fileName);
-    var internalFileExt = 'ooxml';
-    var response = res;
+    let fileName = fileUtility.getFileName(req.body.filename);
+    let filePass = req.body.filePass ? req.body.filePass : null;
+    let lang = req.body.lang ? req.body.lang : null;
+    let fileUri = req.docManager.getDownloadUrl(fileName, true);
+    let fileExt = fileUtility.getFileExtension(fileName);
+    let fileType = fileUtility.getFileType(fileName);
+    let internalFileExt = 'ooxml';
+    let response = res;
 
-    var writeResult = function (filename, step, error) {
-        var result = {};
+    let writeResult = function (filename, step, error) {
+        let result = {};
 
         // write file name, step and error values to the result object if they are defined
         if (filename != null)
@@ -350,7 +350,7 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
         response.end();
     };
 
-    var callback = async function (err, res) {
+    let callback = async function (err, res) {
         if (err) {  // if an error occurs
             if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {  // check what type of error it is
                 writeResult(fileName, 0, null);  // despite the timeout errors, write the file to the result object
@@ -361,17 +361,17 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
         }
 
         try {
-            var responseData = documentService.getResponseUri(res.toString());
-            var result = responseData.percent;
-            var newFileUri = responseData.uri;  // get the callback url
-            var newFileType = '.' + responseData.fileType;  // get the file type
+            let responseData = documentService.getResponseUri(res.toString());
+            let result = responseData.percent;
+            let newFileUri = responseData.uri;  // get the callback url
+            let newFileType = '.' + responseData.fileType;  // get the file type
 
             if (result != 100) {  // if the status isn't 100
                 writeResult(fileName, result, null);  // write the origin file to the result object
                 return;
             }
 
-            var correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);  // get the file name with a new extension
+            let correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);  // get the file name with a new extension
 
             const {status, data} = await urllib.request(newFileUri, {method: 'GET'});
 
@@ -380,11 +380,11 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
             fileSystem.writeFileSync(req.docManager.storagePath(correctName), data);  // write a file with a new extension, but with the content from the origin file
             fileSystem.unlinkSync(req.docManager.storagePath(fileName));  // remove file with the origin extension
 
-            var userAddress = req.docManager.curUserHostAddress();
-            var historyPath = req.docManager.historyPath(fileName, userAddress, true);
-            var correctHistoryPath = req.docManager.historyPath(correctName, userAddress, true);  // get the history path to the file with a new extension
+            let userAddress = req.docManager.curUserHostAddress();
+            let historyPath = req.docManager.historyPath(fileName, userAddress, true);
+            let correctHistoryPath = req.docManager.historyPath(correctName, userAddress, true);  // get the history path to the file with a new extension
 
-            fileSystem.renameSync(historyPath, correctHistoryPath);  // change the previous history path 
+            fileSystem.renameSync(historyPath, correctHistoryPath);  // change the previous history path
 
             fileSystem.renameSync(path.join(correctHistoryPath, fileName + '.txt'), path.join(correctHistoryPath, correctName + '.txt'));  // change the name of the .txt file with document information
 
@@ -414,7 +414,7 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
 
 app.get('/files', function(req, res) {  // define a handler for getting files information
     try {
-        req.docManager = new docManager(req, res); 
+        req.docManager = new docManager(req, res);
         const filesInDirectoryInfo = req.docManager.getFilesInfo();  // get the information about the files from the storage path
         res.setHeader('Content-Type', 'application/json');
         res.write(JSON.stringify(filesInDirectoryInfo));  // transform files information into the json string
@@ -460,15 +460,15 @@ app.delete('/file', function (req, res) {  // define a handler for removing file
 });
 
 app.get('/csv', function (req, res) {  // define a handler for downloading csv files
-    var fileName = 'csv.csv';
-    var csvPath = path.join(__dirname, 'public', 'assets',  'sample', fileName);
+    let fileName = 'csv.csv';
+    let csvPath = path.join(__dirname, 'public', 'assets',  'sample', fileName);
 
     res.setHeader('Content-Length', fileSystem.statSync(csvPath).size);  // add headers to the response to specify the page parameters
     res.setHeader('Content-Type', mime.getType(csvPath));
 
     res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(fileName));
 
-    var filestream = fileSystem.createReadStream(csvPath);
+    let filestream = fileSystem.createReadStream(csvPath);
     filestream.pipe(res);  // send file information to the response by streams
 })
 
@@ -476,32 +476,32 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
 
     req.docManager = new docManager(req, res);
 
-    var result = function(data) {
+    let result = function(data) {
         res.writeHead(200, {'Content-Type': 'application/json' });
         res.write(JSON.stringify(data));
         res.end();
     };
 
-    var referenceData = req.body.referenceData;
+    let referenceData = req.body.referenceData;
     if (!!referenceData) {
-        var instanceId = referenceData.instanceId;
+        let instanceId = referenceData.instanceId;
 
         if (instanceId === req.docManager.getInstanceId()) {
-            var fileKey = JSON.parse(referenceData.fileKey);
-            var userAddress = fileKey.userAddress;
+            let fileKey = JSON.parse(referenceData.fileKey);
+            const userAddress = fileKey.userAddress;
 
             if (userAddress === req.docManager.curUserHostAddress()
                 && req.docManager.existsSync(req.docManager.storagePath(fileKey.fileName, userAddress))) {
-                var fileName = fileKey.fileName;
+                let fileName = fileKey.fileName;
             }
         }
     }
 
     if (!fileName && !!req.body.path) {
-        var path = fileUtility.getFileName(req.body.path);
+        let path = fileUtility.getFileName(req.body.path);
 
         if (req.docManager.existsSync(req.docManager.storagePath(path, userAddress))) {
-            fileName = path;
+        let fileName = path;
         }
     }
 
@@ -510,7 +510,7 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
         return;
     }
 
-    var data = {
+    let data = {
         fileType: fileUtility.getFileExtension(fileName).slice(1),
         url: req.docManager.getDownloadUrl(fileName, true),
         directUrl: req.body.directUrl ? req.docManager.getDownloadUrl(fileName) : null,
@@ -532,36 +532,36 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
 
     req.docManager = new docManager(req, res);
 
-    var userAddress = req.query.useraddress;
-    var fileName = fileUtility.getFileName(req.query.filename);
-    var version = 0;
+    let userAddress = req.query.useraddress;
+    let fileName = fileUtility.getFileName(req.query.filename);
+    let version = 0;
 
     // track file changes
-    var processTrack = async function (response, body, fileName, userAddress) {
+    let processTrack = async function (response, body, fileName, userAddress) {
 
         // callback file saving process
-        var callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
+        let callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
             try {
                 const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
 
                 if (status != 200) throw new Error('Document editing service returned status: ' + status);
 
-                var storagePath = req.docManager.storagePath(newFileName, userAddress);
+                let storagePath = req.docManager.storagePath(newFileName, userAddress);
 
-                var historyPath = req.docManager.historyPath(newFileName, userAddress);  // get the path to the history data
+                let historyPath = req.docManager.historyPath(newFileName, userAddress);  // get the path to the history data
                 if (historyPath == '') {  // if the history path doesn't exist
                     historyPath = req.docManager.historyPath(newFileName, userAddress, true);  // create it
                     req.docManager.createDirectory(historyPath);  // and create a directory for the history data
                 }
 
-                var count_version = req.docManager.countVersion(historyPath);  // get the next file version number
+                let count_version = req.docManager.countVersion(historyPath);  // get the next file version number
                 version = count_version + 1;
-                var versionPath = req.docManager.versionPath(newFileName, userAddress, version);  // get the path to the specified file version
+                let versionPath = req.docManager.versionPath(newFileName, userAddress, version);  // get the path to the specified file version
                 req.docManager.createDirectory(versionPath);  // create a directory to the specified file version
 
-                var downloadZip = body.changesurl;
+                let downloadZip = body.changesurl;
                 if (downloadZip) {
-                    var path_changes = req.docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
+                    let path_changes = req.docManager.diffPath(newFileName, userAddress, version);  // get the path to the file with document versions differences
                     const {status, data} = await urllib.request(downloadZip, {method: 'GET'});
                     if (status == 200) {
                         fileSystem.writeFileSync(path_changes, data);  // write the document version differences to the archive
@@ -570,21 +570,21 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                     }
                 }
 
-                var changeshistory = body.changeshistory || JSON.stringify(body.history);
+                let changeshistory = body.changeshistory || JSON.stringify(body.history);
                 if (changeshistory) {
-                    var path_changes_json = req.docManager.changesPath(newFileName, userAddress, version);  // get the path to the file with document changes
+                    let path_changes_json = req.docManager.changesPath(newFileName, userAddress, version);  // get the path to the file with document changes
                     fileSystem.writeFileSync(path_changes_json, changeshistory);  // and write this data to the path in json format
                 }
 
-                var path_key = req.docManager.keyPath(newFileName, userAddress, version);  // get the path to the key.txt file
+                let path_key = req.docManager.keyPath(newFileName, userAddress, version);  // get the path to the key.txt file
                 fileSystem.writeFileSync(path_key, body.key);  // write the key value to the key.txt file
 
-                var path_prev = path.join(versionPath, 'prev' + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
+                let path_prev = path.join(versionPath, 'prev' + fileUtility.getFileExtension(fileName));  // get the path to the previous file version
                 fileSystem.renameSync(req.docManager.storagePath(fileName, userAddress), path_prev);  // and write it to the current path
 
                 fileSystem.writeFileSync(storagePath, data);
 
-                var forcesavePath = req.docManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file
+                let forcesavePath = req.docManager.forcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file
                 if (forcesavePath != '') {  // if this path is empty
                     fileSystem.unlinkSync(forcesavePath);  // remove it
                 }
@@ -601,7 +601,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
         }
 
         // file saving process
-        var processSave = async function (downloadUri, body, fileName, userAddress) {
+        let processSave = async function (downloadUri, body, fileName, userAddress) {
 
             if (!downloadUri) {
                 response.write('{"error":1}');
@@ -609,14 +609,14 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                 return;
             }
 
-            var curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-            var downloadExt = '.' + body.filetype; // get the extension of the downloaded file
+            let curExt = fileUtility.getFileExtension(fileName);  // get current file extension
+            let downloadExt = '.' + body.filetype; // get the extension of the downloaded file
 
-            var newFileName = fileName;
+            let newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
-                var key = documentService.generateRevisionId(downloadUri);
+                let key = documentService.generateRevisionId(downloadUri);
                 newFileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);  // get the correct file name if it already exists
                 try {
                     documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
@@ -625,7 +625,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                             return;
                         }
                         try {
-                            var res = documentService.getResponseUri(data);
+                            let res = documentService.getResponseUri(data);
                             await callbackProcessSave(res.uri, body, fileName, userAddress, fileName);
                             return;
                         } catch (ex) {
@@ -643,31 +643,31 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
         };
 
         // callback file force saving process
-        var callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false){
+        let callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false){
             try {
                 const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
 
                 if (status != 200) throw new Error('Document editing service returned status: ' + status);
 
-                var downloadExt = '.' + body.fileType;
+                let downloadExt = '.' + body.fileType;
 
-                var isSubmitForm = body.forcesavetype === 3; // SubmitForm
+                let isSubmitForm = body.forcesavetype === 3; // SubmitForm
 
                 if (isSubmitForm) {
                     // new file
                     if (newFileName){
                         fileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + '-form' + downloadExt, userAddress);
                     } else {
-                        var ext = fileUtility.getFileExtension(fileName);
+                        let ext = fileUtility.getFileExtension(fileName);
                         fileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + '-form' + ext, userAddress);
                     }
-                    var forcesavePath = req.docManager.storagePath(fileName, userAddress);
+                    let forcesavePath = req.docManager.storagePath(fileName, userAddress);
                 } else {
                     if (newFileName){
                         fileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                     }
                     // create forcesave path if it doesn't exist
-                    forcesavePath = req.docManager.forcesavePath(fileName, userAddress, false);
+                    let forcesavePath = req.docManager.forcesavePath(fileName, userAddress, false);
                     if (forcesavePath == '') {
                         forcesavePath = req.docManager.forcesavePath(fileName, userAddress, true);
                     }
@@ -676,7 +676,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                 fileSystem.writeFileSync(forcesavePath, data);
 
                 if (isSubmitForm) {
-                    var uid =body.actions[0].userid
+                    let uid =body.actions[0].userid
                     req.docManager.saveFileData(fileName, uid, 'Filling Form', userAddress);
                 }
             } catch (ex) {
@@ -690,7 +690,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
         }
 
         // file force saving process
-        var processForceSave = async function (downloadUri, body, fileName, userAddress) {
+        let processForceSave = async function (downloadUri, body, fileName, userAddress) {
 
             if (!downloadUri) {
                 response.write('{"error":1}');
@@ -698,12 +698,12 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                 return;
             }
 
-            var curExt = fileUtility.getFileExtension(fileName);
-            var downloadExt = '.' + body.filetype;
+            let curExt = fileUtility.getFileExtension(fileName);
+            let downloadExt = '.' + body.filetype;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
             if (downloadExt != curExt) {
-                var key = documentService.generateRevisionId(downloadUri);
+                let key = documentService.generateRevisionId(downloadUri);
                 try {
                     documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
                         if (err) {
@@ -711,7 +711,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                             return;
                         }
                         try {
-                            var res = documentService.getResponseUri(data);
+                            let res = documentService.getResponseUri(data);
                             await callbackProcessForceSave(res.uri, body, fileName, userAddress, false);
                             return;
                         } catch (ex) {
@@ -730,9 +730,9 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
 
         if (body.status == 1) { // editing
             if (body.actions && body.actions[0].type == 0) { // finished edit
-                var user = body.actions[0].userid;
+                let user = body.actions[0].userid;
                 if (body.users.indexOf(user) == -1) {
-                    var key = body.key;
+                    let key = body.key;
                     try {
                         documentService.commandRequest('forcesave', key);  // call the forcesave command
                     } catch (ex) {
@@ -753,26 +753,26 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
     };
 
     // read request body
-    var readbody = async function (request, response, fileName, userAddress) {
-        var content = '';
+    let readbody = async function (request, response, fileName, userAddress) {
+        let content = '';
         request.on('data', async function (data) {  // get data from the request
             content += data;
         });
         request.on('end', async function () {
-            var body = JSON.parse(content);
+            let body = JSON.parse(content);
             await processTrack(response, body, fileName, userAddress);  // and track file changes
         });
     };
 
     // check jwt token
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        var body = null;
+        let body = null;
         if (req.body.hasOwnProperty('token')) {  // if request body has its own token
             body = documentService.readToken(req.body.token);  // read and verify it
         } else {
-            var checkJwtHeaderRes = documentService.checkJwtHeader(req);  // otherwise, check jwt token headers
+            let checkJwtHeaderRes = documentService.checkJwtHeader(req);  // otherwise, check jwt token headers
             if (checkJwtHeaderRes) {  // if they exist
-                var body;
+                let body;
                 if (checkJwtHeaderRes.payload) {
                     body = checkJwtHeaderRes.payload;  // get the payload object
                 }
@@ -808,28 +808,28 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
 
         req.docManager = new docManager(req, res);
 
-        var fileName = fileUtility.getFileName(req.query.fileName);
-        var fileExt = req.query.fileExt;
-        var history = [];
-        var historyData = [];
-        var lang = req.docManager.getLang();
-        var user = users.getUser(req.query.userid);
-        var userDirectUrl = req.query.directUrl == 'true';
+        let fileName = fileUtility.getFileName(req.query.fileName);
+        let fileExt = req.query.fileExt;
+        let history = [];
+        let historyData = [];
+        let lang = req.docManager.getLang();
+        let user = users.getUser(req.query.userid);
+        let userDirectUrl = req.query.directUrl == 'true';
 
-        var userid = user.id;
-        var name = user.name;
+        let userid = user.id;
+        let name = user.name;
 
-        var actionData = 'null';
+        let actionData = 'null';
         if (req.query.action){
             try {
-                actionData = JSON.stringify(JSON.parse(req.query.action)); 
+                actionData = JSON.stringify(JSON.parse(req.query.action));
             }
             catch (ex) {
                 console.log(ex);
             }
         }
 
-        var type = req.query.type || ''; // type: embedded/mobile/desktop
+        let type = req.query.type || ''; // type: embedded/mobile/desktop
         if (type == '') {
             type = new RegExp(configServer.get('mobileRegEx'), 'i').test(req.get('User-Agent')) ? 'mobile' : 'desktop';
         } else if (type != 'mobile'
@@ -837,9 +837,9 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                 type = 'desktop';
         }
 
-        var templatesImageUrl = req.docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
-        var createUrl = req.docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
-        var templates = [
+        let templatesImageUrl = req.docManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
+        let createUrl = req.docManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+        let templates = [
             {
                 'image': '',
                 'title': 'Blank',
@@ -852,33 +852,33 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
             }
         ];
 
-        var userGroup = user.group;
-        var reviewGroups = user.reviewGroups;
-        var commentGroups = user.commentGroups;
-        var userInfoGroups = user.userInfoGroups;
+        let userGroup = user.group;
+        let reviewGroups = user.reviewGroups;
+        let commentGroups = user.commentGroups;
+        let userInfoGroups = user.userInfoGroups;
 
         if (fileExt != null) {
-            var fileName = req.docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
+            let fileName = req.docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
 
             // get the redirect path
-            var redirectPath = req.docManager.getServerUrl() + '/editor?fileName=' + encodeURIComponent(fileName) + req.docManager.getCustomParams();
+            let redirectPath = req.docManager.getServerUrl() + '/editor?fileName=' + encodeURIComponent(fileName) + req.docManager.getCustomParams();
             res.redirect(redirectPath);
             return;
         }
         fileExt = fileUtility.getFileExtension(fileName);
 
-        var userAddress = req.docManager.curUserHostAddress();
+        let userAddress = req.docManager.curUserHostAddress();
         if (!req.docManager.existsSync(req.docManager.storagePath(fileName, userAddress))) {  // if the file with a given name doesn't exist
-            throw { 
+            throw {
                 'message': 'File not found: ' + fileName  // display error message
             };
         }
-        var key = req.docManager.getKey(fileName);
-        var url = req.docManager.getDownloadUrl(fileName, true);
-        var directUrl = req.docManager.getDownloadUrl(fileName);
-        var mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
+        let key = req.docManager.getKey(fileName);
+        let url = req.docManager.getDownloadUrl(fileName, true);
+        let directUrl = req.docManager.getDownloadUrl(fileName);
+        let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
-        var canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
+        let canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1;  // check if this file can be edited
         if ((!canEdit && mode == 'edit' || mode == 'fillForms') && configServer.get('fillDocs').indexOf(fileExt) != -1) {
             mode = 'fillForms';
             canEdit = true;
@@ -886,20 +886,20 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         if (!canEdit && mode == 'edit') {
             mode = 'view';
         }
-        var submitForm = mode == 'fillForms' && userid == 'uid-1' && !1;
+        let submitForm = mode == 'fillForms' && userid == 'uid-1' && !1;
 
-        var countVersion = 1;
+        let countVersion = 1;
 
-        var historyPath = req.docManager.historyPath(fileName, userAddress);
-        var changes = null;
-        var keyVersion = key;
+        let historyPath = req.docManager.historyPath(fileName, userAddress);
+        let changes = null;
+        let keyVersion = key;
 
         if (historyPath != '') {
 
             countVersion = req.docManager.countVersion(historyPath) + 1;  // get the number of file versions
-            for (var i = 1; i <= countVersion; i++) {  // get keys to all the file versions
+            for (let i = 1; i <= countVersion; i++) {  // get keys to all the file versions
                 if (i < countVersion) {
-                    var keyPath = req.docManager.keyPath(fileName, userAddress, i);
+                    let keyPath = req.docManager.keyPath(fileName, userAddress, i);
                     if (!fileSystem.existsSync(keyPath)) continue;
                     keyVersion = '' + fileSystem.readFileSync(keyPath);
                 } else {
@@ -907,7 +907,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                 }
                 history.push(req.docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
 
-                var historyD = {
+                let historyD = {
                     fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
@@ -927,9 +927,9 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                 }
 
                 historyData.push(historyD);
-                
+
                 if (i < countVersion) {
-                    var changesFile = req.docManager.changesPath(fileName, userAddress, i);  // get the path to the file with document changes
+                    let changesFile = req.docManager.changesPath(fileName, userAddress, i);  // get the path to the file with document changes
                     changes = req.docManager.getChanges(changesFile);  // get changes made in the file
                 }
             }
@@ -945,13 +945,13 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         }
 
         if (cfgSignatureEnable) {
-            for (var i = 0; i < historyData.length; i++) {
+            for (let i = 0; i < historyData.length; i++) {
                 historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});  // sign token with given data using signature secret
             }
         }
 
         // file config data
-        var argss = {
+        let argss = {
             apiUrl: siteUrl + configServer.get('apiUrl'),
             file: {
                 name: fileName,
@@ -1047,17 +1047,17 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
 
 app.post('/rename', function (req, res) { //define a handler for renaming file
 
-    var newfilename = req.body.newfilename;
-    var origExt = req.body.ext;
-    var curExt = fileUtility.getFileExtension(newfilename, true);
+    let newfilename = req.body.newfilename;
+    let origExt = req.body.ext;
+    let curExt = fileUtility.getFileExtension(newfilename, true);
     if (curExt !== origExt) {
         newfilename += '.' + origExt;
     }
 
-    var dockey = req.body.dockey;
-    var meta = {title: newfilename};
+    let dockey = req.body.dockey;
+    let meta = {title: newfilename};
 
-    var result = function(err, data, ress) {
+    let result = function(err, data, ress) {
         res.writeHead(200, {'Content-Type': 'application/json' });
         res.write(JSON.stringify({ 'result': ress }));
         res.end();

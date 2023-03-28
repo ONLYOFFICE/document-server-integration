@@ -17,22 +17,22 @@
  */
 
 // get all the necessary values and modules
-var urlModule = require('url');
-var urllib = require('urllib');
-var jwt = require('jsonwebtoken');
-var fileUtility = require('./fileUtility');
-var guidManager = require('./guidManager');
-var configServer = require('config').get('server');
-var siteUrl = configServer.get('siteUrl');  // the path to the editors installation
-var cfgSignatureEnable = configServer.get('token.enable');
-var cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-var cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-var cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
-var cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
-var cfgSignatureSecret = configServer.get('token.secret');
-var cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
+let urlModule = require('url');
+let urllib = require('urllib');
+let jwt = require('jsonwebtoken');
+let fileUtility = require('./fileUtility');
+let guidManager = require('./guidManager');
+let configServer = require('config').get('server');
+let siteUrl = configServer.get('siteUrl');  // the path to the editors installation
+let cfgSignatureEnable = configServer.get('token.enable');
+let cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+let cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
+let cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
+let cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
+let cfgSignatureSecret = configServer.get('token.secret');
+let cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
-var documentService = {};
+let documentService = {};
 
 documentService.userIp = null;
 
@@ -47,11 +47,11 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
     fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
 
-    var title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
+    let title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
 
     documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
 
-    var params = {  // write all the conversion parameters to the params dictionary
+    let params = {  // write all the conversion parameters to the params dictionary
         async: async,
         url: documentUri,
         outputtype: toExtension.replace('.', ''),
@@ -62,8 +62,8 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
         region: lang,
     };
 
-    var uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
-    var headers = {
+    let uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
+    let headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     };
@@ -90,15 +90,15 @@ documentService.generateRevisionId = function (expectedKey) {
         expectedKey = expectedKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
     } 
 
-    var key = expectedKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
+    let key = expectedKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
     return key.substring(0, Math.min(key.length, maxKeyLength));  // the resulting key is of the max key length or less
 };
 
 // create an error message for the error code
 documentService.processConvertServiceResponceError = function (errorCode) {
-    var errorMessage = '';
-    var errorMessageTemplate = 'Error occurred in the ConvertService: ';
+    let errorMessage = '';
+    let errorMessageTemplate = 'Error occurred in the ConvertService: ';
 
     // add the error message to the error message template depending on the error code
     switch (errorCode) {
@@ -141,16 +141,16 @@ documentService.processConvertServiceResponceError = function (errorCode) {
 
 // get the response url
 documentService.getResponseUri = function (json) {
-    var fileResult = JSON.parse(json);
+    let fileResult = JSON.parse(json);
 
     if (fileResult.error)  // if an error occurs
         documentService.processConvertServiceResponceError(parseInt(fileResult.error));  // get an error message
 
-    var isEndConvert = fileResult.endConvert  // check if the conversion is completed
+    let isEndConvert = fileResult.endConvert  // check if the conversion is completed
 
-    var percent = parseInt(fileResult.percent);  // get the conversion percentage
-    var uri = null;
-    var fileType = null;
+    let percent = parseInt(fileResult.percent);  // get the conversion percentage
+    let uri = null;
+    let fileType = null;
 
     if (isEndConvert) {  // if the conversion is completed
         if (!fileResult.fileUrl)  // and the file url doesn't exist
@@ -183,8 +183,8 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
         params.meta = meta;
     }
 
-    var uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
-    var headers = {  // create a headers object
+    let uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
+    let headers = {  // create a headers object
         'Content-Type': 'application/json'
     };
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
@@ -204,10 +204,10 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
 
 // check jwt token headers
 documentService.checkJwtHeader = function (req) {
-  var decoded = null;
-  var authorization = req.get(cfgSignatureAuthorizationHeader);  // get signature authorization header from the request
+  let decoded = null;
+  let authorization = req.get(cfgSignatureAuthorizationHeader);  // get signature authorization header from the request
   if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {  // if authorization header exists and it starts with the authorization header prefix
-    var token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);  // the resulting token starts after the authorization header prefix
+    let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);  // the resulting token starts after the authorization header prefix
     try {
       decoded = jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
     } catch (err) {
@@ -219,16 +219,16 @@ documentService.checkJwtHeader = function (req) {
 
 // get jwt token using url information
 documentService.fillJwtByUrl = function (uri, opt_dataObject) {
-  var parseObject = urlModule.parse(uri, true);  // get parse object from the url
-  var payload = {query: parseObject.query, payload: opt_dataObject};  // create payload object
+  let parseObject = urlModule.parse(uri, true);  // get parse object from the url
+  let payload = {query: parseObject.query, payload: opt_dataObject};  // create payload object
 
-  var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
   return jwt.sign(payload, cfgSignatureSecret, options);  // sign token with given data using signature secret and options parameters
 }
 
 // get token
 documentService.getToken = function (data) {
-    var options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+    let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
     return jwt.sign(data, cfgSignatureSecret, options);  // sign token with given data using signature secret and options parameters
 };
 

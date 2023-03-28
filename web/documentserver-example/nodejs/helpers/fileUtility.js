@@ -16,16 +16,16 @@
  *
  */
 
-var fileUtility = {};
+let fileUtility = {};
 
 // get file name from the given url
 fileUtility.getFileName = function (url, withoutExtension) {
     if (!url) return '';
 
-    var parts = url.split('\\');
+    let parts = url.split('\\');
     parts = parts.pop();
     parts = parts.split('/');
-    var fileName = parts.pop();  // get the file name from the last part of the url
+    let fileName = parts.pop();  // get the file name from the last part of the url
     fileName = fileName.split('?')[0];
 
     // get file name without extension
@@ -40,16 +40,16 @@ fileUtility.getFileName = function (url, withoutExtension) {
 fileUtility.getFileExtension = function (url, withoutDot) {
     if (!url) return null;
 
-    var fileName = fileUtility.getFileName(url);  // get file name from the given url
+    let fileName = fileUtility.getFileName(url);  // get file name from the given url
 
-    var parts = fileName.toLowerCase().split('.');
+    let parts = fileName.toLowerCase().split('.');
 
     return withoutDot ? parts.pop() : '.' + parts.pop();  // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
 fileUtility.getFileType = function (url) {
-    var ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
+    let ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
 
     if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;  // word type for document extensions
     if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;  // cell type for spreadsheet extensions
@@ -76,11 +76,11 @@ fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.ppt
 // get url parameters
 function getUrlParams(url) {
     try {
-        var query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
-        var params = query.split('&');  // parameters are separated by & sign
-        var map = {};  // write parameters and their values to the map dictionary
-        for (var i = 0; i < params.length; i++) {
-            var parts = param.split('=');
+        let query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
+        let params = query.split('&');  // parameters are separated by & sign
+        let map = {};  // write parameters and their values to the map dictionary
+        for (let i = 0; i < params.length; i++) {
+            let parts = param.split('=');
             map[parts[0]] = parts[1];
         }
         return map;

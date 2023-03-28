@@ -18,13 +18,13 @@
 
 const config = require('config');
 const configServer = config.get('server');
-var urlModule = require('url');
-var urllib = require('urllib');
+let urlModule = require('url');
+let urllib = require('urllib');
 const xmlParser = require('fast-xml-parser');
 const he = require('he');
 const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
 
-var cache = null;
+let cache = null;
 
 async function initWopi(docManager) {
     let absSiteUrl = siteUrl;
@@ -56,7 +56,7 @@ async function getDiscoveryInfo(siteUrl) {
 
 async function requestDiscovery(siteUrl) {
     return new Promise((resolve, reject) => {
-        var actions = [];
+        let actions = [];
         urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
             if (data) {
                 const discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response

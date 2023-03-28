@@ -16,7 +16,7 @@
  *
  */
 
-var lockDict = {};
+let lockDict = {};
 
 // get the lock object of the specified file
 function getLockObject(filePath) {

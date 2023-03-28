@@ -294,7 +294,7 @@ function checkFileInfo(wopi, req, res, userHost) {
 
     const path = req.docManager.storagePath(wopi.id, userAddress);
     // add wopi query
-    var query = new URLSearchParams(wopi.accessToken);
+    let query = new URLSearchParams(wopi.accessToken);
     const user = users.getUser(query.get('userid'));
 
     // create the file information object
@@ -315,21 +315,21 @@ function checkFileInfo(wopi, req, res, userHost) {
 
 function saveFileFromBody(req, filename, userAddress, isNewVersion, callback) {
     if (req.body) {
-        var storagePath = req.docManager.storagePath(filename, userAddress);
-        var historyPath = req.docManager.historyPath(filename, userAddress);  // get the path to the file history
+        let storagePath = req.docManager.storagePath(filename, userAddress);
+        let historyPath = req.docManager.historyPath(filename, userAddress);  // get the path to the file history
         if (historyPath == '') {  // if it is empty
             historyPath = req.docManager.historyPath(filename, userAddress, true);  // create it
             req.docManager.createDirectory(historyPath);  // and create a new directory for the history
         }
 
-        var version = 0;
+        let version = 0;
         if (isNewVersion) {
-            var count_version = req.docManager.countVersion(historyPath);  // get the last file version
+            let count_version = req.docManager.countVersion(historyPath);  // get the last file version
             version = count_version + 1;  // get a number of a new file version
-            var versionPath = req.docManager.versionPath(filename, userAddress, version);  // get the path to the specified file version
+            let versionPath = req.docManager.versionPath(filename, userAddress, version);  // get the path to the specified file version
             req.docManager.createDirectory(versionPath);  // and create a new directory for the specified version
 
-            var path_prev = path.join(versionPath, 'prev' + fileUtility.getFileExtension(filename));  // get the path to the previous file version
+            let path_prev = path.join(versionPath, 'prev' + fileUtility.getFileExtension(filename));  // get the path to the previous file version
             fileSystem.renameSync(storagePath, path_prev);  // synchronously rename the given file as the previous file version
         }
 

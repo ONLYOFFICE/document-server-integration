@@ -120,8 +120,8 @@ docManager.prototype.fileRemove = function (fileName) {
 
 // create a zero-size file
 docManager.prototype.fileSizeZero = function (fileName) {
-    var path = this.storagePath(fileName);
-    var fh = fileSystem.openSync(path, 'w');
+    let path = this.storagePath(fileName);
+    let fh = fileSystem.openSync(path, 'w');
     fileSystem.closeSync(fh);
 }
 
@@ -198,7 +198,7 @@ docManager.prototype.getCallback = function (fileName) {
 // get url to the created file
 docManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
     const server = this.getServerUrl();
-    var ext = this.getInternalExtension(docType).replace('.', '');
+    let ext = this.getInternalExtension(docType).replace('.', '');
     const handler = '/editor?fileExt=' + ext + '&userid=' + userid + '&type=' + type + '&lang=' + lang;
 
     return server + handler;
@@ -207,7 +207,7 @@ docManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
 // get url to download a file
 docManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
     const server = this.getServerUrl(forDocumentServer);
-    var handler = '/download?fileName=' + encodeURIComponent(fileName);
+    let handler = '/download?fileName=' + encodeURIComponent(fileName);
     if (forDocumentServer) {
         const hostAddress = this.curUserHostAddress();
         handler += '&useraddress=' + encodeURIComponent(hostAddress);

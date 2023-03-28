@@ -16,7 +16,7 @@
  *
  */
 
-var descr_user_1 = [
+let descr_user_1 = [
     'File author by default',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -27,7 +27,7 @@ var descr_user_1 = [
     //"Can submit forms"
 ];
 
-var descr_user_2 = [
+let descr_user_2 = [
     'Belongs to Group2',
     'Can review only his own changes or changes made by users with no group',
     'Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only',
@@ -37,7 +37,7 @@ var descr_user_2 = [
     //"Can’t submit forms"
 ];
 
-var descr_user_3 = [
+let descr_user_3 = [
     'Belongs to Group3',
     'Can review changes made by Group2 users',
     'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
@@ -50,7 +50,7 @@ var descr_user_3 = [
     //"Can’t submit forms"
 ];
 
-var descr_user_0 = [
+let descr_user_0 = [
     'The name is requested when the editor is opened',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -66,7 +66,7 @@ var descr_user_0 = [
     //"Can’t submit forms"
 ];
 
-var users = [
+let users = [
     new User('uid-1', 'John Smith', 'smith@example.com',
             null, null, {}, null,
             null, [], descr_user_1, true),
@@ -110,7 +110,7 @@ users.getAllUsers = function () {
 
 // get a user by id specified
 users.getUser = function (id) {
-    var result = null;
+    let result = null;
     this.forEach(user => {
         if (user.id == id) {
             result = user;
@@ -121,7 +121,7 @@ users.getUser = function (id) {
 
 // get a list of users with their name and email
 users.getUsersForMentions = function (id) {
-    var result = [];
+    let result = [];
     this.forEach(user => {
         if (user.id != id && user.name != null && user.email != null) {
             result.push({
