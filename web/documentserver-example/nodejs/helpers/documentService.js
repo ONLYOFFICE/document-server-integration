@@ -88,7 +88,7 @@ documentService.generateRevisionId = function (expectedKey) {
     const maxKeyLength = 128;  // the max key length is 128
     if (expectedKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
         expectedKey = expectedKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
-    } 
+    }
 
     let key = expectedKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
@@ -157,7 +157,7 @@ documentService.getResponseUri = function (json) {
             throw { message: 'FileUrl is null' };  // the file url is null
 
         uri = fileResult.fileUrl;  // otherwise, get the file url
-        fileType = fileResult.fileType;  // get the file type
+        ({fileType} = fileResult);  // get the file type
         percent = 100;
     } else {  // if the conversion isn't completed
         percent = percent >= 100 ? 99 : percent;  // get the percentage value

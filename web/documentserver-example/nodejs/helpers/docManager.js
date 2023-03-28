@@ -60,22 +60,22 @@ docManager.prototype.getLang = function () {
 docManager.prototype.getCustomParams = function () {
     let params = '';
 
-    const userid = this.req.query.userid;  // user id
+    const {userid} = this.req.query;  // user id
     params += (userid ? '&userid=' + userid : '');
 
-    const lang = this.req.query.lang;  // language
+    const {lang} = this.req.query;  // language
     params += (lang ? '&lang=' + this.getLang() : '');
 
-    const directUrl = this.req.query.directUrl;  // directUrl
+    const {directUrl} = this.req.query;  // directUrl
     params += (directUrl ? '&directUrl=' + (directUrl == 'true') : '');
 
-    const fileName = this.req.query.fileName;  // file name
+    const {fileName} = this.req.query;  // file name
     params += (fileName ? '&fileName=' + fileName : '');
 
-    const mode = this.req.query.mode;  // mode: view/edit/review/comment/fillForms/embedded
+    const {mode} = this.req.query;  // mode: view/edit/review/comment/fillForms/embedded
     params += (mode ? '&mode=' + mode : '');
 
-    const type = this.req.query.type;  // type: embedded/mobile/desktop
+    const {type} = this.req.query;  // type: embedded/mobile/desktop
     params += (type ? '&type=' + type : '');
 
     return params;
@@ -401,7 +401,7 @@ docManager.prototype.getDate = function (date) {
 docManager.prototype.getChanges = function (fileName) {
     if (this.existsSync(fileName)) {  // if the directory with such a file exists
         return JSON.parse(fileSystem.readFileSync(fileName));  // read this file and parse it
-    } 
+    }
     return null;
 };
 
@@ -420,9 +420,9 @@ docManager.prototype.getHistory = function (fileName, content, keyVersion, versi
     let contentJson = null;
     if (content) {  // if content is defined
         if (content.changes && content.changes.length) {  // and there are some modifications in the content
-            contentJson = content.changes[0];  // write these modifications to the json content
+            [contentJson] = content.changes;  // write these modifications to the json content
         } else if (content.length){
-            contentJson = content[0];  // otherwise, write original content to the json content
+            [contentJson] = content;  // otherwise, write original content to the json content
             oldVersion = true;  // and note that this is an old version
         } else {
             content = false;
@@ -475,9 +475,9 @@ docManager.prototype.getFilesInfo = function (fileId) {
         const stats = fileSystem.lstatSync(path.join(directory, file.name));  // get file information
         const fileObject = {  // write file parameters to the file object
             version: file.version,
-            id: this.getKey(file.name),  
+            id: this.getKey(file.name),
             contentLength: `${(stats.size/1024).toFixed(2)} KB`,
-            pureContentLength: stats.size, 
+            pureContentLength: stats.size,
             title: file.name,
             updated: stats.mtime
         };

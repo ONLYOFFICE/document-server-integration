@@ -179,10 +179,10 @@ app.get('/history', function (req, res) {
         }
     }
 
-    let fileName = req.query.fileName;
+    let {fileName} = req.query;
     let userAddress = req.query.useraddress;
-    let ver = req.query.ver;
-    let file = req.query.file;
+    let {ver} = req.query;
+    let {file} = req.query;
 
     if (file.includes('diff')) {
         const Path = req.docManager.diffPath(fileName, userAddress, ver);
@@ -273,7 +273,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
 });
 
 app.post('/create', function (req, res) {
-    let title = req.body.title;
+    let {title} = req.body;
     let fileUrl = req.body.url;
 
     try {
@@ -428,7 +428,7 @@ app.get('/files', function(req, res) {  // define a handler for getting files in
 app.get('/files/file/:fileId', function(req, res) {  // define a handler for getting file information by its id
     try {
         req.docManager = new docManager(req, res);
-        const fileId = req.params.fileId;
+        const {fileId} = req.params;
         const fileInfoById = req.docManager.getFilesInfo(fileId);  // get the information about the file specified by a file id
         res.setHeader('Content-Type', 'application/json');
         res.write(JSON.stringify(fileInfoById));
@@ -482,17 +482,17 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
         res.end();
     };
 
-    let referenceData = req.body.referenceData;
+    let {referenceData} = req.body;
     if (!!referenceData) {
-        let instanceId = referenceData.instanceId;
+        let {instanceId} = referenceData;
 
         if (instanceId === req.docManager.getInstanceId()) {
             let fileKey = JSON.parse(referenceData.fileKey);
-            const userAddress = fileKey.userAddress;
+            const {userAddress} = fileKey;
 
             if (userAddress === req.docManager.curUserHostAddress()
                 && req.docManager.existsSync(req.docManager.storagePath(fileKey.fileName, userAddress))) {
-                let fileName = fileKey.fileName;
+                let {fileName} = fileKey;
             }
         }
     }
@@ -732,7 +732,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
             if (body.actions && body.actions[0].type == 0) { // finished edit
                 let user = body.actions[0].userid;
                 if (body.users.indexOf(user) == -1) {
-                    let key = body.key;
+                    let {key} = body;
                     try {
                         documentService.commandRequest('forcesave', key);  // call the forcesave command
                     } catch (ex) {
@@ -809,7 +809,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         req.docManager = new docManager(req, res);
 
         let fileName = fileUtility.getFileName(req.query.fileName);
-        let fileExt = req.query.fileExt;
+        let {fileExt} = req.query;
         let history = [];
         let historyData = [];
         let lang = req.docManager.getLang();
@@ -817,7 +817,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         let userDirectUrl = req.query.directUrl == 'true';
 
         let userid = user.id;
-        let name = user.name;
+        let {name} = user;
 
         let actionData = 'null';
         if (req.query.action){
@@ -853,9 +853,9 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         ];
 
         let userGroup = user.group;
-        let reviewGroups = user.reviewGroups;
-        let commentGroups = user.commentGroups;
-        let userInfoGroups = user.userInfoGroups;
+        let {reviewGroups} = user;
+        let {commentGroups} = user;
+        let {userInfoGroups} = user;
 
         if (fileExt != null) {
             let fileName = req.docManager.createDemo(!!req.query.sample, fileExt, userid, name, false);  // create demo document of a given extension
@@ -1047,14 +1047,14 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
 
 app.post('/rename', function (req, res) { //define a handler for renaming file
 
-    let newfilename = req.body.newfilename;
+    let {newfilename} = req.body;
     let origExt = req.body.ext;
     let curExt = fileUtility.getFileExtension(newfilename, true);
     if (curExt !== origExt) {
         newfilename += '.' + origExt;
     }
 
-    let dockey = req.body.dockey;
+    let {dockey} = req.body;
     let meta = {title: newfilename};
 
     let result = function(err, data, ress) {

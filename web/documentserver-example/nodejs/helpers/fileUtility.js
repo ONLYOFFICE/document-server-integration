@@ -26,7 +26,7 @@ fileUtility.getFileName = function (url, withoutExtension) {
     parts = parts.pop();
     parts = parts.split('/');
     let fileName = parts.pop();  // get the file name from the last part of the url
-    fileName = fileName.split('?')[0];
+    [fileName] = fileName.split('?');
 
     // get file name without extension
     if (withoutExtension) {
@@ -81,7 +81,7 @@ function getUrlParams(url) {
         let map = {};  // write parameters and their values to the map dictionary
         for (let i = 0; i < params.length; i++) {
             let parts = param.split('=');
-            map[parts[0]] = parts[1];
+            [,map[parts[0]]] = parts;
         }
         return map;
     }

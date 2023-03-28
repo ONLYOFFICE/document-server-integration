@@ -364,8 +364,8 @@ exports.fileRequestHandler = (req, res) => {
     req.docManager = new docManager(req, res);
     if (req.params['id'].includes('@')) {  // if there is the "@" sign in the id parameter
         const split = req.params['id'].split('@');  // split this parameter by "@"
-        req.params['id'] = split[0];  // rewrite id with the first part of the split parameter
-        userAddress = split[1];  // save the second part as the user address
+        [req.params['id']] = split;  // rewrite id with the first part of the split parameter
+        [,userAddress] = split;  // save the second part as the user address
     }
 
     const wopiData = parseWopiRequest(req);  // get the wopi data
