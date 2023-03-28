@@ -397,7 +397,7 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
 
     try {
         if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {  // check if the file with such an extension can be converted
-            let storagePath = req.docManager.storagePath(fileName);
+            const storagePath = req.docManager.storagePath(fileName);
             const stat = fileSystem.statSync(storagePath);
             let key = fileUri + stat.mtime.getTime();
 
@@ -922,7 +922,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
                         url: historyData[i-2].url,
                         directUrl: !userDirectUrl ? null :  historyData[i-2].directUrl,
                     };
-                    let changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+                    const changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
                     historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
                 }
 

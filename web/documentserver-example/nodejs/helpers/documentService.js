@@ -85,7 +85,7 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 
 // generate the document key value
 documentService.generateRevisionId = function (expectedKey) {
-    let maxKeyLength = 128;  // the max key length is 128
+    const maxKeyLength = 128;  // the max key length is 128
     if (expectedKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
         expectedKey = expectedKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
     } 

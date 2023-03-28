@@ -38,14 +38,14 @@ actionMapping[reqConsts.requestType.Unlock] = unlock;
 
 // parse wopi request
 function parseWopiRequest(req) {
-    let wopiData = {
+    const wopiData = {
         requestType: reqConsts.requestType.None,
         accessToken: req.query['access_token'],
         id: req.params['id']
     }
 
     // get the request path
-    let reqPath = req.path.substring('/wopi/'.length)
+    const reqPath = req.path.substring('/wopi/'.length)
 
     if (reqPath.startsWith('files')) {  // if it starts with "files"
         if (reqPath.endsWith('/contents')) {  // ends with "/contents"
@@ -58,7 +58,7 @@ function parseWopiRequest(req) {
             if (req.method == 'GET') {  // otherwise, if the request method is GET
                 wopiData.requestType = reqConsts.requestType.CheckFileInfo;  // the request type is CheckFileInfo
             } else if (req.method == 'POST') {  // if the request method is POST
-                let wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];  // get the X-WOPI-Override header which determines the request type
+                const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];  // get the X-WOPI-Override header which determines the request type
                 switch (wopiOverride) {
                     case 'LOCK':  // if it is equal to LOCK
                         if (req.headers[reqConsts.requestHeaders.OldLock.toLowerCase()]) {  // check if the request sends the X-WOPI-OldLock header
@@ -103,10 +103,10 @@ function parseWopiRequest(req) {
 
 // lock file editing
 function lock(wopi, req, res, userHost) {
-    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = req.docManager.curUserHostAddress(userHost);  // get current user host address
-    let filePath = req.docManager.storagePath(wopi.id, userAddress);  // get the storage path of the given file
+    const userAddress = req.docManager.curUserHostAddress(userHost);  // get current user host address
+    const filePath = req.docManager.storagePath(wopi.id, userAddress);  // get the storage path of the given file
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => lock
@@ -118,15 +118,15 @@ function lock(wopi, req, res, userHost) {
         res.sendStatus(200);
     } else {
         // file locked by someone else => return lock mismatch
-        let lock = lockManager.getLock(filePath);
+        const lock = lockManager.getLock(filePath);
         returnLockMismatch(res, lock, 'File already locked by ' + lock)
     }
 }
 
 // retrieve a lock on a file
 function getLock(wopi, req, res, userHost) {
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let filePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     // get the lock of the specified file and set it as the X-WOPI-Lock header
     res.setHeader(reqConsts.requestHeaders.lock, lockManager.getLock(filePath));
@@ -135,10 +135,10 @@ function getLock(wopi, req, res, userHost) {
 
 // refresh the lock on a file by resetting its automatic expiration timer to 30 minutes
 function refreshLock(wopi, req, res, userHost) {
-    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let filePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -155,10 +155,10 @@ function refreshLock(wopi, req, res, userHost) {
 
 // allow for file editing
 function unlock(wopi, req, res, userHost) {
-    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let filePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -175,11 +175,11 @@ function unlock(wopi, req, res, userHost) {
 
 // allow for file editing, and then immediately take a new lock on the file
 function unlockAndRelock(wopi, req, res, userHost) {
-    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
-    let oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()];  // get the X-WOPI-OldLock header
+    const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    const oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()];  // get the X-WOPI-OldLock header
 
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let filePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const filePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(filePath)) {
         // file isn't locked => mismatch
@@ -196,25 +196,25 @@ function unlockAndRelock(wopi, req, res, userHost) {
 
 // request a message to retrieve a file
 function getFile(wopi, req, res, userHost) {
-    let userAddress = req.docManager.curUserHostAddress(userHost);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
 
-    let path = req.docManager.storagePath(wopi.id, userAddress);
+    const path = req.docManager.storagePath(wopi.id, userAddress);
 
     res.setHeader('Content-Length', fileSystem.statSync(path).size);
     res.setHeader('Content-Type', mime.getType(path));
 
     res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(wopi.id));
 
-    let filestream = fileSystem.createReadStream(path);  // open a file as a readable stream
+    const filestream = fileSystem.createReadStream(path);  // open a file as a readable stream
     filestream.pipe(res);  // retrieve data from file stream and output it to the response object
 }
 
 // request a message to update a file
 function putFile(wopi, req, res, userHost) {
-    let requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
+    const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let storagePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const storagePath = req.docManager.storagePath(wopi.id, userAddress);
 
     if (!lockManager.hasLock(storagePath)) {
         // ToDo: if body length is 0 bytes => handle document creation
@@ -236,13 +236,13 @@ function putFile(wopi, req, res, userHost) {
 }
 
 function putRelativeFile(wopi, req, res, userHost) {
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let storagePath = req.docManager.storagePath(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const storagePath = req.docManager.storagePath(wopi.id, userAddress);
 
     let filename = req.headers[reqConsts.requestHeaders.RelativeTarget.toLowerCase()]; // we cannot modify this filename
     if (filename) {
         if (req.docManager.existsSync(storagePath)) { // check if already exists
-            let overwrite = req.headers[reqConsts.requestHeaders.OverwriteRelativeTarget.toLowerCase()]; // overwrite header
+            const overwrite = req.headers[reqConsts.requestHeaders.OverwriteRelativeTarget.toLowerCase()]; // overwrite header
             if (overwrite && overwrite === 'true') { // check if we can overwrite
                 if (lockManager.hasLock(storagePath)) { // check if file locked
                     returnValidRelativeTarget(res, req.docManager.getCorrectName(wopi.id, userAddress)); // file is locked, cannot overwrite
@@ -263,7 +263,7 @@ function putRelativeFile(wopi, req, res, userHost) {
         filename = req.docManager.getCorrectName(filename, userAddress); // get correct filename if already exists
     }
 
-    let isConverted = req.headers[reqConsts.requestHeaders.FileConversion.toLowerCase()];
+    const isConverted = req.headers[reqConsts.requestHeaders.FileConversion.toLowerCase()];
     console.log('putRelativeFile after conversation: ' + isConverted);
 
     // if we got here, then we can save a file
@@ -273,10 +273,10 @@ function putRelativeFile(wopi, req, res, userHost) {
             return;
         }
 
-        let serverUrl = req.docManager.getServerUrl(true);
-        let fileActionUrl = serverUrl + '/wopi-action/' + filename + '?action=';
+        const serverUrl = req.docManager.getServerUrl(true);
+        const fileActionUrl = serverUrl + '/wopi-action/' + filename + '?action=';
 
-        let fileInfo = {
+        const fileInfo = {
             'Name': filename,
             'Url': serverUrl + '/wopi/files/' + filename,
             'HostViewUrl': fileActionUrl + 'view',
@@ -289,16 +289,16 @@ function putRelativeFile(wopi, req, res, userHost) {
 
 // return information about the file properties, access rights and editor settings
 function checkFileInfo(wopi, req, res, userHost) {
-    let userAddress = req.docManager.curUserHostAddress(userHost);
-    let version = req.docManager.getKey(wopi.id, userAddress);
+    const userAddress = req.docManager.curUserHostAddress(userHost);
+    const version = req.docManager.getKey(wopi.id, userAddress);
 
-    let path = req.docManager.storagePath(wopi.id, userAddress);
+    const path = req.docManager.storagePath(wopi.id, userAddress);
     // add wopi query
     var query = new URLSearchParams(wopi.accessToken);
-    let user = users.getUser(query.get('userid'));
+    const user = users.getUser(query.get('userid'));
 
     // create the file information object
-    let fileInfo = {
+    const fileInfo = {
         'BaseFileName': wopi.id,
         'OwnerId': req.docManager.getFileData(wopi.id, userAddress)[1],
         'Size': fileSystem.statSync(path).size,
@@ -333,7 +333,7 @@ function saveFileFromBody(req, filename, userAddress, isNewVersion, callback) {
             fileSystem.renameSync(storagePath, path_prev);  // synchronously rename the given file as the previous file version
         }
 
-        let filestream = fileSystem.createWriteStream(storagePath);
+        const filestream = fileSystem.createWriteStream(storagePath);
         req.pipe(filestream);
         req.on('end', () => {
             filestream.close();
@@ -363,12 +363,12 @@ exports.fileRequestHandler = (req, res) => {
     let userAddress = null;
     req.docManager = new docManager(req, res);
     if (req.params['id'].includes('@')) {  // if there is the "@" sign in the id parameter
-        let split = req.params['id'].split('@');  // split this parameter by "@"
+        const split = req.params['id'].split('@');  // split this parameter by "@"
         req.params['id'] = split[0];  // rewrite id with the first part of the split parameter
         userAddress = split[1];  // save the second part as the user address
     }
 
-    let wopiData = parseWopiRequest(req);  // get the wopi data
+    const wopiData = parseWopiRequest(req);  // get the wopi data
 
     // an error of the unknown request type
     if (wopiData.requestType == reqConsts.requestType.None) {
@@ -377,7 +377,7 @@ exports.fileRequestHandler = (req, res) => {
     }
 
     // an error of the unsupported request type
-    let action = actionMapping[wopiData.requestType];
+    const action = actionMapping[wopiData.requestType];
     if (!action) {
         res.status(501).send({ 'title': 'fileHandler', 'method': req.method, 'id': req.params['id'], 'error': 'unsupported' });
         return;

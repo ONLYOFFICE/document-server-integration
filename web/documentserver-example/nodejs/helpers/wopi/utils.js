@@ -59,18 +59,18 @@ async function requestDiscovery(siteUrl) {
         var actions = [];
         urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
             if (data) {
-                let discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
+                const discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
                     attributeNamePrefix: '',
                     ignoreAttributes: false,
                     parseAttributeValue: true,
                     attrValueProcessor: (val, attrName) => he.decode(val, {isAttributeValue: true})
                 });
                 if (discovery['wopi-discovery']) {
-                    for (let app of discovery['wopi-discovery']['net-zone'].app) {
+                    for (const app of discovery['wopi-discovery']['net-zone'].app) {
                         if (!Array.isArray(app.action)) {
                             app.action = [app.action];
                         }
-                        for (let action of app.action) {
+                        for (const action of app.action) {
                             actions.push({  // write all the parameters to the actions element
                                 app: app.name,
                                 favIconUrl: app.favIconUrl,
@@ -93,10 +93,10 @@ async function requestDiscovery(siteUrl) {
 
 // get actions of the specified extension
 async function getActions(ext) {
-    let actions = await getDiscoveryInfo();  // get the wopi discovery information
-    let filtered = [];
+    const actions = await getDiscoveryInfo();  // get the wopi discovery information
+    const filtered = [];
 
-    for (let action of actions) {  // and filter it by the specified extention
+    for (const action of actions) {  // and filter it by the specified extention
         if (action.ext == ext) {
             filtered.push(action);
         }
@@ -107,9 +107,9 @@ async function getActions(ext) {
 
 // get an action for the specified extension and name
 async function getAction(ext, name) {
-    let actions = await getDiscoveryInfo();
+    const actions = await getDiscoveryInfo();
 
-    for (let action of actions) {
+    for (const action of actions) {
         if (action.ext == ext && action.name == name) {
             return action;
         }
@@ -120,9 +120,9 @@ async function getAction(ext, name) {
 
 // get the default action for the specified extension
 async function getDefaultAction(ext) {
-    let actions = await getDiscoveryInfo();
+    const actions = await getDiscoveryInfo();
 
-    for (let action of actions) {
+    for (const action of actions) {
         if (action.ext == ext && action.isDefault) {
             return action;
         }

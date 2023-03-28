@@ -301,7 +301,7 @@ docManager.prototype.getStoredFiles = function () {
         const stats = fileSystem.lstatSync(path.join(directory, storedFiles[i]));  // save element parameters
 
         if (!stats.isDirectory()) {  // if the element isn't a directory
-            let historyPath = this.historyPath(storedFiles[i], userAddress);  // get the path to the file history
+            const historyPath = this.historyPath(storedFiles[i], userAddress);  // get the path to the file history
             let version = 0;
             if (historyPath != '') {  // if the history path exists
                 version = this.countVersion(historyPath);  // get the last file version
@@ -361,7 +361,7 @@ docManager.prototype.getInternalExtension = function (fileType) {
 
 // get the template image url
 docManager.prototype.getTemplateImageUrl = function (fileType) {
-    let path = this.getServerUrl(true);
+    const path = this.getServerUrl(true);
     if (fileType == fileUtility.fileType.word)  // for word type
         return path + '/images/file_docx.svg';
 
@@ -379,12 +379,12 @@ docManager.prototype.getKey = function (fileName, userAddress) {
     userAddress = userAddress || this.curUserHostAddress();
     let key = userAddress + fileName;  // get document key by adding local file url to the current user host address
 
-    let historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history
+    const historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history
     if (historyPath != ''){  // if the path to the file history exists
         key += this.countVersion(historyPath);  // add file version number to the document key
     }
 
-    let storagePath = this.storagePath(fileName, userAddress);  // get the storage path to the given file
+    const storagePath = this.storagePath(fileName, userAddress);  // get the storage path to the given file
     const stat = fileSystem.statSync(storagePath);  // get file information
     key += stat.mtime.getTime();  // and add creation time to the document key
 
@@ -468,7 +468,7 @@ docManager.prototype.getFilesInfo = function (fileId) {
     const userAddress = this.curUserHostAddress();
     const directory = this.storageRootPath(userAddress);
     const filesInDirectory = this.getStoredFiles();  // get all the stored files from the folder
-    let responseArray = [];
+    const responseArray = [];
     let responseObject;
     for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile++) {  // run through all the files from the directory
         const file = filesInDirectory[currentFile];

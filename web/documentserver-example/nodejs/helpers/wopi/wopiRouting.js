@@ -49,24 +49,24 @@ exports.registerRoutes = function(app) {
         await utils.initWopi(req.docManager);
 
         // get the wopi discovery information
-        let actions = await utils.getDiscoveryInfo();
-        let wopiEnable = actions.length != 0 ? true : false;
-        let docsExtEdit = [];    // Supported extensions for WOPI
+        const actions = await utils.getDiscoveryInfo();
+        const wopiEnable = actions.length != 0 ? true : false;
+        const docsExtEdit = [];    // Supported extensions for WOPI
 
         actions.forEach(el => {
             if (el.name == 'edit') docsExtEdit.push('.'+el.ext);
         });
 
-        let editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
-        let fillExts = configServer.get('fillDocs').filter(i => docsExtEdit.includes(i));
+        const editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
+        const fillExts = configServer.get('fillDocs').filter(i => docsExtEdit.includes(i));
 
         try {
             // get all the stored files
-            let files = req.docManager.getStoredFiles();
+            const files = req.docManager.getStoredFiles();
 
             // run through all the files and write the corresponding information to each file
             for (var file of files) {
-                let ext = fileUtility.getFileExtension(file.name, true);  // get an extension of each file
+                const ext = fileUtility.getFileExtension(file.name, true);  // get an extension of each file
                 file.actions = await utils.getActions(ext);  // get actions of the specified extension
                 file.defaultAction = await utils.getDefaultAction(ext);  // get the default action of the specified extension
             }
@@ -117,7 +117,7 @@ exports.registerRoutes = function(app) {
             var user = users.getUser(req.query.userid);  // get a user by the id
 
             // get an action for the specified extension and name
-            let action = await utils.getAction(fileExt, req.query['action']);
+            const action = await utils.getAction(fileExt, req.query['action']);
 
             if (action != null && req.query['action'] == 'editnew') {
                 fileName = req.docManager.RequestEditnew(req, fileName, user);
