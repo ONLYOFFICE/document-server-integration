@@ -39,7 +39,7 @@ getCustomWopiParams = function (query) {
     return { tokenParams, actionParams };
 };
 
-exports.registerRoutes = function(app) {
+exports.registerRoutes = function (app) {
 
     // define a handler for the default wopi page
     app.get('/wopi', async (req, res) => {

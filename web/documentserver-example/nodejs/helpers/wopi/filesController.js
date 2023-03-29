@@ -26,7 +26,7 @@ const users = require('../users');
 const docManager = require('../docManager');
 
 // lock file editing
-const lock = function(wopi, req, res, userHost) {
+const lock = function (wopi, req, res, userHost) {
     const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
     const userAddress = req.docManager.curUserHostAddress(userHost);  // get current user host address

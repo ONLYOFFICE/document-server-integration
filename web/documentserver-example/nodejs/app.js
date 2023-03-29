@@ -476,7 +476,7 @@ app.post('/reference', (req, res) => { //define a handler for renaming file
 
     req.docManager = new docManager(req, res);
 
-    let result = function(data) {
+    let result = function (data) {
         res.writeHead(200, {'Content-Type': 'application/json' });
         res.write(JSON.stringify(data));
         res.end();
@@ -1057,7 +1057,7 @@ app.post('/rename', (req, res) => { //define a handler for renaming file
     let {dockey} = req.body;
     let meta = {title: newfilename};
 
-    let result = function(err, data, ress) {
+    let result = function (err, data, ress) {
         res.writeHead(200, {'Content-Type': 'application/json' });
         res.write(JSON.stringify({ result: ress }));
         res.end();

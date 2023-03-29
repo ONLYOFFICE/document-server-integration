@@ -24,13 +24,13 @@ const documentService = require('./documentService');
 const configServer = require('config').get('server');
 const storageConfigFolder = configServer.get('storageFolder');
 
-const docManager = function(req, res) {
+const docManager = function (req, res) {
     this.req = req;
     this.res = res;
 }
 
 // check if the path exists or not
-docManager.prototype.existsSync = function(path) {
+docManager.prototype.existsSync = function (path) {
     let res = true;
     try {
         fileSystem.accessSync(path, fileSystem.F_OK);  // synchronously test the user's permissions for the directory specified by path; the directory is visible to the calling process
@@ -41,7 +41,7 @@ docManager.prototype.existsSync = function(path) {
 };
 
 // create a new directory if it doesn't exist
-docManager.prototype.createDirectory = function(path) {
+docManager.prototype.createDirectory = function (path) {
     if (!this.existsSync(path)) {
         fileSystem.mkdirSync(path);
     }
@@ -406,7 +406,7 @@ docManager.prototype.getChanges = function (fileName) {
 };
 
 // get the last file version
-docManager.prototype.countVersion = function(directory) {
+docManager.prototype.countVersion = function (directory) {
     let i = 0;
     while (this.existsSync(path.join(directory, `${  i + 1}`))) {  // run through all the file versions
         i++;  // and count them

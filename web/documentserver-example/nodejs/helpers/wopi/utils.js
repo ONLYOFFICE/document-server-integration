@@ -26,7 +26,7 @@ const siteUrl = configServer.get('siteUrl');  // the path to the editors install
 
 let cache = null;
 
-const initWopi = async function(docManager) {
+const initWopi = async function (docManager) {
     let absSiteUrl = siteUrl;
     if (absSiteUrl.indexOf('/') === 0) {
         absSiteUrl = docManager.getServerHost() + siteUrl;
@@ -119,7 +119,7 @@ const getAction = async function (ext, name) {
 }
 
 // get the default action for the specified extension
-const getDefaultAction = async function(ext) {
+const getDefaultAction = async function (ext) {
     const actions = await getDiscoveryInfo();
 
     for (const action of actions) {
