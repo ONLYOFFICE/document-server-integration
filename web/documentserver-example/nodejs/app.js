@@ -907,12 +907,13 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
                 }
                 history.push(req.docManager.getHistory(fileName, changes, keyVersion, i));  // write all the file history information
 
+                let userUrl = i == countVersion ? directUrl : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`);
                 let historyD = {
                     fileType: fileExt.slice(1),
                     version: i,
                     key: keyVersion,
                     url: i == countVersion ? url : (`${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
-                    directUrl: !userDirectUrl ? null : i == countVersion ? directUrl : (`${req.docManager.getServerUrl(false)}/history?fileName=${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`),
+                    directUrl: !userDirectUrl ? null : userUrl,
                 };
 
                 if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists

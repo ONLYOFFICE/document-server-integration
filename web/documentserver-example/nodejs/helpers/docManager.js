@@ -434,9 +434,12 @@ docManager.prototype.getHistory = function (fileName, content, keyVersion, versi
     }
 
     const userAddress = this.curUserHostAddress();
-    const username = fileContent ? (oldVersion ? contentJson.username : contentJson.user.name) : (this.getFileData(fileName, userAddress))[2];
-    const userid = fileContent ? (oldVersion ? contentJson.userid : contentJson.user.id) : (this.getFileData(fileName, userAddress))[1];
-    const created = fileContent ? (oldVersion ? contentJson.date : contentJson.created) : (this.getFileData(fileName, userAddress))[0];
+    const userNameFromJson = oldVersion ? contentJson.username : contentJson.user.name;
+    const userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.userid;
+    const createdFromJson = oldVersion ? contentJson.date : contentJson.created;
+    const username = fileContent ? userNameFromJson : (this.getFileData(fileName, userAddress))[2];
+    const userid = fileContent ? userIdFromJson : (this.getFileData(fileName, userAddress))[1];
+    const created = fileContent ? createdFromJson : (this.getFileData(fileName, userAddress))[0];
     const res = (fileContent && !oldVersion) ? fileContent : {changes: fileContent};
     res.key = keyVersion;  // write the information about the user, creation time, key and version to the result object
     res.version = version;
