@@ -38,7 +38,7 @@ documentService.userIp = null;
 
 // get the url of the converted file (synchronous)
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
-    documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, function (err, data) {
+    documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, (err, data) => {
         callback(err, data);
     });
 };

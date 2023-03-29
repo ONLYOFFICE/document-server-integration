@@ -78,7 +78,7 @@ app.set('views', path.join(__dirname, 'views'));  // specify the path to the mai
 app.set('view engine', 'ejs');  // specify which template engine is used
 
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');  // allow any Internet domain to access the resources of this site
     next();
 });
@@ -98,7 +98,7 @@ app.use(bodyParser.json());  // connect middleware that parses json
 app.use(bodyParser.urlencoded({ extended: false }));  // connect middleware that parses urlencoded bodies
 
 
-app.get('/', function (req, res) {  // define a handler for default page
+app.get('/', (req, res) => {  // define a handler for default page
     try {
 
         req.docManager = new docManager(req, res);
@@ -124,7 +124,7 @@ app.get('/', function (req, res) {  // define a handler for default page
     }
 });
 
-app.get('/download', function(req, res) {  // define a handler for downloading files
+app.get('/download', (req, res) => {  // define a handler for downloading files
     req.docManager = new docManager(req, res);
 
     let fileName = fileUtility.getFileName(req.query.fileName);
@@ -160,7 +160,7 @@ app.get('/download', function(req, res) {  // define a handler for downloading f
     filestream.pipe(res);  // send file information to the response by streams
 });
 
-app.get('/history', function (req, res) {
+app.get('/history', (req, res) => {
     req.docManager = new docManager(req, res);
     if (cfgSignatureEnable && cfgSignatureUseForRequest) {
         let authorization = req.get(cfgSignatureAuthorizationHeader);
@@ -201,7 +201,7 @@ app.get('/history', function (req, res) {
     filestream.pipe(res);  // send file information to the response by streams
 })
 
-app.post('/upload', function (req, res) {  // define a handler for uploading files
+app.post('/upload', (req, res) => {  // define a handler for uploading files
 
     req.docManager = new docManager(req, res);
     req.docManager.storagePath(''); // mkdir if not exist
@@ -215,7 +215,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
     form.uploadDir = uploadDirTmp;  // and write there all the necessary parameters
     form.keepExtensions = true;
 
-    form.parse(req, function (err, fields, files) {  // parse this form
+    form.parse(req, (err, fields, files) => {  // parse this form
     	if (err) {  // if an error occurs
 			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
 			res.writeHead(200, { 'Content-Type': 'text/plain' });  // and write the error status and message to the response
@@ -255,7 +255,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
             return;
         }
 
-        fileSystem.rename(file.path, `${uploadDir  }/${  file.name}`, function (err) {  // rename a file
+        fileSystem.rename(file.path, `${uploadDir  }/${  file.name}`, (err) => {  // rename a file
 			//docManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             if (err) {  // if an error occurs
@@ -272,7 +272,7 @@ app.post('/upload', function (req, res) {  // define a handler for uploading fil
     });
 });
 
-app.post('/create', function (req, res) {
+app.post('/create', (req, res) => {
     let {title} = req.body;
     let fileUrl = req.body.url;
 
@@ -284,7 +284,7 @@ app.post('/create', function (req, res) {
         let userAddress = req.docManager.curUserHostAddress();
         req.docManager.historyPath(fileName, userAddress, true);
 
-        urllib.request(fileUrl, {method: 'GET'},function(err, data) {
+        urllib.request(fileUrl, {method: 'GET'},(err, data) => {
             if (configServer.get('maxFileSize') < data.length || data.length <= 0) {  // check if the file size exceeds the maximum file size
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.write(JSON.stringify({ error: 'File size is incorrect' }));
@@ -320,7 +320,7 @@ app.post('/create', function (req, res) {
     }
 });
 
-app.post('/convert', function (req, res) {  // define a handler for converting files
+app.post('/convert', (req, res) => {  // define a handler for converting files
     req.docManager = new docManager(req, res);
 
     let fileName = fileUtility.getFileName(req.body.filename);
@@ -412,7 +412,7 @@ app.post('/convert', function (req, res) {  // define a handler for converting f
     }
 });
 
-app.get('/files', function(req, res) {  // define a handler for getting files information
+app.get('/files', (req, res) => {  // define a handler for getting files information
     try {
         req.docManager = new docManager(req, res);
         const filesInDirectoryInfo = req.docManager.getFilesInfo();  // get the information about the files from the storage path
@@ -425,7 +425,7 @@ app.get('/files', function(req, res) {  // define a handler for getting files in
     res.end();
 });
 
-app.get('/files/file/:fileId', function(req, res) {  // define a handler for getting file information by its id
+app.get('/files/file/:fileId', (req, res) => {  // define a handler for getting file information by its id
     try {
         req.docManager = new docManager(req, res);
         const {fileId} = req.params;
@@ -439,7 +439,7 @@ app.get('/files/file/:fileId', function(req, res) {  // define a handler for get
     res.end();
 });
 
-app.delete('/file', function (req, res) {  // define a handler for removing file
+app.delete('/file', (req, res) => {  // define a handler for removing file
     try {
     	req.docManager = new docManager(req, res);
         let fileName = req.query.filename;
@@ -459,7 +459,7 @@ app.delete('/file', function (req, res) {  // define a handler for removing file
     res.end();
 });
 
-app.get('/csv', function (req, res) {  // define a handler for downloading csv files
+app.get('/csv', (req, res) => {  // define a handler for downloading csv files
     let fileName = 'csv.csv';
     let csvPath = path.join(__dirname, 'public', 'assets',  'sample', fileName);
 
@@ -472,7 +472,7 @@ app.get('/csv', function (req, res) {  // define a handler for downloading csv f
     filestream.pipe(res);  // send file information to the response by streams
 })
 
-app.post('/reference', function (req, res) { //define a handler for renaming file
+app.post('/reference', (req, res) => { //define a handler for renaming file
 
     req.docManager = new docManager(req, res);
 
@@ -528,7 +528,7 @@ app.post('/reference', function (req, res) { //define a handler for renaming fil
     result(data);
 });
 
-app.post('/track', async function (req, res) {  // define a handler for tracking file changes
+app.post('/track', async (req, res) => {  // define a handler for tracking file changes
 
     req.docManager = new docManager(req, res);
 
@@ -619,7 +619,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
                 let key = documentService.generateRevisionId(downloadUri);
                 newFileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);  // get the correct file name if it already exists
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async (err, data) => {
                         if (err) {
                             await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
                             return;
@@ -705,7 +705,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
             if (downloadExt != curExt) {
                 let key = documentService.generateRevisionId(downloadUri);
                 try {
-                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async function (err, data) {
+                    documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async (err, data) => {
                         if (err) {
                             await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
                             return;
@@ -755,10 +755,10 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
     // read request body
     let readbody = async function (request, response, fileName, userAddress) {
         let content = '';
-        request.on('data', async function (data) {  // get data from the request
+        request.on('data', async (data) => {  // get data from the request
             content += data;
         });
-        request.on('end', async function () {
+        request.on('end', async () => {
             let body = JSON.parse(content);
             await processTrack(response, body, fileName, userAddress);  // and track file changes
         });
@@ -803,7 +803,7 @@ app.post('/track', async function (req, res) {  // define a handler for tracking
     }
 });
 
-app.get('/editor', function (req, res) {  // define a handler for editing document
+app.get('/editor', (req, res) => {  // define a handler for editing document
     try {
 
         req.docManager = new docManager(req, res);
@@ -1022,7 +1022,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
         };
 
         if (cfgSignatureEnable) {
-            app.render('config', argss, function(err, html){  // render a config template with the parameters specified
+            app.render('config', argss, (err, html)=> {  // render a config template with the parameters specified
                 if (err) {
                     console.log(err);
                 } else {
@@ -1045,7 +1045,7 @@ app.get('/editor', function (req, res) {  // define a handler for editing docume
     }
 });
 
-app.post('/rename', function (req, res) { //define a handler for renaming file
+app.post('/rename', (req, res) => { //define a handler for renaming file
 
     let {newfilename} = req.body;
     let origExt = req.body.ext;
@@ -1069,14 +1069,14 @@ app.post('/rename', function (req, res) { //define a handler for renaming file
 wopiApp.registerRoutes(app);
 
 // "Not found" error with 404 status
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     const err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
 // render the error template with the parameters specified
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message

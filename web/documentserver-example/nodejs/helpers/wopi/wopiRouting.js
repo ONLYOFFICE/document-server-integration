@@ -42,7 +42,7 @@ getCustomWopiParams = function (query) {
 exports.registerRoutes = function(app) {
 
     // define a handler for the default wopi page
-    app.get('/wopi', async function(req, res) {
+    app.get('/wopi', async (req, res) => {
 
         req.docManager = new docManager(req, res);
 
@@ -93,7 +93,7 @@ exports.registerRoutes = function(app) {
         }
     });
     // define a handler for creating a new wopi editing session
-    app.get('/wopi-new', function(req, res) {
+    app.get('/wopi-new', (req, res) => {
         let {fileExt} = req.query;  // get the file extension from the request
 
         req.docManager = new docManager(req, res);
@@ -106,7 +106,7 @@ exports.registerRoutes = function(app) {
         }
     });
     // define a handler for getting wopi action information by its id
-    app.get('/wopi-action/:id', async function(req, res) {
+    app.get('/wopi-action/:id', async (req, res) => {
         try {
             req.docManager = new docManager(req, res);
 
