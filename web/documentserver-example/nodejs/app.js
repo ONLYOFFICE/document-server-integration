@@ -59,13 +59,13 @@ String.prototype.hashCode = function () {
     }
     return ret;
 };
-String.prototype.format = function () {
+String.prototype.format = function (...args) {
     let text = this.toString();
 
-    if (!arguments.length) return text;
+    if (!args.length) return text;
 
-    for (let i = 0; i < arguments.length; i++) {
-        text = text.replace(new RegExp(`\\{${  i  }\\}`, 'gi'), arguments[i]);
+    for (let i = 0; i < args.length; i++) {
+        text = text.replace(new RegExp(`\\{${  i  }\\}`, 'gi'), args[i]);
     }
 
     return text;
