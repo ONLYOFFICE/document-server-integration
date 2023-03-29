@@ -121,7 +121,7 @@ users.getAllUsers = function () {
 // get a user by id specified
 users.getUser = function (id) {
     let result = null;
-    this.forEach(user => {
+    this.forEach((user) => {
         if (user.id == id) {
             result = user;
         }
@@ -132,7 +132,7 @@ users.getUser = function (id) {
 // get a list of users with their name and email
 users.getUsersForMentions = function (id) {
     let result = [];
-    this.forEach(user => {
+    this.forEach((user) => {
         if (user.id != id && user.name != null && user.email != null) {
             result.push({
                 email: user.email,

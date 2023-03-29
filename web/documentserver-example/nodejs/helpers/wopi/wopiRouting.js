@@ -53,12 +53,12 @@ exports.registerRoutes = function (app) {
         const wopiEnable = actions.length != 0 ? true : false;
         const docsExtEdit = [];    // Supported extensions for WOPI
 
-        actions.forEach(el => {
+        actions.forEach((el) => {
             if (el.name == 'edit') docsExtEdit.push(`.${el.ext}`);
         });
 
-        const editedExts = configServer.get('editedDocs').filter(i => docsExtEdit.includes(i));   // Checking supported extensions
-        const fillExts = configServer.get('fillDocs').filter(i => docsExtEdit.includes(i));
+        const editedExts = configServer.get('editedDocs').filter((i) => docsExtEdit.includes(i));   // Checking supported extensions
+        const fillExts = configServer.get('fillDocs').filter((i) => docsExtEdit.includes(i));
 
         try {
             // get all the stored files
