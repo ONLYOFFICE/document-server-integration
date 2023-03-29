@@ -74,13 +74,15 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
     }
 
     //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
-    urllib.request(urlModule.parse(uri),
+    urllib.request(
+urlModule.parse(uri),
         {
             method: 'POST',
             headers,
             data: params
         },
-        callback);
+        callback
+);
 };
 
 // generate the document key value
@@ -194,13 +196,15 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
     }
 
     //parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
-    urllib.request(urlModule.parse(uri),
+    urllib.request(
+urlModule.parse(uri),
         {
             method: 'POST',
             headers,
             data: params
         },
-        callback);
+        callback
+);
 };
 
 // check jwt token headers

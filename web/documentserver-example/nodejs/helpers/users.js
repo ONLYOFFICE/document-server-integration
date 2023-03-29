@@ -83,26 +83,34 @@ let descr_user_0 = [
 ];
 
 let users = [
-    new User('uid-1', 'John Smith', 'smith@example.com',
+    new User(
+'uid-1', 'John Smith', 'smith@example.com',
             null, null, {}, null,
-            null, [], descr_user_1, true),
-    new User('uid-2', 'Mark Pottato', 'pottato@example.com',
+            null, [], descr_user_1, true
+),
+    new User(
+'uid-2', 'Mark Pottato', 'pottato@example.com',
             'group-2', ['group-2', ''], {
                 view: '',
                 edit: ['group-2', ''],
                 remove: ['group-2']
             }, ['group-2', ''],
-            true, [], descr_user_2, false),  // own and without group
-    new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com',
+            true, [], descr_user_2, false
+),  // own and without group
+    new User(
+'uid-3', 'Hamish Mitchell', 'mitchell@example.com',
             'group-3', ['group-2'], {
                 view: ['group-3', 'group-2'],
                 edit: ['group-2'],
                 remove: []
             }, ['group-2'],
-            false, ['copy', 'download', 'print'], descr_user_3, false),  // other group only
-    new User('uid-0', null, null,
+            false, ['copy', 'download', 'print'], descr_user_3, false
+),  // other group only
+    new User(
+'uid-0', null, null,
             null, null, {}, [],
-            null, ['protect'], descr_user_0, false),
+            null, ['protect'], descr_user_0, false
+),
 ];
 
 // get a list of all the users
