@@ -16,6 +16,22 @@
  *
  */
 
+class User {
+    constructor(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.group = group;
+        this.reviewGroups = reviewGroups;
+        this.commentGroups = commentGroups;
+        this.userInfoGroups = userInfoGroups;
+        this.favorite = favorite;
+        this.deniedPermissions = deniedPermissions;
+        this.descriptions = descriptions;
+        this.templates = templates;
+    };
+}
+
 let descr_user_1 = [
     'File author by default',
     'Doesn’t belong to any group',
@@ -88,20 +104,6 @@ let users = [
             null, null, {}, [],
             null, ['protect'], descr_user_0, false),
 ];
-
-function User(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.group = group;
-    this.reviewGroups = reviewGroups;
-    this.commentGroups = commentGroups;
-    this.userInfoGroups = userInfoGroups;
-    this.favorite = favorite;
-    this.deniedPermissions = deniedPermissions;
-    this.descriptions = descriptions;
-    this.templates = templates;
-};
 
 // get a list of all the users
 users.getAllUsers = function () {

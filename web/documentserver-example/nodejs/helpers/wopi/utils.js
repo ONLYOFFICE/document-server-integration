@@ -26,7 +26,7 @@ const siteUrl = configServer.get('siteUrl');  // the path to the editors install
 
 let cache = null;
 
-async function initWopi(docManager) {
+const initWopi = async function(docManager) {
     let absSiteUrl = siteUrl;
     if (absSiteUrl.indexOf('/') === 0) {
         absSiteUrl = docManager.getServerHost() + siteUrl;
@@ -37,7 +37,7 @@ async function initWopi(docManager) {
 }
 
 // get the wopi discovery information
-async function getDiscoveryInfo(siteUrl) {
+const getDiscoveryInfo = async function (siteUrl) {
     let actions = [];
 
     if (cache) return cache;
@@ -54,7 +54,7 @@ async function getDiscoveryInfo(siteUrl) {
     return actions;
 }
 
-async function requestDiscovery(siteUrl) {
+const requestDiscovery = async function (siteUrl) {
     return new Promise((resolve, reject) => {
         let actions = [];
         urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
@@ -92,7 +92,7 @@ async function requestDiscovery(siteUrl) {
 }
 
 // get actions of the specified extension
-async function getActions(ext) {
+const getActions = async function (ext) {
     const actions = await getDiscoveryInfo();  // get the wopi discovery information
     const filtered = [];
 
@@ -106,7 +106,7 @@ async function getActions(ext) {
 }
 
 // get an action for the specified extension and name
-async function getAction(ext, name) {
+const getAction = async function (ext, name) {
     const actions = await getDiscoveryInfo();
 
     for (const action of actions) {
@@ -119,7 +119,7 @@ async function getAction(ext, name) {
 }
 
 // get the default action for the specified extension
-async function getDefaultAction(ext) {
+const getDefaultAction = async function(ext) {
     const actions = await getDiscoveryInfo();
 
     for (const action of actions) {
@@ -132,7 +132,7 @@ async function getDefaultAction(ext) {
 }
 
 // get the action url
-function getActionUrl(host, userAddress, action, filename) {
+const getActionUrl = function (host, userAddress, action, filename) {
     return `${action.urlsrc.replace(/<.*&>/g, '')  }WOPISrc=${  host  }/wopi/files/${  filename  }@${  userAddress}`;
 }
 

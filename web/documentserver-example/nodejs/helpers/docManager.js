@@ -24,7 +24,7 @@ const documentService = require('./documentService');
 const configServer = require('config').get('server');
 const storageConfigFolder = configServer.get('storageFolder');
 
-function docManager(req, res) {
+const docManager = function(req, res) {
     this.req = req;
     this.res = res;
 }

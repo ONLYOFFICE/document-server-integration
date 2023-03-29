@@ -19,31 +19,31 @@
 let lockDict = {};
 
 // get the lock object of the specified file
-function getLockObject(filePath) {
+const getLockObject = function (filePath) {
     return lockDict[filePath];
 }
 
 // clear the lock timeout
-function clearLockTimeout(lockObject) {
+const clearLockTimeout = function (lockObject) {
     if (lockObject && lockObject.timeout) {
         clearTimeout(lockObject.timeout);
     }
 }
 
 // get the lock value of the specified file
-function getLockValue(filePath) {
+const getLockValue = function (filePath) {
     const lock = getLockObject(filePath);  // get the lock object of the specified file
     if (lock) return lock.value;  // if it exists, get the lock value from it
     return '';
 }
 
 // check if the specified file path has lock or not
-function hasLock(filePath) {
+const hasLock = function (filePath) {
     return !!getLockObject(filePath);
 }
 
 // lock file editing
-function lock(filePath, lockValue) {
+const lock = function (filePath, lockValue) {
     const oldLock = getLockObject(filePath);  // get the old lock of the specified file
     clearLockTimeout(oldLock);  // clear its timeout
 
@@ -55,7 +55,7 @@ function lock(filePath, lockValue) {
 }
 
 // allow for file editing
-function unlock(filePath) {
+const unlock = function (filePath) {
     const lock = getLockObject(filePath);  // get the lock of the specified file
     clearLockTimeout(lock);  // clear its timeout
     delete lockDict[filePath];  // delete the lock
