@@ -287,8 +287,8 @@ const returnLockMismatch = function (res, lock, reason) {
 const parseWopiRequest = function (req) {
     const wopiData = {
         requestType: reqConsts.requestType.None,
-        accessToken: req.query['access_token'],
-        id: req.params['id']
+        accessToken: req.query.access_token,
+        id: req.params.id
     }
 
     // get the request path
@@ -362,9 +362,9 @@ actionMapping[reqConsts.requestType.Unlock] = unlock;
 exports.fileRequestHandler = (req, res) => {
     let userAddress = null;
     req.docManager = new docManager(req, res);
-    if (req.params['id'].includes('@')) {  // if there is the "@" sign in the id parameter
-        const split = req.params['id'].split('@');  // split this parameter by "@"
-        [req.params['id']] = split;  // rewrite id with the first part of the split parameter
+    if (req.params.id.includes('@')) {  // if there is the "@" sign in the id parameter
+        const split = req.params.id.split('@');  // split this parameter by "@"
+        [req.params.id] = split;  // rewrite id with the first part of the split parameter
         [,userAddress] = split;  // save the second part as the user address
     }
 
@@ -372,14 +372,14 @@ exports.fileRequestHandler = (req, res) => {
 
     // an error of the unknown request type
     if (wopiData.requestType == reqConsts.requestType.None) {
-        res.status(500).send({ title: 'fileHandler', method: req.method, id: req.params['id'], error: 'unknown' });
+        res.status(500).send({ title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown' });
         return;
     }
 
     // an error of the unsupported request type
     const action = actionMapping[wopiData.requestType];
     if (!action) {
-        res.status(501).send({ title: 'fileHandler', method: req.method, id: req.params['id'], error: 'unsupported' });
+        res.status(501).send({ title: 'fileHandler', method: req.method, id: req.params.id, error: 'unsupported' });
         return;
     }
 

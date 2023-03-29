@@ -99,9 +99,9 @@ docManager.prototype.getCorrectName = function (fileName, userAddress) {
 // processes a request editnew
 docManager.prototype.RequestEditnew = function (req, fileName, user) {
     let correctName = fileName;
-    if (req.params['id'] != fileName) {  // processes a repeated request editnew
-        this.fileRemove(req.params['id']);
-        correctName = this.getCorrectName(req.params['id']);
+    if (req.params.id != fileName) {  // processes a repeated request editnew
+        this.fileRemove(req.params.id);
+        correctName = this.getCorrectName(req.params.id);
     }
     this.fileSizeZero(correctName);
     this.saveFileData(correctName, user.id, user.name);
@@ -180,7 +180,7 @@ docManager.prototype.getServerPath = function () {
 
 // get host address from the request
 docManager.prototype.getServerHost = function () {
-    return `${this.getProtocol()  }://${  this.req.headers['x-forwarded-host'] || this.req.headers['host']}`;
+    return `${this.getProtocol()  }://${  this.req.headers['x-forwarded-host'] || this.req.headers.host}`;
 };
 
 // get protocol from the request

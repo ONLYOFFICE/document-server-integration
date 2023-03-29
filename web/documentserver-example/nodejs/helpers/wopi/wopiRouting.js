@@ -112,20 +112,20 @@ exports.registerRoutes = function (app) {
 
             await utils.initWopi(req.docManager);
 
-            let fileName = req.docManager.getCorrectName(req.params['id'])
+            let fileName = req.docManager.getCorrectName(req.params.id)
             let fileExt = fileUtility.getFileExtension(fileName, true);  // get the file extension from the request
             let user = users.getUser(req.query.userid);  // get a user by the id
 
             // get an action for the specified extension and name
-            const action = await utils.getAction(fileExt, req.query['action']);
+            const action = await utils.getAction(fileExt, req.query.action);
 
-            if (action != null && req.query['action'] == 'editnew') {
+            if (action != null && req.query.action == 'editnew') {
                 fileName = req.docManager.RequestEditnew(req, fileName, user);
             }
 
             // render wopiAction template with the parameters specified
             res.render('wopiAction', {
-                actionUrl: utils.getActionUrl(req.docManager.getServerUrl(true), req.docManager.curUserHostAddress(), action, req.params['id']),
+                actionUrl: utils.getActionUrl(req.docManager.getServerUrl(true), req.docManager.curUserHostAddress(), action, req.params.id),
                 token: 'test',
                 tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
                 params: getCustomWopiParams(req.query),

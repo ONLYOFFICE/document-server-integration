@@ -88,7 +88,7 @@ if (config.has('server.static')) {  // check if there are static files such as .
   const staticContent = config.get('server.static');
   for (let i = 0; i < staticContent.length; ++i) {
     const staticContentElem = staticContent[i];
-    app.use(staticContentElem['name'], express.static(staticContentElem['path'], staticContentElem['options']));
+    app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
   }
 }
 app.use(favicon(`${__dirname  }/public/images/favicon.ico`));  // use favicon
@@ -337,13 +337,13 @@ app.post('/convert', (req, res) => {  // define a handler for converting files
 
         // write file name, step and error values to the result object if they are defined
         if (filename != null)
-            result['filename'] = filename;
+            result.filename = filename;
 
         if (step != null)
-            result['step'] = step;
+            result.step = step;
 
         if (error != null)
-            result['error'] = error;
+            result.error = error;
 
         response.setHeader('Content-Type', 'application/json');
         response.write(JSON.stringify(result));
