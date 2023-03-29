@@ -1022,7 +1022,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         };
 
         if (cfgSignatureEnable) {
-            app.render('config', argss, (err, html)=> {  // render a config template with the parameters specified
+            app.render('config', argss, (err, html) => {  // render a config template with the parameters specified
                 if (err) {
                     console.log(err);
                 } else {
