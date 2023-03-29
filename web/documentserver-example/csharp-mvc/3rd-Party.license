@@ -36,6 +36,10 @@ Microsoft.Web.Infrastructure - This package contains the Microsoft.Web.Infrastru
 License:        MS-EULA License
 License File:   Microsoft.Web.Infrastructure.license
 
+MinIO         - MinIO Client SDK provides higher level APIs for MinIO and Amazon S3 compatible cloud storage services. (https://github.com/minio/minio-dotnet)
+License:        Apache-2.0 license 
+License File:   MinIO.license
+
 Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://github.com/JamesNK/Newtonsoft.Json)
 License:        MIT
 License File:   Newtonsoft.Json.license
