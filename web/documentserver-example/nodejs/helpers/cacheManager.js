@@ -25,7 +25,7 @@ exports.put = function (key, value) {
 
 // check if the given key is in the cache
 exports.containsKey = function (key) {
-    if (typeof cache[key] == 'undefined'){
+    if (typeof cache[key] == 'undefined') {
         return false;
     }
 
@@ -33,7 +33,7 @@ exports.containsKey = function (key) {
 
     let t1 = new Date(cache[key].time + (1000 * secondsCache));  // get the creation time of the given key and add 30 seconds to it
     let t2 = new Date();  // get the current time
-    if (t1 < t2 ){  // if the current time is greater
+    if (t1 < t2 ) {  // if the current time is greater
         delete cache[key];  // delete the given key from the cache
         return false;
     }

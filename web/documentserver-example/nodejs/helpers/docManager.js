@@ -98,7 +98,7 @@ docManager.prototype.getCorrectName = function (fileName, userAddress) {
 
 // processes a request editnew
 docManager.prototype.RequestEditnew = function (req, fileName, user) {
-    if (req.params['id'] != fileName){  // processes a repeated request editnew
+    if (req.params['id'] != fileName) {  // processes a repeated request editnew
         this.fileRemove(req.params['id']);
         fileName = this.getCorrectName(req.params['id']);
     }
@@ -380,7 +380,7 @@ docManager.prototype.getKey = function (fileName, userAddress) {
     let key = userAddress + fileName;  // get document key by adding local file url to the current user host address
 
     const historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history
-    if (historyPath != ''){  // if the path to the file history exists
+    if (historyPath != '') {  // if the path to the file history exists
         key += this.countVersion(historyPath);  // add file version number to the document key
     }
 
@@ -421,7 +421,7 @@ docManager.prototype.getHistory = function (fileName, content, keyVersion, versi
     if (content) {  // if content is defined
         if (content.changes && content.changes.length) {  // and there are some modifications in the content
             [contentJson] = content.changes;  // write these modifications to the json content
-        } else if (content.length){
+        } else if (content.length) {
             [contentJson] = content;  // otherwise, write original content to the json content
             oldVersion = true;  // and note that this is an old version
         } else {

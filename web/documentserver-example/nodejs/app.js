@@ -643,7 +643,7 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
         };
 
         // callback file force saving process
-        let callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false){
+        let callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false) {
             try {
                 const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
 
@@ -655,7 +655,7 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
 
                 if (isSubmitForm) {
                     // new file
-                    if (newFileName){
+                    if (newFileName) {
                         fileName = req.docManager.getCorrectName(`${fileUtility.getFileName(fileName, true)  }-form${  downloadExt}`, userAddress);
                     } else {
                         let ext = fileUtility.getFileExtension(fileName);
@@ -663,7 +663,7 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
                     }
                     let forcesavePath = req.docManager.storagePath(fileName, userAddress);
                 } else {
-                    if (newFileName){
+                    if (newFileName) {
                         fileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                     }
                     // create forcesave path if it doesn't exist
@@ -820,7 +820,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         let {name} = user;
 
         let actionData = 'null';
-        if (req.query.action){
+        if (req.query.action) {
             try {
                 actionData = JSON.stringify(JSON.parse(req.query.action));
             }
