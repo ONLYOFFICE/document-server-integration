@@ -82,7 +82,7 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                    string fileData;
+                string fileData;
                 try
                 {
                     using (var receiveStream = context.Request.InputStream)
@@ -96,53 +96,60 @@ namespace OnlineEditorsExampleMVC
                 {
                     throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
                 }
-    
+
                 var jss = new JavaScriptSerializer();
                 var body = jss.Deserialize<Dictionary<string, object>>(fileData);
-                var fileUrl = (string) body["url"];
-                var title = (string) body["title"];
+                var fileUrl = (string)body["url"];
+                var title = (string)body["title"];
                 var fileName = DocManagerHelper.GetCorrectName(title);
                 var extension = "." + (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
-    
+
                 var allExt = DocManagerHelper.ConvertExts
                     .Concat(DocManagerHelper.EditedExts)
                     .Concat(DocManagerHelper.ViewedExts)
                     .Concat(DocManagerHelper.FillFormExts)
                     .ToArray();
-    
+
                 if (!allExt.Contains(extension))
-                { 
+                {
                     context.Response.Write("{\"error\":\"File type is not supported\"}");
                 }
-                
+
                 var req = (HttpWebRequest)WebRequest.Create(fileUrl);
-    
+
                 DocManagerHelper.VerifySSL();
 
                 using (var stream = req.GetResponse().GetResponseStream())
                 {
-                    
                     if (stream == null || req.GetResponse().ContentLength <= 0 || req.GetResponse().ContentLength > DocManagerHelper.MaxFileSize)
                     {
                         context.Response.Write("{\"error\": \"File size is incorrect\"}");
                     }
-                    const int bufferSize = 4096;
-                
-                    using (var fs = File.Open(DocManagerHelper.StoragePath(fileName, null), FileMode.Create))
+
+                    if (S3Helper.Instance.Enabled)
                     {
-                        var buffer = new byte[bufferSize];
-                        int readed;
-                        while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                        S3Helper.Instance.UploadFileSync(fileName, stream);
+                    }
+                    else
+                    {
+                        const int bufferSize = 4096;
+
+                        using (var fs = File.Open(DocManagerHelper.StoragePath(fileName, null), FileMode.Create))
                         {
-                            fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                            var buffer = new byte[bufferSize];
+                            int readed;
+                            while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                            {
+                                fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                            }
                         }
                     }
                 }
-                    
+
                 var id = context.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);  // get the user
                 DocManagerHelper.CreateMeta(fileName, user.id, user.name, null);
-    
+
                 context.Response.Write("{ \"file\": \"" + fileName + "\"}");
             }
             catch (Exception e)
@@ -158,7 +165,7 @@ namespace OnlineEditorsExampleMVC
             try
             {
                 DocManagerHelper.VerifySSL();
-                
+
                 var httpPostedFile = context.Request.Files[0];
                 string fileName;
 
@@ -188,8 +195,15 @@ namespace OnlineEditorsExampleMVC
                 fileName = DocManagerHelper.GetCorrectName(fileName);  // get the correct file name if such a name already exists
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
 
-                var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
-                httpPostedFile.SaveAs(savedFileName);  // and save it
+                if (S3Helper.Instance.Enabled)
+                {
+                    S3Helper.Instance.UploadFileSync(fileName, httpPostedFile.InputStream);
+                }
+                else
+                {
+                    var savedFileName = DocManagerHelper.StoragePath(fileName);  // get the storage path to the uploading file
+                    httpPostedFile.SaveAs(savedFileName);  // and save it
+                }
                 // get file meta information or create the default one
                 var id = context.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);
@@ -263,15 +277,23 @@ namespace OnlineEditorsExampleMVC
                     using (var stream = req.GetResponse().GetResponseStream())  // get response stream of the converting file
                     {
                         if (stream == null) throw new Exception("Stream is null");
-                        const int bufferSize = 4096;
 
-                        using (var fs = File.Open(DocManagerHelper.StoragePath(correctName), FileMode.Create))
+                        if (S3Helper.Instance.Enabled)
                         {
-                            var buffer = new byte[bufferSize];
-                            int readed;
-                            while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                            S3Helper.Instance.UploadFileSync(fileName, stream);
+                        }
+                        else
+                        {
+                            const int bufferSize = 4096;
+
+                            using (var fs = File.Open(DocManagerHelper.StoragePath(correctName), FileMode.Create))
                             {
-                                fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                                var buffer = new byte[bufferSize];
+                                int readed;
+                                while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                                {
+                                    fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                                }
                             }
                         }
                     }
@@ -312,7 +334,7 @@ namespace OnlineEditorsExampleMVC
 
             var userAddress = context.Request["userAddress"];
             var fileName = Path.GetFileName(context.Request["fileName"]);
-            var status = (TrackerStatus) (int) fileData["status"];  // get status from the request body
+            var status = (TrackerStatus)(int)fileData["status"];  // get status from the request body
             var saved = 0;
             switch (status)
             {
@@ -320,8 +342,8 @@ namespace OnlineEditorsExampleMVC
                     try
                     {
                         var jss = new JavaScriptSerializer();
-                        var actions = jss.Deserialize <List<object>> (jss.Serialize(fileData["actions"]));
-                        var action = jss.Deserialize <Dictionary<string, object>> (jss.Serialize(actions[0]));
+                        var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
+                        var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
                         if (action != null && action["type"].ToString().Equals("0"))  // finished edit
                         {
                             var user = action["userid"].ToString();  // the user who finished editing
@@ -396,8 +418,17 @@ namespace OnlineEditorsExampleMVC
             var path = DocManagerHelper.StoragePath(fileName, null);  // delete file
             var histDir = DocManagerHelper.HistoryDir(path);  // delete file history
 
-            if (File.Exists(path)) File.Delete(path);
-            if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+            if (S3Helper.Instance.Enabled)
+            {
+                var filesToRemove = S3Helper.Instance.ListAllItemsSync(histDir).Select(file => file.Key).ToList();
+                filesToRemove.Add(path);
+                S3Helper.Instance.RemoveFilesSync(filesToRemove);
+            }
+            else
+            {
+                if (File.Exists(path)) File.Delete(path);
+                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+            }
         }
 
         // get files information
@@ -456,7 +487,7 @@ namespace OnlineEditorsExampleMVC
         {
             try
             {
-                var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] 
+                var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"]
                     : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = context.Request["userAddress"];
                 var isEmbedded = context.Request["dmode"];
@@ -485,7 +516,7 @@ namespace OnlineEditorsExampleMVC
                 }
                 download(filePath, context);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 context.Response.Write("{ \"error\": \"File not found!\"}");
             }
@@ -494,13 +525,22 @@ namespace OnlineEditorsExampleMVC
         // download data from the url to the file
         private static void download(string filePath, HttpContext context)
         {
-            var fileinf = new FileInfo(filePath);
-            context.Response.AddHeader("Content-Length", fileinf.Length.ToString());  // set headers to the response
             context.Response.AddHeader("Content-Type", MimeMapping.GetMimeMapping(filePath));
             var tmp = HttpUtility.UrlEncode(Path.GetFileName(filePath));
             tmp = tmp.Replace("+", "%20");
             context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8\'\'" + tmp);
-            context.Response.TransmitFile(filePath);
+
+            if (S3Helper.Instance.Enabled)
+            {
+                var stream = S3Helper.Instance.DownloadFileSync(filePath);
+                stream.CopyTo(context.Response.OutputStream);
+            }
+            else
+            {
+                var fileinf = new FileInfo(filePath);
+                context.Response.AddHeader("Content-Length", fileinf.Length.ToString());  // set headers to the response
+                context.Response.TransmitFile(filePath);
+            }
         }
 
         public bool IsReusable
@@ -542,7 +582,15 @@ namespace OnlineEditorsExampleMVC
                     }
                 }
                 var histPath = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, userAddress));
-                var filePath = Path.Combine(DocManagerHelper.VersionDir(histPath, version), file);  // get the path to document version
+                string filePath;
+                if (S3Helper.Instance.Enabled)
+                {
+                    filePath = DocManagerHelper.VersionDir(histPath, version) + file;
+                }
+                else
+                {
+                    filePath = Path.Combine(DocManagerHelper.VersionDir(histPath, version), file);  // get the path to document version
+                }
 
                 download(filePath, context);
             }
@@ -574,17 +622,17 @@ namespace OnlineEditorsExampleMVC
 
             var jss = new JavaScriptSerializer();
             var body = jss.Deserialize<Dictionary<string, object>>(fileData);
-            var newFileName = (string) body["newfilename"];
-            var docKey = (string) body["dockey"];
+            var newFileName = (string)body["newfilename"];
+            var docKey = (string)body["dockey"];
 
-            var origExt = '.' + (string) body["ext"];
+            var origExt = '.' + (string)body["ext"];
             var curExt = Path.GetExtension(newFileName).ToLower();
 
             if (string.Compare(origExt, curExt, true) != 0)
             {
                 newFileName += origExt;
             }
-            var meta =  new Dictionary<string, object>() {
+            var meta = new Dictionary<string, object>() {
                 { "title", newFileName }
             };
             TrackManager.commandRequest("meta", docKey, meta);

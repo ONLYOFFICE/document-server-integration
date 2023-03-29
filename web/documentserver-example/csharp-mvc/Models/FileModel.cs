@@ -24,6 +24,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 using OnlineEditorsExampleMVC.Helpers;
 
 namespace OnlineEditorsExampleMVC.Models
@@ -75,8 +76,6 @@ namespace OnlineEditorsExampleMVC.Models
         // get the document config
         public string GetDocConfig(HttpRequest request, UrlHelper url)
         {
-            var jss = new JavaScriptSerializer();
-
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
             var editorsMode = Mode ?? "edit";  // get editor mode
 
@@ -96,7 +95,7 @@ namespace OnlineEditorsExampleMVC.Models
             bool? favorite = user.favorite;
 
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
-            var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
+            var actionData = string.IsNullOrEmpty(actionLink) ? null : JsonConvert.DeserializeObject(actionLink);  // get action data for the action link
 
             var directUrl = DocManagerHelper.GetDownloadUrl(FileName, false);
             var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
@@ -221,7 +220,7 @@ namespace OnlineEditorsExampleMVC.Models
                 config.Add("token", token);
             }
 
-            return jss.Serialize(config);
+            return JsonConvert.SerializeObject(config, Formatting.Indented);
         }
 
         // get the document history

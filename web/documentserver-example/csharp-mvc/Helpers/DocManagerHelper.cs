@@ -26,6 +26,8 @@ using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Models;
 using System.Net;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace OnlineEditorsExampleMVC.Helpers
 {
@@ -80,21 +82,28 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the storage path of the file
         public static string StoragePath(string fileName, string userAddress = null)
         {
-            var directory = "";
-            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (S3Helper.Instance.Enabled)
             {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                return fileName;
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+                var directory = "";
+                if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+                {
+                    directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                }
+                else
+                {
+                    directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+                }
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
             }
-            
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-            return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
         }
 
         // get the path to the forcesaved file version
@@ -110,7 +119,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             {
                 directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
             }
-            
+
             if (!Directory.Exists(directory))
             {
                 return "";
@@ -146,13 +155,27 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the history directory
         public static string HistoryDir(string storagePath)
         {
-            return storagePath += "-hist";
+            if (S3Helper.Instance.Enabled)
+            {
+                return storagePath + "-hist/";
+            }
+            else
+            {
+                return storagePath + "-hist";
+            }
         }
 
         // get the path to the file version by the history path and file version
         public static string VersionDir(string histPath, int version)
         {
-            return Path.Combine(histPath, version.ToString());
+            if (S3Helper.Instance.Enabled)
+            {
+                return histPath + version + "/";
+            }
+            else
+            {
+                return Path.Combine(histPath, version.ToString());
+            }
         }
 
         // get the path to the file version by the file name, user address and file version
@@ -177,38 +200,62 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get a file name with an index if the file with such a name already exists
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
-            var baseName = Path.GetFileNameWithoutExtension(fileName);
-            var ext = Path.GetExtension(fileName).ToLower();
-            var name = baseName + ext;
-
-            for (var i = 1; File.Exists(StoragePath(name, userAddress)); i++)  // run through all the files with such a name in the storage directory
+            if (S3Helper.Instance.Enabled)
             {
-                name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
-            }
-            return name;
-        }
+                var files = S3Helper.Instance.ListAllItemsSync().Select(file => file.Key);
+                var baseName = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName).ToLower();
+                var name = baseName + ext;
 
-        // get all the stored files from the user host address
-        public static List<FileInfo> GetStoredFiles()
-        {
-            var directory = "";
-            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
-            {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                for (var i = 1; files.Contains(name); i++)  // run through all the files with such a name in the storage directory
+                {
+                    name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+                }
+                return name;
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+                var baseName = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName).ToLower();
+                var name = baseName + ext;
+
+                for (var i = 1; File.Exists(StoragePath(name, userAddress)); i++)  // run through all the files with such a name in the storage directory
+                {
+                    name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+                }
+                return name;
             }
-            
-            if (!Directory.Exists(directory)) return new List<FileInfo>();
+        }
 
-            var directoryInfo = new DirectoryInfo(directory);
+        // get all the stored files from the user host address
+        public static IEnumerable<FileInfoModel> GetStoredFiles()
+        {
+            if (S3Helper.Instance.Enabled)
+            {
+                var files = S3Helper.Instance.ListAllItemsSync();
+                return files.Where(file => !file.IsDir).Select(file => FileInfoModel.FromS3(file));
+            }
+            else
+            {
+                var directory = "";
+                if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+                {
+                    directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                }
+                else
+                {
+                    directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+                }
 
-            // take files from the root directory
-            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+                if (!Directory.Exists(directory)) return new List<FileInfoModel>();
 
-            return storedFiles;
+                var directoryInfo = new DirectoryInfo(directory);
+
+                // take files from the root directory
+                List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+
+                return storedFiles.Select(file => FileInfoModel.FromFileInfo(file));
+            }
         }
 
         // create demo document
@@ -219,7 +266,14 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 
-            File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
+            if (S3Helper.Instance.Enabled)
+            {
+                S3Helper.Instance.UploadFileSync(StoragePath(fileName), HttpRuntime.AppDomainAppPath + demoPath + demoName);
+            }
+            else
+            {
+                File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
+            }
 
             return fileName;
         }
@@ -228,26 +282,34 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static void CreateMeta(string fileName, string uid, string uname, string userAddress = null)
         {
             var histDir = HistoryDir(StoragePath(fileName, userAddress));  // create history directory
-            Directory.CreateDirectory(histDir);
-            // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
-            File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
-                { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
-                { "id", uid },
-                { "name", uname }
-            }));
+            var content = new JavaScriptSerializer().Serialize(new Dictionary<string, object> {
+                    { "created", DateTime.Now.ToString("yyyy'-'MM'-'dd HH':'mm':'ss") },
+                    { "id", uid },
+                    { "name", uname }
+                });
+            if (S3Helper.Instance.Enabled)
+            {
+                S3Helper.Instance.UploadFileSync(histDir + "createdInfo.json", S3Helper.StringToStream(content));
+            }
+            else
+            {
+                Directory.CreateDirectory(histDir);
+                // create createdInfo.json file with meta information in the history directory (creation time, user id and name)
+                File.WriteAllText(Path.Combine(histDir, "createdInfo.json"), content);
+            }
         }
 
         // get file url
         public static string GetFileUri(string fileName, Boolean forDocumentServer)
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
-                {
-                    Path = HttpRuntime.AppDomainAppVirtualPath
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
                            + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                            + CurUserHostAddress() + "/"
                            + fileName,
-                    Query = ""
-                };
+                Query = ""
+            };
 
             return uri.ToString();
         }
@@ -326,7 +388,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                         + "&fileName=" + HttpUtility.UrlEncode(filename)
                         + userAddress
                         + "&ver=" + version
-                        + "&file="+ file
+                        + "&file=" + file
             };
             return downloadUrl.ToString();
         }
@@ -397,14 +459,14 @@ namespace OnlineEditorsExampleMVC.Helpers
                 // write all the parameters to the map
                 var dictionary = new Dictionary<string, object>();
                 dictionary.Add("version", GetFileVersion(file.Name, null));
-                dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file.Name + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(file.Name, null)).GetHashCode()));
+                dictionary.Add("id", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + file + "/" + file.LastModified.GetHashCode()));
                 dictionary.Add("contentLength", Math.Round(file.Length / 1024.0, 2) + " KB");
                 dictionary.Add("pureContentLength", file.Length);
-                dictionary.Add("title", file.Name);
-                dictionary.Add("updated", file.LastWriteTime.ToString());
+                dictionary.Add("title", file);
+                dictionary.Add("updated", file.LastModified.ToString());
 
                 // get file information by its id
-                if (fileId != null) 
+                if (fileId != null)
                 {
                     if (fileId.Equals(dictionary["id"]))
                     {
@@ -425,7 +487,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static void VerifySSL()
         {
             // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if(WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("true")) {
+            if (WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("true"))
+            {
                 ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
@@ -436,9 +499,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             var languages = new Dictionary<string, string>();
             String[] couples = (WebConfigurationManager.AppSettings["files.docservice.languages"] ?? "").Split('|');
             foreach (string couple in couples)
-            {   
+            {
                 String[] tmp = couple.Split(':');
-                languages.Add(tmp[0],tmp[1]);
+                languages.Add(tmp[0], tmp[1]);
             }
             return languages;
         }

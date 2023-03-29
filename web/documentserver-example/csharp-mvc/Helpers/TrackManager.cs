@@ -92,7 +92,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file saving process
         public static int processSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if (string.IsNullOrEmpty((string)fileData["url"])) {
+            if (string.IsNullOrEmpty((string)fileData["url"]))
+            {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
@@ -115,11 +116,11 @@ namespace OnlineEditorsExampleMVC.Helpers
                         // get the correct file name if it already exists
                         newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                     }
-                    else 
+                    else
                     {
                         downloadUri = newFileUri;
                     }
-                } 
+                }
                 catch (Exception)
                 {
                     newFileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
@@ -130,16 +131,29 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             var storagePath = DocManagerHelper.StoragePath(newFileName, userAddress);  // get the file path
             var histDir = DocManagerHelper.HistoryDir(storagePath);  // get the path to the history directory
-            if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
+            if (!S3Helper.Instance.Enabled)
+            {
+                if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
+            }
 
             var versionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));  // get the path to the file version
-            if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
+            if (!S3Helper.Instance.Enabled)
+            {
+                if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
+            }
 
-            // get the path to the previous file version and move it to the storage directory
-            File.Move(DocManagerHelper.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
+            if (S3Helper.Instance.Enabled)
+            {
+                S3Helper.Instance.CopyFileSync(fileName, versionDir + "prev" + curExt);
+            }
+            else
+            {
+                // get the path to the previous file version and move it to the storage directory
+                File.Move(DocManagerHelper.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
+            }
 
             DownloadToFile(downloadUri, storagePath);  // save file to the storage directory
-            DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
+            DownloadToFile((string)fileData["changesurl"], S3Helper.Instance.Enabled ? versionDir + "diff.zip" : Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
 
             var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
             if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
@@ -150,7 +164,14 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             if (!string.IsNullOrEmpty(hist))
             {
-                File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
+                if (S3Helper.Instance.Enabled)
+                {
+                    S3Helper.Instance.UploadFileSync(versionDir + "changes.json", S3Helper.StringToStream(hist));
+                }
+                else
+                {
+                    File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
+                }
             }
 
             File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
@@ -167,7 +188,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         // file force saving process
         public static int processForceSave(Dictionary<string, object> fileData, string fileName, string userAddress)
         {
-            if ( string.IsNullOrEmpty((string)fileData["url"])) {
+            if (string.IsNullOrEmpty((string)fileData["url"]))
+            {
                 throw new Exception("DownloadUrl is null");
             }
             var downloadUri = (string)fileData["url"];
@@ -190,11 +212,11 @@ namespace OnlineEditorsExampleMVC.Helpers
                     {
                         newFileName = true;
                     }
-                    else 
+                    else
                     {
                         downloadUri = newFileUri;
                     }
-                } 
+                }
                 catch (Exception)
                 {
                     newFileName = true;
@@ -202,7 +224,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
 
             DocManagerHelper.VerifySSL();
-            
+
             string forcesavePath = "";
             Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
 
@@ -211,7 +233,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                 if (newFileName)
                 {
                     fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
-                } else
+                }
+                else
                 {
                     fileName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
                 }
@@ -260,7 +283,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 { "key", key }
             };
 
-            if (meta != null) 
+            if (meta != null)
             {
                 body.Add("meta", meta);
             }
@@ -321,15 +344,22 @@ namespace OnlineEditorsExampleMVC.Helpers
             using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
             {
                 if (stream == null) throw new Exception("stream is null");
-                const int bufferSize = 4096;
-
-                using (var fs = File.Open(path, FileMode.Create))
+                if (S3Helper.Instance.Enabled)
                 {
-                    var buffer = new byte[bufferSize];
-                    int readed;
-                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                    S3Helper.Instance.UploadFileSync(path, stream);
+                }
+                else
+                {
+                    const int bufferSize = 4096;
+
+                    using (var fs = File.Open(path, FileMode.Create))
                     {
-                        fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                        var buffer = new byte[bufferSize];
+                        int readed;
+                        while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
+                        {
+                            fs.Write(buffer, 0, readed);  // write bytes to the output stream
+                        }
                     }
                 }
             }
