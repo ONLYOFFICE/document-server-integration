@@ -98,14 +98,15 @@ docManager.prototype.getCorrectName = function (fileName, userAddress) {
 
 // processes a request editnew
 docManager.prototype.RequestEditnew = function (req, fileName, user) {
+    let correctName = fileName;
     if (req.params['id'] != fileName) {  // processes a repeated request editnew
         this.fileRemove(req.params['id']);
-        fileName = this.getCorrectName(req.params['id']);
+        correctName = this.getCorrectName(req.params['id']);
     }
-    this.fileSizeZero(fileName);
-    this.saveFileData(fileName, user.id, user.name);
+    this.fileSizeZero(correctName);
+    this.saveFileData(correctName, user.id, user.name);
 
-    return fileName;
+    return correctName;
 }
 
 // delete a file with its history
@@ -140,17 +141,18 @@ docManager.prototype.createDemo = function (isSample, fileExt, userid, username,
 
 // save file data to the file
 docManager.prototype.saveFileData = function (fileName, userid, username, userAddress) {
-    if (!userAddress) {
-        userAddress = this.curUserHostAddress();  // get current user host address
+    let address = userAddress;
+    if (!address) {
+        address = this.curUserHostAddress();  // get current user host address
     }
     // get full creation date of the document
-    const date_create = fileSystem.statSync(this.storagePath(fileName, userAddress)).mtime;
+    const date_create = fileSystem.statSync(this.storagePath(fileName, address)).mtime;
     const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
     const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
     const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();
     const date_format = `${date_create.getFullYear()  }-${  month  }-${  date_create.getDate()  } ${  date_create.getHours()  }:${  minutes  }:${  sec}`;
 
-    const file_info = this.historyPath(fileName, userAddress, true);  // get file history information
+    const file_info = this.historyPath(fileName, address, true);  // get file history information
     this.createDirectory(file_info);  // create a new history directory if it doesn't exist
 
     fileSystem.writeFileSync(path.join(file_info, `${fileName  }.txt`), `${date_format  },${  userid  },${  username}`);  // write all the file information to a new txt file
@@ -222,10 +224,10 @@ docManager.prototype.storageRootPath = function (userAddress) {
 
 // get the storage path of the given file
 docManager.prototype.storagePath = function (fileName, userAddress) {
-    fileName = fileUtility.getFileName(fileName);  // get the file name with extension
+    let fileNameExt = fileUtility.getFileName(fileName);  // get the file name with extension
     const directory = this.storageRootPath(userAddress);
     this.createDirectory(directory);  // create a new directory if it doesn't exist
-    return path.join(directory, fileName);  // put the given file to this directory
+    return path.join(directory, fileNameExt);  // put the given file to this directory
 };
 
 // get the path to the forcesaved file version
@@ -334,10 +336,11 @@ docManager.prototype.getStoredFiles = function () {
 
 // get current user host address
 docManager.prototype.curUserHostAddress = function (userAddress) {
-    if (!userAddress)  // if user address isn't passed to the function
-        userAddress = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress;  // take it from the header or use the remote address
+    let address = userAddress;
+    if (!address)  // if user address isn't passed to the function
+        address = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress;  // take it from the header or use the remote address
 
-    return userAddress.replace(new RegExp('[^0-9a-zA-Z.=]', 'g'), '_');
+    return address.replace(new RegExp('[^0-9a-zA-Z.=]', 'g'), '_');
 };
 
 // copy file
@@ -376,15 +379,15 @@ docManager.prototype.getTemplateImageUrl = function (fileType) {
 
 // get document key
 docManager.prototype.getKey = function (fileName, userAddress) {
-    userAddress = userAddress || this.curUserHostAddress();
-    let key = userAddress + fileName;  // get document key by adding local file url to the current user host address
+    let address = userAddress || this.curUserHostAddress();
+    let key = address + fileName;  // get document key by adding local file url to the current user host address
 
-    const historyPath = this.historyPath(fileName, userAddress);  // get the path to the file history
+    const historyPath = this.historyPath(fileName, address);  // get the path to the file history
     if (historyPath != '') {  // if the path to the file history exists
         key += this.countVersion(historyPath);  // add file version number to the document key
     }
 
-    const storagePath = this.storagePath(fileName, userAddress);  // get the storage path to the given file
+    const storagePath = this.storagePath(fileName, address);  // get the storage path to the given file
     const stat = fileSystem.statSync(storagePath);  // get file information
     key += stat.mtime.getTime();  // and add creation time to the document key
 
@@ -418,22 +421,23 @@ docManager.prototype.countVersion = function (directory) {
 docManager.prototype.getHistory = function (fileName, content, keyVersion, version) {
     let oldVersion = false;
     let contentJson = null;
-    if (content) {  // if content is defined
-        if (content.changes && content.changes.length) {  // and there are some modifications in the content
-            [contentJson] = content.changes;  // write these modifications to the json content
-        } else if (content.length) {
-            [contentJson] = content;  // otherwise, write original content to the json content
+    let fileContent = content;
+    if (fileContent) {  // if content is defined
+        if (fileContent.changes && fileContent.changes.length) {  // and there are some modifications in the content
+            [contentJson] = fileContent.changes;  // write these modifications to the json content
+        } else if (fileContent.length) {
+            [contentJson] = fileContent;  // otherwise, write original content to the json content
             oldVersion = true;  // and note that this is an old version
         } else {
-            content = false;
+            fileContent = false;
         }
     }
 
     const userAddress = this.curUserHostAddress();
-    const username = content ? (oldVersion ? contentJson.username : contentJson.user.name) : (this.getFileData(fileName, userAddress))[2];
-    const userid = content ? (oldVersion ? contentJson.userid : contentJson.user.id) : (this.getFileData(fileName, userAddress))[1];
-    const created = content ? (oldVersion ? contentJson.date : contentJson.created) : (this.getFileData(fileName, userAddress))[0];
-    const res = (content && !oldVersion) ? content : {changes: content};
+    const username = fileContent ? (oldVersion ? contentJson.username : contentJson.user.name) : (this.getFileData(fileName, userAddress))[2];
+    const userid = fileContent ? (oldVersion ? contentJson.userid : contentJson.user.id) : (this.getFileData(fileName, userAddress))[1];
+    const created = fileContent ? (oldVersion ? contentJson.date : contentJson.created) : (this.getFileData(fileName, userAddress))[0];
+    const res = (fileContent && !oldVersion) ? fileContent : {changes: fileContent};
     res.key = keyVersion;  // write the information about the user, creation time, key and version to the result object
     res.version = version;
     res.created = created;

@@ -45,19 +45,19 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 
 // get the url of the converted file
 documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
-    fromExtension = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
+    let fromExt = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
 
     let title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
 
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
+    let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
 
     let params = {  // write all the conversion parameters to the params dictionary
         async,
         url: documentUri,
         outputtype: toExtension.replace('.', ''),
-        filetype: fromExtension.replace('.', ''),
+        filetype: fromExt.replace('.', ''),
         title,
-        key: documentRevisionId,
+        key: revisionId,
         password: filePass,
         region: lang,
     };
@@ -86,11 +86,12 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
 // generate the document key value
 documentService.generateRevisionId = function (expectedKey) {
     const maxKeyLength = 128;  // the max key length is 128
-    if (expectedKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
-        expectedKey = expectedKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
+    let expKey = expectedKey;
+    if (expKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
+        expKey = expKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
     }
 
-    let key = expectedKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
+    let key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
     return key.substring(0, Math.min(key.length, maxKeyLength));  // the resulting key is of the max key length or less
 };
@@ -173,10 +174,10 @@ documentService.getResponseUri = function (json) {
 // create a command request
 documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
 
-    documentRevisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
+    let revisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
     params = {  // create a parameter object with command method and the document key value in it
         c: method,
-        key: documentRevisionId
+        key: revisionId
     };
 
     if (meta) {

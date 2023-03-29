@@ -650,26 +650,26 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
                 if (status != 200) throw new Error(`Document editing service returned status: ${  status}`);
 
                 let downloadExt = `.${  body.fileType}`;
-
                 let isSubmitForm = body.forcesavetype === 3; // SubmitForm
+                let correctName = '';
 
                 if (isSubmitForm) {
                     // new file
                     if (newFileName) {
-                        fileName = req.docManager.getCorrectName(`${fileUtility.getFileName(fileName, true)  }-form${  downloadExt}`, userAddress);
+                        correctName = req.docManager.getCorrectName(`${fileUtility.getFileName(fileName, true)  }-form${  downloadExt}`, userAddress);
                     } else {
                         let ext = fileUtility.getFileExtension(fileName);
-                        fileName = req.docManager.getCorrectName(`${fileUtility.getFileName(fileName, true)  }-form${  ext}`, userAddress);
+                        correctName = req.docManager.getCorrectName(`${fileUtility.getFileName(fileName, true)  }-form${  ext}`, userAddress);
                     }
-                    let forcesavePath = req.docManager.storagePath(fileName, userAddress);
+                    let forcesavePath = req.docManager.storagePath(correctName, userAddress);
                 } else {
                     if (newFileName) {
-                        fileName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+                        correctName = req.docManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
                     }
                     // create forcesave path if it doesn't exist
-                    let forcesavePath = req.docManager.forcesavePath(fileName, userAddress, false);
+                    let forcesavePath = req.docManager.forcesavePath(correctName, userAddress, false);
                     if (forcesavePath == '') {
-                        forcesavePath = req.docManager.forcesavePath(fileName, userAddress, true);
+                        forcesavePath = req.docManager.forcesavePath(correctName, userAddress, true);
                     }
                 }
 
@@ -677,7 +677,7 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
 
                 if (isSubmitForm) {
                     let uid =body.actions[0].userid
-                    req.docManager.saveFileData(fileName, uid, 'Filling Form', userAddress);
+                    req.docManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
                 }
             } catch (ex) {
                 response.write('{"error":1}');
