@@ -90,7 +90,7 @@ docManager.prototype.getCorrectName = function (fileName, userAddress) {
 
     while (this.existsSync(this.storagePath(name, userAddress))) {  // if the file with such a name already exists in this directory
         name = `${baseName  } (${  index  })${  ext}`;  // add an index after its base name
-        index++;
+        index += 1;
     }
 
     return name;
@@ -299,7 +299,7 @@ docManager.prototype.getStoredFiles = function () {
     this.createDirectory(directory);
     const result = [];
     const storedFiles = fileSystem.readdirSync(directory);  // read the user host directory contents
-    for (let i = 0; i < storedFiles.length; i++) {  // run through all the elements from the folder
+    for (let i = 0; i < storedFiles.length; i += 1) {  // run through all the elements from the folder
         const stats = fileSystem.lstatSync(path.join(directory, storedFiles[i]));  // save element parameters
 
         if (!stats.isDirectory()) {  // if the element isn't a directory
@@ -322,7 +322,7 @@ docManager.prototype.getStoredFiles = function () {
                 result.push(item);  // push the item object to it
             } else {
                 let j = 0;
-                for (; j < result.length; j++) {
+                for (; j < result.length; j += 1) {
                     if (time > result[j].time) {  // otherwise, run through all the objects from the result array
                         break;
                     }
@@ -412,7 +412,7 @@ docManager.prototype.getChanges = function (fileName) {
 docManager.prototype.countVersion = function (directory) {
     let i = 0;
     while (this.existsSync(path.join(directory, `${  i + 1}`))) {  // run through all the file versions
-        i++;  // and count them
+        i += 1;  // and count them
     }
     return i;
 };
@@ -474,7 +474,7 @@ docManager.prototype.getFilesInfo = function (fileId) {
     const filesInDirectory = this.getStoredFiles();  // get all the stored files from the folder
     const responseArray = [];
     let responseObject;
-    for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile++) {  // run through all the files from the directory
+    for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile += 1) {  // run through all the files from the directory
         const file = filesInDirectory[currentFile];
         const stats = fileSystem.lstatSync(path.join(directory, file.name));  // get file information
         const fileObject = {  // write file parameters to the file object

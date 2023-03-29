@@ -79,7 +79,7 @@ const getUrlParams = function (url) {
         let query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
         let params = query.split('&');  // parameters are separated by & sign
         let map = {};  // write parameters and their values to the map dictionary
-        for (let i = 0; i < params.length; i++) {
+        for (let i = 0; i < params.length; i += 1) {
             let parts = param.split('=');
             [,map[parts[0]]] = parts;
         }

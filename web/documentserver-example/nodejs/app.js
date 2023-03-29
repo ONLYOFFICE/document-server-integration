@@ -54,7 +54,7 @@ if(verifyPeerOff) {
 String.prototype.hashCode = function () {
 	const len = this.length;
 	let ret = 0;
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < len; i += 1) {
         ret = (31 * ret + this.charCodeAt(i)) << 0;
     }
     return ret;
@@ -64,7 +64,7 @@ String.prototype.format = function (...args) {
 
     if (!args.length) return text;
 
-    for (let i = 0; i < args.length; i++) {
+    for (let i = 0; i < args.length; i += 1) {
         text = text.replace(new RegExp(`\\{${  i  }\\}`, 'gi'), args[i]);
     }
 
@@ -86,7 +86,7 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));  // public directory
 if (config.has('server.static')) {  // check if there are static files such as .js, .css files, images, samples and process them
   const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; ++i) {
+  for (let i = 0; i < staticContent.length; i += 1) {
     const staticContentElem = staticContent[i];
     app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
   }
@@ -897,7 +897,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         if (historyPath != '') {
 
             countVersion = req.docManager.countVersion(historyPath) + 1;  // get the number of file versions
-            for (let i = 1; i <= countVersion; i++) {  // get keys to all the file versions
+            for (let i = 1; i <= countVersion; i += 1) {  // get keys to all the file versions
                 if (i < countVersion) {
                     let keyPath = req.docManager.keyPath(fileName, userAddress, i);
                     if (!fileSystem.existsSync(keyPath)) continue;
@@ -945,7 +945,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         }
 
         if (cfgSignatureEnable) {
-            for (let i = 0; i < historyData.length; i++) {
+            for (let i = 0; i < historyData.length; i += 1) {
                 historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});  // sign token with given data using signature secret
             }
         }
