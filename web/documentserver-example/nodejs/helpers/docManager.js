@@ -430,6 +430,9 @@ docManager.prototype.getHistory = function (fileName, content, keyVersion, versi
   let oldVersion = false;
   let contentJson = null;
   let fileContent = content;
+  let userNameFromJson = null;
+  let userIdFromJson = null;
+  let createdFromJson = null;
   if (fileContent) { // if content is defined
     if (fileContent.changes && fileContent.changes.length) { // and there are some modifications in the content
       [contentJson] = fileContent.changes; // write these modifications to the json content
@@ -442,12 +445,16 @@ docManager.prototype.getHistory = function (fileName, content, keyVersion, versi
   }
 
   const userAddress = this.curUserHostAddress();
-  const userNameFromJson = oldVersion ? contentJson.username : contentJson.user.name;
-  const userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.userid;
-  const createdFromJson = oldVersion ? contentJson.date : contentJson.created;
-  const username = fileContent ? userNameFromJson : (this.getFileData(fileName, userAddress))[2];
-  const userid = fileContent ? userIdFromJson : (this.getFileData(fileName, userAddress))[1];
-  const created = fileContent ? createdFromJson : (this.getFileData(fileName, userAddress))[0];
+
+  if (content && contentJson) {
+    userNameFromJson = oldVersion ? contentJson.username : contentJson.user.name;
+    userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.userid;
+    createdFromJson = oldVersion ? contentJson.date : contentJson.created;
+  }
+
+  const username = userNameFromJson ? userNameFromJson : (this.getFileData(fileName, userAddress))[2];
+  const userid = userIdFromJson ? userIdFromJson : (this.getFileData(fileName, userAddress))[1];
+  const created = createdFromJson ? createdFromJson : (this.getFileData(fileName, userAddress))[0];
   const res = (fileContent && !oldVersion) ? fileContent : {changes: fileContent};
   res.key = keyVersion; // write the information about the user, creation time, key and version to the result object
   res.version = version;
