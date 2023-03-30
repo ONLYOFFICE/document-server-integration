@@ -146,8 +146,9 @@ documentService.processConvertServiceResponceError = function (errorCode) {
 documentService.getResponseUri = function (json) {
     let fileResult = JSON.parse(json);
 
-    if (fileResult.error)  // if an error occurs
+    if (fileResult.error) {  // if an error occurs
         documentService.processConvertServiceResponceError(parseInt(fileResult.error));  // get an error message
+    }
 
     let isEndConvert = fileResult.endConvert  // check if the conversion is completed
 
@@ -156,8 +157,9 @@ documentService.getResponseUri = function (json) {
     let fileType = null;
 
     if (isEndConvert) {  // if the conversion is completed
-        if (!fileResult.fileUrl)  // and the file url doesn't exist
+        if (!fileResult.fileUrl) {  // and the file url doesn't exist
             throw { message: 'FileUrl is null' };  // the file url is null
+        }
 
         uri = fileResult.fileUrl;  // otherwise, get the file url
         ({fileType} = fileResult);  // get the file type

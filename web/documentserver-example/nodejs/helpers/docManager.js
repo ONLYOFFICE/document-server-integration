@@ -337,8 +337,9 @@ docManager.prototype.getStoredFiles = function () {
 // get current user host address
 docManager.prototype.curUserHostAddress = function (userAddress) {
     let address = userAddress;
-    if (!address)  // if user address isn't passed to the function
+    if (!address) {  // if user address isn't passed to the function
         address = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress;  // take it from the header or use the remote address
+    }
 
     return address.replace(new RegExp('[^0-9a-zA-Z.=]', 'g'), '_');
 };
@@ -350,14 +351,17 @@ docManager.prototype.copyFile = function (exist, target) {
 
 // get an internal extension
 docManager.prototype.getInternalExtension = function (fileType) {
-    if (fileType == fileUtility.fileType.word)  // .docx for word type
+    if (fileType == fileUtility.fileType.word) {  // .docx for word type
         return '.docx';
+    }
 
-    if (fileType == fileUtility.fileType.cell)  // .xlsx for cell type
+    if (fileType == fileUtility.fileType.cell) {  // .xlsx for cell type
         return '.xlsx';
+    }
 
-    if (fileType == fileUtility.fileType.slide)  // .pptx for slide type
+    if (fileType == fileUtility.fileType.slide) {  // .pptx for slide type
         return '.pptx';
+    }
 
     return '.docx';  // the default value is .docx
 };
@@ -365,14 +369,17 @@ docManager.prototype.getInternalExtension = function (fileType) {
 // get the template image url
 docManager.prototype.getTemplateImageUrl = function (fileType) {
     const path = this.getServerUrl(true);
-    if (fileType == fileUtility.fileType.word)  // for word type
-        return `${path  }/images/file_docx.svg`;
+    if (fileType == fileUtility.fileType.word) {  // for word type
+        return `${path}/images/file_docx.svg`;
+    }
 
-    if (fileType == fileUtility.fileType.cell)  // for cell type
-        return `${path  }/images/file_xlsx.svg`;
+    if (fileType == fileUtility.fileType.cell) {  // for cell type
+        return `${path}/images/file_xlsx.svg`;
+    }
 
-    if (fileType == fileUtility.fileType.slide)  // for slide type
-        return `${path  }/images/file_pptx.svg`;
+    if (fileType == fileUtility.fileType.slide) {  // for slide type
+        return `${path}/images/file_pptx.svg`;
+    }
 
     return `${path  }/images/file_docx.svg`;  // the default value
 }
