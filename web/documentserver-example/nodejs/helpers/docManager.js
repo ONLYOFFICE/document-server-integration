@@ -315,7 +315,7 @@ docManager.prototype.getStoredFiles = function () {
         name: storedFiles[i],
         documentType: fileUtility.getFileType(storedFiles[i]),
         canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
-        version: version+1
+        version: version + 1
       };
 
       if (!result.length) {  // if the result array is empty
@@ -490,7 +490,7 @@ docManager.prototype.getFilesInfo = function (fileId) {
     const fileObject = {  // write file parameters to the file object
       version: file.version,
       id: this.getKey(file.name),
-      contentLength: `${(stats.size/1024).toFixed(2)} KB`,
+      contentLength: `${(stats.size / 1024).toFixed(2)} KB`,
       pureContentLength: stats.size,
       title: file.name,
       updated: stats.mtime

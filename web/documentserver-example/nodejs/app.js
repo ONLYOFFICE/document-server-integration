@@ -672,7 +672,7 @@ app.post('/track', async (req, res) => {  // define a handler for tracking file 
         fileSystem.writeFileSync(forcesavePath, data);
 
         if (isSubmitForm) {
-          let uid =body.actions[0].userid
+          let uid = body.actions[0].userid
           req.docManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
         }
       } catch (ex) {
@@ -911,14 +911,14 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
           directUrl: !userDirectUrl ? null : userUrl,
         };
 
-        if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i-1))) {  // check if the path to the file with document versions differences exists
+        if (i > 1 && req.docManager.existsSync(req.docManager.diffPath(fileName, userAddress, i - 1))) {  // check if the path to the file with document versions differences exists
           historyD.previous = {  // write information about previous file version
-            fileType: historyData[i-2].fileType,
-            key: historyData[i-2].key,
-            url: historyData[i-2].url,
-            directUrl: !userDirectUrl ? null :  historyData[i-2].directUrl,
+            fileType: historyData[i - 2].fileType,
+            key: historyData[i - 2].key,
+            url: historyData[i - 2].url,
+            directUrl: !userDirectUrl ? null :  historyData[i - 2].directUrl,
           };
-          const changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i-1}&useraddress=${userAddress}`;
+          const changesUrl = `${req.docManager.getServerUrl(true)}/history?fileName=${encodeURIComponent(fileName)}&file=diff.zip&ver=${i - 1}&useraddress=${userAddress}`;
           historyD.changesUrl = changesUrl;  // get the path to the diff.zip file and write it to the history object
         }
 
