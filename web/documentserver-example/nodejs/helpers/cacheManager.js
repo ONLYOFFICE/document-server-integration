@@ -31,10 +31,10 @@ exports.containsKey = function (key) {
 
   let secondsCache = 30;
 
-  let t1 = new Date(cache[key].time + (1000 * secondsCache));  // get the creation time of the given key and add 30 seconds to it
-  let t2 = new Date();  // get the current time
-  if (t1 < t2 ) {  // if the current time is greater
-    delete cache[key];  // delete the given key from the cache
+  let t1 = new Date(cache[key].time + (1000 * secondsCache)); // get the creation time of the given key and add 30 seconds to it
+  let t2 = new Date(); // get the current time
+  if (t1 < t2 ) { // if the current time is greater
+    delete cache[key]; // delete the given key from the cache
     return false;
   }
 

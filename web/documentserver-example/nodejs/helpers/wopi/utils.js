@@ -22,7 +22,7 @@ let urlModule = require('url');
 let urllib = require('urllib');
 const xmlParser = require('fast-xml-parser');
 const he = require('he');
-const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
+const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
 let cache = null;
 
@@ -61,7 +61,7 @@ const requestDiscovery = async function (siteUrl) {
     let actions = [];
     urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
       if (data) {
-        const discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
+        const discovery = xmlParser.parse(data.toString(), { // create the discovery XML file with the parameters from the response
           attributeNamePrefix: '',
           ignoreAttributes: false,
           parseAttributeValue: true,
@@ -75,7 +75,7 @@ const requestDiscovery = async function (siteUrl) {
               app.action = [app.action];
             }
             for (const action of app.action) {
-              actions.push({  // write all the parameters to the actions element
+              actions.push({ // write all the parameters to the actions element
                 app: app.name,
                 favIconUrl: app.favIconUrl,
                 checkLicense: app.checkLicense == 'true',
@@ -97,10 +97,10 @@ const requestDiscovery = async function (siteUrl) {
 
 // get actions of the specified extension
 const getActions = async function (ext) {
-  const actions = await getDiscoveryInfo();  // get the wopi discovery information
+  const actions = await getDiscoveryInfo(); // get the wopi discovery information
   const filtered = [];
 
-  for (const action of actions) {  // and filter it by the specified extention
+  for (const action of actions) { // and filter it by the specified extention
     if (action.ext == ext) {
       filtered.push(action);
     }
@@ -137,7 +137,7 @@ const getDefaultAction = async function (ext) {
 
 // get the action url
 const getActionUrl = function (host, userAddress, action, filename) {
-  return `${action.urlsrc.replace(/<.*&>/g, '')  }WOPISrc=${  host  }/wopi/files/${  filename  }@${  userAddress}`;
+  return `${action.urlsrc.replace(/<.*&>/g, '') }WOPISrc=${ host }/wopi/files/${ filename }@${ userAddress}`;
 }
 
 exports.initWopi = initWopi;

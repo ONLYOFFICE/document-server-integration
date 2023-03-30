@@ -25,7 +25,7 @@ fileUtility.getFileName = function (url, withoutExtension) {
   let parts = url.split('\\');
   parts = parts.pop();
   parts = parts.split('/');
-  let fileName = parts.pop();  // get the file name from the last part of the url
+  let fileName = parts.pop(); // get the file name from the last part of the url
   [fileName] = fileName.split('?');
 
   // get file name without extension
@@ -40,22 +40,22 @@ fileUtility.getFileName = function (url, withoutExtension) {
 fileUtility.getFileExtension = function (url, withoutDot) {
   if (!url) return null;
 
-  let fileName = fileUtility.getFileName(url);  // get file name from the given url
+  let fileName = fileUtility.getFileName(url); // get file name from the given url
 
   let parts = fileName.toLowerCase().split('.');
 
-  return withoutDot ? parts.pop() : `.${  parts.pop()}`;  // get the extension from the file name with or without dot
+  return withoutDot ? parts.pop() : `.${ parts.pop()}`; // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
 fileUtility.getFileType = function (url) {
-  let ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
+  let ext = fileUtility.getFileExtension(url); // get the file extension from the given url
 
-  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;  // word type for document extensions
-  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;  // cell type for spreadsheet extensions
-  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;  // slide type for presentation extensions
+  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word; // word type for document extensions
+  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell; // cell type for spreadsheet extensions
+  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide; // slide type for presentation extensions
 
-  return fileUtility.fileType.word;  // the default file type is word
+  return fileUtility.fileType.word; // the default file type is word
 }
 
 fileUtility.fileType = {
@@ -76,9 +76,9 @@ fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.ppt
 // get url parameters
 const getUrlParams = function (url) {
   try {
-    let query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
-    let params = query.split('&');  // parameters are separated by & sign
-    let map = {};  // write parameters and their values to the map dictionary
+    let query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url
+    let params = query.split('&'); // parameters are separated by & sign
+    let map = {}; // write parameters and their values to the map dictionary
     for (let i = 0; i < params.length; i += 1) {
       let parts = param.split('=');
       [,map[parts[0]]] = parts;

@@ -96,7 +96,7 @@ let users = [
       remove: ['group-2']
     }, ['group-2', ''],
     true, [], descr_user_2, false
-  ),  // own and without group
+  ), // own and without group
   new User(
     'uid-3', 'Hamish Mitchell', 'mitchell@example.com',
     'group-3', ['group-2'], {
@@ -105,7 +105,7 @@ let users = [
       remove: []
     }, ['group-2'],
     false, ['copy', 'download', 'print'], descr_user_3, false
-  ),  // other group only
+  ), // other group only
   new User(
     'uid-0', null, null,
     null, null, {}, [],

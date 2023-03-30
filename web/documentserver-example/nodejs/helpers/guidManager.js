@@ -24,5 +24,5 @@ let s4 = function () {
 
 // create uuid v4
 exports.newGuid = function () {
-  return (`${s4() + s4()  }-${  s4()  }-${  s4()  }-${  s4()  }-${  s4()  }${s4()  }${s4()}`);
+  return (`${s4() + s4() }-${ s4() }-${ s4() }-${ s4() }-${ s4() }${s4() }${s4()}`);
 };
