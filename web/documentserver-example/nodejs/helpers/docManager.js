@@ -51,9 +51,9 @@ docManager.prototype.createDirectory = function (path) {
 docManager.prototype.getLang = function () {
     if (new RegExp('^[a-z]{2}(-[A-Z]{2})?$', 'i').test(this.req.query.lang)) {
         return this.req.query.lang;
-    } else {  // the default language value is English
+    }   // the default language value is English
         return 'en'
-    }
+    
 };
 
 // get customization parameters
@@ -504,8 +504,8 @@ docManager.prototype.getFilesInfo = function (fileId) {
     };
     if (fileId !== undefined) {
         if (responseObject !== undefined) return responseObject;
-        else return 'File not found';
-    } else return responseArray;
+        return 'File not found';
+    } return responseArray;
 };
 
 docManager.prototype.getInstanceId = function () {
