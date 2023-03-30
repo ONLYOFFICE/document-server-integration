@@ -40,7 +40,7 @@ let descr_user_1 = [
     'The file favorite state is undefined',
     'Can create files from templates using data from the editor',
     'Can see the information about all users',
-    //"Can submit forms"
+    // "Can submit forms"
 ];
 
 let descr_user_2 = [
@@ -50,7 +50,7 @@ let descr_user_2 = [
     'This file is marked as favorite',
     'Can create new files from the editor',
     'Can see the information about users from Group2 and users who don’t belong to any group',
-    //"Can’t submit forms"
+    // "Can’t submit forms"
 ];
 
 let descr_user_3 = [
@@ -63,7 +63,7 @@ let descr_user_3 = [
     'Can’t print the file',
     'Can create new files from the editor',
     'Can see the information about Group2 users',
-    //"Can’t submit forms"
+    // "Can’t submit forms"
 ];
 
 let descr_user_0 = [
@@ -79,7 +79,7 @@ let descr_user_0 = [
     'Can\'t view chat',
     'Can\'t protect file',
     'View file without collaboration',
-    //"Can’t submit forms"
+    // "Can’t submit forms"
 ];
 
 let users = [
