@@ -53,7 +53,6 @@ DocManager.prototype.getLang = function () {
     return this.req.query.lang;
   } // the default language value is English
   return 'en'
-    
 };
 
 // get customization parameters
@@ -128,7 +127,6 @@ DocManager.prototype.fileSizeZero = function (fileName) {
 
 // create demo document
 DocManager.prototype.createDemo = function (isSample, fileExt, userid, username, wopi) {
-
   const demoName = `${isSample ? 'sample' : 'new' }.${ fileExt}`;
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 

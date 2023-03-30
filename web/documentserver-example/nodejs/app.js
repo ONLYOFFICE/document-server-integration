@@ -100,7 +100,6 @@ app.use(bodyParser.urlencoded({ extended: false })); // connect middleware that 
 
 app.get('/', (req, res) => { // define a handler for default page
   try {
-
     req.DocManager = new DocManager(req, res);
 
     res.render('index', { // render index template with the parameters specified
@@ -114,7 +113,6 @@ app.get('/', (req, res) => { // define a handler for default page
       serverUrl: req.DocManager.getServerUrl(),
       languages: configServer.get('languages'),
     });
-
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
@@ -201,7 +199,6 @@ app.get('/history', (req, res) => {
 })
 
 app.post('/upload', (req, res) => { // define a handler for uploading files
-
   req.DocManager = new DocManager(req, res);
   req.DocManager.storagePath(''); // mkdir if not exist
 
@@ -306,9 +303,7 @@ app.post('/create', (req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write(JSON.stringify({ file : fileName }));
       res.end();
-
     });
-
   } catch (e) {
     res.status(500);
     res.write(JSON.stringify({
@@ -469,7 +464,6 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
 })
 
 app.post('/reference', (req, res) => { // define a handler for renaming file
-
   req.DocManager = new DocManager(req, res);
 
   let result = function (data) {
@@ -525,7 +519,6 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 });
 
 app.post('/track', async (req, res) => { // define a handler for tracking file changes
-
   req.DocManager = new DocManager(req, res);
 
   let userAddress = req.query.useraddress;
@@ -534,7 +527,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
   // track file changes
   let processTrack = async function (response, body, fileName, userAddress) {
-
     // callback file saving process
     let callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
       try {
@@ -584,7 +576,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (forcesavePath != '') { // if this path is empty
           fileSystem.unlinkSync(forcesavePath); // remove it
         }
-
       } catch (ex) {
         console.log(ex);
         response.write('{"error":1}');
@@ -598,7 +589,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
     // file saving process
     let processSave = async function (downloadUri, body, fileName, userAddress) {
-
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -687,7 +677,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
     // file force saving process
     let processForceSave = async function (downloadUri, body, fileName, userAddress) {
-
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -801,7 +790,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
 app.get('/editor', (req, res) => { // define a handler for editing document
   try {
-
     req.DocManager = new DocManager(req, res);
 
     let fileName = fileUtility.getFileName(req.query.fileName);
@@ -890,7 +878,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let keyVersion = key;
 
     if (historyPath != '') {
-
       countVersion = req.DocManager.countVersion(historyPath) + 1; // get the number of file versions
       for (let i = 1; i <= countVersion; i += 1) { // get keys to all the file versions
         if (i < countVersion) {
@@ -1041,7 +1028,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 });
 
 app.post('/rename', (req, res) => { // define a handler for renaming file
-
   let {newfilename} = req.body;
   let origExt = req.body.ext;
   let curExt = fileUtility.getFileExtension(newfilename, true);

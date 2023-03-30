@@ -40,10 +40,8 @@ getCustomWopiParams = function (query) {
 };
 
 exports.registerRoutes = function (app) {
-
   // define a handler for the default wopi page
   app.get('/wopi', async (req, res) => {
-
     req.DocManager = new DocManager(req, res);
 
     await utils.initWopi(req.DocManager);
@@ -88,7 +86,6 @@ exports.registerRoutes = function (app) {
         fillExts,
         languages: configServer.get('languages'),
       });
-
     } catch (ex) {
       console.log(ex); // display error message in the console
       res.status(500); // write status parameter to the response
@@ -134,7 +131,6 @@ exports.registerRoutes = function (app) {
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
         params: getCustomWopiParams(req.query),
       });
-
     } catch (ex) {
       console.log(ex);
       res.status(500);
@@ -172,5 +168,4 @@ exports.registerRoutes = function (app) {
     .all(tokenValidator.isValidToken)
     .get(filesController.fileRequestHandler)
     .post(filesController.fileRequestHandler);
-
 };
