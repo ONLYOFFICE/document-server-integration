@@ -38,175 +38,175 @@ documentService.userIp = null;
 
 // get the url of the converted file (synchronous)
 documentService.getConvertedUriSync = function (documentUri, fromExtension, toExtension, documentRevisionId, callback) {
-    documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, (err, data) => {
-        callback(err, data);
-    });
+  documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, (err, data) => {
+    callback(err, data);
+  });
 };
 
 // get the url of the converted file
 documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
-    let fromExt = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
+  let fromExt = fromExtension || fileUtility.getFileExtension(documentUri);  // get the current document extension
 
-    let title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
+  let title = fileUtility.getFileName(documentUri) || guidManager.newGuid();  // get the current document name or uuid
 
-    let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
+  let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);  // generate the document key value
 
-    let params = {  // write all the conversion parameters to the params dictionary
-        async,
-        url: documentUri,
-        outputtype: toExtension.replace('.', ''),
-        filetype: fromExt.replace('.', ''),
-        title,
-        key: revisionId,
-        password: filePass,
-        region: lang,
-    };
+  let params = {  // write all the conversion parameters to the params dictionary
+    async,
+    url: documentUri,
+    outputtype: toExtension.replace('.', ''),
+    filetype: fromExt.replace('.', ''),
+    title,
+    key: revisionId,
+    password: filePass,
+    region: lang,
+  };
 
-    let uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
-    let headers = {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-    };
+  let uri = siteUrl + configServer.get('converterUrl');  // get the absolute converter url
+  let headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
+  };
 
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) {  // if the signature is enabled and it can be used for request
-        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);  // write signature authorization header
-        params.token = documentService.getToken(params);  // get token and save it to the parameters
-    }
+  if (cfgSignatureEnable && cfgSignatureUseForRequest) {  // if the signature is enabled and it can be used for request
+    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);  // write signature authorization header
+    params.token = documentService.getToken(params);  // get token and save it to the parameters
+  }
 
-    // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
-    urllib.request(
-urlModule.parse(uri),
-        {
-            method: 'POST',
-            headers,
-            data: params
-        },
-        callback
-);
+  // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+  urllib.request(
+    urlModule.parse(uri),
+    {
+      method: 'POST',
+      headers,
+      data: params
+    },
+    callback
+  );
 };
 
 // generate the document key value
 documentService.generateRevisionId = function (expectedKey) {
-    const maxKeyLength = 128;  // the max key length is 128
-    let expKey = expectedKey;
-    if (expKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
-        expKey = expKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
-    }
+  const maxKeyLength = 128;  // the max key length is 128
+  let expKey = expectedKey;
+  if (expKey.length > maxKeyLength) {  // if the expected key length is greater than the max key length
+    expKey = expKey.hashCode().toString();  // the expected key is hashed and a fixed length value is stored in the string format
+  }
 
-    let key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
+  let key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
-    return key.substring(0, Math.min(key.length, maxKeyLength));  // the resulting key is of the max key length or less
+  return key.substring(0, Math.min(key.length, maxKeyLength));  // the resulting key is of the max key length or less
 };
 
 // create an error message for the error code
 documentService.processConvertServiceResponceError = function (errorCode) {
-    let errorMessage = '';
-    let errorMessageTemplate = 'Error occurred in the ConvertService: ';
+  let errorMessage = '';
+  let errorMessageTemplate = 'Error occurred in the ConvertService: ';
 
-    // add the error message to the error message template depending on the error code
-    switch (errorCode) {
-        case -20:
-            errorMessage = `${errorMessageTemplate  }Error encrypt signature`;
-            break;
-        case -8:
-            errorMessage = `${errorMessageTemplate  }Error document signature`;
-            break;
-        case -7:
-            errorMessage = `${errorMessageTemplate  }Error document request`;
-            break;
-        case -6:
-            errorMessage = `${errorMessageTemplate  }Error database`;
-            break;
-        case -5:
-            errorMessage = `${errorMessageTemplate  }Incorrect password`;
-            break;
-        case -4:
-            errorMessage = `${errorMessageTemplate  }Error download error`;
-            break;
-        case -3:
-            errorMessage = `${errorMessageTemplate  }Error convertation error`;
-            break;
-        case -2:
-            errorMessage = `${errorMessageTemplate  }Error convertation timeout`;
-            break;
-        case -1:
-            errorMessage = `${errorMessageTemplate  }Error convertation unknown`;
-            break;
-        case 0:  // if the error code is equal to 0, the error message is empty
-            break;
-        default:
-            errorMessage = `ErrorCode = ${  errorCode}`;  // default value for the error message
-            break;
-    }
+  // add the error message to the error message template depending on the error code
+  switch (errorCode) {
+  case -20:
+    errorMessage = `${errorMessageTemplate  }Error encrypt signature`;
+    break;
+  case -8:
+    errorMessage = `${errorMessageTemplate  }Error document signature`;
+    break;
+  case -7:
+    errorMessage = `${errorMessageTemplate  }Error document request`;
+    break;
+  case -6:
+    errorMessage = `${errorMessageTemplate  }Error database`;
+    break;
+  case -5:
+    errorMessage = `${errorMessageTemplate  }Incorrect password`;
+    break;
+  case -4:
+    errorMessage = `${errorMessageTemplate  }Error download error`;
+    break;
+  case -3:
+    errorMessage = `${errorMessageTemplate  }Error convertation error`;
+    break;
+  case -2:
+    errorMessage = `${errorMessageTemplate  }Error convertation timeout`;
+    break;
+  case -1:
+    errorMessage = `${errorMessageTemplate  }Error convertation unknown`;
+    break;
+  case 0:  // if the error code is equal to 0, the error message is empty
+    break;
+  default:
+    errorMessage = `ErrorCode = ${  errorCode}`;  // default value for the error message
+    break;
+  }
 
-    throw { message: errorMessage };
+  throw { message: errorMessage };
 };
 
 // get the response url
 documentService.getResponseUri = function (json) {
-    let fileResult = JSON.parse(json);
+  let fileResult = JSON.parse(json);
 
-    if (fileResult.error) {  // if an error occurs
-        documentService.processConvertServiceResponceError(parseInt(fileResult.error));  // get an error message
+  if (fileResult.error) {  // if an error occurs
+    documentService.processConvertServiceResponceError(parseInt(fileResult.error));  // get an error message
+  }
+
+  let isEndConvert = fileResult.endConvert  // check if the conversion is completed
+
+  let percent = parseInt(fileResult.percent);  // get the conversion percentage
+  let uri = null;
+  let fileType = null;
+
+  if (isEndConvert) {  // if the conversion is completed
+    if (!fileResult.fileUrl) {  // and the file url doesn't exist
+      throw { message: 'FileUrl is null' };  // the file url is null
     }
 
-    let isEndConvert = fileResult.endConvert  // check if the conversion is completed
+    uri = fileResult.fileUrl;  // otherwise, get the file url
+    ({fileType} = fileResult);  // get the file type
+    percent = 100;
+  } else {  // if the conversion isn't completed
+    percent = percent >= 100 ? 99 : percent;  // get the percentage value
+  }
 
-    let percent = parseInt(fileResult.percent);  // get the conversion percentage
-    let uri = null;
-    let fileType = null;
-
-    if (isEndConvert) {  // if the conversion is completed
-        if (!fileResult.fileUrl) {  // and the file url doesn't exist
-            throw { message: 'FileUrl is null' };  // the file url is null
-        }
-
-        uri = fileResult.fileUrl;  // otherwise, get the file url
-        ({fileType} = fileResult);  // get the file type
-        percent = 100;
-    } else {  // if the conversion isn't completed
-        percent = percent >= 100 ? 99 : percent;  // get the percentage value
-    }
-
-    return {
-        percent,
-        uri,
-        fileType
-    };
+  return {
+    percent,
+    uri,
+    fileType
+  };
 };
 
 // create a command request
 documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
 
-    let revisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
-    params = {  // create a parameter object with command method and the document key value in it
-        c: method,
-        key: revisionId
-    };
+  let revisionId = documentService.generateRevisionId(documentRevisionId);  // generate the document key value
+  params = {  // create a parameter object with command method and the document key value in it
+    c: method,
+    key: revisionId
+  };
 
-    if (meta) {
-        params.meta = meta;
-    }
+  if (meta) {
+    params.meta = meta;
+  }
 
-    let uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
-    let headers = {  // create a headers object
-        'Content-Type': 'application/json'
-    };
-    if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-        headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
-        params.token = documentService.getToken(params);
-    }
+  let uri = siteUrl + configServer.get('commandUrl');  // get the absolute command url
+  let headers = {  // create a headers object
+    'Content-Type': 'application/json'
+  };
+  if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    params.token = documentService.getToken(params);
+  }
 
-    // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
-    urllib.request(
-urlModule.parse(uri),
-        {
-            method: 'POST',
-            headers,
-            data: params
-        },
-        callback
-);
+  // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+  urllib.request(
+    urlModule.parse(uri),
+    {
+      method: 'POST',
+      headers,
+      data: params
+    },
+    callback
+  );
 };
 
 // check jwt token headers
@@ -218,7 +218,7 @@ documentService.checkJwtHeader = function (req) {
     try {
       decoded = jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
     } catch (err) {
-        console.log(`checkJwtHeader error: name = ${  err.name  } message = ${  err.message  } token = ${  token}`)  // print debug information to the console
+      console.log(`checkJwtHeader error: name = ${  err.name  } message = ${  err.message  } token = ${  token}`)  // print debug information to the console
     }
   }
   return decoded;
@@ -235,18 +235,18 @@ documentService.fillJwtByUrl = function (uri, opt_dataObject) {
 
 // get token
 documentService.getToken = function (data) {
-    let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
-    return jwt.sign(data, cfgSignatureSecret, options);  // sign token with given data using signature secret and options parameters
+  let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  return jwt.sign(data, cfgSignatureSecret, options);  // sign token with given data using signature secret and options parameters
 };
 
 // read and verify token
 documentService.readToken = function (token) {
-    try {
-        return jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
-    } catch (err) {
-        console.log(`checkJwtHeader error: name = ${  err.name  } message = ${  err.message  } token = ${  token}`)
-    }
-    return null;
+  try {
+    return jwt.verify(token, cfgSignatureSecret);  // verify signature on jwt token using signature secret
+  } catch (err) {
+    console.log(`checkJwtHeader error: name = ${  err.name  } message = ${  err.message  } token = ${  token}`)
+  }
+  return null;
 };
 
 // save all the functions to the documentService module to export it later in other files

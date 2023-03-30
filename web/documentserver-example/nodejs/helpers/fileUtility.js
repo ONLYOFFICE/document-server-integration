@@ -20,48 +20,48 @@ let fileUtility = {};
 
 // get file name from the given url
 fileUtility.getFileName = function (url, withoutExtension) {
-    if (!url) return '';
+  if (!url) return '';
 
-    let parts = url.split('\\');
-    parts = parts.pop();
-    parts = parts.split('/');
-    let fileName = parts.pop();  // get the file name from the last part of the url
-    [fileName] = fileName.split('?');
+  let parts = url.split('\\');
+  parts = parts.pop();
+  parts = parts.split('/');
+  let fileName = parts.pop();  // get the file name from the last part of the url
+  [fileName] = fileName.split('?');
 
-    // get file name without extension
-    if (withoutExtension) {
-        return fileName.substring(0, fileName.lastIndexOf('.'));
-    }
+  // get file name without extension
+  if (withoutExtension) {
+    return fileName.substring(0, fileName.lastIndexOf('.'));
+  }
 
-    return fileName;
+  return fileName;
 };
 
 // get file extension from the given url
 fileUtility.getFileExtension = function (url, withoutDot) {
-    if (!url) return null;
+  if (!url) return null;
 
-    let fileName = fileUtility.getFileName(url);  // get file name from the given url
+  let fileName = fileUtility.getFileName(url);  // get file name from the given url
 
-    let parts = fileName.toLowerCase().split('.');
+  let parts = fileName.toLowerCase().split('.');
 
-    return withoutDot ? parts.pop() : `.${  parts.pop()}`;  // get the extension from the file name with or without dot
+  return withoutDot ? parts.pop() : `.${  parts.pop()}`;  // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
 fileUtility.getFileType = function (url) {
-    let ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
+  let ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
 
-    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;  // word type for document extensions
-    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;  // cell type for spreadsheet extensions
-    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;  // slide type for presentation extensions
+  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;  // word type for document extensions
+  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;  // cell type for spreadsheet extensions
+  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;  // slide type for presentation extensions
 
-    return fileUtility.fileType.word;  // the default file type is word
+  return fileUtility.fileType.word;  // the default file type is word
 }
 
 fileUtility.fileType = {
-    word: 'word',
-    cell: 'cell',
-    slide: 'slide'
+  word: 'word',
+  cell: 'cell',
+  slide: 'slide'
 }
 
 // the document extension list
@@ -75,18 +75,18 @@ fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.ppt
 
 // get url parameters
 const getUrlParams = function (url) {
-    try {
-        let query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
-        let params = query.split('&');  // parameters are separated by & sign
-        let map = {};  // write parameters and their values to the map dictionary
-        for (let i = 0; i < params.length; i += 1) {
-            let parts = param.split('=');
-            [,map[parts[0]]] = parts;
-        }
-        return map;
-    } catch (ex) {
-        return null;
+  try {
+    let query = url.split('?').pop();  // take all the parameters which are placed after ? sign in the file url
+    let params = query.split('&');  // parameters are separated by & sign
+    let map = {};  // write parameters and their values to the map dictionary
+    for (let i = 0; i < params.length; i += 1) {
+      let parts = param.split('=');
+      [,map[parts[0]]] = parts;
     }
+    return map;
+  } catch (ex) {
+    return null;
+  }
 }
 
 // save all the functions to the fileUtility module to export it later in other files

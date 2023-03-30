@@ -27,117 +27,117 @@ const siteUrl = configServer.get('siteUrl');  // the path to the editors install
 let cache = null;
 
 const initWopi = async function (docManager) {
-    let absSiteUrl = siteUrl;
-    if (absSiteUrl.indexOf('/') === 0) {
-        absSiteUrl = docManager.getServerHost() + siteUrl;
-    }
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = docManager.getServerHost() + siteUrl;
+  }
 
-    // get the wopi discovery information
-    await getDiscoveryInfo(absSiteUrl);
+  // get the wopi discovery information
+  await getDiscoveryInfo(absSiteUrl);
 }
 
 // get the wopi discovery information
 const getDiscoveryInfo = async function (siteUrl) {
-    let actions = [];
+  let actions = [];
 
-    if (cache) return cache;
+  if (cache) return cache;
 
-    try {
-        actions = await requestDiscovery(siteUrl);
-    } catch (e) {
-        return actions;
-    }
-
-    cache = actions;
-    setTimeout(() => {
-return cache = null
-}, 1000 * 60 * 60); // 1 hour
-
+  try {
+    actions = await requestDiscovery(siteUrl);
+  } catch (e) {
     return actions;
+  }
+
+  cache = actions;
+  setTimeout(() => {
+    return cache = null
+  }, 1000 * 60 * 60); // 1 hour
+
+  return actions;
 }
 
 const requestDiscovery = async function (siteUrl) {
-    return new Promise((resolve, reject) => {
-        let actions = [];
-        urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
-            if (data) {
-                const discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
-                    attributeNamePrefix: '',
-                    ignoreAttributes: false,
-                    parseAttributeValue: true,
-                    attrValueProcessor: (val, attrName) => {
-return he.decode(val, {isAttributeValue: true})
-}
-                });
-                if (discovery['wopi-discovery']) {
-                    for (const app of discovery['wopi-discovery']['net-zone'].app) {
-                        if (!Array.isArray(app.action)) {
-                            app.action = [app.action];
-                        }
-                        for (const action of app.action) {
-                            actions.push({  // write all the parameters to the actions element
-                                app: app.name,
-                                favIconUrl: app.favIconUrl,
-                                checkLicense: app.checkLicense == 'true',
-                                name: action.name,
-                                ext: action.ext || '',
-                                progid: action.progid || '',
-                                isDefault: !!action.default,
-                                urlsrc: action.urlsrc,
-                                requires: action.requires || ''
-                            });
-                        }
-                    }
-                }
-            }
-            resolve(actions);
+  return new Promise((resolve, reject) => {
+    let actions = [];
+    urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
+      if (data) {
+        const discovery = xmlParser.parse(data.toString(), {  // create the discovery XML file with the parameters from the response
+          attributeNamePrefix: '',
+          ignoreAttributes: false,
+          parseAttributeValue: true,
+          attrValueProcessor: (val, attrName) => {
+            return he.decode(val, {isAttributeValue: true})
+          }
         });
-    })
+        if (discovery['wopi-discovery']) {
+          for (const app of discovery['wopi-discovery']['net-zone'].app) {
+            if (!Array.isArray(app.action)) {
+              app.action = [app.action];
+            }
+            for (const action of app.action) {
+              actions.push({  // write all the parameters to the actions element
+                app: app.name,
+                favIconUrl: app.favIconUrl,
+                checkLicense: app.checkLicense == 'true',
+                name: action.name,
+                ext: action.ext || '',
+                progid: action.progid || '',
+                isDefault: !!action.default,
+                urlsrc: action.urlsrc,
+                requires: action.requires || ''
+              });
+            }
+          }
+        }
+      }
+      resolve(actions);
+    });
+  })
 }
 
 // get actions of the specified extension
 const getActions = async function (ext) {
-    const actions = await getDiscoveryInfo();  // get the wopi discovery information
-    const filtered = [];
+  const actions = await getDiscoveryInfo();  // get the wopi discovery information
+  const filtered = [];
 
-    for (const action of actions) {  // and filter it by the specified extention
-        if (action.ext == ext) {
-            filtered.push(action);
-        }
+  for (const action of actions) {  // and filter it by the specified extention
+    if (action.ext == ext) {
+      filtered.push(action);
     }
+  }
 
-    return filtered;
+  return filtered;
 }
 
 // get an action for the specified extension and name
 const getAction = async function (ext, name) {
-    const actions = await getDiscoveryInfo();
+  const actions = await getDiscoveryInfo();
 
-    for (const action of actions) {
-        if (action.ext == ext && action.name == name) {
-            return action;
-        }
+  for (const action of actions) {
+    if (action.ext == ext && action.name == name) {
+      return action;
     }
+  }
 
-    return null;
+  return null;
 }
 
 // get the default action for the specified extension
 const getDefaultAction = async function (ext) {
-    const actions = await getDiscoveryInfo();
+  const actions = await getDiscoveryInfo();
 
-    for (const action of actions) {
-        if (action.ext == ext && action.isDefault) {
-            return action;
-        }
+  for (const action of actions) {
+    if (action.ext == ext && action.isDefault) {
+      return action;
     }
+  }
 
-    return null;
+  return null;
 }
 
 // get the action url
 const getActionUrl = function (host, userAddress, action, filename) {
-    return `${action.urlsrc.replace(/<.*&>/g, '')  }WOPISrc=${  host  }/wopi/files/${  filename  }@${  userAddress}`;
+  return `${action.urlsrc.replace(/<.*&>/g, '')  }WOPISrc=${  host  }/wopi/files/${  filename  }@${  userAddress}`;
 }
 
 exports.initWopi = initWopi;
