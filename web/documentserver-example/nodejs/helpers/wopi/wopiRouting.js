@@ -50,7 +50,7 @@ exports.registerRoutes = function (app) {
 
         // get the wopi discovery information
         const actions = await utils.getDiscoveryInfo();
-        const wopiEnable = actions.length != 0 ? true : false;
+        const wopiEnable = actions.length != 0;
         const docsExtEdit = [];    // Supported extensions for WOPI
 
         actions.forEach((el) => {

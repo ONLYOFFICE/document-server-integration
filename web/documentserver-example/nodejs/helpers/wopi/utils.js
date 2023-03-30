@@ -78,7 +78,7 @@ const requestDiscovery = async function (siteUrl) {
                                 name: action.name,
                                 ext: action.ext || '',
                                 progid: action.progid || '',
-                                isDefault: action.default ? true : false,
+                                isDefault: !!action.default,
                                 urlsrc: action.urlsrc,
                                 requires: action.requires || ''
                             });
