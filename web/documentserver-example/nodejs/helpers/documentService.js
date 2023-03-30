@@ -106,36 +106,36 @@ documentService.processConvertServiceResponceError = function (errorCode) {
   // add the error message to the error message template depending on the error code
   switch (errorCode) {
   case -20:
-    errorMessage = `${errorMessageTemplate }Error encrypt signature`;
+    errorMessage = `${errorMessageTemplate}Error encrypt signature`;
     break;
   case -8:
-    errorMessage = `${errorMessageTemplate }Error document signature`;
+    errorMessage = `${errorMessageTemplate}Error document signature`;
     break;
   case -7:
-    errorMessage = `${errorMessageTemplate }Error document request`;
+    errorMessage = `${errorMessageTemplate}Error document request`;
     break;
   case -6:
-    errorMessage = `${errorMessageTemplate }Error database`;
+    errorMessage = `${errorMessageTemplate}Error database`;
     break;
   case -5:
-    errorMessage = `${errorMessageTemplate }Incorrect password`;
+    errorMessage = `${errorMessageTemplate}Incorrect password`;
     break;
   case -4:
-    errorMessage = `${errorMessageTemplate }Error download error`;
+    errorMessage = `${errorMessageTemplate}Error download error`;
     break;
   case -3:
-    errorMessage = `${errorMessageTemplate }Error convertation error`;
+    errorMessage = `${errorMessageTemplate}Error convertation error`;
     break;
   case -2:
-    errorMessage = `${errorMessageTemplate }Error convertation timeout`;
+    errorMessage = `${errorMessageTemplate}Error convertation timeout`;
     break;
   case -1:
-    errorMessage = `${errorMessageTemplate }Error convertation unknown`;
+    errorMessage = `${errorMessageTemplate}Error convertation unknown`;
     break;
   case 0: // if the error code is equal to 0, the error message is empty
     break;
   default:
-    errorMessage = `ErrorCode = ${ errorCode}`; // default value for the error message
+    errorMessage = `ErrorCode = ${errorCode}`; // default value for the error message
     break;
   }
 
@@ -217,7 +217,7 @@ documentService.checkJwtHeader = function (req) {
     try {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {
-      console.log(`checkJwtHeader error: name = ${ err.name } message = ${ err.message } token = ${ token}`) // print debug information to the console
+      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`) // print debug information to the console
     }
   }
   return decoded;
@@ -243,7 +243,7 @@ documentService.readToken = function (token) {
   try {
     return jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
   } catch (err) {
-    console.log(`checkJwtHeader error: name = ${ err.name } message = ${ err.message } token = ${ token}`)
+    console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
   }
   return null;
 };

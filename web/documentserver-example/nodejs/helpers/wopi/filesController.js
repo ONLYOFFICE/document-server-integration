@@ -43,7 +43,7 @@ const lock = function (wopi, req, res, userHost) {
   } else {
     // file locked by someone else => return lock mismatch
     const lock = lockManager.getLock(filePath);
-    returnLockMismatch(res, lock, `File already locked by ${ lock}`)
+    returnLockMismatch(res, lock, `File already locked by ${lock}`)
   }
 }
 
@@ -127,7 +127,7 @@ const getFile = function (wopi, req, res, userHost) {
   res.setHeader('Content-Length', fileSystem.statSync(path).size);
   res.setHeader('Content-Type', mime.getType(path));
 
-  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(wopi.id)}`);
+  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(wopi.id)}`);
 
   const filestream = fileSystem.createReadStream(path); // open a file as a readable stream
   filestream.pipe(res); // retrieve data from file stream and output it to the response object
@@ -188,7 +188,7 @@ const putRelativeFile = function (wopi, req, res, userHost) {
   }
 
   const isConverted = req.headers[reqConsts.requestHeaders.FileConversion.toLowerCase()];
-  console.log(`putRelativeFile after conversation: ${ isConverted}`);
+  console.log(`putRelativeFile after conversation: ${isConverted}`);
 
   // if we got here, then we can save a file
   saveFileFromBody(req, filename, userAddress, false, (err) => {
@@ -198,14 +198,14 @@ const putRelativeFile = function (wopi, req, res, userHost) {
     }
 
     const serverUrl = req.DocManager.getServerUrl(true);
-    const fileActionUrl = `${serverUrl }/wopi-action/${ filename }?action=`;
+    const fileActionUrl = `${serverUrl}/wopi-action/${filename}?action=`;
 
     const fileInfo = {
       Name: filename,
-      Url: `${serverUrl }/wopi/files/${ filename}`,
-      HostViewUrl: `${fileActionUrl }view`,
-      HostEditNewUrl: `${fileActionUrl }editnew`,
-      HostEditUrl: `${fileActionUrl }edit`,
+      Url: `${serverUrl}/wopi/files/${filename}`,
+      HostViewUrl: `${fileActionUrl}view`,
+      HostEditNewUrl: `${fileActionUrl}editnew`,
+      HostEditUrl: `${fileActionUrl}edit`,
     };
     res.status(200).send(fileInfo);
   });
@@ -253,7 +253,7 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
       let versionPath = req.DocManager.versionPath(filename, userAddress, version); // get the path to the specified file version
       req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
 
-      let path_prev = path.join(versionPath, `prev${ fileUtility.getFileExtension(filename)}`); // get the path to the previous file version
+      let path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`); // get the path to the previous file version
       fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
     }
 

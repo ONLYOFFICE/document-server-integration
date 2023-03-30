@@ -31,10 +31,10 @@ getCustomWopiParams = function (query) {
   let actionParams = '';
 
   const {userid} = query; // user id
-  tokenParams += (userid ? `&userid=${ userid}` : '');
+  tokenParams += (userid ? `&userid=${userid}` : '');
 
   const {lang} = query; // language
-  actionParams += (lang ? `&ui=${ lang}` : '');
+  actionParams += (lang ? `&ui=${lang}` : '');
 
   return { tokenParams, actionParams };
 };
@@ -100,8 +100,8 @@ exports.registerRoutes = function (app) {
     req.DocManager = new DocManager(req, res);
 
     if (fileExt != null) { // if the file extension exists
-      let fileName = req.DocManager.getCorrectName(`new.${ fileExt}`)
-      let redirectPath = `${req.DocManager.getServerUrl(true) }/wopi-action/${ encodeURIComponent(fileName) }?action=editnew${ req.DocManager.getCustomParams()}`; // get the redirect path
+      let fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
+      let redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
       return;
     }

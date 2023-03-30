@@ -60,22 +60,22 @@ DocManager.prototype.getCustomParams = function () {
   let params = '';
 
   const {userid} = this.req.query; // user id
-  params += (userid ? `&userid=${ userid}` : '');
+  params += (userid ? `&userid=${userid}` : '');
 
   const {lang} = this.req.query; // language
-  params += (lang ? `&lang=${ this.getLang()}` : '');
+  params += (lang ? `&lang=${this.getLang()}` : '');
 
   const {directUrl} = this.req.query; // directUrl
-  params += (directUrl ? `&directUrl=${ directUrl == 'true'}` : '');
+  params += (directUrl ? `&directUrl=${directUrl == 'true'}` : '');
 
   const {fileName} = this.req.query; // file name
-  params += (fileName ? `&fileName=${ fileName}` : '');
+  params += (fileName ? `&fileName=${fileName}` : '');
 
   const {mode} = this.req.query; // mode: view/edit/review/comment/fillForms/embedded
-  params += (mode ? `&mode=${ mode}` : '');
+  params += (mode ? `&mode=${mode}` : '');
 
   const {type} = this.req.query; // type: embedded/mobile/desktop
-  params += (type ? `&type=${ type}` : '');
+  params += (type ? `&type=${type}` : '');
 
   return params;
 };
@@ -88,7 +88,7 @@ DocManager.prototype.getCorrectName = function (fileName, userAddress) {
   let index = 1;
 
   while (this.existsSync(this.storagePath(name, userAddress))) { // if the file with such a name already exists in this directory
-    name = `${baseName } (${ index })${ ext}`; // add an index after its base name
+    name = `${baseName} (${index})${ext}`; // add an index after its base name
     index += 1;
   }
 
@@ -127,7 +127,7 @@ DocManager.prototype.fileSizeZero = function (fileName) {
 
 // create demo document
 DocManager.prototype.createDemo = function (isSample, fileExt, userid, username, wopi) {
-  const demoName = `${isSample ? 'sample' : 'new' }.${ fileExt}`;
+  const demoName = `${isSample ? 'sample' : 'new'}.${fileExt}`;
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
   this.copyFile(path.join(__dirname, '..','public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName)); // copy sample document of a necessary extension to the storage path
@@ -148,17 +148,17 @@ DocManager.prototype.saveFileData = function (fileName, userid, username, userAd
   const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
   const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
   const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();
-  const date_format = `${date_create.getFullYear() }-${ month }-${ date_create.getDate() } ${ date_create.getHours() }:${ minutes }:${ sec}`;
+  const date_format = `${date_create.getFullYear()}-${month}-${date_create.getDate()} ${date_create.getHours()}:${minutes}:${sec}`;
 
   const file_info = this.historyPath(fileName, address, true); // get file history information
   this.createDirectory(file_info); // create a new history directory if it doesn't exist
 
-  fileSystem.writeFileSync(path.join(file_info, `${fileName }.txt`), `${date_format },${ userid },${ username}`); // write all the file information to a new txt file
+  fileSystem.writeFileSync(path.join(file_info, `${fileName}.txt`), `${date_format},${userid},${username}`); // write all the file information to a new txt file
 };
 
 // get file data
 DocManager.prototype.getFileData = function (fileName, userAddress) {
-  const history = path.join(this.historyPath(fileName, userAddress, true), `${fileName }.txt`); // get the path to the file with file information
+  const history = path.join(this.historyPath(fileName, userAddress, true), `${fileName}.txt`); // get the path to the file with file information
   if (!this.existsSync(history)) { // if such a file doesn't exist
     return ['2017-01-01', 'uid-1', 'John Smith']; // return default information
   }
@@ -179,7 +179,7 @@ DocManager.prototype.getServerPath = function () {
 
 // get host address from the request
 DocManager.prototype.getServerHost = function () {
-  return `${this.getProtocol() }://${ this.req.headers['x-forwarded-host'] || this.req.headers.host}`;
+  return `${this.getProtocol()}://${this.req.headers['x-forwarded-host'] || this.req.headers.host}`;
 };
 
 // get protocol from the request
@@ -191,7 +191,7 @@ DocManager.prototype.getProtocol = function () {
 DocManager.prototype.getCallback = function (fileName) {
   const server = this.getServerUrl(true);
   const hostAddress = this.curUserHostAddress();
-  const handler = `/track?filename=${ encodeURIComponent(fileName) }&useraddress=${ encodeURIComponent(hostAddress)}`; // get callback handler
+  const handler = `/track?filename=${encodeURIComponent(fileName)}&useraddress=${encodeURIComponent(hostAddress)}`; // get callback handler
 
   return server + handler;
 };
@@ -200,7 +200,7 @@ DocManager.prototype.getCallback = function (fileName) {
 DocManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
   const server = this.getServerUrl();
   let ext = this.getInternalExtension(docType).replace('.', '');
-  const handler = `/editor?fileExt=${ ext }&userid=${ userid }&type=${ type }&lang=${ lang}`;
+  const handler = `/editor?fileExt=${ext}&userid=${userid}&type=${type}&lang=${lang}`;
 
   return server + handler;
 }
@@ -208,10 +208,10 @@ DocManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
 // get url to download a file
 DocManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
   const server = this.getServerUrl(forDocumentServer);
-  let handler = `/download?fileName=${ encodeURIComponent(fileName)}`;
+  let handler = `/download?fileName=${encodeURIComponent(fileName)}`;
   if (forDocumentServer) {
     const hostAddress = this.curUserHostAddress();
-    handler += `&useraddress=${ encodeURIComponent(hostAddress)}`;
+    handler += `&useraddress=${encodeURIComponent(hostAddress)}`;
   }
 
   return server + handler;
@@ -235,7 +235,7 @@ DocManager.prototype.forcesavePath = function (fileName, userAddress, create) {
   if (!this.existsSync(directory)) { // the directory with host address doesn't exist
     return '';
   }
-  directory = path.join(directory, `${fileName }-history`); // get the path to the history of the given file
+  directory = path.join(directory, `${fileName}-history`); // get the path to the history of the given file
   if (!create && !this.existsSync(directory)) { // the history directory doesn't exist and we are not supposed to create it
     return '';
   }
@@ -253,7 +253,7 @@ DocManager.prototype.historyPath = function (fileName, userAddress, create) {
   if (!this.existsSync(directory)) {
     return '';
   }
-  directory = path.join(directory, `${fileName }-history`);
+  directory = path.join(directory, `${fileName}-history`);
   if (!create && !this.existsSync(path.join(directory, '1'))) {
     return '';
   }
@@ -263,12 +263,12 @@ DocManager.prototype.historyPath = function (fileName, userAddress, create) {
 // get the path to the specified file version
 DocManager.prototype.versionPath = function (fileName, userAddress, version) {
   const historyPath = this.historyPath(fileName, userAddress, true); // get the path to the history of a given file or create it if it doesn't exist
-  return path.join(historyPath, `${ version}`);
+  return path.join(historyPath, `${version}`);
 };
 
 // get the path to the previous file version
 DocManager.prototype.prevFilePath = function (fileName, userAddress, version) {
-  return path.join(this.versionPath(fileName, userAddress, version), `prev${ fileUtility.getFileExtension(fileName)}`);
+  return path.join(this.versionPath(fileName, userAddress, version), `prev${fileUtility.getFileExtension(fileName)}`);
 };
 
 // get the path to the file with document versions differences
@@ -380,7 +380,7 @@ DocManager.prototype.getTemplateImageUrl = function (fileType) {
     return `${path}/images/file_pptx.svg`;
   }
 
-  return `${path }/images/file_docx.svg`; // the default value
+  return `${path}/images/file_docx.svg`; // the default value
 }
 
 // get document key
@@ -403,7 +403,7 @@ DocManager.prototype.getKey = function (fileName, userAddress) {
 // get current date
 DocManager.prototype.getDate = function (date) {
   const minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes().toString();
-  return `${date.getMonth() }/${ date.getDate() }/${ date.getFullYear() } ${ date.getHours() }:${ minutes}`;
+  return `${date.getMonth()}/${date.getDate()}/${date.getFullYear()} ${date.getHours()}:${minutes}`;
 };
 
 // get changes made in the file
@@ -417,7 +417,7 @@ DocManager.prototype.getChanges = function (fileName) {
 // get the last file version
 DocManager.prototype.countVersion = function (directory) {
   let i = 0;
-  while (this.existsSync(path.join(directory, `${ i + 1}`))) { // run through all the file versions
+  while (this.existsSync(path.join(directory, `${i + 1}`))) { // run through all the file versions
     i += 1; // and count them
   }
   return i;

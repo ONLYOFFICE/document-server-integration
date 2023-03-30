@@ -65,7 +65,7 @@ String.prototype.format = function (...args) {
   if (!args.length) return text;
 
   for (let i = 0; i < args.length; i += 1) {
-    text = text.replace(new RegExp(`\\{${ i }\\}`, 'gi'), args[i]);
+    text = text.replace(new RegExp(`\\{${i}\\}`, 'gi'), args[i]);
   }
 
   return text;
@@ -91,7 +91,7 @@ if (config.has('server.static')) { // check if there are static files such as .j
     app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
   }
 }
-app.use(favicon(`${__dirname }/public/images/favicon.ico`)); // use favicon
+app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 
 app.use(bodyParser.json()); // connect middleware that parses json
@@ -137,7 +137,7 @@ app.get('/download', (req, res) => { // define a handler for downloading files
     try {
       let decoded = jwt.verify(token, cfgSignatureSecret);
     } catch (err) {
-      console.log(`checkJwtHeader error: name = ${ err.name } message = ${ err.message } token = ${ token}`)
+      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
       res.sendStatus(403);
       return;
     }
@@ -151,7 +151,7 @@ app.get('/download', (req, res) => { // define a handler for downloading files
   res.setHeader('Content-Length', fileSystem.statSync(path).size); // add headers to the response to specify the page parameters
   res.setHeader('Content-Type', mime.getType(path));
 
-  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(fileName)}`);
+  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
   let filestream = fileSystem.createReadStream(path);
   filestream.pipe(res); // send file information to the response by streams
@@ -166,7 +166,7 @@ app.get('/history', (req, res) => {
       try {
         let decoded = jwt.verify(token, cfgSignatureSecret);
       } catch (err) {
-        console.log(`checkJwtHeader error: name = ${ err.name } message = ${ err.message } token = ${ token}`);
+        console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`);
         res.sendStatus(403);
         return;
       }
@@ -192,7 +192,7 @@ app.get('/history', (req, res) => {
 
   res.setHeader('Content-Length', fileSystem.statSync(Path).size); // add headers to the response to specify the page parameters
   res.setHeader('Content-Type', mime.getType(Path));
-  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(file)}`);
+  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file)}`);
 
   let filestream = fileSystem.createReadStream(Path);
   filestream.pipe(res); // send file information to the response by streams
@@ -215,7 +215,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     	if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
-      res.write(`{ "error": "${ err.message }"}`);
+      res.write(`{ "error": "${err.message}"}`);
       res.end();
       return;
     }
@@ -251,13 +251,13 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    fileSystem.rename(file.path, `${uploadDir }/${ file.name}`, (err) => { // rename a file
+    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (err) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       if (err) { // if an error occurs
-        res.write(`{ "error": "${ err }"}`); // write an error message to the response
+        res.write(`{ "error": "${err}"}`); // write an error message to the response
       } else {
-        res.write(`{ "filename": "${ file.name }", "documentType": "${ documentType }" }`); // otherwise, write a new file name to the response
+        res.write(`{ "filename": "${file.name}", "documentType": "${documentType}" }`); // otherwise, write a new file name to the response
 
         let user = users.getUser(req.query.userid); // get user id and name parameters or set them to the default values
 
@@ -355,7 +355,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       let responseData = documentService.getResponseUri(res.toString());
       let result = responseData.percent;
       let newFileUri = responseData.uri; // get the callback url
-      let newFileType = `.${ responseData.fileType}`; // get the file type
+      let newFileType = `.${responseData.fileType}`; // get the file type
 
       if (result != 100) { // if the status isn't 100
         writeResult(fileName, result, null); // write the origin file to the result object
@@ -366,7 +366,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       const {status, data} = await urllib.request(newFileUri, {method: 'GET'});
 
-      if (status != 200) throw new Error(`Conversion service returned status: ${ status}`);
+      if (status != 200) throw new Error(`Conversion service returned status: ${status}`);
 
       fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data); // write a file with a new extension, but with the content from the origin file
       fileSystem.unlinkSync(req.DocManager.storagePath(fileName)); // remove file with the origin extension
@@ -377,7 +377,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
-      fileSystem.renameSync(path.join(correctHistoryPath, `${fileName }.txt`), path.join(correctHistoryPath, `${correctName }.txt`)); // change the name of the .txt file with document information
+      fileSystem.renameSync(path.join(correctHistoryPath, `${fileName}.txt`), path.join(correctHistoryPath, `${correctName}.txt`)); // change the name of the .txt file with document information
 
       writeResult(correctName, result, null); // write a file with a new name to the result object
     } catch (e) {
@@ -457,7 +457,7 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
   res.setHeader('Content-Length', fileSystem.statSync(csvPath).size); // add headers to the response to specify the page parameters
   res.setHeader('Content-Type', mime.getType(csvPath));
 
-  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${ encodeURIComponent(fileName)}`);
+  res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
   let filestream = fileSystem.createReadStream(csvPath);
   filestream.pipe(res); // send file information to the response by streams
@@ -532,7 +532,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
 
-        if (status != 200) throw new Error(`Document editing service returned status: ${ status}`);
+        if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
 
         let storagePath = req.DocManager.storagePath(newFileName, userAddress);
 
@@ -554,7 +554,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           if (status == 200) {
             fileSystem.writeFileSync(path_changes, data); // write the document version differences to the archive
           } else {
-            emitWarning(`Document editing service returned status: ${ status}`);
+            emitWarning(`Document editing service returned status: ${status}`);
           }
         }
 
@@ -567,7 +567,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         let path_key = req.DocManager.keyPath(newFileName, userAddress, version); // get the path to the key.txt file
         fileSystem.writeFileSync(path_key, body.key); // write the key value to the key.txt file
 
-        let path_prev = path.join(versionPath, `prev${ fileUtility.getFileExtension(fileName)}`); // get the path to the previous file version
+        let path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(fileName)}`); // get the path to the previous file version
         fileSystem.renameSync(req.DocManager.storagePath(fileName, userAddress), path_prev); // and write it to the current path
 
         fileSystem.writeFileSync(storagePath, data);
@@ -596,7 +596,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
 
       let curExt = fileUtility.getFileExtension(fileName); // get current file extension
-      let downloadExt = `.${ body.filetype}`; // get the extension of the downloaded file
+      let downloadExt = `.${body.filetype}`; // get the extension of the downloaded file
 
       let newFileName = fileName;
 
@@ -633,19 +633,19 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
 
-        if (status != 200) throw new Error(`Document editing service returned status: ${ status}`);
+        if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
 
-        let downloadExt = `.${ body.fileType}`;
+        let downloadExt = `.${body.fileType}`;
         let isSubmitForm = body.forcesavetype === 3; // SubmitForm
         let correctName = '';
 
         if (isSubmitForm) {
           // new file
           if (newFileName) {
-            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true) }-form${ downloadExt}`, userAddress);
+            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}-form${downloadExt}`, userAddress);
           } else {
             let ext = fileUtility.getFileExtension(fileName);
-            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true) }-form${ ext}`, userAddress);
+            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
           }
           let forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
@@ -684,7 +684,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
 
       let curExt = fileUtility.getFileExtension(fileName);
-      let downloadExt = `.${ body.filetype}`;
+      let downloadExt = `.${body.filetype}`;
 
       // convert downloaded file to the file with the current extension if these extensions aren't equal
       if (downloadExt != curExt) {
@@ -831,7 +831,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       {
         image: templatesImageUrl,
         title: 'With sample content',
-        url: `${createUrl }&sample=true`
+        url: `${createUrl}&sample=true`
       }
     ];
 
@@ -844,7 +844,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       let fileName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false); // create demo document of a given extension
 
       // get the redirect path
-      let redirectPath = `${req.DocManager.getServerUrl() }/editor?fileName=${ encodeURIComponent(fileName) }${req.DocManager.getCustomParams()}`;
+      let redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=${encodeURIComponent(fileName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
     }
@@ -853,7 +853,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let userAddress = req.DocManager.curUserHostAddress();
     if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) { // if the file with a given name doesn't exist
       throw {
-        message: `File not found: ${ fileName}` // display error message
+        message: `File not found: ${fileName}` // display error message
       };
     }
     let key = req.DocManager.getKey(fileName);
@@ -883,7 +883,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         if (i < countVersion) {
           let keyPath = req.DocManager.keyPath(fileName, userAddress, i);
           if (!fileSystem.existsSync(keyPath)) continue;
-          keyVersion = `${ fileSystem.readFileSync(keyPath)}`;
+          keyVersion = `${fileSystem.readFileSync(keyPath)}`;
         } else {
           keyVersion = key;
         }
@@ -967,7 +967,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         print: !user.deniedPermissions.includes('print'),
         mode: mode != 'view' ? 'edit' : 'view',
         canBackToFolder: type != 'embedded',
-        backUrl: `${req.DocManager.getServerUrl() }/`,
+        backUrl: `${req.DocManager.getServerUrl()}/`,
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid != 'uid-0' ? userid : null,
@@ -988,18 +988,18 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       historyData,
       dataInsertImage: {
         fileType: 'png',
-        url: `${req.DocManager.getServerUrl(true) }/images/logo.png`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl() }/images/logo.png`,
+        url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
       },
       dataCompareFile: {
         fileType: 'docx',
-        url: `${req.DocManager.getServerUrl(true) }/assets/sample/sample.docx`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl() }/assets/sample/sample.docx`,
+        url: `${req.DocManager.getServerUrl(true)}/assets/sample/sample.docx`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/assets/sample/sample.docx`,
       },
       dataMailMergeRecipients: {
         fileType: 'csv',
-        url: `${req.DocManager.getServerUrl(true) }/csv`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl() }/csv`,
+        url: `${req.DocManager.getServerUrl(true)}/csv`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id != 'uid-0' ? users.getUsersForMentions(user.id) : null,
     };
@@ -1023,7 +1023,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
   } catch (ex) {
     console.log(ex);
     res.status(500);
-    res.render('error', { message: `Server error: ${ ex.message}` });
+    res.render('error', { message: `Server error: ${ex.message}` });
   }
 });
 
@@ -1032,7 +1032,7 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
   let origExt = req.body.ext;
   let curExt = fileUtility.getFileExtension(newfilename, true);
   if (curExt !== origExt) {
-    newfilename += `.${ origExt}`;
+    newfilename += `.${origExt}`;
   }
 
   let {dockey} = req.body;
