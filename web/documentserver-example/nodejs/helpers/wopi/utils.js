@@ -62,7 +62,8 @@ const requestDiscovery = async function (siteUrl) {
     let actions = [];
     urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
       if (data) {
-        const discovery = xmlParser.parse(data.toString(), { // create the discovery XML file with the parameters from the response
+        // create the discovery XML file with the parameters from the response
+        const discovery = xmlParser.parse(data.toString(), {
           attributeNamePrefix: '',
           ignoreAttributes: false,
           parseAttributeValue: true,

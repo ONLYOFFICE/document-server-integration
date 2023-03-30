@@ -101,7 +101,8 @@ exports.registerRoutes = function (app) {
 
     if (fileExt != null) { // if the file extension exists
       let fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
-      let redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
+      let redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
+      + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
       return;
     }
@@ -126,7 +127,10 @@ exports.registerRoutes = function (app) {
 
       // render wopiAction template with the parameters specified
       res.render('wopiAction', {
-        actionUrl: utils.getActionUrl(req.DocManager.getServerUrl(true), req.DocManager.curUserHostAddress(), action, req.params.id),
+        actionUrl: utils.getActionUrl(
+          req.DocManager.getServerUrl(true),
+          req.DocManager.curUserHostAddress(), action, req.params.id
+        ),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
         params: getCustomWopiParams(req.query),

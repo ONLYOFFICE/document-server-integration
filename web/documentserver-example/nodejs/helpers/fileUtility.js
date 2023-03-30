@@ -51,9 +51,12 @@ fileUtility.getFileExtension = function (url, withoutDot) {
 fileUtility.getFileType = function (url) {
   let ext = fileUtility.getFileExtension(url); // get the file extension from the given url
 
-  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word; // word type for document extensions
-  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell; // cell type for spreadsheet extensions
-  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide; // slide type for presentation extensions
+  // word type for document extensions
+  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;
+  // cell type for spreadsheet extensions
+  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;
+  // slide type for presentation extensions
+  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;
 
   return fileUtility.fileType.word; // the default file type is word
 }
@@ -65,13 +68,16 @@ fileUtility.fileType = {
 }
 
 // the document extension list
-fileUtility.documentExts = ['.doc', '.docx', '.oform', '.docm', '.dot', '.dotx', '.dotm', '.odt', '.fodt', '.ott', '.rtf', '.txt', '.html', '.htm', '.mht', '.xml', '.pdf', '.djvu', '.fb2', '.epub', '.xps', '.oxps'];
+fileUtility.documentExts = ['.doc', '.docx', '.oform', '.docm', '.dot', '.dotx', '.dotm', '.odt',
+  '.fodt', '.ott', '.rtf', '.txt', '.html', '.htm', '.mht', '.xml', '.pdf', '.djvu', '.fb2', '.epub', '.xps', '.oxps'];
 
 // the spreadsheet extension list
-fileUtility.spreadsheetExts = ['.xls', '.xlsx', '.xlsm', '.xlsb', '.xlt', '.xltx', '.xltm', '.ods', '.fods', '.ots', '.csv'];
+fileUtility.spreadsheetExts = ['.xls', '.xlsx', '.xlsm', '.xlsb', '.xlt',
+  '.xltx', '.xltm', '.ods', '.fods', '.ots', '.csv'];
 
 // the presentation extension list
-fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.pptm', '.pot', '.potx', '.potm', '.odp', '.fodp', '.otp'];
+fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.pptm', '.pot',
+  '.potx', '.potm', '.odp', '.fodp', '.otp'];
 
 // get url parameters
 // eslint-disable-next-line no-unused-vars

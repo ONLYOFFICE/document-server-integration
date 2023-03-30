@@ -33,7 +33,9 @@ const DocManager = function (req, res) {
 DocManager.prototype.existsSync = function (path) {
   let res = true;
   try {
-    fileSystem.accessSync(path, fileSystem.F_OK); // synchronously test the user's permissions for the directory specified by path; the directory is visible to the calling process
+    // synchronously test the user's permissions for the directory specified by path;
+    // the directory is visible to the calling process
+    fileSystem.accessSync(path, fileSystem.F_OK);
   } catch (e) { // the response is set to false, if an error occurs
     res = false;
   }
@@ -87,7 +89,8 @@ DocManager.prototype.getCorrectName = function (fileName, userAddress) {
   let name = baseName + ext; // get full file name
   let index = 1;
 
-  while (this.existsSync(this.storagePath(name, userAddress))) { // if the file with such a name already exists in this directory
+  // if the file with such a name already exists in this directory
+  while (this.existsSync(this.storagePath(name, userAddress))) {
     name = `${baseName} (${index})${ext}`; // add an index after its base name
     index += 1;
   }
@@ -131,7 +134,9 @@ DocManager.prototype.createDemo = function (isSample, fileExt, userid, username,
   const demoName = `${isSample ? 'sample' : 'new'}.${fileExt}`;
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
-  this.copyFile(path.join(__dirname, '..','public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName)); // copy sample document of a necessary extension to the storage path
+  // copy sample document of a necessary extension to the storage path
+  this.copyFile(path.join
+  (__dirname, '..','public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName));
 
   this.saveFileData(fileName, userid, username); // save file data to the file
 
@@ -149,17 +154,20 @@ DocManager.prototype.saveFileData = function (fileName, userid, username, userAd
   const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
   const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
   const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();
-  const date_format = `${date_create.getFullYear()}-${month}-${date_create.getDate()} ${date_create.getHours()}:${minutes}:${sec}`;
+  const date_format
+    = `${date_create.getFullYear()}-${month}-${date_create.getDate()} ${date_create.getHours()}:${minutes}:${sec}`;
 
   const file_info = this.historyPath(fileName, address, true); // get file history information
   this.createDirectory(file_info); // create a new history directory if it doesn't exist
 
-  fileSystem.writeFileSync(path.join(file_info, `${fileName}.txt`), `${date_format},${userid},${username}`); // write all the file information to a new txt file
+  // write all the file information to a new txt file
+  fileSystem.writeFileSync(path.join(file_info, `${fileName}.txt`), `${date_format},${userid},${username}`);
 };
 
 // get file data
 DocManager.prototype.getFileData = function (fileName, userAddress) {
-  const history = path.join(this.historyPath(fileName, userAddress, true), `${fileName}.txt`); // get the path to the file with file information
+  // get the path to the file with file information
+  const history = path.join(this.historyPath(fileName, userAddress, true), `${fileName}.txt`);
   if (!this.existsSync(history)) { // if such a file doesn't exist
     return ['2017-01-01', 'uid-1', 'John Smith']; // return default information
   }
@@ -170,7 +178,8 @@ DocManager.prototype.getFileData = function (fileName, userAddress) {
 
 // get server url
 DocManager.prototype.getServerUrl = function (forDocumentServer) {
-  return (forDocumentServer && !!configServer.get('exampleUrl')) ? configServer.get('exampleUrl') : this.getServerPath();
+  return (forDocumentServer && !!configServer.get('exampleUrl'))
+    ? configServer.get('exampleUrl') : this.getServerPath();
 };
 
 // get server address from the request
@@ -192,7 +201,8 @@ DocManager.prototype.getProtocol = function () {
 DocManager.prototype.getCallback = function (fileName) {
   const server = this.getServerUrl(true);
   const hostAddress = this.curUserHostAddress();
-  const handler = `/track?filename=${encodeURIComponent(fileName)}&useraddress=${encodeURIComponent(hostAddress)}`; // get callback handler
+  // get callback handler
+  const handler = `/track?filename=${encodeURIComponent(fileName)}&useraddress=${encodeURIComponent(hostAddress)}`;
 
   return server + handler;
 };
@@ -219,7 +229,8 @@ DocManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
 };
 
 DocManager.prototype.storageRootPath = function (userAddress) {
-  return path.join(storageConfigFolder, this.curUserHostAddress(userAddress)); // get the path to the directory for the host address
+  // get the path to the directory for the host address
+  return path.join(storageConfigFolder, this.curUserHostAddress(userAddress));
 }
 
 // get the storage path of the given file
@@ -237,7 +248,8 @@ DocManager.prototype.forcesavePath = function (fileName, userAddress, create) {
     return '';
   }
   directory = path.join(directory, `${fileName}-history`); // get the path to the history of the given file
-  if (!create && !this.existsSync(directory)) { // the history directory doesn't exist and we are not supposed to create it
+  // the history directory doesn't exist and we are not supposed to create it
+  if (!create && !this.existsSync(directory)) {
     return '';
   }
   this.createDirectory(directory); // create history directory if it doesn't exist
@@ -263,7 +275,8 @@ DocManager.prototype.historyPath = function (fileName, userAddress, create) {
 
 // get the path to the specified file version
 DocManager.prototype.versionPath = function (fileName, userAddress, version) {
-  const historyPath = this.historyPath(fileName, userAddress, true); // get the path to the history of a given file or create it if it doesn't exist
+  // get the path to the history of a given file or create it if it doesn't exist
+  const historyPath = this.historyPath(fileName, userAddress, true);
   return path.join(historyPath, `${version}`);
 };
 
@@ -338,7 +351,8 @@ DocManager.prototype.getStoredFiles = function () {
 DocManager.prototype.curUserHostAddress = function (userAddress) {
   let address = userAddress;
   if (!address) { // if user address isn't passed to the function
-    address = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress; // take it from the header or use the remote address
+    // take it from the header or use the remote address
+    address = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress;
   }
 
   return address.replace(new RegExp('[^0-9a-zA-Z.=]', 'g'), '_');
@@ -491,7 +505,8 @@ DocManager.prototype.getFilesInfo = function (fileId) {
   const filesInDirectory = this.getStoredFiles(); // get all the stored files from the folder
   const responseArray = [];
   let responseObject;
-  for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile += 1) { // run through all the files from the directory
+  // run through all the files from the directory
+  for (let currentFile = 0; currentFile < filesInDirectory.length; currentFile += 1) {
     const file = filesInDirectory[currentFile];
     const stats = fileSystem.lstatSync(path.join(directory, file.name)); // get file information
     const fileObject = { // write file parameters to the file object

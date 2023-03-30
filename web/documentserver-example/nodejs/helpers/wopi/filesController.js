@@ -169,11 +169,13 @@ const putRelativeFile = function (wopi, req, res, userHost) {
       const overwrite = req.headers[reqConsts.requestHeaders.OverwriteRelativeTarget.toLowerCase()]; // overwrite header
       if (overwrite && overwrite === 'true') { // check if we can overwrite
         if (lockManager.hasLock(storagePath)) { // check if file locked
-          returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress)); // file is locked, cannot overwrite
+          // file is locked, cannot overwrite
+          returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress));
           return;
         }
       } else {
-        returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress)); // file exists and overwrite header is false
+        // file exists and overwrite header is false
+        returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress));
         return;
       }
     }
@@ -250,10 +252,12 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
     if (isNewVersion) {
       let count_version = req.DocManager.countVersion(historyPath); // get the last file version
       version = count_version + 1; // get a number of a new file version
-      let versionPath = req.DocManager.versionPath(filename, userAddress, version); // get the path to the specified file version
+      // get the path to the specified file version
+      let versionPath = req.DocManager.versionPath(filename, userAddress, version);
       req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
 
-      let path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`); // get the path to the previous file version
+      // get the path to the previous file version
+      let path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
       fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
     }
 
@@ -305,11 +309,14 @@ const parseWopiRequest = function (req) {
       if (req.method == 'GET') { // otherwise, if the request method is GET
         wopiData.requestType = reqConsts.requestType.CheckFileInfo; // the request type is CheckFileInfo
       } else if (req.method == 'POST') { // if the request method is POST
-        const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()]; // get the X-WOPI-Override header which determines the request type
+        // get the X-WOPI-Override header which determines the request type
+        const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];
         switch (wopiOverride) {
         case 'LOCK': // if it is equal to LOCK
-          if (req.headers[reqConsts.requestHeaders.OldLock.toLowerCase()]) { // check if the request sends the X-WOPI-OldLock header
-            wopiData.requestType = reqConsts.requestType.UnlockAndRelock; // if yes, then the request type is UnlockAndRelock
+          // check if the request sends the X-WOPI-OldLock header
+          if (req.headers[reqConsts.requestHeaders.OldLock.toLowerCase()]) {
+            // if yes, then the request type is UnlockAndRelock
+            wopiData.requestType = reqConsts.requestType.UnlockAndRelock;
           } else {
             wopiData.requestType = reqConsts.requestType.Lock; // otherwise, it is Lock
           }
@@ -328,7 +335,8 @@ const parseWopiRequest = function (req) {
           break;
 
         case 'PUT_RELATIVE': // if it is equal to PUT_RELATIVE
-          wopiData.requestType = reqConsts.requestType.PutRelativeFile; // the request type is PutRelativeFile (creates a new file on the host based on the current file)
+          // the request type is PutRelativeFile (creates a new file on the host based on the current file)
+          wopiData.requestType = reqConsts.requestType.PutRelativeFile;
           break;
 
         case 'RENAME_FILE': // if it is equal to RENAME_FILE
@@ -336,7 +344,8 @@ const parseWopiRequest = function (req) {
           break;
 
         case 'PUT_USER_INFO': // if it is equal to PUT_USER_INFO
-          wopiData.requestType = reqConsts.requestType.PutUserInfo; // the request type is PutUserInfo (stores some basic user information on the host)
+          // the request type is PutUserInfo (stores some basic user information on the host)
+          wopiData.requestType = reqConsts.requestType.PutUserInfo;
           break;
         }
       }

@@ -44,12 +44,14 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 };
 
 // get the url of the converted file
-documentService.getConvertedUri = function (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
+documentService.getConvertedUri = function
+  (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
   let fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
 
   let title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
 
-  let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri); // generate the document key value
+  // generate the document key value
+  let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
 
   let params = { // write all the conversion parameters to the params dictionary
     async,
@@ -69,11 +71,13 @@ documentService.getConvertedUri = function (documentUri, fromExtension, toExtens
   };
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
-    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params); // write signature authorization header
+    // write signature authorization header
+    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params); // get token and save it to the parameters
   }
 
-  // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+  // parse url to allow request by relative url after
+  // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
   urllib.request(
     urlModule.parse(uri),
     {
@@ -90,7 +94,8 @@ documentService.generateRevisionId = function (expectedKey) {
   const maxKeyLength = 128; // the max key length is 128
   let expKey = expectedKey;
   if (expKey.length > maxKeyLength) { // if the expected key length is greater than the max key length
-    expKey = expKey.hashCode().toString(); // the expected key is hashed and a fixed length value is stored in the string format
+    // the expected key is hashed and a fixed length value is stored in the string format
+    expKey = expKey.hashCode().toString();
   }
 
   let key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
@@ -196,7 +201,8 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
     params.token = documentService.getToken(params);
   }
 
-  // parse url to allow request by relative url after https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+  // parse url to allow request by relative url after
+  // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
   urllib.request(
     urlModule.parse(uri),
     {
@@ -212,12 +218,15 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
 documentService.checkJwtHeader = function (req) {
   let decoded = null;
   let authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
-  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) { // if authorization header exists and it starts with the authorization header prefix
-    let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length); // the resulting token starts after the authorization header prefix
+  // if authorization header exists and it starts with the authorization header prefix
+  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+    // the resulting token starts after the authorization header prefix
+    let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
     try {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {
-      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`) // print debug information to the console
+      // print debug information to the console
+      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
     }
   }
   return decoded;
@@ -229,13 +238,15 @@ documentService.fillJwtByUrl = function (uri, opt_dataObject) {
   let payload = {query: parseObject.query, payload: opt_dataObject}; // create payload object
 
   let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
-  return jwt.sign(payload, cfgSignatureSecret, options); // sign token with given data using signature secret and options parameters
+  // sign token with given data using signature secret and options parameters
+  return jwt.sign(payload, cfgSignatureSecret, options);
 }
 
 // get token
 documentService.getToken = function (data) {
   let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
-  return jwt.sign(data, cfgSignatureSecret, options); // sign token with given data using signature secret and options parameters
+  // sign token with given data using signature secret and options parameters
+  return jwt.sign(data, cfgSignatureSecret, options);
 };
 
 // read and verify token
