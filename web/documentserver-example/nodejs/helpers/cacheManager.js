@@ -29,11 +29,11 @@ exports.containsKey = function (key) {
     return false;
   }
 
-  let secondsCache = 30;
+  const secondsCache = 30;
 
   // get the creation time of the given key and add 30 seconds to it
-  let t1 = new Date(cache[key].time + (1000 * secondsCache));
-  let t2 = new Date(); // get the current time
+  const t1 = new Date(cache[key].time + (1000 * secondsCache));
+  const t2 = new Date(); // get the current time
   if (t1 < t2 ) { // if the current time is greater
     delete cache[key]; // delete the given key from the cache
     return false;

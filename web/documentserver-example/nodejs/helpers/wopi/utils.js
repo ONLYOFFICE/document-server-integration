@@ -18,8 +18,8 @@
 
 const config = require('config');
 const configServer = config.get('server');
-let urlModule = require('url');
-let urllib = require('urllib');
+const urlModule = require('url');
+const urllib = require('urllib');
 const xmlParser = require('fast-xml-parser');
 const he = require('he');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
@@ -59,7 +59,7 @@ const getDiscoveryInfo = async function (siteUrl) {
 const requestDiscovery = async function (siteUrl) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
-    let actions = [];
+    const actions = [];
     urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
       if (data) {
         // create the discovery XML file with the parameters from the response

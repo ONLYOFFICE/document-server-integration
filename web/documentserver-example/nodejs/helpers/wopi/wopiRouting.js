@@ -67,7 +67,7 @@ exports.registerRoutes = function (app) {
       const files = req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
-      for (let file of files) {
+      for (const file of files) {
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
         file.actions = await utils.getActions(ext); // get actions of the specified extension
         file.defaultAction = await utils.getDefaultAction(ext); // get the default action of the specified extension
@@ -95,13 +95,13 @@ exports.registerRoutes = function (app) {
   });
   // define a handler for creating a new wopi editing session
   app.get('/wopi-new', (req, res) => {
-    let {fileExt} = req.query; // get the file extension from the request
+    const {fileExt} = req.query; // get the file extension from the request
 
     req.DocManager = new DocManager(req, res);
 
     if (fileExt != null) { // if the file extension exists
-      let fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
-      let redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
+      const fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
+      const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
       return;
@@ -115,8 +115,8 @@ exports.registerRoutes = function (app) {
       await utils.initWopi(req.DocManager);
 
       let fileName = req.DocManager.getCorrectName(req.params.id)
-      let fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
-      let user = users.getUser(req.query.userid); // get a user by the id
+      const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
+      const user = users.getUser(req.query.userid); // get a user by the id
 
       // get an action for the specified extension and name
       const action = await utils.getAction(fileExt, req.query.action);

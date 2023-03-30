@@ -16,7 +16,7 @@
  *
  */
 
-let lockDict = {};
+const lockDict = {};
 
 // get the lock object of the specified file
 const getLockObject = function (filePath) {

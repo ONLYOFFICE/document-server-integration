@@ -220,7 +220,7 @@ const checkFileInfo = function (wopi, req, res, userHost) {
 
   const path = req.DocManager.storagePath(wopi.id, userAddress);
   // add wopi query
-  let query = new URLSearchParams(wopi.accessToken);
+  const query = new URLSearchParams(wopi.accessToken);
   const user = users.getUser(query.get('userid'));
 
   // create the file information object
@@ -241,7 +241,7 @@ const checkFileInfo = function (wopi, req, res, userHost) {
 
 const saveFileFromBody = function (req, filename, userAddress, isNewVersion, callback) {
   if (req.body) {
-    let storagePath = req.DocManager.storagePath(filename, userAddress);
+    const storagePath = req.DocManager.storagePath(filename, userAddress);
     let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
     if (historyPath == '') { // if it is empty
       historyPath = req.DocManager.historyPath(filename, userAddress, true); // create it
@@ -250,14 +250,14 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
 
     let version = 0;
     if (isNewVersion) {
-      let count_version = req.DocManager.countVersion(historyPath); // get the last file version
+      const count_version = req.DocManager.countVersion(historyPath); // get the last file version
       version = count_version + 1; // get a number of a new file version
       // get the path to the specified file version
-      let versionPath = req.DocManager.versionPath(filename, userAddress, version);
+      const versionPath = req.DocManager.versionPath(filename, userAddress, version);
       req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
 
       // get the path to the previous file version
-      let path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
+      const path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
       fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
     }
 

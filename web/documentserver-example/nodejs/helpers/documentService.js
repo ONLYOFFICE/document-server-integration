@@ -17,22 +17,22 @@
  */
 
 // get all the necessary values and modules
-let urlModule = require('url');
-let urllib = require('urllib');
-let jwt = require('jsonwebtoken');
-let fileUtility = require('./fileUtility');
-let guidManager = require('./guidManager');
-let configServer = require('config').get('server');
-let siteUrl = configServer.get('siteUrl'); // the path to the editors installation
-let cfgSignatureEnable = configServer.get('token.enable');
-let cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-let cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-let cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
-let cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
-let cfgSignatureSecret = configServer.get('token.secret');
-let cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
+const urlModule = require('url');
+const urllib = require('urllib');
+const jwt = require('jsonwebtoken');
+const fileUtility = require('./fileUtility');
+const guidManager = require('./guidManager');
+const configServer = require('config').get('server');
+const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
+const cfgSignatureEnable = configServer.get('token.enable');
+const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
+const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
+const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
+const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
+const cfgSignatureSecret = configServer.get('token.secret');
+const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
-let documentService = {};
+const documentService = {};
 
 documentService.userIp = null;
 
@@ -46,14 +46,14 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 // get the url of the converted file
 documentService.getConvertedUri = function
   (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
-  let fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
+  const fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
 
-  let title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
+  const title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
 
   // generate the document key value
-  let revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
+  const revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);
 
-  let params = { // write all the conversion parameters to the params dictionary
+  const params = { // write all the conversion parameters to the params dictionary
     async,
     url: documentUri,
     outputtype: toExtension.replace('.', ''),
@@ -64,8 +64,8 @@ documentService.getConvertedUri = function
     region: lang,
   };
 
-  let uri = siteUrl + configServer.get('converterUrl'); // get the absolute converter url
-  let headers = {
+  const uri = siteUrl + configServer.get('converterUrl'); // get the absolute converter url
+  const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json'
   };
@@ -98,7 +98,7 @@ documentService.generateRevisionId = function (expectedKey) {
     expKey = expKey.hashCode().toString();
   }
 
-  let key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
+  const key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
 
   return key.substring(0, Math.min(key.length, maxKeyLength)); // the resulting key is of the max key length or less
 };
@@ -106,7 +106,7 @@ documentService.generateRevisionId = function (expectedKey) {
 // create an error message for the error code
 documentService.processConvertServiceResponceError = function (errorCode) {
   let errorMessage = '';
-  let errorMessageTemplate = 'Error occurred in the ConvertService: ';
+  const errorMessageTemplate = 'Error occurred in the ConvertService: ';
 
   // add the error message to the error message template depending on the error code
   switch (errorCode) {
@@ -149,13 +149,13 @@ documentService.processConvertServiceResponceError = function (errorCode) {
 
 // get the response url
 documentService.getResponseUri = function (json) {
-  let fileResult = JSON.parse(json);
+  const fileResult = JSON.parse(json);
 
   if (fileResult.error) { // if an error occurs
     documentService.processConvertServiceResponceError(parseInt(fileResult.error)); // get an error message
   }
 
-  let isEndConvert = fileResult.endConvert // check if the conversion is completed
+  const isEndConvert = fileResult.endConvert // check if the conversion is completed
 
   let percent = parseInt(fileResult.percent); // get the conversion percentage
   let uri = null;
@@ -182,7 +182,7 @@ documentService.getResponseUri = function (json) {
 
 // create a command request
 documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
-  let revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
+  const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   params = { // create a parameter object with command method and the document key value in it
     c: method,
     key: revisionId
@@ -192,8 +192,8 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
     params.meta = meta;
   }
 
-  let uri = siteUrl + configServer.get('commandUrl'); // get the absolute command url
-  let headers = { // create a headers object
+  const uri = siteUrl + configServer.get('commandUrl'); // get the absolute command url
+  const headers = { // create a headers object
     'Content-Type': 'application/json'
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
@@ -217,11 +217,11 @@ documentService.commandRequest = function (method, documentRevisionId, meta = nu
 // check jwt token headers
 documentService.checkJwtHeader = function (req) {
   let decoded = null;
-  let authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
+  const authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
   // if authorization header exists and it starts with the authorization header prefix
   if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
     // the resulting token starts after the authorization header prefix
-    let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
     try {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {
@@ -234,17 +234,17 @@ documentService.checkJwtHeader = function (req) {
 
 // get jwt token using url information
 documentService.fillJwtByUrl = function (uri, opt_dataObject) {
-  let parseObject = urlModule.parse(uri, true); // get parse object from the url
-  let payload = {query: parseObject.query, payload: opt_dataObject}; // create payload object
+  const parseObject = urlModule.parse(uri, true); // get parse object from the url
+  const payload = {query: parseObject.query, payload: opt_dataObject}; // create payload object
 
-  let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  const options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
   // sign token with given data using signature secret and options parameters
   return jwt.sign(payload, cfgSignatureSecret, options);
 }
 
 // get token
 documentService.getToken = function (data) {
-  let options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  const options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
   // sign token with given data using signature secret and options parameters
   return jwt.sign(data, cfgSignatureSecret, options);
 };

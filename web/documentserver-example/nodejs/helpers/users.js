@@ -35,7 +35,7 @@ class User {
   };
 }
 
-let descr_user_1 = [
+const descr_user_1 = [
   'File author by default',
   'Doesn’t belong to any group',
   'Can review all the changes',
@@ -46,7 +46,7 @@ let descr_user_1 = [
   // "Can submit forms"
 ];
 
-let descr_user_2 = [
+const descr_user_2 = [
   'Belongs to Group2',
   'Can review only his own changes or changes made by users with no group',
   'Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only',
@@ -56,7 +56,7 @@ let descr_user_2 = [
   // "Can’t submit forms"
 ];
 
-let descr_user_3 = [
+const descr_user_3 = [
   'Belongs to Group3',
   'Can review changes made by Group2 users',
   'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
@@ -69,7 +69,7 @@ let descr_user_3 = [
   // "Can’t submit forms"
 ];
 
-let descr_user_0 = [
+const descr_user_0 = [
   'The name is requested when the editor is opened',
   'Doesn’t belong to any group',
   'Can review all the changes',
@@ -85,7 +85,7 @@ let descr_user_0 = [
   // "Can’t submit forms"
 ];
 
-let users = [
+const users = [
   new User(
     'uid-1', 'John Smith', 'smith@example.com',
     null, null, {}, null,
@@ -134,7 +134,7 @@ users.getUser = function (id) {
 
 // get a list of users with their name and email
 users.getUsersForMentions = function (id) {
-  let result = [];
+  const result = [];
   this.forEach((user) => {
     if (user.id != id && user.name != null && user.email != null) {
       result.push({

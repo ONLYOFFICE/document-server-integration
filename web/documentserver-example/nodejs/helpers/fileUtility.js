@@ -16,7 +16,7 @@
  *
  */
 
-let fileUtility = {};
+const fileUtility = {};
 
 // get file name from the given url
 fileUtility.getFileName = function (url, withoutExtension) {
@@ -40,16 +40,16 @@ fileUtility.getFileName = function (url, withoutExtension) {
 fileUtility.getFileExtension = function (url, withoutDot) {
   if (!url) return null;
 
-  let fileName = fileUtility.getFileName(url); // get file name from the given url
+  const fileName = fileUtility.getFileName(url); // get file name from the given url
 
-  let parts = fileName.toLowerCase().split('.');
+  const parts = fileName.toLowerCase().split('.');
 
   return withoutDot ? parts.pop() : `.${parts.pop()}`; // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
 fileUtility.getFileType = function (url) {
-  let ext = fileUtility.getFileExtension(url); // get the file extension from the given url
+  const ext = fileUtility.getFileExtension(url); // get the file extension from the given url
 
   // word type for document extensions
   if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;
@@ -83,11 +83,11 @@ fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.ppt
 // eslint-disable-next-line no-unused-vars
 const getUrlParams = function (url) {
   try {
-    let query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url
-    let params = query.split('&'); // parameters are separated by & sign
-    let map = {}; // write parameters and their values to the map dictionary
+    const query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url
+    const params = query.split('&'); // parameters are separated by & sign
+    const map = {}; // write parameters and their values to the map dictionary
     for (let i = 0; i < params.length; i += 1) {
-      let parts = param.split('=');
+      const parts = param.split('=');
       [,map[parts[0]]] = parts;
     }
     return map;

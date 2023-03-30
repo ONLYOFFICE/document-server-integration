@@ -123,8 +123,8 @@ DocManager.prototype.fileRemove = function (fileName) {
 
 // create a zero-size file
 DocManager.prototype.fileSizeZero = function (fileName) {
-  let path = this.storagePath(fileName);
-  let fh = fileSystem.openSync(path, 'w');
+  const path = this.storagePath(fileName);
+  const fh = fileSystem.openSync(path, 'w');
   fileSystem.closeSync(fh);
 }
 
@@ -210,7 +210,7 @@ DocManager.prototype.getCallback = function (fileName) {
 // get url to the created file
 DocManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
   const server = this.getServerUrl();
-  let ext = this.getInternalExtension(docType).replace('.', '');
+  const ext = this.getInternalExtension(docType).replace('.', '');
   const handler = `/editor?fileExt=${ext}&userid=${userid}&type=${type}&lang=${lang}`;
 
   return server + handler;
@@ -235,7 +235,7 @@ DocManager.prototype.storageRootPath = function (userAddress) {
 
 // get the storage path of the given file
 DocManager.prototype.storagePath = function (fileName, userAddress) {
-  let fileNameExt = fileUtility.getFileName(fileName); // get the file name with extension
+  const fileNameExt = fileUtility.getFileName(fileName); // get the file name with extension
   const directory = this.storageRootPath(userAddress);
   this.createDirectory(directory); // create a new directory if it doesn't exist
   return path.join(directory, fileNameExt); // put the given file to this directory
@@ -400,7 +400,7 @@ DocManager.prototype.getTemplateImageUrl = function (fileType) {
 
 // get document key
 DocManager.prototype.getKey = function (fileName, userAddress) {
-  let address = userAddress || this.curUserHostAddress();
+  const address = userAddress || this.curUserHostAddress();
   let key = address + fileName; // get document key by adding local file url to the current user host address
 
   const historyPath = this.historyPath(fileName, address); // get the path to the file history
