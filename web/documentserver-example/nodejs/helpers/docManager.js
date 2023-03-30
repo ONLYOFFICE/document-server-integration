@@ -126,6 +126,7 @@ DocManager.prototype.fileSizeZero = function (fileName) {
 }
 
 // create demo document
+// eslint-disable-next-line no-unused-vars
 DocManager.prototype.createDemo = function (isSample, fileExt, userid, username, wopi) {
   const demoName = `${isSample ? 'sample' : 'new'}.${fileExt}`;
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists

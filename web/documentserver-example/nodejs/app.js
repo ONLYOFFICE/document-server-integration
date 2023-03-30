@@ -27,7 +27,6 @@ const formidable = require('formidable');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const configServer = config.get('server');
-const storageFolder = configServer.get('storageFolder');
 const mime = require('mime');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
@@ -126,16 +125,17 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   let fileName = fileUtility.getFileName(req.query.fileName);
   let userAddress = req.query.useraddress;
+  let token = '';
 
   if (!!userAddress
         && cfgSignatureEnable && cfgSignatureUseForRequest) {
     let authorization = req.get(cfgSignatureAuthorizationHeader);
     if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-      const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+      token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
     }
 
     try {
-      let decoded = jwt.verify(token, cfgSignatureSecret);
+      jwt.verify(token, cfgSignatureSecret);
     } catch (err) {
       console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
       res.sendStatus(403);
@@ -164,7 +164,7 @@ app.get('/history', (req, res) => {
     if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
       let token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
       try {
-        let decoded = jwt.verify(token, cfgSignatureSecret);
+        jwt.verify(token, cfgSignatureSecret);
       } catch (err) {
         console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`);
         res.sendStatus(403);
@@ -180,11 +180,12 @@ app.get('/history', (req, res) => {
   let userAddress = req.query.useraddress;
   let {ver} = req.query;
   let {file} = req.query;
+  let Path = '';
 
   if (file.includes('diff')) {
-    const Path = req.DocManager.diffPath(fileName, userAddress, ver);
+    Path = req.DocManager.diffPath(fileName, userAddress, ver);
   } else if (file.includes('prev')) {
-    const Path = req.DocManager.prevFilePath(fileName, userAddress, ver);
+    Path = req.DocManager.prevFilePath(fileName, userAddress, ver);
   } else {
     res.sendStatus(403);
     return;
@@ -322,7 +323,6 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   let lang = req.body.lang ? req.body.lang : null;
   let fileUri = req.DocManager.getDownloadUrl(fileName, true);
   let fileExt = fileUtility.getFileExtension(fileName);
-  let fileType = fileUtility.getFileType(fileName);
   let internalFileExt = 'ooxml';
   let response = res;
 
@@ -473,6 +473,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   };
 
   let {referenceData} = req.body;
+  let fileName = '';
   if (!!referenceData) {
     let {instanceId} = referenceData;
 
@@ -482,7 +483,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
       if (userAddress === req.DocManager.curUserHostAddress()
                 && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
-        let {fileName} = fileKey;
+        ({fileName} = fileKey);
       }
     }
   }
@@ -491,7 +492,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     let path = fileUtility.getFileName(req.body.path);
 
     if (req.DocManager.existsSync(req.DocManager.storagePath(path, userAddress))) {
-      let fileName = path;
+      fileName = path;
     }
   }
 
@@ -638,6 +639,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         let downloadExt = `.${body.fileType}`;
         let isSubmitForm = body.forcesavetype === 3; // SubmitForm
         let correctName = '';
+        let forcesavePath = '';
 
         if (isSubmitForm) {
           // new file
@@ -647,7 +649,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             let ext = fileUtility.getFileExtension(fileName);
             correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
           }
-          let forcesavePath = req.DocManager.storagePath(correctName, userAddress);
+          forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
           if (newFileName) {
             correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
@@ -757,7 +759,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     } else {
       let checkJwtHeaderRes = documentService.checkJwtHeader(req); // otherwise, check jwt token headers
       if (checkJwtHeaderRes) { // if they exist
-        let body;
         if (checkJwtHeaderRes.payload) {
           body = checkJwtHeaderRes.payload; // get the payload object
         }
@@ -1057,6 +1058,7 @@ app.use((req, res, next) => {
 });
 
 // render the error template with the parameters specified
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', {

@@ -74,6 +74,7 @@ fileUtility.spreadsheetExts = ['.xls', '.xlsx', '.xlsm', '.xlsb', '.xlt', '.xltx
 fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.pptm', '.pot', '.potx', '.potm', '.odp', '.fodp', '.otp'];
 
 // get url parameters
+// eslint-disable-next-line no-unused-vars
 const getUrlParams = function (url) {
   try {
     let query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url

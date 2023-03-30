@@ -57,6 +57,7 @@ const getDiscoveryInfo = async function (siteUrl) {
 }
 
 const requestDiscovery = async function (siteUrl) {
+  // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
     let actions = [];
     urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
@@ -65,6 +66,7 @@ const requestDiscovery = async function (siteUrl) {
           attributeNamePrefix: '',
           ignoreAttributes: false,
           parseAttributeValue: true,
+          // eslint-disable-next-line no-unused-vars
           attrValueProcessor: (val, attrName) => {
             return he.decode(val, {isAttributeValue: true})
           }
