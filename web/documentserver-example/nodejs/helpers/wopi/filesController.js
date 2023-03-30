@@ -23,14 +23,14 @@ const fileSystem = require('fs');
 const mime = require('mime');
 const path = require('path');
 const users = require('../users');
-const docManager = require('../docManager');
+const DocManager = require('../docManager');
 
 // lock file editing
 const lock = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-  const userAddress = req.docManager.curUserHostAddress(userHost); // get current user host address
-  const filePath = req.docManager.storagePath(wopi.id, userAddress); // get the storage path of the given file
+  const userAddress = req.DocManager.curUserHostAddress(userHost); // get current user host address
+  const filePath = req.DocManager.storagePath(wopi.id, userAddress); // get the storage path of the given file
 
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => lock
@@ -49,8 +49,8 @@ const lock = function (wopi, req, res, userHost) {
 
 // retrieve a lock on a file
 const getLock = function (wopi, req, res, userHost) {
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const filePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const filePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   // get the lock of the specified file and set it as the X-WOPI-Lock header
   res.setHeader(reqConsts.requestHeaders.lock, lockManager.getLock(filePath));
@@ -61,8 +61,8 @@ const getLock = function (wopi, req, res, userHost) {
 const refreshLock = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const filePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const filePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
@@ -81,8 +81,8 @@ const refreshLock = function (wopi, req, res, userHost) {
 const unlock = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const filePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const filePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
@@ -102,8 +102,8 @@ const unlockAndRelock = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
   const oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()]; // get the X-WOPI-OldLock header
 
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const filePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const filePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
@@ -120,9 +120,9 @@ const unlockAndRelock = function (wopi, req, res, userHost) {
 
 // request a message to retrieve a file
 const getFile = function (wopi, req, res, userHost) {
-  const userAddress = req.docManager.curUserHostAddress(userHost);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
 
-  const path = req.docManager.storagePath(wopi.id, userAddress);
+  const path = req.DocManager.storagePath(wopi.id, userAddress);
 
   res.setHeader('Content-Length', fileSystem.statSync(path).size);
   res.setHeader('Content-Type', mime.getType(path));
@@ -137,8 +137,8 @@ const getFile = function (wopi, req, res, userHost) {
 const putFile = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const storagePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   if (!lockManager.hasLock(storagePath)) {
     // ToDo: if body length is 0 bytes => handle document creation
@@ -160,20 +160,20 @@ const putFile = function (wopi, req, res, userHost) {
 }
 
 const putRelativeFile = function (wopi, req, res, userHost) {
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const storagePath = req.docManager.storagePath(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
 
   let filename = req.headers[reqConsts.requestHeaders.RelativeTarget.toLowerCase()]; // we cannot modify this filename
   if (filename) {
-    if (req.docManager.existsSync(storagePath)) { // check if already exists
+    if (req.DocManager.existsSync(storagePath)) { // check if already exists
       const overwrite = req.headers[reqConsts.requestHeaders.OverwriteRelativeTarget.toLowerCase()]; // overwrite header
       if (overwrite && overwrite === 'true') { // check if we can overwrite
         if (lockManager.hasLock(storagePath)) { // check if file locked
-          returnValidRelativeTarget(res, req.docManager.getCorrectName(wopi.id, userAddress)); // file is locked, cannot overwrite
+          returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress)); // file is locked, cannot overwrite
           return;
         }
       } else {
-        returnValidRelativeTarget(res, req.docManager.getCorrectName(wopi.id, userAddress)); // file exists and overwrite header is false
+        returnValidRelativeTarget(res, req.DocManager.getCorrectName(wopi.id, userAddress)); // file exists and overwrite header is false
         return;
       }
     }
@@ -184,7 +184,7 @@ const putRelativeFile = function (wopi, req, res, userHost) {
       filename = fileUtility.getFileName(wopi.id, true) + filename; // get original filename with new extension
     }
 
-    filename = req.docManager.getCorrectName(filename, userAddress); // get correct filename if already exists
+    filename = req.DocManager.getCorrectName(filename, userAddress); // get correct filename if already exists
   }
 
   const isConverted = req.headers[reqConsts.requestHeaders.FileConversion.toLowerCase()];
@@ -197,7 +197,7 @@ const putRelativeFile = function (wopi, req, res, userHost) {
       return;
     }
 
-    const serverUrl = req.docManager.getServerUrl(true);
+    const serverUrl = req.DocManager.getServerUrl(true);
     const fileActionUrl = `${serverUrl }/wopi-action/${ filename }?action=`;
 
     const fileInfo = {
@@ -213,10 +213,10 @@ const putRelativeFile = function (wopi, req, res, userHost) {
 
 // return information about the file properties, access rights and editor settings
 const checkFileInfo = function (wopi, req, res, userHost) {
-  const userAddress = req.docManager.curUserHostAddress(userHost);
-  const version = req.docManager.getKey(wopi.id, userAddress);
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const version = req.DocManager.getKey(wopi.id, userAddress);
 
-  const path = req.docManager.storagePath(wopi.id, userAddress);
+  const path = req.DocManager.storagePath(wopi.id, userAddress);
   // add wopi query
   let query = new URLSearchParams(wopi.accessToken);
   const user = users.getUser(query.get('userid'));
@@ -224,7 +224,7 @@ const checkFileInfo = function (wopi, req, res, userHost) {
   // create the file information object
   const fileInfo = {
     BaseFileName: wopi.id,
-    OwnerId: req.docManager.getFileData(wopi.id, userAddress)[1],
+    OwnerId: req.DocManager.getFileData(wopi.id, userAddress)[1],
     Size: fileSystem.statSync(path).size,
     UserId: user.id,
     UserFriendlyName: user.name,
@@ -239,19 +239,19 @@ const checkFileInfo = function (wopi, req, res, userHost) {
 
 const saveFileFromBody = function (req, filename, userAddress, isNewVersion, callback) {
   if (req.body) {
-    let storagePath = req.docManager.storagePath(filename, userAddress);
-    let historyPath = req.docManager.historyPath(filename, userAddress); // get the path to the file history
+    let storagePath = req.DocManager.storagePath(filename, userAddress);
+    let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
     if (historyPath == '') { // if it is empty
-      historyPath = req.docManager.historyPath(filename, userAddress, true); // create it
-      req.docManager.createDirectory(historyPath); // and create a new directory for the history
+      historyPath = req.DocManager.historyPath(filename, userAddress, true); // create it
+      req.DocManager.createDirectory(historyPath); // and create a new directory for the history
     }
 
     let version = 0;
     if (isNewVersion) {
-      let count_version = req.docManager.countVersion(historyPath); // get the last file version
+      let count_version = req.DocManager.countVersion(historyPath); // get the last file version
       version = count_version + 1; // get a number of a new file version
-      let versionPath = req.docManager.versionPath(filename, userAddress, version); // get the path to the specified file version
-      req.docManager.createDirectory(versionPath); // and create a new directory for the specified version
+      let versionPath = req.DocManager.versionPath(filename, userAddress, version); // get the path to the specified file version
+      req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
 
       let path_prev = path.join(versionPath, `prev${ fileUtility.getFileExtension(filename)}`); // get the path to the previous file version
       fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
@@ -361,7 +361,7 @@ actionMapping[reqConsts.requestType.Unlock] = unlock;
 
 exports.fileRequestHandler = (req, res) => {
   let userAddress = null;
-  req.docManager = new docManager(req, res);
+  req.DocManager = new DocManager(req, res);
   if (req.params.id.includes('@')) { // if there is the "@" sign in the id parameter
     const split = req.params.id.split('@'); // split this parameter by "@"
     [req.params.id] = split; // rewrite id with the first part of the split parameter

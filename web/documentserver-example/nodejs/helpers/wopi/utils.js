@@ -26,10 +26,10 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const initWopi = async function (docManager) {
+const initWopi = async function (DocManager) {
   let absSiteUrl = siteUrl;
   if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = docManager.getServerHost() + siteUrl;
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
   }
 
   // get the wopi discovery information

@@ -19,7 +19,7 @@
 const tokenValidator = require('./tokenValidator');
 const filesController = require('./filesController');
 const utils = require('./utils');
-const docManager = require('../docManager');
+const DocManager = require('../docManager');
 const fileUtility = require('../fileUtility');
 const config = require('config');
 const configServer = config.get('server');
@@ -44,9 +44,9 @@ exports.registerRoutes = function (app) {
   // define a handler for the default wopi page
   app.get('/wopi', async (req, res) => {
 
-    req.docManager = new docManager(req, res);
+    req.DocManager = new DocManager(req, res);
 
-    await utils.initWopi(req.docManager);
+    await utils.initWopi(req.DocManager);
 
     // get the wopi discovery information
     const actions = await utils.getDiscoveryInfo();
@@ -66,7 +66,7 @@ exports.registerRoutes = function (app) {
 
     try {
       // get all the stored files
-      const files = req.docManager.getStoredFiles();
+      const files = req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
       for (let file of files) {
@@ -79,9 +79,9 @@ exports.registerRoutes = function (app) {
       res.render('wopiIndex', {
         wopiEnable,
         storedFiles: wopiEnable ? files : [],
-        params: req.docManager.getCustomParams(),
+        params: req.DocManager.getCustomParams(),
         users,
-        serverUrl: req.docManager.getServerUrl(),
+        serverUrl: req.DocManager.getServerUrl(),
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
         convertExts: configServer.get('convertedDocs'),
         editedExts,
@@ -100,11 +100,11 @@ exports.registerRoutes = function (app) {
   app.get('/wopi-new', (req, res) => {
     let {fileExt} = req.query; // get the file extension from the request
 
-    req.docManager = new docManager(req, res);
+    req.DocManager = new DocManager(req, res);
 
     if (fileExt != null) { // if the file extension exists
-      let fileName = req.docManager.getCorrectName(`new.${ fileExt}`)
-      let redirectPath = `${req.docManager.getServerUrl(true) }/wopi-action/${ encodeURIComponent(fileName) }?action=editnew${ req.docManager.getCustomParams()}`; // get the redirect path
+      let fileName = req.DocManager.getCorrectName(`new.${ fileExt}`)
+      let redirectPath = `${req.DocManager.getServerUrl(true) }/wopi-action/${ encodeURIComponent(fileName) }?action=editnew${ req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
       return;
     }
@@ -112,11 +112,11 @@ exports.registerRoutes = function (app) {
   // define a handler for getting wopi action information by its id
   app.get('/wopi-action/:id', async (req, res) => {
     try {
-      req.docManager = new docManager(req, res);
+      req.DocManager = new DocManager(req, res);
 
-      await utils.initWopi(req.docManager);
+      await utils.initWopi(req.DocManager);
 
-      let fileName = req.docManager.getCorrectName(req.params.id)
+      let fileName = req.DocManager.getCorrectName(req.params.id)
       let fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       let user = users.getUser(req.query.userid); // get a user by the id
 
@@ -124,12 +124,12 @@ exports.registerRoutes = function (app) {
       const action = await utils.getAction(fileExt, req.query.action);
 
       if (action != null && req.query.action == 'editnew') {
-        fileName = req.docManager.RequestEditnew(req, fileName, user);
+        fileName = req.DocManager.requestEditnew(req, fileName, user);
       }
 
       // render wopiAction template with the parameters specified
       res.render('wopiAction', {
-        actionUrl: utils.getActionUrl(req.docManager.getServerUrl(true), req.docManager.curUserHostAddress(), action, req.params.id),
+        actionUrl: utils.getActionUrl(req.DocManager.getServerUrl(true), req.DocManager.curUserHostAddress(), action, req.params.id),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
         params: getCustomWopiParams(req.query),
