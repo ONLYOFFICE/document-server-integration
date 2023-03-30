@@ -47,7 +47,7 @@ const urllib = require('urllib');
 const { emitWarning } = require('process');
 const verifyPeerOff = configServer.get('verify_peer_off');
 
-if(verifyPeerOff) {
+if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
