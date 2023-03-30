@@ -49,7 +49,9 @@ const getDiscoveryInfo = async function (siteUrl) {
     }
 
     cache = actions;
-    setTimeout(() => {return cache = null}, 1000 * 60 * 60); // 1 hour
+    setTimeout(() => {
+return cache = null
+}, 1000 * 60 * 60); // 1 hour
 
     return actions;
 }
@@ -63,7 +65,9 @@ const requestDiscovery = async function (siteUrl) {
                     attributeNamePrefix: '',
                     ignoreAttributes: false,
                     parseAttributeValue: true,
-                    attrValueProcessor: (val, attrName) => {return he.decode(val, {isAttributeValue: true})}
+                    attrValueProcessor: (val, attrName) => {
+return he.decode(val, {isAttributeValue: true})
+}
                 });
                 if (discovery['wopi-discovery']) {
                     for (const app of discovery['wopi-discovery']['net-zone'].app) {

@@ -115,8 +115,7 @@ app.get('/', (req, res) => {  // define a handler for default page
             languages: configServer.get('languages'),
         });
 
-    }
-    catch (ex) {
+    } catch (ex) {
         console.log(ex);  // display error message in the console
         res.status(500);  // write status parameter to the response
         res.render('error', { message: 'Server error' });  // render error template with the message parameter specified
@@ -820,8 +819,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         if (req.query.action) {
             try {
                 actionData = JSON.stringify(JSON.parse(req.query.action));
-            }
-            catch (ex) {
+            } catch (ex) {
                 console.log(ex);
             }
         }
@@ -1035,8 +1033,7 @@ app.get('/editor', (req, res) => {  // define a handler for editing document
         } else {
               res.render('editor', argss);
         }
-    }
-    catch (ex) {
+    } catch (ex) {
         console.log(ex);
         res.status(500);
         res.render('error', { message: `Server error: ${  ex.message}` });

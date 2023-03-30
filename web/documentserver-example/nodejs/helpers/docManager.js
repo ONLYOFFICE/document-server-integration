@@ -500,14 +500,12 @@ docManager.prototype.getFilesInfo = function (fileId) {
                 responseObject = fileObject;   // response object will be equal to the file object
                 break;
             }
-        }
-        else responseArray.push(fileObject);  // otherwise, push file object to the response array
+        } else responseArray.push(fileObject);  // otherwise, push file object to the response array
     };
     if (fileId !== undefined) {
         if (responseObject !== undefined) return responseObject;
         else return 'File not found';
-    }
-    else return responseArray;
+    } else return responseArray;
 };
 
 docManager.prototype.getInstanceId = function () {

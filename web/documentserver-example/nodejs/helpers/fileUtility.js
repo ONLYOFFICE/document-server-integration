@@ -84,8 +84,7 @@ const getUrlParams = function (url) {
             [,map[parts[0]]] = parts;
         }
         return map;
-    }
-    catch (ex) {
+    } catch (ex) {
         return null;
     }
 }

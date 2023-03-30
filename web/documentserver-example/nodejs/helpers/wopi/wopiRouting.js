@@ -57,8 +57,12 @@ exports.registerRoutes = function (app) {
             if (el.name == 'edit') docsExtEdit.push(`.${el.ext}`);
         });
 
-        const editedExts = configServer.get('editedDocs').filter((i) => {return docsExtEdit.includes(i)});   // Checking supported extensions
-        const fillExts = configServer.get('fillDocs').filter((i) => {return docsExtEdit.includes(i)});
+        const editedExts = configServer.get('editedDocs').filter((i) => {
+return docsExtEdit.includes(i)
+});   // Checking supported extensions
+        const fillExts = configServer.get('fillDocs').filter((i) => {
+return docsExtEdit.includes(i)
+});
 
         try {
             // get all the stored files
