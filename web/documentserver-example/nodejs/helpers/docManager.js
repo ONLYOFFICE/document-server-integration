@@ -165,7 +165,8 @@ docManager.prototype.getFileData = function (fileName, userAddress) {
     return ['2017-01-01', 'uid-1', 'John Smith'];  // return default information
   }
 
-  return ((fileSystem.readFileSync(history)).toString()).split(',');
+  return ((fileSystem.readFileSync(history)).toString())
+    .split(',');
 };
 
 // get server url
