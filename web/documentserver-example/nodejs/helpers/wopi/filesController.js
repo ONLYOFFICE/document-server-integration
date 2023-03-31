@@ -346,6 +346,7 @@ const parseWopiRequest = function (req) {
           // the request type is PutUserInfo (stores some basic user information on the host)
           wopiData.requestType = reqConsts.requestType.PutUserInfo;
           break;
+        default:
       }
     }
   }
