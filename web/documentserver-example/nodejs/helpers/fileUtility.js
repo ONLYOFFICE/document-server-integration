@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -59,13 +59,13 @@ fileUtility.getFileType = function (url) {
   if (fileUtility.presentationExts.indexOf(ext) !== -1) return fileUtility.fileType.slide;
 
   return fileUtility.fileType.word; // the default file type is word
-}
+};
 
 fileUtility.fileType = {
   word: 'word',
   cell: 'cell',
   slide: 'slide'
-}
+};
 
 // the document extension list
 fileUtility.documentExts = ['.doc', '.docx', '.oform', '.docm', '.dot', '.dotx', '.dotm', '.odt',
@@ -88,13 +88,13 @@ const getUrlParams = function (url) {
     const map = {}; // write parameters and their values to the map dictionary
     for (let i = 0; i < params.length; i += 1) {
       const parts = param.split('=');
-      [,map[parts[0]]] = parts;
+      [, map[parts[0]]] = parts;
     }
     return map;
   } catch (ex) {
     return null;
   }
-}
+};
 
 // save all the functions to the fileUtility module to export it later in other files
 module.exports = fileUtility;

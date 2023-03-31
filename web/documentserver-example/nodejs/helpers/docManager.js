@@ -27,7 +27,7 @@ const storageConfigFolder = configServer.get('storageFolder');
 const DocManager = function (req, res) {
   this.req = req;
   this.res = res;
-}
+};
 
 // check if the path exists or not
 DocManager.prototype.existsSync = function (path) {
@@ -54,7 +54,7 @@ DocManager.prototype.getLang = function () {
   if (new RegExp('^[a-z]{2}(-[A-Z]{2})?$', 'i').test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
-  return 'en'
+  return 'en';
 };
 
 // get customization parameters
@@ -109,7 +109,7 @@ DocManager.prototype.requestEditnew = function (req, fileName, user) {
   this.saveFileData(correctName, user.id, user.name);
 
   return correctName;
-}
+};
 
 // delete a file with its history
 DocManager.prototype.fileRemove = function (fileName) {
@@ -119,14 +119,14 @@ DocManager.prototype.fileRemove = function (fileName) {
   const userAddress = this.curUserHostAddress();
   const historyPath = this.historyPath(fileName, userAddress, true);
   this.cleanFolderRecursive(historyPath, true); // clean all the files from the history folder
-}
+};
 
 // create a zero-size file
 DocManager.prototype.fileSizeZero = function (fileName) {
   const path = this.storagePath(fileName);
   const fh = fileSystem.openSync(path, 'w');
   fileSystem.closeSync(fh);
-}
+};
 
 // create demo document
 // eslint-disable-next-line no-unused-vars
@@ -135,8 +135,7 @@ DocManager.prototype.createDemo = function (isSample, fileExt, userid, username,
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
   // copy sample document of a necessary extension to the storage path
-  this.copyFile(path.join
-  (__dirname, '..','public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName));
+  this.copyFile(path.join(__dirname, '..', 'public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName));
 
   this.saveFileData(fileName, userid, username); // save file data to the file
 
@@ -214,7 +213,7 @@ DocManager.prototype.getCreateUrl = function (docType, userid, type, lang) {
   const handler = `/editor?fileExt=${ext}&userid=${userid}&type=${type}&lang=${lang}`;
 
   return server + handler;
-}
+};
 
 // get url to download a file
 DocManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
@@ -231,7 +230,7 @@ DocManager.prototype.getDownloadUrl = function (fileName, forDocumentServer) {
 DocManager.prototype.storageRootPath = function (userAddress) {
   // get the path to the directory for the host address
   return path.join(storageConfigFolder, this.curUserHostAddress(userAddress));
-}
+};
 
 // get the storage path of the given file
 DocManager.prototype.storagePath = function (fileName, userAddress) {
@@ -396,7 +395,7 @@ DocManager.prototype.getTemplateImageUrl = function (fileType) {
   }
 
   return `${path}/images/file_docx.svg`; // the default value
-}
+};
 
 // get document key
 DocManager.prototype.getKey = function (fileName, userAddress) {
@@ -465,9 +464,9 @@ DocManager.prototype.getHistory = function (fileName, content, keyVersion, versi
     createdFromJson = oldVersion ? contentJson.date : contentJson.created;
   }
 
-  const username = userNameFromJson ? userNameFromJson : (this.getFileData(fileName, userAddress))[2];
-  const userid = userIdFromJson ? userIdFromJson : (this.getFileData(fileName, userAddress))[1];
-  const created = createdFromJson ? createdFromJson : (this.getFileData(fileName, userAddress))[0];
+  const username = userNameFromJson || (this.getFileData(fileName, userAddress))[2];
+  const userid = userIdFromJson || (this.getFileData(fileName, userAddress))[1];
+  const created = createdFromJson || (this.getFileData(fileName, userAddress))[0];
   const res = (fileContent && !oldVersion) ? fileContent : { changes: fileContent };
   res.key = keyVersion; // write the information about the user, creation time, key and version to the result object
   res.version = version;
@@ -523,7 +522,7 @@ DocManager.prototype.getFilesInfo = function (fileId) {
         break;
       }
     } else responseArray.push(fileObject); // otherwise, push file object to the response array
-  };
+  }
   if (fileId !== undefined) {
     if (responseObject !== undefined) return responseObject;
     return 'File not found';

@@ -69,4 +69,4 @@ const requestHeaders = Object.freeze({
 module.exports = {
   requestType,
   requestHeaders,
-}
+};

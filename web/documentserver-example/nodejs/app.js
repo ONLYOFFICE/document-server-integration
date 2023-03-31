@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -113,7 +113,6 @@ app.get('/', (req, res) => { // define a handler for default page
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
     res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
-    return;
   }
 });
 
@@ -134,7 +133,7 @@ app.get('/download', (req, res) => { // define a handler for downloading files
     try {
       jwt.verify(token, cfgSignatureSecret);
     } catch (err) {
-      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
+      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`);
       res.sendStatus(403);
       return;
     }
@@ -197,7 +196,7 @@ app.get('/history', (req, res) => {
 
   const filestream = fileSystem.createReadStream(Path);
   filestream.pipe(res); // send file information to the response by streams
-})
+});
 
 app.post('/upload', (req, res) => { // define a handler for uploading files
   req.DocManager = new DocManager(req, res);
@@ -242,8 +241,10 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     }
 
     const exts = [].concat(
-      configServer.get('viewedDocs'),configServer.get('editedDocs'),
-      configServer.get('convertedDocs'), configServer.get('fillDocs')
+      configServer.get('viewedDocs'),
+      configServer.get('editedDocs'),
+      configServer.get('convertedDocs'),
+      configServer.get('fillDocs')
     ); // all the supported file extensions
     const curExt = fileUtility.getFileExtension(file.name);
     const documentType = fileUtility.getFileType(file.name);
@@ -287,7 +288,7 @@ app.post('/create', (req, res) => {
     const userAddress = req.DocManager.curUserHostAddress();
     req.DocManager.historyPath(fileName, userAddress, true);
 
-    urllib.request(fileUrl, { method: 'GET' },(err, data) => {
+    urllib.request(fileUrl, { method: 'GET' }, (err, data) => {
       // check if the file size exceeds the maximum file size
       if (configServer.get('maxFileSize') < data.length || data.length <= 0) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -297,8 +298,10 @@ app.post('/create', (req, res) => {
       }
 
       const exts = [].concat(
-        configServer.get('viewedDocs'), configServer.get('editedDocs'),
-        configServer.get('convertedDocs'), configServer.get('fillDocs')
+        configServer.get('viewedDocs'),
+        configServer.get('editedDocs'),
+        configServer.get('convertedDocs'),
+        configServer.get('fillDocs')
       ); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName);
 
@@ -313,7 +316,7 @@ app.post('/create', (req, res) => {
       fileSystem.writeFileSync(req.DocManager.storagePath(fileName), data);
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write(JSON.stringify({ file : fileName }));
+      res.write(JSON.stringify({ file: fileName }));
       res.end();
     });
   } catch (e) {
@@ -486,7 +489,7 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
 
   const filestream = fileSystem.createReadStream(csvPath);
   filestream.pipe(res); // send file information to the response by streams
-})
+});
 
 app.post('/reference', (req, res) => { // define a handler for renaming file
   req.DocManager = new DocManager(req, res);
@@ -499,7 +502,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
-  if (!!referenceData) {
+  if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
@@ -618,7 +621,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
       response.write('{"error":0}');
       response.end();
-    }
+    };
 
     // file saving process
     const processSave = async function (downloadUri, body, fileName, userAddress) {
@@ -651,7 +654,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             } catch (ex) {
               console.log(ex);
               await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
-              return;
             }
           });
           return;
@@ -687,8 +689,10 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
           if (newFileName) {
-            correctName = req.DocManager.getCorrectName
-            (fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
+            correctName = req.DocManager.getCorrectName(fileUtility.getFileName(
+              fileName,
+              true
+            ) + downloadExt, userAddress);
           }
           // create forcesave path if it doesn't exist
           let forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, false);
@@ -700,7 +704,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         fileSystem.writeFileSync(forcesavePath, data);
 
         if (isSubmitForm) {
-          const uid = body.actions[0].userid
+          const uid = body.actions[0].userid;
           req.DocManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
         }
       } catch (ex) {
@@ -711,7 +715,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
       response.write('{"error":0}');
       response.end();
-    }
+    };
 
     // file force saving process
     const processForceSave = async function (downloadUri, body, fileName, userAddress) {
@@ -740,7 +744,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             } catch (ex) {
               console.log(ex);
               await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
-              return;
             }
           });
           return;
@@ -748,7 +751,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           console.log(ex);
         }
       }
-      await callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
+      await callbackProcessForceSave(downloadUri, body, fileName, userAddress, false);
     };
 
     if (body.status === 1) { // editing
@@ -902,7 +905,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = configServer.get('editedDocs').indexOf(fileExt) !== -1; // check if this file can be edited
-    if ((!canEdit && mode === 'edit' || mode === 'fillForms') && configServer.get('fillDocs').indexOf(fileExt) !== -1) {
+    if (((!canEdit && mode === 'edit') || mode === 'fillForms')
+      && configServer.get('fillDocs').indexOf(fileExt) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1028,8 +1032,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         submitForm,
         plugins: JSON.stringify(plugins),
         actionData,
-        fileKey: userid !== 'uid-0' ? JSON.stringify
-        ({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
+        fileKey: userid !== 'uid-0'
+          ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect')
       },
@@ -1059,14 +1063,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           console.log(err);
         } else {
           // sign token with given data using signature secret
-          argss.editor.token = jwt.sign
-          (JSON.parse(`{${html}}`), cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataInsertImage.token = jwt.sign
-          (argss.dataInsertImage, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataCompareFile.token = jwt.sign
-          (argss.dataCompareFile, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataMailMergeRecipients.token = jwt.sign
-          (argss.dataMailMergeRecipients, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+          argss.editor.token
+            = jwt.sign(JSON.parse(`{${html}}`), cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+          argss.dataInsertImage.token
+            = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+          argss.dataCompareFile.token
+            = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+          argss.dataMailMergeRecipients.token
+            = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
         }
         res.render('editor', argss); // render the editor template with the parameters specified
       });

@@ -57,10 +57,10 @@ exports.registerRoutes = function (app) {
     });
 
     const editedExts = configServer.get('editedDocs').filter((i) => {
-      return docsExtEdit.includes(i)
+      return docsExtEdit.includes(i);
     }); // Checking supported extensions
     const fillExts = configServer.get('fillDocs').filter((i) => {
-      return docsExtEdit.includes(i)
+      return docsExtEdit.includes(i);
     });
 
     try {
@@ -91,7 +91,6 @@ exports.registerRoutes = function (app) {
       console.log(ex); // display error message in the console
       res.status(500); // write status parameter to the response
       res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
-      return;
     }
   });
   // define a handler for creating a new wopi editing session
@@ -101,11 +100,10 @@ exports.registerRoutes = function (app) {
     req.DocManager = new DocManager(req, res);
 
     if (fileExt) { // if the file extension exists
-      const fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
+      const fileName = req.DocManager.getCorrectName(`new.${fileExt}`);
       const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
-      return;
     }
   });
   // define a handler for getting wopi action information by its id
@@ -115,7 +113,7 @@ exports.registerRoutes = function (app) {
 
       await utils.initWopi(req.DocManager);
 
-      let fileName = req.DocManager.getCorrectName(req.params.id)
+      let fileName = req.DocManager.getCorrectName(req.params.id);
       const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       const user = users.getUser(req.query.userid); // get a user by the id
 
@@ -130,7 +128,9 @@ exports.registerRoutes = function (app) {
       res.render('wopiAction', {
         actionUrl: utils.getActionUrl(
           req.DocManager.getServerUrl(true),
-          req.DocManager.curUserHostAddress(), action, req.params.id
+          req.DocManager.curUserHostAddress(),
+          action,
+          req.params.id
         ),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
@@ -140,7 +140,6 @@ exports.registerRoutes = function (app) {
       console.log(ex);
       res.status(500);
       res.render('error', { message: 'Server error' });
-      return;
     }
   });
 

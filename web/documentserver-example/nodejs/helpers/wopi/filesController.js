@@ -43,9 +43,9 @@ const lock = function (wopi, req, res, userHost) {
   } else {
     // file locked by someone else => return lock mismatch
     const lock = lockManager.getLock(filePath);
-    returnLockMismatch(res, lock, `File already locked by ${lock}`)
+    returnLockMismatch(res, lock, `File already locked by ${lock}`);
   }
-}
+};
 
 // retrieve a lock on a file
 const getLock = function (wopi, req, res, userHost) {
@@ -55,7 +55,7 @@ const getLock = function (wopi, req, res, userHost) {
   // get the lock of the specified file and set it as the X-WOPI-Lock header
   res.setHeader(reqConsts.requestHeaders.lock, lockManager.getLock(filePath));
   res.sendStatus(200);
-}
+};
 
 // refresh the lock on a file by resetting its automatic expiration timer to 30 minutes
 const refreshLock = function (wopi, req, res, userHost) {
@@ -75,7 +75,7 @@ const refreshLock = function (wopi, req, res, userHost) {
     // lock mismatch
     returnLockMismatch(res, lockManager.getLock(filePath), 'Lock mismatch');
   }
-}
+};
 
 // allow for file editing
 const unlock = function (wopi, req, res, userHost) {
@@ -95,7 +95,7 @@ const unlock = function (wopi, req, res, userHost) {
     // lock mismatch
     returnLockMismatch(res, lockManager.getLock(filePath), 'Lock mismatch');
   }
-}
+};
 
 // allow for file editing, and then immediately take a new lock on the file
 const unlockAndRelock = function (wopi, req, res, userHost) {
@@ -116,7 +116,7 @@ const unlockAndRelock = function (wopi, req, res, userHost) {
     // lock mismatch
     returnLockMismatch(res, lockManager.getLock(filePath), 'Lock mismatch');
   }
-}
+};
 
 // request a message to retrieve a file
 const getFile = function (wopi, req, res, userHost) {
@@ -131,7 +131,7 @@ const getFile = function (wopi, req, res, userHost) {
 
   const filestream = fileSystem.createReadStream(path); // open a file as a readable stream
   filestream.pipe(res); // retrieve data from file stream and output it to the response object
-}
+};
 
 // request a message to update a file
 const putFile = function (wopi, req, res, userHost) {
@@ -157,7 +157,7 @@ const putFile = function (wopi, req, res, userHost) {
     // lock mismatch
     returnLockMismatch(res, lockManager.getLock(storagePath), 'Lock mismatch');
   }
-}
+};
 
 const putRelativeFile = function (wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
@@ -211,7 +211,7 @@ const putRelativeFile = function (wopi, req, res, userHost) {
     };
     res.status(200).send(fileInfo);
   });
-}
+};
 
 // return information about the file properties, access rights and editor settings
 const checkFileInfo = function (wopi, req, res, userHost) {
@@ -237,7 +237,7 @@ const checkFileInfo = function (wopi, req, res, userHost) {
     SupportsUpdate: true,
   };
   res.status(200).send(fileInfo);
-}
+};
 
 const saveFileFromBody = function (req, filename, userAddress, isNewVersion, callback) {
   if (req.body) {
@@ -266,17 +266,17 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
     req.on('end', () => {
       filestream.close();
       callback(null, version);
-    })
+    });
   } else {
     callback('empty body');
   }
-}
+};
 
 // return name that wopi-client can use as the value of X-WOPI-RelativeTarget in a future PutRelativeFile operation
 const returnValidRelativeTarget = function (res, filename) {
   res.setHeader(reqConsts.requestHeaders.ValidRelativeTarget, filename); // set the X-WOPI-ValidRelativeTarget header
   res.sendStatus(409); // file with that name already exists
-}
+};
 
 // return lock mismatch
 const returnLockMismatch = function (res, lock, reason) {
@@ -285,7 +285,7 @@ const returnLockMismatch = function (res, lock, reason) {
     res.setHeader(reqConsts.requestHeaders.LockFailureReason, reason); // set it as the X-WOPI-LockFailureReason header
   }
   res.sendStatus(409); // conflict
-}
+};
 
 // parse wopi request
 const parseWopiRequest = function (req) {
@@ -293,10 +293,10 @@ const parseWopiRequest = function (req) {
     requestType: reqConsts.requestType.None,
     accessToken: req.query.access_token,
     id: req.params.id
-  }
+  };
 
   // get the request path
-  const reqPath = req.path.substring('/wopi/'.length)
+  const reqPath = req.path.substring('/wopi/'.length);
 
   if (reqPath.startsWith('files')) { // if it starts with "files"
     if (reqPath.endsWith('/contents')) { // ends with "/contents"
@@ -305,13 +305,12 @@ const parseWopiRequest = function (req) {
       } else if (req.method === 'POST') { // if the request method is POST
         wopiData.requestType = reqConsts.requestType.PutFile; // then the request type is PutFile
       }
-    } else {
-      if (req.method === 'GET') { // otherwise, if the request method is GET
-        wopiData.requestType = reqConsts.requestType.CheckFileInfo; // the request type is CheckFileInfo
-      } else if (req.method === 'POST') { // if the request method is POST
-        // get the X-WOPI-Override header which determines the request type
-        const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];
-        switch (wopiOverride) {
+    } else if (req.method === 'GET') { // otherwise, if the request method is GET
+      wopiData.requestType = reqConsts.requestType.CheckFileInfo; // the request type is CheckFileInfo
+    } else if (req.method === 'POST') { // if the request method is POST
+      // get the X-WOPI-Override header which determines the request type
+      const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];
+      switch (wopiOverride) {
         case 'LOCK': // if it is equal to LOCK
           // check if the request sends the X-WOPI-OldLock header
           if (req.headers[reqConsts.requestHeaders.OldLock.toLowerCase()]) {
@@ -347,7 +346,6 @@ const parseWopiRequest = function (req) {
           // the request type is PutUserInfo (stores some basic user information on the host)
           wopiData.requestType = reqConsts.requestType.PutUserInfo;
           break;
-        }
       }
     }
   } else if (reqPath.startsWith('folders')) {
@@ -355,7 +353,7 @@ const parseWopiRequest = function (req) {
   }
 
   return wopiData;
-}
+};
 
 const actionMapping = {};
 actionMapping[reqConsts.requestType.GetFile] = getFile;
@@ -374,23 +372,27 @@ exports.fileRequestHandler = (req, res) => {
   if (req.params.id.includes('@')) { // if there is the "@" sign in the id parameter
     const split = req.params.id.split('@'); // split this parameter by "@"
     [req.params.id] = split; // rewrite id with the first part of the split parameter
-    [,userAddress] = split; // save the second part as the user address
+    [, userAddress] = split; // save the second part as the user address
   }
 
   const wopiData = parseWopiRequest(req); // get the wopi data
 
   // an error of the unknown request type
   if (wopiData.requestType === reqConsts.requestType.None) {
-    res.status(500).send({ title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown' });
+    res.status(500).send({
+      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown'
+    });
     return;
   }
 
   // an error of the unsupported request type
   const action = actionMapping[wopiData.requestType];
   if (!action) {
-    res.status(501).send({ title: 'fileHandler', method: req.method, id: req.params.id, error: 'unsupported' });
+    res.status(501).send({
+      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unsupported'
+    });
     return;
   }
 
   action(wopiData, req, res, userAddress);
-}
+};

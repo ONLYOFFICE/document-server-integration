@@ -35,7 +35,7 @@ const initWopi = async function (DocManager) {
 
   // get the wopi discovery information
   await getDiscoveryInfo(absSiteUrl);
-}
+};
 
 // get the wopi discovery information
 const getDiscoveryInfo = async function (siteUrl) {
@@ -51,11 +51,11 @@ const getDiscoveryInfo = async function (siteUrl) {
 
   cache = actions;
   setTimeout(() => {
-    return cache = null
+    return cache = null;
   }, 1000 * 60 * 60); // 1 hour
 
   return actions;
-}
+};
 
 const requestDiscovery = async function (siteUrl) {
   // eslint-disable-next-line no-unused-vars
@@ -70,7 +70,7 @@ const requestDiscovery = async function (siteUrl) {
           parseAttributeValue: true,
           // eslint-disable-next-line no-unused-vars
           attrValueProcessor: (val, attrName) => {
-            return he.decode(val, { isAttributeValue: true })
+            return he.decode(val, { isAttributeValue: true });
           }
         });
         if (discovery['wopi-discovery']) {
@@ -96,8 +96,8 @@ const requestDiscovery = async function (siteUrl) {
       }
       resolve(actions);
     });
-  })
-}
+  });
+};
 
 // get actions of the specified extension
 const getActions = async function (ext) {
@@ -111,7 +111,7 @@ const getActions = async function (ext) {
   }
 
   return filtered;
-}
+};
 
 // get an action for the specified extension and name
 const getAction = async function (ext, name) {
@@ -124,7 +124,7 @@ const getAction = async function (ext, name) {
   }
 
   return null;
-}
+};
 
 // get the default action for the specified extension
 const getDefaultAction = async function (ext) {
@@ -137,12 +137,12 @@ const getDefaultAction = async function (ext) {
   }
 
   return null;
-}
+};
 
 // get the action url
 const getActionUrl = function (host, userAddress, action, filename) {
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${host}/wopi/files/${filename}@${userAddress}`;
-}
+};
 
 exports.initWopi = initWopi;
 exports.getDiscoveryInfo = getDiscoveryInfo;

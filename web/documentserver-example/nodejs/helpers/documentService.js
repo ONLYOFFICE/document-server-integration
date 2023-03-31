@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -46,7 +46,7 @@ documentService.getConvertedUriSync = function (documentUri, fromExtension, toEx
 
 // get the url of the converted file
 documentService.getConvertedUri = function
-  (documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
+(documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
   const fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
 
   const title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
@@ -111,38 +111,38 @@ documentService.processConvertServiceResponceError = function (errorCode) {
 
   // add the error message to the error message template depending on the error code
   switch (errorCode) {
-  case -20:
-    errorMessage = `${errorMessageTemplate}Error encrypt signature`;
-    break;
-  case -8:
-    errorMessage = `${errorMessageTemplate}Error document signature`;
-    break;
-  case -7:
-    errorMessage = `${errorMessageTemplate}Error document request`;
-    break;
-  case -6:
-    errorMessage = `${errorMessageTemplate}Error database`;
-    break;
-  case -5:
-    errorMessage = `${errorMessageTemplate}Incorrect password`;
-    break;
-  case -4:
-    errorMessage = `${errorMessageTemplate}Error download error`;
-    break;
-  case -3:
-    errorMessage = `${errorMessageTemplate}Error convertation error`;
-    break;
-  case -2:
-    errorMessage = `${errorMessageTemplate}Error convertation timeout`;
-    break;
-  case -1:
-    errorMessage = `${errorMessageTemplate}Error convertation unknown`;
-    break;
-  case 0: // if the error code is equal to 0, the error message is empty
-    break;
-  default:
-    errorMessage = `ErrorCode = ${errorCode}`; // default value for the error message
-    break;
+    case -20:
+      errorMessage = `${errorMessageTemplate}Error encrypt signature`;
+      break;
+    case -8:
+      errorMessage = `${errorMessageTemplate}Error document signature`;
+      break;
+    case -7:
+      errorMessage = `${errorMessageTemplate}Error document request`;
+      break;
+    case -6:
+      errorMessage = `${errorMessageTemplate}Error database`;
+      break;
+    case -5:
+      errorMessage = `${errorMessageTemplate}Incorrect password`;
+      break;
+    case -4:
+      errorMessage = `${errorMessageTemplate}Error download error`;
+      break;
+    case -3:
+      errorMessage = `${errorMessageTemplate}Error convertation error`;
+      break;
+    case -2:
+      errorMessage = `${errorMessageTemplate}Error convertation timeout`;
+      break;
+    case -1:
+      errorMessage = `${errorMessageTemplate}Error convertation unknown`;
+      break;
+    case 0: // if the error code is equal to 0, the error message is empty
+      break;
+    default:
+      errorMessage = `ErrorCode = ${errorCode}`; // default value for the error message
+      break;
   }
 
   throw { message: errorMessage };
@@ -156,7 +156,7 @@ documentService.getResponseUri = function (json) {
     documentService.processConvertServiceResponceError(parseInt(fileResult.error)); // get an error message
   }
 
-  const isEndConvert = fileResult.endConvert // check if the conversion is completed
+  const isEndConvert = fileResult.endConvert; // check if the conversion is completed
 
   let percent = parseInt(fileResult.percent); // get the conversion percentage
   let uri = null;
@@ -227,11 +227,11 @@ documentService.checkJwtHeader = function (req) {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {
       // print debug information to the console
-      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
+      console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`);
     }
   }
   return decoded;
-}
+};
 
 // get jwt token using url information
 documentService.fillJwtByUrl = function (uri, opt_dataObject) {
@@ -241,7 +241,7 @@ documentService.fillJwtByUrl = function (uri, opt_dataObject) {
   const options = { algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn };
   // sign token with given data using signature secret and options parameters
   return jwt.sign(payload, cfgSignatureSecret, options);
-}
+};
 
 // get token
 documentService.getToken = function (data) {
@@ -255,7 +255,7 @@ documentService.readToken = function (token) {
   try {
     return jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
   } catch (err) {
-    console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`)
+    console.log(`checkJwtHeader error: name = ${err.name} message = ${err.message} token = ${token}`);
   }
   return null;
 };
