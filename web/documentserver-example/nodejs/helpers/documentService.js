@@ -99,7 +99,7 @@ documentService.generateRevisionId = function (expectedKey) {
     expKey = expKey.hashCode().toString();
   }
 
-  const key = expKey.replace(new RegExp('[^0-9-.a-zA-Z_=]', 'g'), '_');
+  const key = expKey.replace(/[^0-9-.a-zA-Z_=]/g, '_');
 
   return key.substring(0, Math.min(key.length, maxKeyLength)); // the resulting key is of the max key length or less
 };

@@ -51,7 +51,7 @@ DocManager.prototype.createDirectory = function (path) {
 
 // get the language from the request
 DocManager.prototype.getLang = function () {
-  if (new RegExp('^[a-z]{2}(-[A-Z]{2})?$', 'i').test(this.req.query.lang)) {
+  if (/^[a-z]{2}(-[A-Z]{2})?$/i.test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
   return 'en';
@@ -354,7 +354,7 @@ DocManager.prototype.curUserHostAddress = function (userAddress) {
     address = this.req.headers['x-forwarded-for'] || this.req.connection.remoteAddress;
   }
 
-  return address.replace(new RegExp('[^0-9a-zA-Z.=]', 'g'), '_');
+  return address.replace(/[^0-9a-zA-Z.=]/g, '_');
 };
 
 // copy file
