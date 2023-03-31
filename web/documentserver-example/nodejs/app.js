@@ -25,13 +25,16 @@ const fileSystem = require('fs');
 const formidable = require('formidable');
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const configServer = config.get('server');
 const mime = require('mime');
+const urllib = require('urllib');
+const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
 const fileUtility = require('./helpers/fileUtility');
 const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
+
+const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const plugins = config.get('plugins');
@@ -41,8 +44,6 @@ const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHea
 const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
-const urllib = require('urllib');
-const { emitWarning } = require('process');
 const verifyPeerOff = configServer.get('verify_peer_off');
 
 if (verifyPeerOff) {

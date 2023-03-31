@@ -17,11 +17,12 @@
  */
 
 const config = require('config');
-const configServer = config.get('server');
 const urlModule = require('url');
 const urllib = require('urllib');
 const xmlParser = require('fast-xml-parser');
 const he = require('he');
+
+const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
 let cache = null;

@@ -18,9 +18,10 @@
 
 const path = require('path');
 const fileSystem = require('fs');
+const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const documentService = require('./documentService');
-const configServer = require('config').get('server');
+
 const storageConfigFolder = configServer.get('storageFolder');
 
 const DocManager = function (req, res) {

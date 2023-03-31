@@ -16,12 +16,12 @@
  *
  */
 
-const reqConsts = require('./request');
-const fileUtility = require('../fileUtility');
-const lockManager = require('./lockManager');
 const fileSystem = require('fs');
 const mime = require('mime');
 const path = require('path');
+const reqConsts = require('./request');
+const fileUtility = require('../fileUtility');
+const lockManager = require('./lockManager');
 const users = require('../users');
 const DocManager = require('../docManager');
 

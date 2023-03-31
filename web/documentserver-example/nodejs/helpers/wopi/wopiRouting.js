@@ -16,15 +16,16 @@
  *
  */
 
+const config = require('config');
 const tokenValidator = require('./tokenValidator');
 const filesController = require('./filesController');
 const utils = require('./utils');
 const DocManager = require('../docManager');
 const fileUtility = require('../fileUtility');
-const config = require('config');
+const users = require('../users');
+
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
-const users = require('../users');
 
 getCustomWopiParams = function (query) {
   let tokenParams = '';

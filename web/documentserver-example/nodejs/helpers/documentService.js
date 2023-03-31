@@ -20,9 +20,10 @@
 const urlModule = require('url');
 const urllib = require('urllib');
 const jwt = require('jsonwebtoken');
+const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
-const configServer = require('config').get('server');
+
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
