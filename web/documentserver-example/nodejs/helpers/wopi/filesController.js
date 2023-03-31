@@ -348,8 +348,6 @@ const parseWopiRequest = function (req) {
           break;
       }
     }
-  } else if (reqPath.startsWith('folders')) {
-
   }
 
   return wopiData;
