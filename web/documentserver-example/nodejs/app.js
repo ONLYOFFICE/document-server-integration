@@ -70,12 +70,10 @@ String.prototype.format = function (...args) {
   return text;
 };
 
-
 const app = express(); // create an application object
 app.disable('x-powered-by');
 app.set('views', path.join(__dirname, 'views')); // specify the path to the main template
 app.set('view engine', 'ejs'); // specify which template engine is used
-
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); // allow any Internet domain to access the resources of this site
@@ -93,10 +91,8 @@ if (config.has('server.static')) {
 }
 app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
-
 app.use(bodyParser.json()); // connect middleware that parses json
 app.use(bodyParser.urlencoded({ extended: false })); // connect middleware that parses urlencoded bodies
-
 
 app.get('/', (req, res) => { // define a handler for default page
   try {
