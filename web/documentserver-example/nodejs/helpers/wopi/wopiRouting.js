@@ -27,7 +27,7 @@ const users = require('../users');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
-getCustomWopiParams = function (query) {
+const getCustomWopiParams = function (query) {
   let tokenParams = '';
   let actionParams = '';
 

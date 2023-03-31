@@ -25,6 +25,15 @@ const lockManager = require('./lockManager');
 const users = require('../users');
 const DocManager = require('../docManager');
 
+// return lock mismatch
+const returnLockMismatch = function (res, lock, reason) {
+  res.setHeader(reqConsts.requestHeaders.Lock, lock || ''); // set the X-WOPI-Lock header
+  if (reason) { // if there is a reason for lock mismatch
+    res.setHeader(reqConsts.requestHeaders.LockFailureReason, reason); // set it as the X-WOPI-LockFailureReason header
+  }
+  res.sendStatus(409); // conflict
+};
+
 // lock file editing
 const lock = function (wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
@@ -45,6 +54,45 @@ const lock = function (wopi, req, res, userHost) {
     const lock = lockManager.getLock(filePath);
     returnLockMismatch(res, lock, `File already locked by ${lock}`);
   }
+};
+
+const saveFileFromBody = function (req, filename, userAddress, isNewVersion, callback) {
+  if (req.body) {
+    const storagePath = req.DocManager.storagePath(filename, userAddress);
+    let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
+    if (historyPath === '') { // if it is empty
+      historyPath = req.DocManager.historyPath(filename, userAddress, true); // create it
+      req.DocManager.createDirectory(historyPath); // and create a new directory for the history
+    }
+
+    let version = 0;
+    if (isNewVersion) {
+      const count_version = req.DocManager.countVersion(historyPath); // get the last file version
+      version = count_version + 1; // get a number of a new file version
+      // get the path to the specified file version
+      const versionPath = req.DocManager.versionPath(filename, userAddress, version);
+      req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
+
+      // get the path to the previous file version
+      const path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
+      fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
+    }
+
+    const filestream = fileSystem.createWriteStream(storagePath);
+    req.pipe(filestream);
+    req.on('end', () => {
+      filestream.close();
+      callback(null, version);
+    });
+  } else {
+    callback('empty body');
+  }
+};
+
+// return name that wopi-client can use as the value of X-WOPI-RelativeTarget in a future PutRelativeFile operation
+const returnValidRelativeTarget = function (res, filename) {
+  res.setHeader(reqConsts.requestHeaders.ValidRelativeTarget, filename); // set the X-WOPI-ValidRelativeTarget header
+  res.sendStatus(409); // file with that name already exists
 };
 
 // retrieve a lock on a file
@@ -237,54 +285,6 @@ const checkFileInfo = function (wopi, req, res, userHost) {
     SupportsUpdate: true,
   };
   res.status(200).send(fileInfo);
-};
-
-const saveFileFromBody = function (req, filename, userAddress, isNewVersion, callback) {
-  if (req.body) {
-    const storagePath = req.DocManager.storagePath(filename, userAddress);
-    let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
-    if (historyPath === '') { // if it is empty
-      historyPath = req.DocManager.historyPath(filename, userAddress, true); // create it
-      req.DocManager.createDirectory(historyPath); // and create a new directory for the history
-    }
-
-    let version = 0;
-    if (isNewVersion) {
-      const count_version = req.DocManager.countVersion(historyPath); // get the last file version
-      version = count_version + 1; // get a number of a new file version
-      // get the path to the specified file version
-      const versionPath = req.DocManager.versionPath(filename, userAddress, version);
-      req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
-
-      // get the path to the previous file version
-      const path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
-      fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
-    }
-
-    const filestream = fileSystem.createWriteStream(storagePath);
-    req.pipe(filestream);
-    req.on('end', () => {
-      filestream.close();
-      callback(null, version);
-    });
-  } else {
-    callback('empty body');
-  }
-};
-
-// return name that wopi-client can use as the value of X-WOPI-RelativeTarget in a future PutRelativeFile operation
-const returnValidRelativeTarget = function (res, filename) {
-  res.setHeader(reqConsts.requestHeaders.ValidRelativeTarget, filename); // set the X-WOPI-ValidRelativeTarget header
-  res.sendStatus(409); // file with that name already exists
-};
-
-// return lock mismatch
-const returnLockMismatch = function (res, lock, reason) {
-  res.setHeader(reqConsts.requestHeaders.Lock, lock || ''); // set the X-WOPI-Lock header
-  if (reason) { // if there is a reason for lock mismatch
-    res.setHeader(reqConsts.requestHeaders.LockFailureReason, reason); // set it as the X-WOPI-LockFailureReason header
-  }
-  res.sendStatus(409); // conflict
 };
 
 // parse wopi request

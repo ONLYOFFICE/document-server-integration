@@ -27,36 +27,6 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const initWopi = async function (DocManager) {
-  let absSiteUrl = siteUrl;
-  if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = DocManager.getServerHost() + siteUrl;
-  }
-
-  // get the wopi discovery information
-  await getDiscoveryInfo(absSiteUrl);
-};
-
-// get the wopi discovery information
-const getDiscoveryInfo = async function (siteUrl) {
-  let actions = [];
-
-  if (cache) return cache;
-
-  try {
-    actions = await requestDiscovery(siteUrl);
-  } catch (e) {
-    return actions;
-  }
-
-  cache = actions;
-  setTimeout(() => {
-    return cache = null;
-  }, 1000 * 60 * 60); // 1 hour
-
-  return actions;
-};
-
 const requestDiscovery = async function (siteUrl) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
@@ -97,6 +67,37 @@ const requestDiscovery = async function (siteUrl) {
       resolve(actions);
     });
   });
+};
+
+// get the wopi discovery information
+const getDiscoveryInfo = async function (siteUrl) {
+  let actions = [];
+
+  if (cache) return cache;
+
+  try {
+    actions = await requestDiscovery(siteUrl);
+  } catch (e) {
+    return actions;
+  }
+
+  cache = actions;
+  setTimeout(() => {
+    cache = null;
+    return cache;
+  }, 1000 * 60 * 60); // 1 hour
+
+  return actions;
+};
+
+const initWopi = async function (DocManager) {
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
+  }
+
+  // get the wopi discovery information
+  await getDiscoveryInfo(absSiteUrl);
 };
 
 // get actions of the specified extension

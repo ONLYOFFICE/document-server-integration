@@ -502,12 +502,13 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
+  let userAddress = '';
   if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      const { userAddress } = fileKey;
+      ({ userAddress } = fileKey);
 
       if (userAddress === req.DocManager.curUserHostAddress()
                 && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
