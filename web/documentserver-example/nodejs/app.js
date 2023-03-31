@@ -213,7 +213,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   form.keepExtensions = true;
 
   form.parse(req, (err, fields, files) => { // parse this form
-    	if (err) { // if an error occurs
+    if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
       res.write(`{ "error": "${err.message}"}`);
@@ -455,7 +455,7 @@ app.get('/files/file/:fileId', (req, res) => { // define a handler for getting f
 
 app.delete('/file', (req, res) => { // define a handler for removing file
   try {
-    	req.DocManager = new DocManager(req, res);
+    req.DocManager = new DocManager(req, res);
     let fileName = req.query.filename;
     if (fileName) { // if the file name is defined
       fileName = fileUtility.getFileName(fileName); // get its part without an extension
