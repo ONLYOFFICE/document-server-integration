@@ -175,10 +175,10 @@ app.get('/history', (req, res) => {
     }
   }
 
-  const {fileName} = req.query;
+  const { fileName } = req.query;
   const userAddress = req.query.useraddress;
-  const {ver} = req.query;
-  const {file} = req.query;
+  const { ver } = req.query;
+  const { file } = req.query;
   let Path = '';
 
   if (file.includes('diff')) {
@@ -276,7 +276,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 });
 
 app.post('/create', (req, res) => {
-  const {title} = req.body;
+  const { title } = req.body;
   const fileUrl = req.body.url;
 
   try {
@@ -287,7 +287,7 @@ app.post('/create', (req, res) => {
     const userAddress = req.DocManager.curUserHostAddress();
     req.DocManager.historyPath(fileName, userAddress, true);
 
-    urllib.request(fileUrl, {method: 'GET'},(err, data) => {
+    urllib.request(fileUrl, { method: 'GET' },(err, data) => {
       // check if the file size exceeds the maximum file size
       if (configServer.get('maxFileSize') < data.length || data.length <= 0) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -377,7 +377,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       // get the file name with a new extension
       const correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
 
-      const {status, data} = await urllib.request(newFileUri, {method: 'GET'});
+      const { status, data } = await urllib.request(newFileUri, { method: 'GET' });
 
       if (status != 200) throw new Error(`Conversion service returned status: ${status}`);
 
@@ -441,7 +441,7 @@ app.get('/files', (req, res) => { // define a handler for getting files informat
 app.get('/files/file/:fileId', (req, res) => { // define a handler for getting file information by its id
   try {
     req.DocManager = new DocManager(req, res);
-    const {fileId} = req.params;
+    const { fileId } = req.params;
     // get the information about the file specified by a file id
     const fileInfoById = req.DocManager.getFilesInfo(fileId);
     res.setHeader('Content-Type', 'application/json');
@@ -492,23 +492,23 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   req.DocManager = new DocManager(req, res);
 
   const result = function (data) {
-    res.writeHead(200, {'Content-Type': 'application/json' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify(data));
     res.end();
   };
 
-  const {referenceData} = req.body;
+  const { referenceData } = req.body;
   let fileName = '';
   if (!!referenceData) {
-    const {instanceId} = referenceData;
+    const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      const {userAddress} = fileKey;
+      const { userAddress } = fileKey;
 
       if (userAddress === req.DocManager.curUserHostAddress()
                 && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
-        ({fileName} = fileKey);
+        ({ fileName } = fileKey);
       }
     }
   }
@@ -531,7 +531,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     url: req.DocManager.getDownloadUrl(fileName, true),
     directUrl: req.body.directUrl ? req.DocManager.getDownloadUrl(fileName) : null,
     referenceData: {
-      fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress()}),
+      fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl()
     },
     path: fileName,
@@ -539,7 +539,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   if (cfgSignatureEnable) {
     // sign token with given data using signature secret
-    data.token = jwt.sign(data, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+    data.token = jwt.sign(data, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
   }
 
   result(data);
@@ -557,7 +557,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // callback file saving process
     const callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
       try {
-        const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
+        const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
 
@@ -579,7 +579,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (downloadZip) {
           // get the path to the file with document versions differences
           const path_changes = req.DocManager.diffPath(newFileName, userAddress, version);
-          const {status, data} = await urllib.request(downloadZip, {method: 'GET'});
+          const { status, data } = await urllib.request(downloadZip, { method: 'GET' });
           if (status == 200) {
             fileSystem.writeFileSync(path_changes, data); // write the document version differences to the archive
           } else {
@@ -665,7 +665,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // callback file force saving process
     const callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false) {
       try {
-        const {status, data} = await urllib.request(downloadUri, {method: 'GET'});
+        const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
 
@@ -755,7 +755,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       if (body.actions && body.actions[0].type == 0) { // finished edit
         const user = body.actions[0].userid;
         if (body.users.indexOf(user) == -1) {
-          const {key} = body;
+          const { key } = body;
           try {
             documentService.commandRequest('forcesave', key); // call the forcesave command
           } catch (ex) {
@@ -830,7 +830,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     req.DocManager = new DocManager(req, res);
 
     const fileName = fileUtility.getFileName(req.query.fileName);
-    let {fileExt} = req.query;
+    let { fileExt } = req.query;
     const history = [];
     const historyData = [];
     const lang = req.DocManager.getLang();
@@ -838,7 +838,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const userDirectUrl = req.query.directUrl == 'true';
 
     const userid = user.id;
-    const {name} = user;
+    const { name } = user;
 
     let actionData = 'null';
     if (req.query.action) {
@@ -873,9 +873,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     ];
 
     const userGroup = user.group;
-    const {reviewGroups} = user;
-    const {commentGroups} = user;
-    const {userInfoGroups} = user;
+    const { reviewGroups } = user;
+    const { commentGroups } = user;
+    const { userInfoGroups } = user;
 
     if (fileExt != null) {
       // create demo document of a given extension
@@ -977,7 +977,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (cfgSignatureEnable) {
       for (let i = 0; i < historyData.length; i += 1) {
         // sign token with given data using signature secret
-        historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+        historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
       }
     }
 
@@ -1005,7 +1005,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         isEdit: canEdit && (mode == 'edit' || mode == 'view' || mode == 'filter' || mode == 'blockcontent'),
         review: canEdit && (mode == 'edit' || mode == 'review'),
         chat: userid != 'uid-0',
-        coEditing: mode == 'view' && userid == 'uid-0' ? {mode: 'strict', change: false} : null,
+        coEditing: mode == 'view' && userid == 'uid-0' ? { mode: 'strict', change: false } : null,
         comment: mode != 'view' && mode != 'fillForms' && mode != 'embedded' && mode != 'blockcontent',
         fillForms: mode != 'view' && mode != 'comment' && mode != 'embedded' && mode != 'blockcontent',
         modifyFilter: mode != 'filter',
@@ -1029,7 +1029,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         plugins: JSON.stringify(plugins),
         actionData,
         fileKey: userid != 'uid-0' ? JSON.stringify
-        ({ fileName, userAddress: req.DocManager.curUserHostAddress()}) : null,
+        ({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid != 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect')
       },
@@ -1060,13 +1060,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         } else {
           // sign token with given data using signature secret
           argss.editor.token = jwt.sign
-          (JSON.parse(`{${html}}`), cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+          (JSON.parse(`{${html}}`), cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
           argss.dataInsertImage.token = jwt.sign
-          (argss.dataInsertImage, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+          (argss.dataInsertImage, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
           argss.dataCompareFile.token = jwt.sign
-          (argss.dataCompareFile, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+          (argss.dataCompareFile, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
           argss.dataMailMergeRecipients.token = jwt.sign
-          (argss.dataMailMergeRecipients, cfgSignatureSecret, {expiresIn: cfgSignatureSecretExpiresIn});
+          (argss.dataMailMergeRecipients, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
         }
         res.render('editor', argss); // render the editor template with the parameters specified
       });
@@ -1081,18 +1081,18 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 });
 
 app.post('/rename', (req, res) => { // define a handler for renaming file
-  let {newfilename} = req.body;
+  let { newfilename } = req.body;
   const origExt = req.body.ext;
   const curExt = fileUtility.getFileExtension(newfilename, true);
   if (curExt !== origExt) {
     newfilename += `.${origExt}`;
   }
 
-  const {dockey} = req.body;
-  const meta = {title: newfilename};
+  const { dockey } = req.body;
+  const meta = { title: newfilename };
 
   const result = function (err, data, ress) {
-    res.writeHead(200, {'Content-Type': 'application/json' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({ result: ress }));
     res.end();
   };

@@ -20,7 +20,7 @@ let cache = {};
 
 // write the key value and its creation time to the cache
 exports.put = function (key, value) {
-  cache[key] = { value, time: new Date().getTime()};
+  cache[key] = { value, time: new Date().getTime() };
 }
 
 // check if the given key is in the cache

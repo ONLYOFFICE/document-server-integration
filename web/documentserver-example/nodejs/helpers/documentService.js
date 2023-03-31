@@ -168,7 +168,7 @@ documentService.getResponseUri = function (json) {
     }
 
     uri = fileResult.fileUrl; // otherwise, get the file url
-    ({fileType} = fileResult); // get the file type
+    ({ fileType } = fileResult); // get the file type
     percent = 100;
   } else { // if the conversion isn't completed
     percent = percent >= 100 ? 99 : percent; // get the percentage value
@@ -236,16 +236,16 @@ documentService.checkJwtHeader = function (req) {
 // get jwt token using url information
 documentService.fillJwtByUrl = function (uri, opt_dataObject) {
   const parseObject = urlModule.parse(uri, true); // get parse object from the url
-  const payload = {query: parseObject.query, payload: opt_dataObject}; // create payload object
+  const payload = { query: parseObject.query, payload: opt_dataObject }; // create payload object
 
-  const options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  const options = { algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn };
   // sign token with given data using signature secret and options parameters
   return jwt.sign(payload, cfgSignatureSecret, options);
 }
 
 // get token
 documentService.getToken = function (data) {
-  const options = {algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn};
+  const options = { algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn };
   // sign token with given data using signature secret and options parameters
   return jwt.sign(data, cfgSignatureSecret, options);
 };

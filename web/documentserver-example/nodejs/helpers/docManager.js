@@ -61,22 +61,22 @@ DocManager.prototype.getLang = function () {
 DocManager.prototype.getCustomParams = function () {
   let params = '';
 
-  const {userid} = this.req.query; // user id
+  const { userid } = this.req.query; // user id
   params += (userid ? `&userid=${userid}` : '');
 
-  const {lang} = this.req.query; // language
+  const { lang } = this.req.query; // language
   params += (lang ? `&lang=${this.getLang()}` : '');
 
-  const {directUrl} = this.req.query; // directUrl
+  const { directUrl } = this.req.query; // directUrl
   params += (directUrl ? `&directUrl=${directUrl == 'true'}` : '');
 
-  const {fileName} = this.req.query; // file name
+  const { fileName } = this.req.query; // file name
   params += (fileName ? `&fileName=${fileName}` : '');
 
-  const {mode} = this.req.query; // mode: view/edit/review/comment/fillForms/embedded
+  const { mode } = this.req.query; // mode: view/edit/review/comment/fillForms/embedded
   params += (mode ? `&mode=${mode}` : '');
 
-  const {type} = this.req.query; // type: embedded/mobile/desktop
+  const { type } = this.req.query; // type: embedded/mobile/desktop
   params += (type ? `&type=${type}` : '');
 
   return params;
@@ -468,7 +468,7 @@ DocManager.prototype.getHistory = function (fileName, content, keyVersion, versi
   const username = userNameFromJson ? userNameFromJson : (this.getFileData(fileName, userAddress))[2];
   const userid = userIdFromJson ? userIdFromJson : (this.getFileData(fileName, userAddress))[1];
   const created = createdFromJson ? createdFromJson : (this.getFileData(fileName, userAddress))[0];
-  const res = (fileContent && !oldVersion) ? fileContent : {changes: fileContent};
+  const res = (fileContent && !oldVersion) ? fileContent : { changes: fileContent };
   res.key = keyVersion; // write the information about the user, creation time, key and version to the result object
   res.version = version;
   res.created = created;

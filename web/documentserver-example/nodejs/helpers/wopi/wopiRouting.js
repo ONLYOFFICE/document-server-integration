@@ -31,10 +31,10 @@ getCustomWopiParams = function (query) {
   let tokenParams = '';
   let actionParams = '';
 
-  const {userid} = query; // user id
+  const { userid } = query; // user id
   tokenParams += (userid ? `&userid=${userid}` : '');
 
-  const {lang} = query; // language
+  const { lang } = query; // language
   actionParams += (lang ? `&ui=${lang}` : '');
 
   return { tokenParams, actionParams };
@@ -96,7 +96,7 @@ exports.registerRoutes = function (app) {
   });
   // define a handler for creating a new wopi editing session
   app.get('/wopi-new', (req, res) => {
-    const {fileExt} = req.query; // get the file extension from the request
+    const { fileExt } = req.query; // get the file extension from the request
 
     req.DocManager = new DocManager(req, res);
 

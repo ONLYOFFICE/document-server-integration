@@ -61,7 +61,7 @@ const requestDiscovery = async function (siteUrl) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
     const actions = [];
-    urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), {method: 'GET'}, (err, data) => {
+    urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
       if (data) {
         // create the discovery XML file with the parameters from the response
         const discovery = xmlParser.parse(data.toString(), {
@@ -70,7 +70,7 @@ const requestDiscovery = async function (siteUrl) {
           parseAttributeValue: true,
           // eslint-disable-next-line no-unused-vars
           attrValueProcessor: (val, attrName) => {
-            return he.decode(val, {isAttributeValue: true})
+            return he.decode(val, { isAttributeValue: true })
           }
         });
         if (discovery['wopi-discovery']) {
