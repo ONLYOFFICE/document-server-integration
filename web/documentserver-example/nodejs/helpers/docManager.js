@@ -68,7 +68,7 @@ DocManager.prototype.getCustomParams = function () {
   params += (lang ? `&lang=${this.getLang()}` : '');
 
   const { directUrl } = this.req.query; // directUrl
-  params += (directUrl ? `&directUrl=${directUrl == 'true'}` : '');
+  params += (directUrl ? `&directUrl=${directUrl === 'true'}` : '');
 
   const { fileName } = this.req.query; // file name
   params += (fileName ? `&fileName=${fileName}` : '');
@@ -101,7 +101,7 @@ DocManager.prototype.getCorrectName = function (fileName, userAddress) {
 // processes a request editnew
 DocManager.prototype.requestEditnew = function (req, fileName, user) {
   let correctName = fileName;
-  if (req.params.id != fileName) { // processes a repeated request editnew
+  if (req.params.id !== fileName) { // processes a repeated request editnew
     this.fileRemove(req.params.id);
     correctName = this.getCorrectName(req.params.id);
   }
@@ -318,7 +318,7 @@ DocManager.prototype.getStoredFiles = function () {
     if (!stats.isDirectory()) { // if the element isn't a directory
       const historyPath = this.historyPath(storedFiles[i], userAddress); // get the path to the file history
       let version = 0;
-      if (historyPath != '') { // if the history path exists
+      if (historyPath !== '') { // if the history path exists
         version = this.countVersion(historyPath); // get the last file version
       }
 
@@ -327,7 +327,7 @@ DocManager.prototype.getStoredFiles = function () {
         time,
         name: storedFiles[i],
         documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) != -1,
+        canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) !== -1,
         version: version + 1
       };
 
@@ -365,15 +365,15 @@ DocManager.prototype.copyFile = function (exist, target) {
 
 // get an internal extension
 DocManager.prototype.getInternalExtension = function (fileType) {
-  if (fileType == fileUtility.fileType.word) { // .docx for word type
+  if (fileType === fileUtility.fileType.word) { // .docx for word type
     return '.docx';
   }
 
-  if (fileType == fileUtility.fileType.cell) { // .xlsx for cell type
+  if (fileType === fileUtility.fileType.cell) { // .xlsx for cell type
     return '.xlsx';
   }
 
-  if (fileType == fileUtility.fileType.slide) { // .pptx for slide type
+  if (fileType === fileUtility.fileType.slide) { // .pptx for slide type
     return '.pptx';
   }
 
@@ -383,15 +383,15 @@ DocManager.prototype.getInternalExtension = function (fileType) {
 // get the template image url
 DocManager.prototype.getTemplateImageUrl = function (fileType) {
   const path = this.getServerUrl(true);
-  if (fileType == fileUtility.fileType.word) { // for word type
+  if (fileType === fileUtility.fileType.word) { // for word type
     return `${path}/images/file_docx.svg`;
   }
 
-  if (fileType == fileUtility.fileType.cell) { // for cell type
+  if (fileType === fileUtility.fileType.cell) { // for cell type
     return `${path}/images/file_xlsx.svg`;
   }
 
-  if (fileType == fileUtility.fileType.slide) { // for slide type
+  if (fileType === fileUtility.fileType.slide) { // for slide type
     return `${path}/images/file_pptx.svg`;
   }
 
@@ -404,7 +404,7 @@ DocManager.prototype.getKey = function (fileName, userAddress) {
   let key = address + fileName; // get document key by adding local file url to the current user host address
 
   const historyPath = this.historyPath(fileName, address); // get the path to the file history
-  if (historyPath != '') { // if the path to the file history exists
+  if (historyPath !== '') { // if the path to the file history exists
     key += this.countVersion(historyPath); // add file version number to the document key
   }
 
@@ -474,7 +474,7 @@ DocManager.prototype.getHistory = function (fileName, content, keyVersion, versi
   res.created = created;
   res.user = {
     id: userid,
-    name: username != 'null' ? username : null
+    name: username !== 'null' ? username : null
   };
 
   return res;
@@ -518,7 +518,7 @@ DocManager.prototype.getFilesInfo = function (fileId) {
       updated: stats.mtime
     };
     if (fileId !== undefined) { // if file id is defined
-      if (this.getKey(file.name) == fileId) { // and it is equal to the document key value
+      if (this.getKey(file.name) === fileId) { // and it is equal to the document key value
         responseObject = fileObject; // response object will be equal to the file object
         break;
       }

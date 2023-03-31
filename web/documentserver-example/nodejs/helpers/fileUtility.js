@@ -52,11 +52,11 @@ fileUtility.getFileType = function (url) {
   const ext = fileUtility.getFileExtension(url); // get the file extension from the given url
 
   // word type for document extensions
-  if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;
+  if (fileUtility.documentExts.indexOf(ext) !== -1) return fileUtility.fileType.word;
   // cell type for spreadsheet extensions
-  if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;
+  if (fileUtility.spreadsheetExts.indexOf(ext) !== -1) return fileUtility.fileType.cell;
   // slide type for presentation extensions
-  if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;
+  if (fileUtility.presentationExts.indexOf(ext) !== -1) return fileUtility.fileType.slide;
 
   return fileUtility.fileType.word; // the default file type is word
 }

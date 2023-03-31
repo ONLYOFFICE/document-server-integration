@@ -49,11 +49,11 @@ exports.registerRoutes = function (app) {
 
     // get the wopi discovery information
     const actions = await utils.getDiscoveryInfo();
-    const wopiEnable = actions.length != 0;
+    const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
 
     actions.forEach((el) => {
-      if (el.name == 'edit') docsExtEdit.push(`.${el.ext}`);
+      if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
     });
 
     const editedExts = configServer.get('editedDocs').filter((i) => {
@@ -100,7 +100,7 @@ exports.registerRoutes = function (app) {
 
     req.DocManager = new DocManager(req, res);
 
-    if (fileExt != null) { // if the file extension exists
+    if (fileExt) { // if the file extension exists
       const fileName = req.DocManager.getCorrectName(`new.${fileExt}`)
       const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
@@ -122,7 +122,7 @@ exports.registerRoutes = function (app) {
       // get an action for the specified extension and name
       const action = await utils.getAction(fileExt, req.query.action);
 
-      if (action != null && req.query.action == 'editnew') {
+      if (action && req.query.action === 'editnew') {
         fileName = req.DocManager.requestEditnew(req, fileName, user);
       }
 

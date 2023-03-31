@@ -36,7 +36,7 @@ const lock = function (wopi, req, res, userHost) {
     // file isn't locked => lock
     lockManager.lock(filePath, requestLock);
     res.sendStatus(200);
-  } else if (lockManager.getLock(filePath) == requestLock) {
+  } else if (lockManager.getLock(filePath) === requestLock) {
     // lock matches current lock => extend duration
     lockManager.lock(filePath, requestLock);
     res.sendStatus(200);
@@ -67,7 +67,7 @@ const refreshLock = function (wopi, req, res, userHost) {
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
     returnLockMismatch(res, '', 'File isn\'t locked');
-  } else if (lockManager.getLock(filePath) == requestLock) {
+  } else if (lockManager.getLock(filePath) === requestLock) {
     // lock matches current lock => extend duration
     lockManager.lock(filePath, requestLock);
     res.sendStatus(200);
@@ -87,7 +87,7 @@ const unlock = function (wopi, req, res, userHost) {
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
     returnLockMismatch(res, '', 'File isn\'t locked');
-  } else if (lockManager.getLock(filePath) == requestLock) {
+  } else if (lockManager.getLock(filePath) === requestLock) {
     // lock matches current lock => unlock
     lockManager.unlock(filePath);
     res.sendStatus(200);
@@ -108,7 +108,7 @@ const unlockAndRelock = function (wopi, req, res, userHost) {
   if (!lockManager.hasLock(filePath)) {
     // file isn't locked => mismatch
     returnLockMismatch(res, '', 'File isn\'t locked');
-  } else if (lockManager.getLock(filePath) == oldLock) {
+  } else if (lockManager.getLock(filePath) === oldLock) {
     // lock matches current lock => lock with new key
     lockManager.lock(filePath, requestLock);
     res.sendStatus(200);
@@ -145,7 +145,7 @@ const putFile = function (wopi, req, res, userHost) {
 
     // file isn't locked => mismatch
     returnLockMismatch(res, '', 'File isn\'t locked');
-  } else if (lockManager.getLock(storagePath) == requestLock) {
+  } else if (lockManager.getLock(storagePath) === requestLock) {
     // lock matches current lock => put file
     saveFileFromBody(req, wopi.id, userAddress, true, (err, version) => {
       if (!err) {
@@ -243,7 +243,7 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
   if (req.body) {
     const storagePath = req.DocManager.storagePath(filename, userAddress);
     let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
-    if (historyPath == '') { // if it is empty
+    if (historyPath === '') { // if it is empty
       historyPath = req.DocManager.historyPath(filename, userAddress, true); // create it
       req.DocManager.createDirectory(historyPath); // and create a new directory for the history
     }
@@ -300,15 +300,15 @@ const parseWopiRequest = function (req) {
 
   if (reqPath.startsWith('files')) { // if it starts with "files"
     if (reqPath.endsWith('/contents')) { // ends with "/contents"
-      if (req.method == 'GET') { // and the request method is GET
+      if (req.method === 'GET') { // and the request method is GET
         wopiData.requestType = reqConsts.requestType.GetFile; // then the request type is GetFile
-      } else if (req.method == 'POST') { // if the request method is POST
+      } else if (req.method === 'POST') { // if the request method is POST
         wopiData.requestType = reqConsts.requestType.PutFile; // then the request type is PutFile
       }
     } else {
-      if (req.method == 'GET') { // otherwise, if the request method is GET
+      if (req.method === 'GET') { // otherwise, if the request method is GET
         wopiData.requestType = reqConsts.requestType.CheckFileInfo; // the request type is CheckFileInfo
-      } else if (req.method == 'POST') { // if the request method is POST
+      } else if (req.method === 'POST') { // if the request method is POST
         // get the X-WOPI-Override header which determines the request type
         const wopiOverride = req.headers[reqConsts.requestHeaders.RequestType.toLowerCase()];
         switch (wopiOverride) {
@@ -380,7 +380,7 @@ exports.fileRequestHandler = (req, res) => {
   const wopiData = parseWopiRequest(req); // get the wopi data
 
   // an error of the unknown request type
-  if (wopiData.requestType == reqConsts.requestType.None) {
+  if (wopiData.requestType === reqConsts.requestType.None) {
     res.status(500).send({ title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown' });
     return;
   }

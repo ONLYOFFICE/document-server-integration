@@ -82,7 +82,7 @@ const requestDiscovery = async function (siteUrl) {
               actions.push({ // write all the parameters to the actions element
                 app: app.name,
                 favIconUrl: app.favIconUrl,
-                checkLicense: app.checkLicense == 'true',
+                checkLicense: app.checkLicense === 'true',
                 name: action.name,
                 ext: action.ext || '',
                 progid: action.progid || '',
@@ -105,7 +105,7 @@ const getActions = async function (ext) {
   const filtered = [];
 
   for (const action of actions) { // and filter it by the specified extention
-    if (action.ext == ext) {
+    if (action.ext === ext) {
       filtered.push(action);
     }
   }
@@ -118,7 +118,7 @@ const getAction = async function (ext, name) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
-    if (action.ext == ext && action.name == name) {
+    if (action.ext === ext && action.name === name) {
       return action;
     }
   }
@@ -131,7 +131,7 @@ const getDefaultAction = async function (ext) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
-    if (action.ext == ext && action.isDefault) {
+    if (action.ext === ext && action.isDefault) {
       return action;
     }
   }

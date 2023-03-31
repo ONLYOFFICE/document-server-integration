@@ -142,7 +142,7 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   // get the path to the force saved document version
   let path = req.DocManager.forcesavePath(fileName, userAddress, false);
-  if (path == '') {
+  if (path === '') {
     path = req.DocManager.storagePath(fileName, userAddress); // or to the original document
   }
 
@@ -223,7 +223,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     const file = files.uploadedFile;
 
-    if (file == undefined) { // if file parameter is undefined
+    if (file === undefined) { // if file parameter is undefined
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
       res.write('{ "error": "Uploaded file not found"}');
       res.end();
@@ -248,7 +248,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     const curExt = fileUtility.getFileExtension(file.name);
     const documentType = fileUtility.getFileType(file.name);
 
-    if (exts.indexOf(curExt) == -1) { // check if the file extension is supported
+    if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
       res.write('{ "error": "File type is not supported"}');
@@ -302,7 +302,7 @@ app.post('/create', (req, res) => {
       ); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName);
 
-      if (exts.indexOf(curExt) == -1) { // check if the file extension is supported
+      if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
         // and write the error status and message to the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File type is not supported' }));
@@ -341,11 +341,11 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
-    if (filename != null) result.filename = filename;
+    if (filename) result.filename = filename;
 
-    if (step != null) result.step = step;
+    if (step) result.step = step;
 
-    if (error != null) result.error = error;
+    if (error) result.error = error;
 
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(result));
@@ -369,7 +369,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       const newFileUri = responseData.uri; // get the callback url
       const newFileType = `.${responseData.fileType}`; // get the file type
 
-      if (result != 100) { // if the status isn't 100
+      if (result !== 100) { // if the status isn't 100
         writeResult(fileName, result, null); // write the origin file to the result object
         return;
       }
@@ -379,7 +379,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       const { status, data } = await urllib.request(newFileUri, { method: 'GET' });
 
-      if (status != 200) throw new Error(`Conversion service returned status: ${status}`);
+      if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
 
       // write a file with a new extension, but with the content from the origin file
       fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
@@ -406,7 +406,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
   try {
     // check if the file with such an extension can be converted
-    if (configServer.get('convertedDocs').indexOf(fileExt) != -1) {
+    if (configServer.get('convertedDocs').indexOf(fileExt) !== -1) {
       const storagePath = req.DocManager.storagePath(fileName);
       const stat = fileSystem.statSync(storagePath);
       let key = fileUri + stat.mtime.getTime();
@@ -559,12 +559,12 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
-        if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
+        if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
 
         const storagePath = req.DocManager.storagePath(newFileName, userAddress);
 
         let historyPath = req.DocManager.historyPath(newFileName, userAddress); // get the path to the history data
-        if (historyPath == '') { // if the history path doesn't exist
+        if (historyPath === '') { // if the history path doesn't exist
           historyPath = req.DocManager.historyPath(newFileName, userAddress, true); // create it
           req.DocManager.createDirectory(historyPath); // and create a directory for the history data
         }
@@ -580,7 +580,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           // get the path to the file with document versions differences
           const path_changes = req.DocManager.diffPath(newFileName, userAddress, version);
           const { status, data } = await urllib.request(downloadZip, { method: 'GET' });
-          if (status == 200) {
+          if (status === 200) {
             fileSystem.writeFileSync(path_changes, data); // write the document version differences to the archive
           } else {
             emitWarning(`Document editing service returned status: ${status}`);
@@ -606,7 +606,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
         // get the path to the forcesaved file
         const forcesavePath = req.DocManager.forcesavePath(newFileName, userAddress, false);
-        if (forcesavePath != '') { // if this path is empty
+        if (forcesavePath !== '') { // if this path is empty
           fileSystem.unlinkSync(forcesavePath); // remove it
         }
       } catch (ex) {
@@ -634,7 +634,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       let newFileName = fileName;
 
       // convert downloaded file to the file with the current extension if these extensions aren't equal
-      if (downloadExt != curExt) {
+      if (downloadExt !== curExt) {
         const key = documentService.generateRevisionId(downloadUri);
         // get the correct file name if it already exists
         newFileName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + downloadExt, userAddress);
@@ -667,7 +667,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
-        if (status != 200) throw new Error(`Document editing service returned status: ${status}`);
+        if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
 
         const downloadExt = `.${body.fileType}`;
         const isSubmitForm = body.forcesavetype === 3; // SubmitForm
@@ -692,7 +692,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
           // create forcesave path if it doesn't exist
           let forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, false);
-          if (forcesavePath == '') {
+          if (forcesavePath === '') {
             forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, true);
           }
         }
@@ -725,7 +725,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       const downloadExt = `.${body.filetype}`;
 
       // convert downloaded file to the file with the current extension if these extensions aren't equal
-      if (downloadExt != curExt) {
+      if (downloadExt !== curExt) {
         const key = documentService.generateRevisionId(downloadUri);
         try {
           documentService.getConvertedUriSync(downloadUri, downloadExt, curExt, key, async (err, data) => {
@@ -751,10 +751,10 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       await callbackProcessForceSave (downloadUri, body, fileName, userAddress, false);
     };
 
-    if (body.status == 1) { // editing
-      if (body.actions && body.actions[0].type == 0) { // finished edit
+    if (body.status === 1) { // editing
+      if (body.actions && body.actions[0].type === 0) { // finished edit
         const user = body.actions[0].userid;
-        if (body.users.indexOf(user) == -1) {
+        if (body.users.indexOf(user) === -1) {
           const { key } = body;
           try {
             documentService.commandRequest('forcesave', key); // call the forcesave command
@@ -763,10 +763,10 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
       }
-    } else if (body.status == 2 || body.status == 3) { // MustSave, Corrupted
+    } else if (body.status === 2 || body.status === 3) { // MustSave, Corrupted
       await processSave(body.url, body, fileName, userAddress); // save file
       return;
-    } else if (body.status == 6 || body.status == 7) { // MustForceSave, CorruptedForceSave
+    } else if (body.status === 6 || body.status === 7) { // MustForceSave, CorruptedForceSave
       await processForceSave(body.url, body, fileName, userAddress); // force save file
       return;
     }
@@ -809,7 +809,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       }
     }
-    if (body == null) {
+    if (!body) {
       res.write('{"error":1}');
       res.end();
       return;
@@ -835,7 +835,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const historyData = [];
     const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
-    const userDirectUrl = req.query.directUrl == 'true';
+    const userDirectUrl = req.query.directUrl === 'true';
 
     const userid = user.id;
     const { name } = user;
@@ -850,10 +850,10 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let type = req.query.type || ''; // type: embedded/mobile/desktop
-    if (type == '') {
+    if (type === '') {
       type = new RegExp(configServer.get('mobileRegEx'), 'i').test(req.get('User-Agent')) ? 'mobile' : 'desktop';
-    } else if (type != 'mobile'
-            && type != 'embedded') {
+    } else if (type !== 'mobile'
+            && type !== 'embedded') {
       type = 'desktop';
     }
 
@@ -877,7 +877,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { commentGroups } = user;
     const { userInfoGroups } = user;
 
-    if (fileExt != null) {
+    if (fileExt) {
       // create demo document of a given extension
       const fileName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
@@ -901,15 +901,15 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const directUrl = req.DocManager.getDownloadUrl(fileName);
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
-    let canEdit = configServer.get('editedDocs').indexOf(fileExt) != -1; // check if this file can be edited
-    if ((!canEdit && mode == 'edit' || mode == 'fillForms') && configServer.get('fillDocs').indexOf(fileExt) != -1) {
+    let canEdit = configServer.get('editedDocs').indexOf(fileExt) !== -1; // check if this file can be edited
+    if ((!canEdit && mode === 'edit' || mode === 'fillForms') && configServer.get('fillDocs').indexOf(fileExt) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
-    if (!canEdit && mode == 'edit') {
+    if (!canEdit && mode === 'edit') {
       mode = 'view';
     }
-    const submitForm = mode == 'fillForms' && userid == 'uid-1' && !1;
+    const submitForm = mode === 'fillForms' && userid === 'uid-1' && !1;
 
     let countVersion = 1;
 
@@ -917,7 +917,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let changes = null;
     let keyVersion = key;
 
-    if (historyPath != '') {
+    if (historyPath !== '') {
       countVersion = req.DocManager.countVersion(historyPath) + 1; // get the number of file versions
       for (let i = 1; i <= countVersion; i += 1) { // get keys to all the file versions
         if (i < countVersion) {
@@ -930,13 +930,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         // write all the file history information
         history.push(req.DocManager.getHistory(fileName, changes, keyVersion, i));
 
-        const userUrl = i == countVersion ? directUrl : (`${req.DocManager.getServerUrl(false)}/history?fileName=`
+        const userUrl = i === countVersion ? directUrl : (`${req.DocManager.getServerUrl(false)}/history?fileName=`
         + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`);
         const historyD = {
           fileType: fileExt.slice(1),
           version: i,
           key: keyVersion,
-          url: i == countVersion ? url : (`${req.DocManager.getServerUrl(true)}/history?fileName=`
+          url: i === countVersion ? url : (`${req.DocManager.getServerUrl(true)}/history?fileName=`
           + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
           directUrl: !userDirectUrl ? null : userUrl,
         };
@@ -992,7 +992,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         uriUser: directUrl,
         version: countVersion,
         created: new Date().toDateString(),
-        favorite: user.favorite != null ? user.favorite : 'null'
+        favorite: user.favorite ? user.favorite : 'null'
       },
       editor: {
         type,
@@ -1000,25 +1000,25 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         key,
         token: '',
         callbackUrl: req.DocManager.getCallback(fileName),
-        createUrl: userid != 'uid-0' ? createUrl : null,
+        createUrl: userid !== 'uid-0' ? createUrl : null,
         templates: user.templates ? templates : null,
-        isEdit: canEdit && (mode == 'edit' || mode == 'view' || mode == 'filter' || mode == 'blockcontent'),
-        review: canEdit && (mode == 'edit' || mode == 'review'),
-        chat: userid != 'uid-0',
-        coEditing: mode == 'view' && userid == 'uid-0' ? { mode: 'strict', change: false } : null,
-        comment: mode != 'view' && mode != 'fillForms' && mode != 'embedded' && mode != 'blockcontent',
-        fillForms: mode != 'view' && mode != 'comment' && mode != 'embedded' && mode != 'blockcontent',
-        modifyFilter: mode != 'filter',
-        modifyContentControl: mode != 'blockcontent',
+        isEdit: canEdit && (mode === 'edit' || mode === 'view' || mode === 'filter' || mode === 'blockcontent'),
+        review: canEdit && (mode === 'edit' || mode === 'review'),
+        chat: userid !== 'uid-0',
+        coEditing: mode === 'view' && userid === 'uid-0' ? { mode: 'strict', change: false } : null,
+        comment: mode !== 'view' && mode !== 'fillForms' && mode !== 'embedded' && mode !== 'blockcontent',
+        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'embedded' && mode !== 'blockcontent',
+        modifyFilter: mode !== 'filter',
+        modifyContentControl: mode !== 'blockcontent',
         copy: !user.deniedPermissions.includes('copy'),
         download: !user.deniedPermissions.includes('download'),
         print: !user.deniedPermissions.includes('print'),
-        mode: mode != 'view' ? 'edit' : 'view',
-        canBackToFolder: type != 'embedded',
+        mode: mode !== 'view' ? 'edit' : 'view',
+        canBackToFolder: type !== 'embedded',
         backUrl: `${req.DocManager.getServerUrl()}/`,
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
-        userid: userid != 'uid-0' ? userid : null,
+        userid: userid !== 'uid-0' ? userid : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
@@ -1028,9 +1028,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         submitForm,
         plugins: JSON.stringify(plugins),
         actionData,
-        fileKey: userid != 'uid-0' ? JSON.stringify
+        fileKey: userid !== 'uid-0' ? JSON.stringify
         ({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
-        instanceId: userid != 'uid-0' ? req.DocManager.getInstanceId() : null,
+        instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect')
       },
       history,
@@ -1050,7 +1050,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         url: `${req.DocManager.getServerUrl(true)}/csv`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
-      usersForMentions: user.id != 'uid-0' ? users.getUsersForMentions(user.id) : null,
+      usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
     };
 
     if (cfgSignatureEnable) {
