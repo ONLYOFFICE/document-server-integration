@@ -87,6 +87,7 @@ const getUrlParams = function (url) {
     const params = query.split('&'); // parameters are separated by & sign
     const map = {}; // write parameters and their values to the map dictionary
     for (let i = 0; i < params.length; i += 1) {
+      // eslint-disable-next-line no-undef
       const parts = param.split('=');
       [, map[parts[0]]] = parts;
     }

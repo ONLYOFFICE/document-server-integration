@@ -135,7 +135,8 @@ DocManager.prototype.createDemo = function (isSample, fileExt, userid, username,
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
   // copy sample document of a necessary extension to the storage path
-  this.copyFile(path.join(__dirname, '..', 'public', 'assets', isSample ? 'sample' : 'new', demoName), this.storagePath(fileName));
+  this.copyFile(path.join(__dirname, '..', 'public', 'assets', isSample
+    ? 'sample' : 'new', demoName), this.storagePath(fileName));
 
   this.saveFileData(fileName, userid, username); // save file data to the file
 
