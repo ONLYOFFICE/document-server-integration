@@ -234,9 +234,9 @@ documentService.checkJwtHeader = function (req) {
 };
 
 // get jwt token using url information
-documentService.fillJwtByUrl = function (uri, opt_dataObject) {
+documentService.fillJwtByUrl = function (uri, optDataObject) {
   const parseObject = urlModule.parse(uri, true); // get parse object from the url
-  const payload = { query: parseObject.query, payload: opt_dataObject }; // create payload object
+  const payload = { query: parseObject.query, payload: optDataObject }; // create payload object
 
   const options = { algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn };
   // sign token with given data using signature secret and options parameters

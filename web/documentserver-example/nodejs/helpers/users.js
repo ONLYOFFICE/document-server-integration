@@ -35,7 +35,7 @@ class User {
   }
 }
 
-const descr_user_1 = [
+const descrUser1 = [
   'File author by default',
   'Doesn’t belong to any group',
   'Can review all the changes',
@@ -46,7 +46,7 @@ const descr_user_1 = [
   // "Can submit forms"
 ];
 
-const descr_user_2 = [
+const descrUser2 = [
   'Belongs to Group2',
   'Can review only his own changes or changes made by users with no group',
   'Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only',
@@ -56,7 +56,7 @@ const descr_user_2 = [
   // "Can’t submit forms"
 ];
 
-const descr_user_3 = [
+const descrUser3 = [
   'Belongs to Group3',
   'Can review changes made by Group2 users',
   'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
@@ -69,7 +69,7 @@ const descr_user_3 = [
   // "Can’t submit forms"
 ];
 
-const descr_user_0 = [
+const descrUser0 = [
   'The name is requested when the editor is opened',
   'Doesn’t belong to any group',
   'Can review all the changes',
@@ -86,18 +86,18 @@ const descr_user_0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descr_user_1, true),
+  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true),
   new User('uid-2', 'Mark Pottato', 'pottato@example.com', 'group-2', ['group-2', ''], {
     view: '',
     edit: ['group-2', ''],
     remove: ['group-2']
-  }, ['group-2', ''], true, [], descr_user_2, false), // own and without group
+  }, ['group-2', ''], true, [], descrUser2, false), // own and without group
   new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com', 'group-3', ['group-2'], {
     view: ['group-3', 'group-2'],
     edit: ['group-2'],
     remove: []
-  }, ['group-2'], false, ['copy', 'download', 'print'], descr_user_3, false), // other group only
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descr_user_0, false),
+  }, ['group-2'], false, ['copy', 'download', 'print'], descrUser3, false), // other group only
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false),
 ];
 
 // get a list of all the users

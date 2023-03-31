@@ -573,8 +573,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           req.DocManager.createDirectory(historyPath); // and create a directory for the history data
         }
 
-        const count_version = req.DocManager.countVersion(historyPath); // get the next file version number
-        version = count_version + 1;
+        const countVersion = req.DocManager.countVersion(historyPath); // get the next file version number
+        version = countVersion + 1;
         // get the path to the specified file version
         const versionPath = req.DocManager.versionPath(newFileName, userAddress, version);
         req.DocManager.createDirectory(versionPath); // create a directory to the specified file version
@@ -582,10 +582,10 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         const downloadZip = body.changesurl;
         if (downloadZip) {
           // get the path to the file with document versions differences
-          const path_changes = req.DocManager.diffPath(newFileName, userAddress, version);
+          const pathChanges = req.DocManager.diffPath(newFileName, userAddress, version);
           const { status, data } = await urllib.request(downloadZip, { method: 'GET' });
           if (status === 200) {
-            fileSystem.writeFileSync(path_changes, data); // write the document version differences to the archive
+            fileSystem.writeFileSync(pathChanges, data); // write the document version differences to the archive
           } else {
             emitWarning(`Document editing service returned status: ${status}`);
           }
@@ -594,17 +594,17 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         const changeshistory = body.changeshistory || JSON.stringify(body.history);
         if (changeshistory) {
           // get the path to the file with document changes
-          const path_changes_json = req.DocManager.changesPath(newFileName, userAddress, version);
-          fileSystem.writeFileSync(path_changes_json, changeshistory); // and write this data to the path in json format
+          const pathChangesJson = req.DocManager.changesPath(newFileName, userAddress, version);
+          fileSystem.writeFileSync(pathChangesJson, changeshistory); // and write this data to the path in json format
         }
 
-        const path_key = req.DocManager.keyPath(newFileName, userAddress, version); // get the path to the key.txt file
-        fileSystem.writeFileSync(path_key, body.key); // write the key value to the key.txt file
+        const pathKey = req.DocManager.keyPath(newFileName, userAddress, version); // get the path to the key.txt file
+        fileSystem.writeFileSync(pathKey, body.key); // write the key value to the key.txt file
 
         // get the path to the previous file version
-        const path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(fileName)}`);
+        const pathPrev = path.join(versionPath, `prev${fileUtility.getFileExtension(fileName)}`);
         // and write it to the current path
-        fileSystem.renameSync(req.DocManager.storagePath(fileName, userAddress), path_prev);
+        fileSystem.renameSync(req.DocManager.storagePath(fileName, userAddress), pathPrev);
 
         fileSystem.writeFileSync(storagePath, data);
 

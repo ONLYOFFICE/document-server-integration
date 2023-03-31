@@ -149,18 +149,18 @@ DocManager.prototype.saveFileData = function (fileName, userid, username, userAd
     address = this.curUserHostAddress(); // get current user host address
   }
   // get full creation date of the document
-  const date_create = fileSystem.statSync(this.storagePath(fileName, address)).mtime;
-  const minutes = (date_create.getMinutes() < 10 ? '0' : '') + date_create.getMinutes().toString();
-  const month = (date_create.getMonth() < 10 ? '0' : '') + (parseInt(date_create.getMonth().toString()) + 1);
-  const sec = (date_create.getSeconds() < 10 ? '0' : '') + date_create.getSeconds().toString();
-  const date_format
-    = `${date_create.getFullYear()}-${month}-${date_create.getDate()} ${date_create.getHours()}:${minutes}:${sec}`;
+  const dateCreate = fileSystem.statSync(this.storagePath(fileName, address)).mtime;
+  const minutes = (dateCreate.getMinutes() < 10 ? '0' : '') + dateCreate.getMinutes().toString();
+  const month = (dateCreate.getMonth() < 10 ? '0' : '') + (parseInt(dateCreate.getMonth().toString()) + 1);
+  const sec = (dateCreate.getSeconds() < 10 ? '0' : '') + dateCreate.getSeconds().toString();
+  const dateFormat
+    = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()} ${dateCreate.getHours()}:${minutes}:${sec}`;
 
-  const file_info = this.historyPath(fileName, address, true); // get file history information
-  this.createDirectory(file_info); // create a new history directory if it doesn't exist
+  const fileInfo = this.historyPath(fileName, address, true); // get file history information
+  this.createDirectory(fileInfo); // create a new history directory if it doesn't exist
 
   // write all the file information to a new txt file
-  fileSystem.writeFileSync(path.join(file_info, `${fileName}.txt`), `${date_format},${userid},${username}`);
+  fileSystem.writeFileSync(path.join(fileInfo, `${fileName}.txt`), `${dateFormat},${userid},${username}`);
 };
 
 // get file data

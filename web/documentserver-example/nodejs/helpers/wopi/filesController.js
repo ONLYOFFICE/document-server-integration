@@ -67,15 +67,15 @@ const saveFileFromBody = function (req, filename, userAddress, isNewVersion, cal
 
     let version = 0;
     if (isNewVersion) {
-      const count_version = req.DocManager.countVersion(historyPath); // get the last file version
-      version = count_version + 1; // get a number of a new file version
+      const countVersion = req.DocManager.countVersion(historyPath); // get the last file version
+      version = countVersion + 1; // get a number of a new file version
       // get the path to the specified file version
       const versionPath = req.DocManager.versionPath(filename, userAddress, version);
       req.DocManager.createDirectory(versionPath); // and create a new directory for the specified version
 
       // get the path to the previous file version
-      const path_prev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
-      fileSystem.renameSync(storagePath, path_prev); // synchronously rename the given file as the previous file version
+      const pathPrev = path.join(versionPath, `prev${fileUtility.getFileExtension(filename)}`);
+      fileSystem.renameSync(storagePath, pathPrev); // synchronously rename the given file as the previous file version
     }
 
     const filestream = fileSystem.createWriteStream(storagePath);
