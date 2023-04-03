@@ -182,7 +182,7 @@ documentService.getResponseUri = function (json) {
 };
 
 // create a command request
-documentService.commandRequest = function (method, documentRevisionId, meta = null, callback) {
+documentService.commandRequest = function (method, documentRevisionId, callback, meta = null) {
   const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   const params = { // create a parameter object with command method and the document key value in it
     c: method,

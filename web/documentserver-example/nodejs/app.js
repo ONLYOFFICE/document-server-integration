@@ -1100,7 +1100,7 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
     res.end();
   };
 
-  documentService.commandRequest('meta', dockey, meta, result);
+  documentService.commandRequest('meta', dockey, result, meta);
 });
 
 wopiApp.registerRoutes(app);
