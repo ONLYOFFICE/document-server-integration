@@ -896,9 +896,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const userAddress = req.DocManager.curUserHostAddress();
     // if the file with a given name doesn't exist
     if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
-      throw {
-        message: `File not found: ${fileName}` // display error message
-      };
+      throw new Error(`File not found: ${fileName}`); // display error message
     }
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);

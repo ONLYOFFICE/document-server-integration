@@ -145,7 +145,7 @@ documentService.processConvertServiceResponceError = function (errorCode) {
       break;
   }
 
-  throw { message: errorMessage };
+  throw new Error(errorMessage);
 };
 
 // get the response url
@@ -164,7 +164,7 @@ documentService.getResponseUri = function (json) {
 
   if (isEndConvert) { // if the conversion is completed
     if (!fileResult.fileUrl) { // and the file url doesn't exist
-      throw { message: 'FileUrl is null' }; // the file url is null
+      throw new Error('FileUrl is null'); // the file url is null
     }
 
     uri = fileResult.fileUrl; // otherwise, get the file url
