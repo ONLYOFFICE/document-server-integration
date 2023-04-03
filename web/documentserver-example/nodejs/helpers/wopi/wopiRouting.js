@@ -70,8 +70,8 @@ exports.registerRoutes = function (app) {
       // run through all the files and write the corresponding information to each file
       for (const file of files) {
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
-        file.actions = await utils.getActions(ext); // get actions of the specified extension
-        file.defaultAction = await utils.getDefaultAction(ext); // get the default action of the specified extension
+        file.actions = utils.getActions(ext); // get actions of the specified extension
+        file.defaultAction = utils.getDefaultAction(ext); // get the default action of the specified extension
       }
 
       // render wopiIndex template with the parameters specified
