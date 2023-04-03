@@ -19,7 +19,7 @@
 const fileUtility = {};
 
 // get file name from the given url
-fileUtility.getFileName = function getFileName (url, withoutExtension) {
+fileUtility.getFileName = function getFileName(url, withoutExtension) {
   if (!url) return '';
 
   let parts = url.split('\\');
@@ -37,7 +37,7 @@ fileUtility.getFileName = function getFileName (url, withoutExtension) {
 };
 
 // get file extension from the given url
-fileUtility.getFileExtension = function getFileExtension (url, withoutDot) {
+fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
   if (!url) return null;
 
   const fileName = fileUtility.getFileName(url); // get file name from the given url
@@ -48,7 +48,7 @@ fileUtility.getFileExtension = function getFileExtension (url, withoutDot) {
 };
 
 // get file type from the given url
-fileUtility.getFileType = function getFileType (url) {
+fileUtility.getFileType = function getFileType(url) {
   const ext = fileUtility.getFileExtension(url); // get the file extension from the given url
 
   // word type for document extensions
@@ -64,7 +64,7 @@ fileUtility.getFileType = function getFileType (url) {
 fileUtility.fileType = {
   word: 'word',
   cell: 'cell',
-  slide: 'slide'
+  slide: 'slide',
 };
 
 // the document extension list
@@ -81,7 +81,7 @@ fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.ppt
 
 // get url parameters
 // eslint-disable-next-line no-unused-vars
-const getUrlParams = function getUrlParams (url) {
+const getUrlParams = function getUrlParams(url) {
   try {
     const query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url
     const params = query.split('&'); // parameters are separated by & sign

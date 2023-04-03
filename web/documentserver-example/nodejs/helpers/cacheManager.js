@@ -19,12 +19,12 @@
 let cache = {};
 
 // write the key value and its creation time to the cache
-exports.put = function put (key, value) {
+exports.put = function put(key, value) {
   cache[key] = { value, time: new Date().getTime() };
 };
 
 // check if the given key is in the cache
-exports.containsKey = function containsKey (key) {
+exports.containsKey = function containsKey(key) {
   if (typeof cache[key] === 'undefined') {
     return false;
   }
@@ -43,16 +43,16 @@ exports.containsKey = function containsKey (key) {
 };
 
 // get the given key from the cache
-exports.get = function get (key) {
+exports.get = function get(key) {
   return cache[key];
 };
 
 // delete the given key from the cache
-exports.delete = function deleteKey (key) {
+exports.delete = function deleteKey(key) {
   delete cache[key];
 };
 
 // clear the cache
-exports.clear = function clear () {
+exports.clear = function clear() {
   cache = {};
 };

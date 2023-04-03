@@ -26,7 +26,7 @@ const users = require('../users');
 const DocManager = require('../docManager');
 
 // return lock mismatch
-const returnLockMismatch = function returnLockMismatch (res, lock, reason) {
+const returnLockMismatch = function returnLockMismatch(res, lock, reason) {
   res.setHeader(reqConsts.requestHeaders.Lock, lock || ''); // set the X-WOPI-Lock header
   if (reason) { // if there is a reason for lock mismatch
     res.setHeader(reqConsts.requestHeaders.LockFailureReason, reason); // set it as the X-WOPI-LockFailureReason header
@@ -35,7 +35,7 @@ const returnLockMismatch = function returnLockMismatch (res, lock, reason) {
 };
 
 // lock file editing
-const lock = function lock (wopi, req, res, userHost) {
+const lock = function lock(wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
   const userAddress = req.DocManager.curUserHostAddress(userHost); // get current user host address
@@ -56,7 +56,7 @@ const lock = function lock (wopi, req, res, userHost) {
   }
 };
 
-const saveFileFromBody = function saveFileFromBody (req, filename, userAddress, isNewVersion, callback) {
+const saveFileFromBody = function saveFileFromBody(req, filename, userAddress, isNewVersion, callback) {
   if (req.body) {
     const storagePath = req.DocManager.storagePath(filename, userAddress);
     let historyPath = req.DocManager.historyPath(filename, userAddress); // get the path to the file history
@@ -90,13 +90,13 @@ const saveFileFromBody = function saveFileFromBody (req, filename, userAddress, 
 };
 
 // return name that wopi-client can use as the value of X-WOPI-RelativeTarget in a future PutRelativeFile operation
-const returnValidRelativeTarget = function returnValidRelativeTarget (res, filename) {
+const returnValidRelativeTarget = function returnValidRelativeTarget(res, filename) {
   res.setHeader(reqConsts.requestHeaders.ValidRelativeTarget, filename); // set the X-WOPI-ValidRelativeTarget header
   res.sendStatus(409); // file with that name already exists
 };
 
 // retrieve a lock on a file
-const getLock = function getLock (wopi, req, res, userHost) {
+const getLock = function getLock(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
   const filePath = req.DocManager.storagePath(wopi.id, userAddress);
 
@@ -106,7 +106,7 @@ const getLock = function getLock (wopi, req, res, userHost) {
 };
 
 // refresh the lock on a file by resetting its automatic expiration timer to 30 minutes
-const refreshLock = function refreshLock (wopi, req, res, userHost) {
+const refreshLock = function refreshLock(wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
   const userAddress = req.DocManager.curUserHostAddress(userHost);
@@ -126,7 +126,7 @@ const refreshLock = function refreshLock (wopi, req, res, userHost) {
 };
 
 // allow for file editing
-const unlock = function unlock (wopi, req, res, userHost) {
+const unlock = function unlock(wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
   const userAddress = req.DocManager.curUserHostAddress(userHost);
@@ -146,7 +146,7 @@ const unlock = function unlock (wopi, req, res, userHost) {
 };
 
 // allow for file editing, and then immediately take a new lock on the file
-const unlockAndRelock = function unlockAndRelock (wopi, req, res, userHost) {
+const unlockAndRelock = function unlockAndRelock(wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
   const oldLock = req.headers[reqConsts.requestHeaders.oldLock.toLowerCase()]; // get the X-WOPI-OldLock header
 
@@ -167,7 +167,7 @@ const unlockAndRelock = function unlockAndRelock (wopi, req, res, userHost) {
 };
 
 // request a message to retrieve a file
-const getFile = function getFile (wopi, req, res, userHost) {
+const getFile = function getFile(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
 
   const path = req.DocManager.storagePath(wopi.id, userAddress);
@@ -182,7 +182,7 @@ const getFile = function getFile (wopi, req, res, userHost) {
 };
 
 // request a message to update a file
-const putFile = function putFile (wopi, req, res, userHost) {
+const putFile = function putFile(wopi, req, res, userHost) {
   const requestLock = req.headers[reqConsts.requestHeaders.Lock.toLowerCase()];
 
   const userAddress = req.DocManager.curUserHostAddress(userHost);
@@ -207,7 +207,7 @@ const putFile = function putFile (wopi, req, res, userHost) {
   }
 };
 
-const putRelativeFile = function putRelativeFile (wopi, req, res, userHost) {
+const putRelativeFile = function putRelativeFile(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
   const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
 
@@ -262,7 +262,7 @@ const putRelativeFile = function putRelativeFile (wopi, req, res, userHost) {
 };
 
 // return information about the file properties, access rights and editor settings
-const checkFileInfo = function checkFileInfo (wopi, req, res, userHost) {
+const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
   const version = req.DocManager.getKey(wopi.id, userAddress);
 
@@ -288,11 +288,11 @@ const checkFileInfo = function checkFileInfo (wopi, req, res, userHost) {
 };
 
 // parse wopi request
-const parseWopiRequest = function parseWopiRequest (req) {
+const parseWopiRequest = function parseWopiRequest(req) {
   const wopiData = {
     requestType: reqConsts.requestType.None,
     accessToken: req.query.access_token,
-    id: req.params.id
+    id: req.params.id,
   };
 
   // get the request path
@@ -379,7 +379,7 @@ exports.fileRequestHandler = (req, res) => {
   // an error of the unknown request type
   if (wopiData.requestType === reqConsts.requestType.None) {
     res.status(500).send({
-      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown'
+      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unknown',
     });
     return;
   }
@@ -388,7 +388,7 @@ exports.fileRequestHandler = (req, res) => {
   const action = actionMapping[wopiData.requestType];
   if (!action) {
     res.status(501).send({
-      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unsupported'
+      title: 'fileHandler', method: req.method, id: req.params.id, error: 'unsupported',
     });
     return;
   }

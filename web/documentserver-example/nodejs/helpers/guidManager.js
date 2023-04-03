@@ -17,12 +17,12 @@
  */
 
 // generate 16 octet
-const s4 = function s4 () {
+const s4 = function s4() {
   return Math.trunc((1 + Math.random()) * 0x10000).toString(16)
     .substring(1);
 };
 
 // create uuid v4
-exports.newGuid = function newGuid () {
+exports.newGuid = function newGuid() {
   return (`${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`);
 };

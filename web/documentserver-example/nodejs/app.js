@@ -50,7 +50,7 @@ if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
-String.prototype.hashCode = function hashCode () {
+String.prototype.hashCode = function hashCode() {
   const len = this.length;
   let ret = 0;
   for (let i = 0; i < len; i += 1) {
@@ -58,7 +58,7 @@ String.prototype.hashCode = function hashCode () {
   }
   return ret;
 };
-String.prototype.format = function format (...args) {
+String.prototype.format = function format(...args) {
   let text = this.toString();
 
   if (!args.length) return text;
@@ -244,7 +244,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       configServer.get('viewedDocs'),
       configServer.get('editedDocs'),
       configServer.get('convertedDocs'),
-      configServer.get('fillDocs')
+      configServer.get('fillDocs'),
     ); // all the supported file extensions
     const curExt = fileUtility.getFileExtension(file.name);
     const documentType = fileUtility.getFileType(file.name);
@@ -301,7 +301,7 @@ app.post('/create', (req, res) => {
         configServer.get('viewedDocs'),
         configServer.get('editedDocs'),
         configServer.get('convertedDocs'),
-        configServer.get('fillDocs')
+        configServer.get('fillDocs'),
       ); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName);
 
@@ -323,7 +323,7 @@ app.post('/create', (req, res) => {
     res.status(500);
     res.write(JSON.stringify({
       error: 1,
-      message: e.message
+      message: e.message,
     }));
     res.end();
   }
@@ -340,7 +340,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const internalFileExt = 'ooxml';
   const response = res;
 
-  const writeResult = function writeResult (filename, step, error) {
+  const writeResult = function writeResult(filename, step, error) {
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
@@ -355,7 +355,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     response.end();
   };
 
-  const callback = async function callback (err, res) {
+  const callback = async function callback(err, res) {
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
@@ -397,7 +397,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       fileSystem.renameSync(
         path.join(correctHistoryPath, `${fileName}.txt`),
-        path.join(correctHistoryPath, `${correctName}.txt`)
+        path.join(correctHistoryPath, `${correctName}.txt`),
       ); // change the name of the .txt file with document information
 
       writeResult(correctName, result, null); // write a file with a new name to the result object
@@ -494,7 +494,7 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
 app.post('/reference', (req, res) => { // define a handler for renaming file
   req.DocManager = new DocManager(req, res);
 
-  const result = function result (data) {
+  const result = function result(data) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify(data));
     res.end();
@@ -536,7 +536,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     directUrl: req.body.directUrl ? req.DocManager.getDownloadUrl(fileName) : null,
     referenceData: {
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
-      instanceId: req.DocManager.getServerUrl()
+      instanceId: req.DocManager.getServerUrl(),
     },
     path: fileName,
   };
@@ -557,14 +557,14 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   let version = 0;
 
   // track file changes
-  const processTrack = async function processTrack (response, body, fileName, userAddress) {
+  const processTrack = async function processTrack(response, body, fileName, userAddress) {
     // callback file saving process
-    const callbackProcessSave = async function callbackProcessSave (
+    const callbackProcessSave = async function callbackProcessSave(
       downloadUri,
       body,
       fileName,
       userAddress,
-      newFileName
+      newFileName,
     ) {
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
@@ -631,7 +631,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // file saving process
-    const processSave = async function processSave (downloadUri, body, fileName, userAddress) {
+    const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -672,12 +672,12 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // callback file force saving process
-    const callbackProcessForceSave = async function callbackProcessForceSave (
+    const callbackProcessForceSave = async function callbackProcessForceSave(
       downloadUri,
       body,
       fileName,
       userAddress,
-      newFileName = false
+      newFileName = false,
     ) {
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
@@ -704,7 +704,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           if (newFileName) {
             correctName = req.DocManager.getCorrectName(fileUtility.getFileName(
               fileName,
-              true
+              true,
             ) + downloadExt, userAddress);
           }
           // create forcesave path if it doesn't exist
@@ -731,7 +731,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // file force saving process
-    const processForceSave = async function processForceSave (downloadUri, body, fileName, userAddress) {
+    const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -792,7 +792,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   };
 
   // read request body
-  const readbody = async function readbody (request, response, fileName, userAddress) {
+  const readbody = async function readbody(request, response, fileName, userAddress) {
     let content = '';
     request.on('data', async (data) => { // get data from the request
       content += data;
@@ -879,13 +879,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       {
         image: '',
         title: 'Blank',
-        url: createUrl
+        url: createUrl,
       },
       {
         image: templatesImageUrl,
         title: 'With sample content',
-        url: `${createUrl}&sample=true`
-      }
+        url: `${createUrl}&sample=true`,
+      },
     ];
 
     const userGroup = user.group;
@@ -1007,7 +1007,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         uriUser: directUrl,
         version: countVersion,
         created: new Date().toDateString(),
-        favorite: user.favorite ? user.favorite : 'null'
+        favorite: user.favorite ? user.favorite : 'null',
       },
       editor: {
         type,
@@ -1046,7 +1046,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         fileKey: userid !== 'uid-0'
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
-        protect: !user.deniedPermissions.includes('protect')
+        protect: !user.deniedPermissions.includes('protect'),
       },
       history,
       historyData,
@@ -1074,14 +1074,26 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           console.log(err);
         } else {
           // sign token with given data using signature secret
-          argss.editor.token
-            = jwt.sign(JSON.parse(`{${html}}`), cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataInsertImage.token
-            = jwt.sign(argss.dataInsertImage, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataCompareFile.token
-            = jwt.sign(argss.dataCompareFile, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-          argss.dataMailMergeRecipients.token
-            = jwt.sign(argss.dataMailMergeRecipients, cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
+          argss.editor.token = jwt.sign(
+            JSON.parse(`{${html}}`),
+            cfgSignatureSecret,
+            { expiresIn: cfgSignatureSecretExpiresIn },
+          );
+          argss.dataInsertImage.token = jwt.sign(
+            argss.dataInsertImage,
+            cfgSignatureSecret,
+            { expiresIn: cfgSignatureSecretExpiresIn },
+          );
+          argss.dataCompareFile.token = jwt.sign(
+            argss.dataCompareFile,
+            cfgSignatureSecret,
+            { expiresIn: cfgSignatureSecretExpiresIn },
+          );
+          argss.dataMailMergeRecipients.token = jwt.sign(
+            argss.dataMailMergeRecipients,
+            cfgSignatureSecret,
+            { expiresIn: cfgSignatureSecretExpiresIn },
+          );
         }
         res.render('editor', argss); // render the editor template with the parameters specified
       });
@@ -1106,7 +1118,7 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
   const { dockey } = req.body;
   const meta = { title: newfilename };
 
-  const result = function result (err, data, ress) {
+  const result = function result(err, data, ress) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({ result: ress }));
     res.end();
@@ -1129,7 +1141,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', {
-    message: err.message
+    message: err.message,
   });
 });
 

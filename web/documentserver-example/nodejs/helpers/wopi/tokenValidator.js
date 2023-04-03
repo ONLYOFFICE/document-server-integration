@@ -16,6 +16,4 @@
  *
  */
 
-exports.isValidToken = (req, res, next) => {
-  return next();
-};
+exports.isValidToken = (req, res, next) => next();

@@ -27,7 +27,7 @@ const users = require('../users');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
-const getCustomWopiParams = function getCustomWopiParams (query) {
+const getCustomWopiParams = function getCustomWopiParams(query) {
   let tokenParams = '';
   let actionParams = '';
 
@@ -40,7 +40,7 @@ const getCustomWopiParams = function getCustomWopiParams (query) {
   return { tokenParams, actionParams };
 };
 
-exports.registerRoutes = function registerRoutes (app) {
+exports.registerRoutes = function registerRoutes(app) {
   // define a handler for the default wopi page
   app.get('/wopi', async (req, res) => {
     req.DocManager = new DocManager(req, res);
@@ -56,12 +56,9 @@ exports.registerRoutes = function registerRoutes (app) {
       if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
     });
 
-    const editedExts = configServer.get('editedDocs').filter((i) => {
-      return docsExtEdit.includes(i);
-    }); // Checking supported extensions
-    const fillExts = configServer.get('fillDocs').filter((i) => {
-      return docsExtEdit.includes(i);
-    });
+    // Checking supported extensions
+    const editedExts = configServer.get('editedDocs').filter((i) => docsExtEdit.includes(i));
+    const fillExts = configServer.get('fillDocs').filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
@@ -130,7 +127,7 @@ exports.registerRoutes = function registerRoutes (app) {
           req.DocManager.getServerUrl(true),
           req.DocManager.curUserHostAddress(),
           action,
-          req.params.id
+          req.params.id,
         ),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,

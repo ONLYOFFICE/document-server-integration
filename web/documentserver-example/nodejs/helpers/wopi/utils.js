@@ -27,7 +27,7 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function requestDiscovery (siteUrl) {
+const requestDiscovery = async function requestDiscovery(siteUrl) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
     const actions = [];
@@ -39,9 +39,7 @@ const requestDiscovery = async function requestDiscovery (siteUrl) {
           ignoreAttributes: false,
           parseAttributeValue: true,
           // eslint-disable-next-line no-unused-vars
-          attrValueProcessor: (val, attrName) => {
-            return he.decode(val, { isAttributeValue: true });
-          }
+          attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true }),
         });
         if (discovery['wopi-discovery']) {
           for (const app of discovery['wopi-discovery']['net-zone'].app) {
@@ -58,7 +56,7 @@ const requestDiscovery = async function requestDiscovery (siteUrl) {
                 progid: action.progid || '',
                 isDefault: !!action.default,
                 urlsrc: action.urlsrc,
-                requires: action.requires || ''
+                requires: action.requires || '',
               });
             }
           }
@@ -70,7 +68,7 @@ const requestDiscovery = async function requestDiscovery (siteUrl) {
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo (siteUrl) {
+const getDiscoveryInfo = async function getDiscoveryInfo(siteUrl) {
   let actions = [];
 
   if (cache) return cache;
@@ -90,7 +88,7 @@ const getDiscoveryInfo = async function getDiscoveryInfo (siteUrl) {
   return actions;
 };
 
-const initWopi = async function initWopi (DocManager) {
+const initWopi = async function initWopi(DocManager) {
   let absSiteUrl = siteUrl;
   if (absSiteUrl.indexOf('/') === 0) {
     absSiteUrl = DocManager.getServerHost() + siteUrl;
@@ -101,7 +99,7 @@ const initWopi = async function initWopi (DocManager) {
 };
 
 // get actions of the specified extension
-const getActions = async function getActions (ext) {
+const getActions = async function getActions(ext) {
   const actions = await getDiscoveryInfo(); // get the wopi discovery information
   const filtered = [];
 
@@ -115,7 +113,7 @@ const getActions = async function getActions (ext) {
 };
 
 // get an action for the specified extension and name
-const getAction = async function getAction (ext, name) {
+const getAction = async function getAction(ext, name) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
@@ -128,7 +126,7 @@ const getAction = async function getAction (ext, name) {
 };
 
 // get the default action for the specified extension
-const getDefaultAction = async function getDefaultAction (ext) {
+const getDefaultAction = async function getDefaultAction(ext) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
@@ -141,7 +139,7 @@ const getDefaultAction = async function getDefaultAction (ext) {
 };
 
 // get the action url
-const getActionUrl = function getActionUrl (host, userAddress, action, filename) {
+const getActionUrl = function getActionUrl(host, userAddress, action, filename) {
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${host}/wopi/files/${filename}@${userAddress}`;
 };
 

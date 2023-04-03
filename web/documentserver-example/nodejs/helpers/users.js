@@ -17,9 +17,18 @@
  */
 
 class User {
-  constructor (
-    id, name, email, group, reviewGroups, commentGroups, userInfoGroups,
-    favorite, deniedPermissions, descriptions, templates
+  constructor(
+    id,
+    name,
+    email,
+    group,
+    reviewGroups,
+    commentGroups,
+    userInfoGroups,
+    favorite,
+    deniedPermissions,
+    descriptions,
+    templates,
   ) {
     this.id = id;
     this.name = name;
@@ -90,23 +99,23 @@ const users = [
   new User('uid-2', 'Mark Pottato', 'pottato@example.com', 'group-2', ['group-2', ''], {
     view: '',
     edit: ['group-2', ''],
-    remove: ['group-2']
+    remove: ['group-2'],
   }, ['group-2', ''], true, [], descrUser2, false), // own and without group
   new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com', 'group-3', ['group-2'], {
     view: ['group-3', 'group-2'],
     edit: ['group-2'],
-    remove: []
+    remove: [],
   }, ['group-2'], false, ['copy', 'download', 'print'], descrUser3, false), // other group only
   new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false),
 ];
 
 // get a list of all the users
-users.getAllUsers = function getAllUsers () {
+users.getAllUsers = function getAllUsers() {
   return users;
 };
 
 // get a user by id specified
-users.getUser = function getUser (id) {
+users.getUser = function getUser(id) {
   let result = null;
   this.forEach((user) => {
     if (user.id === id) {
@@ -117,13 +126,13 @@ users.getUser = function getUser (id) {
 };
 
 // get a list of users with their name and email
-users.getUsersForMentions = function getUsersForMentions (id) {
+users.getUsersForMentions = function getUsersForMentions(id) {
   const result = [];
   this.forEach((user) => {
     if (user.id !== id && user.name && user.email) {
       result.push({
         email: user.email,
-        name: user.name
+        name: user.name,
       });
     }
   });

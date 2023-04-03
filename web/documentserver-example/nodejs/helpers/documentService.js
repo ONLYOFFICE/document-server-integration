@@ -38,12 +38,12 @@ const documentService = {};
 documentService.userIp = null;
 
 // get the url of the converted file (synchronous)
-documentService.getConvertedUriSync = function getConvertedUriSync (
+documentService.getConvertedUriSync = function getConvertedUriSync(
   documentUri,
   fromExtension,
   toExtension,
   documentRevisionId,
-  callback
+  callback,
 ) {
   documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, (err, data) => {
     callback(err, data);
@@ -51,8 +51,16 @@ documentService.getConvertedUriSync = function getConvertedUriSync (
 };
 
 // get the url of the converted file
-documentService.getConvertedUri = function getConvertedUri
-(documentUri, fromExtension, toExtension, documentRevisionId, async, callback, filePass = null, lang = null) {
+documentService.getConvertedUri = function getConvertedUri(
+  documentUri,
+  fromExtension,
+  toExtension,
+  documentRevisionId,
+  async,
+  callback,
+  filePass = null,
+  lang = null,
+) {
   const fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
 
   const title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
@@ -74,7 +82,7 @@ documentService.getConvertedUri = function getConvertedUri
   const uri = siteUrl + configServer.get('converterUrl'); // get the absolute converter url
   const headers = {
     'Content-Type': 'application/json',
-    Accept: 'application/json'
+    Accept: 'application/json',
   };
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
@@ -90,14 +98,14 @@ documentService.getConvertedUri = function getConvertedUri
     {
       method: 'POST',
       headers,
-      data: params
+      data: params,
     },
-    callback
+    callback,
   );
 };
 
 // generate the document key value
-documentService.generateRevisionId = function generateRevisionId (expectedKey) {
+documentService.generateRevisionId = function generateRevisionId(expectedKey) {
   const maxKeyLength = 128; // the max key length is 128
   let expKey = expectedKey;
   if (expKey.length > maxKeyLength) { // if the expected key length is greater than the max key length
@@ -111,7 +119,7 @@ documentService.generateRevisionId = function generateRevisionId (expectedKey) {
 };
 
 // create an error message for the error code
-documentService.processConvertServiceResponceError = function processConvertServiceResponceError (errorCode) {
+documentService.processConvertServiceResponceError = function processConvertServiceResponceError(errorCode) {
   let errorMessage = '';
   const errorMessageTemplate = 'Error occurred in the ConvertService: ';
 
@@ -155,7 +163,7 @@ documentService.processConvertServiceResponceError = function processConvertServ
 };
 
 // get the response url
-documentService.getResponseUri = function getResponseUri (json) {
+documentService.getResponseUri = function getResponseUri(json) {
   const fileResult = JSON.parse(json);
 
   if (fileResult.error) { // if an error occurs
@@ -183,16 +191,16 @@ documentService.getResponseUri = function getResponseUri (json) {
   return {
     percent,
     uri,
-    fileType
+    fileType,
   };
 };
 
 // create a command request
-documentService.commandRequest = function commandRequest (method, documentRevisionId, callback, meta = null) {
+documentService.commandRequest = function commandRequest(method, documentRevisionId, callback, meta = null) {
   const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   const params = { // create a parameter object with command method and the document key value in it
     c: method,
-    key: revisionId
+    key: revisionId,
   };
 
   if (meta) {
@@ -201,7 +209,7 @@ documentService.commandRequest = function commandRequest (method, documentRevisi
 
   const uri = siteUrl + configServer.get('commandUrl'); // get the absolute command url
   const headers = { // create a headers object
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
     headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
@@ -215,14 +223,14 @@ documentService.commandRequest = function commandRequest (method, documentRevisi
     {
       method: 'POST',
       headers,
-      data: params
+      data: params,
     },
-    callback
+    callback,
   );
 };
 
 // check jwt token headers
-documentService.checkJwtHeader = function checkJwtHeader (req) {
+documentService.checkJwtHeader = function checkJwtHeader(req) {
   let decoded = null;
   const authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
   // if authorization header exists and it starts with the authorization header prefix
@@ -240,7 +248,7 @@ documentService.checkJwtHeader = function checkJwtHeader (req) {
 };
 
 // get jwt token using url information
-documentService.fillJwtByUrl = function fillJwtByUrl (uri, optDataObject) {
+documentService.fillJwtByUrl = function fillJwtByUrl(uri, optDataObject) {
   const parseObject = urlModule.parse(uri, true); // get parse object from the url
   const payload = { query: parseObject.query, payload: optDataObject }; // create payload object
 
@@ -250,14 +258,14 @@ documentService.fillJwtByUrl = function fillJwtByUrl (uri, optDataObject) {
 };
 
 // get token
-documentService.getToken = function getToken (data) {
+documentService.getToken = function getToken(data) {
   const options = { algorithm: cfgSignatureSecretAlgorithmRequest, expiresIn: cfgSignatureSecretExpiresIn };
   // sign token with given data using signature secret and options parameters
   return jwt.sign(data, cfgSignatureSecret, options);
 };
 
 // read and verify token
-documentService.readToken = function readToken (token) {
+documentService.readToken = function readToken(token) {
   try {
     return jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
   } catch (err) {
