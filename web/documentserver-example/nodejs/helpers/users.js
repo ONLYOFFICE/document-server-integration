@@ -101,12 +101,12 @@ const users = [
 ];
 
 // get a list of all the users
-users.getAllUsers = function () {
+users.getAllUsers = function getAllUsers () {
   return users;
 };
 
 // get a user by id specified
-users.getUser = function (id) {
+users.getUser = function getUser (id) {
   let result = null;
   this.forEach((user) => {
     if (user.id === id) {
@@ -117,7 +117,7 @@ users.getUser = function (id) {
 };
 
 // get a list of users with their name and email
-users.getUsersForMentions = function (id) {
+users.getUsersForMentions = function getUsersForMentions (id) {
   const result = [];
   this.forEach((user) => {
     if (user.id !== id && user.name && user.email) {

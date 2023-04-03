@@ -27,7 +27,7 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function (siteUrl) {
+const requestDiscovery = async function requestDiscovery (siteUrl) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
     const actions = [];
@@ -70,7 +70,7 @@ const requestDiscovery = async function (siteUrl) {
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function (siteUrl) {
+const getDiscoveryInfo = async function getDiscoveryInfo (siteUrl) {
   let actions = [];
 
   if (cache) return cache;
@@ -90,7 +90,7 @@ const getDiscoveryInfo = async function (siteUrl) {
   return actions;
 };
 
-const initWopi = async function (DocManager) {
+const initWopi = async function initWopi (DocManager) {
   let absSiteUrl = siteUrl;
   if (absSiteUrl.indexOf('/') === 0) {
     absSiteUrl = DocManager.getServerHost() + siteUrl;
@@ -101,7 +101,7 @@ const initWopi = async function (DocManager) {
 };
 
 // get actions of the specified extension
-const getActions = async function (ext) {
+const getActions = async function getActions (ext) {
   const actions = await getDiscoveryInfo(); // get the wopi discovery information
   const filtered = [];
 
@@ -115,7 +115,7 @@ const getActions = async function (ext) {
 };
 
 // get an action for the specified extension and name
-const getAction = async function (ext, name) {
+const getAction = async function getAction (ext, name) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
@@ -128,7 +128,7 @@ const getAction = async function (ext, name) {
 };
 
 // get the default action for the specified extension
-const getDefaultAction = async function (ext) {
+const getDefaultAction = async function getDefaultAction (ext) {
   const actions = await getDiscoveryInfo();
 
   for (const action of actions) {
@@ -141,7 +141,7 @@ const getDefaultAction = async function (ext) {
 };
 
 // get the action url
-const getActionUrl = function (host, userAddress, action, filename) {
+const getActionUrl = function getActionUrl (host, userAddress, action, filename) {
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${host}/wopi/files/${filename}@${userAddress}`;
 };
 

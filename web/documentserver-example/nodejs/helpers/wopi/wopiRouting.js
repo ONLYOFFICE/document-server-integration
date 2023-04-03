@@ -27,7 +27,7 @@ const users = require('../users');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
-const getCustomWopiParams = function (query) {
+const getCustomWopiParams = function getCustomWopiParams (query) {
   let tokenParams = '';
   let actionParams = '';
 
@@ -40,7 +40,7 @@ const getCustomWopiParams = function (query) {
   return { tokenParams, actionParams };
 };
 
-exports.registerRoutes = function (app) {
+exports.registerRoutes = function registerRoutes (app) {
   // define a handler for the default wopi page
   app.get('/wopi', async (req, res) => {
     req.DocManager = new DocManager(req, res);

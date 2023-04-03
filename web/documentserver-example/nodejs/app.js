@@ -50,7 +50,7 @@ if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
-String.prototype.hashCode = function () {
+String.prototype.hashCode = function hashCode () {
   const len = this.length;
   let ret = 0;
   for (let i = 0; i < len; i += 1) {
@@ -58,7 +58,7 @@ String.prototype.hashCode = function () {
   }
   return ret;
 };
-String.prototype.format = function (...args) {
+String.prototype.format = function format (...args) {
   let text = this.toString();
 
   if (!args.length) return text;
@@ -340,7 +340,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const internalFileExt = 'ooxml';
   const response = res;
 
-  const writeResult = function (filename, step, error) {
+  const writeResult = function writeResult (filename, step, error) {
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
@@ -355,7 +355,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     response.end();
   };
 
-  const callback = async function (err, res) {
+  const callback = async function callback (err, res) {
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
@@ -494,7 +494,7 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
 app.post('/reference', (req, res) => { // define a handler for renaming file
   req.DocManager = new DocManager(req, res);
 
-  const result = function (data) {
+  const result = function result (data) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify(data));
     res.end();
@@ -557,9 +557,15 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   let version = 0;
 
   // track file changes
-  const processTrack = async function (response, body, fileName, userAddress) {
+  const processTrack = async function processTrack (response, body, fileName, userAddress) {
     // callback file saving process
-    const callbackProcessSave = async function (downloadUri, body, fileName, userAddress, newFileName) {
+    const callbackProcessSave = async function callbackProcessSave (
+      downloadUri,
+      body,
+      fileName,
+      userAddress,
+      newFileName
+    ) {
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
@@ -625,7 +631,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // file saving process
-    const processSave = async function (downloadUri, body, fileName, userAddress) {
+    const processSave = async function processSave (downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -666,7 +672,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // callback file force saving process
-    const callbackProcessForceSave = async function (downloadUri, body, fileName, userAddress, newFileName = false) {
+    const callbackProcessForceSave = async function callbackProcessForceSave (
+      downloadUri,
+      body,
+      fileName,
+      userAddress,
+      newFileName = false
+    ) {
       try {
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
@@ -719,7 +731,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     };
 
     // file force saving process
-    const processForceSave = async function (downloadUri, body, fileName, userAddress) {
+    const processForceSave = async function processForceSave (downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.write('{"error":1}');
         response.end();
@@ -780,7 +792,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   };
 
   // read request body
-  const readbody = async function (request, response, fileName, userAddress) {
+  const readbody = async function readbody (request, response, fileName, userAddress) {
     let content = '';
     request.on('data', async (data) => { // get data from the request
       content += data;
@@ -1094,7 +1106,7 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
   const { dockey } = req.body;
   const meta = { title: newfilename };
 
-  const result = function (err, data, ress) {
+  const result = function result (err, data, ress) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({ result: ress }));
     res.end();
