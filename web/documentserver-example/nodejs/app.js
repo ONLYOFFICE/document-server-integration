@@ -140,18 +140,18 @@ app.get('/download', (req, res) => { // define a handler for downloading files
   }
 
   // get the path to the force saved document version
-  let path = req.DocManager.forcesavePath(fileName, userAddress, false);
-  if (path === '') {
-    path = req.DocManager.storagePath(fileName, userAddress); // or to the original document
+  let filePath = req.DocManager.forcesavePath(fileName, userAddress, false);
+  if (filePath === '') {
+    filePath = req.DocManager.storagePath(fileName, userAddress); // or to the original document
   }
 
   // add headers to the response to specify the page parameters
-  res.setHeader('Content-Length', fileSystem.statSync(path).size);
-  res.setHeader('Content-Type', mime.getType(path));
+  res.setHeader('Content-Length', fileSystem.statSync(filePath).size);
+  res.setHeader('Content-Type', mime.getType(filePath));
 
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
-  const filestream = fileSystem.createReadStream(path);
+  const filestream = fileSystem.createReadStream(filePath);
   filestream.pipe(res); // send file information to the response by streams
 });
 
@@ -257,11 +257,11 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (err) => { // rename a file
+    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
-      if (err) { // if an error occurs
-        res.write(`{ "error": "${err}"}`); // write an error message to the response
+      if (error) { // if an error occurs
+        res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
         // otherwise, write a new file name to the response
         res.write(`{ "filename": "${file.name}", "documentType": "${documentType}" }`);
@@ -355,7 +355,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     response.end();
   };
 
-  const callback = async function callback(err, res) {
+  const callback = async function callback(err, resp) {
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
@@ -367,7 +367,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     }
 
     try {
-      const responseData = documentService.getResponseUri(res.toString());
+      const responseData = documentService.getResponseUri(resp.toString());
       const result = responseData.percent;
       const newFileUri = responseData.uri; // get the callback url
       const newFileType = `.${responseData.fileType}`; // get the file type
@@ -518,10 +518,10 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   }
 
   if (!fileName && !!req.body.path) {
-    const path = fileUtility.getFileName(req.body.path);
+    const filePath = fileUtility.getFileName(req.body.path);
 
-    if (req.DocManager.existsSync(req.DocManager.storagePath(path, userAddress))) {
-      fileName = path;
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath, userAddress))) {
+      fileName = filePath;
     }
   }
 
@@ -552,12 +552,12 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 app.post('/track', async (req, res) => { // define a handler for tracking file changes
   req.DocManager = new DocManager(req, res);
 
-  let userAddress = req.query.useraddress;
-  let fileName = fileUtility.getFileName(req.query.filename);
+  let uAddress = req.query.useraddress;
+  let fName = fileUtility.getFileName(req.query.filename);
   let version = 0;
 
   // track file changes
-  const processTrack = async function processTrack(response, body, fileName, userAddress) {
+  const processTrack = async function processTrack(response, bodyTrack, fileNameTrack, userAddressTrack) {
     // callback file saving process
     const callbackProcessSave = async function callbackProcessSave(
       downloadUri,
@@ -589,11 +589,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (downloadZip) {
           // get the path to the file with document versions differences
           const pathChanges = req.DocManager.diffPath(newFileName, userAddress, version);
-          const { status, data } = await urllib.request(downloadZip, { method: 'GET' });
+          const zip = await urllib.request(downloadZip, { method: 'GET' });
+          const statusZip = zip.status;
+          const dataZip = zip.data;
           if (status === 200) {
-            fileSystem.writeFileSync(pathChanges, data); // write the document version differences to the archive
+            fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
           } else {
-            emitWarning(`Document editing service returned status: ${status}`);
+            emitWarning(`Document editing service returned status: ${statusZip}`);
           }
         }
 
@@ -655,8 +657,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
               return;
             }
             try {
-              const res = documentService.getResponseUri(data);
-              await callbackProcessSave(res.uri, body, fileName, userAddress, fileName);
+              const resp = documentService.getResponseUri(data);
+              await callbackProcessSave(resp.uri, body, fileName, userAddress, fileName);
               return;
             } catch (ex) {
               console.log(ex);
@@ -708,7 +710,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             ) + downloadExt, userAddress);
           }
           // create forcesave path if it doesn't exist
-          let forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, false);
+          forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, false);
           if (forcesavePath === '') {
             forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, true);
           }
@@ -751,8 +753,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
               return;
             }
             try {
-              const res = documentService.getResponseUri(data);
-              await callbackProcessForceSave(res.uri, body, fileName, userAddress, false);
+              const resp = documentService.getResponseUri(data);
+              await callbackProcessForceSave(resp.uri, body, fileName, userAddress, false);
               return;
             } catch (ex) {
               console.log(ex);
@@ -767,11 +769,11 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       await callbackProcessForceSave(downloadUri, body, fileName, userAddress, false);
     };
 
-    if (body.status === 1) { // editing
-      if (body.actions && body.actions[0].type === 0) { // finished edit
-        const user = body.actions[0].userid;
-        if (body.users.indexOf(user) === -1) {
-          const { key } = body;
+    if (bodyTrack.status === 1) { // editing
+      if (bodyTrack.actions && bodyTrack.actions[0].type === 0) { // finished edit
+        const user = bodyTrack.actions[0].userid;
+        if (bodyTrack.users.indexOf(user) === -1) {
+          const { key } = bodyTrack;
           try {
             documentService.commandRequest('forcesave', key); // call the forcesave command
           } catch (ex) {
@@ -779,11 +781,11 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
       }
-    } else if (body.status === 2 || body.status === 3) { // MustSave, Corrupted
-      await processSave(body.url, body, fileName, userAddress); // save file
+    } else if (bodyTrack.status === 2 || bodyTrack.status === 3) { // MustSave, Corrupted
+      await processSave(bodyTrack.url, bodyTrack, fileNameTrack, userAddressTrack); // save file
       return;
-    } else if (body.status === 6 || body.status === 7) { // MustForceSave, CorruptedForceSave
-      await processForceSave(body.url, body, fileName, userAddress); // force save file
+    } else if (bodyTrack.status === 6 || bodyTrack.status === 7) { // MustForceSave, CorruptedForceSave
+      await processForceSave(bodyTrack.url, bodyTrack, fileNameTrack, userAddressTrack); // force save file
       return;
     }
 
@@ -817,10 +819,10 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         // get user address and file name from the query
         if (checkJwtHeaderRes.query) {
           if (checkJwtHeaderRes.query.useraddress) {
-            userAddress = checkJwtHeaderRes.query.useraddress;
+            uAddress = checkJwtHeaderRes.query.useraddress;
           }
           if (checkJwtHeaderRes.query.filename) {
-            fileName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
+            fName = fileUtility.getFileName(checkJwtHeaderRes.query.filename);
           }
         }
       }
@@ -830,14 +832,14 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       res.end();
       return;
     }
-    await processTrack(res, body, fileName, userAddress);
+    await processTrack(res, body, fName, uAddress);
     return;
   }
 
   if (Object.hasOwn(req.body, 'status')) { // if the request body has status parameter
-    await processTrack(res, req.body, fileName, userAddress); // track file changes
+    await processTrack(res, req.body, fName, uAddress); // track file changes
   } else {
-    await readbody(req, res, fileName, userAddress); // otherwise, read request body first
+    await readbody(req, res, fName, uAddress); // otherwise, read request body first
   }
 });
 
@@ -895,11 +897,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     if (fileExt) {
       // create demo document of a given extension
-      const fileName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
+      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
       // get the redirect path
       const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
-      + `${encodeURIComponent(fileName)}${req.DocManager.getCustomParams()}`;
+      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
     }

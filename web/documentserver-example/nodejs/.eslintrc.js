@@ -15,7 +15,6 @@ module.exports = {
     'no-restricted-syntax': ['error', 'WithStatement', 'BinaryExpression[operator="in"]'],
     'no-console': 'off',
     'no-continue': 'off',
-    'no-shadow': 'off',
     'no-extend-native': ['error', { exceptions: ['String'] }],
     radix: ['error', 'as-needed'],
   },

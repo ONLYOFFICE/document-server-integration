@@ -27,11 +27,11 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function requestDiscovery(siteUrl) {
+const requestDiscovery = async function requestDiscovery(url) {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
     const actions = [];
-    urllib.request(urlModule.parse(siteUrl + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
+    urllib.request(urlModule.parse(url + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
       if (data) {
         // create the discovery XML file with the parameters from the response
         const discovery = xmlParser.parse(data.toString(), {
@@ -68,13 +68,13 @@ const requestDiscovery = async function requestDiscovery(siteUrl) {
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo(siteUrl) {
+const getDiscoveryInfo = async function getDiscoveryInfo(url) {
   let actions = [];
 
   if (cache) return cache;
 
   try {
-    actions = await requestDiscovery(siteUrl);
+    actions = await requestDiscovery(url);
   } catch (e) {
     return actions;
   }

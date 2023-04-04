@@ -51,8 +51,8 @@ const lock = function lock(wopi, req, res, userHost) {
     res.sendStatus(200);
   } else {
     // file locked by someone else => return lock mismatch
-    const lock = lockManager.getLock(filePath);
-    returnLockMismatch(res, lock, `File already locked by ${lock}`);
+    const locked = lockManager.getLock(filePath);
+    returnLockMismatch(res, lock, `File already locked by ${locked}`);
   }
 };
 
@@ -170,14 +170,14 @@ const unlockAndRelock = function unlockAndRelock(wopi, req, res, userHost) {
 const getFile = function getFile(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
 
-  const path = req.DocManager.storagePath(wopi.id, userAddress);
+  const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
 
-  res.setHeader('Content-Length', fileSystem.statSync(path).size);
-  res.setHeader('Content-Type', mime.getType(path));
+  res.setHeader('Content-Length', fileSystem.statSync(storagePath).size);
+  res.setHeader('Content-Type', mime.getType(storagePath));
 
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(wopi.id)}`);
 
-  const filestream = fileSystem.createReadStream(path); // open a file as a readable stream
+  const filestream = fileSystem.createReadStream(storagePath); // open a file as a readable stream
   filestream.pipe(res); // retrieve data from file stream and output it to the response object
 };
 
@@ -266,7 +266,7 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
   const version = req.DocManager.getKey(wopi.id, userAddress);
 
-  const path = req.DocManager.storagePath(wopi.id, userAddress);
+  const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
   // add wopi query
   const query = new URLSearchParams(wopi.accessToken);
   const user = users.getUser(query.get('userid'));
@@ -275,7 +275,7 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
   const fileInfo = {
     BaseFileName: wopi.id,
     OwnerId: req.DocManager.getFileData(wopi.id, userAddress)[1],
-    Size: fileSystem.statSync(path).size,
+    Size: fileSystem.statSync(storagePath).size,
     UserId: user.id,
     UserFriendlyName: user.name,
     Version: version,

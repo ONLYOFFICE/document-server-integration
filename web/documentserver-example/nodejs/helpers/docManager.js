@@ -30,12 +30,12 @@ const DocManager = function DocManager(req, res) {
 };
 
 // check if the path exists or not
-DocManager.prototype.existsSync = function existsSync(path) {
+DocManager.prototype.existsSync = function existsSync(directory) {
   let res = true;
   try {
     // synchronously test the user's permissions for the directory specified by path;
     // the directory is visible to the calling process
-    fileSystem.accessSync(path, fileSystem.F_OK);
+    fileSystem.accessSync(directory, fileSystem.F_OK);
   } catch (e) { // the response is set to false, if an error occurs
     res = false;
   }
@@ -43,9 +43,9 @@ DocManager.prototype.existsSync = function existsSync(path) {
 };
 
 // create a new directory if it doesn't exist
-DocManager.prototype.createDirectory = function createDirectory(path) {
-  if (!this.existsSync(path)) {
-    fileSystem.mkdirSync(path);
+DocManager.prototype.createDirectory = function createDirectory(directory) {
+  if (!this.existsSync(directory)) {
+    fileSystem.mkdirSync(directory);
   }
 };
 
@@ -123,8 +123,8 @@ DocManager.prototype.fileRemove = function fileRemove(fileName) {
 
 // create a zero-size file
 DocManager.prototype.fileSizeZero = function fileSizeZero(fileName) {
-  const path = this.storagePath(fileName);
-  const fh = fileSystem.openSync(path, 'w');
+  const storagePath = this.storagePath(fileName);
+  const fh = fileSystem.openSync(storagePath, 'w');
   fileSystem.closeSync(fh);
 };
 
@@ -382,9 +382,9 @@ DocManager.prototype.getInternalExtension = function getInternalExtension(fileTy
 
 // get the template image url
 DocManager.prototype.getTemplateImageUrl = function getTemplateImageUrl(fileType) {
-  const path = this.getServerUrl(true);
+  const serverUrl = this.getServerUrl(true);
   if (fileType === fileUtility.fileType.word) { // for word type
-    return `${path}/images/file_docx.svg`;
+    return `${serverUrl}/images/file_docx.svg`;
   }
 
   if (fileType === fileUtility.fileType.cell) { // for cell type
