@@ -1,5 +1,7 @@
 # Change Log
 
+- si skin languages
+- fix "no" skin languages
 - anonymous can't change viewer to edit
 - referenceData
 - anonymous can't protect file
