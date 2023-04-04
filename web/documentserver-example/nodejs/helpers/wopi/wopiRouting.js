@@ -65,6 +65,7 @@ exports.registerRoutes = function registerRoutes(app) {
       const files = req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
+      // eslint-disable-next-line no-restricted-syntax
       for (const file of files) {
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
         file.actions = utils.getActions(ext); // get actions of the specified extension

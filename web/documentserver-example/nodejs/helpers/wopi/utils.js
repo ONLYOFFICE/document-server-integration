@@ -42,11 +42,12 @@ const requestDiscovery = async function requestDiscovery(url) {
           attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true }),
         });
         if (discovery['wopi-discovery']) {
-          for (const app of discovery['wopi-discovery']['net-zone'].app) {
-            if (!Array.isArray(app.action)) {
-              app.action = [app.action];
+          discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
+            let appAction = app.action;
+            if (!Array.isArray(appAction)) {
+              appAction = [appAction];
             }
-            for (const action of app.action) {
+            appAction.forEach((action) => {
               actions.push({ // write all the parameters to the actions element
                 app: app.name,
                 favIconUrl: app.favIconUrl,
@@ -58,8 +59,8 @@ const requestDiscovery = async function requestDiscovery(url) {
                 urlsrc: action.urlsrc,
                 requires: action.requires || '',
               });
-            }
-          }
+            });
+          });
         }
       }
       resolve(actions);
@@ -103,11 +104,11 @@ const getActions = async function getActions(ext) {
   const actions = await getDiscoveryInfo(); // get the wopi discovery information
   const filtered = [];
 
-  for (const action of actions) { // and filter it by the specified extention
+  actions.forEach((action) => { // and filter it by the specified extention
     if (action.ext === ext) {
       filtered.push(action);
     }
-  }
+  });
 
   return filtered;
 };
@@ -115,27 +116,29 @@ const getActions = async function getActions(ext) {
 // get an action for the specified extension and name
 const getAction = async function getAction(ext, name) {
   const actions = await getDiscoveryInfo();
+  let act = null;
 
-  for (const action of actions) {
+  actions.forEach((action) => {
     if (action.ext === ext && action.name === name) {
-      return action;
+      act = action;
     }
-  }
+  });
 
-  return null;
+  return act;
 };
 
 // get the default action for the specified extension
 const getDefaultAction = async function getDefaultAction(ext) {
   const actions = await getDiscoveryInfo();
+  let act = null;
 
-  for (const action of actions) {
+  actions.forEach((action) => {
     if (action.ext === ext && action.isDefault) {
-      return action;
+      act = action;
     }
-  }
+  });
 
-  return null;
+  return act;
 };
 
 // get the action url

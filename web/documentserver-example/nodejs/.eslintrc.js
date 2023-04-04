@@ -12,7 +12,6 @@ module.exports = {
   },
   rules: {
     'max-len': ['error', { code: 120 }],
-    'no-restricted-syntax': ['error', 'WithStatement', 'BinaryExpression[operator="in"]'],
     'no-console': 'off',
     'no-continue': 'off',
     'no-extend-native': ['error', { exceptions: ['String'] }],
