@@ -167,12 +167,12 @@ documentService.getResponseUri = function getResponseUri(json) {
   const fileResult = JSON.parse(json);
 
   if (fileResult.error) { // if an error occurs
-    documentService.processConvertServiceResponceError(parseInt(fileResult.error)); // get an error message
+    documentService.processConvertServiceResponceError(parseInt(fileResult.error, 10)); // get an error message
   }
 
   const isEndConvert = fileResult.endConvert; // check if the conversion is completed
 
-  let percent = parseInt(fileResult.percent); // get the conversion percentage
+  let percent = parseInt(fileResult.percent, 10); // get the conversion percentage
   let uri = null;
   let fileType = null;
 
