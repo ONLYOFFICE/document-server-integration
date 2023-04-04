@@ -9,7 +9,7 @@
 - php: linter refactoring
 - horizontal scroll fix for Internet Explorer
 - save file with extension from response after conversation
-- conersation to ooxml
+- conversation to ooxml
 
 ## 1.5.1
 - update jquery
