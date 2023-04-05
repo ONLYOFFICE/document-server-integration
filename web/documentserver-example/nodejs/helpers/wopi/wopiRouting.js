@@ -68,8 +68,10 @@ exports.registerRoutes = function registerRoutes(app) {
       // eslint-disable-next-line no-restricted-syntax
       for (const file of files) {
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
-        file.actions = utils.getActions(ext); // get actions of the specified extension
-        file.defaultAction = utils.getDefaultAction(ext); // get the default action of the specified extension
+        // eslint-disable-next-line no-await-in-loop
+        file.actions = await utils.getActions(ext); // get actions of the specified extension
+        // eslint-disable-next-line no-await-in-loop
+        file.defaultAction = await utils.getDefaultAction(ext);// get the default action of the specified extension
       }
 
       // render wopiIndex template with the parameters specified
