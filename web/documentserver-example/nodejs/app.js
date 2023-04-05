@@ -37,7 +37,6 @@ const users = require('./helpers/users');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
-const plugins = config.get('plugins');
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
 const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
@@ -45,6 +44,7 @@ const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizat
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const verifyPeerOff = configServer.get('verify_peer_off');
+const plugins = config.get('plugins');
 
 if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
