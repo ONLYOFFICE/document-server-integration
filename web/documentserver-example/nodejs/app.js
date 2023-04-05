@@ -53,7 +53,7 @@ if (verifyPeerOff) {
 String.prototype.hashCode = function hashCode() {
   const len = this.length;
   let ret = 0;
-  for (let i = 0; i < len; i += 1) {
+  for (let i = 0; i < len; i++) {
     ret = Math.trunc(31 * ret + this.charCodeAt(i));
   }
   return ret;
@@ -63,7 +63,7 @@ String.prototype.format = function format(...args) {
 
   if (!args.length) return text;
 
-  for (let i = 0; i < args.length; i += 1) {
+  for (let i = 0; i < args.length; i++) {
     text = text.replace(new RegExp(`\\{${i}\\}`, 'gi'), args[i]);
   }
 
@@ -84,7 +84,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // public directory
 // check if there are static files such as .js, .css files, images, samples and process them
 if (config.has('server.static')) {
   const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; i += 1) {
+  for (let i = 0; i < staticContent.length; i++) {
     const staticContentElem = staticContent[i];
     app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
   }
@@ -936,7 +936,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     if (historyPath !== '') {
       countVersion = req.DocManager.countVersion(historyPath) + 1; // get the number of file versions
-      for (let i = 1; i <= countVersion; i += 1) { // get keys to all the file versions
+      for (let i = 1; i <= countVersion; i++) { // get keys to all the file versions
         if (i < countVersion) {
           const keyPath = req.DocManager.keyPath(fileName, userAddress, i);
           if (!fileSystem.existsSync(keyPath)) continue;
@@ -992,7 +992,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     if (cfgSignatureEnable) {
-      for (let i = 0; i < historyData.length; i += 1) {
+      for (let i = 0; i < historyData.length; i++) {
         // sign token with given data using signature secret
         historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
       }

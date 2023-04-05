@@ -15,5 +15,6 @@ module.exports = {
     'no-console': 'off',
     'no-continue': 'off',
     'no-extend-native': ['error', { exceptions: ['String'] }],
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
   },
 };
