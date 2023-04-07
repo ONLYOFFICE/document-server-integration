@@ -280,7 +280,13 @@ namespace OnlineEditorsExampleMVC
 
                         if (S3Helper.Instance.Enabled)
                         {
-                            S3Helper.Instance.UploadFileSync(fileName, stream);
+                            var path = Path.Combine(Path.GetTempPath(), $"temp-conv-upload-{DateTime.Now.Ticks}");
+                            using (var file = File.Open(path, FileMode.Create))
+                            {
+                                stream.CopyTo(file);
+                            }
+                            S3Helper.Instance.UploadFileSync(correctName, path);
+                            File.Delete(path);
                         }
                         else
                         {
