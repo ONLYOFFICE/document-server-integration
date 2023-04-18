@@ -219,7 +219,20 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", ".action-link", function (e) {
         e.preventDefault();
-        window.location = this.href + collectParams(true);
+        let url = this.href + collectParams(true);
+        let target = null;
+
+        if (e.target.hasAttribute("target")) {
+            target = e.target.getAttribute("target");
+        } else if (e.target.parentNode.hasAttribute("target")) {
+            target = e.target.parentNode.getAttribute("target");
+        }
+
+        if (target !== null) {
+            window.open(url, target);
+        } else {
+            window.location = url;
+        }
     });
 
     jq(document).on("click", "#skipPass", function () {
