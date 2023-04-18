@@ -34,29 +34,16 @@ if (typeof jQuery != "undefined") {
     else
         language = jq("#language").val();
 
-
-    jq("#language").change(function() {
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&directUrl=" + directUrl;
-    });
-
     if ("" != userid && undefined != userid)
         jq("#user").val(userid);
     else
         userid = jq("#user").val();
-
-    jq("#user").change(function() {
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&directUrl=" + directUrl;
-    });
 
 
     if (directUrl)
         jq("#directUrl").prop("checked", directUrl);
     else
         directUrl = jq("#directUrl").prop("checked");
-
-    jq("#directUrl").change(function() {
-        window.location = "?lang=" + language + "&userid=" + userid + "&directUrl=" + jq(this).prop("checked");
-    });
 
 
     jq(function () {
@@ -111,7 +98,7 @@ if (typeof jQuery != "undefined") {
             }
         });
     });
-    
+
     var timer = null;
     var checkConvert = function (filePass) {
         filePass = filePass ? filePass : null;
@@ -228,6 +215,11 @@ if (typeof jQuery != "undefined") {
             jq("#filePass").addClass("errorInput");
             jq(".errorPass").text("Password can't be blank.");
         }
+    });
+
+    jq(document).on("click", ".action-link", function (e) {
+        e.preventDefault();
+        window.location = this.href + collectParams(true);
     });
 
     jq(document).on("click", "#skipPass", function () {
@@ -395,3 +387,22 @@ function getUrlVars() {
     }
     return vars;
 };
+
+function collectParams(startParams = false) {
+    let paramsObjects = Array.from(document.getElementsByClassName('collectable'));
+    let params = [];
+    let startChar = startParams ? "&" : "?";
+    paramsObjects.forEach((element) => {
+        let paramName = element.getAttribute("data-param");
+        switch (element.type) {
+            case "select-one":
+                params.push(paramName + "=" + element.value);
+                break;
+            case "checkbox":
+                params.push(paramName + "=" + element.checked);
+                break;
+            default:
+        }
+    });
+    return startChar + params.join("&");
+}
