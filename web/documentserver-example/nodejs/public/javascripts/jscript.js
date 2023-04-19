@@ -228,11 +228,7 @@ if (typeof jQuery != "undefined") {
             target = e.target.parentNode.getAttribute("target");
         }
 
-        if (target !== null) {
-            window.open(url, target);
-        } else {
-            window.location = url;
-        }
+        target !== null ? window.open(url, target) :  window.location = url;
     });
 
     jq(document).on("click", "#skipPass", function () {
@@ -245,12 +241,12 @@ if (typeof jQuery != "undefined") {
         if (UrlEditor == "wopi-action"){
             var url = UrlEditor + "/" + fileId + "?action=edit";
         }else{
-            var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+            var url = UrlEditor + "?fileName=" + fileId + collectParams();
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload(true);
+        window.location = collectParams();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
@@ -258,17 +254,17 @@ if (typeof jQuery != "undefined") {
         if (UrlEditor == "wopi-action"){
             var url = UrlEditor + "/" + fileId + "?action=view";
         }else{
-            var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams();
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload(true);
+        window.location = collectParams();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + collectParams();
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -277,13 +273,13 @@ if (typeof jQuery != "undefined") {
     });
 
     jq(document).on("click", ".reload-page", function () {
-        setTimeout(function () { document.location.reload(true); }, 1000);
+        setTimeout(function () { window.location = collectParams(); }, 1000);
         return true;
     });
 
     jq(document).on("mouseup", ".reload-page", function (event) {
         if (event.which == 2) {
-            setTimeout(function () { document.location.reload(true); }, 1000);
+            setTimeout(function () { window.location = collectParams(); }, 1000);
         }
         return true;
     });
@@ -293,7 +289,7 @@ if (typeof jQuery != "undefined") {
         jq("#embeddedView").remove();
         jq.unblockUI();
         if (mustReload) {
-            document.location.reload(true);
+            window.location = collectParams();
         }
     });
 
@@ -308,7 +304,7 @@ if (typeof jQuery != "undefined") {
             type: "delete",
             url: requestAddress,
             complete: function (data) {
-                document.location.reload(true);
+                window.location = collectParams();
             }
         });
     });
@@ -409,7 +405,10 @@ function collectParams(startParams = false) {
         if (element.name) {
             switch (element.type) {
                 case "select-one":
-                    params.push(element.name + "=" + element.value);
+                case "text":
+                    if (element.value) {
+                        params.push(element.name + "=" + element.value);
+                    }
                     break;
                 case "checkbox":
                     params.push(element.name + "=" + element.checked);
