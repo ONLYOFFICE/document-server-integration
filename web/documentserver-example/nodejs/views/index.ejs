@@ -77,7 +77,7 @@
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
                                                 <img id="info" class="info" src="images/info.svg" />
-                                                <select class="select-user collectable" data-param="userid" id="user">
+                                                <select class="select-user collectable" name="userid" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
                                                     <% }) %>
@@ -88,7 +88,7 @@
                                             <td valign="middle">
                                                 <span class="select-user">Language</span>
                                                 <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
-                                                <select class="select-user collectable" data-param="lang" id="language">
+                                                <select class="select-user collectable" name="lang" id="language">
                                                     <% Object.keys(languages).forEach(key => { %>
                                                         <option value="<%= key %>"><%= languages[key] %></option>
                                                     <% }) %>
@@ -98,7 +98,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <label class="side-option">
-                                                    <input id="directUrl" type="checkbox" class="checkbox collectable" data-param="directUrl" />Try opening on client
+                                                    <input id="directUrl" type="checkbox" class="checkbox collectable" name="directUrl" />Try opening on client
                                                     <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="images/info.svg" />
                                                 </label>
                                             </td>

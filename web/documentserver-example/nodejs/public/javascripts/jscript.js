@@ -406,15 +406,21 @@ function collectParams(startParams = false) {
     let params = [];
     let startChar = startParams ? "&" : "?";
     paramsObjects.forEach((element) => {
-        let paramName = element.getAttribute("data-param");
-        switch (element.type) {
-            case "select-one":
-                params.push(paramName + "=" + element.value);
-                break;
-            case "checkbox":
-                params.push(paramName + "=" + element.checked);
-                break;
-            default:
+        if (element.name) {
+            switch (element.type) {
+                case "select-one":
+                    params.push(element.name + "=" + element.value);
+                    break;
+                case "checkbox":
+                    params.push(element.name + "=" + element.checked);
+                    break;
+                case "radio":
+                    if (element.checked) {
+                        params.push(element.name + "=" + element.value);
+                    }
+                    break;
+                default:
+            }
         }
     });
     return startChar + params.join("&");
