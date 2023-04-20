@@ -49,7 +49,7 @@ final class DocEditorView extends View
         if (!empty($externalUrl)) {
             $filename = doUpload($externalUrl);
         } else { // if the file url doesn't exist, get file name and file extension
-            $filename = basename($request["fileID"]);
+            $filename = basename($request["fileID"] ?? "");
         }
         $createExt = $request["fileExt"] ?? "";
 
