@@ -241,7 +241,7 @@ if (typeof jQuery != "undefined") {
         if (UrlEditor == "wopi-action"){
             var url = UrlEditor + "/" + fileId + "?action=edit";
         }else{
-            var url = UrlEditor + "?fileName=" + fileId + collectParams();
+            var url = UrlEditor + "?fileName=" + fileId + collectParams(true);
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
@@ -254,7 +254,7 @@ if (typeof jQuery != "undefined") {
         if (UrlEditor == "wopi-action"){
             var url = UrlEditor + "/" + fileId + "?action=view";
         }else{
-            var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams();
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams(true);
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
@@ -264,7 +264,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + collectParams();
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + collectParams(true);
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -397,11 +397,11 @@ function getUrlVars() {
     return vars;
 };
 
-function collectParams(startParams = false) {
-    let paramsObjects = Array.from(document.getElementsByClassName('collectable'));
+function collectParams(startParams) {
+    let paramsObjects = Array.prototype.slice.call(document.getElementsByClassName('collectable'));
     let params = [];
     let startChar = startParams ? "&" : "?";
-    paramsObjects.forEach((element) => {
+    paramsObjects.forEach( function (element) {
         if (element.name) {
             switch (element.type) {
                 case "select-one":
