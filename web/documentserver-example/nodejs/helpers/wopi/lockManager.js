@@ -16,54 +16,54 @@
  *
  */
 
-var lockDict = {};
+const lockDict = {};
 
 // get the lock object of the specified file
-function getLockObject(filePath) {
-    return lockDict[filePath];
-}
+const getLockObject = function getLockObject(filePath) {
+  return lockDict[filePath];
+};
 
 // clear the lock timeout
-function clearLockTimeout(lockObject) {
-    if (lockObject && lockObject.timeout) {
-        clearTimeout(lockObject.timeout);
-    }
-}
+const clearLockTimeout = function clearLockTimeout(lockObject) {
+  if (lockObject && lockObject.timeout) {
+    clearTimeout(lockObject.timeout);
+  }
+};
 
 // get the lock value of the specified file
-function getLockValue(filePath) {
-    let lock = getLockObject(filePath);  // get the lock object of the specified file
-    if (lock) return lock.value;  // if it exists, get the lock value from it
-    return "";
-}
+const getLockValue = function getLockValue(filePath) {
+  const lock = getLockObject(filePath); // get the lock object of the specified file
+  if (lock) return lock.value; // if it exists, get the lock value from it
+  return '';
+};
 
 // check if the specified file path has lock or not
-function hasLock(filePath) {
-    return !!getLockObject(filePath);
-}
-
-// lock file editing
-function lock(filePath, lockValue) {
-    let oldLock = getLockObject(filePath);  // get the old lock of the specified file
-    clearLockTimeout(oldLock);  // clear its timeout
-
-    // create a new lock object
-    lockDict[filePath] = {
-        value: lockValue,
-        timeout: setTimeout(unlock, 1000 * 60 * 30, filePath) // set lock for 30 minutes
-    }
-}
+const hasLock = function hasLock(filePath) {
+  return !!getLockObject(filePath);
+};
 
 // allow for file editing
-function unlock(filePath) {
-    let lock = getLockObject(filePath);  // get the lock of the specified file
-    clearLockTimeout(lock);  // clear its timeout
-    delete lockDict[filePath];  // delete the lock
-}
+const unlock = function unlock(filePath) {
+  const lock = getLockObject(filePath); // get the lock of the specified file
+  clearLockTimeout(lock); // clear its timeout
+  delete lockDict[filePath]; // delete the lock
+};
+
+// lock file editing
+const lock = function lock(filePath, lockValue) {
+  const oldLock = getLockObject(filePath); // get the old lock of the specified file
+  clearLockTimeout(oldLock); // clear its timeout
+
+  // create a new lock object
+  lockDict[filePath] = {
+    value: lockValue,
+    timeout: setTimeout(unlock, 1000 * 60 * 30, filePath), // set lock for 30 minutes
+  };
+};
 
 module.exports = {
-    hasLock: hasLock,
-    getLock: getLockValue,
-    lock: lock,
-    unlock: unlock
-}
+  hasLock,
+  getLock: getLockValue,
+  lock,
+  unlock,
+};

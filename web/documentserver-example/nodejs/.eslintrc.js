@@ -11,5 +11,10 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+    'max-len': ['error', { code: 120 }],
+    'no-console': 'off',
+    'no-continue': 'off',
+    'no-extend-native': ['error', { exceptions: ['String'] }],
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
   },
 };
