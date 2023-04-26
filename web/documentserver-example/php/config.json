@@ -5,16 +5,6 @@
   "storagePath": "",
   "alone": false,
 
-  "docServFillforms": [".docx", ".oform"],
-  "docServViewd": [".djvu", ".oxps", ".pdf", ".xps"],
-  "docServEdited": [".csv", ".docm", ".docx", ".docxf", ".dotm", ".dotx", ".epub",
-    ".fb2", ".html", ".odp", ".ods", ".odt", ".otp", ".ots", ".ott", ".potm", ".potx",
-    ".ppsm", ".ppsx", ".pptm", ".pptx", ".rtf", ".txt", ".xlsm", ".xlsx", ".xltm", ".xltx"],
-  "docServConvert": [".doc", ".dot", ".dps", ".dpt", ".epub",
-    ".et", ".ett", ".fb2", ".fodp", ".fods", ".fodt", ".htm", ".html",
-    ".mht", ".mhtml", ".odp", ".ods", ".odt", ".otp", ".ots", ".ott", ".pot",
-    ".pps", ".ppt", ".rtf", ".stw", ".sxc", ".sxi", ".sxw", ".wps", ".wpt", ".xls", ".xlsb", ".xlt", ".xml"],
-
   "docServTimeout": "120000",
   "docServSiteUrl": "https://documentserver/",
 

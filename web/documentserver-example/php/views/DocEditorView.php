@@ -73,10 +73,10 @@ final class DocEditorView extends View
 
         $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
         $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
-        $canEdit = in_array($ext, $confgManager->getConfig("docServEdited"));  // check if the file can be edited
+        $canEdit = in_array($ext, $confgManager->getEditExtensions());  // check if the file can be edited
         if ((!$canEdit && $editorsMode == "edit"
                 || $editorsMode == "fillForms")
-            && in_array($ext, $confgManager->getConfig("docServFillforms"))
+            && in_array($ext, $confgManager->getFillExtensions())
         ) {
             $editorsMode = "fillForms";
             $canEdit = true;
