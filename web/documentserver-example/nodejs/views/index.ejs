@@ -189,7 +189,7 @@
                                                         <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
                                                             <td class="contentCells contentCells-icon "></td>
                                                         <% } %>
-                                                        <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
+                                                        <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                     <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
@@ -201,7 +201,7 @@
                                                             <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
                                                                 <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                                         </td>
-                                                    <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.')).trim().toLowerCase()) !== -1) { %>
+                                                    <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>

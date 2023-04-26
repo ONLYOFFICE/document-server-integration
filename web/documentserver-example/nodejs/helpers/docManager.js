@@ -323,13 +323,13 @@ DocManager.prototype.getStoredFiles = function getStoredFiles() {
       }
 
       const time = stats.mtime.getTime(); // get the time of element modification
-      const item = { // create an object with element data
-        time,
-        name: storedFiles[i],
-        documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) !== -1,
-        version: version + 1,
-      };
+        const item = { // create an object with element data
+          time,
+          name: storedFiles[i],
+          documentType: fileUtility.getFileType(storedFiles[i]),
+          canEdit: fileUtility.getEditExtensions().indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
+          version: version + 1,
+        };
 
       if (!result.length) { // if the result array is empty
         result.push(item); // push the item object to it

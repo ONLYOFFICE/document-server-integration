@@ -100,9 +100,9 @@ app.get('/', (req, res) => { // define a handler for default page
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      convertExts: configServer.get('convertedDocs'),
-      editedExts: configServer.get('editedDocs'),
-      fillExts: configServer.get('fillDocs'),
+      convertExts: fileUtility.getConvertExtensions(),
+      editedExts: fileUtility.getEditExtensions(),
+      fillExts: fileUtility.getFillExtensions(),
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
@@ -240,13 +240,8 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    const exts = [].concat(
-      configServer.get('viewedDocs'),
-      configServer.get('editedDocs'),
-      configServer.get('convertedDocs'),
-      configServer.get('fillDocs'),
-    ); // all the supported file extensions
-    const curExt = fileUtility.getFileExtension(file.name);
+    const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
+    const curExt = fileUtility.getFileExtension(file.name, true);
     const documentType = fileUtility.getFileType(file.name);
 
     if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
@@ -297,13 +292,8 @@ app.post('/create', (req, res) => {
         return;
       }
 
-      const exts = [].concat(
-        configServer.get('viewedDocs'),
-        configServer.get('editedDocs'),
-        configServer.get('convertedDocs'),
-        configServer.get('fillDocs'),
-      ); // all the supported file extensions
-      const curExt = fileUtility.getFileExtension(fileName);
+      const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
+      const curExt = fileUtility.getFileExtension(fileName, true);
 
       if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
         // and write the error status and message to the response
@@ -336,7 +326,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const filePass = req.body.filePass ? req.body.filePass : null;
   const lang = req.body.lang ? req.body.lang : null;
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
-  const fileExt = fileUtility.getFileExtension(fileName);
+  const fileExt = fileUtility.getFileExtension(fileName,true);
   const internalFileExt = 'ooxml';
   const response = res;
 
@@ -409,7 +399,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
   try {
     // check if the file with such an extension can be converted
-    if (configServer.get('convertedDocs').indexOf(fileExt) !== -1) {
+    if (fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) {
       const storagePath = req.DocManager.storagePath(fileName);
       const stat = fileSystem.statSync(storagePath);
       let key = fileUri + stat.mtime.getTime();
@@ -917,9 +907,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const directUrl = req.DocManager.getDownloadUrl(fileName);
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
-    let canEdit = configServer.get('editedDocs').indexOf(fileExt) !== -1; // check if this file can be edited
+    let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && configServer.get('fillDocs').indexOf(fileExt) !== -1) {
+      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
