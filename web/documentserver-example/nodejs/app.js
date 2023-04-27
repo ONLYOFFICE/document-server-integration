@@ -469,7 +469,7 @@ app.delete('/file', (req, res) => { // define a handler for removing file
 
 app.get('/csv', (req, res) => { // define a handler for downloading csv files
   const fileName = 'csv.csv';
-  const csvPath = path.join(__dirname, 'public', 'assets', 'sample', fileName);
+  const csvPath = path.join(__dirname, 'public', 'assets', 'document-templates', 'sample', fileName);
 
   // add headers to the response to specify the page parameters
   res.setHeader('Content-Length', fileSystem.statSync(csvPath).size);
@@ -1049,8 +1049,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       dataCompareFile: {
         fileType: 'docx',
-        url: `${req.DocManager.getServerUrl(true)}/assets/sample/sample.docx`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/assets/sample/sample.docx`,
+        url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
       dataMailMergeRecipients: {
         fileType: 'csv',

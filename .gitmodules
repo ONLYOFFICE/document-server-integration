@@ -26,3 +26,7 @@
 	path = web/documentserver-example/java-spring/src/main/resources/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/nodejs/public/assets/document-templates"]
+	path = web/documentserver-example/nodejs/public/assets/document-templates
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
