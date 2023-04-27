@@ -16,7 +16,7 @@
  *
  */
 
-const supportedFormats = require("../config/onlyoffice-docs-formats.json")
+const supportedFormats = require("../public/assets/document-formats/onlyoffice-docs-formats.json")
 const fileUtility = {};
 
 // get file name from the given url
