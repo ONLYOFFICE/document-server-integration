@@ -51,6 +51,11 @@ final class ConfigManager
         return $this->config;
     }
 
+    public function getSuppotredFormats(): mixed
+    {
+        return $this->configFormats;
+    }
+
     public function getSuppotredExtensions(): mixed
     {
         return array_reduce(

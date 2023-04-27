@@ -71,7 +71,7 @@ final class DocEditorView extends View
         $docKey = getDocEditorKey($filename);
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-        $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+        $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
         $canEdit = in_array($ext, $confgManager->getEditExtensions());  // check if the file can be edited
         if ((!$canEdit && $editorsMode == "edit"

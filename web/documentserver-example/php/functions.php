@@ -130,18 +130,24 @@ function getCurUserHostAddress($userAddress = null)
  */
 function getInternalExtension($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return ".docx";
-    }  // .docx for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return ".xlsx";
-    }  // .xlsx for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return ".pptx";
-    }  // .pptx for presentation extensions
+
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            if ($format->type === "word") {
+                return ".docx";
+            }
+            if ($format->type === "cell") {
+                return ".xlsx";
+            }
+            if ($format->type === "slide") {
+                return ".pptx";
+            }
+        }
+    }
+
     return "";
 }
 
@@ -154,19 +160,24 @@ function getInternalExtension($filename)
  */
 function getTemplateImageUrl($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/css/images/";
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return $path . "file_docx.svg";
-    }  // for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return $path . "file_xlsx.svg";
-    }  // for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return $path . "file_pptx.svg";
-    }  // for presentation extensions
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            if ($format->type === "word") {
+                return $path . "file_docx.svg";
+            }
+            if ($format->type === "cell") {
+                return $path . "file_xlsx.svg";
+            }
+            if ($format->type === "slide") {
+                return $path . "file_pptx.svg";
+            }
+        }
+    }
+
     return $path . "file_docx.svg";
 }
 
@@ -179,18 +190,15 @@ function getTemplateImageUrl($filename)
  */
 function getDocumentType($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return "word";
-    }  // word for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return "cell";
-    }  // cell for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return "slide";
-    }  // slide for presentation extensions
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            return $format->type;
+        }
+    }
+
     return "word";
 }
 
