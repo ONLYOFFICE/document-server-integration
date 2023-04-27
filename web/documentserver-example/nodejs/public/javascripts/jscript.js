@@ -239,7 +239,7 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
         if (UrlEditor == "wopi-action"){
-            var url = UrlEditor + "/" + fileId + "?action=edit";
+            var url = UrlEditor + "/" + fileId + "?action=edit" + collectParams(true);
         }else{
             var url = UrlEditor + "?fileName=" + fileId + collectParams(true);
         }
@@ -252,7 +252,7 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
         if (UrlEditor == "wopi-action"){
-            var url = UrlEditor + "/" + fileId + "?action=view";
+            var url = UrlEditor + "/" + fileId + "?action=view" + collectParams(true);
         }else{
             var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams(true);
         }
