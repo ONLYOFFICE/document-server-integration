@@ -80,7 +80,6 @@ exports.registerRoutes = function registerRoutes(app) {
         storedFiles: wopiEnable ? files : [],
         params: req.DocManager.getCustomParams(),
         users,
-        serverUrl: req.DocManager.getServerUrl(),
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
         convertExts: configServer.get('convertedDocs'),
         editedExts,

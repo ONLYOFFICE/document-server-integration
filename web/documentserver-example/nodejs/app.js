@@ -1,4 +1,4 @@
-/**
+﻿/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -106,7 +106,6 @@ app.get('/', (req, res) => { // define a handler for default page
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
-      serverUrl: req.DocManager.getServerUrl(),
       languages: configServer.get('languages'),
     });
   } catch (ex) {
