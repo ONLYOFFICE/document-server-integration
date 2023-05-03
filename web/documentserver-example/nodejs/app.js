@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -1008,7 +1008,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         uriUser: directUrl,
         version: countVersion,
         created: new Date().toDateString(),
-        favorite: user.favorite ? user.favorite : 'null',
+        favorite: user.favorite != null ? user.favorite : 'null',
       },
       editor: {
         type,
@@ -1067,6 +1067,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
+      usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
     };
 
     if (cfgSignatureEnable) {

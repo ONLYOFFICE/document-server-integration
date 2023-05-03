@@ -125,13 +125,28 @@ users.getUser = function getUser(id) {
   return result || this[0];
 };
 
-// get a list of users with their name and email
+// get a list of users with their name and email for mentions
 users.getUsersForMentions = function getUsersForMentions(id) {
   const result = [];
   this.forEach((user) => {
     if (user.id !== id && user.name && user.email) {
       result.push({
         email: user.email,
+        name: user.name,
+      });
+    }
+  });
+  return result;
+};
+
+// get a list of users with their name, id and email for protect
+users.getUsersForProtect = function getUsersForProtect(id) {
+  const result = [];
+  this.forEach((user) => {
+    if (user.id !== id && user.name != null) {
+      result.push({
+        email: user.email,
+        id: user.id,
         name: user.name,
       });
     }
