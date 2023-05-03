@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: setUsers for region protection
 - si skin languages
 - fix "no" skin languages
 - anonymous can't change viewer to edit
