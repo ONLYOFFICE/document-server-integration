@@ -807,7 +807,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   // check jwt token
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
     let body = null;
-    if (Object.hasOwn(req.body, 'token')) { // if request body has its own token
+    // eslint-disable-next-line no-prototype-builtins
+    if (req.body.hasOwnProperty('token')) { // if request body has its own token
       body = documentService.readToken(req.body.token); // read and verify it
     } else {
       const checkJwtHeaderRes = documentService.checkJwtHeader(req); // otherwise, check jwt token headers
@@ -835,7 +836,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     return;
   }
 
-  if (Object.hasOwn(req.body, 'status')) { // if the request body has status parameter
+  // eslint-disable-next-line no-prototype-builtins
+  if (req.body.hasOwnProperty('status')) { // if the request body has status parameter
     await processTrack(res, req.body, fName, uAddress); // track file changes
   } else {
     await readbody(req, res, fName, uAddress); // otherwise, read request body first
