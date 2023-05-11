@@ -293,7 +293,8 @@ if (typeof jQuery != "undefined") {
     });
 
     jq(document).on("click", ".delete-file", function () {
-        var fileName = jq(this).attr("data");
+        const currentElement = jq(this);
+        var fileName = currentElement.attr("data");
 
         var requestAddress = "file?filename=" + fileName;
 
@@ -303,7 +304,12 @@ if (typeof jQuery != "undefined") {
             type: "delete",
             url: requestAddress,
             complete: function (data) {
-                document.location.reload(true);
+                if (JSON.parse(data.responseText).success) {
+                    const parentRow = currentElement.parents('tr')[0];
+                    if (parentRow) {
+                        parentRow.remove();
+                    }
+                }
             }
         });
     });
