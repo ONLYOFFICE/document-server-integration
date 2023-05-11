@@ -72,20 +72,41 @@
         };
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
-            var historyObj = <%- JSON.stringify(history) %> || null;
-
+            const fileName = "<%- file.name %>" || null;
+            const directUrl = "<%- file.directUrl %>" || null;
+            const data = {
+              fileName,
+              directUrl
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "historyObj");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+              const response = JSON.parse(xhr.responseText);
             docEditor.refreshHistory(  // show the document version history
-                {
-                    currentVersion: "<%- file.version %>",
-                    history: historyObj
-                });
+              {
+                currentVersion: response.countVersion,
+                history: response.history
+              });
+            }
         };
 
-        var onRequestHistoryData = function (data) {  // the user is trying to click the specific document version in the document version history
-            var version = data.data;
-            var historyData = <%- JSON.stringify(historyData) %> || null;
-
-            docEditor.setHistoryData(historyData[version-1]);  // send the link to the document for viewing the version history
+        var onRequestHistoryData = function (event) {  // the user is trying to click the specific document version in the document version history
+          const fileName = "<%- file.name %>" || null;
+          const directUrl = "<%- file.directUrl %>" || null;
+          const version = event.data;
+          const data = {
+            fileName,
+            directUrl
+          };
+          let xhr = new XMLHttpRequest();
+          xhr.open("POST", "historyObj");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send(JSON.stringify(data));
+          xhr.onload = function () {
+            docEditor.setHistoryData(JSON.parse(xhr.responseText).historyData[version-1]);  // send the link to the document for viewing the version history
+          }
         };
 
         var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
