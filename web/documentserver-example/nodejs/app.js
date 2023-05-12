@@ -1091,7 +1091,6 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
 app.post('/historyObj', (req, res) => {
   req.DocManager = new DocManager(req, res);
   const { fileName } = req.body;
-  const { requestType } = req.body || null;
   const { directUrl } = req.body || null;
   const historyObj = req.DocManager.getHistoryObject(fileName, null, directUrl);
 
