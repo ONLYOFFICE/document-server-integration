@@ -548,6 +548,40 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   result(data);
 });
 
+app.put('/restore', (req, res) => { // define a handler for restore file version
+  const { fileName } = req.body;
+  const result = {};
+  if (fileName) {
+    req.DocManager = new DocManager(req, res);
+    const userAddress = req.DocManager.curUserHostAddress();
+    const key = req.DocManager.getKey(fileName);
+    const { version } = req.body;
+    const filePath = req.DocManager.storagePath(fileName, userAddress);
+    const historyPath = req.DocManager.historyPath(fileName, userAddress);
+    const newVersion = req.DocManager.countVersion(historyPath) + 1;
+    const versionPath = `${historyPath}\\${version}\\prev${fileUtility.getFileExtension(fileName)}`;
+    const newVersionPath = `${historyPath}\\${newVersion}`;
+
+    if (fileSystem.existsSync(versionPath)) {
+      req.DocManager.createDirectory(newVersionPath);
+      req.DocManager.copyFile(filePath, `${newVersionPath}\\prev${fileUtility.getFileExtension(fileName)}`);
+      fileSystem.writeFileSync(`${newVersionPath}\\key.txt`, key);
+      req.DocManager.copyFile(versionPath, filePath);
+      result.success = true;
+    } else {
+      result.success = false;
+      result.error = 'Version path does not exists';
+    }
+  } else {
+    result.success = false;
+    result.error = 'Filename is empty';
+  }
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write(JSON.stringify(result));
+  res.end();
+});
+
 app.post('/track', async (req, res) => { // define a handler for tracking file changes
   req.DocManager = new DocManager(req, res);
 
