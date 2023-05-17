@@ -309,6 +309,10 @@ if (typeof jQuery != "undefined") {
                     if (parentRow) {
                         parentRow.remove();
                     }
+                    const remainingRows = jq('tr.tableRow');
+                    if (remainingRows.length === 0) {
+                        document.location.reload(true);
+                    }
                 }
             }
         });
