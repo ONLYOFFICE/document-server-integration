@@ -107,8 +107,8 @@
           const fileName = "<%- file.name %>" || null;
           const directUrl = "<%- file.directUrl %>" || null;
           const restoreData = {
-            version,
-            fileName,
+            version: version,
+            fileName: fileName,
           };
           let xhr = new XMLHttpRequest();
           xhr.open("PUT", "restore");
@@ -118,19 +118,19 @@
             const response = JSON.parse(xhr.responseText);
             if (response.success && !response.error) {
               const dataForHistory = {
-                fileName,
-                directUrl
+                fileName: fileName,
+                directUrl: directUrl
               };
               let xhr = new XMLHttpRequest();
               xhr.open("POST", "historyObj");
               xhr.setRequestHeader("Content-Type", "application/json");
               xhr.send(JSON.stringify(dataForHistory));
               xhr.onload = function () {
-                const response = JSON.parse(xhr.responseText);
+                historyObject = JSON.parse(xhr.responseText);
                 docEditor.refreshHistory(  // show the document version history
                   {
-                    currentVersion: response.countVersion,
-                    history: response.history
+                    currentVersion: historyObject.countVersion,
+                    history: historyObject.history
                   });
               }
             } else {
