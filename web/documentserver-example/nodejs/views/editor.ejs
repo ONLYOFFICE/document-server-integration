@@ -76,8 +76,8 @@
             const fileName = "<%- file.name %>" || null;
             const directUrl = "<%- file.directUrl %>" || null;
             const data = {
-              fileName,
-              directUrl
+              fileName: fileName,
+              directUrl: directUrl
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "historyObj");
