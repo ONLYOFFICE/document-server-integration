@@ -39,6 +39,7 @@
 
         var docEditor;
         var config;
+        let historyObject;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -83,30 +84,18 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
-              const response = JSON.parse(xhr.responseText);
-            docEditor.refreshHistory(  // show the document version history
-              {
-                currentVersion: response.countVersion,
-                history: response.history
-              });
+              historyObject = JSON.parse(xhr.responseText);
+              docEditor.refreshHistory(  // show the document version history
+                {
+                  currentVersion: historyObject.countVersion,
+                  history: historyObject.history
+                });
             }
         };
 
         var onRequestHistoryData = function (event) {  // the user is trying to click the specific document version in the document version history
-          const fileName = "<%- file.name %>" || null;
-          const directUrl = "<%- file.directUrl %>" || null;
           const version = event.data;
-          const data = {
-            fileName,
-            directUrl
-          };
-          let xhr = new XMLHttpRequest();
-          xhr.open("POST", "historyObj");
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send(JSON.stringify(data));
-          xhr.onload = function () {
-            docEditor.setHistoryData(JSON.parse(xhr.responseText).historyData[version-1]);  // send the link to the document for viewing the version history
-          }
+          docEditor.setHistoryData(historyObject.historyData[version-1]);  // send the link to the document for viewing the version history
         };
 
         var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
