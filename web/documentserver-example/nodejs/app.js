@@ -848,8 +848,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const fileName = fileUtility.getFileName(req.query.fileName);
     let { fileExt } = req.query;
-    const history = [];
-    const historyData = [];
     const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
     const userDirectUrl = req.query.directUrl === 'true';
@@ -927,76 +925,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
     const submitForm = mode === 'fillForms' && userid === 'uid-1' && !1;
 
-    let countVersion = 1;
-
-    const historyPath = req.DocManager.historyPath(fileName, userAddress);
-    let changes = null;
-    let keyVersion = key;
-
-    if (historyPath !== '') {
-      countVersion = req.DocManager.countVersion(historyPath) + 1; // get the number of file versions
-      for (let i = 1; i <= countVersion; i++) { // get keys to all the file versions
-        if (i < countVersion) {
-          const keyPath = req.DocManager.keyPath(fileName, userAddress, i);
-          if (!fileSystem.existsSync(keyPath)) continue;
-          keyVersion = `${fileSystem.readFileSync(keyPath)}`;
-        } else {
-          keyVersion = key;
-        }
-        // write all the file history information
-        history.push(req.DocManager.getHistory(fileName, changes, keyVersion, i));
-
-        const userUrl = i === countVersion ? directUrl : (`${req.DocManager.getServerUrl(false)}/history?fileName=`
-        + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`);
-        const historyD = {
-          fileType: fileExt.slice(1),
-          version: i,
-          key: keyVersion,
-          url: i === countVersion ? url : (`${req.DocManager.getServerUrl(true)}/history?fileName=`
-          + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
-          directUrl: !userDirectUrl ? null : userUrl,
-        };
-
-        // check if the path to the file with document versions differences exists
-        if (i > 1 && req.DocManager.existsSync(req.DocManager.diffPath(fileName, userAddress, i - 1))) {
-          historyD.previous = { // write information about previous file version
-            fileType: historyData[i - 2].fileType,
-            key: historyData[i - 2].key,
-            url: historyData[i - 2].url,
-            directUrl: !userDirectUrl ? null : historyData[i - 2].directUrl,
-          };
-          const changesUrl = `${req.DocManager.getServerUrl(true)}/history?fileName=`
-          + `${encodeURIComponent(fileName)}&file=diff.zip&ver=${i - 1}&useraddress=${userAddress}`;
-          historyD.changesUrl = changesUrl; // get the path to the diff.zip file and write it to the history object
-        }
-
-        historyData.push(historyD);
-
-        if (i < countVersion) {
-          // get the path to the file with document changes
-          const changesFile = req.DocManager.changesPath(fileName, userAddress, i);
-          changes = req.DocManager.getChanges(changesFile); // get changes made in the file
-        }
-      }
-    } else { // if history path is empty
-      // write the history information about the last file version
-      history.push(req.DocManager.getHistory(fileName, changes, keyVersion, countVersion));
-      historyData.push({
-        fileType: fileExt.slice(1),
-        version: countVersion,
-        key,
-        url,
-        directUrl: !userDirectUrl ? null : directUrl,
-      });
-    }
-
-    if (cfgSignatureEnable) {
-      for (let i = 0; i < historyData.length; i++) {
-        // sign token with given data using signature secret
-        historyData[i].token = jwt.sign(historyData[i], cfgSignatureSecret, { expiresIn: cfgSignatureSecretExpiresIn });
-      }
-    }
-
     // file config data
     const argss = {
       apiUrl: siteUrl + configServer.get('apiUrl'),
@@ -1006,7 +934,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         uri: url,
         directUrl: !userDirectUrl ? null : directUrl,
         uriUser: directUrl,
-        version: countVersion,
         created: new Date().toDateString(),
         favorite: user.favorite != null ? user.favorite : 'null',
       },
@@ -1049,8 +976,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
       },
-      history,
-      historyData,
       dataInsertImage: {
         fileType: 'png',
         url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
@@ -1127,6 +1052,27 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
   };
 
   documentService.commandRequest('meta', dockey, result, meta);
+});
+
+app.post('/historyObj', (req, res) => {
+  req.DocManager = new DocManager(req, res);
+  const { fileName } = req.body;
+  const { directUrl } = req.body || null;
+  const historyObj = req.DocManager.getHistoryObject(fileName, null, directUrl);
+
+  if (cfgSignatureEnable) {
+    for (let i = 0; i < historyObj.historyData.length; i++) {
+      // sign token with given data using signature secret
+      historyObj.historyData[i].token = jwt.sign(
+        historyObj.historyData[i],
+        cfgSignatureSecret,
+        { expiresIn: cfgSignatureSecretExpiresIn },
+      );
+    }
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write(JSON.stringify(historyObj));
+  res.end();
 });
 
 wopiApp.registerRoutes(app);
