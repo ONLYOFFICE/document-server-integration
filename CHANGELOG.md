@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: getting history by a separate request
 - nodejs: setUsers for region protection
 - si skin languages
 - fix "no" skin languages
