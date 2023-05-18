@@ -98,7 +98,7 @@ if (typeof jQuery != "undefined") {
             }
         });
     });
-    
+
     var timer = null;
     var checkConvert = function (filePass) {
         filePass = filePass ? filePass : null;
