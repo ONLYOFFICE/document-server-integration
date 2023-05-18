@@ -307,7 +307,7 @@ if (typeof jQuery != "undefined") {
                 if (JSON.parse(data.responseText).success) {
                     const parentRow = currentElement.parents('tr')[0];
                     if (parentRow) {
-                        parentRow.remove();
+                        jq(parentRow).remove();
                     }
                     const remainingRows = jq('tr.tableRow');
                     if (remainingRows.length === 0) {
