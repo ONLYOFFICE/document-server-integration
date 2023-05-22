@@ -102,6 +102,43 @@
             document.location.reload();
         };
 
+        var onRequestRestore = function (event) { // the user is trying to restore file version
+          const version = event.data.version;
+          const fileName = "<%- file.name %>" || null;
+          const directUrl = "<%- file.directUrl %>" || null;
+          const restoreData = {
+            version: version,
+            fileName: fileName,
+          };
+          let xhr = new XMLHttpRequest();
+          xhr.open("PUT", "restore");
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify(restoreData));
+          xhr.onload = function () {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success && !response.error) {
+              const dataForHistory = {
+                fileName: fileName,
+                directUrl: directUrl
+              };
+              let xhr = new XMLHttpRequest();
+              xhr.open("POST", "historyObj");
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.send(JSON.stringify(dataForHistory));
+              xhr.onload = function () {
+                historyObject = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(  // show the document version history
+                  {
+                    currentVersion: historyObject.countVersion,
+                    history: historyObject.history
+                  });
+              }
+            } else {
+              innerAlert(response.error);
+            }
+          }
+        }
+
         var onError = function (event) {  // an error or some other specific event occurs
             if (event)
                 innerAlert(event.data);
@@ -245,6 +282,7 @@
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
             config.events.onRequestHistoryClose = onRequestHistoryClose;
+            config.events.onRequestRestore = onRequestRestore;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
