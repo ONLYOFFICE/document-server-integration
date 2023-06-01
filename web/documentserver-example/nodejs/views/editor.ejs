@@ -39,6 +39,7 @@
 
         var docEditor;
         var config;
+        let historyObject;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -72,25 +73,71 @@
         };
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
-            var historyObj = <%- JSON.stringify(history) %> || null;
-
-            docEditor.refreshHistory(  // show the document version history
+            const fileName = "<%- file.name %>" || null;
+            const directUrl = "<%- file.directUrl %>" || null;
+            const data = {
+              fileName: fileName,
+              directUrl: directUrl
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "historyObj");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+              historyObject = JSON.parse(xhr.responseText);
+              docEditor.refreshHistory(  // show the document version history
                 {
-                    currentVersion: "<%- file.version %>",
-                    history: historyObj
+                  currentVersion: historyObject.countVersion,
+                  history: historyObject.history
                 });
+            }
         };
 
-        var onRequestHistoryData = function (data) {  // the user is trying to click the specific document version in the document version history
-            var version = data.data;
-            var historyData = <%- JSON.stringify(historyData) %> || null;
-
-            docEditor.setHistoryData(historyData[version-1]);  // send the link to the document for viewing the version history
+        var onRequestHistoryData = function (event) {  // the user is trying to click the specific document version in the document version history
+          const version = event.data;
+          docEditor.setHistoryData(historyObject.historyData[version-1]);  // send the link to the document for viewing the version history
         };
 
         var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
             document.location.reload();
         };
+
+        var onRequestRestore = function (event) { // the user is trying to restore file version
+          const version = event.data.version;
+          const fileName = "<%- file.name %>" || null;
+          const directUrl = "<%- file.directUrl %>" || null;
+          const restoreData = {
+            version: version,
+            fileName: fileName,
+          };
+          let xhr = new XMLHttpRequest();
+          xhr.open("PUT", "restore");
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify(restoreData));
+          xhr.onload = function () {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success && !response.error) {
+              const dataForHistory = {
+                fileName: fileName,
+                directUrl: directUrl
+              };
+              let xhr = new XMLHttpRequest();
+              xhr.open("POST", "historyObj");
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.send(JSON.stringify(dataForHistory));
+              xhr.onload = function () {
+                historyObject = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(  // show the document version history
+                  {
+                    currentVersion: historyObject.countVersion,
+                    history: historyObject.history
+                  });
+              }
+            } else {
+              innerAlert(response.error);
+            }
+          }
+        }
 
         var onError = function (event) {  // an error or some other specific event occurs
             if (event)
@@ -139,9 +186,22 @@
             docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {
-            docEditor.setUsers({  // set a list of users to mention in the comments
-                "users": <%- JSON.stringify(usersForMentions) %>
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "protect":
+                    var users = <%- JSON.stringify(usersForProtect) %>;
+                    break;
+                default:
+                    users = <%- JSON.stringify(usersForMentions) %>;
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
             });
         };
 
@@ -222,6 +282,7 @@
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
             config.events.onRequestHistoryClose = onRequestHistoryClose;
+            config.events.onRequestRestore = onRequestRestore;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;

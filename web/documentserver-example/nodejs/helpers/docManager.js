@@ -438,6 +438,78 @@ DocManager.prototype.countVersion = function countVersion(directory) {
   return i;
 };
 
+DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, userAddr = null, userDirectUrl = null) {
+  const userAddress = userAddr || this.curUserHostAddress();
+  const historyPath = this.historyPath(fileName, userAddress);
+  const key = this.getKey(fileName);
+  const directUrl = this.getDownloadUrl(fileName);
+  const fileExt = fileUtility.getFileExtension(fileName);
+  const url = this.getDownloadUrl(fileName, true);
+  const history = [];
+  const historyData = [];
+  let countVersion = 1;
+  let changes = null;
+  let keyVersion = key;
+
+  if (historyPath !== '') {
+    countVersion = this.countVersion(historyPath) + 1; // get the number of file versions
+    for (let i = 1; i <= countVersion; i++) { // get keys to all the file versions
+      if (i < countVersion) {
+        const keyPath = this.keyPath(fileName, userAddress, i);
+        if (!fileSystem.existsSync(keyPath)) continue;
+        keyVersion = `${fileSystem.readFileSync(keyPath)}`;
+      } else {
+        keyVersion = key;
+      }
+      // write all the file history information
+      history.push(this.getHistory(fileName, changes, keyVersion, i));
+
+      const userUrl = i === countVersion ? directUrl : (`${this.getServerUrl(false)}/history?fileName=`
+        + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`);
+      const historyD = {
+        fileType: fileExt.slice(1),
+        version: i,
+        key: keyVersion,
+        url: i === countVersion ? url : (`${this.getServerUrl(true)}/history?fileName=`
+          + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
+        directUrl: !userDirectUrl ? null : userUrl,
+      };
+
+      // check if the path to the file with document versions differences exists
+      if (i > 1 && this.existsSync(this.diffPath(fileName, userAddress, i - 1))) {
+        historyD.previous = { // write information about previous file version
+          fileType: historyData[i - 2].fileType,
+          key: historyData[i - 2].key,
+          url: historyData[i - 2].url,
+          directUrl: !userDirectUrl ? null : historyData[i - 2].directUrl,
+        };
+        const changesUrl = `${this.getServerUrl(true)}/history?fileName=`
+          + `${encodeURIComponent(fileName)}&file=diff.zip&ver=${i - 1}&useraddress=${userAddress}`;
+        historyD.changesUrl = changesUrl; // get the path to the diff.zip file and write it to the history object
+      }
+
+      historyData.push(historyD);
+
+      if (i < countVersion) {
+        // get the path to the file with document changes
+        const changesFile = this.changesPath(fileName, userAddress, i);
+        changes = this.getChanges(changesFile); // get changes made in the file
+      }
+    }
+  } else { // if history path is empty
+    // write the history information about the last file version
+    history.push(this.getHistory(fileName, changes, keyVersion, countVersion));
+    historyData.push({
+      fileType: fileExt.slice(1),
+      version: countVersion,
+      key,
+      url,
+      directUrl: !userDirectUrl ? null : directUrl,
+    });
+  }
+
+  return { history, historyData, countVersion };
+};
 // get file history information
 DocManager.prototype.getHistory = function getHistory(fileName, content, keyVersion, version) {
   let oldVersion = false;
