@@ -16,7 +16,8 @@
  *
  */
 
-const supportedFormats = require("../public/assets/document-formats/onlyoffice-docs-formats.json")
+const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json');
+
 const fileUtility = {};
 
 // get file name from the given url
@@ -52,8 +53,8 @@ fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
 fileUtility.getFileType = function getFileType(url) {
   const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
 
-  for(let format of supportedFormats) {
-    if (format.name === ext) return format.type;
+  for (let i = 0; i < supportedFormats.length; i++) {
+    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
   }
 
   return fileUtility.fileType.word; // the default file type is word
@@ -67,28 +68,33 @@ fileUtility.fileType = {
 
 fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
   return supportedFormats.reduce((extensions, format) => [...extensions, format.name], []);
-}
+};
 
 fileUtility.getViewExtensions = function getViewExtensions() {
-  return supportedFormats.filter((format) => format.actions.includes('view')).reduce((extensions, format) => [...extensions, format.name], []);
-}
+  return supportedFormats.filter(
+    (format) => format.actions.includes('view'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 fileUtility.getEditExtensions = function getEditExtensions() {
-  return supportedFormats.filter((format) => format.actions.includes('edit')).reduce((extensions, format) => [...extensions, format.name], []);
-}
+  return supportedFormats.filter(
+    (format) => format.actions.includes('edit'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 fileUtility.getFillExtensions = function getFillExtensions() {
-    return supportedFormats.filter((format) => format.actions.includes('fill')).reduce((extensions, format) => [...extensions, format.name], []);
-}
+  return supportedFormats.filter(
+    (format) => format.actions.includes('fill'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 fileUtility.getConvertExtensions = function getConvertExtensions() {
-    return supportedFormats.filter(
-        (format) => 
-            format.type === "word" && format.convert.includes('docx')
-            || format.type === "cell" && format.convert.includes('xlsx')
-            || format.type === "slide" && format.convert.includes('pptx')
-    ).reduce((extensions, format) => [...extensions, format.name], []);
-}
+  return supportedFormats.filter(
+    (format) => (format.type === 'word' && format.convert.includes('docx'))
+            || (format.type === 'cell' && format.convert.includes('xlsx'))
+            || (format.type === 'slide' && format.convert.includes('pptx')),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 // get url parameters
 // eslint-disable-next-line no-unused-vars

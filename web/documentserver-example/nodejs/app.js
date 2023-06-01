@@ -326,7 +326,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const filePass = req.body.filePass ? req.body.filePass : null;
   const lang = req.body.lang ? req.body.lang : null;
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
-  const fileExt = fileUtility.getFileExtension(fileName,true);
+  const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
   const response = res;
 
@@ -1050,7 +1050,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       dataCompareFile: {
         fileType: 'docx',
         url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
+        directUrl: !userDirectUrl
+          ? null
+          : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
       dataMailMergeRecipients: {
         fileType: 'csv',
