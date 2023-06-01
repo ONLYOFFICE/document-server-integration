@@ -36,7 +36,9 @@ final class ConfigManager
 
     private function getConfigurationFromatsJson(): bool|string
     {
-        return file_exists("./assets/document-formats/onlyoffice-docs-formats.json") ? file_get_contents("./assets/document-formats/onlyoffice-docs-formats.json") : false;
+        return file_exists("./assets/document-formats/onlyoffice-docs-formats.json")
+            ? file_get_contents("./assets/document-formats/onlyoffice-docs-formats.json")
+            : false;
     }
 
     /**

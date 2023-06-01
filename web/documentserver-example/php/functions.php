@@ -889,7 +889,8 @@ function getResponseUri($document_response, &$response_uri)
 function tryGetDefaultByType($createExt, $user)
 {
     $demoName = (isset($_GET["sample"]) ? "sample." : "new.") . $createExt;
-    $demoPath = "assets" . DIRECTORY_SEPARATOR . "document-templates" . DIRECTORY_SEPARATOR . (isset($_GET["sample"]) ? "sample" : "new") . DIRECTORY_SEPARATOR;
+    $demoPath = "assets" . DIRECTORY_SEPARATOR . "document-templates" . DIRECTORY_SEPARATOR
+        . (isset($_GET["sample"]) ? "sample" : "new") . DIRECTORY_SEPARATOR;
     $demoFilename = GetCorrectName($demoName);
 
     if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
