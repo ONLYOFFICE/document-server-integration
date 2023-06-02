@@ -343,11 +343,11 @@ app.post('/convert', (req, res) => { // define a handler for converting files
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
-    if (result.filename !== null) result.filename = filename;
+    if (filename !== null) result.filename = filename;
 
-    if (result.filenameep !== null) result.step = step;
+    if (step !== null) result.step = step;
 
-    if (result.error !== null) result.error = error;
+    if (error !== null) result.error = error;
 
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(result));
