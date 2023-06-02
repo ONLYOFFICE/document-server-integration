@@ -28,6 +28,8 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.version = "1.5.1"
 
+    Rails.application.config.hosts << /.*/
+
     Rails.configuration.fileSizeMax = ENV["FILE_SIZE_MAX"] ? ENV["FILE_SIZE_MAX"] : 5242880
     Rails.configuration.storagePath = ENV["STORAGE_PATH"] ? ENV["STORAGE_PATH"] : "app_data"
     Rails.configuration.timeout = ENV["TIMEOUT"] ? ENV["TIMEOUT"] : 120
