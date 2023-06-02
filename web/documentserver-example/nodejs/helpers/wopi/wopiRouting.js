@@ -25,7 +25,8 @@ const fileUtility = require('../fileUtility');
 const users = require('../users');
 
 const configServer = config.get('server');
-const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
+// the path to the editors installation
+const siteUrl = process.env.SITE_URL ? process.env.SITE_URL : configServer.get('siteUrl');
 
 const getCustomWopiParams = function getCustomWopiParams(query) {
   let tokenParams = '';

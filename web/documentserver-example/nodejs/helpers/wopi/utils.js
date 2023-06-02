@@ -23,7 +23,8 @@ const xmlParser = require('fast-xml-parser');
 const he = require('he');
 
 const configServer = config.get('server');
-const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
+// the path to the editors installation
+const siteUrl = process.env.SITE_URL ? process.env.SITE_URL : configServer.get('siteUrl');
 
 let cache = null;
 

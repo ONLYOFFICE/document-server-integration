@@ -35,14 +35,15 @@ const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
 
 const configServer = config.get('server');
-const siteUrl = configServer.get('siteUrl');
+const siteUrl = process.env.SITE_URL ? process.env.SITE_URL : configServer.get('siteUrl');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
 const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
 const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
-const cfgSignatureSecret = configServer.get('token.secret');
+const cfgSignatureSecret = process.env.TOKEN_SECRET ? process.env.TOKEN_SECRET : configServer.get('token.secret');
+const maxFileSize = process.env.MAX_FILE_SIZE ? process.env.MAX_FILE_SIZE : configServer.get('maxFileSize');
 const verifyPeerOff = configServer.get('verify_peer_off');
 const plugins = config.get('plugins');
 
@@ -231,7 +232,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     file.name = req.DocManager.getCorrectName(file.name);
 
     // check if the file size exceeds the maximum file size
-    if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
+    if (maxFileSize < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.write('{ "error": "File size is incorrect"}');
@@ -289,7 +290,7 @@ app.post('/create', (req, res) => {
 
     urllib.request(fileUrl, { method: 'GET' }, (err, data) => {
       // check if the file size exceeds the maximum file size
-      if (configServer.get('maxFileSize') < data.length || data.length <= 0) {
+      if (maxFileSize < data.length || data.length <= 0) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File size is incorrect' }));
         res.end();

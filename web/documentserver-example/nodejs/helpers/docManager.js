@@ -22,6 +22,7 @@ const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const documentService = require('./documentService');
 
+const exampleUrl = process.env.EXAMPLE_URL ? process.env.EXAMPLE_URL : configServer.get('exampleUrl');
 const storageConfigFolder = configServer.get('storageFolder');
 
 const DocManager = function DocManager(req, res) {
@@ -178,8 +179,7 @@ DocManager.prototype.getFileData = function getFileData(fileName, userAddress) {
 
 // get server url
 DocManager.prototype.getServerUrl = function getServerUrl(forDocumentServer) {
-  return (forDocumentServer && !!configServer.get('exampleUrl'))
-    ? configServer.get('exampleUrl') : this.getServerPath();
+  return (forDocumentServer && !!exampleUrl) ? exampleUrl : this.getServerPath();
 };
 
 // get server address from the request

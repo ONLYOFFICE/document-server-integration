@@ -24,13 +24,14 @@ const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
 
-const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
+// the path to the editors installation
+const siteUrl = process.env.SITE_URL ? process.env.SITE_URL : configServer.get('siteUrl');
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
 const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
 const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
-const cfgSignatureSecret = configServer.get('token.secret');
+const cfgSignatureSecret = process.env.TOKEN_SECRET ? process.env.TOKEN_SECRET : configServer.get('token.secret');
 const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
 const documentService = {};
