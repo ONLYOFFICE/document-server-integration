@@ -78,7 +78,7 @@ fileUtility.getViewExtensions = function getViewExtensions() {
 
 fileUtility.getEditExtensions = function getEditExtensions() {
   return supportedFormats.filter(
-    (format) => format.actions.includes('edit'),
+    (format) => format.actions.includes('edit') || format.actions.includes('lossy-edit'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
 
