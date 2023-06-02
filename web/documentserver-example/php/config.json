@@ -2,7 +2,7 @@
   "version": "1.5.1",
 
   "fileSizeMax": 5242880,
-  "storagePath": "",
+  "storagePath": "app_data",
   "alone": false,
 
   "docServFillforms": [".docx", ".oform"],

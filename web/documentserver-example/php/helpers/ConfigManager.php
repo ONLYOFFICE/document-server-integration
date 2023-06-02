@@ -25,6 +25,39 @@ final class ConfigManager
     public function __construct()
     {
         $this->config = json_decode($this->getConfigurationJson());
+        if ($this->config === null) {
+            return;
+        }
+
+        $fileSizeMax = getenv("FILE_SIZE_MAX");
+        if ($fileSizeMax !== false) {
+            $this->config->fileSizeMax = $fileSizeMax;
+        }
+
+        $storagePath = getenv("STORAGE_PATH");
+        if ($storagePath !== false) {
+            $this->config->storagePath = $storagePath;
+        }
+
+        $docServTimeout = getenv("DOC_SERV_TIMEOUT");
+        if ($docServTimeout !== false) {
+            $this->config->docServTimeout = $docServTimeout;
+        }
+
+        $docServSiteUrl = getenv("DOC_SERV_SITE_URL");
+        if ($docServSiteUrl !== false) {
+            $this->config->docServSiteUrl = $docServSiteUrl;
+        }
+
+        $docServJwtSecret = getenv("DOC_SERV_JWT_SECRET");
+        if ($docServJwtSecret !== false) {
+            $this->config->docServJwtSecret = $docServJwtSecret;
+        }
+
+        $exampleUrl = getenv("EXAMPLE_URL");
+        if ($exampleUrl !== false) {
+            $this->config->exampleUrl = $exampleUrl;
+        }
     }
 
     private function getConfigurationJson(): bool|string
