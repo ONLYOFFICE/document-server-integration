@@ -87,7 +87,7 @@ final class ConfigManager
         return array_reduce(
             $this->configFormats,
             function ($extensions, $format) {
-                if (in_array("edit", $format->actions)) {
+                if (in_array("edit", $format->actions) || in_array("lossy-edit", $format->actions)) {
                     $extensions[] = $format->name;
                 }
                 return $extensions;
