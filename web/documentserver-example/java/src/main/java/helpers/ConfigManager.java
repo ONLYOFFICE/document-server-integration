@@ -37,6 +37,36 @@ public final class ConfigManager {
             InputStream stream = Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream("settings.properties");
             properties.load(stream);
+
+            String fileSizeMax = System.getenv("FILESIZE_MAX");
+            if (fileSizeMax != null) {
+                properties.setProperty("filesize-max", fileSizeMax);
+            }
+
+            String storageFolder = System.getenv("STORAGE_FOLDER");
+            if (storageFolder != null) {
+                properties.setProperty("storage-folder", storageFolder);
+            }
+
+            String docServiceTimeout = System.getenv("DOCSERVICE_TIMEOUT");
+            if (docServiceTimeout != null) {
+                properties.setProperty("files.docservice.timeout", docServiceTimeout);
+            }
+
+            String docServiceSiteURL = System.getenv("DOCSERVICE_SITE_URL");
+            if (docServiceSiteURL != null) {
+                properties.setProperty("files.docservice.url.site", docServiceSiteURL);
+            }
+
+            String docServiceExampleURL = System.getenv("DOCSERVICE_EXAMPLE_URL");
+            if (docServiceExampleURL != null) {
+                properties.setProperty("files.docservice.url.example", docServiceExampleURL);
+            }
+
+            String docServiceSecret = System.getenv("DOCSERVICE_SECRET");
+            if (docServiceSecret != null) {
+                properties.setProperty("files.docservice.secret", docServiceSecret);
+            }
         } catch (Exception ex) {
             properties = null;
         }
