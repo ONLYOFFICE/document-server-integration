@@ -119,7 +119,7 @@ namespace OnlineEditorsExample
                         newFileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
                     }
                     else
-                    { 
+                    {
                         downloadUri = newFileUri;
                     }
                 }
@@ -272,8 +272,12 @@ namespace OnlineEditorsExample
         public static void commandRequest(string method, string key, object meta = null)
         {
             _Default.VerifySSL();
-            
-            string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
+
+            var customDocServiceSiteURL = Environment.GetEnvironmentVariable("DOCSERVICE_SITE_URL");
+            var defaultDocServiceSiteURL = WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty;
+            var docServiceTimeout = customDocServiceSiteURL ?? defaultDocServiceSiteURL;
+
+            string documentCommandUrl = docServiceTimeout + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
             request.Method = "POST";

@@ -40,9 +40,15 @@ namespace ASC.Api.DocumentConverter
         /// </summary>
         static ServiceConverter()
         {
-            DocumentConverterUrl = (WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? "") + (WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "");
+            var customDocServiceSiteURL = Environment.GetEnvironmentVariable("DOCSERVICE_SITE_URL");
+            var defaultDocServiceSiteURL = WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty;
+            var docServiceTimeout = customDocServiceSiteURL ?? defaultDocServiceSiteURL;
+            DocumentConverterUrl = docServiceTimeout + (WebConfigurationManager.AppSettings["files.docservice.url.converter"] ?? "");
 
-            Int32.TryParse(WebConfigurationManager.AppSettings["files.docservice.timeout"], out ConvertTimeout);
+            var customDocServiceTimeout = Environment.GetEnvironmentVariable("DOCSERVICE_TIMEOUT");
+            var defaultDocServiceTimeout = WebConfigurationManager.AppSettings["files.docservice.timeout"];
+            var docServiceTimeout = customDocServiceTimeout ?? defaultDocServiceTimeout;
+            Int32.TryParse(docServiceTimeout, out ConvertTimeout);
             ConvertTimeout = ConvertTimeout > 0 ? ConvertTimeout : 120000;
         }
 
@@ -169,7 +175,7 @@ namespace ASC.Api.DocumentConverter
         /// <returns>Supported key</returns>
         public static string GenerateRevisionId(string expectedKey)
         {
-            // if the expected key length is greater than 20, it is hashed and a fixed length value is stored in the string format 
+            // if the expected key length is greater than 20, it is hashed and a fixed length value is stored in the string format
             if (expectedKey.Length > 20) expectedKey = expectedKey.GetHashCode().ToString();
             var key = Regex.Replace(expectedKey, "[^0-9-.a-zA-Z_=]", "_");
             return key.Substring(key.Length - Math.Min(key.Length, 20));  // the resulting key length is 20 or less
@@ -178,7 +184,7 @@ namespace ASC.Api.DocumentConverter
         #endregion
 
         #region private method
-        
+
         /// <summary>
         /// Processing document received from the editing service
         /// </summary>
@@ -199,7 +205,7 @@ namespace ASC.Api.DocumentConverter
             var isEndConvert = responseFromService.endConvert;
 
             int resultPercent;
-            responseData = new Dictionary<string, string>(); 
+            responseData = new Dictionary<string, string>();
             var responseUri = string.Empty;
             var responseFileType = string.Empty;
             if (isEndConvert)  // if the conversion is completed

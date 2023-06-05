@@ -78,12 +78,13 @@ namespace OnlineEditorsExample
         {
             get
             {
-                return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? 
-                    WebConfigurationManager.AppSettings["storage-path"] + "/"
-                    :
+                var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+                var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+                var storagePath = customStoragePath ?? defaultStoragePath;
+                return Path.IsPathRooted(storagePath) ? storagePath + "/" :
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + WebConfigurationManager.AppSettings["storage-path"]
+                    + storagePath
                     + CurUserHostAddress(null) + "/";
             }
         }
@@ -100,8 +101,11 @@ namespace OnlineEditorsExample
         {
             get
             {
+                var customFileSizeMax = Environment.GetEnvironmentVariable("FILESIZE_MAX");
+                var defaultFileSizeMax = WebConfigurationManager.AppSettings["filesize-max"];
+                var fileSizeMax = customFileSizeMax ?? defaultFileSizeMax;
                 long size;
-                long.TryParse(WebConfigurationManager.AppSettings["filesize-max"], out size);
+                long.TryParse(fileSizeMax, out size);
                 return size > 0 ? size : 5*1024*1024;
             }
         }
@@ -117,7 +121,7 @@ namespace OnlineEditorsExample
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
         }
-        
+
         public static List<string> FillFormsExts
         {
             get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
@@ -146,14 +150,17 @@ namespace OnlineEditorsExample
         // get the storage path of the given file
         public static string StoragePath(string fileName, string userAddress)
         {
+            var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+            var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+            var storagePath = customStoragePath ?? defaultStoragePath;
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (Path.IsPathRooted(storagePath))
             {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                directory = storagePath + "\\";
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+                directory = HttpRuntime.AppDomainAppPath + storagePath + CurUserHostAddress(userAddress) + "\\";
             }
 
             if (!Directory.Exists(directory))
@@ -166,14 +173,17 @@ namespace OnlineEditorsExample
         // get the path to the history file version
         public static string HistoryPath(string fileName, string userAddress, string version, string file)
         {
+            var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+            var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+            var storagePath = customStoragePath ?? defaultStoragePath;
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (Path.IsPathRooted(storagePath))
             {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                directory = storagePath + "\\";
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+                directory = HttpRuntime.AppDomainAppPath + storagePath + CurUserHostAddress(userAddress) + "\\";
             }
             var filepath = directory + Path.GetFileName(fileName) + "-hist" + "\\" + version + "\\" + file;
             return filepath;
@@ -182,16 +192,19 @@ namespace OnlineEditorsExample
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
+            var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+            var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+            var storagePath = customStoragePath ?? defaultStoragePath;
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (Path.IsPathRooted(storagePath))
             {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                directory = storagePath + "\\";
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+                directory = HttpRuntime.AppDomainAppPath + storagePath + CurUserHostAddress(userAddress) + "\\";
             }
-            
+
             if (!Directory.Exists(directory))  // the directory with host address doesn't exist
             {
                 return "";
@@ -264,9 +277,12 @@ namespace OnlineEditorsExample
         // get server url
         public static string GetServerUrl(Boolean forDocumentServer)
         {
-            if (forDocumentServer && !WebConfigurationManager.AppSettings["files.docservice.url.example"].Equals(""))
+            var customDocServiceExampleURL = Environment.GetEnvironmentVariable("DOCSERVICE_EXAMPLE_URL");
+            var defaultDocServiceExampleURL = WebConfigurationManager.AppSettings["files.docservice.url.example"] ?? string.Empty;
+            var docServiceExampleURL = customDocServiceExampleURL ?? defaultDocServiceExampleURL;
+            if (forDocumentServer && !docServiceExampleURL.Equals(""))
             {
-                return WebConfigurationManager.AppSettings["files.docservice.url.example"];
+                return docServiceExampleURL;
             }
             else
             {
@@ -291,7 +307,16 @@ namespace OnlineEditorsExample
             return "word";  // the default document type is word
         }
 
-        protected string UrlPreloadScripts = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
+        protected string UrlPreloadScripts
+        {
+            get
+            {
+                var customDocServiceSiteURL = Environment.GetEnvironmentVariable("DOCSERVICE_SITE_URL");
+                var defaultDocServiceSiteURL = WebConfigurationManager.AppSettings["files.docservice.url.site"] ?? string.Empty;
+                var docServiceTimeout = customDocServiceSiteURL ?? defaultDocServiceSiteURL;
+                return docServiceTimeout + WebConfigurationManager.AppSettings["files.docservice.url.preloader"];
+            }
+        }
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -413,20 +438,20 @@ namespace OnlineEditorsExample
             {
                 return "{\"error\":\"File type is not supported\"}";
             }
-            
+
             var req = (HttpWebRequest)WebRequest.Create(fileUrl);
-            
+
             VerifySSL();
-            
+
             using (var stream = req.GetResponse().GetResponseStream())
             {
-                
+
                 if (stream == null || req.GetResponse().ContentLength <= 0 || req.GetResponse().ContentLength > MaxFileSize)
                 {
                     return "{\"error\": \"File size is incorrect\"}";
                 }
                 const int bufferSize = 4096;
-            
+
                 using (var fs = File.Open(StoragePath(fileName, null), FileMode.Create))
                 {
                     var buffer = new byte[bufferSize];
@@ -437,7 +462,7 @@ namespace OnlineEditorsExample
                     }
                 }
             }
-                
+
             var id = context.Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             DocEditor.CreateMeta(fileName, user.id, user.name, null);
@@ -553,16 +578,19 @@ namespace OnlineEditorsExample
         // get all the stored files from the folder
         protected static List<FileInfo> GetStoredFiles()
         {
+            var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+            var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+            var storagePath = customStoragePath ?? defaultStoragePath;
             var directory = "";
-            if (Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            if (Path.IsPathRooted(storagePath))
             {
-                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+                directory = storagePath + "\\";
             }
             else
             {
-                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+                directory = HttpRuntime.AppDomainAppPath + storagePath + CurUserHostAddress(null) + "\\";
             }
-            
+
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);  // read the user host directory contents
@@ -615,13 +643,13 @@ namespace OnlineEditorsExample
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             }
         }
-        
+
         public static Dictionary<string, string> GetLanguages()
         {
             var languages = new Dictionary<string, string>();
             String[] couples = (WebConfigurationManager.AppSettings["files.docservice.languages"] ?? "").Split('|');
             foreach (string couple in couples)
-            {   
+            {
                 String[] tmp = couple.Split(':');
                 languages.Add(tmp[0],tmp[1]);
             }

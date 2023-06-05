@@ -33,7 +33,9 @@ namespace OnlineEditorsExample
 
         static JwtManager()
         {
-            Secret = WebConfigurationManager.AppSettings["files.docservice.secret"] ?? "";  // get token secret from the config parameters
+            var customDocServiceSecret = Environment.GetEnvironmentVariable("DOCSERVICE_SECRET");
+            var defaultDocServiceSecret = WebConfigurationManager.AppSettings["files.docservice.secret"] ?? string.Empty;
+            Secret = customDocServiceSecret ?? defaultDocServiceSecret;
             Enabled = !string.IsNullOrEmpty(Secret);  // check if the token is enabled
             SignatureUseForRequest = bool.Parse(WebConfigurationManager.AppSettings["files.docservice.token.useforrequest"]);
         }

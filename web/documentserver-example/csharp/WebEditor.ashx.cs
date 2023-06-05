@@ -281,7 +281,12 @@ namespace OnlineEditorsExample
         {
             try
             {
-                var fileName = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? context.Request["fileName"] : Path.GetFileName(context.Request["fileName"]);
+                var customStoragePath = Environment.GetEnvironmentVariable("STORAGE_PATH");
+                var defaultStoragePath = WebConfigurationManager.AppSettings["storage-path"]);
+                var storagePath = customStoragePath ?? defaultStoragePath;
+                var fileName = Path.IsPathRooted(storagePath)
+                    ? context.Request["fileName"]
+                    : Path.GetFileName(context.Request["fileName"]);
                 var userAddress = Path.GetFileName(context.Request["userAddress"]);
                 var isEmbedded = context.Request["dmode"];
 
