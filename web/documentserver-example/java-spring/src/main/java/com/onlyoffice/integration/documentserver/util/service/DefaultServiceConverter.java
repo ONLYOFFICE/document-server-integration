@@ -53,12 +53,16 @@ import static com.onlyoffice.integration.documentserver.util.Constants.MAX_KEY_L
 public class DefaultServiceConverter implements ServiceConverter {
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
+
     @Value("${files.docservice.url.site}")
-    private String docServiceUrl;
+    private String defaultDocServiceSiteURL;
+
     @Value("${files.docservice.url.converter}")
     private String docServiceUrlConverter;
+
     @Value("${files.docservice.timeout}")
-    private String docserviceTimeout;
+    private String defaultDocServiceTimeout;
+
     private int convertTimeout;
 
     @Autowired
@@ -70,8 +74,25 @@ public class DefaultServiceConverter implements ServiceConverter {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private String getDocServiceSiteURL() {
+        var customDocServiceSiteURL = System.getenv("DOCSERVICE_SITE_URL");
+        if (customDocServiceSiteURL == null) {
+            return defaultDocServiceSiteURL;
+        }
+        return customDocServiceSiteURL;
+    }
+
+    private String getDocServiceTimeout() {
+        var customDocServiceTimeout = System.getenv("DOCSERVICE_TIMEOUT");
+        if (customDocServiceTimeout == null) {
+            return defaultDocServiceTimeout;
+        }
+        return customDocServiceTimeout;
+    }
+
     @PostConstruct
     public void init() {
+        String docserviceTimeout = getDocServiceTimeout();
         int timeout = Integer.parseInt(docserviceTimeout);  // parse the dcoument service timeout value
         convertTimeout = timeout > 0 ? timeout : CONVERT_TIMEOUT_MS;
     }
@@ -87,6 +108,7 @@ public class DefaultServiceConverter implements ServiceConverter {
 
         byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);  // convert body string into bytes
         try {
+            String docServiceUrl = getDocServiceSiteURL();
             // set the request parameters
             url = new URL(docServiceUrl + docServiceUrlConverter);
             connection = (java.net.HttpURLConnection) url.openConnection();

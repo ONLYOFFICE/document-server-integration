@@ -65,7 +65,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     private String storageFolder;
 
     @Value("${files.docservice.url.example}")
-    private String docserviceUrlExample;
+    private String defaultDocServiceExampleURL;
 
     @Value("${files.docservice.history.postfix}")
     private String historyPostfix;
@@ -75,6 +75,14 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
     @Autowired
     private HttpServletRequest request;
+
+    private String getDocServiceExampleURL() {
+        var customDocServiceExampleURL = System.getenv("DOCSERVICE_EXAMPLE_URL");
+        if (customDocServiceExampleURL == null) {
+            return defaultDocServiceExampleURL;
+        }
+        return customDocServiceExampleURL;
+    }
 
     /*
         This Storage configuration method should be called whenever a new storage folder is required
@@ -350,6 +358,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
     // get the server URL
     public String getServerUrl(final Boolean forDocumentServer) {
+        String docserviceUrlExample = getDocServiceExampleURL();
         if (forDocumentServer && !docserviceUrlExample.equals("")) {
             return docserviceUrlExample;
         } else {

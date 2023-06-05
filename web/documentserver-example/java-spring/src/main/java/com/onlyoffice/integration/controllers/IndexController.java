@@ -62,7 +62,7 @@ public class IndexController {
     private UserServices userService;
 
     @Value("${files.docservice.url.site}")
-    private String docserviceSite;
+    private String defaultDocServiceSiteURL;
 
     @Value("${files.docservice.url.preloader}")
     private String docservicePreloader;
@@ -75,6 +75,14 @@ public class IndexController {
 
     @Value("${files.docservice.languages}")
     private String langs;
+
+    private String getDocServiceSiteURL() {
+        var customDocServiceSiteURL = System.getenv("DOCSERVICE_SITE_URL");
+        if (customDocServiceSiteURL == null) {
+            return defaultDocServiceSiteURL;
+        }
+        return customDocServiceSiteURL;
+    }
 
     @GetMapping("${url.index}")
     public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
@@ -119,7 +127,11 @@ public class IndexController {
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
+
+        String docserviceSite = getDocServiceSiteURL();
+
         model.addAttribute("datadocs", docserviceSite + docservicePreloader);
+
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);

@@ -36,17 +36,29 @@ import java.util.Map;
 @Component
 public class DefaultJwtManager implements JwtManager {
     @Value("${files.docservice.secret}")
-    private String tokenSecret;
+    private String defaultDocServiceSecret;
+
     @Value("${files.docservice.token-use-for-request}")
     private String tokenUseForRequest;
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private JSONParser parser;
+
+    private String getDocServiceSecret() {
+        var customDocServiceSecret = System.getenv("DOCSERVICE_SECRET");
+        if (customDocServiceSecret == null) {
+            return defaultDocServiceSecret;
+        }
+        return customDocServiceSecret;
+    }
 
     // create document token
     public String createToken(final Map<String, Object> payloadClaims) {
         try {
+            String tokenSecret = getDocServiceSecret();
             // build a HMAC signer using a SHA-256 hash
             Signer signer = HMACSigner.newSHA256Signer(tokenSecret);
             JWT jwt = new JWT();
@@ -61,6 +73,7 @@ public class DefaultJwtManager implements JwtManager {
 
     // check if the token is enabled
     public boolean tokenEnabled() {
+        String tokenSecret = getDocServiceSecret();
         return tokenSecret != null && !tokenSecret.isEmpty();
     }
 
@@ -71,6 +84,7 @@ public class DefaultJwtManager implements JwtManager {
     // read document token
     public JWT readToken(final String token) {
         try {
+            String tokenSecret = getDocServiceSecret();
             // build a HMAC verifier using the token secret
             Verifier verifier = HMACVerifier.newVerifier(tokenSecret);
 

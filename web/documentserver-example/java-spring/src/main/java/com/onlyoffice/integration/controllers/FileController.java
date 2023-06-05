@@ -75,10 +75,7 @@ public class FileController {
     private String documentJwtHeader;
 
     @Value("${filesize-max}")
-    private String filesizeMax;
-
-    @Value("${files.docservice.url.site}")
-    private String docserviceUrlSite;
+    private String defaultFilesizeMax;
 
     @Value("${files.docservice.url.command}")
     private String docserviceUrlCommand;
@@ -103,6 +100,14 @@ public class FileController {
     private ServiceConverter serviceConverter;
     @Autowired
     private CallbackManager callbackManager;
+
+    private String getFileSizeMax() {
+        var customFileSizeMax = System.getenv("FILESIZE_MAX");
+        if (customFileSizeMax == null) {
+            return defaultFilesizeMax;
+        }
+        return customFileSizeMax;
+    }
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -413,6 +418,8 @@ public class FileController {
             URL url = new URL(saveAsFileUrl);
             java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
             InputStream stream = connection.getInputStream();
+
+            String filesizeMax = getFileSizeMax();
 
             if (Integer.parseInt(filesizeMax) < stream.available() || stream.available() <= 0) {
                 return "{\"error\":\"File size is incorrect\"}";

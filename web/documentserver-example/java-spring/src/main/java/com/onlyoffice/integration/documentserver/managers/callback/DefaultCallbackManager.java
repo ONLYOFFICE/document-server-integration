@@ -55,9 +55,11 @@ import static com.onlyoffice.integration.documentserver.util.Constants.FILE_SAVE
 public class DefaultCallbackManager implements CallbackManager {
 
     @Value("${files.docservice.url.site}")
-    private String docserviceUrlSite;
+    private String defaultDocServiceSiteURL;
+
     @Value("${files.docservice.url.command}")
     private String docserviceUrlCommand;
+
     @Value("${files.docservice.header}")
     private String documentJwtHeader;
 
@@ -75,6 +77,14 @@ public class DefaultCallbackManager implements CallbackManager {
     private ObjectMapper objectMapper;
     @Autowired
     private ServiceConverter serviceConverter;
+
+    private String getDocServiceSiteURL() {
+        var customDocServiceSiteURL = System.getenv("DOCSERVICE_SITE_URL");
+        if (customDocServiceSiteURL == null) {
+            return defaultDocServiceSiteURL;
+        }
+        return customDocServiceSiteURL;
+    }
 
     // download file from url
     @SneakyThrows
@@ -197,6 +207,7 @@ public class DefaultCallbackManager implements CallbackManager {
     public void commandRequest(final String method,
                                final String key,
                                final HashMap meta) {  // create a command request
+        String docserviceUrlSite = getDocServiceSiteURL();
         String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
 
         URL url = new URL(documentCommandUrl);

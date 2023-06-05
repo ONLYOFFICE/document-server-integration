@@ -36,7 +36,7 @@ import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_
 @Qualifier("default")
 public class DefaultFileUtility implements FileUtility {
     @Value("${filesize-max}")
-    private String filesizeMax;
+    private String defaultFilesizeMax;
 
     @Value("${files.docservice.viewed-docs}")
     private String docserviceViewedDocs;
@@ -70,6 +70,14 @@ public class DefaultFileUtility implements FileUtility {
                             ".ppt", ".pptx", ".pptm",
                             ".pot", ".potx", ".potm",
                             ".odp", ".fodp", ".otp");
+
+    private String getFileSizeMax() {
+        var customFileSizeMax = System.getenv("FILESIZE_MAX");
+        if (customFileSizeMax == null) {
+            return defaultFilesizeMax;
+        }
+        return customFileSizeMax;
+    }
 
     // get the document type
     public DocumentType getDocumentType(final String fileName) {
@@ -197,6 +205,7 @@ public class DefaultFileUtility implements FileUtility {
 
     // get maximum file size
     public long getMaxFileSize() {
+        String filesizeMax = getFileSizeMax();
         long size = Long.parseLong(filesizeMax);
         return size > 0 ? size : MAX_FILE_SIZE;
     }

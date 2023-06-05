@@ -56,7 +56,7 @@ import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS
 public class EditorController {
 
     @Value("${files.docservice.url.site}")
-    private String docserviceSite;
+    private String defaultDocServiceSiteURL;
 
     @Value("${files.docservice.url.api}")
     private String docserviceApiUrl;
@@ -81,6 +81,14 @@ public class EditorController {
 
     @Autowired
     private FileConfigurer<DefaultFileWrapper> fileConfigurer;
+
+    private String getDocServiceSiteURL() {
+        var customDocServiceSiteURL = System.getenv("DOCSERVICE_SITE_URL");
+        if (customDocServiceSiteURL == null) {
+            return defaultDocServiceSiteURL;
+        }
+        return customDocServiceSiteURL;
+    }
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
@@ -142,6 +150,8 @@ public class EditorController {
 
         // get file history and add it to the model
         model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
+
+        String docserviceSite = getDocServiceSiteURL();
 
         // create the document service api URL and add it to the model
         model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
