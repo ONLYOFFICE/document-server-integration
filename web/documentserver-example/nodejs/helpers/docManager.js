@@ -189,7 +189,8 @@ DocManager.prototype.getServerPath = function getServerPath() {
 
 // get host address from the request
 DocManager.prototype.getServerHost = function getServerHost() {
-  return `${this.getProtocol()}://${this.req.headers['x-forwarded-host'] || this.req.headers.host}`;
+  return `${this.getProtocol()}://${this.req.headers['x-forwarded-host'] || this.req.headers.host}`
+    + `${this.req.headers['x-forwarded-prefix'] || ''}`;
 };
 
 // get protocol from the request
