@@ -34,6 +34,7 @@ You can use any web server capable of running PHP code to run the example. We wi
 * **IIS**: version 7 or later (refer to [Microsoft official website](https://www.iis.net/learn/application-frameworks/scenario-build-a-php-website-on-iis/configuring-step-1-install-iis-and-php) to learn how to install IIS);
 * **PHP** (download it from the [http://php.net](https://php.net/downloads.php) site);
 * **PHP Manager for IIS** (download it from the [Microsoft open source site](https://phpmanager.codeplex.com/releases/view/69115)).
+* **Composer** (download it from the [Composer official website](https://getcomposer.org/download/)).
 
 ### Step 4. IIS configuration
 
@@ -78,7 +79,13 @@ You can use any web server capable of running PHP code to run the example. We wi
 
     After IIS manager configuration is complete, everything is ready for running the PHP example.
 
-### Step 5. Run your website with the editors
+### Step 5. Run *composer install*:
+
+    ```
+    php composer.phar install
+    ```
+
+### Step 6. Run your website with the editors
 
 1. Add your website in the IIS Manager.
 
@@ -100,7 +107,7 @@ You can use any web server capable of running PHP code to run the example. We wi
 
    ![browse](screenshots/browse.png) 
 
-### Step 6. Check accessibility
+### Step 7. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
@@ -124,8 +131,11 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 
 2. Install **Composer**:
 
+    To install composer globally, use the following command which will download and install Composer as a system-wide command named composer, under /usr/local/bin:
+
     ```
-    instructions should be here
+    curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+    sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
     ```
 
 3. Download the archive with the PHP example and unpack the archive:
