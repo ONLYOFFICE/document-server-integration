@@ -19,7 +19,9 @@ services:
       - "80"
     environment:
       - JWT_SECRET=your-256-bit-secret
-      - URL_SITE=http://localhost:3000/
+      - URL_EXAMPLE=http://proxy:8080
+      - URL_SITE=http://proxy:3000/
+      - FRONTEND_DOCUMENT_SERVER_URL=http://localhost:3000/
 
   proxy:
     container_name: proxy

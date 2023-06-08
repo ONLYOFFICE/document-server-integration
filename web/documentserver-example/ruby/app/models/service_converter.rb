@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# typed: true
+# rubocop:disable Metrics/ClassLength
+
 class ServiceConverter
 
   @@convert_timeout = Rails.configuration.timeout  # get the convertion timeout from the config

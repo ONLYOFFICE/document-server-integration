@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<script src="<%= Rails.configuration.urlSite + Rails.configuration.urlApi %>"></script>
+<script src="<%= Rails.configuration.frontend_document_server_url + Rails.configuration.urlApi %>"></script>
 
 <script type="text/javascript" language="javascript">
 
@@ -109,7 +109,7 @@
     // the user is trying to select document for comparing by clicking the Document from Storage button
     var onRequestCompareFile = function() {
         docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);  // select a document for comparing
-    }; 
+    };
 
     // the user is trying to select recipients data by clicking the Mail merge button
     var onRequestMailMergeRecipients = function (event) {
@@ -152,7 +152,7 @@
     };
 
     var onRequestReferenceData = function(event) {  // user refresh external data source
-        
+
         event.data.directUrl = !!config.document.directUrl;
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "reference");

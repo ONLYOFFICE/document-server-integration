@@ -47,6 +47,8 @@ module OnlineEditorsExampleRuby
 
     Rails.configuration.urlExample = ENV["URL_EXAMPLE"] ? ENV["URL_EXAMPLE"] : ""
 
+    Rails.configuration.frontend_document_server_url = ENV["FRONTEND_DOCUMENT_SERVER_URL"] ? ENV["FRONTEND_DOCUMENT_SERVER_URL"] : Rails.configuration.urlSite
+
     Rails.configuration.jwtSecret = ENV["JWT_SECRET"] ? ENV["JWT_SECRET"] : ""
     Rails.configuration.header = "Authorization"
     Rails.configuration.token_use_for_request = true
