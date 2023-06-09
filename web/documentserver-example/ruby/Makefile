@@ -10,3 +10,8 @@ help: #     Show help message for each of the Makefile recipes.
 install: #  Install dependencies and initialize the project.
 	@bundle install
 	@bundle exec tapioca init
+
+.PHONY: lint
+lint: #     Lint the source code for style and check for types.
+	@bundle exec rubocop
+	@bundle exec srb tc
