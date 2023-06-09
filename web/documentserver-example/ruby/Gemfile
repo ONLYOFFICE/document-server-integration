@@ -8,6 +8,7 @@ gem "jwt", "~> 2.7"
 gem "mimemagic", github: "mimemagicrb/mimemagic", ref: "01f92d86d15d85cfd0f20dabd025dcbd36a8a60f"
 gem "rack-cors", "~> 2.0"
 gem "rails", "~> 7.0"
+gem "rubocop", "~> 1.52", :group => :development
 gem "sass-rails", "~> 6.0"
 gem "sdoc", "~> 2.6", :group => :doc
 gem "sqlite3", "1.4.2"
