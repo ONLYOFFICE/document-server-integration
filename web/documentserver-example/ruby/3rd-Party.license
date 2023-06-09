@@ -8,6 +8,10 @@ coffee-rails  - CoffeeScript adapter for the Rails asset pipeline. (https://gith
 License:        MIT
 License File:   coffee-rails.license
 
+dalli         - High performance memcached client for Ruby. (https://github.com/petergoldstein/dalli/blob/v3.2.0/LICENSE)
+License:        MIT
+License File:   dalli.license
+
 jbuilder      - Create JSON structures via a Builder-style DSL (https://github.com/rails/jbuilder/blob/master/MIT-LICENSE)
 License:        MIT
 License File:   jbuilder.license
@@ -60,9 +64,17 @@ sdoc          - rdoc generator html with javascript search index. (https://githu
 License:        MIT
 License File:   sdoc.license
 
+sorbet        - A fast, powerful type checker designed for Ruby. (https://github.com/sorbet/sorbet/blob/0.5.10871.20230607144259-d9000e2ba/LICENSE)
+License:        Apache License 2.0
+License File:   sorbet.license
+
 sqlite3       - This module allows Ruby programs to interface with the SQLite3 database engine (www.sqlite.org). (https://github.com/sparklemotion/sqlite3-ruby/blob/master/LICENSE)
 License:        BSD-3-Clause
 License File:   sqlite3.license
+
+tapioca       - The swiss army knife of RBI generation. (https://github.com/Shopify/tapioca/blob/v0.11.6/LICENSE.txt)
+License:        MIT
+License File:   tapioca.license
 
 turbolinks    - Rails engine for Turbolinks 5 support (https://github.com/turbolinks/turbolinks-rails/blob/master/LICENSE)
 License:        MIT
