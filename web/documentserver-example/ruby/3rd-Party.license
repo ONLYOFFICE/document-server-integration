@@ -48,6 +48,10 @@ rails         - Rails is a web-application framework that includes everything ne
 License:        MIT
 License File:   rails.license
 
+rubocop       - A Ruby static code analyzer and formatter, based on the community Ruby style guide. (https://github.com/rubocop/rubocop/blob/v1.52.0/LICENSE.txt)
+License:        MIT
+License File:   rubocop.license
+
 sass-rails    - This gem provides official integration for Ruby on Rails projects with the Sass stylesheet language. (https://github.com/rails/sass-rails/blob/master/MIT-LICENSE)
 License:        MIT
 License File:   sass-rails.license
