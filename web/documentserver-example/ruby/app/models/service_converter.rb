@@ -16,8 +16,8 @@
 
 class ServiceConverter
 
-  @@convert_timeout = Rails.configuration.timeout  # get the convertion timeout from the config
-  @@document_converter_url = Rails.configuration.urlSite + Rails.configuration.urlConverter  # get the converter url from the config
+  @@convert_timeout = Configuration.new.convertation_timeout
+  @@document_converter_url = Configuration.new.document_server_converter_uri.to_s
 
   class << self
 

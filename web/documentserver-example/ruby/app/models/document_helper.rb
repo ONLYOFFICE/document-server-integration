@@ -29,11 +29,8 @@ class DocumentHelper
 
     # define max file size
     def file_size_max
-      if Rails.configuration.fileSizeMax == nil
-        5 * 1024 * 1024
-      else
-        Rails.configuration.fileSizeMax  # or get it from the config
-      end
+      config = Configuration.new
+      config.maximum_file_size
     end
 
     # all the supported file extensions
@@ -42,38 +39,26 @@ class DocumentHelper
     end
 
     def fill_forms_exts
-      if Rails.configuration.fillDocs.empty?
-        []
-      else
-        Rails.configuration.fillDocs.split("|")
-      end
+      config = Configuration.new
+      config.fillable_file_extensions
     end
 
     # file extensions that can be viewed
     def viewed_exts
-      if Rails.configuration.viewedDocs.empty?
-        []
-      else
-        Rails.configuration.viewedDocs.split("|")
-      end
+      config = Configuration.new
+      config.viewable_file_extensions
     end
 
     # file extensions that can be edited
     def edited_exts
-      if Rails.configuration.editedDocs.empty?
-        []
-      else
-        Rails.configuration.editedDocs.split("|")
-      end
+      config = Configuration.new
+      config.editable_file_extensions
     end
 
     # file extensions that can be converted
     def convert_exts
-      if Rails.configuration.convertDocs.empty?
-        []
-      else
-        Rails.configuration.convertDocs.split("|")
-      end
+      config = Configuration.new
+      config.convertable_file_extensions
     end
 
     # get current user host address
@@ -83,8 +68,9 @@ class DocumentHelper
 
     # get the storage path of the given file
     def storage_path(file_name, user_address)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))  # get the path to the directory for the host address
+      config = Configuration.new
+      directory = File.absolute_path?(config.storage_path) ? config.storage_path
+                    : Rails.root.join('public', config.storage_path, cur_user_host_address(user_address))  # get the path to the directory for the host address
 
       # create a new directory if it doesn't exist
       unless File.directory?(directory)
@@ -97,8 +83,9 @@ class DocumentHelper
 
     # get the path to the forcesaved file version
     def forcesave_path(file_name, user_address, create)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      config = Configuration.new
+      directory = File.absolute_path?(config.storage_path) ? config.storage_path
+                    : Rails.root.join('public', config.storage_path, cur_user_host_address(user_address))
 
       # the directory with host address doesn't exist
       unless File.directory?(directory)
@@ -176,8 +163,9 @@ class DocumentHelper
 
     # get all the stored files from the folder
     def get_stored_files(user_address)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      config = Configuration.new
+      directory = File.absolute_path?(config.storage_path) ? config.storage_path
+                    : Rails.root.join('public', config.storage_path, cur_user_host_address(user_address))
 
       arr = [];
 
@@ -230,7 +218,8 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
+      config = Configuration.new
+      uri = get_server_url(for_document_server) + '/' + config.storage_path + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
 
       return uri
     end
@@ -245,8 +234,9 @@ class DocumentHelper
 
     # get server url
     def get_server_url(for_document_server)
-      if for_document_server && !Rails.configuration.urlExample.empty?
-        return Rails.configuration.urlExample
+      config = Configuration.new
+      if for_document_server && config.example_uri
+        return config.example_uri.to_s
       else
         return @@base_url
       end 
@@ -344,7 +334,7 @@ class DocumentHelper
     end
     # enable ignore certificate
     def verify_ssl(file_uri, http)
-      if file_uri.start_with?('https') && Rails.configuration.verify_peer_off.eql?('true')
+      if file_uri.start_with?('https') && Configuration.new.ssl_verify_peer_mode_enabled
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
       end

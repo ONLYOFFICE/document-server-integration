@@ -17,6 +17,7 @@
 require 'net/http'
 
 class TrackHelper
+  @@document_command_url = Configuration.new.document_server_command_uri.to_s
 
     class << self
 
@@ -211,8 +212,6 @@ class TrackHelper
 
         # send the command request
         def command_request(method, key, meta = nil)
-            document_command_url = Rails.configuration.urlSite + Rails.configuration.commandUrl  # get the document command url
-
             # create a payload object with the method and key
             payload = {
                 :c => method,
@@ -226,10 +225,10 @@ class TrackHelper
             data = nil
             begin
 
-                uri = URI.parse(document_command_url)  # parse the document command url
+                uri = URI.parse(@@document_command_url)  # parse the document command url
                 http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-                DocumentHelper.verify_ssl(document_command_url, http)
+                DocumentHelper.verify_ssl(@@document_command_url, http)
 
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
                 req.add_field("Content-Type", "application/json")  # set headers

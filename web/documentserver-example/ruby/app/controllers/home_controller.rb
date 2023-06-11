@@ -325,7 +325,7 @@ class HomeController < ApplicationController
       res = http.request(req)
       data = res.body
 
-      if data.size <= 0 || data.size > Rails.configuration.fileSizeMax
+      if data.size <= 0 || data.size > Configuration.new.maximum_file_size
         render plain: '{"error": "File size is incorrect"}'
         return
       end
