@@ -15,8 +15,16 @@
 #
 
 require 'net/http'
+require_relative '../configuration'
 
 class TrackHelper
+  @config_manager = ConfigurationManager.new
+
+  class << self
+    attr_reader :config_manager
+  end
+
+  @@document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
 
     class << self
 
@@ -34,7 +42,7 @@ class TrackHelper
             if JwtHelper.is_enabled && JwtHelper.use_for_request
                 inHeader = false
                 token = nil
-                jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get the authorization header from the config
+                jwtHeader = TrackHelper.config_manager.jwt_header;  # get the authorization header from the config
                 if file_data["token"]  # if the token is in the body
                     token = JwtHelper.decode(file_data["token"])  # decode a token into a payload object using a secret key
                 elsif request.headers[jwtHeader]  # if the token is in the header
@@ -211,8 +219,6 @@ class TrackHelper
 
         # send the command request
         def command_request(method, key, meta = nil)
-            document_command_url = Rails.configuration.urlSite + Rails.configuration.commandUrl  # get the document command url
-
             # create a payload object with the method and key
             payload = {
                 :c => method,
@@ -226,17 +232,17 @@ class TrackHelper
             data = nil
             begin
 
-                uri = URI.parse(document_command_url)  # parse the document command url
+                uri = URI.parse(@@document_command_url)  # parse the document command url
                 http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
 
-                DocumentHelper.verify_ssl(document_command_url, http)
+                DocumentHelper.verify_ssl(@@document_command_url, http)
 
                 req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
                 req.add_field("Content-Type", "application/json")  # set headers
 
                 if JwtHelper.is_enabled && JwtHelper.use_for_request  # if the signature is enabled
                     payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
-                    jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get signature authorization header
+                    jwtHeader = TrackHelper.config_manager.jwt_header;  # get signature authorization header
                     req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
                 end
 

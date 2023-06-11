@@ -75,7 +75,7 @@
                         data-tooltip="Choose the language for ONLYOFFICE editors interface"
                         src="assets/info.svg" />
                       <select class="select-user" id="language">
-                        <% Rails.configuration.languages.each { |key, language|%>
+                        <% ConfigurationManager.new.languages.each { |key, language|%>
                           <option value="<%=key %>"> <%=language %> </option>
                         <% } %>
                       </select>
@@ -304,7 +304,7 @@
   </div>
 </div>
 
-<span id="loadScripts" data-docs="<%= Rails.configuration.urlSite + Rails.configuration.urlPreloader %>"></span>
+<span id="loadScripts" data-docs="<%= ConfigurationManager.new.document_server_preloader_uri.to_s %>"></span>
 
 <footer>
   <div class="center">
