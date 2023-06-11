@@ -61,8 +61,34 @@ class TrackHelper
             return file_data
         end
 
+    def resolve_file_data(file_data)
+      config = Configuration.new
+      proxy = Proxy.new(config)
+
+      url = file_data['url']
+      file_data['url'] = proxy.resolve_document_server_uri(url).to_s if url
+
+      changesurl = file_data['changesurl']
+      file_data['changesurl'] = proxy.resolve_document_server_uri(changesurl).to_s if changesurl
+
+      home = file_data['home']
+      if home
+        home_url = home['url']
+        home['url'] = proxy.resolve_document_server_uri(home_url).to_s if home_url
+
+        home_changesurl = home['changesurl']
+        home['changesurl'] = proxy.resolve_document_server_uri(home_changesurl).to_s if home_changesurl
+
+        file_data['home'] = home
+      end
+
+      file_data
+    end
+
         # file saving process
-        def process_save(file_data, file_name, user_address)
+        def process_save(raw_file_data, file_name, user_address)
+            file_data = resolve_file_data(raw_file_data)
+
             download_uri = file_data['url']
             if download_uri.eql?(nil)
                 saved = 1

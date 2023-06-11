@@ -29,6 +29,7 @@ class Configuration
     @version = T.let('1.5.1', String)
   end
 
+  # The URI through which an example instance can be accessed.
   sig { returns(T.nilable(URI::Generic)) }
   def example_uri
     url = ENV['EXAMPLE_URL']
@@ -36,9 +37,23 @@ class Configuration
     URI.parse(url)
   end
 
+  # The public URI through which a document-server instance can be accessed.
+  # For example, it can be used to grant the user's browser access to a
+  # document-server.
   sig { returns(URI::Generic) }
-  def document_server_uri
-    url = ENV['DOCUMENT_SERVER_URL'] || 'http://document-server/'
+  def document_server_public_uri
+    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server/'
+    URI.parse(url)
+  end
+
+  # The private URI through which a document-server instance can be accessed.
+  # If no private URI is specified, it will be redirected to the public URI.
+  # For example, it can be used when both an example instance and a
+  # document-server instance are on the same closed network.
+  sig { returns(URI::Generic) }
+  def document_server_private_uri
+    url = ENV['DOCUMENT_SERVER_PRIVATE_URL']
+    return document_server_public_uri if url.nil?
     URI.parse(url)
   end
 
@@ -46,28 +61,28 @@ class Configuration
   def document_server_api_uri
     path = ENV['DOCUMENT_SERVER_API_PATH'] ||
            'web-apps/apps/api/documents/api.js'
-    URI.join(document_server_uri.to_s, path)
+    URI.join(document_server_public_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_preloader_uri
     path = ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
            'web-apps/apps/api/documents/cache-scripts.html'
-    URI.join(document_server_uri.to_s, path)
+    URI.join(document_server_public_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_command_uri
     path = ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
            'coauthoring/CommandService.ashx'
-    URI.join(document_server_uri.to_s, path)
+    URI.join(document_server_private_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_converter_uri
     path = ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
            'ConvertService.ashx'
-    URI.join(document_server_uri.to_s, path)
+    URI.join(document_server_private_uri.to_s, path)
   end
 
   sig { returns(String) }
