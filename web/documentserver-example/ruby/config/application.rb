@@ -1,34 +1,52 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
-# Pick the frameworks you want:
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "action_view/railtie"
-require "sprockets/railtie"
-# require "rails/test_unit/railtie"
+require 'active_model/railtie'
+require 'action_controller/railtie'
+require 'action_view/railtie'
+require 'sprockets/railtie'
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module OnlineEditorsExampleRuby
+module Example
   class Application < Rails::Application
+    # TODO: move to the Convifgutaion.
+    # It needs to be moved to the Configuration, but it can't be done at the
+    # moment because replacing it causes the application to crash.
+    Rails.configuration.header = 'Authorization'
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
-        resource '*',
-                 headers: :any,
-                 methods: [:get, :post, :patch, :delete, :put, :options]
+        resource '*', headers: :any, methods: %i[get post patch delete put options]
       end
     end
 
-    # TODO: move to the Convifgutaion.
-    # It needs to be moved to the Configuration, but it can't be done at the
-    # moment because replacing it causes the application to crash.
-    Rails.configuration.header = "Authorization"
+    config.action_controller.perform_caching = true
+    config.active_support.deprecation = :log
+    config.assets.debug = false
+    config.assets.digest = true
+    config.cache_classes = true
+    config.consider_all_requests_local = true
+    config.eager_load = true
+    config.require_master_key = false
+    config.secret_key_base = 'pseudo_secret'
+
+    routes.append do
+      root to: 'home#index'
+      match '/convert', to: 'home#convert', via: 'post'
+      match '/csv', to: 'home#csv', via: 'get'
+      match '/download', to: 'home#download', via: 'get'
+      match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
+      match '/editor', to: 'home#editor', via: 'get'
+      match '/files', to: 'home#files', via: 'get'
+      match '/index', to: 'home#index', via: 'get'
+      match '/reference', to: 'home#reference', via: 'post'
+      match '/remove', to: 'home#remove', via: 'get'
+      match '/rename', to: 'home#rename', via: 'post'
+      match '/sample', to: 'home#sample', via: 'get'
+      match '/saveas', to: 'home#saveas', via: 'post'
+      match '/track', to: 'home#track', via: 'post'
+      match '/upload', to: 'home#upload', via: 'post'
+    end
   end
 end
