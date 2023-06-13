@@ -14,7 +14,6 @@ gem "sass-rails", "~> 6.0"
 gem "sdoc", "~> 2.6", :group => :doc
 gem "sorbet", "~> 0.5.10871", :group => :development
 gem "sorbet-runtime", "~> 0.5.10871"
-gem "sqlite3", "1.4.2"
 gem "tapioca", "~> 0.11.6", :group => :development
 gem "turbolinks", "~> 5.2"
 gem "tzinfo-data", "~> 1.2023"
