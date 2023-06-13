@@ -9,6 +9,7 @@ help: #         Show help message for each of the Makefile recipes.
 .PHONY: dev
 dev: #          Install development dependencies and initialize the project.
 	@bundle install
+	@rake app:update:bin
 	@bundle exec tapioca init
 
 .PHONY: dev-server
@@ -23,6 +24,7 @@ lint: #         Lint the source code for style and check for types.
 .PHONY: prod
 prod: #         Install production dependencies.
 	@bundle install --without development doc test
+	@rake app:update:bin
 
 .PHONY: prod-server
 prod-server: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
