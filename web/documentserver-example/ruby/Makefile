@@ -29,3 +29,8 @@ prod: #         Install production dependencies.
 .PHONY: prod-server
 prod-server: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
 	@rails server --environment production --using webrick
+
+.PHONY: up
+up: #           Build and up docker containers.
+	@docker-compose build
+	@docker-compose up -d
