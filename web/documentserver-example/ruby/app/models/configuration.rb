@@ -42,7 +42,7 @@ class Configuration
   # document-server.
   sig { returns(URI::Generic) }
   def document_server_public_uri
-    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server/'
+    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server'
     URI.parse(url)
   end
 
@@ -59,29 +59,33 @@ class Configuration
 
   sig { returns(URI::Generic) }
   def document_server_api_uri
-    path = ENV['DOCUMENT_SERVER_API_PATH'] ||
-           'web-apps/apps/api/documents/api.js'
+    path =
+      ENV['DOCUMENT_SERVER_API_PATH'] ||
+      '/web-apps/apps/api/documents/api.js'
     URI.join(document_server_public_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_preloader_uri
-    path = ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
-           'web-apps/apps/api/documents/cache-scripts.html'
+    path =
+      ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
+      '/web-apps/apps/api/documents/cache-scripts.html'
     URI.join(document_server_public_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_command_uri
-    path = ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
-           'coauthoring/CommandService.ashx'
+    path =
+      ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
+      '/coauthoring/CommandService.ashx'
     URI.join(document_server_private_uri.to_s, path)
   end
 
   sig { returns(URI::Generic) }
   def document_server_converter_uri
-    path = ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
-           'ConvertService.ashx'
+    path =
+      ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
+      '/ConvertService.ashx'
     URI.join(document_server_private_uri.to_s, path)
   end
 
