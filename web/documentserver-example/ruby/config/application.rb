@@ -43,6 +43,7 @@ module Example
       match '/reference', to: 'home#reference', via: 'post'
       match '/remove', to: 'home#remove', via: 'get'
       match '/rename', to: 'home#rename', via: 'post'
+      match '/restore', to: 'home#restore', via: 'put'
       match '/sample', to: 'home#sample', via: 'get'
       match '/saveas', to: 'home#saveas', via: 'post'
       match '/track', to: 'home#track', via: 'post'

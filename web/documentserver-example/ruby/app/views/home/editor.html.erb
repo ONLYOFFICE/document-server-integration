@@ -109,12 +109,48 @@
     // the user is trying to select document for comparing by clicking the Document from Storage button
     var onRequestCompareFile = function() {
         docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);  // select a document for comparing
-    }; 
+    };
 
     // the user is trying to select recipients data by clicking the Mail merge button
     var onRequestMailMergeRecipients = function (event) {
         docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);  // insert recipient data for mail merge into the file
     };
+
+    var onRequestRestore = function (event) {
+      const version = event.data.version;
+      const fileName = "<%= @file.file_name %>";
+      const restoreData = {
+        version: version,
+        fileName: fileName,
+      };
+      let xhr = new XMLHttpRequest();
+      xhr.open("PUT", "restore");
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify(restoreData));
+      xhr.onload = function () {
+        const authorization = xhr.getResponseHeader('Authorization')
+        const response = JSON.parse(xhr.responseText);
+        if (response.success && !response.error) {
+          const history = <%= raw @file.get_history.to_json %>
+          docEditor.refreshHistory(history.hist);
+          // let xhr = new XMLHttpRequest();
+          // xhr.open("GET", `downloadhistory?fileName=${fileName}&userAddress=${response.user_address}&ver=${response.target_version}&file=${response.file}`);
+          // xhr.setRequestHeader("Content-Type", "application/json");
+          // xhr.setRequestHeader("Authorization", authorization)
+          // xhr.send();
+          // xhr.onload = function () {
+          //   history.changes = JSON.parse(xhr.responseText);
+          //   docEditor.refreshHistory(
+          //     {
+          //       currentVersion: response.bumped_version,
+          //       history: history.changes
+          //     });
+          // }
+        } else {
+          innerAlert(response.error);
+        }
+      }
+    }
 
     var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
         var title = event.data.title;
@@ -152,7 +188,7 @@
     };
 
     var onRequestReferenceData = function(event) {  // user refresh external data source
-        
+
         event.data.directUrl = !!config.document.directUrl;
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "reference");
@@ -180,6 +216,7 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+            'onRequestRestore': onRequestRestore
         };
 
         <%

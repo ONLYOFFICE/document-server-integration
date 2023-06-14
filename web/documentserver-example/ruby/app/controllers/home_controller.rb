@@ -14,6 +14,11 @@
 # limitations under the License.
 #
 
+# typed: true
+# rubocop:disable Metrics/ClassLength
+# rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/AbcSize
+
 require 'net/http'
 require 'mimemagic'
 
@@ -92,7 +97,7 @@ class HomeController < ApplicationController
       end
 
       body = JSON.parse(file_data)
-      
+
       file_name = File.basename(body["filename"])
       lang = cookies[:ulang] ? cookies[:ulang] : "en"
       file_pass = body["filePass"] ? body["filePass"] : nil
@@ -368,7 +373,7 @@ class HomeController < ApplicationController
     def reference
       body = JSON.parse(request.body.read)
       fileName = ""
-      
+
 
       if body.key?("referenceData")
         referenceData = body["referenceData"]
@@ -411,4 +416,71 @@ class HomeController < ApplicationController
 
       render plain: data.to_json
     end
+
+  # Bumps the source file's current version and restores it to the specified
+  # version, thus designating it as the new source file.
+  #
+  # ```http
+  # PUT /restore HTTP/1.1
+  # Content-Type: application/json
+  #
+  # {
+  #   "fileName": "the source file name with extension"
+  #   "version": "the file version that needs to be restored"
+  # }
+  # ```
+  def restore
+    body = JSON.parse(request.body.read)
+
+    source_basename = body['fileName']
+    target_version = body['version']
+    unless source_basename && target_version
+      response.status = :bad_request
+      render json: {
+        error: 'The fileName or version parameters were not specified.',
+        success: false
+      }
+      return
+    end
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+    user_address = DocumentHelper.cur_user_host_address(nil)
+    source_file = DocumentHelper.storage_path(source_basename, user_address)
+    history_directory = DocumentHelper.history_dir(source_file)
+
+    previous_name = 'prev'
+    previous_extension = File.extname(source_basename)
+    previous_basename = "#{previous_name}#{previous_extension}"
+
+    target_directory = File.join(history_directory, target_version.to_s)
+    target_file = File.join(target_directory, previous_basename)
+
+    latest_version = DocumentHelper.get_file_version(history_directory)
+    bumped_version = latest_version + 1
+    bumped_directory = File.join(history_directory, bumped_version.to_s)
+    bumped_file = File.join(bumped_directory, previous_basename)
+    FileUtils.mkdir(bumped_directory) unless File.directory?(bumped_directory)
+
+    FileUtils.cp(source_file, bumped_file)
+    FileUtils.cp(target_file, source_file)
+
+    response_data = {
+      error: nil,
+      success: true,
+      # TODO:
+      user_address:,
+      target_version:,
+      file: 'changes.json',
+      bumped_version:
+    }
+
+    if JwtHelper.is_enabled
+      jwt_header = Rails.configuration.header.empty? ? 'Authorization' : Rails.configuration.header
+      jwt_token = JwtHelper.encode(response_data)
+      response.headers[jwt_header] = "Bearer #{jwt_token}"
+    end
+
+    response.status = :ok
+    render json: response_data
+  end
 end
