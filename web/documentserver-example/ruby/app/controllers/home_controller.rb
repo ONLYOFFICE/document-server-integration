@@ -18,6 +18,8 @@
 # rubocop:disable Metrics/ClassLength
 # rubocop:disable Metrics/MethodLength
 # rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
 
 require 'net/http'
 require 'mimemagic'
@@ -446,23 +448,45 @@ class HomeController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
     user_address = DocumentHelper.cur_user_host_address(nil)
     source_file = DocumentHelper.storage_path(source_basename, user_address)
-    history_directory = DocumentHelper.history_dir(source_file)
+    unless File.exist?(source_file)
+      response.status = :not_found
+      render json: {
+        error: "The file with the specified fileName doesn't exist.",
+        success: false
+      }
+      return
+    end
 
     previous_name = 'prev'
     previous_extension = File.extname(source_basename)
     previous_basename = "#{previous_name}#{previous_extension}"
+    history_directory = DocumentHelper.history_dir(source_file)
 
     target_directory = File.join(history_directory, target_version.to_s)
     target_file = File.join(target_directory, previous_basename)
+    unless File.exist?(target_file)
+      response.status = :not_found
+      render json: {
+        error: "The file with the specified version doesn't exist.",
+        success: false
+      }
+      return
+    end
 
     latest_version = DocumentHelper.get_file_version(history_directory)
     bumped_version = latest_version + 1
     bumped_directory = File.join(history_directory, bumped_version.to_s)
     bumped_file = File.join(bumped_directory, previous_basename)
-    FileUtils.mkdir(bumped_directory) unless File.directory?(bumped_directory)
+    FileUtils.mkdir(bumped_directory) unless File.exist?(bumped_directory)
+
+    bumped_key = ServiceConverter.generate_revision_id(
+      "#{File.join(user_address, source_basename)}.#{File.mtime(source_file)}"
+    )
+    bumped_key_file = File.join(bumped_directory, 'key.txt')
 
     FileUtils.cp(source_file, bumped_file)
     FileUtils.cp(target_file, source_file)
+    File.write(bumped_key_file, bumped_key)
 
     response_data = {
       error: nil,
@@ -482,5 +506,104 @@ class HomeController < ApplicationController
 
     response.status = :ok
     render json: response_data
+  end
+
+  # ```http
+  # GET /history/{{file_basename}}?user_host={{user_host}} HTTP/1.1
+  # ??Authorization: Bearer {{token}}
+  # ```
+  def history
+    source_basename = T.let(params[:file_basename], String)
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+
+    user_host = DocumentHelper.cur_user_host_address(params[:user_host])
+    source_file = DocumentHelper.storage_path(source_basename, user_host)
+    unless File.exist?(source_file)
+      response.status = :not_found
+      render json: {
+        error: "The file with the specified fileName doesn't exist.",
+        success: false
+      }
+      return
+    end
+
+    source_extension = File.extname(source_file)
+    source_key = ServiceConverter.generate_revision_id(
+      "#{File.join(user_host, source_basename)}.#{File.mtime(source_file)}"
+    )
+
+    puts
+  end
+
+  # ```http
+  # GET /history/{{file_basename}}/{{version}}?user_host={{user_host}} HTTP/1.1
+  # Authorization: Bearer {{token}}
+  # ```
+  def history_of_version
+    if JwtHelper.is_enabled && JwtHelper.use_for_request
+      header_name = Rails.configuration.header.empty? ? 'Authorization' : Rails.configuration.header
+      header = request.headers[header_name]
+      unless header
+        response.status = :forbidden
+        render json: {
+          error: 'forbidden',
+          success: false
+        }
+        return
+      end
+
+      token = header.sub('Bearer ', '')
+      decoded = JwtHelper.decode(token)
+      unless decoded && !decoded.eql?('')
+        response.status = :forbidden
+        render json: {
+          error: 'forbidden',
+          success: false
+        }
+        return
+      end
+    end
+
+    source_basename = T.let(params[:file_basename], String)
+    target_version = T.let(params[:version], String).to_i
+    unless target_version != 0
+      response.status = :bad_request
+      # if params[:version] == '0', version can't be null
+      return
+    end
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+
+    user_host = DocumentHelper.cur_user_host_address(params[:user_host])
+    source_file = DocumentHelper.storage_path(source_basename, user_host)
+    unless File.exist?(source_file)
+      response.status = :not_found
+      render json: {
+        error: "The file with the specified fileName doesn't exist.",
+        success: false
+      }
+      return
+    end
+
+    history_directory = DocumentHelper.history_dir(source_file)
+    target_directory = File.join(history_directory, target_version.to_s)
+    target_history_file = File.join(target_directory, 'changes.json')
+    unless File.exist?(target_history_file)
+      response.status = :not_found
+      render json: {
+        error: "The file with the specified version doesn't exist.",
+        success: false
+      }
+      return
+    end
+
+    target_history_mimetype = MimeMagic.by_path(target_history_file)
+
+    response.headers['Content-Length'] = File.size(target_history_file).to_s
+    response.headers['Content-Type'] = target_history_mimetype.eql?(nil) ? nil : target_history_mimetype.type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode('changes.json')}"
+    response.status = :ok
+    send_file target_history_file
   end
 end
