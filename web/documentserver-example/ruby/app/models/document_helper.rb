@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+# rubocop:disable all
+
 class DocumentHelper
 
   @@runtime_cache = {}

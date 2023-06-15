@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+# rubocop:disable all
+
 class FileModel
 
   attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data, :direct_url
@@ -147,7 +149,7 @@ class FileModel
         :lang => @lang ? @lang : "en",
         :callbackUrl => callback_url,  # absolute URL to the document storage service
         :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {
-          :mode => "strict", 
+          :mode => "strict",
           :change => false
         } : nil,
         :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
@@ -165,7 +167,7 @@ class FileModel
         },
         :customization => {  # the parameters for the editor interface
           :about => true,  # the About section display
-          :comments => true,  
+          :comments => true,
           :feedback => true,  # the Feedback & Support menu button display
           :forcesave => false,  # adding the request for the forced file saving to the callback handler
           :submitForm => submitForm,  # the Submit form button state
@@ -320,7 +322,7 @@ class FileModel
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
       compare_file["token"] = JwtHelper.encode(compare_file)  # encode a payload object into a token and write it to the compare_file object
     end
-    
+
     return compare_file
   end
 

@@ -19,40 +19,54 @@
 
 require 'pathname'
 
-# app_directory
-# |- storage_directory
-#    |- user_directory
+# ```text
+# /application_directory
+# └─ storage_directory
+#    └─ user_directory
+#       └─ source_file
+#
+# /srv
+# └─ storage
+#    └─ 172.19.0.1
+#       └─ document.docx
+# ```
 class StorageManager
   extend T::Sig
 
-  sig { params(config: Configuration).void }
-  def initialize(config)
-    @config = T.let(config, Configuration)
+  sig do
+    params(
+      config: Configuration,
+      user_manager: UserManager,
+      source_basename: String
+    )
+      .void
+  end
+  def initialize(config, user_manager, source_basename)
+    @config = config
+    @user_manager = user_manager
+    @source_basename = source_basename
   end
 
-  # Creates a storage directory intended for storing each user's directories and
-  # returns the path to that directory.
+  sig { returns(Pathname) }
+  def source_file
+    user_directory.join(@source_basename)
+  end
+
+  sig { returns(Pathname) }
+  def user_directory
+    directory = storage_directory.join(@user_manager.host)
+    FileUtils.mkdir(directory) unless directory.exist?
+    directory
+  end
+
   sig { returns(Pathname) }
   def storage_directory
     # move to configuration
     # path = Pathname.new(@config.storage_path)
     # # @config.storage_path
     # directory = path ? @configuration.storage_path : Rails.root.join('public', @config.storage_path)
-    FileUtils.mkdir(@config.storage_path) unless File.exist?(@config.storage_path)
-    Pathname.new(@config.storage_path)
-  end
-
-  # Creates a user directory and returns the path to that directory.
-  sig do
-    params(
-      storage_directory: Pathname,
-      user_host: String
-    )
-      .returns(Pathname)
-  end
-  def user_directory(storage_directory, user_host)
-    directory = Pathname(File.join(storage_directory, user_host))
-    FileUtils.mkdir(directory) unless File.exist?(directory)
-    directory
+    storage_path = Pathname(@config.storage_path)
+    FileUtils.mkdir(storage_path) unless storage_path.exist?
+    storage_path
   end
 end

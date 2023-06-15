@@ -29,7 +29,7 @@ module Example
     config.consider_all_requests_local = true
     config.eager_load = true
     config.require_master_key = false
-    config.secret_key_base = 'pseudo_secret'
+    config.secret_key_base = SecureRandom.uuid
 
     routes.append do
       root to: 'home#index'
