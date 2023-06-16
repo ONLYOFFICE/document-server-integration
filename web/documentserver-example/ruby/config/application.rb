@@ -1,3 +1,5 @@
+# rubocop:disable Metrics/BlockLength
+
 require_relative 'boot'
 
 require 'active_model/railtie'
@@ -48,6 +50,17 @@ module Example
       match '/saveas', to: 'home#saveas', via: 'post'
       match '/track', to: 'home#track', via: 'post'
       match '/upload', to: 'home#upload', via: 'post'
+
+      match(
+        '/history/:file_basename',
+        to: HistoryController.action(:history),
+        via: :get
+      )
+      match(
+        '/history/:file_basename/:version/data',
+        to: HistoryController.action(:history_data),
+        via: :get
+      )
     end
   end
 end

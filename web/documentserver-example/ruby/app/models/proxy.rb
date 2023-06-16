@@ -26,7 +26,7 @@ class Proxy
 
   sig { params(configuration: Configuration).void }
   def initialize(configuration)
-    @configuration = T.let(configuration, Configuration)
+    @config = configuration
   end
 
   # Resolves with a private document-server URI if the specified URI based on a
@@ -44,17 +44,17 @@ class Proxy
 
   sig { params(uri: URI::Generic).returns(T::Boolean) }
   def equal_document_server_public_uri(uri)
-    uri.scheme == @configuration.document_server_public_uri.scheme && \
-      uri.host == @configuration.document_server_public_uri.host && \
-      uri.port == @configuration.document_server_public_uri.port
+    uri.scheme == @config.document_server_public_uri.scheme && \
+      uri.host == @config.document_server_public_uri.host && \
+      uri.port == @config.document_server_public_uri.port
   end
 
   sig { params(uri: URI::Generic).returns(URI::Generic) }
   def swap_docuemnt_server_public_uri(uri)
     swaped_uri = uri
-    swaped_uri.scheme = @configuration.document_server_private_uri.scheme
-    swaped_uri.host = @configuration.document_server_private_uri.host
-    swaped_uri.port = @configuration.document_server_private_uri.port
+    swaped_uri.scheme = @config.document_server_private_uri.scheme
+    swaped_uri.host = @config.document_server_private_uri.host
+    swaped_uri.port = @config.document_server_private_uri.port
     swaped_uri
   end
 end

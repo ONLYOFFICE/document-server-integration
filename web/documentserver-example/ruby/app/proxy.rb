@@ -17,14 +17,32 @@
 # frozen_string_literal: true
 # typed: true
 
-class UserManager
+require 'uri'
+
+class ProxyManager
   extend T::Sig
 
-  sig { returns(String) }
-  attr_reader :host
+  sig do
+    params(
+      config: Configuration,
+      request: ActionDispatch::Request,
+      user_host: T.nilable(String)
+    )
+      .void
+  end
+  def initialize(config:, request:, user_host: nil)
+    @config = config
+    @request = request
+    @user_host = user_host
+  end
 
-  sig { params(host: String).void }
-  def initialize(host)
-    @host = host
+  sig { returns(URI::Generic) }
+  def example_uri
+    @config.example_uri || URI(@request.base_url)
+  end
+
+  sig { returns(String) }
+  def user_host
+    (@user_host || @request.remote_ip).gsub(/[^0-9\-.a-zA-Z_=]/, '_')
   end
 end

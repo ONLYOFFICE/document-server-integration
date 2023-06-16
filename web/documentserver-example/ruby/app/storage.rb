@@ -36,14 +36,14 @@ class StorageManager
   sig do
     params(
       config: Configuration,
-      user_manager: UserManager,
+      proxy_manager: ProxyManager,
       source_basename: String
     )
       .void
   end
-  def initialize(config, user_manager, source_basename)
+  def initialize(config:, proxy_manager:, source_basename:)
     @config = config
-    @user_manager = user_manager
+    @proxy_manager = proxy_manager
     @source_basename = source_basename
   end
 
@@ -54,7 +54,7 @@ class StorageManager
 
   sig { returns(Pathname) }
   def user_directory
-    directory = storage_directory.join(@user_manager.host)
+    directory = storage_directory.join(@proxy_manager.user_host)
     FileUtils.mkdir(directory) unless directory.exist?
     directory
   end
