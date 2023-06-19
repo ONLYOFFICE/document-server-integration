@@ -78,6 +78,11 @@ public class IndexServlet extends HttpServlet {
             return;
         }
 
+        // charset for response headers if upload or convert
+        if (action.matches("upload|convert")) {
+           response.setCharacterEncoding("UTF-8");
+        }
+
         DocumentManager.init(request, response);
 
         // create a variable to display information about the application and error messages
