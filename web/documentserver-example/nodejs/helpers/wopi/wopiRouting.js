@@ -57,8 +57,8 @@ exports.registerRoutes = function registerRoutes(app) {
     });
 
     // Checking supported extensions
-    const editedExts = configServer.get('editedDocs').filter((i) => docsExtEdit.includes(i));
-    const fillExts = configServer.get('fillDocs').filter((i) => docsExtEdit.includes(i));
+    const editedExts = fileUtility.getEditExtensions().filter((i) => docsExtEdit.includes(i));
+    const fillExts = fileUtility.getFillExtensions().filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
@@ -81,7 +81,7 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-        convertExts: configServer.get('convertedDocs'),
+        convertExts: fileUtility.getConvertExtensions(),
         editedExts,
         fillExts,
         languages: configServer.get('languages'),
@@ -89,7 +89,8 @@ exports.registerRoutes = function registerRoutes(app) {
     } catch (ex) {
       console.log(ex); // display error message in the console
       res.status(500); // write status parameter to the response
-      res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+      // render error template with the message parameter specified
+      res.render('error', { message: 'Server error' });
     }
   });
   // define a handler for creating a new wopi editing session

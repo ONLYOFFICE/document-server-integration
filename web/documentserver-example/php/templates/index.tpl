@@ -212,7 +212,7 @@
 <script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
 <script type="text/javascript" src="js/jscript.js"></script>
 <script type="text/javascript">
-    var FillFormsExtList = '{docServFillforms}';
+    var FillFormsExtList = '{fillFormsExtList}';
     var ConverExtList = '{converExtList}';
     var EditedExtList = '{editedExtList}';
 </script>

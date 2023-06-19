@@ -16,6 +16,8 @@
  *
  */
 
+const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
+
 const fileUtility = {};
 
 // get file name from the given url
@@ -49,14 +51,11 @@ fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
 
 // get file type from the given url
 fileUtility.getFileType = function getFileType(url) {
-  const ext = fileUtility.getFileExtension(url); // get the file extension from the given url
+  const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
 
-  // word type for document extensions
-  if (fileUtility.documentExts.indexOf(ext) !== -1) return fileUtility.fileType.word;
-  // cell type for spreadsheet extensions
-  if (fileUtility.spreadsheetExts.indexOf(ext) !== -1) return fileUtility.fileType.cell;
-  // slide type for presentation extensions
-  if (fileUtility.presentationExts.indexOf(ext) !== -1) return fileUtility.fileType.slide;
+  for (let i = 0; i < supportedFormats.length; i++) {
+    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
+  }
 
   return fileUtility.fileType.word; // the default file type is word
 };
@@ -67,17 +66,35 @@ fileUtility.fileType = {
   slide: 'slide',
 };
 
-// the document extension list
-fileUtility.documentExts = ['.doc', '.docx', '.oform', '.docm', '.dot', '.dotx', '.dotm', '.odt',
-  '.fodt', '.ott', '.rtf', '.txt', '.html', '.htm', '.mht', '.xml', '.pdf', '.djvu', '.fb2', '.epub', '.xps', '.oxps'];
+fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
+  return supportedFormats.reduce((extensions, format) => [...extensions, format.name], []);
+};
 
-// the spreadsheet extension list
-fileUtility.spreadsheetExts = ['.xls', '.xlsx', '.xlsm', '.xlsb', '.xlt',
-  '.xltx', '.xltm', '.ods', '.fods', '.ots', '.csv'];
+fileUtility.getViewExtensions = function getViewExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('view'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
-// the presentation extension list
-fileUtility.presentationExts = ['.pps', '.ppsx', '.ppsm', '.ppt', '.pptx', '.pptm', '.pot',
-  '.potx', '.potm', '.odp', '.fodp', '.otp'];
+fileUtility.getEditExtensions = function getEditExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('edit') || format.actions.includes('lossy-edit'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
+
+fileUtility.getFillExtensions = function getFillExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('fill'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
+
+fileUtility.getConvertExtensions = function getConvertExtensions() {
+  return supportedFormats.filter(
+    (format) => (format.type === 'word' && format.convert.includes('docx'))
+            || (format.type === 'cell' && format.convert.includes('xlsx'))
+            || (format.type === 'slide' && format.convert.includes('pptx')),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 // get url parameters
 // eslint-disable-next-line no-unused-vars

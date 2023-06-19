@@ -113,7 +113,7 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         if (ConverExtList.indexOf(posExt) == -1) {
@@ -194,7 +194,7 @@ if (typeof jQuery != "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});

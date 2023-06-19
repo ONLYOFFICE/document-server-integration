@@ -130,18 +130,24 @@ function getCurUserHostAddress($userAddress = null)
  */
 function getInternalExtension($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return ".docx";
-    }  // .docx for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return ".xlsx";
-    }  // .xlsx for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return ".pptx";
-    }  // .pptx for presentation extensions
+
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            if ($format->type === "word") {
+                return ".docx";
+            }
+            if ($format->type === "cell") {
+                return ".xlsx";
+            }
+            if ($format->type === "slide") {
+                return ".pptx";
+            }
+        }
+    }
+
     return "";
 }
 
@@ -154,19 +160,24 @@ function getInternalExtension($filename)
  */
 function getTemplateImageUrl($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/css/images/";
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return $path . "file_docx.svg";
-    }  // for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return $path . "file_xlsx.svg";
-    }  // for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return $path . "file_pptx.svg";
-    }  // for presentation extensions
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            if ($format->type === "word") {
+                return $path . "file_docx.svg";
+            }
+            if ($format->type === "cell") {
+                return $path . "file_xlsx.svg";
+            }
+            if ($format->type === "slide") {
+                return $path . "file_pptx.svg";
+            }
+        }
+    }
+
     return $path . "file_docx.svg";
 }
 
@@ -179,18 +190,15 @@ function getTemplateImageUrl($filename)
  */
 function getDocumentType($filename)
 {
-    $ext = mb_strtolower('.' . pathinfo($filename, PATHINFO_EXTENSION));
+    $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
     $configManager = new ConfigManager();
-    if (in_array($ext, $configManager->getConfig("extsDocument"))) {
-        return "word";
-    }  // word for text document extensions
-    if (in_array($ext, $configManager->getConfig("extsSpreadsheet"))) {
-        return "cell";
-    }  // cell for spreadsheet extensions
-    if (in_array($ext, $configManager->getConfig("extsPresentation"))) {
-        return "slide";
-    }  // slide for presentation extensions
+    foreach ($configManager->getSuppotredFormats() as $format) {
+        if ($format->name === $ext) {
+            return $format->type;
+        }
+    }
+
     return "word";
 }
 
@@ -400,13 +408,13 @@ function getStoredFiles()
     foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName, [".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
-                $ext = mb_strtolower('.' . pathinfo($fileName, PATHINFO_EXTENSION));
+                $ext = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
                 $result[$dat] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
-                    "canEdit" => in_array($ext, $configManager->getConfig("docServEdited")),
-                    "isFillFormDoc" => in_array($ext, $configManager->getConfig("docServFillforms")),
+                    "canEdit" => in_array($ext, $configManager->getEditExtensions()),
+                    "isFillFormDoc" => in_array($ext, $configManager->getFillExtensions()),
                 ];
             }
         }
@@ -522,22 +530,6 @@ function getFileInfo($fileId)
 }
 
 /**
- * Get all the supported file extensions
- *
- * @return array
- */
-function getFileExts()
-{
-    $configManager = new ConfigManager();
-    return array_merge(
-        $configManager->getConfig("docServViewd"),
-        $configManager->getConfig("docServEdited"),
-        $configManager->getConfig("docServConvert"),
-        $configManager->getConfig("docServFillforms")
-    );
-}
-
-/**
  * Get the correct file name if such a name already exists
  *
  * @param string $fileName
@@ -590,10 +582,11 @@ function getDocEditorKey($fileName)
 function doUpload($fileUri)
 {
     $_fileName = GetCorrectName($fileUri);
+    $configManager = new ConfigManager();
 
     // check if file extension is supported by the editor
-    $ext = mb_strtolower('.' . pathinfo($_fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, getFileExts())) {
+    $ext = mb_strtolower(pathinfo($_fileName, PATHINFO_EXTENSION));
+    if (!in_array($ext, $configManager->getSuppotredExtensions())) {
         throw new Exception("File type is not supported");
     }
 
@@ -896,7 +889,8 @@ function getResponseUri($document_response, &$response_uri)
 function tryGetDefaultByType($createExt, $user)
 {
     $demoName = (isset($_GET["sample"]) ? "sample." : "new.") . $createExt;
-    $demoPath = "assets" . DIRECTORY_SEPARATOR . (isset($_GET["sample"]) ? "sample" : "new") . DIRECTORY_SEPARATOR;
+    $demoPath = "assets" . DIRECTORY_SEPARATOR . "document-templates" . DIRECTORY_SEPARATOR
+        . (isset($_GET["sample"]) ? "sample" : "new") . DIRECTORY_SEPARATOR;
     $demoFilename = GetCorrectName($demoName);
 
     if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {

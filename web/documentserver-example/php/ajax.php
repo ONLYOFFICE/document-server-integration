@@ -95,15 +95,10 @@ function saveas()
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
         $configManager = new ConfigManager();
-        $allexts = array_merge(
-            $configManager->getConfig("docServConvert"),
-            $configManager->getConfig("docServEdited"),
-            $configManager->getConfig("docServViewd"),
-            $configManager->getConfig("docServFillforms")
-        );
+        $allexts = $configManager->getSuppotredExtensions();
         $filename = GetCorrectName($title);
 
-        if (!in_array("." . $extension, $allexts)) {
+        if (!in_array($extension, $allexts)) {
             $result["error"] = "File type is not supported";
             return $result;
         }
@@ -156,7 +151,7 @@ function upload()
     // check if the file was uploaded using HTTP POST
     if (is_uploaded_file($tmp)) {
         $filesize = $_FILES['files']['size'];  // get the file size
-        $ext = mb_strtolower('.' . pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
+        $ext = mb_strtolower(pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
         if ($filesize <= 0 || $filesize > $configManager->getConfig("fileSizeMax")) {
@@ -165,7 +160,7 @@ function upload()
         }
 
         // check if the file extension is supported by the editor
-        if (!in_array($ext, getFileExts())) {
+        if (!in_array($ext, $configManager->getSuppotredExtensions())) {
             $result["error"] = 'File type is not supported';  // if not, then an error occurs
             return $result;
         }
@@ -256,7 +251,7 @@ function convert()
     $configManager = new ConfigManager();
 
     // check if the file with such an extension can be converted
-    if (in_array("." . $extension, $configManager->getConfig("docServConvert")) &&
+    if (in_array($extension, $configManager->getConvertExtensions()) &&
         $internalExtension != "") {
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
@@ -369,7 +364,8 @@ function assets()
 {
     $fileName = basename($_GET["name"]);
     $filePath = dirname(__FILE__) .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
+        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 
@@ -382,7 +378,8 @@ function csv()
 {
     $fileName = "csv.csv";
     $filePath = dirname(__FILE__) .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
+        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
 }
 

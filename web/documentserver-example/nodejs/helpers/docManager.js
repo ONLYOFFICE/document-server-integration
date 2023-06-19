@@ -135,7 +135,7 @@ DocManager.prototype.createDemo = function createDemo(isSample, fileExt, userid,
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
   // copy sample document of a necessary extension to the storage path
-  this.copyFile(path.join(__dirname, '..', 'public', 'assets', isSample
+  this.copyFile(path.join(__dirname, '..', 'public', 'assets', 'document-templates', isSample
     ? 'sample' : 'new', demoName), this.storagePath(fileName));
 
   this.saveFileData(fileName, userid, username); // save file data to the file
@@ -328,7 +328,7 @@ DocManager.prototype.getStoredFiles = function getStoredFiles() {
         time,
         name: storedFiles[i],
         documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: configServer.get('editedDocs').indexOf(fileUtility.getFileExtension(storedFiles[i])) !== -1,
+        canEdit: fileUtility.getEditExtensions().indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
         version: version + 1,
       };
 
