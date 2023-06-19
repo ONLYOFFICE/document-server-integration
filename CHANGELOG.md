@@ -1,5 +1,7 @@
 # Change Log
 
+- php: using a repo with a list of formats
+- nodejs: using a repo with a list of formats
 - nodejs: delete file without reloading the page
 - nodejs: getting history by a separate request
 - nodejs: restore from history
