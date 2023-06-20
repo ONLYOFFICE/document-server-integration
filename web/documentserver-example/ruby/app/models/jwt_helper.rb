@@ -18,8 +18,8 @@ require 'jwt'
 
 class JwtHelper
 
-    @jwt_secret = Configuration.new.jwt_secret
-    @token_use_for_request = Configuration.new.jwt_use_for_request
+    @jwt_secret = ConfigurationManager.new.jwt_secret
+    @token_use_for_request = ConfigurationManager.new.jwt_use_for_request
 
     class << self
         # check if a secret key to generate token exists or not

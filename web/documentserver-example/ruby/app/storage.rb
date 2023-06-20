@@ -18,6 +18,8 @@
 # typed: true
 
 require 'pathname'
+require_relative 'models/configuration_manager'
+require_relative 'proxy'
 
 # ```text
 # /application_directory
@@ -35,7 +37,7 @@ class StorageManager
 
   sig do
     params(
-      config: Configuration,
+      config: ConfigurationManager,
       proxy_manager: ProxyManager,
       source_basename: String
     )
@@ -61,11 +63,9 @@ class StorageManager
 
   sig { returns(Pathname) }
   def storage_directory
-    # move to configuration
-    # path = Pathname.new(@config.storage_path)
-    # # @config.storage_path
-    # directory = path ? @configuration.storage_path : Rails.root.join('public', @config.storage_path)
-    storage_path = Pathname(@config.storage_path)
+    # TODO: move to the Configuration.
+    path = Pathname.new(@config.storage_path)
+    storage_path = path.absolute? ? path : Rails.root.join('public', path)
     FileUtils.mkdir(storage_path) unless storage_path.exist?
     storage_path
   end

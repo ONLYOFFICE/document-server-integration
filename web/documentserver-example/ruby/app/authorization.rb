@@ -20,11 +20,12 @@
 # rubocop:disable Metrics/MethodLength
 
 require 'jwt'
+require_relative 'models/configuration_manager'
 
 class AuthorizationService
   extend T::Sig
 
-  sig { params(config: Configuration).void }
+  sig { params(config: ConfigurationManager).void }
   def initialize(config:)
     @config = config
   end

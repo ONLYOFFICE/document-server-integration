@@ -17,7 +17,7 @@
 require 'net/http'
 
 class TrackHelper
-  @@document_command_url = Configuration.new.document_server_command_uri.to_s
+  @@document_command_url = ConfigurationManager.new.document_server_command_uri.to_s
 
     class << self
 
@@ -62,7 +62,7 @@ class TrackHelper
         end
 
     def resolve_file_data(file_data)
-      config = Configuration.new
+      config = ConfigurationManager.new
       proxy = Proxy.new(config)
 
       url = file_data['url']

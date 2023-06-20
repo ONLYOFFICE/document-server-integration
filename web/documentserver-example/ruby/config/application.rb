@@ -9,6 +9,9 @@ require 'sprockets/railtie'
 
 Bundler.require(*Rails.groups)
 
+require_relative '../app/controllers/application_controller'
+require_relative '../app/history'
+
 module Example
   class Application < Rails::Application
     # TODO: move to the Convifgutaion.
@@ -51,15 +54,27 @@ module Example
       match '/track', to: 'home#track', via: 'post'
       match '/upload', to: 'home#upload', via: 'post'
 
-      match(
+      get(
         '/history/:file_basename',
-        to: HistoryController.action(:history),
-        via: :get
+        to: HistoryController.action('history'),
+        format: false,
+        defaults: {
+          format: 'html'
+        },
+        constraints: {
+          file_basename: /[^\/]*/
+        }
       )
-      match(
+      get(
         '/history/:file_basename/:version/data',
-        to: HistoryController.action(:history_data),
-        via: :get
+        to: HistoryController.action('history_data'),
+        format: false,
+        defaults: {
+          format: 'html'
+        },
+        constraints: {
+          file_basename: /[^\/]*/
+        }
       )
     end
   end

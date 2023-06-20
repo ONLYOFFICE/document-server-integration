@@ -19,12 +19,14 @@
 
 require 'uri'
 
+require_relative 'models/configuration_manager'
+
 class ProxyManager
   extend T::Sig
 
   sig do
     params(
-      config: Configuration,
+      config: ConfigurationManager,
       request: ActionDispatch::Request,
       user_host: T.nilable(String)
     )

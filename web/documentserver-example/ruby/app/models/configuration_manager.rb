@@ -22,7 +22,7 @@ require 'uri'
 # The Configuration class provides the environment based configuration for the
 # example instance.
 # rubocop:disable Metrics/ClassLength
-class Configuration
+class ConfigurationManager
   extend T::Sig
 
   def initialize

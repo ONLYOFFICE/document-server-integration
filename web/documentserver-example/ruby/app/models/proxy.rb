@@ -24,7 +24,7 @@ require 'uri'
 class Proxy
   extend T::Sig
 
-  sig { params(configuration: Configuration).void }
+  sig { params(configuration: ConfigurationManager).void }
   def initialize(configuration)
     @config = configuration
   end

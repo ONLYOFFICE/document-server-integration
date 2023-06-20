@@ -332,7 +332,7 @@ class HomeController < ApplicationController
       res = http.request(req)
       data = res.body
 
-      if data.size <= 0 || data.size > Configuration.new.maximum_file_size
+      if data.size <= 0 || data.size > ConfigurationManager.new.maximum_file_size
         render plain: '{"error": "File size is incorrect"}'
         return
       end

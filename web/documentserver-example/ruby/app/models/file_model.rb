@@ -48,7 +48,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    config = Configuration.new
+    config = ConfigurationManager.new
     File.absolute_path?(config.storage_path) ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
   end
 

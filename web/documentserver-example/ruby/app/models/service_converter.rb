@@ -16,8 +16,8 @@
 
 class ServiceConverter
 
-  @@convert_timeout = Configuration.new.convertation_timeout
-  @@document_converter_url = Configuration.new.document_server_converter_uri.to_s
+  @@convert_timeout = ConfigurationManager.new.convertation_timeout
+  @@document_converter_url = ConfigurationManager.new.document_server_converter_uri.to_s
 
   class << self
 
