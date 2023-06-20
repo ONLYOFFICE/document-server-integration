@@ -21,8 +21,9 @@
 
 require 'jwt'
 require_relative 'models/configuration_manager'
+require_relative 'response'
 
-class AuthorizationService
+class AuthorizationManager
   extend T::Sig
 
   sig { params(config: ConfigurationManager).void }
@@ -30,27 +31,44 @@ class AuthorizationService
     @config = config
   end
 
+  sig { params(headers: ActionDispatch::Http::Headers).returns(T::Boolean) }
+  def authorize(headers:)
+    enabled ? verify(headers:) : true
+  end
+
   sig { returns(T::Boolean) }
   def enabled
     !@config.jwt_secret.empty?
   end
 
-  # TODO: rename to enable_for_document_server
-  # sig { returns(T::Boolean) }
-  # def use_for_request
-  #   @configuration.jwt_use_for_request
-  # end
+  sig { params(headers: ActionDispatch::Http::Headers).returns(T::Boolean) }
+  def document_server_authorize(headers:)
+    document_server_enabled ? verify(headers:) : true
+  end
+
+  sig { returns(T::Boolean) }
+  def document_server_enabled
+    enabled && @config.jwt_use_for_request
+  end
+
+  sig { params(headers: ActionDispatch::Http::Headers).returns(T::Boolean) }
+  def verify(headers:)
+    header = headers[@config.jwt_header]
+    return false unless header
+    token = header.sub('Bearer ', '')
+    decoded = decode(token)
+    !decoded.nil?
+  end
 
   sig { params(payload: T.untyped).returns(String) }
   def encode(payload:)
     JWT.encode(
       payload,
       @config.jwt_secret,
-      AuthorizationService.algorithm
+      AuthorizationManager.algorithm
     )
   end
 
-  # TODO: make returns nullable.
   sig { params(payload: String).returns(T.untyped) }
   def decode(payload:)
     decoded = JWT.decode(
@@ -58,15 +76,25 @@ class AuthorizationService
       @config.jwt_secret,
       true,
       {
-        algorithm: AuthorizationService.algorithm
+        algorithm: AuthorizationManager.algorithm
       }
     )
-    decoded[0].to_json
+    decoded[0]
   rescue StandardError
-    ''
+    nil
   end
 
   def self.algorithm
     'HS256'
+  end
+end
+
+class AuthorizationResponseError < ResponseError
+  sig { returns(AuthorizationResponseError) }
+  def self.forbidden
+    AuthorizationResponseError.new(
+      status: :forbidden,
+      error: 'forbidden'
+    )
   end
 end

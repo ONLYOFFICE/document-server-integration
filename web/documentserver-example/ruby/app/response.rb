@@ -17,41 +17,17 @@
 # frozen_string_literal: true
 # typed: true
 
-require 'uri'
-
-require_relative 'models/configuration_manager'
-
-class ProxyManager
+class ResponseError
   extend T::Sig
 
-  sig do
-    params(
-      config: ConfigurationManager,
-      base_url: String,
-      remote_ip: String,
-      user_host: T.nilable(String)
+  sig { params(status: Symbol, error: String).void }
+  def initialize(status:, error:)
+    @status = status
+    @json = JSON.generate(
+      {
+        error:,
+        success: false
+      }
     )
-      .void
-  end
-  def initialize(
-    config:,
-    base_url:,
-    remote_ip:,
-    user_host: nil
-  )
-    @config = config
-    @base_url = base_url
-    @remote_ip = remote_ip
-    @user_host = user_host
-  end
-
-  sig { returns(URI::Generic) }
-  def example_uri
-    @config.example_uri || URI(@base_url)
-  end
-
-  sig { returns(String) }
-  def user_host
-    (@user_host || @remote_ip).gsub(/[^0-9\-.a-zA-Z_=]/, '_')
   end
 end

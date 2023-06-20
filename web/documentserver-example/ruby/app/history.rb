@@ -35,10 +35,12 @@
 
 # https://api.onlyoffice.com/editors/callback#history
 
+require 'mimemagic'
 require_relative 'models/configuration_manager'
 require_relative 'models/document_helper'
 require_relative 'authorization'
 require_relative 'proxy'
+require_relative 'response'
 require_relative 'storage'
 
 class PseudoLogger
@@ -409,45 +411,47 @@ class HistoryController < ApplicationController
   #
   # ```http
   # GET {{example_url}}/history/{{file_basename}}?user_host={{user_host}} HTTP/1.1
-  # ?? Authorization: Bearer {{token}}
+  # Authorization: Bearer {{token}}
   # ``
   sig { void }
   def history
     DocumentHelper.init(request.remote_ip, request.base_url)
 
     config = ConfigurationManager.new
-    proxy_manager = ProxyManager.new(
-      config:,
-      request:,
-      user_host: params['user_host']
-    )
+    auth_manager = AuthorizationManager.new(config:)
 
-    storage_manager = StorageManager.new(
-      config:,
-      proxy_manager:,
-      source_basename: params['file_basename']
-    )
-    unless storage_manager.source_file.exist?
-      render(
-        status: :not_found,
-        json: HistoryResponseError.could_not_find_file
-      )
+    unless auth_manager.authorize(headers: request.headers)
+      render(AuthorizationResponseError.forbidden)
       return
     end
 
-    history_manager = HistoryManager.new(proxy_manager:, storage_manager:)
-    history = history_manager.history
-    render(
-      status: :ok,
-      json: history
+    source_basename = params['file_basename']
+    user_host = params['user_host']
+
+    proxy_manager = ProxyManager.new(
+      config:,
+      base_url: request.base_url,
+      remote_ip: request.remote_ip,
+      user_host:
     )
+    storage_manager = StorageManager.new(
+      config:,
+      proxy_manager:,
+      source_basename:
+    )
+    history_manager = HistoryManager.new(
+      proxy_manager:,
+      storage_manager:
+    )
+
+    render(json: history_manager.history)
   end
 
   # https://api.onlyoffice.com/editors/methods#setHistoryData
   #
   # ```http
   # GET {{example_url}}/history/{{file_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
-  # ?? Authorization: Bearer {{token}}
+  # Authorization: Bearer {{token}}
   # ```
   sig { void }
   def history_data
@@ -455,37 +459,40 @@ class HistoryController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
 
     config = ConfigurationManager.new
+    auth_manager = AuthorizationManager.new(config:)
+
+    unless auth_manager.authorize(headers: request.headers)
+      render(AuthorizationResponseError.forbidden)
+      return
+    end
+
+    source_basename = params['file_basename']
+    version = params['version'].to_i
+    user_host = params['user_host']
+
     proxy_manager = ProxyManager.new(
       config:,
-      request:,
-      user_host: params['user_host']
+      base_url: request.base_url,
+      remote_ip: request.remote_ip,
+      user_host:
     )
-
     storage_manager = StorageManager.new(
       config:,
       proxy_manager:,
-      source_basename: params['file_basename']
+      source_basename:
     )
-    unless storage_manager.source_file.exist?
-      render(
-        status: :not_found,
-        json: HistoryResponseError.could_not_find_file
-      )
-      return
-    end
+    history_manager = HistoryManager.new(
+      proxy_manager:,
+      storage_manager:
+    )
 
-    history_manager = HistoryManager.new(proxy_manager:, storage_manager:)
-    history_data = history_manager.history_data(version: params['version'].to_i)
+    history_data = history_manager.history_data(version:)
     unless history_data
-      render(
-        status: :not_found,
-        json: nil
-      )
+      render(HistoryResponseError.could_not_create_history_data)
       return
     end
 
-    auth = AuthorizationService.new(config:)
-    unless auth.enabled
+    unless auth_manager.enabled
       render(
         status: :ok,
         json: history_data
@@ -493,7 +500,7 @@ class HistoryController < ApplicationController
       return
     end
 
-    token = auth.encode(payload: history_data)
+    token = auth_manager.encode(payload: history_data)
     tokenized_history_data = HistoryData.new(
       changes_uri: history_data.changes_uri,
       file_type: history_data.file_type,
@@ -503,10 +510,61 @@ class HistoryController < ApplicationController
       uri: history_data.uri,
       version: history_data.version
     )
-    render(
-      status: :ok,
-      json: tokenized_history_data
+
+    render(json: tokenized_history_data)
+  end
+
+  # ? url that used in history_data
+  #
+  # ```http
+  # GET {{example_url}}/history/{{file_basename}}/{{version}}/download/{{requested_file_basename}}?user_host={{user_host}} HTTP/1.1
+  # Authorization: Bearer {{token}}
+  # ```
+  sig { void }
+  def history_download
+    config = ConfigurationManager.new
+    auth_manager = AuthorizationManager.new(config:)
+
+    unless auth_manager.document_server_authorize(headers: request.headers)
+      render(AuthorizationResponseError.forbidden)
+      return
+    end
+
+    source_basename = params['file_basename']
+    version = params['version'].to_i
+    requested_basename = params['requested_file_basename']
+    user_host = params['user_host']
+
+    proxy_manager = ProxyManager.new(
+      config:,
+      base_url: request.base_url,
+      remote_ip: request.remote_ip,
+      user_host:
     )
+    storage_manager = StorageManager.new(
+      config:,
+      proxy_manager:,
+      source_basename:
+    )
+    history_manager = HistoryManager.new(
+      proxy_manager:,
+      storage_manager:
+    )
+
+    directory = history_manager.version_directory(version:)
+    requested_file = directory.join(requested_basename)
+    unless requested_file.exist?
+      render(HistoryResponseError.could_not_find_requested)
+      return
+    end
+
+    requested_size = File.size(requested_file)
+    requested_mime = MimeMagic.by_path(requested_file)
+
+    response.headers['Content-Length'] = requested_size.to_s
+    response.headers['Content-Type'] = requested_mime&.type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{requested_basename}"
+    send_file(requested_file)
   end
 end
 
@@ -533,7 +591,7 @@ class HistoryManager
 
   sig do
     params(
-      proxy_manager: T.nilable(ProxyManager),
+      proxy_manager: ProxyManager,
       storage_manager: StorageManager
     )
       .void
@@ -588,9 +646,7 @@ class HistoryManager
       end
     return nil unless key
 
-    uri = history_download_item_uri(version:)
-    return nil unless uri
-
+    uri = history_item_download_uri(version:)
     file_type = @storage_manager.source_file.extname.delete_prefix('.')
 
     if version == HistoryManager.minimal_version
@@ -606,7 +662,7 @@ class HistoryManager
     end
 
     previous = history_data(version: version - 1)
-    changes_uri = history_download_changes_uri(version:)
+    changes_uri = history_changes_download_uri(version:)
 
     HistoryData.new(
       changes_uri:,
@@ -619,16 +675,16 @@ class HistoryManager
     )
   end
 
-  sig { params(version: Integer).returns(T.nilable(URI::Generic)) }
-  def history_download_item_uri(version:)
+  sig { params(version: Integer).returns(URI::Generic) }
+  def history_item_download_uri(version:)
     history_download_uri(
       version:,
       requested_file_basename: "prev#{@storage_manager.source_file.extname}"
     )
   end
 
-  sig { params(version: Integer).returns(T.nilable(URI::Generic)) }
-  def history_download_changes_uri(version:)
+  sig { params(version: Integer).returns(URI::Generic) }
+  def history_changes_download_uri(version:)
     history_download_uri(
       version:,
       requested_file_basename: 'diff.zip'
@@ -640,10 +696,9 @@ class HistoryManager
       version: Integer,
       requested_file_basename: String
     )
-      .returns(T.nilable(URI::Generic))
+      .returns(URI::Generic)
   end
   def history_download_uri(version:, requested_file_basename:)
-    return nil unless @proxy_manager
     uri = URI.join(
       "#{@proxy_manager.example_uri}/",
       'history/',
@@ -712,9 +767,8 @@ class HistoryManager
   end
 
   # TODO: this method shouldn't be there because we should always have a key file.
-  sig { returns(T.nilable(String)) }
+  sig { returns(String) }
   def generate_key
-    return nil unless @proxy_manager
     time = File.mtime(@storage_manager.source_file)
     ServiceConverter.generate_revision_id(
       "#{@proxy_manager.user_host}/#{@storage_manager.source_file.basename}.#{time}"
@@ -785,21 +839,19 @@ class HistoryManager
   end
 end
 
-class HistoryResponseError
-  extend T::Sig
-
-  sig { params(error: Integer, message: T.nilable(String)).void }
-  def initialize(error:, message: nil)
-    @error = error
-    @message = message
-    @success = false
+class HistoryResponseError < ResponseError
+  sig { returns(HistoryResponseError) }
+  def self.could_not_find_requested
+    HistoryResponseError.new(
+      status: :not_found,
+      error: "The requested file with the specified basename doesn't exist."
+    )
   end
 
-  sig { returns(HistoryResponseError) }
-  def self.could_not_find_file
+  def self.could_not_create_history_data
     HistoryResponseError.new(
-      error: 1,
-      message: "The file with the specified basename doesn't exist."
+      status: :bad_request,
+      error: 'could_not_create_history_data'
     )
   end
 end

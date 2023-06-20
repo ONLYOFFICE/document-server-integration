@@ -54,6 +54,8 @@ module Example
       match '/track', to: 'home#track', via: 'post'
       match '/upload', to: 'home#upload', via: 'post'
 
+      file_basename_constraint = /[^\/]*/
+
       get(
         '/history/:file_basename',
         to: HistoryController.action('history'),
@@ -62,7 +64,7 @@ module Example
           format: 'html'
         },
         constraints: {
-          file_basename: /[^\/]*/
+          file_basename: file_basename_constraint
         }
       )
       get(
@@ -73,7 +75,19 @@ module Example
           format: 'html'
         },
         constraints: {
-          file_basename: /[^\/]*/
+          file_basename: file_basename_constraint
+        }
+      )
+      get(
+        '/history/:file_basename/:version/download/:requested_file_basename',
+        to: HistoryController.action('history_download'),
+        format: false,
+        defaults: {
+          foramt: 'html'
+        },
+        constraints: {
+          file_basename: file_basename_constraint,
+          requested_file_basename: file_basename_constraint
         }
       )
     end
