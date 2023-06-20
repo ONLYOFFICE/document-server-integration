@@ -57,37 +57,48 @@ module Example
       file_basename_constraint = /[^\/]*/
 
       get(
-        '/history/:file_basename',
+        '/history/:source_basename',
         to: HistoryController.action('history'),
         format: false,
         defaults: {
           format: 'html'
         },
         constraints: {
-          file_basename: file_basename_constraint
+          source_basename: file_basename_constraint
         }
       )
       get(
-        '/history/:file_basename/:version/data',
+        '/history/:source_basename/:version/data',
         to: HistoryController.action('history_data'),
         format: false,
         defaults: {
           format: 'html'
         },
         constraints: {
-          file_basename: file_basename_constraint
+          source_basename: file_basename_constraint
         }
       )
       get(
-        '/history/:file_basename/:version/download/:requested_file_basename',
+        '/history/:source_basename/:version/download/:requested_basename',
         to: HistoryController.action('history_download'),
         format: false,
         defaults: {
           foramt: 'html'
         },
         constraints: {
-          file_basename: file_basename_constraint,
-          requested_file_basename: file_basename_constraint
+          source_basename: file_basename_constraint,
+          requested_basename: file_basename_constraint
+        }
+      )
+      get(
+        '/history/:source_basename/:version/restore',
+        to: HistoryController.action('history_restore'),
+        format: false,
+        defaults: {
+          foramt: 'html'
+        },
+        constraints: {
+          source_basename: file_basename_constraint
         }
       )
     end

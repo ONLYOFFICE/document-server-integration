@@ -410,7 +410,7 @@ class HistoryController < ApplicationController
   # https://api.onlyoffice.com/editors/methods#refreshHistory
   #
   # ```http
-  # GET {{example_url}}/history/{{file_basename}}?user_host={{user_host}} HTTP/1.1
+  # GET {{example_url}}/history/{{source_basename}}?user_host={{user_host}} HTTP/1.1
   # Authorization: Bearer {{token}}
   # ``
   sig { void }
@@ -425,7 +425,7 @@ class HistoryController < ApplicationController
       return
     end
 
-    source_basename = params['file_basename']
+    source_basename = params['source_basename']
     user_host = params['user_host']
 
     proxy_manager = ProxyManager.new(
@@ -450,7 +450,7 @@ class HistoryController < ApplicationController
   # https://api.onlyoffice.com/editors/methods#setHistoryData
   #
   # ```http
-  # GET {{example_url}}/history/{{file_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
+  # GET {{example_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
@@ -466,7 +466,7 @@ class HistoryController < ApplicationController
       return
     end
 
-    source_basename = params['file_basename']
+    source_basename = params['source_basename']
     version = params['version'].to_i
     user_host = params['user_host']
 
@@ -493,10 +493,7 @@ class HistoryController < ApplicationController
     end
 
     unless auth_manager.enabled
-      render(
-        status: :ok,
-        json: history_data
-      )
+      render(json: history_data)
       return
     end
 
@@ -517,7 +514,7 @@ class HistoryController < ApplicationController
   # ? url that used in history_data
   #
   # ```http
-  # GET {{example_url}}/history/{{file_basename}}/{{version}}/download/{{requested_file_basename}}?user_host={{user_host}} HTTP/1.1
+  # GET {{example_url}}/history/{{source_basename}}/{{version}}/download/{{requested_basename}}?user_host={{user_host}} HTTP/1.1
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
@@ -530,9 +527,9 @@ class HistoryController < ApplicationController
       return
     end
 
-    source_basename = params['file_basename']
+    source_basename = params['source_basename']
     version = params['version'].to_i
-    requested_basename = params['requested_file_basename']
+    requested_basename = params['requested_basename']
     user_host = params['user_host']
 
     proxy_manager = ProxyManager.new(
@@ -565,6 +562,50 @@ class HistoryController < ApplicationController
     response.headers['Content-Type'] = requested_mime&.type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{requested_basename}"
     send_file(requested_file)
+  end
+
+  # Bumps the source file's current version and restores it to the specified
+  # version, thus designating it as the new source file.
+  #
+  # ```http
+  # GET {{example_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}} HTTP/1.1
+  # Authorization: Bearer {{token}}
+  # ```
+  sig { void }
+  def history_restore
+    DocumentHelper.init(request.remote_ip, request.base_url)
+
+    config = ConfigurationManager.new
+    auth_manager = AuthorizationManager.new(config:)
+
+    unless auth_manager.authorize(headers: request.headers)
+      render(AuthorizationResponseError.forbidden)
+      return
+    end
+
+    source_basename = params['source_basename']
+    version = params['version'].to_i
+    user_host = params['user_host']
+
+    proxy_manager = ProxyManager.new(
+      config:,
+      base_url: request.base_url,
+      remote_ip: request.remote_ip,
+      user_host:
+    )
+    storage_manager = StorageManager.new(
+      config:,
+      proxy_manager:,
+      source_basename:
+    )
+    history_manager = HistoryManager.new(
+      proxy_manager:,
+      storage_manager:
+    )
+
+    # history_manager.restore(version:)
+
+    puts
   end
 end
 
@@ -675,11 +716,26 @@ class HistoryManager
     )
   end
 
+  sig { params(version: Integer).returns(T::Boolean) }
+  def restore(version:)
+    recovery_file = item_file(version:)
+    return false unless recovery_file.exist?
+
+    bumped_version = latest_version + 1
+    bumped_file = item_file(version: bumped_version)
+
+    write_key(version: bumped_version)
+    FileUtils.cp(@storage_manager.source_file, bumped_file)
+    FileUtils.cp(recovery_file, @storage_manager.source_file)
+
+    true
+  end
+
   sig { params(version: Integer).returns(URI::Generic) }
   def history_item_download_uri(version:)
     history_download_uri(
       version:,
-      requested_file_basename: "prev#{@storage_manager.source_file.extname}"
+      requested_file_basename: item_file(version:).basename.to_s
     )
   end
 
@@ -751,6 +807,12 @@ class HistoryManager
     )
   end
 
+  sig { params(version: Integer).returns(Pathname) }
+  def item_file(version:)
+    directory = version_directory(version:)
+    directory.join("prev#{@storage_manager.source_file.extname}")
+  end
+
   sig { params(version: Integer).returns(T.nilable(HistoryChanges)) }
   def changes(version:)
     file = changes_file(version:)
@@ -766,7 +828,15 @@ class HistoryManager
     history_directory.join(version.to_s, 'changes.json')
   end
 
-  # TODO: this method shouldn't be there because we should always have a key file.
+  sig { params(version: Integer).returns(Pathname) }
+  def write_key(version:)
+    key = generate_key
+    key_file = key_file(version:)
+    FileUtils.mkdir(key_file.dirname) unless File.exist?(key_file.dirname)
+    File.write(key_file, key)
+    key_file
+  end
+
   sig { returns(String) }
   def generate_key
     time = File.mtime(@storage_manager.source_file)
