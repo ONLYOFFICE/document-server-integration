@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.6.0
 - nodejs: setUsers for region protection
 - si skin languages
 - fix "no" skin languages

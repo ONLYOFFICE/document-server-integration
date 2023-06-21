@@ -26,7 +26,7 @@ module OnlineEditorsExampleRuby
       end
     end
 
-    Rails.configuration.version="1.5.1"
+    Rails.configuration.version="1.6.0"
 
     Rails.configuration.fileSizeMax=5242880
     Rails.configuration.storagePath="app_data"
