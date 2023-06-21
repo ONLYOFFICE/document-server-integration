@@ -1,8 +1,17 @@
 ONLYOFFICE Applications example uses code from the following 3rd party projects:
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
+
+Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   gson.license
+
+H2 Database Engine - This software contains unmodified binary redistributions for H2 database engine. H2 is a relational DBMS that can be embedded in java applications. (https://h2database.com/html/license.html)
+License:        MPL 2.0 or EPL 1.0
+License File:   h2database.license
+
+Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   jackson-databind.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -16,13 +25,29 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+JSON.simple   - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt)
+License:        Apache 2.0
+License File:   JSON.simple.license
+
+Project Lombok - Project Lombok is a java library that automatically plugs into your editor and build tools. (https://mvnrepository.com/artifact/org.projectlombok/lombok).
+License:        MIT
+License File    lombok.license
+
+ModelMapper   - ModelMapper is an intelligent object mapping library that automatically maps objects to each other. (https://github.com/modelmapper/modelmapper)
+License:        Apache 2.0
+License File    modelmapper.license
 
 Prime JWT     - is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson. (https://github.com/ws-apps/prime-jwt/blob/master/LICENSE)
 License:        Apache 2.0
@@ -43,19 +68,3 @@ License File:   spring-boot.license
 Spring Data JPA - Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate. (https://github.com/spring-projects/spring-data-jpa/blob/main/LICENSE.txt)
 License:        Apache 2.0
 License File:   spring-data-jpa.license
-
-H2 Database Engine - This software contains unmodified binary redistributions for H2 database engine. H2 is a relational DBMS that can be embedded in java applications. (https://h2database.com/html/license.html)
-License:        MPL 2.0 or EPL 1.0
-License File:   h2database.license
-
-JSON.simple   - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt)
-License:        Apache 2.0
-License File:   JSON.simple.license
-
-Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
-License:        Apache 2.0
-License File:   gson.license
-
-Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
-License:        Apache 2.0
-License File:   jackson-databind.license
