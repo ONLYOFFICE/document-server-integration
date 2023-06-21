@@ -86,11 +86,11 @@ public final class Users {
                 true, new ArrayList<String>(), descriptionUserSecond, false));
         add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
-                Arrays.asList("group-2"), new ArrayList<String>()), Arrays.asList("group-2"),
+                Arrays.asList("group-2"), null), Arrays.asList("group-2"),
                 false, Arrays.asList("copy", "download", "print"),
                 descriptionUserThird, false));
         add(new User("uid-0", null, null,
-                "", null, new CommentGroups(), new ArrayList<String>(),
+                "", null, null, null,
                 null, Arrays.asList("protect"), descriptionUserZero, false));
     }};
 
