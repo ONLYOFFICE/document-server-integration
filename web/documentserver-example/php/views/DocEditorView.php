@@ -43,13 +43,14 @@ final class DocEditorView extends View
         $confgManager = new ConfigManager();
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
+        $fileId = $request["fileID"] ?? "";
         $user = $userList->getUser($request["user"]);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
             $filename = doUpload($externalUrl);
         } else { // if the file url doesn't exist, get file name and file extension
-            $filename = basename($request["fileID"]);
+            $filename = basename($fileId);
         }
         $createExt = $request["fileExt"] ?? "";
 
