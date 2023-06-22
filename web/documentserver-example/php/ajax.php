@@ -491,7 +491,7 @@ function downloadFile($filePath)
 
         // write headers to the response object
         @header('Content-Length: ' . filesize($filePath));
-        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . str_replace("+", " ", urlencode(basename($filePath))));
+        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . str_replace("+", "%20", urlencode(basename($filePath))));
         @header('Content-Type: ' . mime_content_type($filePath));
 
         if ($fd = fopen($filePath, 'rb')) {
