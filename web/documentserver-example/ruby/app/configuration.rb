@@ -39,7 +39,7 @@ class ConfigurationManager
 
   sig { returns(URI::Generic) }
   def document_server_uri
-    url = ENV['DOCUMENT_SERVER_URL'] || 'http://document-server/'
+    url = ENV['DOCUMENT_SERVER_URL'] || 'http://document-server'
     URI(url)
   end
 
@@ -47,7 +47,7 @@ class ConfigurationManager
   def document_server_api_uri
     path =
       ENV['DOCUMENT_SERVER_API_PATH'] ||
-      'web-apps/apps/api/documents/api.js'
+      '/web-apps/apps/api/documents/api.js'
     URI.join(document_server_uri, path)
   end
 
@@ -55,7 +55,7 @@ class ConfigurationManager
   def document_server_preloader_uri
     path =
       ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
-      'web-apps/apps/api/documents/cache-scripts.html'
+      '/web-apps/apps/api/documents/cache-scripts.html'
     URI.join(document_server_uri, path)
   end
 
@@ -63,7 +63,7 @@ class ConfigurationManager
   def document_server_command_uri
     path =
       ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
-      'coauthoring/CommandService.ashx'
+      '/coauthoring/CommandService.ashx'
     URI.join(document_server_uri, path)
   end
 
@@ -71,7 +71,7 @@ class ConfigurationManager
   def document_server_converter_uri
     path =
       ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
-      'ConvertService.ashx'
+      '/ConvertService.ashx'
     URI.join(document_server_uri, path)
   end
 
