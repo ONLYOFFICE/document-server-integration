@@ -295,4 +295,5 @@ def download(filePath):
     response['Content-Length'] =  os.path.getsize(filePath)
     response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.quote_plus(os.path.basename(filePath))
     response['Content-Type'] = magic.from_file(filePath, mime=True)
+    response['Access-Control-Allow-Origin'] = "*"
     return response
