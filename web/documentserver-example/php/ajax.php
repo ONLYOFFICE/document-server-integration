@@ -250,7 +250,7 @@ function convert()
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
-    $lang = $_COOKIE["ulang"];
+    $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
     $configManager = new ConfigManager();
@@ -445,8 +445,8 @@ function download()
         $fileName = realpath($configManager->getConfig("storagePath"))
         === $configManager->getConfig("storagePath") ?
             $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
-        $userAddress = $_GET["userAddress"];
-        $isEmbedded = $_GET["&dmode"];
+        $userAddress = $_GET["userAddress"] ?? null;
+        $isEmbedded = $_GET["&dmode"] ?? null;
         $jwtManager = new JwtManager();
 
         if ($jwtManager->isJwtEnabled() && $isEmbedded == null && $userAddress) {
