@@ -69,7 +69,7 @@ module Example
       )
       get(
         '/history/:source_basename/:version/data',
-        to: HistoryController.action('history_data'),
+        to: HistoryController.action('data'),
         format: false,
         defaults: {
           format: 'html'
@@ -80,7 +80,7 @@ module Example
       )
       get(
         '/history/:source_basename/:version/download/:requested_basename',
-        to: HistoryController.action('history_download'),
+        to: HistoryController.action('download'),
         format: false,
         defaults: {
           foramt: 'html'
@@ -90,9 +90,9 @@ module Example
           requested_basename: file_basename_constraint
         }
       )
-      get(
+      put(
         '/history/:source_basename/:version/restore',
-        to: HistoryController.action('history_restore'),
+        to: HistoryController.action('restore'),
         format: false,
         defaults: {
           foramt: 'html'

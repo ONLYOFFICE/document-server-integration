@@ -116,39 +116,56 @@
         docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);  // insert recipient data for mail merge into the file
     };
 
-    var onRequestRestore = function (event) {
-      const version = event.data.version;
-      const fileName = "<%= @file.file_name %>";
-      const restoreData = {
-        version: version,
-        fileName: fileName,
-      };
-      let xhr = new XMLHttpRequest();
-      xhr.open("PUT", "restore");
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(JSON.stringify(restoreData));
-      xhr.onload = function () {
-        const authorization = xhr.getResponseHeader('Authorization')
-        const response = JSON.parse(xhr.responseText);
-        if (response.success && !response.error) {
-          const history = <%= raw @file.get_history.to_json %>
-          docEditor.refreshHistory(history.hist);
-          // let xhr = new XMLHttpRequest();
-          // xhr.open("GET", `downloadhistory?fileName=${fileName}&userAddress=${response.user_address}&ver=${response.target_version}&file=${response.file}`);
-          // xhr.setRequestHeader("Content-Type", "application/json");
-          // xhr.setRequestHeader("Authorization", authorization)
-          // xhr.send();
-          // xhr.onload = function () {
-          //   history.changes = JSON.parse(xhr.responseText);
-          //   docEditor.refreshHistory(
-          //     {
-          //       currentVersion: response.bumped_version,
-          //       history: history.changes
-          //     });
-          // }
-        } else {
-          innerAlert(response.error);
+    function onRequestHistory() {
+      const fileName = "<%= @file.file_name %>"
+      // const directURL
+      const request = new XMLHttpRequest()
+      request.open("GET", `history/${fileName}`)
+      request.send()
+      request.onload = function () {
+        response = JSON.parse(request.response)
+        if (request.status != 200) {
+          innerAlert(response.error)
+          return
         }
+        docEditor.refreshHistory(response)
+      }
+    }
+
+    function onRequestHistoryData(event) {
+      const fileName = "<%= @file.file_name %>"
+      const version = event.data
+      // const directURL
+      const request = new XMLHttpRequest()
+      request.open("GET", `history/${fileName}/${version}/data`)
+      request.send()
+      request.onload = function () {
+        response = JSON.parse(request.response)
+        if (request.status != 200) {
+          innerAlert(response.error)
+          return
+        }
+        docEditor.setHistoryData(response)
+      }
+    }
+
+    function onRequestHistoryClose() {
+      document.location.reload()
+    }
+
+    function onRequestRestore(event) {
+      const fileName = "<%= @file.file_name %>"
+      const version = event.data.version
+      const request = new XMLHttpRequest()
+      request.open("PUT", `history/${fileName}/${version}/restore`)
+      request.send()
+      request.onload = function () {
+        if (request.status != 200) {
+          response = JSON.parse(request.response)
+          innerAlert(response.error)
+          return
+        }
+        onRequestHistory()
       }
     }
 
@@ -215,31 +232,18 @@
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
-            'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
-            'onRequestRestore': onRequestRestore
+            'onRequestMailMergeRecipients': onRequestMailMergeRecipients
         };
 
         <%
-            history = @file.get_history
             usersMentions = @file.get_users_mentions %>
 
             if (config.editorConfig.user.id) {
-                <% if history %>
-                    // the user is trying to show the document version history
-                    config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(<%= raw history[:hist].to_json %>);  // show the document version history
-                    };
-                    // the user is trying to click the specific document version in the document version history
-                    config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = <%= raw history[:histData].to_json %>;
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                    };
-                    // the user is trying to go back to the document from viewing the document version history
-                    config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };
-                <% end %>
+              config.events.onRequestHistory = onRequestHistory
+              config.events.onRequestHistoryData = onRequestHistoryData
+              config.events.onRequestHistoryClose = onRequestHistoryClose
+              config.events.onRequestRestore = onRequestRestore
+
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments

@@ -17,17 +17,23 @@
 # frozen_string_literal: true
 # typed: true
 
-class ResponseError
+module ResponseError
   extend T::Sig
 
-  sig { params(status: Symbol, error: String).void }
-  def initialize(status:, error:)
-    @status = status
-    @json = JSON.generate(
-      {
-        error:,
-        success: false
-      }
-    )
+  sig { params(error: String).void }
+  def initialize(error)
+    @error = error
+    @success = false
+  end
+
+  def to_json(*options)
+    as_json.to_json(*options)
+  end
+
+  def as_json(_ = {})
+    {
+      error: @error,
+      success: @success
+    }
   end
 end

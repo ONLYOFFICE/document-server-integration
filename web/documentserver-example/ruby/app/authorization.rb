@@ -89,12 +89,14 @@ class AuthorizationManager
   end
 end
 
-class AuthorizationResponseError < ResponseError
+class AuthorizationResponseError
+  include ResponseError
+  extend T::Sig
+
   sig { returns(AuthorizationResponseError) }
   def self.forbidden
     AuthorizationResponseError.new(
-      status: :forbidden,
-      error: 'forbidden'
+      'forbidden'
     )
   end
 end

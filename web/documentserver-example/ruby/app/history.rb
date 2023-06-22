@@ -144,7 +144,7 @@ end
 class HistoryItem
   extend T::Sig
 
-  sig { returns(T.nilable(HistoryChanges)) }
+  sig { returns(T::Array[HistoryChangesItem]) }
   attr_reader :changes
 
   sig { returns(String) }
@@ -164,7 +164,7 @@ class HistoryItem
 
   sig do
     params(
-      changes: T.nilable(HistoryChanges),
+      changes: T::Array[HistoryChangesItem],
       created: String,
       key: String,
       server_version: T.nilable(String),
@@ -206,10 +206,12 @@ class HistoryItem
 
   sig { params(json: T.untyped).returns(HistoryItem) }
   def self.from_json(json)
-    changes = json['changes']
+    changes = json['changes']&.map do |item|
+      HistoryChangesItem.from_json(item)
+    end
     user = json['user']
     HistoryItem.new(
-      changes: (HistoryChanges.from_json(changes) if changes),
+      changes:,
       created: json['created'],
       key: json['key'],
       server_version: json['serverVersion'],
@@ -278,6 +280,7 @@ class HistoryChangesItem
     @user = user
   end
 
+  # sig { params(options: T.untyped).returns(T.untyped) }
   def to_json(*options)
     as_json.to_json(*options)
   end
@@ -420,10 +423,10 @@ class HistoryController < ApplicationController
     config = ConfigurationManager.new
     auth_manager = AuthorizationManager.new(config:)
 
-    unless auth_manager.authorize(headers: request.headers)
-      render(AuthorizationResponseError.forbidden)
-      return
-    end
+    # unless auth_manager.authorize(headers: request.headers)
+    #   render(AuthorizationResponseError.forbidden)
+    #   return
+    # end
 
     source_basename = params['source_basename']
     user_host = params['user_host']
@@ -454,17 +457,17 @@ class HistoryController < ApplicationController
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
-  def history_data
+  def data
     # TODO: directUrl.
     DocumentHelper.init(request.remote_ip, request.base_url)
 
     config = ConfigurationManager.new
     auth_manager = AuthorizationManager.new(config:)
 
-    unless auth_manager.authorize(headers: request.headers)
-      render(AuthorizationResponseError.forbidden)
-      return
-    end
+    # unless auth_manager.authorize(headers: request.headers)
+    #   render(AuthorizationResponseError.forbidden)
+    #   return
+    # end
 
     source_basename = params['source_basename']
     version = params['version'].to_i
@@ -486,9 +489,10 @@ class HistoryController < ApplicationController
       storage_manager:
     )
 
-    history_data = history_manager.history_data(version:)
+    history_data = history_manager.data(version:)
     unless history_data
-      render(HistoryResponseError.could_not_create_history_data)
+      response.status = :bad_request
+      render(json: HistoryResponseError.could_not_create_history_data)
       return
     end
 
@@ -518,14 +522,14 @@ class HistoryController < ApplicationController
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
-  def history_download
+  def download
     config = ConfigurationManager.new
     auth_manager = AuthorizationManager.new(config:)
 
-    unless auth_manager.document_server_authorize(headers: request.headers)
-      render(AuthorizationResponseError.forbidden)
-      return
-    end
+    # unless auth_manager.document_server_authorize(headers: request.headers)
+    #   render(AuthorizationResponseError.forbidden)
+    #   return
+    # end
 
     source_basename = params['source_basename']
     version = params['version'].to_i
@@ -548,10 +552,18 @@ class HistoryController < ApplicationController
       storage_manager:
     )
 
-    directory = history_manager.version_directory(version:)
-    requested_file = directory.join(requested_basename)
+    # TODO: if in the track we will link the source file to the lates version...
+    requested_file =
+      if version == history_manager.latest_version && requested_basename.include?('prev')
+        storage_manager.user_directory.join(source_basename)
+      else
+        directory = history_manager.version_directory(version:)
+        directory.join(requested_basename)
+      end
+
     unless requested_file.exist?
-      render(HistoryResponseError.could_not_find_requested)
+      response.status = :not_found
+      render(json: HistoryResponseError.could_not_find_requested)
       return
     end
 
@@ -568,20 +580,20 @@ class HistoryController < ApplicationController
   # version, thus designating it as the new source file.
   #
   # ```http
-  # GET {{example_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}} HTTP/1.1
+  # PUT {{example_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}} HTTP/1.1
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
-  def history_restore
+  def restore
     DocumentHelper.init(request.remote_ip, request.base_url)
 
     config = ConfigurationManager.new
-    auth_manager = AuthorizationManager.new(config:)
+    # auth_manager = AuthorizationManager.new(config:)
 
-    unless auth_manager.authorize(headers: request.headers)
-      render(AuthorizationResponseError.forbidden)
-      return
-    end
+    # unless auth_manager.authorize(headers: request.headers)
+    #   render(AuthorizationResponseError.forbidden)
+    #   return
+    # end
 
     source_basename = params['source_basename']
     version = params['version'].to_i
@@ -603,9 +615,13 @@ class HistoryController < ApplicationController
       storage_manager:
     )
 
-    # history_manager.restore(version:)
+    unless history_manager.restore(version:)
+      response.status = :bad_request
+      render(json: HistoryResponseError.could_not_restore_item)
+      return
+    end
 
-    puts
+    head(:ok)
   end
 end
 
@@ -678,7 +694,7 @@ class HistoryManager
   end
 
   sig { params(version: Integer).returns(T.nilable(HistoryData)) }
-  def history_data(version:)
+  def data(version:)
     key =
       if version == latest_version
         generate_key
@@ -687,7 +703,7 @@ class HistoryManager
       end
     return nil unless key
 
-    uri = history_item_download_uri(version:)
+    uri = item_download_uri(version:)
     file_type = @storage_manager.source_file.extname.delete_prefix('.')
 
     if version == HistoryManager.minimal_version
@@ -702,8 +718,9 @@ class HistoryManager
       )
     end
 
-    previous = history_data(version: version - 1)
-    changes_uri = history_changes_download_uri(version:)
+    previous_version = version - 1
+    previous = data(version: previous_version)
+    changes_uri = changes_download_uri(version: previous_version)
 
     HistoryData.new(
       changes_uri:,
@@ -721,7 +738,8 @@ class HistoryManager
     recovery_file = item_file(version:)
     return false unless recovery_file.exist?
 
-    bumped_version = latest_version + 1
+    # bumped_version = latest_version + 1
+    bumped_version = latest_version
     bumped_file = item_file(version: bumped_version)
 
     write_key(version: bumped_version)
@@ -731,43 +749,7 @@ class HistoryManager
     true
   end
 
-  sig { params(version: Integer).returns(URI::Generic) }
-  def history_item_download_uri(version:)
-    history_download_uri(
-      version:,
-      requested_file_basename: item_file(version:).basename.to_s
-    )
-  end
-
-  sig { params(version: Integer).returns(URI::Generic) }
-  def history_changes_download_uri(version:)
-    history_download_uri(
-      version:,
-      requested_file_basename: 'diff.zip'
-    )
-  end
-
-  sig do
-    params(
-      version: Integer,
-      requested_file_basename: String
-    )
-      .returns(URI::Generic)
-  end
-  def history_download_uri(version:, requested_file_basename:)
-    uri = URI.join(
-      "#{@proxy_manager.example_uri}/",
-      'history/',
-      "#{ERB::Util.url_encode(@storage_manager.source_file.basename)}/",
-      "#{version}/",
-      'download/',
-      requested_file_basename
-    )
-    query = {}
-    query['user_host'] = @proxy_manager.user_host
-    uri.query = URI.encode_www_form(query)
-    uri
-  end
+  # Item
 
   sig { returns(T.nilable(HistoryItem)) }
   def initial_item
@@ -780,7 +762,7 @@ class HistoryManager
     )
 
     HistoryItem.new(
-      changes: nil,
+      changes: [],
       created: metadata.created,
       key: '',
       server_version: nil,
@@ -798,7 +780,7 @@ class HistoryManager
     return nil unless latest_changes
 
     HistoryItem.new(
-      changes:,
+      changes: changes.changes,
       created: latest_changes.created,
       key: '',
       server_version: changes.server_version,
@@ -807,11 +789,21 @@ class HistoryManager
     )
   end
 
+  sig { params(version: Integer).returns(URI::Generic) }
+  def item_download_uri(version:)
+    download_uri(
+      version:,
+      requested_file_basename: item_file(version:).basename.to_s
+    )
+  end
+
   sig { params(version: Integer).returns(Pathname) }
   def item_file(version:)
     directory = version_directory(version:)
     directory.join("prev#{@storage_manager.source_file.extname}")
   end
+
+  # Changes
 
   sig { params(version: Integer).returns(T.nilable(HistoryChanges)) }
   def changes(version:)
@@ -827,6 +819,16 @@ class HistoryManager
   def changes_file(version:)
     history_directory.join(version.to_s, 'changes.json')
   end
+
+  sig { params(version: Integer).returns(URI::Generic) }
+  def changes_download_uri(version:)
+    download_uri(
+      version:,
+      requested_file_basename: 'diff.zip'
+    )
+  end
+
+  # Key
 
   sig { params(version: Integer).returns(Pathname) }
   def write_key(version:)
@@ -858,12 +860,7 @@ class HistoryManager
     directory.join('key.txt')
   end
 
-  sig { params(version: Integer).returns(Pathname) }
-  def version_directory(version:)
-    directory = history_directory.join(version.to_s)
-    FileUtils.mkdir(directory) unless directory.exist?
-    directory
-  end
+  # Metadata
 
   # TODO: not sure if this method is supposed to be.
   # If in the /track we store metadata in the history directory, we can merge
@@ -883,13 +880,9 @@ class HistoryManager
     history_directory.join('createdInfo.json')
   end
 
-  sig { returns(Pathname) }
-  def history_directory
-    directory = Pathname(File.join("#{@storage_manager.source_file}-hist"))
-    FileUtils.mkdir(directory) unless directory.exist?
-    directory
-  end
+  # Versions
 
+  # TODO: !
   sig { returns(Integer) }
   def latest_version
     version = HistoryManager.minimal_version
@@ -897,7 +890,7 @@ class HistoryManager
 
     Dir.each_child(history_directory) do |child|
       child_path = history_directory.join(child)
-      version += 1 if child_path.directory?
+      version += 1 if child_path.directory? && !child_path.empty?
     end
 
     version
@@ -907,21 +900,70 @@ class HistoryManager
   def self.minimal_version
     1
   end
+
+  # URI's
+
+  sig do
+    params(
+      version: Integer,
+      requested_file_basename: String
+    )
+      .returns(URI::Generic)
+  end
+  def download_uri(version:, requested_file_basename:)
+    uri = URI.join(
+      "#{@proxy_manager.example_uri}/",
+      'history/',
+      "#{ERB::Util.url_encode(@storage_manager.source_file.basename)}/",
+      "#{version}/",
+      'download/',
+      requested_file_basename
+    )
+    query = {}
+    query['user_host'] = @proxy_manager.user_host
+    uri.query = URI.encode_www_form(query)
+    uri
+  end
+
+  # Directories
+
+  sig { params(version: Integer).returns(Pathname) }
+  def version_directory(version:)
+    directory = history_directory.join(version.to_s)
+    FileUtils.mkdir(directory) unless directory.exist?
+    directory
+  end
+
+  sig { returns(Pathname) }
+  def history_directory
+    directory = Pathname(File.join("#{@storage_manager.source_file}-hist"))
+    FileUtils.mkdir(directory) unless directory.exist?
+    directory
+  end
 end
 
-class HistoryResponseError < ResponseError
+class HistoryResponseError
+  include ResponseError
+  extend T::Sig
+
   sig { returns(HistoryResponseError) }
   def self.could_not_find_requested
     HistoryResponseError.new(
-      status: :not_found,
-      error: "The requested file with the specified basename doesn't exist."
+      "The requested file with the specified basename doesn't exist."
     )
   end
 
+  sig { returns(HistoryResponseError) }
   def self.could_not_create_history_data
     HistoryResponseError.new(
-      status: :bad_request,
-      error: 'could_not_create_history_data'
+      'could_not_create_history_data'
+    )
+  end
+
+  sig { returns(HistoryResponseError) }
+  def self.could_not_restore_item
+    HistoryResponseError.new(
+      'could_not_restore_item'
     )
   end
 end
