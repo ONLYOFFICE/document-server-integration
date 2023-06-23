@@ -41,11 +41,6 @@ class FileModel
     File.extname(@file_name).downcase
   end
 
-  # get file url
-  def file_uri
-    DocumentHelper.get_file_uri(@file_name, true)
-  end
-
   # get file uri for document server
   def file_uri_user
     config = ConfigurationManager.new
@@ -183,111 +178,6 @@ class FileModel
     end
 
     return config
-  end
-
-  # get document history
-  def get_history
-    file_name = @file_name
-    file_ext = File.extname(file_name).downcase
-    doc_key = key()
-    doc_uri = file_uri()
-
-    hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil))  # get the path to the file history
-    cur_ver = DocumentHelper.get_file_version(hist_dir)  # get the file version
-
-    if (cur_ver > 0)  # if file was modified
-      hist = []
-      histData = {}
-
-      for i in 1..cur_ver  # run through all the file versions
-        obj = {}
-        dataObj = {}
-        ver_dir = DocumentHelper.version_dir(hist_dir, i)  # get the path to the given file version
-
-        # get document key
-        cur_key = doc_key
-        if (i != cur_ver)
-          File.open(File.join(ver_dir, "key.txt"), 'r') do |file|
-            cur_key = file.read()
-          end
-        end
-        obj["key"] = cur_key
-        obj["version"] = i
-
-        if (i == 1)  # check if the version number is equal to 1
-          if File.file?(File.join(hist_dir, "createdInfo.json"))  # check if the createdInfo.json file with meta data exists
-            File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file|  # open it
-              cr_info = JSON.parse(file.read())  # parse the file content
-
-              # write information about changes to the object
-              obj["created"] = cr_info["created"]
-              obj["user"] = {
-                :id => cr_info["uid"],
-                :name => cr_info["uname"]
-              }
-            end
-          end
-        end
-
-        # get the history data from the previous file version and write key and url information about it
-        dataObj["fileType"] = file_ext[1..file_ext.length]
-        dataObj["key"] = cur_key
-        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
-        if is_enable_direct_url == true
-          dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
-        end
-        dataObj["version"] = i
-
-        if (i > 1)  # check if the version number is greater than 1
-          changes = nil
-          change = nil
-          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file|  # get the path to the changes.json file
-            changes = JSON.parse(file.read())  # and parse its content
-          end
-
-          change = changes["changes"][0]
-
-          # write information about changes to the object
-          obj["changes"] = change ? changes["changes"] : nil
-          obj["serverVersion"] = changes["serverVersion"]
-          obj["created"] = change ? change["created"] : nil
-          obj["user"] = change ? change["user"] : nil
-
-          prev = histData[(i - 2).to_s]  # get the history data from the previous file version
-          dataObj["previous"] = is_enable_direct_url == true ? {  # write key and url information about previous file version with optional direct url
-            :fileType => prev["fileType"],
-            :key => prev["key"],
-            :url => prev["url"],
-            :directUrl => prev["directUrl"]
-          } : {
-            :fileType => prev["fileType"],
-            :key => prev["key"],
-            :url => prev["url"]
-          }
-
-          # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, i - 1, "diff.zip")
-        end
-
-        if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
-          dataObj["token"] = JwtHelper.encode(dataObj)  # encode a payload object into a token and write it to the data object
-        end
-
-        hist.push(obj)  # add object dictionary to the hist list
-        histData[(i - 1).to_s] = dataObj  # write data object information to the history data
-      end
-
-      return {
-        :hist => {  # write history information about the current file version to the hist
-          :currentVersion => cur_ver,
-          :history => hist
-        },
-        :histData => histData
-      }
-    end
-
-    return nil
-
   end
 
   # get image information
