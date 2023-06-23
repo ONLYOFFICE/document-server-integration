@@ -224,7 +224,7 @@ end
 class HistoryChanges
   extend T::Sig
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   attr_reader :server_version
 
   sig { returns(T::Array[HistoryChangesItem]) }
@@ -232,7 +232,7 @@ class HistoryChanges
 
   sig do
     params(
-      server_version: String,
+      server_version: T.nilable(String),
       changes: T::Array[HistoryChangesItem]
     )
       .void
@@ -580,7 +580,7 @@ class HistoryController < ApplicationController
   # version, thus designating it as the new source file.
   #
   # ```http
-  # PUT {{example_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}} HTTP/1.1
+  # PUT {{example_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}}&user_id={{user_id}} HTTP/1.1
   # Authorization: Bearer {{token}}
   # ```
   sig { void }
@@ -598,6 +598,7 @@ class HistoryController < ApplicationController
     source_basename = params['source_basename']
     version = params['version'].to_i
     user_host = params['user_host']
+    user_id = params['user_id']
 
     proxy_manager = ProxyManager.new(
       config:,
@@ -615,7 +616,13 @@ class HistoryController < ApplicationController
       storage_manager:
     )
 
-    unless history_manager.restore(version:)
+    raw_user = Users.get_user(user_id)
+    user = HistoryUser.new(
+      id: raw_user.id,
+      name: raw_user.name
+    )
+
+    unless history_manager.restore(version:, user:)
       response.status = :bad_request
       render(json: HistoryResponseError.could_not_restore_item)
       return
@@ -733,16 +740,18 @@ class HistoryManager
     )
   end
 
-  sig { params(version: Integer).returns(T::Boolean) }
-  def restore(version:)
+  sig { params(version: Integer, user: HistoryUser).returns(T::Boolean) }
+  def restore(version:, user:)
     recovery_file = item_file(version:)
     return false unless recovery_file.exist?
 
-    # bumped_version = latest_version + 1
     bumped_version = latest_version
     bumped_file = item_file(version: bumped_version)
+    bumped_changes = generate_changes(user:)
+    bumped_key = generate_key
 
-    write_key(version: bumped_version)
+    write_key(version: bumped_version, key: bumped_key)
+    append_changes(version: bumped_version, changes: bumped_changes)
     FileUtils.cp(@storage_manager.source_file, bumped_file)
     FileUtils.cp(recovery_file, @storage_manager.source_file)
 
@@ -776,15 +785,15 @@ class HistoryManager
     changes = changes(version: version - 1)
     return nil unless changes
 
-    latest_changes = changes.changes[0]
-    return nil unless latest_changes
+    first_changes = changes.changes[0]
+    return nil unless first_changes
 
     HistoryItem.new(
       changes: changes.changes,
-      created: latest_changes.created,
+      created: first_changes.created,
       key: '',
       server_version: changes.server_version,
-      user: latest_changes.user,
+      user: first_changes.user,
       version:
     )
   end
@@ -804,6 +813,38 @@ class HistoryManager
   end
 
   # Changes
+
+  sig { params(user: HistoryUser).returns(HistoryChanges) }
+  def generate_changes(user:)
+    created = Time.now.to_formatted_s(:db)
+    initial_changes_item = HistoryChangesItem.new(created:, user:)
+    HistoryChanges.new(
+      server_version: nil,
+      changes: [initial_changes_item]
+    )
+  end
+
+  sig { params(version: Integer, changes: HistoryChanges).returns(Pathname) }
+  def append_changes(version:, changes:)
+    file = changes_file(version:)
+    return write_changes(version:, changes:) unless file.exist?
+
+    existing_content = file.read
+    existing_json = JSON.parse(existing_content)
+    existing_changes = HistoryChanges.from_json(existing_json)
+    changes.changes.each do |item|
+      existing_changes.changes.append(item)
+    end
+    write_changes(version:, changes: existing_changes)
+  end
+
+  sig { params(version: Integer, changes: HistoryChanges).returns(Pathname) }
+  def write_changes(version:, changes:)
+    file = changes_file(version:)
+    FileUtils.mkdir(file.dirname) unless File.exist?(file.dirname)
+    File.write(file, changes.to_json)
+    file
+  end
 
   sig { params(version: Integer).returns(T.nilable(HistoryChanges)) }
   def changes(version:)
@@ -830,21 +871,20 @@ class HistoryManager
 
   # Key
 
-  sig { params(version: Integer).returns(Pathname) }
-  def write_key(version:)
-    key = generate_key
-    key_file = key_file(version:)
-    FileUtils.mkdir(key_file.dirname) unless File.exist?(key_file.dirname)
-    File.write(key_file, key)
-    key_file
-  end
-
   sig { returns(String) }
   def generate_key
     time = File.mtime(@storage_manager.source_file)
     ServiceConverter.generate_revision_id(
       "#{@proxy_manager.user_host}/#{@storage_manager.source_file.basename}.#{time}"
     )
+  end
+
+  sig { params(version: Integer, key: String).returns(Pathname) }
+  def write_key(version:, key:)
+    file = key_file(version:)
+    FileUtils.mkdir(file.dirname) unless File.exist?(file.dirname)
+    File.write(file, key)
+    file
   end
 
   sig { params(version: Integer).returns(T.nilable(String)) }

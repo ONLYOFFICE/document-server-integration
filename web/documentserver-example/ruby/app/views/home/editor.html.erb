@@ -155,9 +155,10 @@
 
     function onRequestRestore(event) {
       const fileName = "<%= @file.file_name %>"
+      const userID = "<%= @file.user.id %>"
       const version = event.data.version
       const request = new XMLHttpRequest()
-      request.open("PUT", `history/${fileName}/${version}/restore`)
+      request.open("PUT", `history/${fileName}/${version}/restore?user_id=${userID}`)
       request.send()
       request.onload = function () {
         if (request.status != 200) {
