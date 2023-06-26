@@ -18,3 +18,7 @@ lint: #  Lint the source code for style and check for types.
 .PHONY: prod
 prod: #  Install production dependencies.
 	@pip install .
+
+.PHONY: test
+test: #  Recursively run the tests.
+	@python -m unittest ./**/*_tests.py
