@@ -493,6 +493,7 @@ function downloadFile($filePath)
         @header('Content-Length: ' . filesize($filePath));
         @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . str_replace("+", "%20", urlencode(basename($filePath))));
         @header('Content-Type: ' . mime_content_type($filePath));
+        @header('Access-Control-Allow-Origin: *');
 
         if ($fd = fopen($filePath, 'rb')) {
             while (!feof($fd)) {
