@@ -20,3 +20,9 @@ text = "Apache-2.0"
 [[project.authors]]
 name = "ONLYOFFICE"
 email = "support@onlyoffice.com"
+
+[project.optional-dependencies]
+lint = [
+	"mypy>=1.4.1",
+	"pylint>=2.17.4"
+]

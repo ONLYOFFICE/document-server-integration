@@ -28,9 +28,17 @@ jQuery.UI     - jQuery UI is an open source library of interface components — 
 License:        MIT
 License File:   jQuery.UI.license
 
+mypy          - Optional static typing for Python. (https://github.com/python/mypy/raw/v1.4.1/LICENSE)
+License:        MIT
+License File:   mypy.license
+
 PyJWT         - A Python implementation of RFC 7519. (https://github.com/jpadilla/pyjwt/blob/master/LICENSE)
 License:        MIT
 License File:   PyJWT.license
+
+pylint        - It's not just a linter that annoys you! (https://github.com/pylint-dev/pylint/raw/v2.17.4/LICENSE)
+License:        GPL v2
+License File:   pylint.license
 
 python-magic  - python-magic is a Python interface to the libmagic file type identification library. (https://github.com/ahupp/python-magic/blob/master/LICENSE)
 License:        MIT
