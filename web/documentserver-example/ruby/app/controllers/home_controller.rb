@@ -395,9 +395,9 @@ class HomeController < ApplicationController
       end
 
       data = {
-        :fileType => DocumentHelper.get_internal_extension(fileName),
+        :fileType => File.extname(fileName).downcase.delete("."),
         :url => DocumentHelper.get_download_url(fileName),
-        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName) : DocumentHelper.get_download_url(fileName,false),
+        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
         :referenceData => {
           :instanceId => DocumentHelper.get_server_url(false),
           :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
