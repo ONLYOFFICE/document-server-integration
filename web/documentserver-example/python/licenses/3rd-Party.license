@@ -1,8 +1,16 @@
 ONLYOFFICE Applications example uses code from the following 3rd party projects:
 
+django-stubs  - PEP-484 stubs for Django. (https://github.com/typeddjango/django-stubs/blob/4.2.3/LICENSE.md)
+License:        MIT
+License File:   django-stubs.license
+
 Django        - Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. Thanks for checking it out. (https://github.com/django/django/blob/main/LICENSE)
 License:        BSD-3-Clause
 License File:   Django.license
+
+flake8        - flake8 is a python tool that glues together pycodestyle, pyflakes, mccabe, and third-party plugins to check the style and quality of some python code. (https://github.com/PyCQA/flake8/blob/6.0.0/LICENSE)
+License:        MIT
+License File:   flake8.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -28,6 +36,10 @@ jQuery.UI     - jQuery UI is an open source library of interface components — 
 License:        MIT
 License File:   jQuery.UI.license
 
+mypy          - Optional static typing for Python. (https://github.com/python/mypy/raw/v1.4.1/LICENSE)
+License:        MIT
+License File:   mypy.license
+
 PyJWT         - A Python implementation of RFC 7519. (https://github.com/jpadilla/pyjwt/blob/master/LICENSE)
 License:        MIT
 License File:   PyJWT.license
@@ -39,3 +51,7 @@ License File:   python-magic.license
 requests      - Requests allows you to send HTTP/1.1 requests extremely easily. There’s no need to manually add query strings to your URLs, or to form-encode your PUT & POST data — but nowadays, just use the json method! (https://github.com/psf/requests/blob/main/LICENSE)
 License:        Apache 2.0
 License File:   requests.license
+
+typeshed      - Collection of library stubs for Python, with static types. (https://github.com/python/typeshed/blob/b8ab395d4bafd6352560e74b636744d49a9bcd6e/LICENSE)
+License:        Apache License, Version 2.0
+License File:   typeshed.license
