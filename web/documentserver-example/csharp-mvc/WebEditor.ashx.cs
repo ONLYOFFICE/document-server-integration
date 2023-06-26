@@ -659,10 +659,12 @@ namespace OnlineEditorsExampleMVC
                 return;
             }
 
+            var directUrl = (bool)body["directUrl"];
+
             var data = new Dictionary<string, object>() {
-            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
             { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
-            { "directUrl",  DocManagerHelper.GetDownloadUrl(fileName) },
+            { "directUrl", directUrl ? DocManagerHelper.GetDownloadUrl(fileName, false) : null },
             { "referenceData", new Dictionary<string, string>()
                 {
                     { "fileKey", jss.Serialize(new Dictionary<string, object>{
@@ -670,7 +672,7 @@ namespace OnlineEditorsExampleMVC
                             {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
                     })
                     },
-                    {"instanceId", DocManagerHelper.GetServerUrl(false) }
+                    { "instanceId", DocManagerHelper.GetServerUrl(false) }
                 }
             },
             { "path", fileName }

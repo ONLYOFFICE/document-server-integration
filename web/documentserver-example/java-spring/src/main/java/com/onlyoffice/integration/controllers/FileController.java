@@ -498,18 +498,20 @@ public class FileController {
                 return "{ \"error\": \"File not found\"}";
             }
 
+            boolean directUrl = (boolean) body.get("directUrl");
+
             HashMap<String, Object> fileKey = new HashMap<>();
             fileKey.put("fileName", fileName);
             fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
 
             HashMap<String, Object> referenceData = new HashMap<>();
             referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
-            referenceData.put("fileKey", fileKey);
+            referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("fileType", fileUtility.getFileExtension(fileName).replace(".", ""));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", documentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", directUrl ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
 

@@ -695,6 +695,8 @@ public class IndexServlet extends HttpServlet {
                 return;
             }
 
+            boolean directUrl = (boolean) body.get("directUrl");
+
             HashMap<String, Object> fileKey = new HashMap<>();
             fileKey.put("fileName", fileName);
             fileKey.put("userAddress", DocumentManager.curUserHostAddress(null));
@@ -704,9 +706,9 @@ public class IndexServlet extends HttpServlet {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", FileUtility.getFileExtension(fileName));
+            data.put("fileType", FileUtility.getFileExtension(fileName).replace(".", ""));
             data.put("url", DocumentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", directUrl ? DocumentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
 
