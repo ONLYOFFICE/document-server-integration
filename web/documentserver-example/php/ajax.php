@@ -588,9 +588,9 @@ function reference()
     }
 
     $data = [
-        "fileType" => getInternalExtension($fileName),
+        "fileType" => trim(getInternalExtension($fileName), '.'),
         "url" => getDownloadUrl($fileName),
-        "directUrl" => $post["directUrl"] ? getDownloadUrl($fileName) : getDownloadUrl($fileName, false),
+        "directUrl" => $post["directUrl"] ? getDownloadUrl($fileName, false) : null,
         "referenceData" => [
             "fileKey" => json_encode([
                 "fileName" => $fileName,
