@@ -1,21 +1,70 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
-import os
-import sys
+from os import environ
+from sys import argv
+from mimetypes import add_type
+from django.conf import settings
+from django.core.management import execute_from_command_line
+from django.core.management.commands.runserver import Command as RunServer
+from django.core.wsgi import get_wsgi_application
+from django.urls import path
+from src.views import actions, index
 
+def debug():
+    env = environ.get('DEBUG')
+    if env is None:
+        return False
+    if env == 'true':
+        return True
+    return False
 
-def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'src.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+def address():
+    if debug():
+        return '127.0.0.1'
+    return '0.0.0.0'
 
+def port():
+    env = environ.get('PORT')
+    return env or '8000'
+
+add_type('text/javascript', '.js', True)
+
+RunServer.default_addr = address()
+RunServer.default_port = port()
+
+settings.configure(
+    ALLOWED_HOSTS=[
+        '*'
+    ],
+    DEBUG=debug(),
+    ROOT_URLCONF=__name__,
+    STATIC_URL='/static/',
+    TEMPLATES=[
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [
+                'templates'
+            ]
+        }
+    ]
+)
+
+urlpatterns = [
+    path('', index.default),
+    path('convert', actions.convert),
+    path('create', actions.createNew),
+    path('csv', actions.csv),
+    path('download', actions.download),
+    path('downloadhistory', actions.downloadhistory),
+    path('edit', actions.edit),
+    path('files', actions.files),
+    path('reference', actions.reference),
+    path('remove', actions.remove),
+    path('rename', actions.rename),
+    path('saveas', actions.saveAs),
+    path('track', actions.track),
+    path('upload', actions.upload)
+]
+
+application = get_wsgi_application()
 
 if __name__ == '__main__':
-    main()
+    execute_from_command_line(argv)
