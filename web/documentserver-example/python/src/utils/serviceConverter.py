@@ -18,8 +18,8 @@
 
 import json
 import requests
-import config
 
+from src.configuration import ConfigurationManager
 from . import fileUtils, jwtManager
 
 # convert file and give url to a new file
@@ -44,13 +44,14 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, l
     if (isAsync): # check if the operation is asynchronous
         payload.setdefault('async', True) # and write this information to the payload object
 
+    config = ConfigurationManager()
+
     if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
-        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-        headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
+        headers[config.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
-    response = requests.post(config.DOC_SERV_SITE_URL + config.DOC_SERV_CONVERTER_URL, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER, timeout=5) # send the headers and body values to the converter and write the result to the response
+    response = requests.post(config.document_server_converter_url().geturl(), json=payload, headers=headers, verify = config.ssl_verify_peer_mode_enabled(), timeout=5) # send the headers and body values to the converter and write the result to the response
     status_code = response.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Convertation service returned status: %s' % status_code)

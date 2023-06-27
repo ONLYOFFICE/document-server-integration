@@ -17,10 +17,10 @@
 """
 
 
-import config
 import requests
 import os
 import json
+from src.configuration import ConfigurationManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
 # read request body
@@ -30,8 +30,8 @@ def readBody(request):
         token = body.get('token') # get the document token
 
         if (not token): # if JSON web token is not received
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader) # get it from the Authorization header
+            config = ConfigurationManager()
+            token = request.headers.get(config.jwt_header()) # get it from the Authorization header
             if token:
                 token = token[len('Bearer '):] # and save it without Authorization prefix
 
@@ -152,7 +152,7 @@ def processForceSave(body, filename, usAddr):
 
 # create a command request
 def commandRequest(method, key, meta = None):
-    documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
+    config = ConfigurationManager()
 
     payload = {
         'c': method,
@@ -166,12 +166,12 @@ def commandRequest(method, key, meta = None):
     headers={'accept': 'application/json'}
 
     if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
-        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
+        config = ConfigurationManager()
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
-        headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
+        headers[config.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-    response = requests.post(documentCommandUrl, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER)
+    response = requests.post(config.document_server_command_url().geturl(), json=payload, headers=headers, verify = config.ssl_verify_peer_mode_enabled())
 
     if (meta): 
         return response

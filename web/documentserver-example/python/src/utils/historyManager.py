@@ -19,11 +19,11 @@
 import os
 import io
 import json
-import config
 
 from . import users, fileUtils
 from datetime import datetime
 from src import settings
+from src.configuration import ConfigurationManager
 from src.utils import docManager
 from src.utils import jwtManager
     
@@ -180,7 +180,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                     dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False) # write file direct url to the data object
 
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
-                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
+                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file
                     change = changes['changes'][0]
                     
                     obj['changes'] = changes['changes'] if change else None # write information about changes to the object
@@ -226,5 +226,6 @@ class CorsHeaderMiddleware:
     def __call__(self, request):
         resp = self.get_response(request)
         if request.path == '/downloadhistory':
-            resp['Access-Control-Allow-Origin'] = config.DOC_SERV_SITE_URL[0:-1]
+            config = ConfigurationManager()
+            resp['Access-Control-Allow-Origin'] = config.document_server_url().geturl()[0:-1]
         return resp

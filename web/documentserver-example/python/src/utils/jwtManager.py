@@ -16,21 +16,25 @@
 
 """
 
-import config
 import jwt
+from src.configuration import ConfigurationManager
 
 # check if a secret key to generate token exists or not
 def isEnabled():
-    return bool(config.DOC_SERV_JWT_SECRET)
+    config = ConfigurationManager()
+    return bool(config.jwt_secret())
 
 # check if a secret key to generate token exists or not
 def useForRequest():
-    return bool(config.DOC_SERV_JWT_USE_FOR_REQUEST)
+    config = ConfigurationManager()
+    return config.jwt_use_for_request()
 
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
-    return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256')
+    config = ConfigurationManager()
+    return jwt.encode(payload, config.jwt_secret(), algorithm='HS256')
 
 # decode a token into a payload object using a secret key
 def decode(string):
-    return jwt.decode(string, config.DOC_SERV_JWT_SECRET, algorithms=['HS256'])
+    config = ConfigurationManager()
+    return jwt.decode(string, config.jwt_secret(), algorithms=['HS256'])

@@ -17,7 +17,6 @@
 """
 
 
-import config
 import os
 import shutil
 import io
@@ -30,22 +29,26 @@ import magic
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src import settings
 from . import fileUtils, historyManager
-from ..configuration import ConfigurationManager
+from src.configuration import ConfigurationManager
 
 def isCanFillForms(ext):
-    return ext in config.DOC_SERV_FILLFORMS
+    config = ConfigurationManager()
+    return ext in config.fillable_file_extensions()
 
 # check if the file extension can be viewed
 def isCanView(ext):
-    return ext in config.DOC_SERV_VIEWED
+    config = ConfigurationManager()
+    return ext in config.viewable_file_extensions()
 
 # check if the file extension can be edited
 def isCanEdit(ext):
-    return ext in config.DOC_SERV_EDITED
+    config = ConfigurationManager()
+    return ext in config.editable_file_extensions()
 
 # check if the file extension can be converted
 def isCanConvert(ext):
-    return ext in config.DOC_SERV_CONVERT
+    config = ConfigurationManager()
+    return ext in config.convertible_file_extensions()
 
 # check if the file extension is supported by the editor (it can be viewed or edited or converted)
 def isSupportedExt(ext):
@@ -88,8 +91,10 @@ def getCorrectName(filename, req):
 
 # get server url
 def getServerUrl (forDocumentServer, req):
-    if (forDocumentServer and config.EXAMPLE_DOMAIN is not None):
-        return  config.EXAMPLE_DOMAIN
+    config = ConfigurationManager()
+    example_url = config.example_url()
+    if (forDocumentServer and example_url is not None):
+        return example_url.geturl()
     else:
         return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
@@ -214,7 +219,8 @@ def saveFile(response, path):
 
 # download file from the given url
 def downloadFileFromUri(uri, path = None, withSave = False):
-    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER, timeout=5)
+    config = ConfigurationManager()
+    resp = requests.get(uri, stream=True, verify = config.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = resp.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Document editing service returned status: %s' % status_code)

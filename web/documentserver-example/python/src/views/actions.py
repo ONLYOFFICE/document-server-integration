@@ -17,7 +17,6 @@
 """
 import requests
 
-import config
 import json
 import os
 import urllib.parse
@@ -25,8 +24,8 @@ import urllib.parse
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
+from src.configuration import ConfigurationManager
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
-from ..configuration import ConfigurationManager
 
 # upload a file from the document storage service to the document editing service
 def upload(request):
@@ -116,11 +115,12 @@ def saveAs(request):
         saveAsFileUrl = body.get('url')
         title = body.get('title')
 
+        config = ConfigurationManager()
+
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
-        resp = requests.get(saveAsFileUrl, verify = config.DOC_SERV_VERIFY_PEER)
+        resp = requests.get(saveAsFileUrl, verify = config.ssl_verify_peer_mode_enabled())
 
-        config = ConfigurationManager()
         if ((len(resp.content) > config.maximum_file_size()) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             response.setdefault('error', 'File size is incorrect')
             raise Exception('File size is incorrect')
@@ -329,12 +329,14 @@ def edit(request):
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
+    config = ConfigurationManager()
+
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
         'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
-        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,  # the absolute URL to the api
+        'apiUrl': config.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
         'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
@@ -406,8 +408,8 @@ def download(request):
         isEmbedded = request.GET.get('dmode')
 
         if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader)
+            config = ConfigurationManager()
+            token = request.headers.get(config.jwt_header())
             if token:
                 token = token[len('Bearer '):]
 
@@ -439,8 +441,8 @@ def downloadhistory(request):
         isEmbedded = request.GET.get('dmode')
 
         if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader)
+            config = ConfigurationManager()
+            token = request.headers.get(config.jwt_header())
             if token:
                 token = token[len('Bearer '):]
                 try:
