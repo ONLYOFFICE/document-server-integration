@@ -26,7 +26,7 @@ from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
-
+from ..configuration import ConfigurationManager
 
 # upload a file from the document storage service to the document editing service
 def upload(request):
@@ -34,7 +34,8 @@ def upload(request):
 
     try:
         fileInfo = request.FILES['uploadedFile']
-        if ((fileInfo.size > config.FILE_SIZE_MAX) | (fileInfo.size <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        config = ConfigurationManager()
+        if ((fileInfo.size > config.maximum_file_size()) | (fileInfo.size <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             raise Exception('File size is incorrect')
 
         curExt = fileUtils.getFileExt(fileInfo.name)
@@ -119,7 +120,8 @@ def saveAs(request):
         path = docManager.getStoragePath(filename, request)
         resp = requests.get(saveAsFileUrl, verify = config.DOC_SERV_VERIFY_PEER)
 
-        if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        config = ConfigurationManager()
+        if ((len(resp.content) > config.maximum_file_size()) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             response.setdefault('error', 'File size is incorrect')
             raise Exception('File size is incorrect')
 
@@ -166,7 +168,7 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
+    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -256,9 +258,9 @@ def edit(request):
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
             'coEditing': {
-                            "mode": "strict", 
+                            "mode": "strict",
                             "change": False
-                         } 
+                         }
                          if edMode == 'view' and user.id =='uid-0' else None,
             'createUrl' : createUrl if user.id !='uid-0' else None,
             'templates' : templates if user.templates else None,
@@ -275,11 +277,11 @@ def edit(request):
             },
             'customization': {  # the parameters for the editor interface
                 'about': True,  # the About section display
-                'comments': True,  
+                'comments': True,
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
-                'goback': {  # settings for the Open file location menu button and upper right corner button 
+                'goback': {  # settings for the Open file location menu button and upper right corner button
                     'url': docManager.getServerUrl(False, request)  # the absolute URL to the website address which will be opened when clicking the Open file location menu button
                 }
             }
@@ -317,7 +319,7 @@ def edit(request):
     }
 
     # users data for mentions
-    usersForMentions = users.getUsersForMentions(user.id) 
+    usersForMentions = users.getUsersForMentions(user.id)
 
     if jwtManager.isEnabled():  # if the secret key to generate token exists
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
@@ -477,20 +479,20 @@ def reference(request):
             userAddress = fileKey['userAddress']
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
-    
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
             if os.path.exists(docManager.getStoragePath(path,request)):
-                fileName = path 
+                fileName = path
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     if fileName is None:
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     data = {
         'fileType' : fileUtils.getFileExt(fileName),
         'url' : docManager.getDownloadUrl(fileName, request),
@@ -504,5 +506,5 @@ def reference(request):
 
     if (jwtManager.isEnabled()):
         data['token'] = jwtManager.encode(data)
-    
+
     return HttpResponse(json.dumps(data), content_type='application/json')

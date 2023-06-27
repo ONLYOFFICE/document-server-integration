@@ -8,7 +8,7 @@ help: #  Show help message for each of the Makefile recipes.
 
 .PHONY: dev
 dev: #   Install development dependencies.
-	@pip install --editable .[lint]
+	@pip install --editable .[development]
 
 .PHONY: lint
 lint: #  Lint the source code for style and check for types.

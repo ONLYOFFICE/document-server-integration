@@ -22,7 +22,8 @@ name = "ONLYOFFICE"
 email = "support@onlyoffice.com"
 
 [project.optional-dependencies]
-lint = [
+development = [
 	"mypy>=1.4.1",
-	"pylint>=2.17.4"
+	"pylint>=2.17.4",
+	"types-requests>=2.31.0"
 ]

@@ -30,6 +30,7 @@ import magic
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src import settings
 from . import fileUtils, historyManager
+from ..configuration import ConfigurationManager
 
 def isCanFillForms(ext):
     return ext in config.DOC_SERV_FILLFORMS
@@ -88,7 +89,7 @@ def getCorrectName(filename, req):
 # get server url
 def getServerUrl (forDocumentServer, req):
     if (forDocumentServer and config.EXAMPLE_DOMAIN is not None):
-        return  config.EXAMPLE_DOMAIN 
+        return  config.EXAMPLE_DOMAIN
     else:
         return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
@@ -122,7 +123,8 @@ def getRootFolder(req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = config.STORAGE_PATH if os.path.isabs(config.STORAGE_PATH) else os.path.join(config.STORAGE_PATH, curAdr)
+    config = ConfigurationManager()
+    directory = config.storage_path().joinpath(curAdr)
 
     if not os.path.exists(directory): # if such a directory does not exist, make it
         os.makedirs(directory)
@@ -136,7 +138,8 @@ def getHistoryPath(filename, file, version, req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    config = ConfigurationManager()
+    directory = config.storage_path().joinpath(curAdr)
     if not os.path.exists(directory): # the directory with host address doesn't exist
         filePath = os.path.join(getRootFolder(req), f'{filename}-hist', version, file)
     else:
@@ -157,10 +160,11 @@ def getForcesavePath(filename, req, create):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    config = ConfigurationManager()
+    directory = config.storage_path().joinpath(curAdr)
     if not os.path.exists(directory): # the directory with host address doesn't exist
         return ""
- 
+
     directory = os.path.join(directory, f'{filename}-hist') # get the path to the history of the given file
     if (not os.path.exists(directory)):
         if create: # if the history directory doesn't exist
@@ -208,7 +212,7 @@ def saveFile(response, path):
             file.write(chunk)
     return
 
-# download file from the given url 
+# download file from the given url
 def downloadFileFromUri(uri, path = None, withSave = False):
     resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER, timeout=5)
     status_code = resp.status_code
@@ -227,7 +231,7 @@ def createSample(fileType, sample, req):
     if not sample:
         sample = 'false'
 
-    sampleName = 'sample' if sample == 'true' else 'new' # create sample or new template 
+    sampleName = 'sample' if sample == 'true' else 'new' # create sample or new template
 
     filename = getCorrectName(f'{sampleName}{ext}', req) # get file name with an index if such a file name already exists
     path = getStoragePath(filename, req)
@@ -273,7 +277,7 @@ def getFilesInfo(req):
         stats = os.stat(os.path.join(getRootFolder(req), f.get("title"))) # get file information
         result.append( # write file parameters to the file object
             {   "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
-                "id" :  generateFileKey(f.get("title"), req),   
+                "id" :  generateFileKey(f.get("title"), req),
                 "contentLength" : "%.2f KB" % (stats.st_size/1024),
                 "pureContentLength" : stats.st_size,
                 "title" :  f.get("title"),
@@ -285,7 +289,7 @@ def getFilesInfo(req):
 
     if fileId :
         if len(resultID) > 0 : return resultID
-        else : return "File not found"     
+        else : return "File not found"
     else :
         return result
 
