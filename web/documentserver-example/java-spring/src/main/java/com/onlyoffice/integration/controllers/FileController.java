@@ -236,6 +236,9 @@ public class FileController {
                     throw new RuntimeException("Input stream is null");
                 }
 
+                // remove source file
+                storageMutator.deleteFile(fileName);
+
                 // create the converted file with input stream
                 storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
                 fileName = correctedName;
