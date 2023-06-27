@@ -213,13 +213,14 @@ public final class ServiceConverter {
 
         connection.connect();
 
+
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(bodyByte);
+        }
         int statusCode = connection.getResponseCode();
         if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new Exception("Conversion service returned status: " + statusCode);
-        }
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(bodyByte);
         }
 
         InputStream stream = connection.getInputStream();
