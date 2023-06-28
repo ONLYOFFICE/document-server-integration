@@ -17,10 +17,12 @@
 """
 
 
+from copy import deepcopy
 import requests
 import os
 import json
 from src.configuration import ConfigurationManager
+from src.proxy import ProxyManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
 # read request body
@@ -44,7 +46,9 @@ def readBody(request):
     return body
 
 # file saving process
-def processSave(body, filename, usAddr):
+def processSave(raw_body, filename, usAddr):
+    body = resolve_process_save_body(raw_body)
+
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
@@ -178,3 +182,33 @@ def commandRequest(method, key, meta = None):
 
     return
 
+def resolve_process_save_body(body):
+    copied = deepcopy(body)
+    config_manager = ConfigurationManager()
+    proxy_manager = ProxyManager(config_manager=config_manager)
+
+    url = copied.get('url')
+    if url is not None:
+        resolved_url = proxy_manager.resolve_document_server_url(url)
+        copied['url'] = resolved_url.geturl()
+
+    changes_url = copied.get('changesurl')
+    if changes_url is not None:
+        resolved_url = proxy_manager.resolve_document_server_url(changes_url)
+        copied['changesurl'] = resolved_url.geturl()
+
+    home = copied.get('home')
+    if home is not None:
+        url = home.get('url')
+        if url is not None:
+            resolved_url = proxy_manager.resolve_document_server_url(url)
+            home['url'] = resolved_url.geturl()
+
+        changes_url = home.get('changesurl')
+        if changes_url is not None:
+            resolved_url = proxy_manager.resolve_document_server_url(changes_url)
+            home['changesurl'] = resolved_url.geturl()
+
+        copied['home'] = home
+
+    return copied
