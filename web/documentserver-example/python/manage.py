@@ -1,5 +1,6 @@
 from os import environ
 from sys import argv
+from uuid import uuid1
 from mimetypes import add_type
 from django.conf import settings
 from django.core.management import execute_from_command_line
@@ -36,6 +37,7 @@ settings.configure(
     ],
     DEBUG=debug(),
     ROOT_URLCONF=__name__,
+    SECRET_KEY=uuid1(),
     STATIC_URL='/static/',
     TEMPLATES=[
         {
