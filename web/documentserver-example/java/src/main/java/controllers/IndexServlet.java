@@ -315,9 +315,9 @@ public class IndexServlet extends HttpServlet {
 
                 connection.disconnect();
 
-                // remove source file ?
-                // File sourceFile = new File(DocumentManager.StoragePath(fileName, null));
-                // sourceFile.delete();
+                // remove source file
+                File sourceFile = new File(DocumentManager.storagePath(fileName, null));
+                sourceFile.delete();
 
                 fileName = correctName;
 

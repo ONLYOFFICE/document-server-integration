@@ -131,6 +131,11 @@ class HomeController < ApplicationController
           file.write(data)
         end
 
+        old_storage_path = DocumentHelper.storage_path(file_name, nil)
+        if File.exist?(old_storage_path)
+          File.delete(old_storage_path)
+        end
+
         file_name = correct_name
         user = Users.get_user(params[:userId])
 
