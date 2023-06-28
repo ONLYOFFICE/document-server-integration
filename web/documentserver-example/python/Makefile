@@ -31,4 +31,4 @@ prod-server: #  Start the production server on 0.0.0.0 at $PORT (default: 8000).
 
 .PHONY: test
 test: #         Recursively run the tests.
-	@python -m unittest ./**/*_tests.py
+	@python -m unittest ./src/**/*_tests.py
