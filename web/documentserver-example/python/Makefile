@@ -32,3 +32,8 @@ prod-server: #  Start the production server on 0.0.0.0 at $PORT (default: 8000).
 .PHONY: test
 test: #         Recursively run the tests.
 	@python -m unittest ./src/**/*_tests.py
+
+.PHONY: up
+up: #           Build and up docker containers.
+	@docker-compose build
+	@docker-compose up -d
