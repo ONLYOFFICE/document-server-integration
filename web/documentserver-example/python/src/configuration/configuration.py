@@ -34,15 +34,21 @@ class ConfigurationManager:
             return None
         return urlparse(url)
 
-    def document_server_url(self) -> ParseResult:
+    def document_server_public_url(self) -> ParseResult:
         url = (
-            environ.get('DOCUMENT_SERVER_URL') or
+            environ.get('DOCUMENT_SERVER_PUBLIC_URL') or
             'http://document-server/'
         )
         return urlparse(url)
 
+    def document_server_private_url(self) -> ParseResult:
+        url = environ.get('DOCUMENT_SERVER_PRIVATE_URL')
+        if not url:
+            return self.document_server_public_url()
+        return urlparse(url)
+
     def document_server_api_url(self) -> ParseResult:
-        base = self.document_server_url().geturl()
+        base = self.document_server_public_url().geturl()
         path = (
             environ.get('DOCUMENT_SERVER_API_PATH') or
             'web-apps/apps/api/documents/api.js'
@@ -51,7 +57,7 @@ class ConfigurationManager:
         return urlparse(url)
 
     def document_server_preloader_url(self) -> ParseResult:
-        base = self.document_server_url().geturl()
+        base = self.document_server_public_url().geturl()
         path = (
             environ.get('DOCUMENT_SERVER_PRELOADER_PATH') or
             'web-apps/apps/api/documents/cache-scripts.html'
@@ -60,7 +66,7 @@ class ConfigurationManager:
         return urlparse(url)
 
     def document_server_command_url(self) -> ParseResult:
-        base = self.document_server_url().geturl()
+        base = self.document_server_private_url().geturl()
         path = (
             environ.get('DOCUMENT_SERVER_COMMAND_PATH') or
             'coauthoring/CommandService.ashx'
@@ -69,7 +75,7 @@ class ConfigurationManager:
         return urlparse(url)
 
     def document_server_converter_url(self) -> ParseResult:
-        base = self.document_server_url().geturl()
+        base = self.document_server_private_url().geturl()
         path = (
             environ.get('DOCUMENT_SERVER_CONVERTER_PATH') or
             'ConvertService.ashx'
