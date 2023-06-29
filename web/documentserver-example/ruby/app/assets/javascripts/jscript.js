@@ -240,6 +240,7 @@ if (typeof jQuery != "undefined") {
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
@@ -248,6 +249,7 @@ if (typeof jQuery != "undefined") {
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {

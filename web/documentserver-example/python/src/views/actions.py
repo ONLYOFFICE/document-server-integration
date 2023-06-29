@@ -492,9 +492,9 @@ def reference(request):
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
     
     data = {
-        'fileType' : fileUtils.getFileExt(fileName),
+        'fileType' : fileUtils.getFileExt(fileName).replace('.', ''),
         'url' : docManager.getDownloadUrl(fileName, request),
-        'directUrl' : docManager.getDownloadUrl(fileName, request) if body["directUrl"] else docManager.getDownloadUrl(fileName, request, False),
+        'directUrl' : docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
         'referenceData' : {
             'instanceId' : docManager.getServerUrl(False, request),
             'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})

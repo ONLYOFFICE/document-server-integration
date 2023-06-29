@@ -106,15 +106,15 @@ public class DefaultServiceConverter implements ServiceConverter {
 
             connection.connect();
 
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(bodyByte);  // write bytes to the output stream
+                os.flush();  // force write data to the output stream that can be cached in the current thread
+            }
+
             int statusCode = connection.getResponseCode();
             if (statusCode != HttpStatus.OK.value()) {  // checking status code
                 connection.disconnect();
                 throw new RuntimeException("Convertation service returned status: " + statusCode);
-            }
-
-            try (OutputStream os = connection.getOutputStream()) {
-                os.write(bodyByte);  // write bytes to the output stream
-                os.flush();  // force write data to the output stream that can be cached in the current thread
             }
 
             response = connection.getInputStream();  // get the input stream

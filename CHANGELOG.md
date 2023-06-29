@@ -5,6 +5,8 @@
 - nodejs: delete file without reloading the page
 - nodejs: getting history by a separate request
 - nodejs: restore from history
+
+## 1.6.0
 - nodejs: setUsers for region protection
 - si skin languages
 - fix "no" skin languages

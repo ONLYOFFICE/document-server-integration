@@ -249,14 +249,14 @@ namespace OnlineEditorsExampleMVC
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
                     var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, internalExtension, key, true, out newFileData, filePass, lang);
-                    var newFileUri = newFileData["fileUrl"];
-                    var newFileType = "." + newFileData["fileType"];
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
                         return;
                     }
 
+                    var newFileUri = newFileData["fileUrl"];
+                    var newFileType = "." + newFileData["fileType"];
                     // get a file name of an internal file extension with an index if the file with such a name already exists
                     var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + newFileType);
 
@@ -659,10 +659,12 @@ namespace OnlineEditorsExampleMVC
                 return;
             }
 
+            var directUrl = (bool)body["directUrl"];
+
             var data = new Dictionary<string, object>() {
-            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
             { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
-            { "directUrl",  DocManagerHelper.GetDownloadUrl(fileName) },
+            { "directUrl", directUrl ? DocManagerHelper.GetDownloadUrl(fileName, false) : null },
             { "referenceData", new Dictionary<string, string>()
                 {
                     { "fileKey", jss.Serialize(new Dictionary<string, object>{
@@ -670,7 +672,7 @@ namespace OnlineEditorsExampleMVC
                             {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
                     })
                     },
-                    {"instanceId", DocManagerHelper.GetServerUrl(false) }
+                    { "instanceId", DocManagerHelper.GetServerUrl(false) }
                 }
             },
             { "path", fileName }

@@ -477,10 +477,12 @@ namespace OnlineEditorsExample
                 return;
             }
 
+            var directUrl = (bool) body["directUrl"];
+
             var data = new Dictionary<string, object>() {
-            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower() },
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
             { "url",  DocEditor.getDownloadUrl(fileName)},
-            { "directUrl",  DocEditor.getDownloadUrl(fileName) },
+            { "directUrl", directUrl ? DocEditor.getDownloadUrl(fileName, false) : null},
             { "referenceData", new Dictionary<string, string>()
                 {
                     { "fileKey", jss.Serialize(new Dictionary<string, object>{

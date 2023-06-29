@@ -131,6 +131,11 @@ class HomeController < ApplicationController
           file.write(data)
         end
 
+        old_storage_path = DocumentHelper.storage_path(file_name, nil)
+        if File.exist?(old_storage_path)
+          File.delete(old_storage_path)
+        end
+
         file_name = correct_name
         user = Users.get_user(params[:userId])
 
@@ -395,9 +400,9 @@ class HomeController < ApplicationController
       end
 
       data = {
-        :fileType => DocumentHelper.get_internal_extension(fileName),
+        :fileType => File.extname(fileName).downcase.delete("."),
         :url => DocumentHelper.get_download_url(fileName),
-        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName) : DocumentHelper.get_download_url(fileName,false),
+        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
         :referenceData => {
           :instanceId => DocumentHelper.get_server_url(false),
           :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json

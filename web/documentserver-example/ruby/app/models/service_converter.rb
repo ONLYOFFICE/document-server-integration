@@ -68,13 +68,13 @@ class ServiceConverter
         req.body = payload.to_json
         res = http.request(req)  # get the response
 
-        status_code = res.code
+        status_code = res.code.to_i
         if status_code != 200  # checking status code
           raise "Conversion service returned status: #{status_code}"
         end
 
         data = res.body  # and take its body
-      rescue TimeoutError
+      rescue Timeout::Error
         # try again
       rescue => ex
         raise ex.message

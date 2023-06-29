@@ -632,6 +632,7 @@ namespace OnlineEditorsExample
 
             var filePath = _Default.StoragePath(FileName, null);
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);  // copy this file to the storage directory
+            File.SetLastWriteTime(filePath, DateTime.Now);
 
             // create a json file with file meta data
             var id = request.Cookies.GetOrDefault("uid", null);

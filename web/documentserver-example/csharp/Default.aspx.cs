@@ -489,13 +489,13 @@ namespace OnlineEditorsExample
                 // get the url and file type of the converted file
                 Dictionary<string, string> newFileData;
                 var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, internalExtension, key, true, out newFileData, filePass, lang);
-                var newFileUri = newFileData["fileUrl"];
-                var newFileType = "." + newFileData["fileType"];
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";
                 }
 
+                var newFileUri = newFileData["fileUrl"];
+                var newFileType = "." + newFileData["fileType"];
                 // get a file name of an internal file extension with an index if the file with such a name already exists
                 var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + newFileType);
 

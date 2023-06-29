@@ -36,6 +36,7 @@ import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -64,6 +65,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -233,6 +235,9 @@ public class FileController {
                     connection.disconnect();
                     throw new RuntimeException("Input stream is null");
                 }
+
+                // remove source file
+                storageMutator.deleteFile(fileName);
 
                 // create the converted file with input stream
                 storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
@@ -459,18 +464,18 @@ public class FileController {
     @ResponseBody
     public String reference(@RequestBody final JSONObject body) {
         try {
-
+            JSONParser parser = new JSONParser();
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
             String userAddress = "";
             String fileName = "";
 
             if (body.containsKey("referenceData")) {
-                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                LinkedHashMap referenceDataObj = (LinkedHashMap) body.get("referenceData");
                 String instanceId = (String) referenceDataObj.get("instanceId");
 
                 if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
-                    JSONObject fileKey = (JSONObject) referenceDataObj.get("fileKey");
+                    JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
                     userAddress = (String) fileKey.get("userAddress");
                     if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
                         fileName = (String) fileKey.get("fileName");
@@ -496,18 +501,20 @@ public class FileController {
                 return "{ \"error\": \"File not found\"}";
             }
 
+            boolean directUrl = (boolean) body.get("directUrl");
+
             HashMap<String, Object> fileKey = new HashMap<>();
             fileKey.put("fileName", fileName);
             fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
 
             HashMap<String, Object> referenceData = new HashMap<>();
             referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
-            referenceData.put("fileKey", fileKey);
+            referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("fileType", fileUtility.getFileExtension(fileName).replace(".", ""));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", documentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", directUrl ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
 
