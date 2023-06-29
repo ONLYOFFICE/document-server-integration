@@ -74,6 +74,9 @@ namespace OnlineEditorsExampleMVC
                 case "rename":
                     Rename(context);
                     break;
+                case "reference":
+                    Reference(context);
+                    break;
             }
         }
 
@@ -227,11 +230,10 @@ namespace OnlineEditorsExampleMVC
                 var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
 
                 var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
-                var internalExtension = DocManagerHelper.GetInternalExtension(FileUtility.GetFileType(fileName)).Trim('.');
+                var internalExtension = "ooxml";
 
                 // check if the file with such an extension can be converted
-                if (DocManagerHelper.ConvertExts.Contains("." + extension)
-                    && !string.IsNullOrEmpty(internalExtension))
+                if (DocManagerHelper.ConvertExts.Contains("." + extension))
                 {
                     // generate document key
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
@@ -244,17 +246,19 @@ namespace OnlineEditorsExampleMVC
                         Query = "type=download&fileName=" + HttpUtility.UrlEncode(fileName)
                     };
 
-                    // get the url to the converted file
-                    string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(downloadUri.ToString(), extension, internalExtension, key, true, out newFileUri, filePass, lang);
+                    // get the url and file type of the converted file
+                    Dictionary<string, string> newFileData;
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, internalExtension, key, true, out newFileData, filePass, lang);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
                         return;
                     }
 
+                    var newFileUri = newFileData["fileUrl"];
+                    var newFileType = "." + newFileData["fileType"];
                     // get a file name of an internal file extension with an index if the file with such a name already exists
-                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + internalExtension);
+                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + newFileType);
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
@@ -461,20 +465,21 @@ namespace OnlineEditorsExampleMVC
                 var userAddress = context.Request["userAddress"];
                 var isEmbedded = context.Request["dmode"];
 
-                if (JwtManager.Enabled && isEmbedded == null)
+                if (JwtManager.Enabled && isEmbedded == null && userAddress != null && JwtManager.SignatureUseForRequest)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
+                    string token = "";
                     if (context.Request.Headers.AllKeys.Contains(JWTheader, StringComparer.InvariantCultureIgnoreCase))
                     {
                         var headerToken = context.Request.Headers.Get(JWTheader).Substring("Bearer ".Length);
-                        string token = JwtManager.Decode(headerToken);
-                        if (string.IsNullOrEmpty(token))
-                        {
-                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            context.Response.Write("JWT validation failed");
-                            return;
-                        }
+                        token = JwtManager.Decode(headerToken);
+                    }
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.Write("JWT validation failed");
+                        return;
                     }
                 }
 
@@ -518,7 +523,7 @@ namespace OnlineEditorsExampleMVC
                 var version = System.Convert.ToInt32(context.Request["ver"]);
                 var file = Path.GetFileName(context.Request["file"]);
 
-                if (JwtManager.Enabled)
+                if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
                 {
                     string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
@@ -590,5 +595,98 @@ namespace OnlineEditorsExampleMVC
             TrackManager.commandRequest("meta", docKey, meta);
             context.Response.Write("{ \"result\": \"OK\"}");
         }
+
+        private static void Reference(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+            Dictionary<string, object> referenceData = null;
+            var fileName = "";
+            var userAddress = "";
+
+            if (body.ContainsKey("referenceData"))
+            {
+                referenceData = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(body["referenceData"]));
+                var instanceId = (string)referenceData["instanceId"];
+                var fileKey = (string)referenceData["fileKey"];
+                if (instanceId == DocManagerHelper.GetServerUrl(false))
+                {
+                    var fileKeyObj = jss.Deserialize<Dictionary<string, object>>(fileKey);
+                    userAddress = (string)fileKeyObj["userAddress"];
+                    if (userAddress == HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)))
+                    {
+                        fileName = (string)fileKeyObj["fileName"];
+                    }
+                }
+            }
+
+            if (fileName == "")
+            {
+                try
+                {
+                    var path = (string)body["path"];
+                    path = Path.GetFileName(path);
+                    if (File.Exists(DocManagerHelper.StoragePath(path, null)))
+                    {
+                        fileName = path;
+                    }
+                }
+                catch
+                {
+                    context.Response.Write("{ \"error\": \"Path not found!\"}");
+                    return;
+                }
+            }
+
+            if (fileName == "")
+            {
+                context.Response.Write("{ \"error\": \"File not found!\"}");
+                return;
+            }
+
+            var directUrl = (bool)body["directUrl"];
+
+            var data = new Dictionary<string, object>() {
+            { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
+            { "directUrl", directUrl ? DocManagerHelper.GetDownloadUrl(fileName, false) : null },
+            { "referenceData", new Dictionary<string, string>()
+                {
+                    { "fileKey", jss.Serialize(new Dictionary<string, object>{
+                            {"fileName", fileName},
+                            {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                    })
+                    },
+                    { "instanceId", DocManagerHelper.GetServerUrl(false) }
+                }
+            },
+            { "path", fileName }
+            };
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(data);
+                data.Add("token", token);
+            }
+
+            context.Response.Write(jss.Serialize(data));
+        }
+
     }
+ 
 }

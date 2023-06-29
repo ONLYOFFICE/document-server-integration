@@ -139,9 +139,22 @@
             docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {  // add mentions for not anonymous users
-            docEditor.setUsers({  // set a list of users to mention in the comments
-                "users": <%- JSON.stringify(usersForMentions) %>
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "protect":
+                    var users = <%- JSON.stringify(usersForProtect) %>;
+                    break;
+                default:
+                    users = <%- JSON.stringify(usersForMentions) %>;
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
             });
         };
 
@@ -208,7 +221,6 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
-            "onRequestEditRights": onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -219,6 +231,7 @@
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
             config.events.onRequestHistoryClose = onRequestHistoryClose;
@@ -232,7 +245,10 @@
             config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
-        if (new URL(window.location).searchParams.get("oform") == "false") {
+        try {
+            var oformParam = new URL(window.location).searchParams.get("oform");
+        } catch (e) {}
+        if (oformParam == "false") {
             config.document.options = config.document.options || {};
             config.document.options["oform"] = false;
         }
@@ -251,6 +267,9 @@
 
         // get the editor sizes
         var fixSize = function () {
+            if (config.type !== "mobile") {
+                return;
+            }
             var wrapEl = document.getElementsByClassName("form");
             if (wrapEl.length) {
                 wrapEl[0].style.height = screen.availHeight + "px";

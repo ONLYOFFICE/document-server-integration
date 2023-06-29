@@ -1,19 +1,24 @@
 import os
 
-VERSION = '1.5.1'
+VERSION = '1.6.0'
 
 FILE_SIZE_MAX = 5242880
 STORAGE_PATH = 'app_data'
 
-DOC_SERV_FILLFORMS = [".oform", ".docx"]
-DOC_SERV_VIEWED = [".pdf", ".djvu", ".xps", ".oxps"]  # file extensions that can be viewed
-DOC_SERV_EDITED = [".docx", ".xlsx", ".csv", ".pptx", ".txt", ".docxf"]  # file extensions that can be edited
-DOC_SERV_CONVERT = [                                           # file extensions that can be converted
-    ".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt",
-    ".fodt", ".ott", ".xlsm", ".xlsb", ".xls", ".xltx", ".xltm",
-    ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt",
-    ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot",
-    ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"
+DOC_SERV_FILLFORMS = [".docx", ".oform"]
+DOC_SERV_VIEWED = [".djvu", ".oxps", ".pdf", ".xps"]  # file extensions that can be viewed
+DOC_SERV_EDITED = [                                             # file extensions that can be edited
+    ".csv", ".docm", ".docx", ".docxf", ".dotm", ".dotx",
+    ".epub", ".fb2", ".html", ".odp", ".ods", ".odt", ".otp",
+    ".ots", ".ott", ".potm", ".potx", ".ppsm", ".ppsx", ".pptm",
+    ".pptx", ".rtf", ".txt", ".xlsm", ".xlsx", ".xltm", ".xltx"
+]
+DOC_SERV_CONVERT = [                                            # file extensions that can be converted
+    ".doc", ".dot", ".dps", ".dpt", ".epub", ".et", ".ett", ".fb2",
+    ".fodp", ".fods", ".fodt", ".htm", ".html", ".mht", ".mhtml",
+    ".odp", ".ods", ".odt", ".otp", ".ots", ".ott", ".pot", ".pps",
+    ".ppt", ".rtf", ".stw", ".sxc", ".sxi", ".sxw", ".wps", ".wpt",
+    ".xls", ".xlsb", ".xlt", ".xml"
 ]
 
 DOC_SERV_TIMEOUT = 120000
@@ -29,6 +34,7 @@ EXAMPLE_DOMAIN = None
 
 DOC_SERV_JWT_SECRET = ''  # the secret key for generating token
 DOC_SERV_JWT_HEADER = 'Authorization'
+DOC_SERV_JWT_USE_FOR_REQUEST = True
 
 DOC_SERV_VERIFY_PEER = False
 
@@ -61,8 +67,8 @@ LANGUAGES = {
     'be': 'Belarusian',
     'bg': 'Bulgarian',
     'ca': 'Catalan',
-    'zh' : 'Chinese (People\'s Republic of China)',
-    'zh-TW' : 'Chinese (Traditional, Taiwan)',
+    'zh': 'Chinese (Simplified)',
+    'zh-TW': 'Chinese (Traditional)',
     'cs': 'Czech',
     'da': 'Danish',
     'nl': 'Dutch',
@@ -76,15 +82,16 @@ LANGUAGES = {
     'it': 'Italian',
     'ja': 'Japanese',
     'ko': 'Korean',
-    'lv': 'Latvian',
     'lo': 'Lao',
+    'lv': 'Latvian',
     'ms': 'Malay (Malaysia)',
-    'nb': 'Norwegian',
+    'no': 'Norwegian',
     'pl': 'Polish',
-    'pt' : 'Portuguese (Brazil)',
-    'pt-PT' : 'Portuguese (Portugal)',
+    'pt': 'Portuguese (Brazil)',
+    'pt-PT': 'Portuguese (Portugal)',
     'ro': 'Romanian',
     'ru': 'Russian',
+    'si': 'Sinhala (Sri Lanka)',
     'sk': 'Slovak',
     'sl': 'Slovenian',
     'es': 'Spanish',

@@ -153,7 +153,7 @@
         var onRequestMailMergeRecipients = function (event) {
             docEditor.setMailMergeRecipients(<%= DataMailMergeRecipients %>);  // insert recipient data for mail merge into the file
         };
-        
+
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
             var title = event.data.title;
             var url = event.data.url;
@@ -190,6 +190,19 @@
             }
         };
 
+        var onRequestReferenceData = function (event) {  // user refresh external data source
+
+            event.data.directUrl = !!config.document.directUrl;
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor.ashx?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(event.data));
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            }
+        };
+
         config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -198,7 +211,6 @@
         config.events = {
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
-            'onRequestEditRights': onRequestEditRights,
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             'onMakeActionLink': onMakeActionLink,
@@ -219,7 +231,7 @@
                     var histData = <%= HistoryData %>;
                     docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
                 };
-                config.events['onRequestHistoryClose '] = function () {  // the user is trying to go back to the document from viewing the document version history
+                config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
                     document.location.reload();
                 };
             <% } %>
@@ -242,6 +254,9 @@
             };
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
+            config.events['onRequestReferenceData'] = onRequestReferenceData;
+            // prevent switch the document from the viewing into the editing mode for anonymous users
+            config.events['onRequestEditRights'] = onRequestEditRights;
         }
 
         if (config.editorConfig.createUrl) {

@@ -207,6 +207,17 @@ namespace OnlineEditorsExample
                                         }
                                 },
                                 {
+                                    "referenceData", new Dictionary<string, string>()
+                                    {
+                                        { "fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", FileName},
+                                                {"userAddress", HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                        }) : null },
+                                        {"instanceId", _Default.GetServerUrl(false) }
+                                    }
+                                },
+                                {
                                     // the permission for the document to be edited and downloaded or not
                                     "permissions", new Dictionary<string, object>
                                         {
@@ -222,7 +233,8 @@ namespace OnlineEditorsExample
                                             { "chat", !user.id.Equals("uid-0") },
                                             { "reviewGroups", user.reviewGroups },
                                             { "commentGroups", user.commentGroups },
-                                            { "userInfoGroups", user.userInfoGroups }
+                                            { "userInfoGroups", user.userInfoGroups },
+                                            { "protect", !user.deniedPermissions.Contains("protect") }
                                         }
                                 }
                             }
@@ -620,6 +632,7 @@ namespace OnlineEditorsExample
 
             var filePath = _Default.StoragePath(FileName, null);
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, filePath);  // copy this file to the storage directory
+            File.SetLastWriteTime(filePath, DateTime.Now);
 
             // create a json file with file meta data
             var id = request.Cookies.GetOrDefault("uid", null);

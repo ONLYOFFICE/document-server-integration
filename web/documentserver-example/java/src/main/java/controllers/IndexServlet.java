@@ -19,6 +19,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import entities.FileType;
 import entities.User;
 import helpers.ConfigManager;
@@ -63,7 +64,6 @@ import java.util.Scanner;
 
 import static utils.Constants.KILOBYTE_SIZE;
 
-
 @WebServlet(name = "IndexServlet", urlPatterns = {"/IndexServlet"})
 @MultipartConfig
 public class IndexServlet extends HttpServlet {
@@ -76,6 +76,11 @@ public class IndexServlet extends HttpServlet {
             // forward the request and response objects to the index.jsp
             request.getRequestDispatcher("index.jsp").forward(request, response);
             return;
+        }
+
+        // charset for response headers if upload or convert
+        if (action.matches("upload|convert")) {
+           response.setCharacterEncoding("UTF-8");
         }
 
         DocumentManager.init(request, response);
@@ -117,6 +122,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "rename":
                 rename(request, response, writer);
+                break;
+            case "reference":
+                reference(request, response, writer);
                 break;
             default:
                 break;
@@ -262,16 +270,18 @@ public class IndexServlet extends HttpServlet {
             String fileUri = DocumentManager.getDownloadUrl(fileName, true);
             String fileExt = FileUtility.getFileExtension(fileName);
             FileType fileType = FileUtility.getFileType(fileName);
-            String internalFileExt = DocumentManager.getInternalExtension(fileType);
+            String internalFileExt = "ooxml";
 
             // check if the file with such an extension can be converted
             if (DocumentManager.getConvertExts().contains(fileExt)) {
                 // generate document key
                 String key = ServiceConverter.generateRevisionId(fileUri);
 
-                // get the url to the converted file
-                String newFileUri = ServiceConverter
-                        .getConvertedUri(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                // get the url and file type to the converted file
+                Map<String, String> newFileData = ServiceConverter
+                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                String newFileUri = newFileData.get("fileUrl");
+                String newFileType = "." + newFileData.get("fileType");
 
                 if (newFileUri.isEmpty()) {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
@@ -281,7 +291,7 @@ public class IndexServlet extends HttpServlet {
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
                 String correctName = DocumentManager.getCorrectName(FileUtility
-                                .getFileNameWithoutExtension(fileName) + internalFileExt, null);
+                                .getFileNameWithoutExtension(fileName) + newFileType, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -305,9 +315,9 @@ public class IndexServlet extends HttpServlet {
 
                 connection.disconnect();
 
-                // remove source file ?
-                // File sourceFile = new File(DocumentManager.StoragePath(fileName, null));
-                // sourceFile.delete();
+                // remove source file
+                File sourceFile = new File(DocumentManager.storagePath(fileName, null));
+                sourceFile.delete();
 
                 fileName = correctName;
 
@@ -472,7 +482,7 @@ public class IndexServlet extends HttpServlet {
                                         final HttpServletResponse response,
                                         final PrintWriter writer) {
         try {
-            if (DocumentManager.tokenEnabled()) {
+            if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
@@ -517,22 +527,24 @@ public class IndexServlet extends HttpServlet {
             String userAddress = request.getParameter("userAddress");
             String isEmbedded = request.getParameter("dmode");
 
-            if (DocumentManager.tokenEnabled() && isEmbedded == null) {
+            if (DocumentManager.tokenEnabled() && isEmbedded == null && userAddress != null
+                    && DocumentManager.tokenUseForRequest()) {
 
                 String documentJwtHeader = ConfigManager.getProperty("files.docservice.header");
 
                 String header = (String) request.getHeader(documentJwtHeader == null || documentJwtHeader.isEmpty()
                         ? "Authorization" : documentJwtHeader);
+                String token = "";
                 if (header != null && !header.isEmpty()) {
                     String bearerPrefix = "Bearer ";
-                    String token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
-                    try {
-                        Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
-                        JWT jwt = JWT.getDecoder().decode(token, verifier);
-                    } catch (Exception e) {
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
-                        return;
-                    }
+                    token = header.startsWith(bearerPrefix) ? header.substring(bearerPrefix.length()) : header;
+                }
+                try {
+                    Verifier verifier = HMACVerifier.newVerifier(DocumentManager.getTokenSecret());
+                    JWT jwt = JWT.getDecoder().decode(token, verifier);
+                } catch (Exception e) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "JWT validation failed");
+                    return;
                 }
             }
 
@@ -632,6 +644,89 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
+    // reference data
+    private static void reference(final HttpServletRequest request,
+                               final HttpServletResponse response,
+                               final PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            String fileKeyValue = "";
+            String userAddress = "";
+            String fileName = "";
+            boolean incorrectFileKey = false;
+
+            JSONParser parser = new JSONParser();
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            if (body.containsKey("referenceData")) {
+                JSONObject referenceDataObj = (JSONObject) body.get("referenceData");
+                String instanceId = (String) referenceDataObj.get("instanceId");
+
+                if (instanceId.equals(DocumentManager.getServerUrl(false))) {
+                    try {
+                        JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
+                        userAddress = (String) fileKey.get("userAddress");
+
+                        if (userAddress.equals(DocumentManager.curUserHostAddress(null))) {
+                            fileName = (String) fileKey.get("fileName");
+                        }
+                    } catch (Exception e) {
+                        incorrectFileKey = true; //data from DocEditor can give incorrect fileKey param in java Example
+                    }
+                }
+            }
+
+            if (fileName.equals("")) {
+                try {
+                    String path = (String) body.get("path");
+                    path = FileUtility.getFileName(path);
+                    File f = new File(DocumentManager.storagePath(path, null));
+                    if (f.exists()) {
+                        fileName = path;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+                }
+            }
+
+            if (fileName.equals("")) {
+                writer.write("{ \"error\": \"File not found\"}");
+                return;
+            }
+
+            boolean directUrl = (boolean) body.get("directUrl");
+
+            HashMap<String, Object> fileKey = new HashMap<>();
+            fileKey.put("fileName", fileName);
+            fileKey.put("userAddress", DocumentManager.curUserHostAddress(null));
+
+            HashMap<String, Object> referenceData = new HashMap<>();
+            referenceData.put("instanceId", DocumentManager.getServerUrl(false));
+            referenceData.put("fileKey", gson.toJson(fileKey));
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("fileType", FileUtility.getFileExtension(fileName).replace(".", ""));
+            data.put("url", DocumentManager.getDownloadUrl(fileName, true));
+            data.put("directUrl", directUrl ? DocumentManager.getDownloadUrl(fileName, false) : null);
+            data.put("referenceData", referenceData);
+            data.put("path", fileName);
+
+            if (DocumentManager.tokenEnabled()) {
+                String token = DocumentManager.createToken(data);
+                data.put("token", token);
+            }
+            writer.write(gson.toJson(data));
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.write("{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}");
+        }
+    }
 
     // process get request
     @Override

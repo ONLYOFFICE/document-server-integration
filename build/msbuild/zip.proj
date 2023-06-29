@@ -26,13 +26,13 @@
     <RemoveDir Directories="$(To)" ContinueOnError="true" />
 
     <ItemGroup>
-      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**;$(DirCSharp)**\.git" />
+      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp).vs\**;$(DirCSharp)bin\*.pdb;$(DirCSharp)bin\*.xml;$(DirCSharp)obj\**;$(DirCSharp)packages\**;$(DirCSharp)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesCSharp)" DestinationFiles="@(ZipFilesCSharp->'$(NameCSharp)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameCSharp)" WorkingDirectory="$(To)" ZipFileName="$(NameCSharp).zip" />
 
     <ItemGroup>
-      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**;$(DirMvc)**\.git" />
+      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc).vs\**;$(DirMvc)bin\*.pdb;$(DirMvc)bin\*.xml;$(DirMvc)obj\**;$(DirMvc)packages\**;$(DirMvc)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />

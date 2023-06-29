@@ -23,7 +23,7 @@ import config
 from . import fileUtils, jwtManager
 
 # convert file and give url to a new file
-def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
+def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
     if not fromExt: # check if the extension from the request matches the real file extension
         fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
 
@@ -44,7 +44,7 @@ def getConverterUri(docUri, fromExt, toExt, docKey, isAsync, filePass = None, la
     if (isAsync): # check if the operation is asynchronous
         payload.setdefault('async', True) # and write this information to the payload object
 
-    if jwtManager.isEnabled(): # check if a secret key to generate token exists or not
+    if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
         jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
@@ -66,7 +66,7 @@ def getResponseUri(json):
         processError(error)
 
     if isEnd:
-        return json.get('fileUrl')
+        return { 'uri': json.get('fileUrl'), 'fileType': json.get('fileType') }
 
 # display an error that occurs during conversion
 def processError(error):

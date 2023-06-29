@@ -98,11 +98,11 @@ class HomeController < ApplicationController
       file_pass = body["filePass"] ? body["filePass"] : nil
       file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
-      internal_extension = DocumentHelper.get_internal_extension(FileUtility.get_file_type(file_name))
+      internal_extension = 'ooxml'
 
       if DocumentHelper.convert_exts.include? (extension)  # check if the file with such an extension can be converted
         key = ServiceConverter.generate_revision_id(file_uri)  # generate document key
-        percent, new_file_uri  = ServiceConverter.get_converted_uri(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang)  # get the url of the converted file and the conversion percentage
+        percent, new_file_uri, new_file_type  = ServiceConverter.get_converted_data(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang)  # get the url and file type of the converted file and the conversion percentage
 
         # if the conversion isn't completed, write file name and step values to the response
         if percent != 100
@@ -111,7 +111,7 @@ class HomeController < ApplicationController
         end
 
         # get the correct file name if such a name already exists
-        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + internal_extension, nil)
+        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + "." + new_file_type, nil)
 
         uri = URI.parse(new_file_uri)  # create the request url
         http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
@@ -129,6 +129,11 @@ class HomeController < ApplicationController
         # write a file with a new extension, but with the content from the origin file
         File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
           file.write(data)
+        end
+
+        old_storage_path = DocumentHelper.storage_path(file_name, nil)
+        if File.exist?(old_storage_path)
+          File.delete(old_storage_path)
         end
 
         file_name = correct_name
@@ -153,7 +158,7 @@ class HomeController < ApplicationController
       file = params[:file]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled
+      if JwtHelper.is_enabled && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
@@ -272,17 +277,17 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded == nil
+      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
         jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]
             hdr.slice!(0, "Bearer ".length)
             token = JwtHelper.decode(hdr)
-            if !token || token.eql?("")
-              render plain: "JWT validation failed", :status => 403
-              return
-            end
-          end
+        end
+        if !token || token.eql?("")
+          render plain: "JWT validation failed", :status => 403
+          return
+        end
       end
 
       file_path = DocumentHelper.forcesave_path(file_name, user_address, false)  # get the path to the force saved document version
@@ -362,5 +367,53 @@ class HomeController < ApplicationController
 
       json_data = TrackHelper.command_request("meta", dockey, meta)
       render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    end
+
+    #ReferenceData
+    def reference
+      body = JSON.parse(request.body.read)
+      fileName = ""
+      
+
+      if body.key?("referenceData")
+        referenceData = body["referenceData"]
+        instanceId = referenceData["instanceId"]
+        if instanceId == DocumentHelper.get_server_url(false)
+          fileKey = JSON.parse(referenceData["fileKey"])
+          userAddress = fileKey["userAddress"]
+          if userAddress == DocumentHelper.cur_user_host_address(nil)
+            fileName = fileKey["fileName"]
+          end
+        end
+      end
+
+      if fileName.empty? and body.key?("path")
+        path = File.basename(body["path"])
+        if File.exist?(DocumentHelper.storage_path(path, nil))
+          fileName = path
+        end
+      end
+
+      if fileName.empty?
+        render plain: '{ "error": "File not found"}'
+        return
+      end
+
+      data = {
+        :fileType => File.extname(fileName).downcase.delete("."),
+        :url => DocumentHelper.get_download_url(fileName),
+        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
+        :referenceData => {
+          :instanceId => DocumentHelper.get_server_url(false),
+          :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
+        },
+        :path => fileName
+      }
+
+      if JwtHelper.is_enabled
+        data["token"] = JwtHelper.encode(data)
+      end
+
+      render plain: data.to_json
     end
 end

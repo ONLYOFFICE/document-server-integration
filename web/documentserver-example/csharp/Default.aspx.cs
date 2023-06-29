@@ -471,11 +471,10 @@ namespace OnlineEditorsExample
             var lang = context.Request.Cookies.GetOrDefault("ulang", null);
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
-            var internalExtension = FileType.GetInternalExtension(_fileName).Trim('.');
+            var internalExtension = "ooxml";
 
             // check if the file with such an extension can be converted
-            if (ConvertExts.Contains("." + extension)
-                && !string.IsNullOrEmpty(internalExtension))
+            if (ConvertExts.Contains("." + extension))
             {
                 // generate document key
                 var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName, true));
@@ -487,16 +486,18 @@ namespace OnlineEditorsExample
                 fileUrl.Query = "type=download&fileName=" + HttpUtility.UrlEncode(_fileName)
                 + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
 
-                // get the url to the converted file
-                string newFileUri;
-                var result = ServiceConverter.GetConvertedUri(fileUrl.ToString() , extension, internalExtension, key, true, out newFileUri, filePass, lang);
+                // get the url and file type of the converted file
+                Dictionary<string, string> newFileData;
+                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, internalExtension, key, true, out newFileData, filePass, lang);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";
                 }
 
+                var newFileUri = newFileData["fileUrl"];
+                var newFileType = "." + newFileData["fileType"];
                 // get a file name of an internal file extension with an index if the file with such a name already exists
-                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + "." + internalExtension);
+                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + newFileType);
 
                 var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 

@@ -220,6 +220,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
+            File.SetLastWriteTime(StoragePath(fileName), DateTime.Now);
 
             return fileName;
         }

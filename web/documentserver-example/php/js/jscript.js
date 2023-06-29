@@ -251,7 +251,7 @@ if (typeof jQuery != "undefined") {
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload();
+        document.location.reload(true);
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
@@ -260,7 +260,7 @@ if (typeof jQuery != "undefined") {
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload();
+        document.location.reload(true);
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
@@ -274,13 +274,13 @@ if (typeof jQuery != "undefined") {
     });
 
     jq(document).on("click", ".reload-page", function () {
-        setTimeout(function () { document.location.reload(); }, 1000);
+        setTimeout(function () { document.location.reload(true); }, 1000);
         return true;
     });
 
     jq(document).on("mouseup", ".reload-page", function (event) {
         if (event.which == 2) {
-            setTimeout(function () { document.location.reload(); }, 1000);
+            setTimeout(function () { document.location.reload(true); }, 1000);
         }
         return true;
     });
@@ -290,7 +290,7 @@ if (typeof jQuery != "undefined") {
         jq("#embeddedView").attr("src", "");
         jq.unblockUI();
         if (mustReload) {
-            document.location.reload();
+            document.location.reload(true);
         }
     });
 
@@ -305,7 +305,7 @@ if (typeof jQuery != "undefined") {
             type: "get",
             url: requestAddress,
             complete: function (data) {
-                document.location.reload();
+                document.location.reload(true);
             }
         });
     });

@@ -137,10 +137,10 @@ public final class ServiceConverter {
     }
 
     // get the url of the converted file
-    public static String getConvertedUri(final String documentUri, final String fromExtension,
-                                         final String toExtension, final String documentRevisionId,
-                                         final String filePass, final Boolean isAsync,
-                                         final String lang) throws Exception {
+    public static Map<String, String> getConvertedData(final String documentUri, final String fromExtension,
+                                                       final String toExtension, final String documentRevisionId,
+                                                       final String filePass, final Boolean isAsync,
+                                                       final String lang) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
         String fromExt = fromExtension == null || fromExtension.isEmpty()
                 ? FileUtility.getFileExtension(documentUri) : fromExtension;
@@ -168,7 +168,7 @@ public final class ServiceConverter {
         }
 
         String headerToken = "";
-        if (DocumentManager.tokenEnabled()) {
+        if (DocumentManager.tokenEnabled() && DocumentManager.tokenUseForRequest()) {
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("region", lang);
             map.put("url", body.getUrl());
@@ -213,13 +213,14 @@ public final class ServiceConverter {
 
         connection.connect();
 
+
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(bodyByte);
+        }
         int statusCode = connection.getResponseCode();
         if (statusCode != HttpServletResponse.SC_OK) {  // checking status code
             connection.disconnect();
             throw new Exception("Conversion service returned status: " + statusCode);
-        }
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(bodyByte);
         }
 
         InputStream stream = connection.getInputStream();
@@ -233,7 +234,7 @@ public final class ServiceConverter {
 
         connection.disconnect();
 
-        return getResponseUri(jsonString);
+        return getResponseData(jsonString);
     }
 
     // generate document key
@@ -254,8 +255,8 @@ public final class ServiceConverter {
         throw new Exception(errorMessage);
     }
 
-    // get the response url
-    private static String getResponseUri(final String jsonString) throws Exception {
+    // get the response data
+    private static Map<String, String> getResponseData(final String jsonString) throws Exception {
         JSONObject jsonObj = convertStringToJSON(jsonString);
 
         Object error = jsonObj.get("error");
@@ -268,17 +269,23 @@ public final class ServiceConverter {
 
         Long resultPercent = 0L;
         String responseUri = null;
+        String responseFileType = null;
+        Map<String, String> responseData = new HashMap<>();
 
         if (isEndConvert) {  // if the conversion is completed
             resultPercent = FULL_LOADING_IN_PERCENT;
             responseUri = (String) jsonObj.get("fileUrl");  // get the file url
+            responseFileType = (String) jsonObj.get("fileType");  // get the file type
+            responseData.put("fileUrl", responseUri);
+            responseData.put("fileType", responseFileType);
         } else {  // if the conversion isn't completed
             resultPercent = (Long) jsonObj.get("percent");
+            responseData.put("fileUrl", "");
             resultPercent = resultPercent >= FULL_LOADING_IN_PERCENT
                     ? FULL_LOADING_IN_PERCENT - 1 : resultPercent;  // get the percentage value
         }
 
-        return resultPercent >= FULL_LOADING_IN_PERCENT ? responseUri : "";
+        return responseData;
     }
 
     // convert stream to string

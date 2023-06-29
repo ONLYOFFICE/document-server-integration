@@ -52,7 +52,7 @@
 
                 // the user is trying to switch the document from the viewing into the editing mode
                 var onRequestEditRights = function () {
-                    location.href = location.href.replace(RegExp("\&?action=view\&?", "i"), "");
+                    location.href = location.href.replace(RegExp("\&?action=view", "i"), "");
                 };
 
                 // an error or some other specific event occurs
@@ -160,12 +160,23 @@
                     }
                 };
 
+                var onRequestReferenceData = function(event) {  // user refresh external data source
+                    event.data.directUrl = !!config.document.directUrl;
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "reference");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(event.data));
+                    xhr.onload = function () {
+                        innerAlert(xhr.responseText);
+                        docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                    }
+                };
+
                 config.width = "100%";
                 config.height = "100%";
                 config.events = {
                     "onAppReady": onAppReady,
                     "onDocumentStateChange": onDocumentStateChange,
-                    'onRequestEditRights': onRequestEditRights,
                     "onError": onError,
                     "onOutdatedVersion": onOutdatedVersion,
                     "onMakeActionLink": onMakeActionLink,
@@ -211,6 +222,9 @@
                     };
                     // prevent file renaming for anonymous users
                     config.events['onRequestRename'] = onRequestRename;
+                    config.events['onRequestReferenceData'] = onRequestReferenceData;
+                    // prevent switch the document from the viewing into the editing mode for anonymous users
+                    config.events['onRequestEditRights'] = onRequestEditRights;
                 }
 
                 if (config.editorConfig.createUrl) {

@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.services.configurers.implementations;
 
+import com.google.gson.Gson;
 import com.onlyoffice.integration.documentserver.models.filemodel.Document;
 import com.onlyoffice.integration.documentserver.models.filemodel.Permission;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
@@ -31,6 +32,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.util.HashMap;
 
 @Service
 @Primary
@@ -71,7 +74,20 @@ public class DefaultDocumentConfigurer implements DocumentConfigurer<DefaultDocu
                         + "/" + fileName + "/"
                         + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
 
+        Gson gson = new Gson();
+        HashMap<String, String> fileKey = new HashMap<>();
+        fileKey.put("fileName", fileName);
+        try {
+            fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        HashMap<String, Object> referenceData = new HashMap<>();
+        referenceData.put("instanceId", storagePathBuilder.getServerUrl(true));
+        referenceData.put("fileKey", gson.toJson(fileKey));
+
         document.setKey(key);  // set the key to the document config
         document.setPermissions(permission);  // set the permission parameters to the document config
+        document.setReferenceData(referenceData);
     }
 }
