@@ -14,20 +14,21 @@
 # limitations under the License.
 #
 
-"""
+'''
 The Codable module provides the ability to decode a string JSON into a class
 instance and encode it back. It also provides the ability to remap JSON keys and
 work with nested Codable instances.
 
 ```python
+from dataclasses import dataclass
 from src.codable import Codable, CodingKey
 
 @dataclass
 class Parent(Codable):
     class CondingKeys(CodingKey):
-        native_style_for_python: 'foreignStyleForPython'
+        native_for_python: 'foreignForPython'
 
-    native_style_for_python: str
+    native_for_python: str
 ```
 
 The algorithm for converting JSON objects to Codable instances is far from
@@ -41,6 +42,6 @@ and struggles with type inference (see [#227](https://github.com/lidatong/datacl
 
 On the other hand, developing the current implementation into a full-fledged
 library may be more attractive to us.
-"""
+'''
 
 from .codable import Codable, CodingKey
