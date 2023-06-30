@@ -45,3 +45,16 @@ library may be more attractive to us.
 '''
 
 from .codable import Codable, CodingKey
+
+# TODO: isolate Decoder and Encoder initialization.
+# Give the user the ability to override the decode and encode methods in order
+# to change the object_hook for a specific property. For instance, this can be
+# used to override the default behavior for ParseResult (urlparse).
+
+# TODO: make the CodingKey definition optional.
+# If the class doesn't provide the CodingKey, we must also use the native
+# property names as foreign.
+
+# TODO: add common presets.
+# When overriding a specific CodingKeys method, define a common preset for all
+# foreign keys. For example, convert all of them from camel case to snake case.
