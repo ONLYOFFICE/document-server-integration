@@ -326,6 +326,13 @@
             }
         };
 
+        const getFileExt = function (fileName) {
+          if (fileName.indexOf(".")) {
+            return fileName.split('.').reverse()[0];
+          }
+          return false;
+        };
+
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
             window.addEventListener("resize", fixSize);
