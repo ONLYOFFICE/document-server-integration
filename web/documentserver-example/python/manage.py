@@ -1,4 +1,6 @@
 from os import environ
+from os.path import abspath, dirname
+from pathlib import Path
 from sys import argv
 from uuid import uuid1
 from mimetypes import add_type
@@ -8,6 +10,9 @@ from django.core.management.commands.runserver import Command as RunServer
 from django.core.wsgi import get_wsgi_application
 from django.urls import path
 from src.views import actions, index
+from src.history import HistoryController
+
+root = Path(dirname(abspath(__file__)))
 
 def debug():
     env = environ.get('DEBUG')
@@ -18,7 +23,7 @@ def debug():
     return False
 
 def address():
-    if debug():
+    if settings.DEBUG:
         return '127.0.0.1'
     return '0.0.0.0'
 
@@ -28,17 +33,21 @@ def port():
 
 add_type('text/javascript', '.js', True)
 
-RunServer.default_addr = address()
-RunServer.default_port = port()
-
 settings.configure(
+    INSTALLED_APPS=[
+        'django.contrib.staticfiles'
+    ],
     ALLOWED_HOSTS=[
         '*'
     ],
+    BASE_DIR=root,
     DEBUG=debug(),
     ROOT_URLCONF=__name__,
     SECRET_KEY=uuid1(),
-    STATIC_URL='/static/',
+    STATIC_URL='static/',
+    STATICFILES_DIRS=[
+        f"{root.joinpath('static')}"
+    ],
     TEMPLATES=[
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -48,6 +57,8 @@ settings.configure(
         }
     ]
 )
+
+history = HistoryController()
 
 urlpatterns = [
     path('', index.default),
@@ -63,8 +74,14 @@ urlpatterns = [
     path('rename', actions.rename),
     path('saveas', actions.saveAs),
     path('track', actions.track),
-    path('upload', actions.upload)
+    path('upload', actions.upload),
+
+    # path('history/<source_basename>', history.history),
+    # path('history/<source_basename>/<version>/data', history.data)
 ]
+
+RunServer.default_addr = address()
+RunServer.default_port = port()
 
 application = get_wsgi_application()
 
