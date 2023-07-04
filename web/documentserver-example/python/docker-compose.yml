@@ -14,6 +14,8 @@ services:
     build:
       context: .
       target: example
+    volumes:
+      - static:/srv/static
     expose:
       - "80"
     environment:
@@ -28,6 +30,11 @@ services:
     build:
       context: .
       target: proxy
+    volumes:
+      - static:/srv/static
     ports:
       - "8080:8080"
       - "3000:3000"
+
+volumes:
+  static:
