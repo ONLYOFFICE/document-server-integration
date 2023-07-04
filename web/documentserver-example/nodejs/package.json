@@ -1,6 +1,6 @@
 {
   "name": "OnlineEditorsExampleNodeJS",
-  "version": "4.1.0",
+  "version": "1.6.0",
   "private": false,
   "scripts": {
     "start": "node ./bin/www",
