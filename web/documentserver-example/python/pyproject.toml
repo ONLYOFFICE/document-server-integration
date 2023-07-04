@@ -30,4 +30,14 @@ development = [
 ]
 
 [tool.mypy]
-plugins = ["mypy_django_plugin.main"]
+plugins = [
+	"mypy_django_plugin.main"
+]
+
+[tool.pylint]
+disable = [
+	"missing-module-docstring",
+	"missing-class-docstring",
+	"missing-function-docstring"
+]
+class-const-naming-style = "snake_case"
