@@ -12,13 +12,22 @@ gem "rails", "~> 7.0"
 gem "rubocop", "~> 1.52", :group => :development
 gem "sass-rails", "~> 6.0"
 gem "sdoc", "~> 2.6", :group => :doc
-gem "sorbet", "~> 0.5.10871", :group => :development
 gem "sorbet-runtime", "~> 0.5.10871"
 gem "sqlite3", "1.4.2"
-gem "tapioca", "~> 0.11.6", :group => :development
 gem "turbolinks", "~> 5.2"
 gem "tzinfo-data", "~> 1.2023"
 gem "uglifier", "~> 4.2"
 gem "uuid", "~> 2.3"
 gem "web-console", "~> 4.2", :groups => [:development, :test]
 gem "webrick", "~> 1.8"
+
+# Unfortunately, Sorbet only supports Darwin and Linux-based systems.
+# Additionally, it doesn't support Linux on ARM64, which may be used in a Docker
+# VM on Mac, for example.
+#
+# https://github.com/sorbet/sorbet/issues/4011
+# https://github.com/sorbet/sorbet/issues/4119
+install_if -> { RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /x86_64/ } do
+  gem "sorbet", "~> 0.5.10871", :group => :development
+  gem "tapioca", "~> 0.11.6", :group => :development
+end
