@@ -25,7 +25,7 @@ from src.codable import Codable, CodingKey
 
 @dataclass
 class Parent(Codable):
-    class CondingKeys(CodingKey):
+    class CodingKeys(CodingKey):
         native_for_python: 'foreignForPython'
 
     native_for_python: str
