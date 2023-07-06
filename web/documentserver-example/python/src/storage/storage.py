@@ -24,6 +24,10 @@ class StorageManager():
     user_host: str
     source_basename: str
 
+    def source_type(self) -> str:
+        file = self.source_file()
+        return file.suffix.replace('.', '')
+
     def source_file(self) -> Path:
         directory = self.user_directory()
         return directory.joinpath(self.source_basename)

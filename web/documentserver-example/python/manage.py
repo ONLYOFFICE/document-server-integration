@@ -63,15 +63,31 @@ def routers():
         path('saveas', actions.saveAs),
         path('track', actions.track),
         path('upload', actions.upload),
-        path('history/<source_basename>', history.history),
-        path('history/<source_basename>/<version>/data', history.data)
+
+        path(
+            'history/<str:source_basename>',
+            history.history
+        ),
+        path(
+            'history/<str:source_basename>/<int:version>/data',
+            history.data
+        ),
+        path(
+            'history/<str:source_basename>/<int:version>/download/<str:requested_basename>',
+            history.download
+        ),
+        path(
+            'history/<str:source_basename>/<int:version>/restore',
+            history.restore
+        )
     ]
 
 add_type('text/javascript', '.js', True)
 settings.configure(**configuration())
 urlpatterns = routers()
 RunServer.default_addr = address()
-RunServer.default_port = port()
+# False positive: the default_port isn't an int, it's a str.
+RunServer.default_port = port() # type: ignore # noqa: E261
 setup()
 
 if __name__ == '__main__':

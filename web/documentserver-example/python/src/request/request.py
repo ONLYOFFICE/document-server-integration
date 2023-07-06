@@ -16,6 +16,7 @@
 
 from dataclasses import dataclass
 from re import sub
+from typing import Optional
 from urllib.parse import ParseResult
 from django.http import HttpRequest
 from src.configuration import ConfigurationManager
@@ -25,24 +26,32 @@ class RequestManager():
     config_manager: ConfigurationManager
     request: HttpRequest
 
-    def example_url(self) -> ParseResult:
+    def base_url(self) -> ParseResult:
         return self.config_manager.example_url() or self.__base_url()
 
     def __base_url(self):
         return ParseResult(
-            scheme=self.request.scheme,
-            netloc=self.request.get_host()
+            scheme=self.__scheme(),
+            netloc=self.request.get_host(),
+            path='',
+            params='',
+            query='',
+            fragment=''
         )
 
-    def user_host(self) -> str:
-        host = self.request.GET.get('user_host') or self.__remote_address()
+    def __scheme(self) -> str:
+        return (
+            self.request.headers.get('X-Forwarded-Proto') or
+            self.request.scheme or
+            'http'
+        )
+
+    def resolve_user_host(self, user_host: Optional[str]) -> str:
+        host = user_host or self.__remote_address()
         return sub(r'[^0-9\-.a-zA-Z_=]', '_', host)
 
-    # TODO: add support for the optional HTTP_X_FORWARDED_FOR.
     def __remote_address(self) -> str:
-        # forwarded = self.request.META.get('HTTP_X_FORWARDED_FOR')
-
-        # if forwarded:
-        #     return forwarded.split(',')[0]
-
+        forwarded = self.request.headers.get('X-Forwarded-For')
+        if forwarded:
+            return forwarded.split(',')[0]
         return self.request.META['REMOTE_ADDR']

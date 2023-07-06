@@ -16,6 +16,7 @@
 
 """
 
+import shutil
 
 from copy import deepcopy
 import requests
@@ -82,9 +83,14 @@ def processSave(raw_body, filename, usAddr):
 
     versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
 
-    os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
+    # os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
 
-    docManager.saveFile(data, path)  # save document file
+    # docManager.saveFile(data, path)  # save document file
+
+    versioned_file = historyManager.getPrevFilePath(versionDir, curExt)
+    docManager.saveFile(data, versioned_file)
+    os.remove(path)
+    shutil.copy(versioned_file, path)
 
     dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
     if (dataChanges is None):
@@ -98,7 +104,10 @@ def processSave(raw_body, filename, usAddr):
     if hist:
         historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist) # write the history changes to the changes.json file
 
-    historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key')) # write the key value to the key.txt file
+    key = docManager.generateFileKey(None, None)
+    key_file = historyManager.getKeyPath(versionDir)
+    historyManager.writeFile(key_file, key)
+    # historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key')) # write the key value to the key.txt file
 
     forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False) # get the path to the forcesaved file version
     if (forcesavePath != ""): # if the forcesaved file version exists
@@ -152,6 +161,8 @@ def processForceSave(body, filename, usAddr):
     if(isSubmitForm):
         uid = body['actions'][0]['userid'] # get the user id
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr) # create meta data for forcesaved file
+        historyManager.createMetaDataKey(filename, usAddr)
+        historyManager.createMetaDataItem(filename, usAddr)
     return
 
 # create a command request

@@ -111,12 +111,7 @@ def getAllUsers():
 # get user information from the request
 def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
-
-    for user in USERS:
-        if (user.id == uid):
-            return user
-
-    return DEFAULT_USER
+    return find_user(uid)
 
 # get users data for mentions
 def getUsersForMentions(uid):
@@ -125,3 +120,10 @@ def getUsersForMentions(uid):
         if(user.id != uid and user.name != None and user.email != None):
             usersData.append({'name':user.name, 'email':user.email})
     return usersData
+
+def find_user(id: str) -> User:
+    for user in USERS:
+        if not user.id == id:
+            continue
+        return user
+    return DEFAULT_USER

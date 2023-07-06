@@ -20,6 +20,7 @@ import requests
 import json
 import os
 import urllib.parse
+from pathlib import Path
 
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
@@ -170,7 +171,7 @@ def edit(request):
     fileUri = docManager.getFileUri(filename, True, request)
     fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
-    docKey = docManager.generateFileKey(filename, request)
+    # docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
 
@@ -190,6 +191,12 @@ def edit(request):
     storagePath = docManager.getStoragePath(filename, request)
     meta = historyManager.getMeta(storagePath)  # get the document meta data
     infObj = None
+
+    history_directory = historyManager.getHistoryDir(storagePath)
+    latest_version = historyManager.getFileVersion(history_directory) - 1
+    version_directory = historyManager.getVersionDir(history_directory, latest_version)
+    key_file = historyManager.getKeyPath(version_directory)
+    docKey = Path(key_file).read_text('utf-8')
 
     actionData = request.GET.get('actionLink')  # get the action data that will be scrolled to (comment or bookmark)
     actionLink = json.loads(actionData) if actionData else None
@@ -327,14 +334,14 @@ def edit(request):
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
         dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
 
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
+    # hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
     config = ConfigurationManager()
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
-        'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
-        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
+        # 'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
+        # 'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document

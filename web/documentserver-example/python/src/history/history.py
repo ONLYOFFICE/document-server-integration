@@ -14,24 +14,30 @@
 # limitations under the License.
 #
 
-# TODO: add types for kwards.
+# TODO: add types for kwargs.
 # https://github.com/python/mypy/issues/14697
 
-# from http import HTTPStatus
-# from re import sub
 from __future__ import annotations
 from dataclasses import dataclass
+from datetime import datetime
 from functools import reduce
+# from http import HTTPStatus
+from json import loads
 from pathlib import Path
+from shutil import copy
 from typing import Any, Optional
-from urllib.parse import ParseResult, quote, urlencode, urljoin, urlparse
 from uuid import uuid1
-from django.http import HttpRequest, HttpResponse
+from urllib.parse import ParseResult, quote, urlencode, urljoin, urlparse
+from django.http import FileResponse, HttpRequest, HttpResponse
+# Pylance doesn't see the HttpResponseBase export from the django.http.
+from django.http.response import HttpResponseBase
 from src.codable import Codable, CodingKey
 from src.configuration import ConfigurationManager
 from src.optional import optional
 from src.request import RequestManager
 from src.storage import StorageManager
+from src.utils import jwtManager
+from src.utils.users import find_user
 
 @dataclass
 class History(Codable):
@@ -58,17 +64,6 @@ class HistoryItem(Codable):
     server_version: Optional[str]
     user: Optional[HistoryUser]
     version: int
-
-@dataclass
-class HistoryMetadata(Codable):
-    class CodingKeys(CodingKey):
-        created = 'created'
-        uid = 'uid'
-        uname = 'uname'
-
-    created: str
-    uid: str
-    uname: str
 
 @dataclass
 class HistoryChanges(Codable):
@@ -117,12 +112,12 @@ class HistoryData(Codable):
     version: int
 
 class HistoryController():
-    def history(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+    def history(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#refreshHistory
 
         ```http
-        GET {{example_url}}/history/{{source_basename}}?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}?user_host={{user_host}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -131,9 +126,9 @@ class HistoryController():
             request=request
         )
 
-        example_url = request_manager.example_url()
         source_basename: str = kwargs['source_basename']
-        user_host = request_manager.user_host()
+        optional_user_host = request.GET.get('user_host')
+        user_host = request_manager.resolve_user_host(optional_user_host)
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -141,9 +136,7 @@ class HistoryController():
             source_basename=source_basename
         )
         history_manager = HistoryManager(
-            storage_manager=storage_manager,
-            example_url=example_url,
-            user_host=user_host
+            storage_manager=storage_manager
         )
 
         history = history_manager.history()
@@ -152,12 +145,12 @@ class HistoryController():
             content_type='application/json'
         )
 
-    def data(self, request: HttpRequest, **kwargs: Any) -> HttpResponse:
+    def data(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#setHistoryData
 
         ```http
-        GET {{example_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -166,10 +159,11 @@ class HistoryController():
             request=request
         )
 
-        example_url = request_manager.example_url()
+        base_url = request_manager.base_url()
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
-        user_host = request_manager.user_host()
+        optional_user_host = request.GET.get('user_host')
+        user_host = request_manager.resolve_user_host(optional_user_host)
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -177,43 +171,112 @@ class HistoryController():
             source_basename=source_basename
         )
         history_manager = HistoryManager(
-            storage_manager=storage_manager,
-            example_url=example_url,
-            user_host=user_host
+            storage_manager=storage_manager
         )
 
-        history_data = history_manager.data(version)
+        history_data = history_manager.data(base_url, version, user_host)
 
-        # tokenized_history_data
+        if jwtManager.isEnabled():
+            history_data.token = jwtManager.encode(loads(history_data.encode()))
 
         return HttpResponse(
             history_data.encode(),
             content_type='application/json'
         )
 
+    def download(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
+        '''
+        ```http
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/download/{{requested_basename}}?user_host={{user_host}} HTTP/1.1
+        ```
+        '''
+        config_manager = ConfigurationManager()
+        request_manager = RequestManager(
+            config_manager=config_manager,
+            request=request
+        )
+
+        source_basename: str = kwargs['source_basename']
+        version: int = kwargs['version']
+        requested_basename: str = kwargs['requested_basename']
+        optional_user_host = request.GET.get('user_host')
+        user_host = request_manager.resolve_user_host(optional_user_host)
+
+        storage_manager = StorageManager(
+            config_manager=config_manager,
+            user_host=user_host,
+            source_basename=source_basename
+        )
+        history_manager = HistoryManager(
+            storage_manager=storage_manager
+        )
+
+        version_directory = history_manager.version_directory(version)
+        requested_file = version_directory.joinpath(requested_basename)
+
+        # if not requested_file.exists():
+        #     return HttpResponse(
+        #         '{ "error": "not exists" }',
+        #         content_type='application/json'
+        #     )
+
+        return FileResponse(
+            open(requested_file, 'rb'),
+            as_attachment=True
+        )
+
+    def restore(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
+        '''
+        PUT {{base_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}}&user_id={{user_id}} HTTP/1.1
+        '''
+        config_manager = ConfigurationManager()
+        request_manager = RequestManager(
+            config_manager=config_manager,
+            request=request
+        )
+
+        source_basename: str = kwargs['source_basename']
+        version: int = kwargs['version']
+        optional_user_host = request.GET.get('user_host')
+        user_host = request_manager.resolve_user_host(optional_user_host)
+        user_id = request.GET.get('user_id')
+
+        storage_manager = StorageManager(
+            config_manager=config_manager,
+            user_host=user_host,
+            source_basename=source_basename
+        )
+        history_manager = HistoryManager(
+            storage_manager=storage_manager
+        )
+
+        raw_user = find_user(user_id)
+        user = HistoryUser(
+            id=raw_user.id,
+            name=raw_user.name
+        )
+
+        history_manager.restore(version, user)
+
+        return HttpResponse()
+
 @dataclass
 class HistoryManager():
     storage_manager: StorageManager
-    example_url: ParseResult
-    user_host: str
+
+    # History Management
 
     def history(self) -> History:
-        history = History(current_version=self.latest_version(), history=[])
+        history = History(
+            current_version=self.latest_version(),
+            history=[]
+        )
 
         for version in range(
             HistoryManager.minimal_version,
             history.current_version + 1
         ):
-            if version == HistoryManager.minimal_version:
-                item = self.initial_item()
-            else:
-                if version == history.current_version:
-                    key = self.generate_key()
-                    item = self.item(key, version)
-                else:
-                    item = self.item(None, version)
-
-            # item = self.item(version)
+            item = self.item(version)
             if item is None:
                 continue
 
@@ -221,34 +284,53 @@ class HistoryManager():
 
         return history
 
-    def data(self, version: int) -> Optional[HistoryData]:
-        if version == self.latest_version():
-            key = self.generate_key()
-        else:
-            key = self.key(version)
+    # Data Management
 
-        # key = self.key(version)
+    def data(
+        self,
+        base_url: ParseResult,
+        version: int,
+        user_host: str
+    ) -> Optional[HistoryData]:
+        key = self.key(version)
         if key is None:
             return None
 
-        url = self.item_download_url(version)
-        file = self.storage_manager.source_file()
-        file_type = file.suffix.replace('.', '')
+        file_type = self.storage_manager.source_type()
 
-        if version == HistoryManager.minimal_version:
+        item_file = self.item_file(version)
+        item_url = self.download_url(
+            base_url,
+            version,
+            item_file.name,
+            user_host
+        )
+
+        previous_version = version - 1
+        previous = self.data(
+            base_url,
+            previous_version,
+            user_host
+        )
+
+        if previous is None:
             return HistoryData(
                 changes_url=None,
                 file_type=file_type,
                 key=key,
                 previous=None,
                 token=None,
-                url=url.geturl(),
+                url=item_url.geturl(),
                 version=version
             )
 
-        previous_version = version - 1
-        previous = self.data(previous_version)
-        changes_url = self.changes_download_url(previous_version)
+        changes_file = self.diff_file(version)
+        changes_url = self.download_url(
+            base_url,
+            version,
+            changes_file.name,
+            user_host
+        )
 
         return HistoryData(
             changes_url=changes_url.geturl(),
@@ -256,39 +338,67 @@ class HistoryManager():
             key=key,
             previous=previous,
             token=None,
-            url=url.geturl(),
+            url=item_url.geturl(),
             version=version
         )
 
-    # Item
-
-    def initial_item(self) -> HistoryItem:
-        key = self.generate_key()
-
-        metadata = self.metadata()
-        if metadata is None:
-            return None
-
-        user = HistoryUser(
-            id=metadata.uid,
-            name=metadata.uname
+    def download_url(
+        self,
+        base_url: ParseResult,
+        version: int,
+        file_basename: str,
+        user_host: str
+    ) -> ParseResult:
+        source_basename = quote(self.storage_manager.source_basename)
+        raw_url = reduce(urljoin, [
+            f'{base_url.geturl()}/',
+            'history/',
+            f'{source_basename}/',
+            f'{version}/',
+            'download/',
+            file_basename
+        ])
+        url = urlparse(f'{raw_url}')
+        query = urlencode({
+            'user_host': user_host
+        })
+        return ParseResult(
+            scheme=url.scheme,
+            netloc=url.netloc,
+            path=url.path,
+            params=url.params,
+            query=query,
+            fragment=url.fragment
         )
 
-        return HistoryItem(
-            changes=[],
-            created=metadata.created,
-            key=key,
-            server_version=None,
-            user=user,
-            version=HistoryManager.minimal_version
-        )
+    # Item Management
 
-    def item(self, key: Optional[str], version: int) -> Optional[HistoryItem]:
-        key = key or self.key(version)
+    def restore(self, version: int, user: HistoryUser):
+        recovery_file = self.item_file(version)
+        if not recovery_file:
+            raise Exception()
+
+        latest_version = self.latest_version()
+        bumped_version = latest_version + 1
+
+        bumped_key = HistoryManager.generate_key()
+        self.write_key(bumped_version, bumped_key)
+
+        bumped_changes = HistoryManager.generate_changes(user)
+        self.write_changes(bumped_version, bumped_changes)
+
+        bumped_file = self.item_file(bumped_version)
+        copy(f'{recovery_file}', f'{bumped_file}')
+
+        source_file = self.storage_manager.source_file()
+        copy(f'{recovery_file}', f'{source_file}')
+
+    def item(self, version: int) -> Optional[HistoryItem]:
+        key = self.key(version)
         if key is None:
             return None
 
-        changes = self.changes(version - 1)
+        changes = self.changes(version)
         if changes is None:
             return None
 
@@ -305,44 +415,54 @@ class HistoryManager():
             version=version
         )
 
-    def item_download_url(self, version: int) -> ParseResult:
-        file = self.item_file(version)
-        return self.download_url(version, file.name)
-
     def item_file(self, version: int) -> Path:
-        parent_directory = self.version_directory(version)
-        directory = parent_directory.joinpath(f'{version}')
+        directory = self.version_directory(version)
         source_file = self.storage_manager.source_file()
         return directory.joinpath(f'prev{source_file.suffix}')
 
-    # Changes
+    # Changes Management
 
-    # def generate_changes(user:)
-    # def append_changes(version:, changes:)
-    # def write_changes(version:, changes:)
+    def write_changes(self, version: int, changes: HistoryChanges):
+        content = changes.encode()
+        file = self.changes_file(version)
+        file.write_text(content, 'utf-8')
 
     def changes(self, version: int) -> Optional[HistoryChanges]:
         file = self.changes_file(version)
-        if not file.exists:
+        if not file.exists():
             return None
 
         content = file.read_text('utf-8')
         return HistoryChanges.decode(content)
 
     def changes_file(self, version: int) -> Path:
-        directory = self.history_directory()
-        return directory.joinpath(f'{version}', 'changes.json')
+        directory = self.version_directory(version)
+        return directory.joinpath('changes.json')
 
-    def changes_download_url(self, version: int) -> ParseResult:
-        return self.download_url(f'{version}', 'diff.zip')
+    def diff_file(self, version: int) -> Path:
+        directory = self.version_directory(version)
+        return directory.joinpath('diff.zip')
 
-    # Key
+    @classmethod
+    def generate_changes(cls, user: HistoryUser) -> HistoryChanges:
+        today = datetime.today()
+        created = today.strftime('%Y-%m-%d %H:%M:%S')
+        item = HistoryChangesItem(
+            created=created,
+            user=user
+        )
+        return HistoryChanges(
+            server_version=None,
+            changes=[
+                item
+            ]
+        )
 
-    def generate_key(self) -> str:
-        key = uuid1()
-        return f'{key}'
+    # Key Management
 
-    # def write_key(version, key)
+    def write_key(self, version: int, key: str):
+        file = self.key_file(version)
+        file.write_text(key, 'utf-8')
 
     def key(self, version: int) -> Optional[str]:
         file = self.key_file(version)
@@ -356,25 +476,24 @@ class HistoryManager():
         directory = self.version_directory(version)
         return directory.joinpath('key.txt')
 
-    # Metadata
+    @classmethod
+    def generate_key(cls) -> str:
+        key = uuid1()
+        return f'{key}'
 
-    def metadata(self) -> Optional[HistoryMetadata]:
-        file = self.metadata_file()
-        if not file.exists():
-            return None
+    # Version Management
 
-        content = file.read_text('utf-8')
-        return HistoryMetadata.decode(content)
+    def version_directory(self, version: int) -> Path:
+        parent_directory = self.history_directory()
+        directory = parent_directory.joinpath(f'{version}')
+        if not directory.exists():
+            directory.mkdir()
+        return directory
 
-    def metadata_file(self) -> Path:
-        directory = self.history_directory()
-        return directory.joinpath('createdInfo.json')
-
-    # Versions
+    # Storage Management
 
     minimal_version = 1
 
-    # TODO: make the minimal version equal 1.
     def latest_version(self) -> int:
         directory = self.history_directory()
         version = 0
@@ -388,45 +507,7 @@ class HistoryManager():
 
             version += 1
 
-        if version == 0:
-            return version
-
-        return version + HistoryManager.minimal_version
-
-    # URL's
-
-    def download_url(self, version: int, file_basename: str) -> ParseResult:
-        base_url = self.example_url.geturl()
-        source_file = self.storage_manager.source_file()
-        source_file_basename = quote(source_file.name)
-        url = reduce(urljoin, [
-            f'{base_url}/',
-            'history/',
-            f'{source_file_basename}/',
-            f'{version}/',
-            'download/',
-            file_basename
-        ])
-        query = urlencode({
-            'user_host': self.user_host
-        })
-        return ParseResult(
-            scheme=url.scheme,
-            netloc=url.netloc,
-            path=url.path,
-            params=url.params,
-            query=query,
-            fragment=url.fragment
-        )
-
-    # Directories
-
-    def version_directory(self, version: int) -> Path:
-        parent_directory = self.history_directory()
-        directory = parent_directory.joinpath(f'{version}')
-        if not directory.exists():
-            directory.mkdir()
-        return directory
+        return version
 
     def history_directory(self) -> Path:
         file = self.storage_manager.source_file()

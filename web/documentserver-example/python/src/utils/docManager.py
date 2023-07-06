@@ -26,6 +26,7 @@ import time
 import urllib.parse
 import magic
 
+from uuid import uuid1
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from . import fileUtils, historyManager
@@ -208,6 +209,8 @@ def createFile(stream, path, req = None, meta = False):
             read = stream.read(bufSize)
     if meta:
         historyManager.createMeta(path, req) # create meta data for the file if needed
+        historyManager.createMetaKey(path)
+        historyManager.createMetaItem(path)
     return
 
 # save file
@@ -257,13 +260,8 @@ def removeFile(filename, req):
 
 # generate file key
 def generateFileKey(filename, req):
-    path = getStoragePath(filename, req)
-    uri = getFileUri(filename, False, req)
-    stat = os.stat(path) # get the directory parameters
-
-    h = str(hash(f'{uri}_{stat.st_mtime_ns}')) # get the hash value of the file url and the date of its last modification and turn it into a string format
-    replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
-    return replaced[:20] # take the first 20 characters for the key
+    key = uuid1()
+    return f'{key}'
 
 # generate the document key value
 def generateRevisionId(expectedKey):

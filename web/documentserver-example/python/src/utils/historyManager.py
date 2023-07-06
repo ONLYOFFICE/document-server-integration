@@ -20,6 +20,8 @@ import os
 import io
 import json
 
+import shutil
+from pathlib import Path
 from . import users, fileUtils
 from datetime import datetime
 from src.configuration import ConfigurationManager
@@ -42,8 +44,16 @@ def getFileVersion(histDir):
     cnt = 1
 
     for f in os.listdir(histDir): # run through all the files in the history directory
-        if not os.path.isfile(os.path.join(histDir, f)): # and count the number of files
-            cnt += 1
+        path = os.path.join(histDir, f)
+        directory = Path(path)
+
+        if not directory.is_dir():
+            continue
+
+        if not len(list(directory.iterdir())) > 0:
+            continue
+
+        cnt += 1
 
     return cnt
 
@@ -74,45 +84,75 @@ def getKeyPath(verDir):
 
 # get the path to a json file with meta data about this file
 def getMetaPath(histDir):
-    return os.path.join(histDir, 'createdInfo.json')
+    directory = os.path.join(histDir, '1')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return os.path.join(directory, 'changes.json')
 
 # create a json file with file meta data using the storage path and request
 def createMeta(storagePath, req):
-    histDir = getHistoryDir(storagePath)
-    path = getMetaPath(histDir) # get the path to a json file with meta data about file
-
-    if not os.path.exists(histDir):
-        os.makedirs(histDir)
-
     user = users.getUserFromReq(req) # get the user information (id and name)
+    createMetaChanges(storagePath, user)
 
-    obj = { # create the meta data object
-        'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-        'uid': user.id,
-        'uname': user.name
+def createMetaChanges(path, user):
+    history_directory = getHistoryDir(path)
+    if not os.path.exists(history_directory):
+        os.makedirs(history_directory)
+
+    changes = {
+        'server_version': None,
+        'changes': [
+            {
+                'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+                'user': {
+                    'id': user.id,
+                    'name': user.name
+                }
+            }
+        ]
     }
+    changes_file = getMetaPath(history_directory)
+    writeFile(changes_file, json.dumps(changes))
 
-    writeFile(path, json.dumps(obj))
+def createMetaKey(path):
+    key = docManager.generateFileKey(None, None)
+    history_directory = getHistoryDir(path)
+    version_directory = os.path.join(history_directory, '1')
+    key_file = getKeyPath(version_directory)
+    writeFile(key_file, key)
 
-    return
+def createMetaItem(path):
+    source_file = Path(path)
+    history_directory = getHistoryDir(path)
+    version_directory = os.path.join(history_directory, '1')
+    versioned_file = getPrevFilePath(version_directory, source_file.suffix)
+    shutil.copy(path, versioned_file)
 
 # create a json file with file meta data using the file name, user id, user name and user address
 def createMetaData(filename, uid, uname, usAddr):
-    histDir = getHistoryDir(docManager.getStoragePath(filename, usAddr))
-    path = getMetaPath(histDir) # get the path to a json file with meta data about file
+    source_file = docManager.getStoragePath(filename, usAddr)
+    user = users.User(
+        id=uid,
+        name=uname,
+        email=None,
+        group=None,
+        reviewGroups=None,
+        commentGroups=None,
+        userInfoGroups=None,
+        favorite=None,
+        deniedPermissions=None,
+        descriptions=None,
+        templates=None
+    )
+    createMetaChanges(source_file, user)
 
-    if not os.path.exists(histDir):
-        os.makedirs(histDir)
+def createMetaDataKey(source_basename, user_host):
+    source_file = docManager.getStoragePath(source_basename, user_host)
+    createMetaKey(source_file)
 
-    obj = { # create the meta data object
-        'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-        'uid': uid,
-        'uname': uname
-    }
-
-    writeFile(path, json.dumps(obj))
-
-    return
+def createMetaDataItem(source_basename, user_host):
+    source_file = docManager.getStoragePath(source_basename, user_host)
+    createMetaItem(source_file)
 
 # create file with a given content in it
 def writeFile(path, content):
@@ -138,7 +178,12 @@ def getMeta(storagePath):
 
     if os.path.exists(path): # check if the json file with file meta data exists
         with io.open(path, 'r') as stream:
-            return json.loads(stream.read()) # turn meta data into python format
+            obj = json.loads(stream.read())['changes'][0]
+            return {
+                'created': obj['created'],
+                'uid': obj['user']['id'],
+                'uname': obj['user']['name']
+            }
 
     return None
 
