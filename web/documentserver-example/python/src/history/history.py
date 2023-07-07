@@ -279,7 +279,7 @@ class HistoryController():
             name=raw_user.name
         )
 
-        history_manager.restore_item(version, user)
+        history_manager.restore(version, user)
 
         return HttpResponse()
 
@@ -402,51 +402,29 @@ class HistoryManager():
         ])
         return urlparse(f'{url}')
 
-    # Item Management
+    # Rejuvenation Management
 
-    def restore_item(self, version: int, user: HistoryUser):
+    def restore(self, version: int, user: HistoryUser):
         recovery_file = self.item_file(version)
-        if not recovery_file.exists():
-            raise Exception()
-
         source_file = self.storage_manager.source_file()
-        if not source_file.exists():
-            raise Exception()
+        copy(f'{recovery_file}', f'{source_file}')
 
         latest_version = self.latest_version()
         bumped_version = latest_version + 1
-
-        self.bootstrap_item(
-            recovery_file,
-            bumped_version,
-            user
-        )
-
-        copy(f'{recovery_file}', f'{source_file}')
+        self.bootstrap(bumped_version, user)
 
     def bootstrap_initial_item(self, user: HistoryUser):
+        self.bootstrap(HistoryManager.minimal_version, user)
+
+    def bootstrap(self, version: int, user: HistoryUser):
+        self.bootstrap_key(version)
+        self.bootstrap_changes(version, user)
+        self.bootstrap_item(version)
+
+    # Item Management
+
+    def bootstrap_item(self, version: int):
         source_file = self.storage_manager.source_file()
-        if not source_file.exists():
-            raise Exception()
-
-        self.bootstrap_item(
-            source_file,
-            HistoryManager.minimal_version,
-            user
-        )
-
-    def bootstrap_item(
-        self,
-        source_file: Path,
-        version: int,
-        user: HistoryUser
-    ):
-        key = HistoryManager.generate_key()
-        self.write_key(version, key)
-
-        changes = HistoryManager.generate_changes(user)
-        self.write_changes(version, changes)
-
         file = self.item_file(version)
         copy(f'{source_file}', f'{file}')
 
@@ -485,6 +463,10 @@ class HistoryManager():
 
     # Changes Management
 
+    def bootstrap_changes(self, version: int, user: HistoryUser):
+        changes = HistoryManager.generate_changes(user)
+        self.write_changes(version, changes)
+
     def write_changes(self, version: int, changes: HistoryChanges):
         content = changes.encode()
         file = self.changes_file(version)
@@ -522,6 +504,10 @@ class HistoryManager():
         )
 
     # Key Management
+
+    def bootstrap_key(self, version: int):
+        key = HistoryManager.generate_key()
+        self.write_key(version, key)
 
     def write_key(self, version: int, key: str):
         file = self.key_file(version)
