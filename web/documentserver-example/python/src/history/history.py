@@ -21,6 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from functools import reduce
+from http import HTTPMethod
 # from http import HTTPStatus
 from json import loads
 from pathlib import Path
@@ -39,6 +40,7 @@ from django.http import FileResponse, HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from src.codable import Codable, CodingKey
 from src.configuration import ConfigurationManager
+from src.http import http_method
 from src.optional import optional
 from src.request import RequestManager
 from src.storage import StorageManager
@@ -120,6 +122,7 @@ class HistoryData(Codable):
     version: int
 
 class HistoryController():
+    @http_method(HTTPMethod.GET)
     def history(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#refreshHistory
@@ -152,6 +155,7 @@ class HistoryController():
             content_type='application/json'
         )
 
+    @http_method(HTTPMethod.GET)
     def data(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#setHistoryData
@@ -201,6 +205,7 @@ class HistoryController():
             content_type='application/json'
         )
 
+    @http_method(HTTPMethod.GET)
     def download(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
@@ -241,6 +246,7 @@ class HistoryController():
             as_attachment=True
         )
 
+    @http_method(HTTPMethod.PUT)
     def restore(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
