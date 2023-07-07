@@ -184,11 +184,11 @@
         };
 
         function onRequestHistory() {
-          const config = {{ cfg | safe }}
-          const sourceBasename = config.document.title
-          // const directURL
+          const query = new URLSearchParams(window.location.search)
+          const sourceBasename = query.get('filename')
           const request = new XMLHttpRequest()
-          request.open("GET", `history/${sourceBasename}`)
+          const path = `history/${sourceBasename}`
+          request.open("GET", path)
           request.send()
           request.onload = function () {
             response = JSON.parse(request.response)
@@ -201,12 +201,15 @@
         }
 
         function onRequestHistoryData(event) {
-          const config = {{ cfg | safe }}
-          const sourceBasename = config.document.title
+          const query = new URLSearchParams(window.location.search)
+          const sourceBasename = query.get('filename')
           const version = event.data
-          // const directURL
+          const direct = query.has('directURL')
           const request = new XMLHttpRequest()
-          request.open("GET", `history/${sourceBasename}/${version}/data`)
+          const path = direct
+            ? `history/${sourceBasename}/${version}/data?direct`
+            : `history/${sourceBasename}/${version}/data`
+          request.open("GET", path)
           request.send()
           request.onload = function () {
             response = JSON.parse(request.response)
@@ -223,12 +226,14 @@
         }
 
         function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const sourceBasename = query.get('filename')
           const config = {{ cfg | safe }}
-          const sourceBasename = config.document.title
           const userID = config.editorConfig.user.id
           const version = event.data.version
           const request = new XMLHttpRequest()
-          request.open("PUT", `history/${sourceBasename}/${version}/restore?user_id=${userID}`)
+          const path = `history/${sourceBasename}/${version}/restore?user_id=${userID}`
+          request.open("PUT", path)
           request.send()
           request.onload = function () {
             if (request.status != 200) {

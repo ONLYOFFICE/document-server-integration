@@ -73,7 +73,7 @@ def routers():
             history.data
         ),
         path(
-            'history/<str:source_basename>/<int:version>/download/<str:requested_basename>',
+            'history/<str:source_basename>/<int:version>/download/<str:basename>',
             history.download
         ),
         path(

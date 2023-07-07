@@ -27,7 +27,13 @@ from pathlib import Path
 from shutil import copy
 from typing import Any, Optional
 from uuid import uuid1
-from urllib.parse import ParseResult, quote, urlencode, urljoin, urlparse
+from urllib.parse import \
+    ParseResult, \
+    parse_qs, \
+    quote, \
+    urlencode, \
+    urljoin, \
+    urlparse
 from django.http import FileResponse, HttpRequest, HttpResponse
 # Pylance doesn't see the HttpResponseBase export from the django.http.
 from django.http.response import HttpResponseBase
@@ -101,6 +107,7 @@ class HistoryData(Codable):
         previous = 'previous'
         token = 'token'
         url = 'url'
+        direct_url = 'directUrl'
         version = 'version'
 
     changes_url: Optional[str]
@@ -109,6 +116,7 @@ class HistoryData(Codable):
     previous: Optional[HistoryData]
     token: Optional[str]
     url: Optional[str]
+    direct_url: Optional[str]
     version: int
 
 class HistoryController():
@@ -122,7 +130,6 @@ class HistoryController():
         '''
         config_manager = ConfigurationManager()
         request_manager = RequestManager(
-            config_manager=config_manager,
             request=request
         )
 
@@ -150,16 +157,21 @@ class HistoryController():
         https://api.onlyoffice.com/editors/methods#setHistoryData
 
         ```http
-        GET {{base_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}}&direct HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
         request_manager = RequestManager(
-            config_manager=config_manager,
             request=request
         )
 
-        base_url = request_manager.base_url()
+        direct = 'direct' in kwargs
+
+        example_url: Optional[ParseResult] = None
+        if direct:
+            example_url = config_manager.example_url()
+
+        base_url = request_manager.resolve_base_url(example_url)
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
         optional_user_host = request.GET.get('user_host')
@@ -174,7 +186,12 @@ class HistoryController():
             storage_manager=storage_manager
         )
 
-        history_data = history_manager.data(base_url, version, user_host)
+        history_data = history_manager.data(
+            base_url,
+            version,
+            user_host,
+            direct
+        )
 
         if jwtManager.isEnabled():
             history_data.token = jwtManager.encode(loads(history_data.encode()))
@@ -187,18 +204,17 @@ class HistoryController():
     def download(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
-        GET {{base_url}}/history/{{source_basename}}/{{version}}/download/{{requested_basename}}?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/download/{{basename}}?user_host={{user_host}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
         request_manager = RequestManager(
-            config_manager=config_manager,
             request=request
         )
 
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
-        requested_basename: str = kwargs['requested_basename']
+        basename: str = kwargs['basename']
         optional_user_host = request.GET.get('user_host')
         user_host = request_manager.resolve_user_host(optional_user_host)
 
@@ -212,26 +228,27 @@ class HistoryController():
         )
 
         version_directory = history_manager.version_directory(version)
-        requested_file = version_directory.joinpath(requested_basename)
+        file = version_directory.joinpath(basename)
 
-        # if not requested_file.exists():
+        # if not file.exists():
         #     return HttpResponse(
         #         '{ "error": "not exists" }',
         #         content_type='application/json'
         #     )
 
         return FileResponse(
-            open(requested_file, 'rb'),
+            open(file, 'rb'),
             as_attachment=True
         )
 
     def restore(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
+        ```http
         PUT {{base_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}}&user_id={{user_id}} HTTP/1.1
+        ```
         '''
         config_manager = ConfigurationManager()
         request_manager = RequestManager(
-            config_manager=config_manager,
             request=request
         )
 
@@ -290,78 +307,59 @@ class HistoryManager():
         self,
         base_url: ParseResult,
         version: int,
-        user_host: str
+        user_host: str,
+        direct: bool
     ) -> Optional[HistoryData]:
         key = self.key(version)
         if key is None:
             return None
 
-        file_type = self.storage_manager.source_type()
-
-        item_file = self.item_file(version)
-        item_url = self.download_url(
-            base_url,
-            version,
-            item_file.name,
-            user_host
-        )
-
         previous_version = version - 1
         previous = self.data(
             base_url,
             previous_version,
-            user_host
+            user_host,
+            direct
         )
 
-        if previous is None:
-            return HistoryData(
-                changes_url=None,
-                file_type=file_type,
-                key=key,
-                previous=None,
-                token=None,
-                url=item_url.geturl(),
-                version=version
-            )
+        history_url = self.history_url(base_url)
+        version_url = self.version_url(history_url, version)
 
-        changes_file = self.diff_file(version)
-        changes_url = self.download_url(
-            base_url,
-            version,
-            changes_file.name,
-            user_host
-        )
+        changes_url: Optional[str] = None
+        if previous is not None:
+            file = self.diff_file(version)
+            download_url = self.download_url(version_url, file.name)
+            personal_url = self.personalize_url(download_url, user_host)
+            changes_url = personal_url.geturl()
+
+        file = self.item_file(version)
+        file_type = file.suffix.replace('.', '')
+        download_url = self.download_url(version_url, file.name)
+        personal_url = self.personalize_url(download_url, user_host)
+        url = personal_url.geturl()
+
+        direct_url: Optional[str] = None
+        if direct:
+            direct_url = download_url.geturl()
 
         return HistoryData(
-            changes_url=changes_url.geturl(),
+            changes_url=changes_url,
             file_type=file_type,
             key=key,
             previous=previous,
             token=None,
-            url=item_url.geturl(),
+            url=url,
+            direct_url=direct_url,
             version=version
         )
 
-    def download_url(
-        self,
-        base_url: ParseResult,
-        version: int,
-        file_basename: str,
-        user_host: str
-    ) -> ParseResult:
-        source_basename = quote(self.storage_manager.source_basename)
-        raw_url = reduce(urljoin, [
-            f'{base_url.geturl()}/',
-            'history/',
-            f'{source_basename}/',
-            f'{version}/',
-            'download/',
-            file_basename
-        ])
-        url = urlparse(f'{raw_url}')
-        query = urlencode({
-            'user_host': user_host
+    def personalize_url(self, url: ParseResult, user_host: str) -> ParseResult:
+        parsed_query = parse_qs(url.query)
+        parsed_query.update({
+            # False positive: the update supports dict.
+            'user_host': user_host # type: ignore # noqa: E261
         })
+        query = urlencode(parsed_query)
         return ParseResult(
             scheme=url.scheme,
             netloc=url.netloc,
@@ -370,6 +368,33 @@ class HistoryManager():
             query=query,
             fragment=url.fragment
         )
+
+    def download_url(self, base_url: ParseResult, basename: str) -> ParseResult:
+        base = base_url.geturl()
+        url = reduce(urljoin, [
+            f'{base}/',
+            'download/',
+            basename
+        ])
+        return urlparse(f'{url}')
+
+    def version_url(self, base_url: ParseResult, version: int) -> ParseResult:
+        base = base_url.geturl()
+        url = reduce(urljoin, [
+            f'{base}/',
+            f'{version}'
+        ])
+        return urlparse(f'{url}')
+
+    def history_url(self, base_url: ParseResult) -> ParseResult:
+        base = base_url.geturl()
+        source_basename = quote(self.storage_manager.source_basename)
+        url = reduce(urljoin, [
+            f'{base}/',
+            'history/',
+            source_basename
+        ])
+        return urlparse(f'{url}')
 
     # Item Management
 

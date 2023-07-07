@@ -19,31 +19,28 @@ from re import sub
 from typing import Optional
 from urllib.parse import ParseResult
 from django.http import HttpRequest
-from src.configuration import ConfigurationManager
 
 @dataclass
 class RequestManager():
-    config_manager: ConfigurationManager
     request: HttpRequest
 
-    def base_url(self) -> ParseResult:
-        return self.config_manager.example_url() or self.__base_url()
+    def resolve_base_url(self, base_url: Optional[ParseResult]) -> ParseResult:
+        return base_url or self.__base_url()
 
     def __base_url(self):
+        scheme = (
+            self.request.headers.get('X-Forwarded-Proto') or
+            self.request.scheme or
+            'http'
+        )
+        host = self.request.get_host()
         return ParseResult(
-            scheme=self.__scheme(),
-            netloc=self.request.get_host(),
+            scheme=scheme,
+            netloc=host,
             path='',
             params='',
             query='',
             fragment=''
-        )
-
-    def __scheme(self) -> str:
-        return (
-            self.request.headers.get('X-Forwarded-Proto') or
-            self.request.scheme or
-            'http'
         )
 
     def resolve_user_host(self, user_host: Optional[str]) -> str:
