@@ -26,7 +26,7 @@ from http import HTTPMethod
 from json import loads
 from pathlib import Path
 from shutil import copy
-from typing import Any, Optional
+from typing import Any, Iterator, Optional
 from uuid import uuid1
 from urllib.parse import \
     ParseResult, \
@@ -279,7 +279,7 @@ class HistoryController():
             name=raw_user.name
         )
 
-        history_manager.restore(version, user)
+        history_manager.restore_item(version, user)
 
         return HttpResponse()
 
@@ -404,25 +404,57 @@ class HistoryManager():
 
     # Item Management
 
-    def restore(self, version: int, user: HistoryUser):
+    def restore_item(self, version: int, user: HistoryUser):
         recovery_file = self.item_file(version)
-        if not recovery_file:
+        if not recovery_file.exists():
+            raise Exception()
+
+        source_file = self.storage_manager.source_file()
+        if not source_file.exists():
             raise Exception()
 
         latest_version = self.latest_version()
         bumped_version = latest_version + 1
 
-        bumped_key = HistoryManager.generate_key()
-        self.write_key(bumped_version, bumped_key)
+        self.bootstrap_item(
+            recovery_file,
+            bumped_version,
+            user
+        )
 
-        bumped_changes = HistoryManager.generate_changes(user)
-        self.write_changes(bumped_version, bumped_changes)
-
-        bumped_file = self.item_file(bumped_version)
-        copy(f'{recovery_file}', f'{bumped_file}')
-
-        source_file = self.storage_manager.source_file()
         copy(f'{recovery_file}', f'{source_file}')
+
+    def bootstrap_initial_item(self, user: HistoryUser):
+        source_file = self.storage_manager.source_file()
+        if not source_file.exists():
+            raise Exception()
+
+        self.bootstrap_item(
+            source_file,
+            HistoryManager.minimal_version,
+            user
+        )
+
+    def bootstrap_item(
+        self,
+        source_file: Path,
+        version: int,
+        user: HistoryUser
+    ):
+        key = HistoryManager.generate_key()
+        self.write_key(version, key)
+
+        changes = HistoryManager.generate_changes(user)
+        self.write_changes(version, changes)
+
+        file = self.item_file(version)
+        copy(f'{source_file}', f'{file}')
+
+    def write_item(self, version: int, stream: Iterator[Any]):
+        file = self.item_file(version)
+        with open(f'{file}', 'wb') as output:
+            for chunk in stream:
+                output.write(chunk)
 
     def item(self, version: int) -> Optional[HistoryItem]:
         key = self.key(version)
