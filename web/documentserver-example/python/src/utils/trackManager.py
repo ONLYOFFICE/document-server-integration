@@ -23,6 +23,8 @@ import requests
 import os
 import json
 from src.configuration import ConfigurationManager
+from src.history import HistoryManager, HistoryChanges
+from src.storage import StorageManager
 from src.proxy import ProxyManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
@@ -71,43 +73,33 @@ def processSave(raw_body, filename, usAddr):
         except Exception:
             newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)
 
-    path = docManager.getStoragePath(newFilename, usAddr) # get the file path
-
-    data = docManager.downloadFileFromUri(download)  # download document file
+    data = docManager.downloadFileFromUri(download)
     if (data is None):
         raise Exception("Downloaded document is null")
 
-    histDir = historyManager.getHistoryDir(path) # get the path to the history direction
-    if not os.path.exists(histDir): # if the path doesn't exist
-        os.makedirs(histDir) # create it
-
-    versionDir = historyManager.getNextVersionDir(histDir) # get the path to the next file version
-
-    # os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt)) # get the path to the previous file version and rename the storage path with it
-
-    # docManager.saveFile(data, path)  # save document file
-
-    versioned_file = historyManager.getPrevFilePath(versionDir, curExt)
-    docManager.saveFile(data, versioned_file)
-    os.remove(path)
-    shutil.copy(versioned_file, path)
-
-    dataChanges = docManager.downloadFileFromUri(changesUri) # download changes file
+    dataChanges = docManager.downloadFileFromUri(changesUri)
     if (dataChanges is None):
         raise Exception("Downloaded changes is null")
-    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir)) # save file changes to the diff.zip archive
 
-    hist = None
     hist = body.get('changeshistory')
     if (not hist) & ('history' in body):
         hist = json.dumps(body.get('history'))
-    if hist:
-        historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist) # write the history changes to the changes.json file
 
-    key = docManager.generateFileKey(None, None)
-    key_file = historyManager.getKeyPath(versionDir)
-    historyManager.writeFile(key_file, key)
-    # historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key')) # write the key value to the key.txt file
+    config_manager = ConfigurationManager()
+    storage_manager = StorageManager(
+        config_manager=config_manager,
+        user_host=usAddr,
+        source_basename=newFilename
+    )
+    history_manager = HistoryManager(
+        storage_manager=storage_manager
+    )
+    history_changes = HistoryChanges.decode(hist)
+    history_manager.save(
+        changes=history_changes,
+        diff=dataChanges.iter_content(chunk_size=8192),
+        item=data.iter_content(chunk_size=8192)
+    )
 
     forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False) # get the path to the forcesaved file version
     if (forcesavePath != ""): # if the forcesaved file version exists
@@ -161,8 +153,6 @@ def processForceSave(body, filename, usAddr):
     if(isSubmitForm):
         uid = body['actions'][0]['userid'] # get the user id
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr) # create meta data for forcesaved file
-        historyManager.createMetaDataKey(filename, usAddr)
-        historyManager.createMetaDataItem(filename, usAddr)
     return
 
 # create a command request

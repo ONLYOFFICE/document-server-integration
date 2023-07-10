@@ -26,6 +26,9 @@ from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
 from src.configuration import ConfigurationManager
+from src.history import HistoryManager
+from src.request import RequestManager
+from src.storage import StorageManager
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
 # upload a file from the document storage service to the document editing service
@@ -164,6 +167,23 @@ def rename(request):
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
+
+    config_manager = ConfigurationManager()
+    request_manager = RequestManager(
+        request=request
+    )
+    user_host = request_manager.resolve_user_host(None)
+    storage_manager = StorageManager(
+        config_manager=config_manager,
+        user_host=user_host,
+        source_basename=filename
+    )
+    history_manager = HistoryManager(
+        storage_manager=storage_manager
+    )
+    latest_version = history_manager.latest_version()
+    key = history_manager.key(latest_version)
+
     isEnableDirectUrl = request.GET['directUrl'].lower() in ("true")  if 'directUrl' in request.GET else False
 
     ext = fileUtils.getFileExt(filename)
@@ -171,7 +191,7 @@ def edit(request):
     fileUri = docManager.getFileUri(filename, True, request)
     fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
-    # docKey = docManager.generateFileKey(filename, request)
+    docKey = key
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
 
@@ -191,12 +211,6 @@ def edit(request):
     storagePath = docManager.getStoragePath(filename, request)
     meta = historyManager.getMeta(storagePath)  # get the document meta data
     infObj = None
-
-    history_directory = historyManager.getHistoryDir(storagePath)
-    latest_version = historyManager.getFileVersion(history_directory) - 1
-    version_directory = historyManager.getVersionDir(history_directory, latest_version)
-    key_file = historyManager.getKeyPath(version_directory)
-    docKey = Path(key_file).read_text('utf-8')
 
     actionData = request.GET.get('actionLink')  # get the action data that will be scrolled to (comment or bookmark)
     actionLink = json.loads(actionData) if actionData else None

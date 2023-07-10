@@ -209,8 +209,6 @@ def createFile(stream, path, req = None, meta = False):
             read = stream.read(bufSize)
     if meta:
         historyManager.createMeta(path, req) # create meta data for the file if needed
-        historyManager.createMetaKey(path)
-        historyManager.createMetaItem(path)
     return
 
 # save file

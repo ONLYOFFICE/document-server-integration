@@ -404,14 +404,32 @@ class HistoryManager():
 
     # Rejuvenation Management
 
+    # def force_save(self)
+
+    def save(
+        self,
+        changes: HistoryChanges,
+        diff: Iterator[Any],
+        item: Iterator[Any]
+    ):
+        version = self.next_version()
+
+        self.bootstrap_key(version)
+        self.write_changes(version, changes)
+        self.write_diff(version, diff)
+        self.write_item(version, item)
+
+        source_file = self.storage_manager.source_file()
+        file = self.item_file(version)
+        copy(f'{file}', f'{source_file}')
+
     def restore(self, version: int, user: HistoryUser):
         recovery_file = self.item_file(version)
         source_file = self.storage_manager.source_file()
         copy(f'{recovery_file}', f'{source_file}')
 
-        latest_version = self.latest_version()
-        bumped_version = latest_version + 1
-        self.bootstrap(bumped_version, user)
+        version = self.next_version()
+        self.bootstrap(version, user)
 
     def bootstrap_initial_item(self, user: HistoryUser):
         self.bootstrap(HistoryManager.minimal_version, user)
@@ -484,6 +502,12 @@ class HistoryManager():
         directory = self.version_directory(version)
         return directory.joinpath('changes.json')
 
+    def write_diff(self, version, stream: Iterator[Any]):
+        file = self.diff_file(version)
+        with open(f'{file}', 'wb') as output:
+            for chunk in stream:
+                output.write(chunk)
+
     def diff_file(self, version: int) -> Path:
         directory = self.version_directory(version)
         return directory.joinpath('diff.zip')
@@ -532,6 +556,8 @@ class HistoryManager():
 
     # Version Management
 
+    # def version_file(self, version: int, basename: str) -> Path
+
     def version_directory(self, version: int) -> Path:
         parent_directory = self.history_directory()
         directory = parent_directory.joinpath(f'{version}')
@@ -542,6 +568,10 @@ class HistoryManager():
     # Storage Management
 
     minimal_version = 1
+
+    def next_version(self) -> int:
+        version = self.latest_version()
+        return version + 1
 
     def latest_version(self) -> int:
         directory = self.history_directory()
