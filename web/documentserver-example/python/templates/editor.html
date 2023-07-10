@@ -232,7 +232,7 @@
           const userID = config.editorConfig.user.id
           const version = event.data.version
           const request = new XMLHttpRequest()
-          const path = `history/${sourceBasename}/${version}/restore?user_id=${userID}`
+          const path = `history/${sourceBasename}/${version}/restore?userId=${userID}`
           request.open("PUT", path)
           request.send()
           request.onload = function () {

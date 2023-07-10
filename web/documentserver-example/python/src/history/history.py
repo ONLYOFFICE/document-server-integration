@@ -128,7 +128,7 @@ class HistoryController():
         https://api.onlyoffice.com/editors/methods#refreshHistory
 
         ```http
-        GET {{base_url}}/history/{{source_basename}}?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}?userHost={{user_host}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -137,7 +137,7 @@ class HistoryController():
         )
 
         source_basename: str = kwargs['source_basename']
-        optional_user_host = request.GET.get('user_host')
+        optional_user_host = request.GET.get('userHost')
         user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
@@ -161,7 +161,7 @@ class HistoryController():
         https://api.onlyoffice.com/editors/methods#setHistoryData
 
         ```http
-        GET {{base_url}}/history/{{source_basename}}/{{version}}/data?user_host={{user_host}}&direct HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/data?userHost={{user_host}}&direct HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -178,7 +178,7 @@ class HistoryController():
         base_url = request_manager.resolve_base_url(example_url)
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
-        optional_user_host = request.GET.get('user_host')
+        optional_user_host = request.GET.get('userHost')
         user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
@@ -209,7 +209,7 @@ class HistoryController():
     def download(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
-        GET {{base_url}}/history/{{source_basename}}/{{version}}/download/{{basename}}?user_host={{user_host}} HTTP/1.1
+        GET {{base_url}}/history/{{source_basename}}/{{version}}/download/{{basename}}?userHost={{user_host}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -220,7 +220,7 @@ class HistoryController():
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
         basename: str = kwargs['basename']
-        optional_user_host = request.GET.get('user_host')
+        optional_user_host = request.GET.get('userHost')
         user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
@@ -250,7 +250,7 @@ class HistoryController():
     def restore(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
-        PUT {{base_url}}/history/{{source_basename}}/{{version}}/restore?user_host={{user_host}}&user_id={{user_id}} HTTP/1.1
+        PUT {{base_url}}/history/{{source_basename}}/{{version}}/restore?userHost={{user_host}}&userId={{user_id}} HTTP/1.1
         ```
         '''
         config_manager = ConfigurationManager()
@@ -260,9 +260,9 @@ class HistoryController():
 
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
-        optional_user_host = request.GET.get('user_host')
+        optional_user_host = request.GET.get('userHost')
         user_host = request_manager.resolve_address(optional_user_host)
-        user_id = request.GET.get('user_id')
+        user_id = request.GET.get('userId')
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -363,7 +363,7 @@ class HistoryManager():
         parsed_query = parse_qs(url.query)
         parsed_query.update({
             # False positive: the update supports dict.
-            'user_host': user_host # type: ignore # noqa: E261
+            'userHost': user_host # type: ignore # noqa: E261
         })
         query = urlencode(parsed_query)
         return ParseResult(
