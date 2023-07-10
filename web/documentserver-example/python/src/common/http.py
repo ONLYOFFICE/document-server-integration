@@ -20,7 +20,11 @@
 from http import HTTPStatus, HTTPMethod
 from django.http import HttpRequest, HttpResponse
 
-def http_method(method: HTTPMethod):
+# TODO: Access-Control-Allow-Origin
+def access_control_allow_origin():
+    pass
+
+def method(meth: HTTPMethod):
     def wrapper(func):
         def inner(self, request: HttpRequest, *args, **kwargs):
             if request.method is None:
@@ -28,7 +32,7 @@ def http_method(method: HTTPMethod):
                     status=HTTPStatus.METHOD_NOT_ALLOWED
                 )
 
-            if request.method.upper() != method.name:
+            if request.method.upper() != meth.name:
                 return HttpResponse(
                     status=HTTPStatus.METHOD_NOT_ALLOWED
                 )

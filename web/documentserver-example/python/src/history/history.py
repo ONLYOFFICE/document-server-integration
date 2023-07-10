@@ -40,8 +40,7 @@ from django.http import FileResponse, HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from src.codable import Codable, CodingKey
 from src.configuration import ConfigurationManager
-from src.http import http_method
-from src.optional import optional
+from src.common import http, optional
 from src.request import RequestManager
 from src.storage import StorageManager
 from src.utils import jwtManager
@@ -122,7 +121,7 @@ class HistoryData(Codable):
     version: int
 
 class HistoryController():
-    @http_method(HTTPMethod.GET)
+    @http.method(HTTPMethod.GET)
     def history(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#refreshHistory
@@ -155,7 +154,7 @@ class HistoryController():
             content_type='application/json'
         )
 
-    @http_method(HTTPMethod.GET)
+    @http.method(HTTPMethod.GET)
     def data(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         https://api.onlyoffice.com/editors/methods#setHistoryData
@@ -205,7 +204,7 @@ class HistoryController():
             content_type='application/json'
         )
 
-    @http_method(HTTPMethod.GET)
+    @http.method(HTTPMethod.GET)
     def download(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
@@ -246,7 +245,7 @@ class HistoryController():
             as_attachment=True
         )
 
-    @http_method(HTTPMethod.PUT)
+    @http.method(HTTPMethod.PUT)
     def restore(self, request: HttpRequest, **kwargs: Any) -> HttpResponseBase:
         '''
         ```http
@@ -461,7 +460,7 @@ class HistoryManager():
         if changes is None:
             return None
 
-        first_changes = optional(lambda: changes.changes[0])
+        first_changes = optional.expression(lambda: changes.changes[0])
         if first_changes is None:
             return None
 

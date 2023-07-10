@@ -14,4 +14,12 @@
 # limitations under the License.
 #
 
-from .optional import *
+from typing import Callable, Optional, TypeVar
+
+T = TypeVar('T')
+
+def expression(callback: Callable[[], T]) -> Optional[T]:
+    try:
+        return callback()
+    except Exception:
+        return None

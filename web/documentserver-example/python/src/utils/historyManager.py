@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 from src.configuration import ConfigurationManager
 from src.history import HistoryManager, HistoryUser
-from src.optional import optional
+from src.common import optional
 from src.storage import StorageManager
 from src.utils import users
 
@@ -109,7 +109,7 @@ def getMeta(storagePath):
     if changes is None:
         return None
 
-    first_changes = optional(lambda: changes.changes[0])
+    first_changes = optional.expression(lambda: changes.changes[0])
     if first_changes is None:
         return None
 
