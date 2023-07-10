@@ -16,8 +16,15 @@
 
 require 'net/http'
 require 'mimemagic'
+require_relative '../configuration'
 
 class HomeController < ApplicationController
+  @config_manager = ConfigurationManager.new
+
+  class << self
+    attr_reader :config_manager
+  end
+
   def index
   end
 
@@ -159,7 +166,7 @@ class HomeController < ApplicationController
       isEmbedded = params[:dmode]
 
       if JwtHelper.is_enabled && JwtHelper.use_for_request
-        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        jwtHeader = HomeController.config_manage.jwt_header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
           hdr.slice!(0, "Bearer ".length)
@@ -278,7 +285,7 @@ class HomeController < ApplicationController
       isEmbedded = params[:dmode]
 
       if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
-        jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;
+        jwtHeader = HomeController.config_manage.jwt_header;
         if request.headers[jwtHeader]
             hdr = request.headers[jwtHeader]
             hdr.slice!(0, "Bearer ".length)
@@ -330,7 +337,7 @@ class HomeController < ApplicationController
       res = http.request(req)
       data = res.body
 
-      if data.size <= 0 || data.size > Rails.configuration.fileSizeMax
+      if data.size <= 0 || data.size > HomeController.config_manager.maximum_file_size
         render plain: '{"error": "File size is incorrect"}'
         return
       end
