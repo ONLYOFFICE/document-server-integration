@@ -172,7 +172,7 @@ def edit(request):
     request_manager = RequestManager(
         request=request
     )
-    user_host = request_manager.resolve_user_host(None)
+    user_host = request_manager.resolve_address()
     storage_manager = StorageManager(
         config_manager=config_manager,
         user_host=user_host,

@@ -24,7 +24,10 @@ from django.http import HttpRequest
 class RequestManager():
     request: HttpRequest
 
-    def resolve_base_url(self, base_url: Optional[ParseResult]) -> ParseResult:
+    def resolve_base_url(
+        self,
+        base_url: Optional[ParseResult] = None
+    ) -> ParseResult:
         return base_url or self.__base_url()
 
     def __base_url(self):
@@ -33,21 +36,21 @@ class RequestManager():
             self.request.scheme or
             'http'
         )
-        host = self.request.get_host()
+        netloc = self.request.get_host()
         return ParseResult(
             scheme=scheme,
-            netloc=host,
+            netloc=netloc,
             path='',
             params='',
             query='',
             fragment=''
         )
 
-    def resolve_user_host(self, user_host: Optional[str]) -> str:
-        host = user_host or self.__remote_address()
-        return sub(r'[^0-9\-.a-zA-Z_=]', '_', host)
+    def resolve_address(self, address: Optional[str] = None) -> str:
+        raw = address or self.__address()
+        return sub(r'[^0-9\-.a-zA-Z_=]', '_', raw)
 
-    def __remote_address(self) -> str:
+    def __address(self) -> str:
         forwarded = self.request.headers.get('X-Forwarded-For')
         if forwarded:
             return forwarded.split(',')[0]

@@ -138,7 +138,7 @@ class HistoryController():
 
         source_basename: str = kwargs['source_basename']
         optional_user_host = request.GET.get('user_host')
-        user_host = request_manager.resolve_user_host(optional_user_host)
+        user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -179,7 +179,7 @@ class HistoryController():
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
         optional_user_host = request.GET.get('user_host')
-        user_host = request_manager.resolve_user_host(optional_user_host)
+        user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -221,7 +221,7 @@ class HistoryController():
         version: int = kwargs['version']
         basename: str = kwargs['basename']
         optional_user_host = request.GET.get('user_host')
-        user_host = request_manager.resolve_user_host(optional_user_host)
+        user_host = request_manager.resolve_address(optional_user_host)
 
         storage_manager = StorageManager(
             config_manager=config_manager,
@@ -261,7 +261,7 @@ class HistoryController():
         source_basename: str = kwargs['source_basename']
         version: int = kwargs['version']
         optional_user_host = request.GET.get('user_host')
-        user_host = request_manager.resolve_user_host(optional_user_host)
+        user_host = request_manager.resolve_address(optional_user_host)
         user_id = request.GET.get('user_id')
 
         storage_manager = StorageManager(
