@@ -41,3 +41,6 @@ disable = [
 	"missing-function-docstring"
 ]
 class-const-naming-style = "snake_case"
+
+[tool.django-stubs]
+django_settings_module = "manage"
