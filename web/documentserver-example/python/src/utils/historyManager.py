@@ -228,5 +228,5 @@ class CorsHeaderMiddleware:
     def __call__(self, request):
         resp = self.get_response(request)
         if request.path == '/downloadhistory':
-            resp['Access-Control-Allow-Origin'] = config_manager.document_server_url().geturl()[0:-1]
+            resp['Access-Control-Allow-Origin'] = config_manager.document_server_url().geturl()
         return resp

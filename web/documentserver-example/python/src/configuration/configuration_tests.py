@@ -42,7 +42,7 @@ class ConfigurationManagerDocumentServerURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_url()
-        self.assertEqual(url.geturl(), 'http://document-server/')
+        self.assertEqual(url.geturl(), 'http://document-server')
 
     @patch.dict(environ, {
         'DOCUMENT_SERVER_URL': 'http://localhost'

@@ -32,7 +32,7 @@ class ConfigurationManager:
     def document_server_url(self) -> ParseResult:
         url = (
             environ.get('DOCUMENT_SERVER_URL') or
-            'http://document-server/'
+            'http://document-server'
         )
         return urlparse(url)
 
@@ -41,7 +41,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_API_PATH') or
-            'web-apps/apps/api/documents/api.js'
+            '/web-apps/apps/api/documents/api.js'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -51,7 +51,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_PRELOADER_PATH') or
-            'web-apps/apps/api/documents/cache-scripts.html'
+            '/web-apps/apps/api/documents/cache-scripts.html'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -61,7 +61,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_COMMAND_PATH') or
-            'coauthoring/CommandService.ashx'
+            '/coauthoring/CommandService.ashx'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -71,7 +71,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_CONVERTER_PATH') or
-            'ConvertService.ashx'
+            '/ConvertService.ashx'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
