@@ -19,14 +19,16 @@
 import os
 import io
 import json
-import config
 
 from . import users, fileUtils
 from datetime import datetime
 from src import settings
+from src.configuration import ConfigurationManager
 from src.utils import docManager
 from src.utils import jwtManager
     
+config_manager = ConfigurationManager()
+
 # get the path to the history direction
 def getHistoryDir(storagePath):
     return f'{storagePath}-hist'
@@ -226,5 +228,5 @@ class CorsHeaderMiddleware:
     def __call__(self, request):
         resp = self.get_response(request)
         if request.path == '/downloadhistory':
-            resp['Access-Control-Allow-Origin'] = config.DOC_SERV_SITE_URL[0:-1]
+            resp['Access-Control-Allow-Origin'] = config_manager.document_server_url().geturl()[0:-1]
         return resp

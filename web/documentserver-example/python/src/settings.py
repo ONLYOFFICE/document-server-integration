@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
-import config
 import mimetypes
+from src.configuration import ConfigurationManager
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -100,4 +100,10 @@ USE_TZ = True
 mimetypes.add_type("text/javascript", ".js", True)
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ( os.path.join('static'), os.path.join(config.STORAGE_PATH),  os.path.join('assets/sample'))
+
+config_manager = ConfigurationManager()
+STATICFILES_DIRS = (
+    os.path.join('static'),
+    os.path.join('assets/sample'),
+    f'{config_manager.storage_path()}'
+)

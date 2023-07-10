@@ -16,7 +16,9 @@
 
 """
 
-import config
+from src.configuration import ConfigurationManager
+
+config_manager = ConfigurationManager()
 
 # get file name from the document url
 def getFileName(str):
@@ -38,11 +40,11 @@ def getFileExt(str):
 # get file type
 def getFileType(str):
     ext = getFileExt(str)
-    if ext in config.EXT_DOCUMENT:
+    if ext in config_manager.document_file_extensions():
         return 'word'
-    if ext in config.EXT_SPREADSHEET:
+    if ext in config_manager.spreadsheet_file_extensions():
         return 'cell'
-    if ext in config.EXT_PRESENTATION:
+    if ext in config_manager.presentation_file_extensions():
         return 'slide'
 
     return 'word' # default file type is word
