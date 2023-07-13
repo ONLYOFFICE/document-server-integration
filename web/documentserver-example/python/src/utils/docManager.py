@@ -26,8 +26,8 @@ import time
 import urllib.parse
 import magic
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
-from src import settings
 from src.configuration import ConfigurationManager
 from . import fileUtils, historyManager
 

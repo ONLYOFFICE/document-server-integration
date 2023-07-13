@@ -22,7 +22,6 @@ import json
 
 from . import users, fileUtils
 from datetime import datetime
-from src import settings
 from src.configuration import ConfigurationManager
 from src.utils import docManager
 from src.utils import jwtManager
