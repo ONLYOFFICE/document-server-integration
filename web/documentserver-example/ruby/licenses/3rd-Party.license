@@ -68,10 +68,6 @@ sorbet        - A fast, powerful type checker designed for Ruby. (https://github
 License:        Apache License 2.0
 License File:   sorbet.license
 
-sqlite3       - This module allows Ruby programs to interface with the SQLite3 database engine (www.sqlite.org). (https://github.com/sparklemotion/sqlite3-ruby/blob/master/LICENSE)
-License:        BSD-3-Clause
-License File:   sqlite3.license
-
 tapioca       - The swiss army knife of RBI generation. (https://github.com/Shopify/tapioca/blob/v0.11.6/LICENSE.txt)
 License:        MIT
 License File:   tapioca.license
