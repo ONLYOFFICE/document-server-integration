@@ -22,8 +22,3 @@
 /web/documentserver-example/csharp/packages
 /web/documentserver-example/csharp-mvc/packages
 /web/documentserver-example/java-spring/documents/
-/web/documentserver-example/ruby/.bundle
-/web/documentserver-example/ruby/db/*.sqlite3
-/web/documentserver-example/ruby/db/*.sqlite3-journal
-/web/documentserver-example/ruby/log/*
-/web/documentserver-example/ruby/tmp
