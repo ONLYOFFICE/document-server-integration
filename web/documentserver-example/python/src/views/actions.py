@@ -17,7 +17,6 @@
 """
 import requests
 
-import config
 import json
 import os
 import urllib.parse
@@ -25,8 +24,10 @@ import urllib.parse
 from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import render
+from src.configuration import ConfigurationManager
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
+config_manager = ConfigurationManager()
 
 # upload a file from the document storage service to the document editing service
 def upload(request):
@@ -34,7 +35,7 @@ def upload(request):
 
     try:
         fileInfo = request.FILES['uploadedFile']
-        if ((fileInfo.size > config.FILE_SIZE_MAX) | (fileInfo.size <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        if ((fileInfo.size > config_manager.maximum_file_size()) | (fileInfo.size <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             raise Exception('File size is incorrect')
 
         curExt = fileUtils.getFileExt(fileInfo.name)
@@ -117,9 +118,9 @@ def saveAs(request):
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
-        resp = requests.get(saveAsFileUrl, verify = config.DOC_SERV_VERIFY_PEER)
+        resp = requests.get(saveAsFileUrl, verify = config_manager.ssl_verify_peer_mode_enabled())
 
-        if ((len(resp.content) > config.FILE_SIZE_MAX) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        if ((len(resp.content) > config_manager.maximum_file_size()) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
             response.setdefault('error', 'File size is incorrect')
             raise Exception('File size is incorrect')
 
@@ -166,7 +167,7 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb" if os.path.isabs(config.STORAGE_PATH) else docManager.getFileUri(filename, False, request)
+    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -332,7 +333,7 @@ def edit(request):
         'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
-        'apiUrl': config.DOC_SERV_SITE_URL + config.DOC_SERV_API_URL,  # the absolute URL to the api
+        'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
         'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
@@ -404,8 +405,7 @@ def download(request):
         isEmbedded = request.GET.get('dmode')
 
         if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader)
+            token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
 
@@ -437,8 +437,7 @@ def downloadhistory(request):
         isEmbedded = request.GET.get('dmode')
 
         if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader)
+            token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
                 try:
