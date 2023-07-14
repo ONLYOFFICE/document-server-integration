@@ -9,11 +9,6 @@ help: #         Show help message for each of the Makefile recipes.
 dev: #          Install development dependencies.
 	@pip install --editable .[development]
 
-.PHONY: lint
-lint: #         Lint the source code for style and check for types.
-	@flake8
-	@mypy .
-
 .PHONY: prod
 prod: #         Install production dependencies.
 	@pip install .
@@ -27,6 +22,11 @@ server-prod: \
 	export DEBUG := false
 server-prod: #  Start the production server on 0.0.0.0 at $PORT (default: 8000).
 	@python manage.py runserver
+
+.PHONY: lint
+lint: #         Lint the source code for style and check for types.
+	@flake8
+	@mypy .
 
 .PHONY: test
 test: #         Recursively run the tests.
