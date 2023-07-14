@@ -16,10 +16,9 @@
 
 """
 
-
-import requests
-import os
 import json
+import os
+import requests
 from src.configuration import ConfigurationManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
