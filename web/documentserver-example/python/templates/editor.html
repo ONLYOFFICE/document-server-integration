@@ -183,6 +183,27 @@
             }
         };
 
+        function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const config = {{ cfg | safe }}
+          const payload = {
+            fileName: query.get('filename'),
+            version: event.data.version,
+            userId: config.editorConfig.user.id
+          }
+          const request = new XMLHttpRequest()
+          request.open("PUT", '/restore')
+          request.send(JSON.stringify(payload))
+          request.onload = function () {
+            if (request.status != 200) {
+              response = JSON.parse(request.response)
+              innerAlert(response.error)
+              return
+            }
+            document.location.reload();
+          }
+        }
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -198,6 +219,7 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                'onRequestRestore': onRequestRestore
             };
 
 
