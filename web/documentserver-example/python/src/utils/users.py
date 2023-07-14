@@ -16,8 +16,6 @@
 
 """
 
-from urllib.parse import unquote
-
 class User:
     def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates):
         self.id = id
