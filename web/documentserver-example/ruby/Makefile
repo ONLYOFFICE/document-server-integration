@@ -30,10 +30,6 @@ ifeq ($(SORBET_SUPPORTED),1)
 	@bundle exec tapioca init
 endif
 
-.PHONY: dev-server
-dev-server: #   Start the development server on localhost at $PORT (default: 3000).
-	@bundle exec rails server
-
 .PHONY: lint
 lint: #         Lint the source code for style and check for types.
 	@bundle exec rubocop
@@ -46,8 +42,12 @@ prod: #         Install production dependencies.
 	@bundle install --without development doc test
 	@bundle exec rake app:update:bin
 
-.PHONY: prod-server
-prod-server: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
+.PHONY: server-dev
+server-dev: #   Start the development server on localhost at $PORT (default: 3000).
+	@bundle exec rails server
+
+.PHONY: server-prod
+server-prod: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
 	@bundle exec rails server --environment production
 
 .PHONY: test
