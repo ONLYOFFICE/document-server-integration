@@ -29,13 +29,6 @@ ifeq ($(SORBET_SUPPORTED),1)
 	@bundle exec tapioca init
 endif
 
-.PHONY: lint
-lint: #         Lint the source code for style and check for types.
-	@bundle exec rubocop
-ifeq ($(SORBET_SUPPORTED),1)
-	@bundle exec srb tc
-endif
-
 .PHONY: prod
 prod: #         Install production dependencies.
 	@bundle install --without development doc test
@@ -48,6 +41,13 @@ server-dev: #   Start the development server on localhost at $PORT (default: 300
 .PHONY: server-prod
 server-prod: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
 	@bundle exec rails server --environment production
+
+.PHONY: lint
+lint: #         Lint the source code for style and check for types.
+	@bundle exec rubocop
+ifeq ($(SORBET_SUPPORTED),1)
+	@bundle exec srb tc
+endif
 
 .PHONY: test
 test: #         Recursively run the tests.
