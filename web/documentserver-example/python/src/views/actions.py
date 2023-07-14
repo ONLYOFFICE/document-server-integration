@@ -15,14 +15,13 @@
  limitations under the License.
 
 """
-import requests
-
-import json
-import os
 
 from datetime import datetime
+import json
+import os
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+import requests
 from src.configuration import ConfigurationManager
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
