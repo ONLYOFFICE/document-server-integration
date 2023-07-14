@@ -19,10 +19,9 @@ import requests
 
 import json
 import os
-import urllib.parse
 
 from datetime import datetime
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from src.configuration import ConfigurationManager
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
