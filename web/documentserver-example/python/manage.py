@@ -16,6 +16,9 @@ def debug():
     return string.boolean(env, True)
 
 def address():
+    env = environ.get('ADDRESS')
+    if env is not None:
+        return env
     if settings.DEBUG:
         return RunServer.default_addr
     return '0.0.0.0'
