@@ -29,3 +29,7 @@ prod: #         Install production dependencies.
 .PHONY: prod-server
 prod-server: #  Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
 	@bundle exec rails server --environment production
+
+.PHONY: test
+test: #         Recursively run the tests.
+	@bundle exec rake test
