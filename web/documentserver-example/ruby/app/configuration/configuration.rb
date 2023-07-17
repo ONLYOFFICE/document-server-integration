@@ -17,6 +17,9 @@
 # frozen_string_literal: true
 # typed: true
 
+require 'active_model'
+require 'pathname'
+require 'sorbet-runtime'
 require 'uri'
 
 class ConfigurationManager
