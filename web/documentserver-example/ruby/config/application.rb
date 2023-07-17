@@ -20,6 +20,7 @@ class Application < Rails::Application
   config.assets.debug = true
   config.assets.digest = false
   config.eager_load = false
+  config.hosts << /.*/
   config.require_master_key = false
   config.secret_key_base = SecureRandom.uuid
 
