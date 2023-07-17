@@ -15,16 +15,19 @@
  limitations under the License.
 
 """
-import requests
-
-import json
-import os
-import urllib.parse
 
 from datetime import datetime
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from http import HTTPStatus
+import json
+import os
+from pathlib import Path
+from shutil import copy
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+import requests
+from src.common import http
 from src.configuration import ConfigurationManager
+from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
 config_manager = ConfigurationManager()
@@ -505,3 +508,51 @@ def reference(request):
         data['token'] = jwtManager.encode(data)
     
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+@http.PUT()
+def restore(request: HttpRequest) -> HttpResponse:
+    try:
+        body = json.loads(request.body)
+        source_basename: str = body['fileName']
+        version: int = body['version']
+        user_id: str = body.get('userId')
+        source_extension = Path(source_basename).suffix
+
+        user = users.find_user(user_id)
+
+        source_file = docManager.getStoragePath(source_basename, request)
+        history_directory = historyManager.getHistoryDir(source_file)
+
+        recovery_version_directory = historyManager.getVersionDir(history_directory, version)
+        recovery_file = historyManager.getPrevFilePath(recovery_version_directory, source_extension)
+
+        bumped_version_directory = historyManager.getNextVersionDir(history_directory)
+        bumped_key = docManager.generateFileKey(source_basename, request)
+        bumped_key_file = historyManager.getKeyPath(bumped_version_directory)
+        bumped_changes_file = historyManager.getChangesHistoryPath(bumped_version_directory)
+        bumped_changes = {
+            'serverVersion': None,
+            'changes': [
+                {
+                    'created': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+                    'user': {
+                        'id': user.id,
+                        'name': user.name
+                    }
+                }
+            ]
+        }
+        bumped_changes_content = json.dumps(bumped_changes)
+        bumped_file = historyManager.getPrevFilePath(bumped_version_directory, source_extension)
+
+        Path(bumped_key_file).write_text(bumped_key, 'utf-8')
+        Path(bumped_changes_file).write_text(bumped_changes_content, 'utf-8')
+        copy(source_file, bumped_file)
+        copy(recovery_file, source_file)
+
+        return HttpResponse()
+    except Exception as error:
+        return ErrorResponse(
+            message=f'{type(error)}: {error}',
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )

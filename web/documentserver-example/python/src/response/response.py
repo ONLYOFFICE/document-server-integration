@@ -14,10 +14,19 @@
 # limitations under the License.
 #
 
-'''
-The common module is a collection of small, generic functions that are
-independent of business logic.
-'''
+from http import HTTPStatus
+from json import dumps
+from django.http import HttpResponse
 
-from . import http
-from . import string
+class ErrorResponse(HttpResponse):
+    def __init__(self, message: str, status: HTTPStatus):
+        payload = {
+            'error': message,
+            'success': False
+        }
+        content = dumps(payload)
+        super().__init__(
+            content,
+            content_type='application/json',
+            status=status
+        )

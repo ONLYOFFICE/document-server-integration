@@ -14,10 +14,4 @@
 # limitations under the License.
 #
 
-'''
-The common module is a collection of small, generic functions that are
-independent of business logic.
-'''
-
-from . import http
-from . import string
+from .response import *

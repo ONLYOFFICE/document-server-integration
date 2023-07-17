@@ -67,6 +67,7 @@ def routers():
         path('reference', actions.reference),
         path('remove', actions.remove),
         path('rename', actions.rename),
+        path('restore', actions.restore),
         path('saveas', actions.saveAs),
         path('track', actions.track),
         path('upload', actions.upload)
