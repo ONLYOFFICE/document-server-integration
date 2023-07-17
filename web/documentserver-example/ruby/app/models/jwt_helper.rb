@@ -15,7 +15,7 @@
 #
 
 require 'jwt'
-require_relative '../configuration'
+require_relative '../configuration/configuration'
 
 class JwtHelper
 

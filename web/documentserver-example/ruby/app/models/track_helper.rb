@@ -15,7 +15,7 @@
 #
 
 require 'net/http'
-require_relative '../configuration'
+require_relative '../configuration/configuration'
 
 class TrackHelper
   @config_manager = ConfigurationManager.new

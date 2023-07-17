@@ -105,7 +105,8 @@ class ConfigurationManager
     storage_directory = Pathname(storage_path)
     return storage_directory if storage_directory.absolute?
     current_directory = Pathname(File.expand_path(__dir__))
-    current_directory.join('..', storage_directory)
+    directory = current_directory.join('..', '..', storage_directory)
+    directory.cleanpath
   end
 
   sig { returns(Numeric) }

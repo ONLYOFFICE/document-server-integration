@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require_relative '../configuration'
+require_relative '../configuration/configuration'
 
 class FileModel
 
