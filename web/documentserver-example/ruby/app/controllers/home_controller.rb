@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'json'
 require 'net/http'
 require 'mimemagic'
 require_relative '../configuration/configuration'
@@ -423,4 +424,72 @@ class HomeController < ApplicationController
 
       render plain: data.to_json
     end
+
+  def restore
+    body = JSON.parse(request.body.read)
+
+    source_basename = body['fileName']
+    version = body['version']
+    user_id = body['userId']
+
+    source_extension = Pathname(source_basename).extname
+    user = Users.get_user(user_id)
+
+    DocumentHelper.init(request.remote_ip, request.base_url)
+    file_model = FileModel.new(
+      {
+        'file_name': source_basename
+      }
+    )
+
+    user_ip = DocumentHelper.cur_user_host_address(nil)
+    source_file = DocumentHelper.storage_path(source_basename, user_ip)
+    history_directory = DocumentHelper.history_dir(source_file)
+
+    previous_basename = "prev#{source_extension}"
+
+    recovery_version_directory = DocumentHelper.version_dir(history_directory, version)
+    recovery_raw_file = Pathname(recovery_version_directory)
+    recovery_file = recovery_raw_file.join(previous_basename)
+
+    bumped_version = DocumentHelper.get_file_version(history_directory)
+    bumped_version_raw_directory = DocumentHelper.version_dir(history_directory, bumped_version)
+    bumped_version_directory = Pathname(bumped_version_raw_directory)
+    FileUtils.mkdir(bumped_version_directory) unless bumped_version_directory.exist?
+
+    bumped_key_file = bumped_version_directory.join('key.txt')
+    bumped_key = file_model.key
+    File.write(bumped_key_file, bumped_key)
+
+    bumped_changes_file = bumped_version_directory.join('changes.json')
+    bumped_changes = {
+      'serverVersion': nil,
+      'changes': [
+        {
+          'created': Time.now.to_formatted_s(:db),
+          'user': {
+            'id': user.id,
+            'name': user.name
+          }
+        }
+      ]
+    }
+    bumped_changes_content = JSON.generate(bumped_changes)
+    File.write(bumped_changes_file, bumped_changes_content)
+
+    bumped_file = bumped_version_directory.join(previous_basename)
+    FileUtils.cp(source_file, bumped_file)
+    FileUtils.cp(recovery_file, source_file)
+
+    render json: {
+      error: nil,
+      success: true
+    }
+  rescue => error
+    response.status = :internal_server_error
+    render json: {
+      error: error.message,
+      success: false
+    }
+  end
 end
