@@ -1,5 +1,21 @@
 .DEFAULT_GOAL := help
 
+ifeq ($(OS),Windows_NT)
+	SORBET_SUPPORTED := 0
+else
+	NAME := $(shell uname -s)
+	ifeq ($(NAME),Darwin)
+		SORBET_SUPPORTED := 1
+	else
+		ARCH := $(shell uname -p)
+		ifeq ($(ARCH),x86_64)
+			SORBET_SUPPORTED := 1
+		else
+			SORBET_SUPPORTED := 0
+		endif
+	endif
+endif
+
 .PHONY: help
 help: #         Show help message for each of the Makefile recipes.
 	@grep -E "^[a-z-]+: #" $(MAKEFILE_LIST) | \
@@ -10,7 +26,9 @@ help: #         Show help message for each of the Makefile recipes.
 dev: #          Install development dependencies and initialize the project.
 	@bundle install
 	@bundle exec rake app:update:bin
+ifeq ($(SORBET_SUPPORTED),1)
 	@bundle exec tapioca init
+endif
 
 .PHONY: dev-server
 dev-server: #   Start the development server on localhost at $PORT (default: 3000).
@@ -19,7 +37,9 @@ dev-server: #   Start the development server on localhost at $PORT (default: 300
 .PHONY: lint
 lint: #         Lint the source code for style and check for types.
 	@bundle exec rubocop
+ifeq ($(SORBET_SUPPORTED),1)
 	@bundle exec srb tc
+endif
 
 .PHONY: prod
 prod: #         Install production dependencies.
