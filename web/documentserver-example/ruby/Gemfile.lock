@@ -140,6 +140,7 @@ GEM
     parser (3.2.2.3)
       ast (~> 2.4.1)
       racc
+    power_assert (2.0.3)
     psych (5.1.0)
       stringio
     racc (1.7.0)
@@ -241,6 +242,8 @@ GEM
       spoom (~> 1.2.0, >= 1.2.0)
       thor (>= 1.2.0)
       yard-sorbet
+    test-unit (3.6.1)
+      power_assert
     thor (1.2.2)
     tilt (2.2.0)
     timeout (0.3.2)
@@ -295,6 +298,7 @@ DEPENDENCIES
   sorbet (~> 0.5.10871)
   sorbet-runtime (~> 0.5.10871)
   tapioca (~> 0.11.6)
+  test-unit (~> 3.6)
   turbolinks (~> 5.2)
   tzinfo-data (~> 1.2023)
   uglifier (~> 4.2)

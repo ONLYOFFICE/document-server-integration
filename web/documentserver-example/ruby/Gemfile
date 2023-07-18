@@ -13,6 +13,7 @@ gem "rubocop", "~> 1.52", :group => :development
 gem "sass-rails", "~> 6.0"
 gem "sdoc", "~> 2.6", :group => :doc
 gem "sorbet-runtime", "~> 0.5.10871"
+gem "test-unit", "~> 3.6", :groups => [:development, :test]
 gem "turbolinks", "~> 5.2"
 gem "tzinfo-data", "~> 1.2023"
 gem "uglifier", "~> 4.2"
