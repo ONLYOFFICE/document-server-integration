@@ -7,6 +7,7 @@
 - nodejs: getting history by a separate request
 - nodejs: restore from history
 - python: restore from history
+- ruby: restore from history
 
 ## 1.6.0
 - nodejs: setUsers for region protection
