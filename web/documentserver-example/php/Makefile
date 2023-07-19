@@ -12,3 +12,11 @@ dev: #   Install development dependencies.
 .PHONY: prod
 prod: #  Install production dependencies.
 	@composer install --no-dev
+
+.PHONY: lint
+lint: #  Lint the source code for the style.
+	@./vendor/bin/phpcs .
+
+.PHONY: test
+test: #  Run tests recursively.
+	@./vendor/bin/phpunit ./**/*Tests.php
