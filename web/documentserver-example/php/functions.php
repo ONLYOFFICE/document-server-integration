@@ -890,7 +890,10 @@ function tryGetDefaultByType($createExt, $user)
 {
     $sample = isset($_GET["sample"]) && $_GET["sample"];
     $demoName = ($sample ? "sample." : "new.") . $createExt;
-    $demoPath = "assets" . DIRECTORY_SEPARATOR . ($sample ? "sample" : "new") . DIRECTORY_SEPARATOR;
+    $demoPath =
+      "assets" . DIRECTORY_SEPARATOR .
+      "document-templates" . DIRECTORY_SEPARATOR .
+      ($sample ? "sample" : "new") . DIRECTORY_SEPARATOR;
     $demoFilename = GetCorrectName($demoName);
 
     if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
