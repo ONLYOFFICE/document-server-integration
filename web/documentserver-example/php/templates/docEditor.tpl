@@ -189,6 +189,27 @@
             }
         };
 
+        function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const config = {config}
+          const payload = {
+            fileName: query.get('fileID'),
+            version: event.data.version,
+            userId: query.get('user') || config.editorConfig.user.id
+          }
+          const request = new XMLHttpRequest()
+          request.open("PUT", '/webeditor-ajax.php?type=restore')
+          request.send(JSON.stringify(payload))
+          request.onload = function () {
+            if (request.status != 200) {
+              response = JSON.parse(request.response)
+              innerAlert(response.error)
+              return
+            }
+            document.location.reload();
+          }
+        }
+
         var сonnectEditor = function () {
             {fileNotFoundAlert}
 
@@ -208,6 +229,7 @@
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
                 'onRequestReferenceData': onRequestReferenceData,
+                'onRequestRestore': onRequestRestore
             };
 
                 {history}
