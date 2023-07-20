@@ -19,7 +19,7 @@
             "@code-sniffer"
         ]
     },
-    "autoload-dev": {
+    "autoload": {
         "psr-4": {
             "OnlineEditorsExamplePhp\\" : "",
             "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
