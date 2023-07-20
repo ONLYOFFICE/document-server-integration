@@ -1,6 +1,7 @@
 {
     "require": {
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "firebase/php-jwt": "^6.8.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.2",
@@ -22,8 +23,7 @@
         "psr-4": {
             "OnlineEditorsExamplePhp\\" : "",
             "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
-            "OnlineEditorsExamplePhp\\Views\\" : "views/",
-            "Firebase\\JWT\\" : "lib/jwt/"
+            "OnlineEditorsExamplePhp\\Views\\" : "views/"
         }
     }
 }
