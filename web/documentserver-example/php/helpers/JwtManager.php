@@ -18,6 +18,9 @@ namespace OnlineEditorsExamplePhp\Helpers;
  * limitations under the License.
  */
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 final class JwtManager
 {
     /**
@@ -52,7 +55,7 @@ final class JwtManager
     public function jwtEncode($payload)
     {
         $configManager = new ConfigManager();
-        return \Firebase\JWT\JWT::encode($payload, $configManager->getConfig("docServJwtSecret"));
+        return JWT::encode($payload, $configManager->getConfig("docServJwtSecret"), 'HS256');
     }
 
     /**
@@ -66,10 +69,9 @@ final class JwtManager
     {
         $configManager = new ConfigManager();
         try {
-            $payload = \Firebase\JWT\JWT::decode(
+            $payload = JWT::decode(
                 $token,
-                $configManager->getConfig("docServJwtSecret"),
-                ["HS256"]
+                new Key($configManager->getConfig("docServJwtSecret"), 'HS256')
             );
         } catch (\UnexpectedValueException $e) {
             $payload = "";
