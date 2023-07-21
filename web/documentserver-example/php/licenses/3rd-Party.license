@@ -32,6 +32,6 @@ PHP_CodeSniffer - PHP_CodeSniffer is a set of two PHP scripts; the main phpcs sc
 License:        BSD-3-Clause
 License File:   PHP_CodeSniffer.license
 
-PHPUnit         - The PHP Unit Testing framework.
+PHPUnit         - The PHP Unit Testing framework. (https://github.com/sebastianbergmann/phpunit/blob/main/LICENSE)
 License:        BSD 3-Clause
 License File:   phpunit.license
