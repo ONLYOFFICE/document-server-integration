@@ -19,4 +19,4 @@ lint: #  Lint the source code for the style.
 
 .PHONY: test
 test: #  Run tests recursively.
-	@./vendor/bin/phpunit ./**/*Tests.php
+	@./vendor/bin/phpunit --test-suffix "Tests.php" common
