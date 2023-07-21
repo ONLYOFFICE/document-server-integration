@@ -18,6 +18,7 @@
 namespace OnlineEditorsExamplePhp;
 
 use Exception;
+use OnlineEditorsExamplePhp\Common\Path;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
@@ -604,4 +605,75 @@ function reference()
     }
 
     return $data;
+}
+
+function restore()
+{
+    try {
+        $input = file_get_contents('php://input');
+        $body = json_decode($input);
+
+        $source_basename = $body->fileName;
+        $version = $body->version;
+        $user_id = $body->userId;
+
+        $source_file = getStoragePath($source_basename);
+        $history_directory = getHistoryDir($source_file);
+
+        $bumped_version = getFileVersion($history_directory);
+        $bumped_version_string_directory = getVersionDir($history_directory, $bumped_version);
+        if (!file_exists($bumped_version_string_directory)) {
+            mkdir($bumped_version_string_directory);
+        }
+        $bumped_version_directory = new Path($bumped_version_string_directory);
+
+        $bumped_key_file = $bumped_version_directory->join('key.txt');
+        $bumped_key_string_file = $bumped_key_file->string();
+        $bumped_key = getDocEditorKey($source_basename);
+        file_put_contents($bumped_key_string_file, $bumped_key, LOCK_EX);
+
+        $users = new ExampleUsers();
+        $user = $users->getUser($user_id);
+
+        $bumped_changes_file = $bumped_version_directory->join('changes.json');
+        $bumped_changes_string_file = $bumped_changes_file->string();
+        $bumped_changes = [
+            'serverVersion' => null,
+            'changes' => array(
+                [
+                    'created' => date('Y-m-d H:i:s'),
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name
+                    ]
+                ]
+            )
+        ];
+        $bumped_changes_content = json_encode($bumped_changes, JSON_PRETTY_PRINT);
+        file_put_contents($bumped_changes_string_file, $bumped_changes_content, LOCK_EX);
+
+        $source_extension = pathinfo($source_basename, PATHINFO_EXTENSION);
+        $previous_basename = "prev.{$source_extension}";
+
+        $bumped_file = $bumped_version_directory->join($previous_basename);
+        $bumped_string_file = $bumped_file->string();
+        copy($source_file, $bumped_string_file);
+
+        $recovery_version_string_directory = getVersionDir($history_directory, $version);
+        $recovery_version_directory = new Path($recovery_version_string_directory);
+        $recovery_file = $recovery_version_directory->join($previous_basename);
+        $recovery_string_file = $recovery_file->string();
+        copy($recovery_string_file, $source_file);
+
+        return [
+            'error' => null,
+            'success' => true
+        ];
+    } catch (Exception $error) {
+        $message = $error->getMessage();
+        return [
+            'error' => $message,
+            'success' => false
+        ];
+    }
 }

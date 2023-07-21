@@ -112,6 +112,9 @@ if (isset($_GET["type"]) && !empty($_GET["type"])) {
         case "rename":
             $response_array = renamefile();
             die(json_encode($response_array));
+        case 'restore':
+            $response_array = restore();
+            die(json_encode($response_array));
         default:
             $response_array['status'] = 'error';
             $response_array['error'] = '404 Method not found';

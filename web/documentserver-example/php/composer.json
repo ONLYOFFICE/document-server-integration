@@ -18,6 +18,7 @@
     "autoload-dev": {
         "psr-4": {
             "OnlineEditorsExamplePhp\\" : "",
+            "OnlineEditorsExamplePhp\\Common\\": "common/",
             "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
             "OnlineEditorsExamplePhp\\Views\\" : "views/",
             "Firebase\\JWT\\" : "lib/jwt/"
