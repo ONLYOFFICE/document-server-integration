@@ -19,7 +19,7 @@
     <header>
         <div class="center">
             <a href="">
-                <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
+                <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
     </header>
@@ -66,7 +66,7 @@
                                 <tr>
                                     <td valign="middle">
                                         <span class="select-user">Username</span>
-                                        <img id="info" class="info" src="css/images/info.svg" />
+                                        <img id="info" class="info" src="assets/images/info.svg" />
                                         <select class="select-user" id="user">
                                             {userOpts}
                                         </select>
@@ -77,7 +77,7 @@
                                         <span class="select-user">Language</span>
                                         <img class="info info-tooltip" data-id="language"
                                              data-tooltip="Choose the language for ONLYOFFICE editors interface"
-                                             src="css/images/info.svg" />
+                                             src="assets/images/info.svg" />
                                         <select class="select-user" id="language">
                                             {langs}
                                         </select>
@@ -92,7 +92,7 @@
                                                  data-id="directUrlInfo" data-tooltip=
                                                  "Some files can be opened in the user's
                                                              browser without connecting to the document server."
-                                                 src="css/images/info.svg" />
+                                                 src="assets/images/info.svg" />
                                         </label>
                                     </td>
                                 </tr>

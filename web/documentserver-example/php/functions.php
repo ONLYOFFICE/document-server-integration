@@ -159,7 +159,7 @@ function getInternalExtension($filename)
 function getTemplateImageUrl($filename)
 {
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $path = serverPath(true) . "/css/images/";
+    $path = serverPath(true) . "/assets/images/";
 
     $configManager = new ConfigManager();
     foreach ($configManager->getSuppotredFormats() as $format) {

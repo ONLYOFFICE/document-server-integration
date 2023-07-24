@@ -191,11 +191,11 @@ final class DocEditorView extends View
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
             "fileType" => "png",
-            "url" => serverPath(true) . "/css/images/logo.png",
-            "directUrl" => serverPath(false) . "/css/images/logo.png",
+            "url" => serverPath(true) . "/assets/images/logo.png",
+            "directUrl" => serverPath(false) . "/assets/images/logo.png",
         ] : [
             "fileType" => "png",
-            "url" => serverPath(true) . "/css/images/logo.png",
+            "url" => serverPath(true) . "/assets/images/logo.png",
         ];
 
         // a document for comparing
