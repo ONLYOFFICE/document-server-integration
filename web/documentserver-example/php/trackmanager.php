@@ -18,6 +18,7 @@
 namespace OnlineEditorsExamplePhp;
 
 use Exception;
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
 
@@ -28,6 +29,8 @@ use OnlineEditorsExamplePhp\Helpers\JwtManager;
  */
 function readBody()
 {
+    $config_manager = new ConfigurationManager();
+
     $result["error"] = 0;
     $configManager = new ConfigManager();
     $jwtManager = new JwtManager();
@@ -53,8 +56,7 @@ function readBody()
 
         $inHeader = false;
         $data = "";
-        $jwtHeader = $configManager->getConfig("docServJwtHeader") ==
-        "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
+        $jwtHeader = $config_manager->jwt_header();
 
         if (!empty($data["token"])) {  // if the document token is in the data
             $data = $jwtManager->jwtDecode($data["token"]);  // decode it
@@ -290,10 +292,10 @@ function processForceSave($data, $fileName, $userAddress)
  */
 function commandRequest($method, $key, $meta = null)
 {
-    $configManager = new ConfigManager();
+    $config_manager = new ConfigurationManager();
+
     $jwtManager = new JwtManager();
-    $documentCommandUrl = $configManager->getConfig("docServSiteUrl").
-        $configManager->getConfig("docServCommandUrl");
+    $documentCommandUrl = $config_manager->document_server_command_url()->string();
 
     $arr = [
         "c" => $method,
@@ -305,8 +307,7 @@ function commandRequest($method, $key, $meta = null)
     }
 
     $headerToken = "";
-    $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ? "Authorization" :
-        $configManager->getConfig("docServJwtHeader");
+    $jwtHeader = $config_manager->jwt_header();
 
     // check if a secret key to generate token exists or not
     if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
@@ -326,7 +327,7 @@ function commandRequest($method, $key, $meta = null)
     ]];
 
     if (mb_substr($documentCommandUrl, 0, mb_strlen("https")) === "https") {
-        if ($configManager->getConfig("docServVerifyPeerOff") === true) {
+        if ($config_manager->ssl_verify_peer_mode_enabled()) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }

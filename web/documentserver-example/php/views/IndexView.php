@@ -17,6 +17,7 @@
 
 namespace OnlineEditorsExamplePhp\Views;
 
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use function OnlineEditorsExamplePhp\getStoredFiles;
@@ -61,8 +62,8 @@ final class IndexView extends View
     private function getLanguageListOptionsLayout()
     {
         $layout = "";
-        $configManager = new ConfigManager();
-        foreach ($configManager->getConfig("languages") as $key => $language) {
+        $config_manager = new ConfigurationManager();
+        foreach ($config_manager->languages() as $key => $language) {
             $layout .= '<option value="'.$key.'">'.$language.'</option>'.PHP_EOL;
         }
         return $layout;
@@ -100,16 +101,12 @@ final class IndexView extends View
 
     private function getPreloaderUrl()
     {
-        $configManager = new ConfigManager();
-
-        return $configManager->getConfig("docServSiteUrl").
-        $configManager->getConfig("docServPreloaderUrl");
+        $config_manager = new ConfigurationManager();
+        return $config_manager->document_server_preloader_url()->string();
     }
 
     private function getEditButton()
     {
-        $configManager = new ConfigManager();
-        return $configManager->getConfig("mode") != "view" ?
-        '<div id="beginEdit" class="button orange disable">Edit</div>' : "";
+        return '<div id="beginEdit" class="button orange disable">Edit</div>';
     }
 }

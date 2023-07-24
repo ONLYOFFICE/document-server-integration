@@ -18,6 +18,7 @@
 namespace OnlineEditorsExamplePhp;
 
 use Exception;
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
@@ -92,10 +93,10 @@ function getClientIp()
  */
 function serverPath($forDocumentServer = null)
 {
-    $configManager = new ConfigManager();
-    return $forDocumentServer && $configManager->getConfig("storagePath") != null
-    && $configManager->getConfig("exampleUrl") != ""
-        ? $configManager->getConfig("exampleUrl")
+    $config_manager = new ConfigurationManager();
+    $example_url = $config_manager->example_url();
+    return $forDocumentServer && $example_url
+        ? $example_url->string()
         : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
@@ -108,11 +109,8 @@ function serverPath($forDocumentServer = null)
  */
 function getCurUserHostAddress($userAddress = null)
 {
-    $configManager = new ConfigManager();
-    if ($configManager->getConfig("alone")) {
-        if (empty($configManager->getConfig("storagePath"))) {
-            return "Storage";
-        }
+    $config_manager = new ConfigurationManager();
+    if ($config_manager->single_user()) {
         return "";
     }
     if (is_null($userAddress)) {
@@ -222,39 +220,21 @@ function getScheme()
  */
 function getStoragePath($fileName, $userAddress = null)
 {
-    $configManager = new ConfigManager();
-    $storagePath = trim(
-        str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $configManager->getConfig("storagePath")),
-        DIRECTORY_SEPARATOR
-    );
-    if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
-        mkdir($storagePath);
+    $config_manager = new ConfigurationManager();
+    $storage_path = $config_manager->storage_path();
+
+    if (!$storage_path->exists()) {
+        $storage_path->make_directory();
     }
 
-    if (realpath($storagePath) === $storagePath) {
-        $directory = $storagePath;
-    } else {
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    $user_ip = getCurUserHostAddress($userAddress);
+    $user_directory = $storage_path->join_path($user_ip);
+    if (!$user_directory->exists()) {
+        $user_directory->make_directory();
     }
 
-    if ($storagePath != "") {
-        $directory = $directory  . DIRECTORY_SEPARATOR;
-
-        // if the file directory doesn't exist, make it
-        if (!file_exists($directory) && !is_dir($directory)) {
-            mkdir($directory);
-        }
-    }
-
-    if (realpath($storagePath) !== $storagePath) {
-        $directory = $directory . getCurUserHostAddress($userAddress) . DIRECTORY_SEPARATOR;
-    }
-
-    if (!file_exists($directory) && !is_dir($directory)) {
-        mkdir($directory);
-    }
-    sendlog("getStoragePath result: " . $directory . basename($fileName), "common.log");
-    return realpath($storagePath) === $storagePath ? $directory . $fileName : $directory . basename($fileName);
+    $file = $user_directory->join_path($fileName);
+    return $file->string();
 }
 
 /**
@@ -268,43 +248,30 @@ function getStoragePath($fileName, $userAddress = null)
  */
 function getForcesavePath($fileName, $userAddress, $create)
 {
-    $configManager = new ConfigManager();
-    $storagePath = trim(
-        str_replace(
-            ['/', '\\'],
-            DIRECTORY_SEPARATOR,
-            $configManager->getConfig("storagePath")
-        ),
-        DIRECTORY_SEPARATOR
-    );
+    $config_manager = new ConfigurationManager();
+    $storage_path = $config_manager->storage_path();
 
-    // create the directory to this file version
-    if (realpath($storagePath) === $storagePath) {
-        $directory = $storagePath . DIRECTORY_SEPARATOR;
-    } else {
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath . getCurUserHostAddress($userAddress) .
-            DIRECTORY_SEPARATOR;
+    $user_ip = getCurUserHostAddress($userAddress);
+    $user_directory = $storage_path->join_path($user_ip);
+    if (!$user_directory->exists()) {
+        return '';
     }
 
-    if (!is_dir($directory)) {
-        return "";
+    $history_directory = $user_directory->join_path("{$fileName}-hist");
+    if (!$history_directory->exists()) {
+        if ($create) {
+            $history_directory->make_directory();
+        } else {
+            return '';
+        }
     }
 
-    // create the directory to the history of this file version
-    $directory = $directory . $fileName . "-hist" . DIRECTORY_SEPARATOR;
-    if (!$create && !is_dir($directory)) {
-        return "";
+    $file = $history_directory->join_path($fileName);
+    if (!$file->exists() && !$create) {
+        return '';
     }
 
-    if (!file_exists($directory) && !is_dir($directory)) {
-        mkdir($directory);
-    }
-    $directory = $directory . $fileName;
-    if (!$create && !file_exists($directory)) {
-        return "";
-    }
-
-    return $directory;
+    return $file->string();
 }
 
 /**
@@ -370,38 +337,21 @@ function getFileVersion($histDir)
 function getStoredFiles()
 {
     $configManager = new ConfigManager();
-    $storagePath = trim(str_replace(
-        ['/', '\\'],
-        DIRECTORY_SEPARATOR,
-        $configManager->getConfig("storagePath")
-    ), DIRECTORY_SEPARATOR);
-    if (!empty($storagePath) && !file_exists($storagePath) && !is_dir($storagePath)) {
-        mkdir($storagePath);
+
+    $config_manager = new ConfigurationManager();
+    $storage_path = $config_manager->storage_path();
+
+    if (!$storage_path->exists()) {
+        $storage_path->make_directory();
     }
 
-    if (realpath($storagePath) === $storagePath) {
-        $directory = $storagePath;
-    } else {
-        $directory = __DIR__ . DIRECTORY_SEPARATOR . $storagePath;
+    $user_ip = getCurUserHostAddress();
+    $user_directory = $storage_path->join_path($user_ip);
+    if (!$user_directory->exists()) {
+        $user_directory->make_directory();
     }
 
-    // get the storage path and check if it exists
-    $result = [];
-    if ($storagePath != "") {
-        $directory = $directory . DIRECTORY_SEPARATOR;
-
-        if (!file_exists($directory) && !is_dir($directory)) {
-            return $result;
-        }
-    }
-
-    if (realpath($storagePath) !== $storagePath) {
-        $directory = $directory . getCurUserHostAddress() . DIRECTORY_SEPARATOR;
-    }
-
-    if (!file_exists($directory) && !is_dir($directory)) {
-        return $result;
-    }
+    $directory = $user_directory->string();
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
@@ -432,21 +382,8 @@ function getStoredFiles()
  */
 function getVirtualPath($forDocumentServer)
 {
-    $configManager = new ConfigManager();
-    $storagePath = trim(str_replace(
-        ['/', '\\'],
-        '/',
-        $configManager->getConfig("storagePath")
-    ), '/');
-    $storagePath = $storagePath != "" ? $storagePath . '/' : "";
-
-    if (realpath($storagePath) === $storagePath) {
-        $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . '/';
-    } else {
-        $virtPath = serverPath($forDocumentServer) . '/' . $storagePath . getCurUserHostAddress() . '/';
-    }
-    sendlog("getVirtualPath virtPath: " . $virtPath, "common.log");
-    return $virtPath;
+    $server_url = serverPath($forDocumentServer);
+    return $server_url . '/' . getCurUserHostAddress() . '/';
 }
 
 /**
@@ -689,6 +626,8 @@ function sendRequestToConvertService(
     $filePass,
     $lang
 ) {
+    $config_manager = new ConfigurationManager();
+
     if (empty($from_extension)) {
         $path_parts = pathinfo($document_uri);
         $from_extension = mb_strtolower($path_parts['extension']);
@@ -707,9 +646,7 @@ function sendRequestToConvertService(
     // generate document token
     $document_revision_id = generateRevisionId($document_revision_id);
 
-    $configManager = new ConfigManager();
-    $urlToConverter = $configManager->getConfig("docServSiteUrl").
-        $configManager->getConfig("docServConverterUrl");
+    $urlToConverter = $config_manager->document_server_converter_url()->string();
 
     $arr = [
         "async" => $is_async,
@@ -724,8 +661,7 @@ function sendRequestToConvertService(
 
     // add header token
     $headerToken = "";
-    $jwtHeader = $configManager->getConfig("docServJwtHeader") ==
-    "" ? "Authorization" : $configManager->getConfig("docServJwtHeader");
+    $jwtHeader = $config_manager->jwt_header();
 
     $jwtManager = new JwtManager();
     if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
@@ -738,7 +674,7 @@ function sendRequestToConvertService(
     // request parameters
     $opts = ['http' => [
         'method' => 'POST',
-        'timeout' => $configManager->getConfig("docServTimeout"),
+        'timeout' => $config_manager->conversion_timeout(),
         'header' => "Content-type: application/json\r\n" .
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
@@ -747,7 +683,7 @@ function sendRequestToConvertService(
     ];
 
     if (mb_substr($urlToConverter, 0, mb_strlen("https")) === "https") {
-        if ($configManager->getConfig("docServVerifyPeerOff") === true) {
+        if ($config_manager->ssl_verify_peer_mode_enabled()) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
@@ -995,8 +931,6 @@ function getDownloadUrl($fileName, $isServer = true)
  */
 function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
 {
-    $configManager = new ConfigManager();
-    $storagePath = $configManager->getConfig("storagePath");
     $histDir = getHistoryDir(getStoragePath($filename));  // get the path to the file history
 
     if (getFileVersion($histDir) > 0) {  // check if the file was modified (the file version is greater than 0)
@@ -1037,13 +971,11 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             $directUrl = $i == $curVer ? fileUri($filename, false) :
                 getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
             $prevFileUrl = $i == $curVer ? $fileuri : getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
-            if (realpath($storagePath) === $storagePath) {
-                $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :
-                    getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
-                if ($isEnableDirectUrl) {
-                    $directUrl = $i == $curVer ? getDownloadUrl($filename, false) :
-                        getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
-                }
+            $prevFileUrl = $i == $curVer ? getDownloadUrl($filename) :
+                getHistoryDownloadUrl($filename, $i, "prev.".$fileExe);
+            if ($isEnableDirectUrl) {
+                $directUrl = $i == $curVer ? getDownloadUrl($filename, false) :
+                    getHistoryDownloadUrl($filename, $i, "prev.".$fileExe, false);
             }
 
             $dataObj["url"] = $prevFileUrl;  // write file url to the data object

@@ -17,6 +17,7 @@
 
 namespace OnlineEditorsExamplePhp\Views;
 
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
@@ -39,6 +40,9 @@ final class DocEditorView extends View
     public function __construct($request, $tempName = "docEditor")
     {
         parent::__construct($tempName);
+
+        $config_manager = new ConfigurationManager();
+
         $externalUrl = $request["fileUrl"] ?? "";
         $confgManager = new ConfigManager();
         $jwtManager = new JwtManager();
@@ -65,9 +69,6 @@ final class DocEditorView extends View
         }
 
         $fileuri = fileUri($filename, true);
-        $fileuriUser = realpath($confgManager->getConfig("storagePath")) ===
-        $confgManager->getConfig("storagePath") ?
-            getDownloadUrl($filename) . "&dmode=emb" : fileUri($filename);
         $directUrl = getDownloadUrl($filename, false);
         $docKey = getDocEditorKey($filename);
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -266,7 +267,7 @@ final class DocEditorView extends View
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
-            "apiUrl" => $confgManager->getConfig("docServSiteUrl").$confgManager->getConfig("docServApiUrl"),
+            "apiUrl" => $config_manager->document_server_api_url()->string(),
             "dataInsertImage" => mb_strimwidth(
                 json_encode($dataInsertImage),
                 1,
