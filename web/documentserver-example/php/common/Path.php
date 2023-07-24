@@ -53,27 +53,34 @@ final class Path {
         return $parsed ?: null;
     }
 
-    public function join(string ...$paths): self {
-        if (!isset($paths[0])) {
-            return $this;
-        }
-
-        $next_paths = array_slice($paths, 1);
-        if ($paths[0] == '' || $paths[0] == '.') {
-            return $this->join(...$next_paths);
-        }
-
-        $sub = new Path($paths[0]);
-        $sub_string = $sub->string();
-
+    public function normalize(): self {
         $string = $this->string();
-        $separator = str_starts_with($sub_string, $this->separator)
+        $filtered = array();
+        $slugs = explode($this->separator, $string);
+        foreach ($slugs as $slug) {
+            if ($slug === '.') {
+                continue;
+            }
+            if ($slug === '..') {
+                array_pop($filtered);
+                continue;
+            }
+            $filtered[] = $slug;
+        }
+        $joined = implode($this->separator, $filtered);
+        $escaped_separator = preg_quote($this->separator, $this->separator);
+        $separator_regex = "/{$escaped_separator}{2,}/";
+        $separated = preg_replace($separator_regex, $this->separator, $joined);
+        return new Path($separated);
+    }
+
+    public function join_path(string $path): self {
+        $string = $this->string();
+        $separator =
+            str_ends_with($string, $this->separator) ||
+            str_starts_with($path, $this->separator)
             ? ''
             : $this->separator;
-
-        $joined_string = "{$string}{$separator}{$sub_string}";
-        $joined = new Path($joined_string);
-
-        return $joined->join(...$next_paths);
+        return new Path("{$string}{$separator}{$path}");
     }
 }
