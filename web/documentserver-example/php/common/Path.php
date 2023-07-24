@@ -83,4 +83,45 @@ final class Path {
             : $this->separator;
         return new Path("{$string}{$separator}{$path}");
     }
+
+    public function absolute(): bool {
+        $string = $this->string();
+
+        $nt_regex = '/^[A-Za-z]:\\\\/';
+        if (preg_match($nt_regex, $string)) {
+            return true;
+        }
+
+        $nt_separator = '\\';
+        if (str_starts_with($string, $nt_separator)) {
+            return true;
+        }
+
+        $posix_separator = '/';
+        if (str_starts_with($string, $posix_separator)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function exists(): bool {
+        $string = $this->string();
+        return file_exists($string);
+    }
+
+    public function contents(): string {
+        $string = $this->string();
+        return file_get_contents($string);
+    }
+
+    public function directory(): bool {
+        $string = $this->string();
+        return is_dir($string);
+    }
+
+    public function make_directory(): bool {
+        $string = $this->string();
+        return mkdir($string);
+    }
 }
