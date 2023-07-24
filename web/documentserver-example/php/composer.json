@@ -9,11 +9,10 @@
     },
     "autoload": {
         "psr-4": {
-            "OnlineEditorsExamplePhp\\" : "",
-            "OnlineEditorsExamplePhp\\Common\\": "common/",
-            "OnlineEditorsExamplePhp\\Configuration\\" : "configuration/",
-            "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
-            "OnlineEditorsExamplePhp\\Views\\" : "views/"
+            "OnlineEditorsExamplePhp\\Common\\": "src/common/",
+            "OnlineEditorsExamplePhp\\Configuration\\" : "src/configuration/",
+            "OnlineEditorsExamplePhp\\Helpers\\" : "src/helpers/",
+            "OnlineEditorsExamplePhp\\Views\\" : "src/views/"
         }
     }
 }
