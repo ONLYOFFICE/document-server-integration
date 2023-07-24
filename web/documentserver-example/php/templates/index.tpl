@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>ONLYOFFICE Document Editors</title>
 
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,
             800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
