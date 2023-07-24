@@ -18,18 +18,15 @@
 namespace OnlineEditorsExamplePhp\Common;
 
 final class Path {
-    public string $separator;
+    private string $separator = DIRECTORY_SEPARATOR;
+
     public ?string $dirname;
     public ?string $basename;
     public ?string $extension;
     public ?string $filename;
 
-    public function __construct(
-        string $path,
-        string $separator = DIRECTORY_SEPARATOR
-    ) {
+    public function __construct(string $path) {
         $parsed_path = pathinfo($path);
-        $this->separator = $separator;
         $this->dirname = self::dirname($parsed_path);
         $this->basename = self::basename($parsed_path);
         $this->extension = self::extension($parsed_path);
@@ -87,7 +84,7 @@ final class Path {
             return $this->join(...$next_paths);
         }
 
-        $sub = new Path($paths[0], $this->separator);
+        $sub = new Path($paths[0]);
         $sub_string = $sub->string();
 
         $string = $this->string();
@@ -96,7 +93,7 @@ final class Path {
             : $this->separator;
 
         $joined_string = "{$string}{$separator}{$sub_string}";
-        $joined = new Path($joined_string, $this->separator);
+        $joined = new Path($joined_string);
 
         return $joined->join(...$next_paths);
     }
