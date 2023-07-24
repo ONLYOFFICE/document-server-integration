@@ -99,6 +99,7 @@ final class ConfigurationManager {
         $current_directory = new Path(__DIR__);
         $directory = $current_directory
             ->join_path('..')
+            ->join_path('..')
             ->join_path($storage_string_directory);
         return $directory->normalize();
     }
