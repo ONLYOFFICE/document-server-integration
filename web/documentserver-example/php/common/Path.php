@@ -19,59 +19,38 @@ namespace OnlineEditorsExamplePhp\Common;
 
 final class Path {
     private string $separator = DIRECTORY_SEPARATOR;
-
-    public ?string $dirname;
-    public ?string $basename;
-    public ?string $extension;
-    public ?string $filename;
+    private string $string;
 
     public function __construct(string $path) {
-        $parsed_path = pathinfo($path);
-        $this->dirname = self::dirname($parsed_path);
-        $this->basename = self::basename($parsed_path);
-        $this->extension = self::extension($parsed_path);
-        $this->filename = self::filename($parsed_path);
-    }
-
-    private static function dirname(array $path): ?string {
-        return isset($path['dirname'])
-            ? $path['dirname']
-            : null;
-    }
-
-    private static function basename(array $path): ?string {
-        return isset($path['basename'])
-            ? $path['basename']
-            : null;
-    }
-
-    private static function extension(array $path): ?string {
-        return isset($path['extension'])
-            ? $path['extension']
-            : null;
-    }
-
-    private static function filename(array $path): ?string {
-        return isset($path['filename'])
-            ? $path['filename']
-            : null;
+        $this->string = $path;
     }
 
     public function string(): string {
-        $parts = array();
-        if (!$this->dirname && !$this->basename) {
-            return '.';
-        }
-        if ($this->dirname === $this->separator && $this->basename) {
-            return "{$this->dirname}{$this->basename}";
-        }
-        if ($this->dirname !== '.') {
-            $parts[] = $this->dirname;
-        }
-        if ($this->basename) {
-            $parts[] = $this->basename;
-        }
-        return implode($this->separator, $parts);
+        return $this->string;
+    }
+
+    public function dirname(): ?string {
+        $string = $this->string();
+        $parsed = pathinfo($string, PATHINFO_DIRNAME);
+        return $parsed ?: null;
+    }
+
+    public function basename(): ?string {
+        $string = $this->string();
+        $parsed = pathinfo($string, PATHINFO_BASENAME);
+        return $parsed ?: null;
+    }
+
+    public function extension(): ?string {
+        $string = $this->string();
+        $parsed = pathinfo($string, PATHINFO_EXTENSION);
+        return $parsed ?: null;
+    }
+
+    public function filename(): ?string {
+        $string = $this->string();
+        $parsed = pathinfo($string, PATHINFO_FILENAME);
+        return $parsed ?: null;
     }
 
     public function join(string ...$paths): self {
