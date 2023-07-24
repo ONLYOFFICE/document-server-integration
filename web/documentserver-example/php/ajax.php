@@ -234,9 +234,8 @@ function convert()
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
             $fileUri = serverPath(true) . '/'
-                . "webeditor-ajax.php"
-                . "?type=download"
-                . "&fileName=" . urlencode($fileName)
+                . "download"
+                . "?fileName=" . urlencode($fileName)
                 . "&userAddress=" . getClientIp();
         }
         $key = getDocEditorKey($fileName);

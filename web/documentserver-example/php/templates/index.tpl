@@ -35,19 +35,19 @@
                                 <ul class="try-editor-list clearFix">
                                     <li>
                                         <a class="try-editor word reload-page" target="_blank"
-                                           href="doceditor.php?fileExt=docx&user={user}">Document</a>
+                                           href="editor?fileExt=docx&user={user}">Document</a>
                                     </li>
                                     <li>
                                         <a class="try-editor cell reload-page" target="_blank"
-                                           href="doceditor.php?fileExt=xlsx&user={user}">Spreadsheet</a>
+                                           href="editor?fileExt=xlsx&user={user}">Spreadsheet</a>
                                     </li>
                                     <li>
                                         <a class="try-editor slide reload-page" target="_blank"
-                                           href="doceditor.php?fileExt=pptx&user={user}">Presentation</a>
+                                           href="editor?fileExt=pptx&user={user}">Presentation</a>
                                     </li>
                                     <li>
                                         <a class="try-editor form reload-page" target="_blank"
-                                           href="doceditor.php?fileExt=docxf&user={user}">Form template</a>
+                                           href="editor?fileExt=docxf&user={user}">Form template</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">
@@ -58,7 +58,7 @@
                             <div class="upload-panel clearFix">
                                 <a class="file-upload">Upload file
                                     <input type="file" id="fileupload" name="files"
-                                           data-url="webeditor-ajax.php?type=upload&user={user}" />
+                                           data-url="upload?user={user}" />
                                 </a>
                             </div>
 

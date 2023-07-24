@@ -50,40 +50,40 @@ class IndexStoredListView extends View
                     )
                 ).']">';
                 $layout .= ' <td class="contentCells"><a class="stored-edit '.
-                    $storeFile->documentType.'" href="doceditor.php?fileID='.
+                    $storeFile->documentType.'" href="editor?fileID='.
                     urlencode($storeFile->name).
                     '&user='.$user.
                     $directUrlArg .'" target="_blank">'.'<span>'.$storeFile->name.'</span></a></td>';
                 if ($storeFile->canEdit) {
-                    $layout .= ' <td class="contentCells contentCells-icon">   <a href="doceditor.php?fileID='.
+                    $layout .= ' <td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                     urlencode($storeFile->name).'&user=' . htmlentities($user).$directUrlArg.
                      '&action=edit&type=desktop" target="_blank">'.
                      '<img src="css/images/desktop.svg" alt="Open in editor for full size screens"'.
                      ' title="Open in editor for full size screens"/></a></td>'.
-                     ' <td class="contentCells contentCells-icon">  <a href="doceditor.php?fileID='.
+                     ' <td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                         urlencode($storeFile->name).'&user=' . htmlentities($user).$directUrlArg.
                      '&action=edit&type=mobile" target="_blank">'.
                     '<img src="css/images/mobile.svg" alt="Open in editor for mobile devices"'.
                     ' title="Open in editor for mobile devices" /></a></td>'.
-                     ' <td class="contentCells contentCells-icon">  <a href="doceditor.php?fileID='.
+                     ' <td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                         urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                     '&action=comment&type=desktop" target="_blank">'.
                     '   <img src="css/images/comment.svg" alt="Open in editor for comment"'.
                     ' title="Open in editor for comment" /></a></td>';
                     if ($storeFile->documentType == "word") {
-                        $layout .= '<td class="contentCells contentCells-icon">   <a href="doceditor.php?fileID='.
+                        $layout .= '<td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=review&type=desktop" target="_blank">'.
                         '   <img src="css/images/review.svg" alt="Open in editor for review"'.
                         ' title="Open in editor for review" /></a></td>'.
-                        ' <td class="contentCells contentCells-icon ">   <a href="doceditor.php?fileID='.
+                        ' <td class="contentCells contentCells-icon ">   <a href="editor?fileID='.
                         urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=blockcontent&type=desktop" target="_blank">'.
                         '   <img src="css/images/block-content.svg"'.
                             ' alt="Open in editor without content control modification"'.
                         ' title="Open in editor without content control modification"</a></td>';
                     } elseif ($storeFile->documentType == "cell") {
-                        $layout .= '<td class="contentCells contentCells-icon">  <a href="doceditor.php?fileID='.
+                        $layout .= '<td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=filter&type=desktop" target="_blank">'.
                         '   <img src="css/images/filter.svg" alt="Open in editor without access to change the filter"'.
@@ -95,7 +95,7 @@ class IndexStoredListView extends View
                     if ($storeFile->isFillFormDoc) {
                         $layout.= ' <td class="contentCells contentCells-shift contentCells-icon'.
                             ' firstContentCellShift">'.
-                        '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).
+                        '  <a href="editor?fileID='.urlencode($storeFile->name).
                             '&user='.htmlentities($user).$directUrlArg.
                             '&action=fillForms&type=desktop" target="_blank">'.
                         '   <img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms"'.
@@ -105,7 +105,7 @@ class IndexStoredListView extends View
                         'firstContentCellShift"></td>';
                     }
                 } elseif ($storeFile->isFillFormDoc) {
-                    $layout .= '<td class="contentCells contentCells-icon">   <a href="doceditor.php?fileID='.
+                    $layout .= '<td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                         urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                         '&action=fillForms&type=desktop" target="_blank">'.
                     '   <img src="css/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms'.
@@ -114,7 +114,7 @@ class IndexStoredListView extends View
                     '<td class="contentCells contentCells-icon"></td>'.
                     '<td class="contentCells contentCells-icon"></td>'.
                     '<td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">'.
-                    '<a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
+                    '<a href="editor?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
                         $directUrlArg.'&action=fillForms&type=desktop" target="_blank">'.
                     '<img src="css/images/fill-forms.svg" alt="Open in editor for filling in forms"'.
                     ' title="Open in editor for filling in forms"/></a></td>';
@@ -123,22 +123,22 @@ class IndexStoredListView extends View
                         'contentCellsEmpty" colspan="6"></td>';
                 }
                 $layout .= '<td class="contentCells contentCells-icon firstContentCellViewers">'.
-                    '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
+                    '  <a href="editor?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
                         $directUrlArg.'&action=view&type=desktop" target="_blank">'.
                     '   <img src="css/images/desktop.svg" alt="Open in viewer for full size screens"'.
                     ' title="Open in viewer for full size screens" /></a></td>'.
-                    ' <td class="contentCells contentCells-icon">  <a href="doceditor.php?fileID='.
+                    ' <td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                         urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                         '&action=view&type=mobile" target="_blank">'.
                     '   <img src="css/images/mobile.svg" alt="Open in viewer for mobile devices"'.
                     ' title="Open in viewer for mobile devices" /></a></td>'.
                     ' <td class="contentCells contentCells-icon contentCells-shift">'.
-                    '  <a href="doceditor.php?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
+                    '  <a href="editor?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
                         $directUrlArg.'&action=embedded&type=embedded" target="_blank">'.
                     '   <img src="css/images/embeded.svg" alt="Open in embedded mode"'.
                     ' title="Open in embedded mode" /></a>'.
                     ' <td class="contentCells contentCells-icon contentCells-shift  downloadContentCellShift">'.
-                    '<a href="webeditor-ajax.php?type=download&fileName='.urlencode($storeFile->name).'">'.
+                    '<a href="download?fileName='.urlencode($storeFile->name).'">'.
                     '   <img class="icon-download" src="css/images/download.svg"  alt="Download" title="Download"'.
                     ' /></a></td>'.
                     '<td class="contentCells contentCells-icon contentCells-shift">'.

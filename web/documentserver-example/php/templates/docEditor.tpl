@@ -103,7 +103,7 @@
 
             event.data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=reference");
+            xhr.open("POST", "reference");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(event.data));
             xhr.onload = function () {
@@ -161,7 +161,7 @@
                 url: url
             };
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=saveas");
+            xhr.open("POST", "saveas");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
@@ -181,7 +181,7 @@
             };
 
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=rename");
+            xhr.open("POST", "rename");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
@@ -198,7 +198,7 @@
             userId: query.get('user') || config.editorConfig.user.id
           }
           const request = new XMLHttpRequest()
-          request.open("PUT", '/webeditor-ajax.php?type=restore')
+          request.open("PUT", 'restore')
           request.send(JSON.stringify(payload))
           request.onload = function () {
             if (request.status != 200) {
