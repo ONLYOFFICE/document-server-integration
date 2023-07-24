@@ -18,9 +18,9 @@
 namespace OnlineEditorsExamplePhp;
 
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/ajax.php';
-require_once __DIR__ . '/functions.php';
-require_once __DIR__ . '/trackmanager.php';
+require_once __DIR__ . '/src/ajax.php';
+require_once __DIR__ . '/src/functions.php';
+require_once __DIR__ . '/src/trackmanager.php';
 
 use OnlineEditorsExamplePhp\Common\HTTPStatus;
 use OnlineEditorsExamplePhp\Common\URL;

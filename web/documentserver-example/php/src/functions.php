@@ -827,6 +827,7 @@ function tryGetDefaultByType($createExt, $user)
     $sample = isset($_GET["sample"]) && $_GET["sample"];
     $demoName = ($sample ? "sample." : "new.") . $createExt;
     $demoPath =
+      '..' . DIRECTORY_SEPARATOR .
       "assets" . DIRECTORY_SEPARATOR .
       "document-templates" . DIRECTORY_SEPARATOR .
       ($sample ? "sample" : "new") . DIRECTORY_SEPARATOR;

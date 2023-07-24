@@ -340,7 +340,7 @@ function files()
 function assets()
 {
     $fileName = basename($_GET["name"]);
-    $filePath = dirname(__FILE__) .
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
         DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
         . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
@@ -354,7 +354,7 @@ function assets()
 function csv()
 {
     $fileName = "csv.csv";
-    $filePath = dirname(__FILE__) .
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
         DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
         . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
     downloadFile($filePath);
