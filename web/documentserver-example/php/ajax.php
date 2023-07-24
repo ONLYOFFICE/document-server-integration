@@ -50,41 +50,6 @@ function getHttpOrigin()
 }
 
 /**
- * Set headers that prevent caching in all the browsers
- *
- * @return void
- */
-function nocacheHeaders()
-{
-    $headers = [
-        'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
-        'Cache-Control' => 'no-cache, must-revalidate, max-age=0',
-        'Pragma' => 'no-cache',
-    ];
-    $headers['Last-Modified'] = false;
-
-    unset($headers['Last-Modified']);
-
-    // In PHP 5.3+, make sure we are not sending a Last-Modified header.
-    if (function_exists('header_remove')) {
-        @header_remove('Last-Modified');
-    } else {
-        // In PHP 5.2, send an empty Last-Modified header, but only as a
-        // last resort to override a header already sent. #WP23021
-        foreach (headers_list() as $header) {
-            if (0 === mb_stripos($header, 'Last-Modified')) {
-                $headers['Last-Modified'] = '';
-                break;
-            }
-        }
-    }
-
-    foreach ($headers as $name => $field_value) {
-        @header("{$name}: {$field_value}");
-    }
-}
-
-/**
  * Save copy as...
  *
  * @return array
@@ -208,7 +173,15 @@ function track()
         return $data;
     }
 
-    global $_trackerStatus;
+    $_trackerStatus = [
+        0 => 'NotFound',
+        1 => 'Editing',
+        2 => 'MustSave',
+        3 => 'Corrupted',
+        4 => 'Closed',
+        6 => 'MustForceSave',
+        7 => 'CorruptedForceSave',
+    ];
     $status = $_trackerStatus[$data->status];  // get status from the request body
 
     $userAddress = $_GET["userAddress"];
