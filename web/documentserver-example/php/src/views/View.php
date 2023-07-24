@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp\Views;
+namespace Example\Views;
 
 class View
 {

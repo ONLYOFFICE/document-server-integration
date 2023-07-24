@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp\Views;
+namespace Example\Views;
 
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
-use function OnlineEditorsExamplePhp\doUpload;
-use function OnlineEditorsExamplePhp\fileUri;
-use function OnlineEditorsExamplePhp\getCallbackUrl;
-use function OnlineEditorsExamplePhp\getCreateUrl;
-use function OnlineEditorsExamplePhp\getDocEditorKey;
-use function OnlineEditorsExamplePhp\getDocumentType;
-use function OnlineEditorsExamplePhp\getDownloadUrl;
-use function OnlineEditorsExamplePhp\getHistory;
-use function OnlineEditorsExamplePhp\getStoragePath;
-use function OnlineEditorsExamplePhp\getTemplateImageUrl;
-use function OnlineEditorsExamplePhp\serverPath;
-use function OnlineEditorsExamplePhp\tryGetDefaultByType;
-use function OnlineEditorsExamplePhp\getCurUserHostAddress;
+use Example\Configuration\ConfigurationManager;
+use Example\Helpers\ConfigManager;
+use Example\Helpers\ExampleUsers;
+use Example\Helpers\JwtManager;
+use function Example\doUpload;
+use function Example\fileUri;
+use function Example\getCallbackUrl;
+use function Example\getCreateUrl;
+use function Example\getDocEditorKey;
+use function Example\getDocumentType;
+use function Example\getDownloadUrl;
+use function Example\getHistory;
+use function Example\getStoragePath;
+use function Example\getTemplateImageUrl;
+use function Example\serverPath;
+use function Example\tryGetDefaultByType;
+use function Example\getCurUserHostAddress;
 
 final class DocEditorView extends View
 {

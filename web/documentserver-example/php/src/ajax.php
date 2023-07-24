@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp;
+namespace Example;
 
 use Exception;
-use OnlineEditorsExamplePhp\Common\Path;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
+use Example\Common\Path;
+use Example\Configuration\ConfigurationManager;
+use Example\Helpers\ConfigManager;
+use Example\Helpers\ExampleUsers;
+use Example\Helpers\JwtManager;
 
 /**
  * Check if the request is an AJAX request

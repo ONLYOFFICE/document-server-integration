@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
+use Example\Configuration\ConfigurationManager;
 
 final class ConfigurationManagerStoragePathTests extends TestCase {
     public array $env;

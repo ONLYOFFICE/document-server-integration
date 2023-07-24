@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Common\URL;
+use Example\Common\URL;
 
 final class URLJoinPathTests extends TestCase {
     public function test_joins_a_relative_to_an_empty_one() {

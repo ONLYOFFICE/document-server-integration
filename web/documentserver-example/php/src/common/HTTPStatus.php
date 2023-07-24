@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-namespace OnlineEditorsExamplePhp\Common;
+namespace Example\Common;
 
 enum HTTPStatus: int {
     case not_found = 404;

@@ -1,8 +1,8 @@
 <?php
 
-namespace OnlineEditorsExamplePhp\Helpers;
+namespace Example\Helpers;
 
-use function OnlineEditorsExamplePhp\sendlog;
+use function Example\sendlog;
 
 /**
  * (c) Copyright Ascensio System SIA 2023

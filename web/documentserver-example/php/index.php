@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp;
+namespace Example;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/ajax.php';
 require_once __DIR__ . '/src/functions.php';
 require_once __DIR__ . '/src/trackmanager.php';
 
-use OnlineEditorsExamplePhp\Common\HTTPStatus;
-use OnlineEditorsExamplePhp\Common\URL;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Views\DocEditorView;
-use OnlineEditorsExamplePhp\Views\IndexView;
+use Example\Common\HTTPStatus;
+use Example\Common\URL;
+use Example\Configuration\ConfigurationManager;
+use Example\Views\DocEditorView;
+use Example\Views\IndexView;
 
 function configure() {
     $config_manager = new ConfigurationManager();

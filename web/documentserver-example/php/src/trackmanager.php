@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp;
+namespace Example;
 
 use Exception;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
+use Example\Configuration\ConfigurationManager;
+use Example\Helpers\ConfigManager;
+use Example\Helpers\JwtManager;
 
 /**
  * Read request body

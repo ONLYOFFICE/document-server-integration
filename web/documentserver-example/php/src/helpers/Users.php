@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineEditorsExamplePhp\Helpers;
+namespace Example\Helpers;
 
 /**
  * (c) Copyright Ascensio System SIA 2023

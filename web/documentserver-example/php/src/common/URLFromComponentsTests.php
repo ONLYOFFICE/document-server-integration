@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Common\URL;
+use Example\Common\URL;
 
 final class URLFromComponentsTests extends TestCase {
     public function test_creates() {

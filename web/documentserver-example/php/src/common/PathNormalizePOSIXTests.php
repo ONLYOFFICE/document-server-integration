@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Common\Path;
+use Example\Common\Path;
 
 final class PathNormalizePOSIXTests extends TestCase {
     public function test_normalizes() {

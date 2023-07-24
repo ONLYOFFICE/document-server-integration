@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp;
+namespace Example;
 
 use Exception;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use OnlineEditorsExamplePhp\Helpers\JwtManager;
-use OnlineEditorsExamplePhp\Helpers\Users;
+use Example\Configuration\ConfigurationManager;
+use Example\Helpers\ConfigManager;
+use Example\Helpers\ExampleUsers;
+use Example\Helpers\JwtManager;
+use Example\Helpers\Users;
 
 /**
  * Put log files into the log folder

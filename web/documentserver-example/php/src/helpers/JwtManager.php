@@ -1,6 +1,6 @@
 <?php
 
-namespace OnlineEditorsExamplePhp\Helpers;
+namespace Example\Helpers;
 
 /**
  * (c) Copyright Ascensio System SIA 2023
@@ -20,7 +20,7 @@ namespace OnlineEditorsExamplePhp\Helpers;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
+use Example\Configuration\ConfigurationManager;
 
 final class JwtManager
 {

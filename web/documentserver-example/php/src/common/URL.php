@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-namespace OnlineEditorsExamplePhp\Common;
+namespace Example\Common;
 
 final class URL {
     private string $string;

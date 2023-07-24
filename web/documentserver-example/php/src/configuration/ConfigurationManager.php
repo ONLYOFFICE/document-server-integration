@@ -15,10 +15,10 @@
 // limitations under the License.
 //
 
-namespace OnlineEditorsExamplePhp\Configuration;
+namespace Example\Configuration;
 
-use OnlineEditorsExamplePhp\Common\Path;
-use OnlineEditorsExamplePhp\Common\URL;
+use Example\Common\Path;
+use Example\Common\URL;
 
 final class ConfigurationManager {
     public string $version = '1.6.0';

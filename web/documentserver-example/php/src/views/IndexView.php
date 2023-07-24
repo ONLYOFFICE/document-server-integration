@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp\Views;
+namespace Example\Views;
 
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
-use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
-use function OnlineEditorsExamplePhp\getStoredFiles;
+use Example\Configuration\ConfigurationManager;
+use Example\Helpers\ConfigManager;
+use Example\Helpers\ExampleUsers;
+use function Example\getStoredFiles;
 
 final class IndexView extends View
 {

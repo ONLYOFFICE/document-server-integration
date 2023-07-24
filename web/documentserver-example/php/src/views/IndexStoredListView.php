@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace OnlineEditorsExamplePhp\Views;
+namespace Example\Views;
 
-use function OnlineEditorsExamplePhp\getStoredFiles;
-use function OnlineEditorsExamplePhp\getFileVersion;
-use function OnlineEditorsExamplePhp\getHistoryDir;
-use function OnlineEditorsExamplePhp\getStoragePath;
+use function Example\getStoredFiles;
+use function Example\getFileVersion;
+use function Example\getHistoryDir;
+use function Example\getStoragePath;
 
 class IndexStoredListView extends View
 {

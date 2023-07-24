@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Common\Path;
+use Example\Common\Path;
 
 final class PathAbsolutePOSIXTests extends TestCase {
     public function test_recognizes_an_empty_as_a_non_absolute() {

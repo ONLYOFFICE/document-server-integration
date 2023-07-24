@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Common\Path;
+use Example\Common\Path;
 
 final class PathJoinPOSIXTests extends TestCase {
     public function test_joins_a_relative_to_an_empty_one() {

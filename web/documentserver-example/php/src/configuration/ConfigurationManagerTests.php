@@ -16,7 +16,7 @@
 //
 
 use PHPUnit\Framework\TestCase;
-use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
+use Example\Configuration\ConfigurationManager;
 
 final class ConfigurationManagerTests extends TestCase {
     public function test_corresponds_the_latest_version() {
