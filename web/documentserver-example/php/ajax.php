@@ -627,7 +627,7 @@ function restore()
         }
         $bumped_version_directory = new Path($bumped_version_string_directory);
 
-        $bumped_key_file = $bumped_version_directory->join('key.txt');
+        $bumped_key_file = $bumped_version_directory->join_path('key.txt');
         $bumped_key_string_file = $bumped_key_file->string();
         $bumped_key = getDocEditorKey($source_basename);
         file_put_contents($bumped_key_string_file, $bumped_key, LOCK_EX);
@@ -635,7 +635,7 @@ function restore()
         $users = new ExampleUsers();
         $user = $users->getUser($user_id);
 
-        $bumped_changes_file = $bumped_version_directory->join('changes.json');
+        $bumped_changes_file = $bumped_version_directory->join_path('changes.json');
         $bumped_changes_string_file = $bumped_changes_file->string();
         $bumped_changes = [
             'serverVersion' => null,
@@ -655,13 +655,13 @@ function restore()
         $source_extension = pathinfo($source_basename, PATHINFO_EXTENSION);
         $previous_basename = "prev.{$source_extension}";
 
-        $bumped_file = $bumped_version_directory->join($previous_basename);
+        $bumped_file = $bumped_version_directory->join_path($previous_basename);
         $bumped_string_file = $bumped_file->string();
         copy($source_file, $bumped_string_file);
 
         $recovery_version_string_directory = getVersionDir($history_directory, $version);
         $recovery_version_directory = new Path($recovery_version_string_directory);
-        $recovery_file = $recovery_version_directory->join($previous_basename);
+        $recovery_file = $recovery_version_directory->join_path($previous_basename);
         $recovery_string_file = $recovery_file->string();
         copy($recovery_string_file, $source_file);
 
