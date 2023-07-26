@@ -137,10 +137,24 @@ public final class TrackManager {
         return body;
     }
 
+    public static JSONObject resolveProcessSaveBody(final JSONObject body) {
+        JSONObject copied = body;
+
+        String url = (String) copied.get("url");
+        copied.put("url", url.replace("localhost", "proxy"));
+
+        String changesURL = (String) copied.get("changesurl");
+        copied.put("changesurl", changesURL.replace("localhost", "proxy"));
+
+        return copied;
+    }
+
     // file saving process
-    public static void processSave(final JSONObject body,
+    public static void processSave(final JSONObject rawBody,
                                    final String fileName,
                                    final String userAddress) throws Exception {
+        JSONObject body = TrackManager.resolveProcessSaveBody(rawBody);
+
         if (body.get("url") == null) {
             throw new Exception("DownloadUrl is null");
         }
