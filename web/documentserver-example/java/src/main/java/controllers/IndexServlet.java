@@ -48,6 +48,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -57,7 +58,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -125,6 +128,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "reference":
                 reference(request, response, writer);
+                break;
+            case "restore":
+                restore(request, response, writer);
                 break;
             default:
                 break;
@@ -728,6 +734,97 @@ public class IndexServlet extends HttpServlet {
         }
     }
 
+    private static void restore(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        try {
+            Scanner scanner = new Scanner(request.getInputStream());
+            scanner.useDelimiter("\\A");
+            String bodyString = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(bodyString);
+
+            String sourceBasename = (String) body.get("fileName");
+            Integer version = ((Long) body.get("version")).intValue();
+            String userID = (String) body.get("userId");
+
+            String sourceStringFile = DocumentManager.storagePath(sourceBasename, null);
+            File sourceFile = new File(sourceStringFile);
+            Path sourcePathFile = sourceFile.toPath();
+            String historyDirectory = DocumentManager.historyDir(sourceStringFile);
+
+            Integer bumpedVersion = DocumentManager.getFileVersion(historyDirectory);
+            String bumpedVersionStringDirectory = DocumentManager.versionDir(historyDirectory, bumpedVersion);
+            File bumpedVersionDirectory = new File(bumpedVersionStringDirectory);
+            if (!bumpedVersionDirectory.exists()) {
+                bumpedVersionDirectory.mkdir();
+            }
+
+            Path bumpedKeyPathFile = Paths.get(bumpedVersionStringDirectory, "key.txt");
+            String bumpedKeyStringFile = bumpedKeyPathFile.toString();
+            File bumpedKeyFile = new File(bumpedKeyStringFile);
+            String bumpedKey = ServiceConverter.generateRevisionId(
+                DocumentManager.curUserHostAddress(null)
+                + "/"
+                + sourceBasename
+                + "/"
+                + Long.toString(sourceFile.lastModified())
+            );
+            FileWriter bumpedKeyFileWriter = new FileWriter(bumpedKeyFile);
+            bumpedKeyFileWriter.write(bumpedKey);
+            bumpedKeyFileWriter.close();
+
+            User user = Users.getUser(userID);
+
+            Path bumpedChangesPathFile = Paths.get(bumpedVersionStringDirectory, "changes.json");
+            String bumpedChangesStringFile = bumpedChangesPathFile.toString();
+            File bumpedChangesFile = new File(bumpedChangesStringFile);
+            JSONObject bumpedChangesUser = new JSONObject();
+            bumpedChangesUser.put("id", user.getId());
+            bumpedChangesUser.put("name", user.getName());
+            JSONObject bumpedChangesChangesItem = new JSONObject();
+            bumpedChangesChangesItem.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            bumpedChangesChangesItem.put("user", bumpedChangesUser);
+            JSONArray bumpedChangesChanges = new JSONArray();
+            bumpedChangesChanges.add(bumpedChangesChangesItem);
+            JSONObject bumpedChanges = new JSONObject();
+            bumpedChanges.put("serverVersion", null);
+            bumpedChanges.put("changes", bumpedChangesChanges);
+            String bumpedChangesContent = bumpedChanges.toJSONString();
+            FileWriter bumpedChangesFileWriter = new FileWriter(bumpedChangesFile);
+            bumpedChangesFileWriter.write(bumpedChangesContent);
+            bumpedChangesFileWriter.close();
+
+            String sourceExtension = FileUtility.getFileExtension(sourceBasename);
+            String previousBasename = "prev" + sourceExtension;
+
+            Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
+            Files.move(sourcePathFile, bumpedFile);
+
+            String recoveryVersionStringDirectory = DocumentManager.versionDir(historyDirectory, version);
+            Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
+            String recoveryStringFile = recoveryPathFile.toString();
+            FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
+            DocumentManager.createFile(sourcePathFile, recoveryStream);
+            recoveryStream.close();
+
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", null);
+            responseBody.put("success", true);
+            String responseContent = responseBody.toJSONString();
+            writer.write(responseContent);
+        } catch (Exception error) {
+            error.printStackTrace();
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", error.getMessage());
+            responseBody.put("success", false);
+            String responseContent = responseBody.toJSONString();
+            writer.write(responseContent);
+        }
+    }
+
     // process get request
     @Override
     protected void doGet(final HttpServletRequest request,
@@ -738,6 +835,12 @@ public class IndexServlet extends HttpServlet {
     // process post request
     @Override
     protected void doPost(final HttpServletRequest request,
+                          final HttpServletResponse response) throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPut(final HttpServletRequest request,
                           final HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
