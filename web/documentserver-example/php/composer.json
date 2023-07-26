@@ -11,6 +11,7 @@
         "psr-4": {
             "OnlineEditorsExamplePhp\\" : "",
             "OnlineEditorsExamplePhp\\Common\\": "common/",
+            "OnlineEditorsExamplePhp\\Configuration\\" : "configuration/",
             "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
             "OnlineEditorsExamplePhp\\Views\\" : "views/"
         }

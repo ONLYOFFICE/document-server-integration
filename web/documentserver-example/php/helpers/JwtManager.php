@@ -20,6 +20,7 @@ namespace OnlineEditorsExamplePhp\Helpers;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 
 final class JwtManager
 {
@@ -30,8 +31,8 @@ final class JwtManager
      */
     public function isJwtEnabled(): bool
     {
-        $configManager = new ConfigManager();
-        return !empty($configManager->getConfig("docServJwtSecret"));
+        $config_manager = new ConfigurationManager();
+        return !empty($config_manager->jwt_secret());
     }
 
     /**
@@ -41,8 +42,8 @@ final class JwtManager
      */
     public function tokenUseForRequest(): bool
     {
-        $configManager = new ConfigManager();
-        return $configManager->getConfig("docServJwtUseForRequest") ?: false;
+        $config_manager = new ConfigurationManager();
+        return $config_manager->jwt_use_for_request() ?: false;
     }
 
     /**
@@ -54,8 +55,8 @@ final class JwtManager
      */
     public function jwtEncode($payload)
     {
-        $configManager = new ConfigManager();
-        return JWT::encode($payload, $configManager->getConfig("docServJwtSecret"), 'HS256');
+        $config_manager = new ConfigurationManager();
+        return JWT::encode($payload, $config_manager->jwt_secret(), 'HS256');
     }
 
     /**
@@ -67,11 +68,11 @@ final class JwtManager
      */
     public function jwtDecode($token)
     {
-        $configManager = new ConfigManager();
+        $config_manager = new ConfigurationManager();
         try {
             $payload = JWT::decode(
                 $token,
-                new Key($configManager->getConfig("docServJwtSecret"), 'HS256')
+                new Key($config_manager->jwt_secret(), 'HS256')
             );
         } catch (\UnexpectedValueException $e) {
             $payload = "";

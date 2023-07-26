@@ -20,18 +20,11 @@ namespace OnlineEditorsExamplePhp\Helpers;
 
 final class ConfigManager
 {
-    private mixed $config;
     private mixed $configFormats;
 
     public function __construct()
     {
-        $this->config = json_decode($this->getConfigurationJson());
         $this->configFormats = json_decode($this->getConfigurationFromatsJson());
-    }
-
-    private function getConfigurationJson(): bool|string
-    {
-        return file_exists("./config.json") ? file_get_contents("./config.json") : false;
     }
 
     private function getConfigurationFromatsJson(): bool|string
@@ -39,18 +32,6 @@ final class ConfigManager
         return file_exists("./assets/document-formats/onlyoffice-docs-formats.json")
             ? file_get_contents("./assets/document-formats/onlyoffice-docs-formats.json")
             : false;
-    }
-
-    /**
-     * @param string|null $configName
-     * @return mixed
-     */
-    public function getConfig(string $configName = null): mixed
-    {
-        if ($configName) {
-            return $this->config->$configName ?? "";
-        }
-        return $this->config;
     }
 
     public function getSuppotredFormats(): mixed

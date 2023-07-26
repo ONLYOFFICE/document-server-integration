@@ -19,6 +19,7 @@ namespace OnlineEditorsExamplePhp;
 
 use Exception;
 use OnlineEditorsExamplePhp\Common\Path;
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 use OnlineEditorsExamplePhp\Helpers\ConfigManager;
 use OnlineEditorsExamplePhp\Helpers\ExampleUsers;
 use OnlineEditorsExamplePhp\Helpers\JwtManager;
@@ -91,6 +92,8 @@ function nocacheHeaders()
 function saveas()
 {
     try {
+        $config_manager = new ConfigurationManager();
+
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
@@ -107,8 +110,7 @@ function saveas()
         $content_length = $headers["Content-Length"];
         $data = file_get_contents(str_replace(" ", "%20", $fileurl));
 
-        if ($data === false || $content_length <= 0 || $content_length >
-            $configManager->getConfig("fileSizeMax")) {
+        if ($data === false || $content_length <= 0 || $content_length > $config_manager->maximum_file_size()) {
             $result["error"] = "File size is incorrect";
             return $result;
         }
@@ -134,6 +136,8 @@ function saveas()
  */
 function upload()
 {
+    $config_manager = new ConfigurationManager();
+
     $configManager = new ConfigManager();
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
@@ -155,7 +159,7 @@ function upload()
         $ext = mb_strtolower(pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
-        if ($filesize <= 0 || $filesize > $configManager->getConfig("fileSizeMax")) {
+        if ($filesize <= 0 || $filesize > $config_manager->maximum_file_size()) {
             $result["error"] = 'File size is incorrect';  // if not, then an error occurs
             return $result;
         }
@@ -392,6 +396,8 @@ function csv()
 function historyDownload()
 {
     try {
+        $config_manager = new ConfigurationManager();
+
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
 
@@ -401,8 +407,7 @@ function historyDownload()
         $jwtManager = new JwtManager();
         if ($jwtManager->isJwtEnabled()) {
             $configManager = new ConfigManager();
-            $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ?
-                "Authorization" : $configManager->getConfig("docServJwtHeader");
+            $jwtHeader = $config_manager->jwt_header();
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(
                     apache_request_headers()[$jwtHeader],
@@ -439,17 +444,15 @@ function historyDownload()
 function download()
 {
     try {
-        $configManager = new ConfigManager();
-        $fileName = realpath($configManager->getConfig("storagePath"))
-        === $configManager->getConfig("storagePath") ?
-            $_GET["fileName"] : basename($_GET["fileName"]);  // get the file name
+        $config_manager = new ConfigurationManager();
+
+        $fileName = $_GET["fileName"];
         $userAddress = $_GET["userAddress"] ?? null;
         $isEmbedded = $_GET["&dmode"] ?? null;
         $jwtManager = new JwtManager();
 
         if ($jwtManager->isJwtEnabled() && $isEmbedded == null && $userAddress) {
-            $jwtHeader = $configManager->getConfig("docServJwtHeader") == "" ?
-                "Authorization" : $configManager->getConfig("docServJwtHeader");
+            $jwtHeader = $config_manager->jwt_header();
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(
                     apache_request_headers()[$jwtHeader],

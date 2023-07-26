@@ -17,7 +17,7 @@
 
 namespace OnlineEditorsExamplePhp;
 
-use OnlineEditorsExamplePhp\Helpers\ConfigManager;
+use OnlineEditorsExamplePhp\Configuration\ConfigurationManager;
 
 /**
  * WebEditor AJAX Process Execution.
@@ -28,7 +28,8 @@ require_once dirname(__FILE__) . '/functions.php';
 require_once dirname(__FILE__) . '/trackmanager.php';
 require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-$configManager = new ConfigManager();
+$config_manager = new ConfigurationManager();
+
 // define tracker status
 $_trackerStatus = [
     0 => 'NotFound',
@@ -41,7 +42,7 @@ $_trackerStatus = [
 ];
 
 // ignore self-signed certificate
-if ($configManager->getConfig("docServVerifyPeerOff") === true) {
+if ($config_manager->ssl_verify_peer_mode_enabled()) {
     stream_context_set_default([
         'ssl' => [
             'verify_peer' => false,
