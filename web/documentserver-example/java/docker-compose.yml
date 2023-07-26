@@ -1,9 +1,31 @@
-version: '3'
+version: "3.8"
+
 services:
-    java-intg-ex:
-        build:
-            context: ./
-            dockerfile: Dockerfile
-        ports:
-            - 8080:8080
-       
+  document-server:
+    container_name: document-server
+    image: onlyoffice/documentserver:7.3.3.50
+    expose:
+      - "80"
+    environment:
+      - JWT_SECRET=your-256-bit-secret
+
+  example:
+    container_name: example
+    build:
+      context: .
+      target: example
+    # platform: linux/amd64
+    expose:
+      # - "80"
+      - "8080"
+
+  proxy:
+    container_name: proxy
+    build:
+      context: .
+      target: proxy
+    ports:
+      # - "80:80"
+      # - "8080:8080"
+      - "8080:8080"
+      - "3000:3000"
