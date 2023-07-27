@@ -131,30 +131,6 @@ class ConfigurationManager
     120
   end
 
-  sig { returns(T::Array[String]) }
-  def fillable_file_extensions
-    '.docx|.oform'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def viewable_file_extensions
-    '.djvu|.oxps|.pdf|.xps'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def editable_file_extensions
-    '.csv|.docm|.docx|.docxf|.dotm|.dotx|.epub|.fb2|.html|.odp|.ods|.odt|.otp|.ots|.ott|.potm|.potx|.ppsm|.ppsx|.pptm|.pptx|.rtf|.txt|.xlsm|.xlsx|.xltm|.xltx'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def convertable_file_extensions
-    '.doc|.dot|.dps|.dpt|.epub|.et|.ett|.fb2|.fodp|.fods|.fodt|.htm|.html|.mht|.mhtml|.odp|.ods|.odt|.otp|.ots|.ott|.pot|.pps|.ppt|.rtf|.stw|.sxc|.sxi|.sxw|.wps|.wpt|.xls|.xlsb|.xlt|.xml'
-      .split('|')
-  end
-
   sig { returns(T::Hash[String, String]) }
   def languages
     {

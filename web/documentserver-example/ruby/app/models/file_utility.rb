@@ -14,39 +14,22 @@
 # limitations under the License.
 #
 
+require_relative '../format/format'
+
 class FileUtility
-
-  
-  # the document extension list
-  @@exts_document = %w(.doc .docx .docm .oform .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps .oxps)
-
-  # the spreadsheet extension list
-  @@exts_spreadsheet = %w(.xls .xlsx .xlsm .xlsb .xlt .xltx .xltm .ods .fods .ots .csv)
-
-  # the presentation extension list
-  @@exts_presentation = %w(.pps .ppsx .ppsm .ppt .pptx .pptm .pot .potx .potm .odp .fodp .otp)
+  @format_manager = FormatManager.new
 
   class << self
+    attr_reader :format_manager
 
-    # get file type by its name
     def get_file_type(file_name)
-        ext = File.extname(file_name).downcase  # get file extension by its name
+      ext = File.extname(file_name).downcase
 
-        if @@exts_document.include? ext  # word type for document extensions
-          return 'word'
-        end
+      return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
+      return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
+      return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
 
-        if @@exts_spreadsheet.include? ext  # cell type for spreadsheet extensions
-          return 'cell'
-        end
-
-        if @@exts_presentation.include? ext  # slide type for presentation extensions
-          return 'slide'
-        end
-
-        'word'  # the default file type is word
+      'word'
     end
-
   end
-
 end
