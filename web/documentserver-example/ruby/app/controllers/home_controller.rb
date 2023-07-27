@@ -268,7 +268,7 @@ class HomeController < ApplicationController
   # downloading a csv file
   def csv
     file_name = "csv.csv"
-    csvPath = Rails.root.join('public', 'assets', 'sample', file_name)
+    csvPath = Rails.root.join('assets', 'document-templates', 'sample', file_name)
 
     # add headers to the response to specify the page parameters
     response.headers['Content-Length'] = File.size(csvPath).to_s
