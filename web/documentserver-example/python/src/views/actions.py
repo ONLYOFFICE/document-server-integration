@@ -396,7 +396,7 @@ def files(request):
 
 # download a csv file
 def csv(request):
-    filePath = os.path.join('assets', 'sample', "csv.csv")
+    filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
     response = docManager.download(filePath)
     return response
 
