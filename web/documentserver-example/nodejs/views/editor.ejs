@@ -239,7 +239,8 @@
               let fileList = JSON.parse(xhr.responseText);
               let firstXlsxName;
               let file;
-              for (file of fileList) {
+              for (var i = 0; i < fileList.length; i++) {
+                file = fileList[i];
                 if (file["title"]) {
                   if (getFileExt(file["title"]) === "xlsx")
                   {
