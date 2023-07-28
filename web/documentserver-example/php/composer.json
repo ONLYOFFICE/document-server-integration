@@ -1,7 +1,9 @@
 {
     "require": {
         "ext-mbstring": "*",
-        "firebase/php-jwt": "^6.8.1"
+        "firebase/php-jwt": "^6.8.1",
+        "symfony/serializer": "^6.3",
+        "symfony/property-access": "^6.3"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.2",
