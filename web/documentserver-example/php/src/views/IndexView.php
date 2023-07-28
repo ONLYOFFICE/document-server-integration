@@ -18,7 +18,7 @@
 namespace Example\Views;
 
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use function Example\getStoredFiles;
 
@@ -28,8 +28,9 @@ final class IndexView extends View
     public function __construct($request, $tempName = "index")
     {
         parent::__construct($tempName);
+        $formatManager = new FormatManager();
+
         $storedList = new IndexStoredListView($request);
-        $configManager = new ConfigManager();
         $portalInfo = $this->getPortalInfoStyleDisplay();
 
         $this->tagsValues = [
@@ -42,9 +43,9 @@ final class IndexView extends View
             "editButton" => $this->getEditButton(),
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
-            "fillFormsExtList" => implode(",", $configManager->getFillExtensions()),
-            "converExtList" => implode(",", $configManager->getConvertExtensions()),
-            "editedExtList" => implode(",", $configManager->getEditExtensions()),
+            "fillFormsExtList" => implode(",", $formatManager->fillableExtensions()),
+            "converExtList" => implode(",", $formatManager->convertibleExtensions()),
+            "editedExtList" => implode(",", $formatManager->editableExtensions()),
         ];
     }
 
