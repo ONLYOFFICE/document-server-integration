@@ -13,6 +13,7 @@
         "psr-4": {
             "Example\\Common\\": "src/common/",
             "Example\\Configuration\\" : "src/configuration/",
+            "Example\\Format\\" : "src/format/",
             "Example\\Helpers\\" : "src/helpers/",
             "Example\\Views\\" : "src/views/"
         }
