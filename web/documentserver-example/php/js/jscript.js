@@ -125,7 +125,7 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         timer = setTimeout(function () {
-            var requestAddress = "webeditor-ajax.php?type=convert&user=" + user;
+            var requestAddress = "convert?user=" + user;
 
             jq.ajax({
                 async: true,
@@ -247,7 +247,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
+        var url = "editor?fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -256,7 +256,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?action=view&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
+        var url = "editor?action=view&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
@@ -265,7 +265,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = "doceditor.php?type=embedded&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
+        var url = "editor?type=embedded&fileID=" + fileId + "&user=" + user + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -297,7 +297,7 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", ".delete-file", function () {
         var fileName = jq(this).attr("data");
 
-        var requestAddress = "webeditor-ajax.php?type=delete&fileName=" + fileName;
+        var requestAddress = "delete?fileName=" + fileName;
 
         jq.ajax({
             async: true,

@@ -63,7 +63,7 @@ final class DocEditorView extends View
             $filename = tryGetDefaultByType($createExt, $user);
 
             // create the demo file url
-            $new_url = "doceditor.php?fileID=" . $filename . "&user=" . $request["user"];
+            $new_url = "editor?fileID=" . $filename . "&user=" . $request["user"];
             header('Location: ' . $new_url, true);
             exit;
         }
@@ -201,21 +201,21 @@ final class DocEditorView extends View
         // a document for comparing
         $dataCompareFile = $isEnableDirectUrl ? [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
-            "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+            "url" => serverPath(true) . "/assets?name=sample.docx",
+            "directUrl" => serverPath(false) . "/assets?name=sample.docx",
         ] : [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/webeditor-ajax.php?type=assets&name=sample.docx",
+            "url" => serverPath(true) . "/assets?name=sample.docx",
         ];
 
         // recipients data for mail merging
         $dataMailMergeRecipients = $isEnableDirectUrl ? [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
-            "directUrl" => serverPath(false) . "/webeditor-ajax.php?type=csv",
+            "url" => serverPath(true) . "/csv",
+            "directUrl" => serverPath(false) . "/csv",
         ] : [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/webeditor-ajax.php?type=csv",
+            "url" => serverPath(true) . "/csv",
         ];
 
         // users data for mentions

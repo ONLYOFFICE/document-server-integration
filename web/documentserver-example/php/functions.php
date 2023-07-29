@@ -853,9 +853,8 @@ function tryGetDefaultByType($createExt, $user)
 function getCallbackUrl($fileName)
 {
     return serverPath(true) . '/'
-        . "webeditor-ajax.php"
-        . "?type=track"
-        . "&fileName=" . urlencode($fileName)
+        . "track"
+        . "?fileName=" . urlencode($fileName)
         . "&userAddress=" . getClientIp();
 }
 
@@ -872,10 +871,9 @@ function getCreateUrl($fileName, $uid, $type)
 {
     $ext = trim(getInternalExtension($fileName), '.');
     return serverPath(false) . '/'
-        . "doceditor.php"
+        . "editor"
         . "?fileExt=" . $ext
-        . "&user=" . $uid
-        . "&type=" . $type;
+        . "&user=" . $uid;
 }
 
 /**
@@ -892,9 +890,8 @@ function getHistoryDownloadUrl($fileName, $version, $file, $isServer = true)
 {
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
     return serverPath($isServer) . '/'
-        . "webeditor-ajax.php"
-        . "?type=history"
-        . "&fileName=" . urlencode($fileName)
+        . "history"
+        . "?fileName=" . urlencode($fileName)
         . "&ver=" . $version
         . "&file=" . urlencode($file)
         . $userAddress;
@@ -912,9 +909,8 @@ function getDownloadUrl($fileName, $isServer = true)
 {
     $userAddress = $isServer ? "&userAddress=" . getClientIp() : "";
     return serverPath($isServer) . '/'
-        . "webeditor-ajax.php"
-        . "?type=download"
-        . "&fileName=" . urlencode($fileName)
+        . "download"
+        . "?fileName=" . urlencode($fileName)
         . $userAddress;
 }
 
