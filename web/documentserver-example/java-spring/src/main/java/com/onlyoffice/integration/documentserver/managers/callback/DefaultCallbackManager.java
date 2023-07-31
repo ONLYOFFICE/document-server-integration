@@ -163,6 +163,8 @@ public class DefaultCallbackManager implements CallbackManager {
 
             storageMutator.createDirectory(ver);  // create the file version directory
 
+            lastVersion.toFile().renameTo(new File(versionDir + File.separator + "prev" + curExt));
+
             saveFile(byteArrayFile, toSave); // save document file
 
             byte[] byteArrayChanges = getDownloadFile(changesUri); // download file changes
