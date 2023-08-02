@@ -451,7 +451,7 @@ public class IndexServlet extends HttpServlet {
     private static void csv(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final PrintWriter writer) {
-        String fileName = "assets/sample/csv.csv";
+        String fileName = "assets/document-templates/sample/csv.csv";
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
         try {
@@ -466,7 +466,7 @@ public class IndexServlet extends HttpServlet {
     private static void assets(final HttpServletRequest request,
                                final HttpServletResponse response,
                                final PrintWriter writer) {
-        String fileName = "assets/sample/" + FileUtility.getFileName(request.getParameter("name"));
+        String fileName = "assets/document-templates/sample/" + FileUtility.getFileName(request.getParameter("name"));
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(fileName);
         Path filePath = null;
         try {
