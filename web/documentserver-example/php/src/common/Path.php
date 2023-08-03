@@ -17,7 +17,7 @@
 
 namespace Example\Common;
 
-final class Path {
+class Path {
     private string $separator = DIRECTORY_SEPARATOR;
     private string $string;
 

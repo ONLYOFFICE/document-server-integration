@@ -20,7 +20,7 @@ namespace Example\Configuration;
 use Example\Common\Path;
 use Example\Common\URL;
 
-final class ConfigurationManager {
+class ConfigurationManager {
     public string $version = '1.6.0';
 
     public function example_url(): ?URL {

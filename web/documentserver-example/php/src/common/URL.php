@@ -17,7 +17,7 @@
 
 namespace Example\Common;
 
-final class URL {
+class URL {
     private string $string;
 
     public function __construct(string $url) {
