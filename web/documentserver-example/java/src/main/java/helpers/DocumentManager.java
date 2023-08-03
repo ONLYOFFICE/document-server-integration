@@ -20,6 +20,8 @@ package helpers;
 
 import entities.FileType;
 import entities.User;
+import format.FormatManager;
+
 import org.json.simple.JSONObject;
 import org.primeframework.jwt.Signer;
 import org.primeframework.jwt.Verifier;
@@ -56,6 +58,7 @@ import static utils.Constants.MAX_FILE_SIZE;
 
 public final class DocumentManager {
     private static HttpServletRequest request;
+    private static FormatManager formatManager = new FormatManager();
 
     private DocumentManager() { }
 
@@ -89,26 +92,38 @@ public final class DocumentManager {
     }
 
     public static List<String> getFillExts() {
-        String exts = ConfigManager.getProperty("files.docservice.fill-docs");
-        return Arrays.asList(exts.split("\\|"));
+        try {
+            return DocumentManager.formatManager.fillableExtensions();
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
     }
 
     // get file extensions that can be viewed
     public static List<String> getViewedExts() {
-        String exts = ConfigManager.getProperty("files.docservice.viewed-docs");
-        return Arrays.asList(exts.split("\\|"));
+        try {
+            return DocumentManager.formatManager.viewableExtensions();
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
     }
 
     // get file extensions that can be edited
     public static List<String> getEditedExts() {
-        String exts = ConfigManager.getProperty("files.docservice.edited-docs");
-        return Arrays.asList(exts.split("\\|"));
+        try {
+            return DocumentManager.formatManager.editableExtensions();
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
     }
 
     // get file extensions that can be converted
     public static List<String> getConvertExts() {
-        String exts = ConfigManager.getProperty("files.docservice.convert-docs");
-        return Arrays.asList(exts.split("\\|"));
+        try {
+            return DocumentManager.formatManager.convertibleExtensions();
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
     }
 
     // get current user host address
