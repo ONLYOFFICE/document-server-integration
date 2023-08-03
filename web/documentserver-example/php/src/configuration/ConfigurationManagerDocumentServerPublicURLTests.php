@@ -18,7 +18,7 @@
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerDocumentServerURLTests extends TestCase {
+final class ConfigurationManagerDocumentServerPublicURLTests extends TestCase {
     public array $env;
 
     public function __construct(string $name) {
@@ -34,14 +34,14 @@ final class ConfigurationManagerDocumentServerURLTests extends TestCase {
 
     public function test_assigns_a_default_value() {
         $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_url();
+        $url = $config_manager->document_server_public_url();
         $this->assertEquals('http://document-server', $url->string());
     }
 
     public function test_assigns_a_value_from_the_environment() {
-        putenv('DOCUMENT_SERVER_URL=http://localhost');
+        putenv('DOCUMENT_SERVER_PUBLIC_URL=http://localhost');
         $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_url();
+        $url = $config_manager->document_server_public_url();
         $this->assertEquals('http://localhost', $url->string());
     }
 }
