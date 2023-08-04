@@ -69,12 +69,4 @@ test: #         Run tests recursively.
 		--display-errors \
 		--display-notices \
 		--display-warnings \
-		common
-	@./vendor/bin/phpunit \
-		--test-suffix "Tests.php" \
-		--display-incomplete \
-		--display-deprecations \
-		--display-errors \
-		--display-notices \
-		--display-warnings \
-		configuration
+		src
