@@ -29,24 +29,26 @@ import magic
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from src.configuration import ConfigurationManager
+from src.format import FormatManager
 from . import fileUtils, historyManager
 
 config_manager = ConfigurationManager()
+format_manager = FormatManager()
 
 def isCanFillForms(ext):
-    return ext in config_manager.fillable_file_extensions()
+    return ext in format_manager.fillable_extensions()
 
 # check if the file extension can be viewed
 def isCanView(ext):
-    return ext in config_manager.viewable_file_extensions()
+    return ext in format_manager.viewable_extensions()
 
 # check if the file extension can be edited
 def isCanEdit(ext):
-    return ext in config_manager.editable_file_extensions()
+    return ext in format_manager.editable_extensions()
 
 # check if the file extension can be converted
 def isCanConvert(ext):
-    return ext in config_manager.convertible_file_extensions()
+    return ext in format_manager.convertible_extensions()
 
 # check if the file extension is supported by the editor (it can be viewed or edited or converted)
 def isSupportedExt(ext):
@@ -238,7 +240,7 @@ def createSample(fileType, sample, req):
     filename = getCorrectName(f'{sampleName}{ext}', req) # get file name with an index if such a file name already exists
     path = getStoragePath(filename, req)
 
-    with io.open(os.path.join('assets', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
+    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
         createFile(stream, path, req, True)
     return filename
 

@@ -2,10 +2,6 @@
 	path = web/documentserver-example/java/src/main/resources/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/python/assets"]
-	path = web/documentserver-example/python/assets
-	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/en
 [submodule "web/documentserver-example/csharp-mvc/assets"]
 	path = web/documentserver-example/csharp-mvc/assets
 	url = https://github.com/ONLYOFFICE/document-templates
@@ -36,5 +32,13 @@
 	branch = main/en
 [submodule "web/documentserver-example/php/assets/document-formats"]
 	path = web/documentserver-example/php/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/python/assets/document-templates"]
+	path = web/documentserver-example/python/assets/document-templates
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/python/assets/document-formats"]
+	path = web/documentserver-example/python/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
 	branch = master
