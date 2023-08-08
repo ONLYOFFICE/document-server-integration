@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: key in referenceData
 - nodejs: change reference source
 - php: using a repo with a list of formats
 - nodejs: using a repo with a list of formats

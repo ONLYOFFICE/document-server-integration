@@ -521,6 +521,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const data = {
     fileType: fileUtility.getFileExtension(fileName).slice(1),
+    key: req.DocManager.getKey(fileName),
     url: req.DocManager.getDownloadUrl(fileName, true),
     directUrl: req.body.directUrl ? req.DocManager.getDownloadUrl(fileName) : null,
     referenceData: {
