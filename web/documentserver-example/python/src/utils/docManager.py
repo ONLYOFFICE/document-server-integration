@@ -238,7 +238,7 @@ def createSample(fileType, sample, req):
     filename = getCorrectName(f'{sampleName}{ext}', req) # get file name with an index if such a file name already exists
     path = getStoragePath(filename, req)
 
-    with io.open(os.path.join('assets', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
+    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
         createFile(stream, path, req, True)
     return filename
 
