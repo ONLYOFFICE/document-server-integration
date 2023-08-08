@@ -711,7 +711,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
         const downloadExt = `.${body.fileType}`;
         const isSubmitForm = body.forcesavetype === 3; // SubmitForm
-        let correctName = '';
+        let correctName = fileName;
         let forcesavePath = '';
 
         if (isSubmitForm) {
