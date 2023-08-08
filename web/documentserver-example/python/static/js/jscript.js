@@ -16,6 +16,62 @@
  *
  */
 
+function convertingConstruct() {
+  var button = document.querySelector("#MYBUTTON");
+  if (!button) {
+    return;
+  }
+
+  button.addEventListener("click", convertingClick);
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function convertingClick(event) {
+  var form = document.querySelector(".converting");
+  if (!form) {
+    return;
+  }
+
+  jq.blockUI({
+    theme: true,
+    title: "Converting file" + "<div class=\"dialog-close\"></div>",
+    message: jq(".converting"),
+    overlayCSS: {
+      "background-color": "#aaa"
+    },
+    themedCSS: {
+      width: "539px",
+      top: "20%",
+      left: "50%",
+      marginLeft: "-269px"
+    }
+  });
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+function convertingSelect(form) {
+  var step = form.querySelector(".converting-steps__step:nth-of-type(1)");
+  if (!step) {
+    return;
+  }
+
+  // const request = new XMLHttpRequest();
+}
+
+/**
+ * @param {HTMLFormElement} form
+ */
+function convertingConversion(form) {
+  var step = form.querySelector(".converting-steps__step:nth-of-type(2)");
+  if (!step) {
+    return;
+  }
+}
+
 var directUrl;
 
 if (typeof jQuery !== "undefined") {
@@ -365,4 +421,6 @@ if (typeof jQuery !== "undefined") {
     }).mouseout(function () {
         jq("div.tooltip").remove();
     });
+
+    convertingConstruct();
 }
