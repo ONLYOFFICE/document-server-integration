@@ -67,6 +67,7 @@ def routers():
         path('downloadhistory', actions.downloadhistory),
         path('edit', actions.edit),
         path('files', actions.files),
+        path('formats-convertible', actions.formats_convertible),
         path('reference', actions.reference),
         path('remove', actions.remove),
         path('rename', actions.rename),

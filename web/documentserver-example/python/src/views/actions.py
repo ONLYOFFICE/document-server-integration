@@ -27,10 +27,12 @@ from django.shortcuts import render
 import requests
 from src.common import http
 from src.configuration import ConfigurationManager
+from src.format import FormatManager
 from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 
 config_manager = ConfigurationManager()
+format_manager = FormatManager()
 
 # upload a file from the document storage service to the document editing service
 def upload(request):
@@ -551,6 +553,21 @@ def restore(request: HttpRequest) -> HttpResponse:
         copy(recovery_file, source_file)
 
         return HttpResponse()
+    except Exception as error:
+        return ErrorResponse(
+            message=f'{type(error)}: {error}',
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+
+@http.POST()
+def formats_convertible(request: HttpRequest) -> HttpResponse:
+    try:
+        body = json.loads(request.body)
+        source_basename: str = body['fileName']
+        source_extension = Path(source_basename).suffix
+        names = format_manager.convertible_to_names(source_extension)
+        content = json.dumps(names)
+        return HttpResponse(content)
     except Exception as error:
         return ErrorResponse(
             message=f'{type(error)}: {error}',
