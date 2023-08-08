@@ -104,6 +104,29 @@ class FormatManager():
         )
         return list(mapped)
 
+    def convertible_to_names(self, extension) -> list[str]:
+        formats = self.convertible_to(extension)
+        mapped = map(lambda format: format.name, formats)
+        return list(mapped)
+
+    def convertible_to(self, extension) -> list[Format]:
+        formats = self.all()
+        filtered: list[Format] = []
+        names: list[str] = []
+
+        for format in formats:
+            if format.extension() == extension:
+                names = format.convert
+                break
+
+        for name in names:
+            for format in formats:
+                if format.name == name:
+                    filtered.append(format)
+                    break
+
+        return list(filtered)
+
     def convertible_extensions(self) -> list[str]:
         formats = self.convertible()
         mapped = map(lambda format: format.extension(), formats)
