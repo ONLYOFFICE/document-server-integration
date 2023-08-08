@@ -111,15 +111,15 @@ class FormatManager():
 
     def convertible(self) -> list[Format]:
         formats = self.all()
-        mapped = filter(
+        filtered = filter(
             lambda format: (
-                format.type == 'cell' and 'xlsx' in format.actions or
-                format.type == 'slide' and 'pptx' in format.actions or
-                format.type == 'word' and 'docx' in format.actions
+                format.type == 'cell' and 'xlsx' in format.convert or
+                format.type == 'slide' and 'pptx' in format.convert or
+                format.type == 'word' and 'docx' in format.convert
             ),
             formats
         )
-        return list(mapped)
+        return list(filtered)
 
     def all_extensions(self) -> list[str]:
         formats = self.all()
