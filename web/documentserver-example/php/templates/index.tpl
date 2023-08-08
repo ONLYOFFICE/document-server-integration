@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width" />
     <title>ONLYOFFICE Document Editors</title>
 
-    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,
             800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
 
-    <link rel="stylesheet" type="text/css" href="css/stylesheet.css" />
-    <link rel="stylesheet" type="text/css" href="css/media.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/media.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/jquery-ui.css" />
 </head>
 <body>
 <form id="form1">
     <header>
         <div class="center">
             <a href="">
-                <img src ="css/images/logo.svg" alt="ONLYOFFICE" />
+                <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
     </header>
@@ -66,7 +66,7 @@
                                 <tr>
                                     <td valign="middle">
                                         <span class="select-user">Username</span>
-                                        <img id="info" class="info" src="css/images/info.svg" />
+                                        <img id="info" class="info" src="assets/images/info.svg" />
                                         <select class="select-user" id="user">
                                             {userOpts}
                                         </select>
@@ -77,7 +77,7 @@
                                         <span class="select-user">Language</span>
                                         <img class="info info-tooltip" data-id="language"
                                              data-tooltip="Choose the language for ONLYOFFICE editors interface"
-                                             src="css/images/info.svg" />
+                                             src="assets/images/info.svg" />
                                         <select class="select-user" id="language">
                                             {langs}
                                         </select>
@@ -92,7 +92,7 @@
                                                  data-id="directUrlInfo" data-tooltip=
                                                  "Some files can be opened in the user's
                                                              browser without connecting to the document server."
-                                                 src="css/images/info.svg" />
+                                                 src="assets/images/info.svg" />
                                         </label>
                                     </td>
                                 </tr>
@@ -203,14 +203,14 @@
     </footer>
 </form>
 
-<script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
-<script type="text/javascript" src="js/jquery-migrate-3.4.1.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/jquery.blockUI.js"></script>
-<script type="text/javascript" src="js/jquery.iframe-transport.js"></script>
-<script type="text/javascript" src="js/jquery.fileupload.js"></script>
-<script type="text/javascript" src="js/jquery.dropdownToggle.js"></script>
-<script type="text/javascript" src="js/jscript.js"></script>
+<script type="text/javascript" src="assets/js/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery-migrate-3.4.1.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.blockUI.js"></script>
+<script type="text/javascript" src="assets/js/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="assets/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
+<script type="text/javascript" src="assets/js/jscript.js"></script>
 <script type="text/javascript">
     var FillFormsExtList = '{fillFormsExtList}';
     var ConverExtList = '{converExtList}';

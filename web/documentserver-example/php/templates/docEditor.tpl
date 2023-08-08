@@ -6,7 +6,7 @@
             maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="css/images/{docType}.ico" type="image/x-icon" />
+    <link rel="icon" href="assets/images/{docType}.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
