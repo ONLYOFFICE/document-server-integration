@@ -688,20 +688,3 @@
         max-width: none;
     }
 }
-
-/* Converting */
-
-@media (max-width: 593px) {
-  .converting {
-    padding: 24px 16px;
-  }
-
-  .converting-options {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .converting-actions {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
