@@ -29,15 +29,10 @@ function convertingConstruct() {
  * @param {MouseEvent} event
  */
 function convertingClick(event) {
-  var form = document.querySelector(".converting");
-  if (!form) {
-    return;
-  }
-
   jq.blockUI({
     theme: true,
-    title: "Converting file" + "<div class=\"dialog-close\"></div>",
-    message: jq(".converting"),
+    title: "File Conversion" + "<div class=\"dialog-close\"></div>",
+    message: jq(".conversion"),
     overlayCSS: {
       "background-color": "#aaa"
     },
@@ -48,28 +43,6 @@ function convertingClick(event) {
       marginLeft: "-269px"
     }
   });
-}
-
-/**
- * @param {HTMLFormElement} form
- */
-function convertingSelect(form) {
-  var step = form.querySelector(".converting-steps__step:nth-of-type(1)");
-  if (!step) {
-    return;
-  }
-
-  // const request = new XMLHttpRequest();
-}
-
-/**
- * @param {HTMLFormElement} form
- */
-function convertingConversion(form) {
-  var step = form.querySelector(".converting-steps__step:nth-of-type(2)");
-  if (!step) {
-    return;
-  }
 }
 
 var directUrl;
