@@ -172,6 +172,28 @@
                     }
                 };
 
+                function onRequestRestore(event) {
+                  const query = new URLSearchParams(window.location.search)
+                  const config = [[${model}]]
+                  const payload = {
+                    fileName: query.get('fileName'),
+                    version: event.data.version,
+                    userId: config.editorConfig.user.id
+                  }
+                  const request = new XMLHttpRequest()
+                  request.open('PUT', 'restore')
+                  request.setRequestHeader('Content-Type', 'application/json')
+                  request.send(JSON.stringify(payload))
+                  request.onload = function () {
+                    if (request.status != 200) {
+                      response = JSON.parse(request.response)
+                      innerAlert(response.error)
+                      return
+                    }
+                    document.location.reload()
+                  }
+                }
+
                 config.width = "100%";
                 config.height = "100%";
                 config.events = {
@@ -184,6 +206,7 @@
                     "onRequestInsertImage": onRequestInsertImage,
                     "onRequestCompareFile": onRequestCompareFile,
                     "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                    "onRequestRestore": onRequestRestore
                 };
 
                 var histArray = [[${fileHistory}]];
