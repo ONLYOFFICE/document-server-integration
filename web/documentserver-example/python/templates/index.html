@@ -311,10 +311,10 @@
 
     <button id="MYBUTTON" type="button">click</button>
 
-    <form class="converting">
-      <div class="converting-file">
-        <span class="converting-file__basename">document.docx</span>
-        <span class="converting-file__type">
+    <form class="conversion">
+      <div class="conversion-file">
+        <span class="conversion-file__basename">document.docx</span>
+        <span class="conversion-file__type">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M6 5H14L18 9V19H6V5Z" fill="white"/>
             <path fill-rule="evenodd" clip-rule="evenodd" d="M18 9L14 5H6V19H18V9ZM14 4L19 9V20H5V4H14Z" fill="#BFBFBF"/>
@@ -329,11 +329,11 @@
           </svg>
         </span>
       </div>
-      <ul class="converting-steps">
-        <li class="converting-steps__step converting-steps__step_skipped">
-          <p class="converting-steps__title"><span aria-hidden="true">1.</span> Select a format file to convert</p>
-          <span class="converting-steps__status">
-            <svg xmlns="http://www.w3.org/2000/svg" class="converting-processing" aria-hidden="true" viewBox="0 0 24 24">
+      <ul class="conversion-steps">
+        <li class="conversion-steps__step conversion-steps__step_skipped">
+          <p class="conversion-steps__title"><span aria-hidden="true">1.</span> Select a format file to convert</p>
+          <span class="conversion-steps__status">
+            <svg xmlns="http://www.w3.org/2000/svg" class="conversion-loading" aria-hidden="true" viewBox="0 0 24 24">
               <circle cx="12.5" cy="5.5" r="1.5" fill="#D9D9D9"/>
               <circle cx="16.5" cy="7.5" r="1.5" fill="#A4A4A4"/>
               <circle cx="18.5" cy="11.5" r="1.5" fill="#727272"/>
@@ -341,37 +341,38 @@
               <circle cx="12.5" cy="17.5" r="1.5" fill="#505050"/>
               <circle cx="8.5" cy="15.5" r="1.5" fill="#333333"/>
             </svg>
-            <svg xmlns="http://www.w3.org/2000/svg" class="converting-done" aria-hidden="true" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="conversion-succeeded" aria-hidden="true" viewBox="0 0 24 24">
               <path d="M10.3765 15.128C9.98789 15.5187 9.35642 15.5214 8.96449 15.134L6.14517 12.3473C5.75561 11.9622 5.12876 11.9622 4.7392 12.3473L4.72038 12.3659C4.32403 12.7576 4.32441 13.3978 4.72124 13.7891L8.96526 17.974C9.35702 18.3603 9.98726 18.3576 10.3757 17.9679L20.2877 8.02322C20.6801 7.62959 20.67 6.98549 20.2729 6.59667V6.59667C19.8804 6.21243 19.2454 6.21063 18.8581 6.60004L10.3765 15.128Z"/>
             </svg>
           </span>
-          <div class="converting-steps__contents">
-            <p class="converting-steps__description">The converting speed depends on file size and additional elements it contains.</p>
-            <div class="converting-options" role="menu">
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">pdf</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">pdfа</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">docxf</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">docx</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">jpg</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">png</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">txt</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">bmp</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">rtf</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">ebub</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">fb2</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">html</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">docm</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">dotm</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">odt</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">ott</label>
-              <label class="converting-options__option converting-options__option_inactivated" aria-checked="false" role="menuitemradio" tabindex="0">dotx</label>
-            </div>
+          <div class="conversion-steps__contents">
+            <p class="conversion-steps__description">The converting speed depends on file size and additional elements it contains.</p>
+            <fieldset class="conversion-options">
+              <legend class="sr-only">Select a format file to convert</legend>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="pdf"><span class="conversion-options__indicator">pdf</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="pdfа"><span class="conversion-options__indicator">pdfа</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="docxf"><span class="conversion-options__indicator">docxf</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="docx"><span class="conversion-options__indicator">docx</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="jpg"><span class="conversion-options__indicator">jpg</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="png"><span class="conversion-options__indicator">png</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="txt"><span class="conversion-options__indicator">txt</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="bmp"><span class="conversion-options__indicator">bmp</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="rtf"><span class="conversion-options__indicator">rtf</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="ebub"><span class="conversion-options__indicator">ebub</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="fb2"><span class="conversion-options__indicator">fb2</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="html"><span class="conversion-options__indicator">html</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="docm"><span class="conversion-options__indicator">docm</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="dotm"><span class="conversion-options__indicator">dotm</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="odt"><span class="conversion-options__indicator">odt</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="ott"><span class="conversion-options__indicator">ott</span></label>
+              <label class="conversion-options__option"><input class="conversion-options__control" type="radio" name="format" value="dotx"><span class="conversion-options__indicator">dotx</span></label>
+            </fieldset>
           </div>
         </li>
-        <li class="converting-steps__step converting-steps__step_skipped">
-          <p class="converting-steps__title"><span aria-hidden="true">2.</span> File conversion</p>
-          <span class="converting-steps__status">
-            <svg xmlns="http://www.w3.org/2000/svg" class="converting-processing" aria-hidden="true" viewBox="0 0 24 24">
+        <li class="conversion-steps__step conversion-steps__step_skipped">
+          <p class="conversion-steps__title"><span aria-hidden="true">2.</span> File conversion</p>
+          <span class="conversion-steps__status">
+            <svg xmlns="http://www.w3.org/2000/svg" class="conversion-loading" aria-hidden="true" viewBox="0 0 24 24">
               <circle cx="12.5" cy="5.5" r="1.5" fill="#D9D9D9"/>
               <circle cx="16.5" cy="7.5" r="1.5" fill="#A4A4A4"/>
               <circle cx="18.5" cy="11.5" r="1.5" fill="#727272"/>
@@ -379,29 +380,29 @@
               <circle cx="12.5" cy="17.5" r="1.5" fill="#505050"/>
               <circle cx="8.5" cy="15.5" r="1.5" fill="#333333"/>
             </svg>
-            <svg xmlns="http://www.w3.org/2000/svg" class="converting-done" aria-hidden="true" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="conversion-succeeded" aria-hidden="true" viewBox="0 0 24 24">
               <path d="M10.3765 15.128C9.98789 15.5187 9.35642 15.5214 8.96449 15.134L6.14517 12.3473C5.75561 11.9622 5.12876 11.9622 4.7392 12.3473L4.72038 12.3659C4.32403 12.7576 4.32441 13.3978 4.72124 13.7891L8.96526 17.974C9.35702 18.3603 9.98726 18.3576 10.3757 17.9679L20.2877 8.02322C20.6801 7.62959 20.67 6.98549 20.2729 6.59667V6.59667C19.8804 6.21243 19.2454 6.21063 18.8581 6.60004L10.3765 15.128Z"/>
             </svg>
           </span>
-          <div class="converting-steps__contents">
-            <p class="converting-steps__description">The file is converted <span class="converting-steps__progress">58%</span></p>
+          <div class="conversion-steps__contents">
+            <legend class="conversion-progress">The file is converted <progress class="sr-only" max="100" value="0">0%</progress><span class="conversion-progress__indicator" aria-hidden="true">0%</span></legend>
           </div>
         </li>
       </ul>
-      <p class="converting-note">Note the speed of all operations depends on your connection quality and server location.</p>
-      <div class="converting-error">
-        <p class="converting-error__message"><strong class="converting-error__type">Upload error.</strong> Please select another file and try again.</p>
-        <span class="converting-error__icon">
-          <svg xmlns="http://www.w3.org/2000/svg" class="converting-failed" aria-hidden="true" viewBox="0 0 16 16">
+      <p class="conversion-note">Note the speed of all operations depends on your connection quality and server location.</p>
+      <div class="conversion-error" hidden>
+        <p class="conversion-error__message"><strong class="conversion-error__type">Upload error.</strong> Please select another file and try again.</p>
+        <span class="conversion-error__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="conversion-failed" aria-hidden="true" viewBox="0 0 16 16">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99857 1.6C4.46508 1.6 1.6 4.46548 1.6 8.00029C1.6 9.70508 2.26458 11.2515 3.35202 12.3999C4.52033 13.6337 6.16874 14.4 7.99857 14.4C11.5348 14.4 14.4 11.5335 14.4 8.00029C14.4 4.46592 11.5348 1.6 7.99857 1.6ZM0 8.00029C0 3.58219 3.58105 0 7.99857 0C12.4184 0 16 3.58219 16 8.00029C16 12.4172 12.4184 16 7.99857 16C5.71117 16 3.64805 15.0395 2.19023 13.5C0.83265 12.0663 0 10.1304 0 8.00029ZM7 4H9V9H7V4ZM9 10H7V12H9V10Z"/>
           </svg>
         </span>
       </div>
-      <div class="converting-actions">
-        <button class="converting-actions__action converting-actions__action_style_accent" type="button">Download</button>
-        <a class="converting-actions__action converting-actions__action_style_neutral">View</a>
-        <a class="converting-actions__action converting-actions__action_style_neutral">Edit</a>
-        <button class="converting-actions__action converting-actions__action_style_neutral" type="button">Cancel</button>
+      <div class="conversion-actions">
+        <a class="conversion-actions__action conversion-actions__action_style_accent" type="button" disabled>Download</a>
+        <a class="conversion-actions__action conversion-actions__action_style_neutral" disabled>View</a>
+        <a class="conversion-actions__action conversion-actions__action_style_neutral" disabled>Edit</a>
+        <button class="conversion-actions__action conversion-actions__action_style_neutral" type="button">Cancel</button>
       </div>
     </form>
 
