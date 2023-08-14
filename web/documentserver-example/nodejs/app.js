@@ -1,4 +1,4 @@
-/**
+﻿/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -948,7 +948,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (!canEdit && mode === 'edit') {
       mode = 'view';
     }
-    const submitForm = mode === 'fillForms' && userid === 'uid-1' && !1;
+    const submitForm = mode === 'fillForms' && userid === 'uid-1';
 
     // file config data
     const argss = {
