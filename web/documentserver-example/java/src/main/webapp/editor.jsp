@@ -173,6 +173,26 @@
             }
         };
 
+        function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const payload = {
+            fileName: query.get('fileName'),
+            version: event.data.version,
+            userId: config.editorConfig.user.id
+          }
+          const request = new XMLHttpRequest()
+          request.open('PUT', 'IndexServlet?type=restore')
+          request.send(JSON.stringify(payload))
+          request.onload = function () {
+            if (request.status != 200) {
+              response = JSON.parse(request.response)
+              innerAlert(response.error)
+              return
+            }
+            document.location.reload()
+          }
+        }
+
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -186,6 +206,7 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestRestore": onRequestRestore
         };
 
         <%
