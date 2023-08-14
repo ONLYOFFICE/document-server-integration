@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: submitForm
 - nodejs: key in referenceData
 - nodejs: change reference source
 - php: using a repo with a list of formats
