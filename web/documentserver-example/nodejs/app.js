@@ -718,12 +718,12 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (isSubmitForm) {
           // new file
           if (newFileName) {
-            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}
-            -form${downloadExt}`, userAddress);
+            correctName = req.DocManager.getCorrectName(
+              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`, userAddress);
           } else {
             const ext = fileUtility.getFileExtension(fileName);
-            correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}
-            -form${ext}`, userAddress);
+            correctName = req.DocManager.getCorrectName(
+              `${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
           }
           forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
