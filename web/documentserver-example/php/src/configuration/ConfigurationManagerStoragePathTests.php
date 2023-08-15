@@ -15,42 +15,50 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerStoragePathTests extends TestCase {
+final class ConfigurationManagerStoragePathTests extends TestCase
+{
     public array $env;
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->env = getenv();
         parent::__construct($name);
     }
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         foreach ($this->env as $key => $value) {
             putenv("{$key}={$value}");
         }
     }
 
-    public function test_assigns_a_default_value() {
-        $config_manager = new ConfigurationManager();
-        $path = $config_manager->storage_path();
+    public function testAssignsADefaultValue()
+    {
+        $configManager = new ConfigurationManager();
+        $path = $configManager->storagePath();
         $this->assertTrue($path->absolute());
         $this->assertEquals($path->basename(), 'storage');
     }
 
-    public function test_assigns_a_relative_path_from_the_environment() {
+    public function testAssignsARelativePathFromTheEnvironment()
+    {
         putenv('STORAGE_PATH=directory');
-        $config_manager = new ConfigurationManager();
-        $path = $config_manager->storage_path();
+        $configManager = new ConfigurationManager();
+        $path = $configManager->storagePath();
         $this->assertTrue($path->absolute());
         $this->assertEquals($path->basename(), 'directory');
     }
 
-    public function test_assigns_an_absolute_path_from_the_environment() {
+    public function testAssignsAnAbsolutePathFromTheEnvironment()
+    {
         putenv('STORAGE_PATH=/directory');
-        $config_manager = new ConfigurationManager();
-        $path = $config_manager->storage_path();
+        $configManager = new ConfigurationManager();
+        $path = $configManager->storagePath();
         $this->assertEquals($path->string(), '/directory');
     }
 }

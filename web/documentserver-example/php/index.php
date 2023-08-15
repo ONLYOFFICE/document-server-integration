@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore PSR1.Files.SideEffects.FoundWithSymbols
 /**
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -28,9 +28,10 @@ use Example\Configuration\ConfigurationManager;
 use Example\Views\DocEditorView;
 use Example\Views\IndexView;
 
-function configure() {
-    $config_manager = new ConfigurationManager();
-    if ($config_manager->ssl_verify_peer_mode_enabled()) {
+function configure()
+{
+    $configManager = new ConfigurationManager();
+    if ($configManager->sslVerifyPeerModeEnabled()) {
         // Ignore self-signed certificate.
         stream_context_set_default([
             'ssl' => [
@@ -41,7 +42,8 @@ function configure() {
     }
 }
 
-function routers() {
+function routers()
+{
     // TODO: delete fallback.
     // In theory, the content type of the response should be declared inside the
     // router function. However, this statement isn't true for all routers, and
@@ -149,7 +151,7 @@ function routers() {
         return;
     }
 
-    http_response_code(HTTPStatus::not_found->value);
+    http_response_code(HTTPStatus::NotFound->value);
 }
 
 configure();

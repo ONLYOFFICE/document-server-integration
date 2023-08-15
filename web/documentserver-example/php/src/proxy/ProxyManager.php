@@ -39,20 +39,20 @@ class ProxyManager
 
     private function referPublicURL(URL $url): bool
     {
-        $public_url = $this->configManager->document_server_public_url();
+        $publicURL = $this->configManager->documentServerPublicURL();
         return
-            $url->scheme() == $public_url->scheme() &&
-            $url->host() == $public_url->host() &&
-            $url->port() == $public_url->port();
+            $url->scheme() == $publicURL->scheme() &&
+            $url->host() == $publicURL->host() &&
+            $url->port() == $publicURL->port();
     }
 
     private function redirectPublicURL(URL $url): URL
     {
-        $private_url = $this->configManager->document_server_private_url();
-        return URL::from_components(
-            $private_url->scheme(),
-            $private_url->host(),
-            $private_url->port(),
+        $privateURL = $this->configManager->documentServerPrivateURL();
+        return URL::fromComponents(
+            $privateURL->scheme(),
+            $privateURL->host(),
+            $privateURL->port(),
             $url->user(),
             $url->pass(),
             $url->path(),

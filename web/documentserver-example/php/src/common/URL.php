@@ -17,58 +17,69 @@
 
 namespace Example\Common;
 
-class URL {
+final class URL
+{
     private string $string;
 
-    public function __construct(string $url) {
+    public function __construct(string $url)
+    {
         $this->string = $url;
     }
 
-    public function string(): string {
+    public function string(): string
+    {
         return $this->string;
     }
 
-    public function scheme(): ?string {
+    public function scheme(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_SCHEME) ?: null;
     }
 
-    public function host(): ?string {
+    public function host(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_HOST) ?: null;
     }
 
-    public function port(): ?int {
+    public function port(): ?int
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_PORT) ?: null;
     }
 
-    public function user(): ?string {
+    public function user(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_USER) ?: null;
     }
 
-    public function pass(): ?string {
+    public function pass(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_PASS) ?: null;
     }
 
-    public function path(): ?string {
+    public function path(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_PATH) ?: null;
     }
 
-    public function query(): ?string {
+    public function query(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_QUERY) ?: null;
     }
 
-    public function fragment(): ?string {
+    public function fragment(): ?string
+    {
         $string = $this->string();
         return parse_url($string, PHP_URL_FRAGMENT) ?: null;
     }
 
-    public static function from_components(
+    public static function fromComponents(
         ?string $scheme,
         ?string $host,
         ?int $port,
@@ -106,19 +117,20 @@ class URL {
         return new URL($string);
     }
 
-    public function join_path(string $path): self {
-        $current_path = $this->path();
+    public function joinPath(string $path): self
+    {
+        $currentPath = $this->path();
         $separator =
-            $current_path &&
+            $currentPath &&
             (
-                str_ends_with($current_path, '/') ||
+                str_ends_with($currentPath, '/') ||
                 str_starts_with($path, '/')
             ) ||
-            !$current_path && str_starts_with($path, '/')
+            !$currentPath && str_starts_with($path, '/')
             ? ''
             : '/';
-        $separated = "{$current_path}{$separator}{$path}";
-        return URL::from_components(
+        $separated = "{$currentPath}{$separator}{$path}";
+        return URL::fromComponents(
             $this->scheme(),
             $this->host(),
             $this->port(),

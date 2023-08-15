@@ -15,12 +15,16 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerTests extends TestCase {
-    public function test_corresponds_the_latest_version() {
-        $config_manager = new ConfigurationManager();
-        $this->assertEquals('1.6.0', $config_manager->version);
+final class ConfigurationManagerTests extends TestCase
+{
+    public function testCorrespondsTheLatestVersion()
+    {
+        $configManager = new ConfigurationManager();
+        $this->assertEquals('1.6.0', $configManager->version);
     }
 }
