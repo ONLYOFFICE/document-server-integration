@@ -528,6 +528,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl(),
     },
+    link: `${req.DocManager.getServerUrl()}/editor?fileName=` + encodeURIComponent(fileName),
     path: fileName,
   };
 

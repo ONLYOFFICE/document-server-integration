@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: onRequestOpen
 - nodejs: submitForm
 - nodejs: key in referenceData
 - nodejs: change reference source
