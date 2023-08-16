@@ -12,6 +12,7 @@
             "Example\\Common\\": "src/common/",
             "Example\\Configuration\\" : "src/configuration/",
             "Example\\Helpers\\" : "src/helpers/",
+            "Example\\Proxy\\": "src/proxy/",
             "Example\\Views\\" : "src/views/"
         }
     }

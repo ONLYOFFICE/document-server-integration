@@ -20,7 +20,7 @@ namespace Example\Configuration;
 use Example\Common\Path;
 use Example\Common\URL;
 
-final class ConfigurationManager {
+class ConfigurationManager {
     public string $version = '1.6.0';
 
     public function example_url(): ?URL {
@@ -31,34 +31,42 @@ final class ConfigurationManager {
         return new URL($url);
     }
 
-    public function document_server_url(): URL {
-        $url = getenv('DOCUMENT_SERVER_URL') ?: 'http://document-server';
+    public function document_server_public_url(): URL {
+        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://document-server';
+        return new URL($url);
+    }
+
+    public function document_server_private_url(): URL {
+        $url = getenv('DOCUMENT_SERVER_PRIVATE_URL');
+        if (!$url) {
+            return $this->document_server_public_url();
+        }
         return new URL($url);
     }
 
     public function document_server_api_url(): URL {
-        $server_url = $this->document_server_url();
+        $server_url = $this->document_server_public_url();
         $path = getenv('DOCUMENT_SERVER_API_PATH')
             ?: 'web-apps/apps/api/documents/api.js';
         return $server_url->join_path($path);
     }
 
     public function document_server_preloader_url(): URL {
-        $server_url = $this->document_server_url();
+        $server_url = $this->document_server_public_url();
         $path = getenv('DOCUMENT_SERVER_PRELOADER_PATH')
             ?: 'web-apps/apps/api/documents/cache-scripts.html';
         return $server_url->join_path($path);
     }
 
     public function document_server_command_url(): URL {
-        $server_url = $this->document_server_url();
+        $server_url = $this->document_server_private_url();
         $path = getenv('DOCUMENT_SERVER_COMMAND_PATH')
             ?: 'coauthoring/CommandService.ashx';
         return $server_url->join_path($path);
     }
 
     public function document_server_converter_url(): URL {
-        $server_url = $this->document_server_url();
+        $server_url = $this->document_server_private_url();
         $path = getenv('DOCUMENT_SERVER_CONVERTER_PATH')
             ?: 'ConvertService.ashx';
         return $server_url->join_path($path);
