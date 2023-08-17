@@ -18,7 +18,8 @@ services:
       - "80"
     environment:
       - BINDING=0.0.0.0
-      - DOCUMENT_SERVER_URL=http://localhost:8080
+      - DOCUMENT_SERVER_PRIVATE_URL=http://proxy:8080
+      - DOCUMENT_SERVER_PUBLIC_URL=http://localhost:8080
       - EXAMPLE_URL=http://proxy
       - JWT_SECRET=your-256-bit-secret
       - PORT=80
