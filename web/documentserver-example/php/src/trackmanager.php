@@ -20,7 +20,6 @@ namespace Example;
 use Exception;
 use Example\Common\URL;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
 use Example\Helpers\JwtManager;
 use Example\Proxy\ProxyManager;
 
@@ -34,7 +33,6 @@ function readBody()
     $config_manager = new ConfigurationManager();
 
     $result["error"] = 0;
-    $configManager = new ConfigManager();
     $jwtManager = new JwtManager();
     // get the body of the post request and check if it is correct
     if (($body_stream = file_get_contents('php://input')) === false) {

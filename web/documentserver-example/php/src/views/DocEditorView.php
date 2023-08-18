@@ -18,7 +18,7 @@
 namespace Example\Views;
 
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use Example\Helpers\JwtManager;
 use function Example\doUpload;
@@ -42,9 +42,9 @@ final class DocEditorView extends View
         parent::__construct($tempName);
 
         $config_manager = new ConfigurationManager();
+        $formatManager = new FormatManager();
 
         $externalUrl = $request["fileUrl"] ?? "";
-        $confgManager = new ConfigManager();
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
@@ -75,10 +75,10 @@ final class DocEditorView extends View
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
-        $canEdit = in_array($ext, $confgManager->getEditExtensions());  // check if the file can be edited
+        $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
         if ((!$canEdit && $editorsMode == "edit"
                 || $editorsMode == "fillForms")
-            && in_array($ext, $confgManager->getFillExtensions())
+            && in_array($ext, $formatManager->fillableExtensions())
         ) {
             $editorsMode = "fillForms";
             $canEdit = true;

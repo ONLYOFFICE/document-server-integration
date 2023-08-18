@@ -35,3 +35,11 @@ License File:   PHP_CodeSniffer.license
 PHPUnit         - The PHP Unit Testing framework. (https://github.com/sebastianbergmann/phpunit/blob/main/LICENSE)
 License:        BSD 3-Clause
 License File:   phpunit.license
+
+property-access - Provides functions to read and write from/to an object or array using a simple string notation. (https://github.com/symfony/property-access/blob/6.3/LICENSE)
+License:        MIT
+License File:   property-access.license
+
+serializer      - Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON. (https://github.com/symfony/serializer/blob/6.3/LICENSE)
+License:        MIT
+License File:   serializer.license
