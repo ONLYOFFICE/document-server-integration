@@ -221,20 +221,33 @@
         };
 
         if (config.editorConfig.user.id) {
-            <% if (!string.IsNullOrEmpty(History) && !string.IsNullOrEmpty(HistoryData))
-            { %>
-                config.events['onRequestHistory'] = function () {  // the user is trying to show the document version history
-                    docEditor.refreshHistory(<%= History %>);  // show the document version history
-                };
-                config.events['onRequestHistoryData'] = function (event) {  // the user is trying to click the specific document version in the document version history
-                    var ver = event.data;
-                    var histData = <%= HistoryData %>;
-                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
-                    document.location.reload();
-                };
-            <% } %>
+
+            config.events['onRequestHistory'] = function (event) {  // the user is trying to show the document version history
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", "webeditor.ashx?type=gethistory&filename=<%= FileName %>");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send();
+                xhr.onload = function () {
+                    console.log(xhr.responseText);
+                    docEditor.refreshHistory(JSON.parse(xhr.responseText));
+                }
+            };
+            config.events['onRequestHistoryData'] = function (event) {  // the user is trying to click the specific document version in the document version history
+                var ver = event.data;
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", "webeditor.ashx?type=getversiondata&filename=<%= FileName %>&version=" + ver);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send();
+                xhr.onload = function () {
+                    console.log(xhr.responseText);
+                    docEditor.setHistoryData(JSON.parse(xhr.responseText));  // send the link to the document for viewing the version history
+                }
+            };
+            config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
+                document.location.reload();
+            };
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(UsersForMentions))
