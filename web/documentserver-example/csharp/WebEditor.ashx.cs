@@ -425,6 +425,12 @@ namespace OnlineEditorsExample
                 }
             }
 
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(versionData);
+                versionData.Add("token", token);
+            }
+
             context.Response.Write(jss.Serialize(versionData));
         }
 
