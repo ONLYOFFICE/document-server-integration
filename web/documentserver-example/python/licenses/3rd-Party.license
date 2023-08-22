@@ -36,6 +36,10 @@ jQuery.UI     - jQuery UI is an open source library of interface components — 
 License:        MIT
 License File:   jQuery.UI.license
 
+msgspec       - A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML. (https://github.com/jcrist/msgspec/blob/0.18.1/LICENSE)
+License:        BSD 3-Clause
+License File:   msgspec.license
+
 mypy          - Optional static typing for Python. (https://github.com/python/mypy/blob/master/LICENSE)
 License:        MIT
 License File:   mypy.license
