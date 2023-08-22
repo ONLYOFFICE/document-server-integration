@@ -56,6 +56,9 @@ namespace OnlineEditorsExample
                 case "getversiondata":
                     GetVersionData(context);
                     break;
+                case "restore":
+                    Restore(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -415,11 +418,69 @@ namespace OnlineEditorsExample
 
                 versionData.Add("previous", dataPrev);
 
-                var changesUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "diff.zip");
-                versionData.Add("changesUrl", changesUrl);
+                if (File.Exists(Path.Combine(prevVerDir, "diff.zip")))
+                {
+                    var changesUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "diff.zip");
+                    versionData.Add("changesUrl", changesUrl);
+                }
             }
 
             context.Response.Write(jss.Serialize(versionData));
+        }
+
+        private void Restore(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+
+            var fileName = (string)body["fileName"];
+            var version = (int)body["version"];
+
+            var lastVersionUri = _Default.FileUri(fileName, true);
+            var key = ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                + "/" + Path.GetFileName(lastVersionUri)
+                + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode());
+
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
+            var currentVersionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));
+            var verDir = _Default.VersionDir(histDir, version);
+
+            if (!Directory.Exists(currentVersionDir)) Directory.CreateDirectory(currentVersionDir);
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            File.Copy(_Default.StoragePath(fileName, null), Path.Combine(currentVersionDir, "prev" + ext));
+
+            File.WriteAllText(Path.Combine(currentVersionDir, "key.txt"), key);
+
+            var changesPath = Path.Combine(_Default.VersionDir(histDir, version - 1), "changes.json");
+            if (File.Exists(changesPath))
+            {
+                File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
+            }
+
+            File.Copy(Path.Combine(verDir, "prev" + ext), _Default.StoragePath(fileName, null), true);
+
+            var fileInfo = new FileInfo(_Default.StoragePath(fileName, null));
+            fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
         }
 
         private static void DownloadHistory(HttpContext context)
@@ -619,7 +680,8 @@ namespace OnlineEditorsExample
                 versionObj.Add("key", key);
                 versionObj.Add("version", versionNum);
 
-                if (versionNum == 1)  // check if the version number is equal to 1
+                var changesPath = Path.Combine(_Default.VersionDir(histDir, versionNum - 1), "changes.json");
+                if (versionNum == 1 || !File.Exists(changesPath))  // check if the version number is equal to 1
                 {
                     var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
                     if (File.Exists(infoPath))
@@ -633,11 +695,10 @@ namespace OnlineEditorsExample
                         });
                     }
                 }
-
-                if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
+                else if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
                 {
-                    // get the path to the changes.json file 
-                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, versionNum - 1), "changes.json")));
+                    // get the path to the changes.json file
+                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
                     var changesArray = (ArrayList)changes["changes"];
                     var change = changesArray.Count > 0
                         ? (Dictionary<string, object>)changesArray[0]

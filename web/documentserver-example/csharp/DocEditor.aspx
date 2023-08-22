@@ -248,6 +248,22 @@
             config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
                 document.location.reload();
             };
+            config.events['onRequestRestore'] = function (event) {
+                var fileName = "<%= FileName %>";
+                var version = event.data.version;
+                var data = {
+                    fileName: fileName,
+                    version: version
+                };
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "webeditor.ashx?type=restore");
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(data));
+                xhr.onload = function () {
+                    docEditor.refreshHistory(JSON.parse(xhr.responseText));
+                }
+            };
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(UsersForMentions))
