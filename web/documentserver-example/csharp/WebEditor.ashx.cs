@@ -405,9 +405,12 @@ namespace OnlineEditorsExample
             versionData.Add("version", version);
             if (version > 1)
             {
-                var prevUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "prev" + ext);
-
                 var prevVerDir = _Default.VersionDir(histDir, version - 1);
+
+                var prevUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "prev" + ext);
+                if (Path.IsPathRooted(storagePath))
+                    prevUrl = DocEditor.getDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+
                 var prevKey = File.ReadAllText(Path.Combine(prevVerDir, "key.txt"));
 
                 Dictionary<string, object> dataPrev = new Dictionary<string, object>() {  // write information about previous file version to the data object
@@ -415,6 +418,16 @@ namespace OnlineEditorsExample
                     { "key", prevKey },  // write key and url information about previous file version
                     { "url", prevUrl }
                 };
+
+                string directPrevUrl;
+                if (_Default.IsEnabledDirectUrl())
+                {
+                    directPrevUrl = Path.IsPathRooted(storagePath)
+                        ? DocEditor.getDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""), false)
+                        : MakePublicHistoryUrl(fileName, (version - 1).ToString(), "prev" + ext, false);
+
+                    dataPrev.Add("directUrl", directPrevUrl); // write direct url to the data object
+                }
 
                 versionData.Add("previous", dataPrev);
 

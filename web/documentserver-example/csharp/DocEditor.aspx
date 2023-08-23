@@ -237,7 +237,7 @@
                 var ver = event.data;
 
                 let xhr = new XMLHttpRequest();
-                xhr.open("GET", "webeditor.ashx?type=getversiondata&filename=<%= FileName %>&version=" + ver);
+                xhr.open("GET", "webeditor.ashx?type=getversiondata&filename=<%= FileName %>&version=" + ver + "&directUrl=" + !!config.document.directUrl);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send();
                 xhr.onload = function () {
@@ -257,7 +257,7 @@
                 };
 
                 let xhr = new XMLHttpRequest();
-                xhr.open("POST", "webeditor.ashx?type=restore");
+                xhr.open("POST", "webeditor.ashx?type=restore&directUrl=" + !!config.document.directUrl);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send(JSON.stringify(data));
                 xhr.onload = function () {
