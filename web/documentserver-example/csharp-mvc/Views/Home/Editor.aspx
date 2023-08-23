@@ -190,6 +190,30 @@
             }
         };
 
+        var onRequestHistory = function () {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "webeditor.ashx?type=gethistory&filename=<%= Model.FileName %>");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+                docEditor.refreshHistory(JSON.parse(xhr.responseText));
+            }
+        };
+
+        var onRequestHistoryData = function (event) {
+            var ver = event.data;
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "webeditor.ashx?type=getversiondata&filename=<%= Model.FileName %>&version=" + ver + "&directUrl=" + !!config.document.directUrl);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+                docEditor.setHistoryData(JSON.parse(xhr.responseText));  // send the link to the document for viewing the version history
+            }
+        }
+
         config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -207,30 +231,18 @@
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
         };
 
-        <% string hist, histData; %>
-        <% Model.GetHistory(out hist, out histData); %>
-
         <% string usersForMentions; %>
         <% Model.GetUsersMentions(Request, out usersForMentions); %>
 
         if (config.editorConfig.user.id) {
-            <% if (!string.IsNullOrEmpty(hist) && !string.IsNullOrEmpty(histData))
-            { %>
-                // the user is trying to show the document version history
-                config.events['onRequestHistory'] = function () {
-                    docEditor.refreshHistory(<%= hist %>);  // show the document version history
-                };
-                // the user is trying to click the specific document version in the document version history
-                config.events['onRequestHistoryData'] = function (event) {
-                    var ver = event.data;
-                    var histData = <%= histData %>;
-                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                // the user is trying to go back to the document from viewing the document version history
-                config.events['onRequestHistoryClose'] = function () {
-                    document.location.reload();
-                };
-            <% } %>
+            // the user is trying to show the document version history
+            config.events['onRequestHistory'] = onRequestHistory;
+            // the user is trying to click the specific document version in the document version history
+            config.events['onRequestHistoryData'] = onRequestHistoryData;
+            // the user is trying to go back to the document from viewing the document version history
+            config.events['onRequestHistoryClose'] = function () {
+                document.location.reload();
+            };
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))
