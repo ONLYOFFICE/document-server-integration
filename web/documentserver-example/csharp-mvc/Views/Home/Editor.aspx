@@ -212,6 +212,23 @@
                 console.log(xhr.responseText);
                 docEditor.setHistoryData(JSON.parse(xhr.responseText));  // send the link to the document for viewing the version history
             }
+        };
+
+        var onRequestRestore = function (event) {
+            var fileName = "<%= Model.FileName %>";
+            var version = event.data.version;
+            var data = {
+                fileName: fileName,
+                version: version
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "webeditor.ashx?type=restore&directUrl=" + !!config.document.directUrl);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                docEditor.refreshHistory(JSON.parse(xhr.responseText));
+            }
         }
 
         config = <%= Model.GetDocConfig(Request, Url) %>;
@@ -243,6 +260,7 @@
             config.events['onRequestHistoryClose'] = function () {
                 document.location.reload();
             };
+            config.events['onRequestRestore'] = onRequestRestore;
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))

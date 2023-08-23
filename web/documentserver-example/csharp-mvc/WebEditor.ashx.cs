@@ -57,6 +57,9 @@ namespace OnlineEditorsExampleMVC
                 case "getversiondata":
                     GetVersionData(context);
                     break;
+                case "restore":
+                    Restore(context);
+                    break;
                 case "convert":
                     Convert(context);
                     break;
@@ -615,8 +618,11 @@ namespace OnlineEditorsExampleMVC
 
                 versionData.Add("previous", dataPrev);
 
-                var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(fileName, (version - 1).ToString(), "diff.zip");
-                versionData.Add("changesUrl", changesUrl);
+                if (File.Exists(Path.Combine(prevVerDir, "diff.zip")))
+                {
+                    var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(fileName, (version - 1).ToString(), "diff.zip");
+                    versionData.Add("changesUrl", changesUrl);
+                }
             }
 
             if (JwtManager.Enabled)
@@ -626,6 +632,60 @@ namespace OnlineEditorsExampleMVC
             }
 
             context.Response.Write(jss.Serialize(versionData));
+        }
+
+        private static void Restore(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+
+            var fileName = (string)body["fileName"];
+            var version = (int)body["version"];
+
+            var key = ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
+                + "/" + fileName + "/"
+                + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode());
+
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+            var currentVersionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));
+            var verDir = DocManagerHelper.VersionDir(histDir, version);
+
+            if (!Directory.Exists(currentVersionDir)) Directory.CreateDirectory(currentVersionDir);
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            File.Copy(DocManagerHelper.StoragePath(fileName, null), Path.Combine(currentVersionDir, "prev" + ext));
+
+            File.WriteAllText(Path.Combine(currentVersionDir, "key.txt"), key);
+
+            var changesPath = Path.Combine(DocManagerHelper.VersionDir(histDir, version - 1), "changes.json");
+            if (File.Exists(changesPath))
+            {
+                File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
+            }
+
+            File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
+
+            var fileInfo = new FileInfo(DocManagerHelper.StoragePath(fileName, null));
+            fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
         }
 
         // download a history file
@@ -826,7 +886,8 @@ namespace OnlineEditorsExampleMVC
                 versionObj.Add("key", key);
                 versionObj.Add("version", versionNum);
 
-                if (versionNum == 1)  // check if the version number is equal to 1
+                var changesPath = Path.Combine(DocManagerHelper.VersionDir(histDir, versionNum - 1), "changes.json");
+                if (versionNum == 1 || !File.Exists(changesPath))  // check if the version number is equal to 1
                 {
                     var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
                     if (File.Exists(infoPath))
@@ -840,11 +901,10 @@ namespace OnlineEditorsExampleMVC
                         });
                     }
                 }
-
-                if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
+                else if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
                 {
                     // get the path to the changes.json file 
-                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, versionNum - 1), "changes.json")));
+                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
                     var changesArray = (ArrayList)changes["changes"];
                     var change = changesArray.Count > 0
                         ? (Dictionary<string, object>)changesArray[0]
