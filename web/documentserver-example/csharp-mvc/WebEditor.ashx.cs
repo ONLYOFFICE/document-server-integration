@@ -570,17 +570,17 @@ namespace OnlineEditorsExampleMVC
             string directPrevFileUrl;
             if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
             {
-                prevFileUrl = version == lastVersion ? DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext)
+                prevFileUrl = version == lastVersion ? DocManagerHelper.GetDownloadUrl(fileName)
                     : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
-                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false)
+                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetDownloadUrl(fileName, false)
                     : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
             }
             else
             {
                 prevFileUrl = version == lastVersion ? DocManagerHelper.GetFileUri(fileName, true)
                     : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext);
-                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false)
-                    : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
+                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetFileUri(fileName, false)
+                    : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false);
             }
 
             versionData.Add("url", prevFileUrl);
@@ -611,7 +611,9 @@ namespace OnlineEditorsExampleMVC
                 string directPrevUrl;
                 if (isEnableDirectUrl)
                 {
-                    directPrevUrl = DocManagerHelper.GetDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
+                    directPrevUrl = Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath)
+                        ? DocManagerHelper.GetDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""), false)
+                        : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false);
 
                     dataPrev.Add("directUrl", directPrevUrl);
                 }
