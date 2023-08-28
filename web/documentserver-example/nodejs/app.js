@@ -551,13 +551,16 @@ app.put('/restore', (req, res) => { // define a handler for restore file version
     const filePath = req.DocManager.storagePath(fileName, userAddress);
     const historyPath = req.DocManager.historyPath(fileName, userAddress);
     const newVersion = req.DocManager.countVersion(historyPath) + 1;
-    const versionPath = `${historyPath}\\${version}\\prev${fileUtility.getFileExtension(fileName)}`;
-    const newVersionPath = `${historyPath}\\${newVersion}`;
+    const versionPath = path.join(`${historyPath}`, `${version}`, `prev${fileUtility.getFileExtension(fileName)}`);
+    const newVersionPath = path.join(`${historyPath}`, `${newVersion}`);
 
     if (fileSystem.existsSync(versionPath)) {
       req.DocManager.createDirectory(newVersionPath);
-      req.DocManager.copyFile(filePath, `${newVersionPath}\\prev${fileUtility.getFileExtension(fileName)}`);
-      fileSystem.writeFileSync(`${newVersionPath}\\key.txt`, key);
+      req.DocManager.copyFile(
+        filePath,
+        path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
+      );
+      fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
       req.DocManager.copyFile(versionPath, filePath);
       result.success = true;
     } else {
