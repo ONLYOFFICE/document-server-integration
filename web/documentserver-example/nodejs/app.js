@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -528,7 +528,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl(),
     },
-    link: `${req.DocManager.getServerUrl()}/editor?fileName=` + encodeURIComponent(fileName),
+    link: `${req.DocManager.getServerUrl()}/editor?fileName=${encodeURIComponent(fileName)}`,
     path: fileName,
   };
 
@@ -684,7 +684,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessSave(resp.uri, body, fileName, userAddress, fileName);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
@@ -720,11 +719,15 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           // new file
           if (newFileName) {
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`,
+              userAddress,
+            );
           } else {
             const ext = fileUtility.getFileExtension(fileName);
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${ext}`,
+              userAddress,
+            );
           }
           forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
@@ -780,7 +783,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessForceSave(resp.uri, body, fileName, userAddress, false);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
