@@ -761,60 +761,6 @@ function getConvertedData(
 }
 
 /**
- * Processing document received from the editing service.
- *
- * @param Response $document_response The result from editing service
- * @param string $response_uri      Uri to the converted document
- *
- * @throws Exception if an error occurs
- *
- * @return int percentage of completion of conversion
- */
-function getResponseUri($document_response, &$response_uri)
-{
-    $response_uri = "";
-    $resultPercent = 0;
-
-    if (!$document_response) {
-        $errs = "Invalid answer format";
-    }
-
-    // if an error occurs, then display an error message
-    $errorElement = $document_response->Error;
-    if ($errorElement != null && $errorElement != "") {
-        processConvServResponceError($document_response->Error);
-    }
-
-    $endConvert = $document_response->EndConvert;
-    if ($endConvert != null && $endConvert == "") {
-        throw new Exception("Invalid answer format");
-    }
-
-    // if the conversion is completed successfully
-    if ($endConvert != null && mb_strtolower($endConvert) == true) {
-        $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == null || $fileUrl == "") {
-            throw new Exception("Invalid answer format");
-        }
-
-        // get the response file url
-        $response_uri = $fileUrl;
-        $resultPercent = 100;
-    } else { // otherwise, get the percentage of conversion completion
-        $percent = $document_response->Percent;
-
-        if ($percent != null && $percent != "") {
-            $resultPercent = $percent;
-        }
-        if ($resultPercent >= 100) {
-            $resultPercent = 99;
-        }
-    }
-
-    return $resultPercent;
-}
-
-/**
  * Get demo file name by the extension
  *
  * @param string $createExt
