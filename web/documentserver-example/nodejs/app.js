@@ -1,4 +1,4 @@
-/**
+﻿/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -1019,7 +1019,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? null
           : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
-      dataMailMergeRecipients: {
+      dataSpreadsheet: {
         fileType: 'csv',
         url: `${req.DocManager.getServerUrl(true)}/csv`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
@@ -1049,8 +1049,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataMailMergeRecipients.token = jwt.sign(
-            argss.dataMailMergeRecipients,
+          argss.dataSpreadsheet.token = jwt.sign(
+            argss.dataSpreadsheet,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );

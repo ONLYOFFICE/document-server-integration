@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
 - nodejs: submitForm
 - nodejs: key in referenceData

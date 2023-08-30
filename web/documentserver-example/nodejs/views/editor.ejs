@@ -181,8 +181,10 @@
             docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);  // select a document for comparing
         };
 
-        var onRequestMailMergeRecipients = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
-            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
+            var data = <%- JSON.stringify(dataSpreadsheet) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
         };
 
         var onRequestUsers = function (event) {
@@ -344,7 +346,7 @@
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
             "onRequestOpen": onRequestOpen,
         };
 
