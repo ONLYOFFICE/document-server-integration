@@ -307,6 +307,14 @@ PHPUnit         - The PHP Unit Testing framework. (https://github.com/sebastianb
 License:        BSD 3-Clause
 License File:   phpunit.license
 
+property-access - Provides functions to read and write from/to an object or array using a simple string notation. (https://github.com/symfony/property-access/blob/6.3/LICENSE)
+License:        MIT
+License File:   property-access.license
+
+serializer      - Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON. (https://github.com/symfony/serializer/blob/6.3/LICENSE)
+License:        MIT
+License File:   serializer.license
+
 
 web/documentserver-example/python
 
@@ -345,6 +353,10 @@ License File:   jQuery.Migrate.license
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+msgspec       - A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML. (https://github.com/jcrist/msgspec/blob/0.18.1/LICENSE)
+License:        BSD 3-Clause
+License File:   msgspec.license
 
 mypy          - Optional static typing for Python. (https://github.com/python/mypy/blob/master/LICENSE)
 License:        MIT

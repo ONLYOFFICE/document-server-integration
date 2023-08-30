@@ -19,7 +19,7 @@ namespace Example;
 
 use Exception;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use Example\Helpers\JwtManager;
 use Example\Helpers\Users;
@@ -128,11 +128,10 @@ function getCurUserHostAddress($userAddress = null)
  */
 function getInternalExtension($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $configManager = new ConfigManager();
-
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             if ($format->type === "word") {
                 return ".docx";
@@ -158,11 +157,11 @@ function getInternalExtension($filename)
  */
 function getTemplateImageUrl($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/assets/images/";
 
-    $configManager = new ConfigManager();
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             if ($format->type === "word") {
                 return $path . "file_docx.svg";
@@ -188,10 +187,10 @@ function getTemplateImageUrl($filename)
  */
 function getDocumentType($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $configManager = new ConfigManager();
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             return $format->type;
         }
@@ -336,7 +335,7 @@ function getFileVersion($histDir)
  */
 function getStoredFiles()
 {
-    $configManager = new ConfigManager();
+    $formatManager = new FormatManager();
 
     $config_manager = new ConfigurationManager();
     $storage_path = $config_manager->storage_path();
@@ -363,8 +362,8 @@ function getStoredFiles()
                 $result[$dat] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
-                    "canEdit" => in_array($ext, $configManager->getEditExtensions()),
-                    "isFillFormDoc" => in_array($ext, $configManager->getFillExtensions()),
+                    "canEdit" => in_array($ext, $formatManager->editableExtensions()),
+                    "isFillFormDoc" => in_array($ext, $formatManager->fillableExtensions()),
                 ];
             }
         }
@@ -518,12 +517,13 @@ function getDocEditorKey($fileName)
  */
 function doUpload($fileUri)
 {
+    $formatManager = new FormatManager();
+
     $_fileName = GetCorrectName($fileUri);
-    $configManager = new ConfigManager();
 
     // check if file extension is supported by the editor
     $ext = mb_strtolower(pathinfo($_fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, $configManager->getSuppotredExtensions())) {
+    if (!in_array($ext, $formatManager->allExtensions())) {
         throw new Exception("File type is not supported");
     }
 
@@ -758,60 +758,6 @@ function getConvertedData(
     }
 
     return ["percent" => $percent, "fileType" => $fileType];
-}
-
-/**
- * Processing document received from the editing service.
- *
- * @param Response $document_response The result from editing service
- * @param string $response_uri      Uri to the converted document
- *
- * @throws Exception if an error occurs
- *
- * @return int percentage of completion of conversion
- */
-function getResponseUri($document_response, &$response_uri)
-{
-    $response_uri = "";
-    $resultPercent = 0;
-
-    if (!$document_response) {
-        $errs = "Invalid answer format";
-    }
-
-    // if an error occurs, then display an error message
-    $errorElement = $document_response->Error;
-    if ($errorElement != null && $errorElement != "") {
-        processConvServResponceError($document_response->Error);
-    }
-
-    $endConvert = $document_response->EndConvert;
-    if ($endConvert != null && $endConvert == "") {
-        throw new Exception("Invalid answer format");
-    }
-
-    // if the conversion is completed successfully
-    if ($endConvert != null && mb_strtolower($endConvert) == true) {
-        $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == null || $fileUrl == "") {
-            throw new Exception("Invalid answer format");
-        }
-
-        // get the response file url
-        $response_uri = $fileUrl;
-        $resultPercent = 100;
-    } else { // otherwise, get the percentage of conversion completion
-        $percent = $document_response->Percent;
-
-        if ($percent != null && $percent != "") {
-            $resultPercent = $percent;
-        }
-        if ($resultPercent >= 100) {
-            $resultPercent = 99;
-        }
-    }
-
-    return $resultPercent;
 }
 
 /**

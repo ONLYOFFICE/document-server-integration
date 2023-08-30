@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: onRequestSelectSpreadsheet method
+- nodejs: onRequestOpen
 - nodejs: submitForm
 - nodejs: key in referenceData
 - nodejs: change reference source
@@ -11,6 +13,8 @@
 - python: restore from history
 - ruby: restore from history
 - php: restore from history
+- csharp-mvc: getting history by a separate request
+- csharp-mvc: restore from history
 
 ## 1.6.0
 - nodejs: setUsers for region protection

@@ -528,6 +528,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl(),
     },
+    link: `${req.DocManager.getServerUrl()}/editor?fileName=${encodeURIComponent(fileName)}`,
     path: fileName,
   };
 
@@ -550,13 +551,16 @@ app.put('/restore', (req, res) => { // define a handler for restore file version
     const filePath = req.DocManager.storagePath(fileName, userAddress);
     const historyPath = req.DocManager.historyPath(fileName, userAddress);
     const newVersion = req.DocManager.countVersion(historyPath) + 1;
-    const versionPath = `${historyPath}\\${version}\\prev${fileUtility.getFileExtension(fileName)}`;
-    const newVersionPath = `${historyPath}\\${newVersion}`;
+    const versionPath = path.join(`${historyPath}`, `${version}`, `prev${fileUtility.getFileExtension(fileName)}`);
+    const newVersionPath = path.join(`${historyPath}`, `${newVersion}`);
 
     if (fileSystem.existsSync(versionPath)) {
       req.DocManager.createDirectory(newVersionPath);
-      req.DocManager.copyFile(filePath, `${newVersionPath}\\prev${fileUtility.getFileExtension(fileName)}`);
-      fileSystem.writeFileSync(`${newVersionPath}\\key.txt`, key);
+      req.DocManager.copyFile(
+        filePath,
+        path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
+      );
+      fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
       req.DocManager.copyFile(versionPath, filePath);
       result.success = true;
     } else {
@@ -683,7 +687,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessSave(resp.uri, body, fileName, userAddress, fileName);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
@@ -719,11 +722,15 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           // new file
           if (newFileName) {
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`,
+              userAddress,
+            );
           } else {
             const ext = fileUtility.getFileExtension(fileName);
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${ext}`,
+              userAddress,
+            );
           }
           forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
@@ -779,7 +786,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessForceSave(resp.uri, body, fileName, userAddress, false);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
@@ -1013,7 +1019,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? null
           : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
-      dataMailMergeRecipients: {
+      dataSpreadsheet: {
         fileType: 'csv',
         url: `${req.DocManager.getServerUrl(true)}/csv`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
@@ -1043,8 +1049,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataMailMergeRecipients.token = jwt.sign(
-            argss.dataMailMergeRecipients,
+          argss.dataSpreadsheet.token = jwt.sign(
+            argss.dataSpreadsheet,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );

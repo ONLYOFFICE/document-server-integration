@@ -18,9 +18,10 @@
 namespace Example;
 
 use Exception;
+use Example\Common\URL;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
 use Example\Helpers\JwtManager;
+use Example\Proxy\ProxyManager;
 
 /**
  * Read request body
@@ -32,7 +33,6 @@ function readBody()
     $config_manager = new ConfigurationManager();
 
     $result["error"] = 0;
-    $configManager = new ConfigManager();
     $jwtManager = new JwtManager();
     // get the body of the post request and check if it is correct
     if (($body_stream = file_get_contents('php://input')) === false) {
@@ -99,8 +99,10 @@ function readBody()
  *
  * @return array
  */
-function processSave($data, $fileName, $userAddress)
+function processSave($rawData, $fileName, $userAddress)
 {
+    $data = resolveProcessSaveData($rawData);
+
     $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
@@ -336,4 +338,27 @@ function commandRequest($method, $key, $meta = null)
     $response_data = file_get_contents($documentCommandUrl, false, $context);
 
     return $response_data;
+}
+
+function resolveProcessSaveData($data)
+{
+    $configManager = new ConfigurationManager();
+    $proxyManager = new ProxyManager($configManager);
+    $copied = clone $data;
+
+    $url = $copied->url;
+    if ($url) {
+        $parsedURL = new URL($url);
+        $resolvedURL = $proxyManager->resolveURL($parsedURL);
+        $copied->url = $resolvedURL->string();
+    }
+
+    $changesURL = $copied->changesurl;
+    if ($changesURL) {
+        $parsedURL = new URL($changesURL);
+        $resolvedURL = $proxyManager->resolveURL($parsedURL);
+        $copied->changesurl = $resolvedURL->string();
+    }
+
+    return $copied;
 }

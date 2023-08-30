@@ -364,13 +364,13 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name")
                                                final String name) {  // get sample files from the assests
-        String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
+        String fileName = Path.of("assets", "document-templates", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv() {  // download a csv file
-        String fileName = Path.of("assets", "sample", "csv.csv").toString();
+        String fileName = Path.of("assets", "document-templates", "sample", "csv.csv").toString();
         return downloadFile(fileName);
     }
 

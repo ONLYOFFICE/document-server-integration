@@ -20,7 +20,7 @@ namespace Example;
 use Exception;
 use Example\Common\Path;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use Example\Helpers\JwtManager;
 
@@ -58,13 +58,13 @@ function saveas()
 {
     try {
         $config_manager = new ConfigurationManager();
+        $formatManager = new FormatManager();
 
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
-        $configManager = new ConfigManager();
-        $allexts = $configManager->getSuppotredExtensions();
+        $allexts = $formatManager->allExtensions();
         $filename = GetCorrectName($title);
 
         if (!in_array($extension, $allexts)) {
@@ -102,8 +102,8 @@ function saveas()
 function upload()
 {
     $config_manager = new ConfigurationManager();
+    $formatManager = new FormatManager();
 
-    $configManager = new ConfigManager();
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
         return $result;
@@ -130,7 +130,7 @@ function upload()
         }
 
         // check if the file extension is supported by the editor
-        if (!in_array($ext, $configManager->getSuppotredExtensions())) {
+        if (!in_array($ext, $formatManager->allExtensions())) {
             $result["error"] = 'File type is not supported';  // if not, then an error occurs
             return $result;
         }
@@ -220,16 +220,17 @@ function track()
  */
 function convert()
 {
+    $formatManager = new FormatManager();
+
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
-    $configManager = new ConfigManager();
 
     // check if the file with such an extension can be converted
-    if (in_array($extension, $configManager->getConvertExtensions()) &&
+    if (in_array($extension, $formatManager->convertibleExtensions()) &&
         $internalExtension != "") {
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
@@ -378,7 +379,6 @@ function historyDownload()
 
         $jwtManager = new JwtManager();
         if ($jwtManager->isJwtEnabled()) {
-            $configManager = new ConfigManager();
             $jwtHeader = $config_manager->jwt_header();
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(
