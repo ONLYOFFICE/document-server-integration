@@ -172,10 +172,9 @@
         };
 
         var onRequestInsertImage = function(event) {  // the user is trying to insert an image by clicking the Image from Storage button
-            docEditor.insertImage({  // insert an image into the file
-                "c": event.data.c,
-                <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
-            })
+            var data = <%- JSON.stringify(dataInsertImage) %>;
+            data.c = event.data.c
+            docEditor.insertImage(data);  // insert an image into the file
         };
 
         var onRequestCompareFile = function() {  // the user is trying to select document for comparing by clicking the Document from Storage button
