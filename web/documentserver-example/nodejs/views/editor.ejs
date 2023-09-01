@@ -173,12 +173,14 @@
 
         var onRequestInsertImage = function(event) {  // the user is trying to insert an image by clicking the Image from Storage button
             var data = <%- JSON.stringify(dataInsertImage) %>;
-            data.c = event.data.c
+            data.c = event.data.c;
             docEditor.insertImage(data);  // insert an image into the file
         };
 
-        var onRequestCompareFile = function() {  // the user is trying to select document for comparing by clicking the Document from Storage button
-            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);  // select a document for comparing
+        var onRequestSelectDocument = function() {  // the user is trying to select document by clicking the Document from Storage button
+            var data = <%- JSON.stringify(dataDocument) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document
         };
 
         var onRequestSelectSpreadsheet = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
@@ -345,7 +347,7 @@
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
             "onRequestOpen": onRequestOpen,
         };

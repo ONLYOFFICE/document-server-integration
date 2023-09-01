@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: onRequestSelectDocument method
 - nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
 - nodejs: submitForm
