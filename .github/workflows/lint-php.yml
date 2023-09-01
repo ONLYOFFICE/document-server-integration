@@ -26,4 +26,4 @@ jobs:
           tools: cs2pr, phpcs
           
       - name: Lint
-        run: phpcs .
+        run: phpcs src index.php

@@ -15,133 +15,157 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\Path;
 
-final class PathStringPOSIXTests extends TestCase {
-    public function test_generates_with_an_empty() {
+final class PathStringPOSIXTests extends TestCase
+{
+    public function testGeneratesWithAnEmpty()
+    {
         $path = new Path('');
         $string = $path->string();
         $this->assertEquals($string, '');
     }
 
-    public function test_generates_with_an_empty_relative() {
+    public function testGeneratesWithAnEmptyRelative()
+    {
         $path = new Path('.');
         $string = $path->string();
         $this->assertEquals($string, '.');
     }
 
-    public function test_generates_with_an_empty_absolute() {
+    public function testGeneratesWithAnEmptyAbsolute()
+    {
         $path = new Path('/');
         $string = $path->string();
         $this->assertEquals($string, '/');
     }
 
-    public function test_generates_with_a_relative() {
+    public function testGeneratesWithARelative()
+    {
         $path = new Path('srv');
         $string = $path->string();
         $this->assertEquals($string, 'srv');
     }
 
-    public function test_generates_with_a_relative_containing_a_directory() {
+    public function testGeneratesWithARelativeContainingADirectory()
+    {
         $path = new Path('srv/sub');
         $string = $path->string();
         $this->assertEquals($string, 'srv/sub');
     }
 
-    public function test_generates_with_a_relative_containing_a_file() {
+    public function testGeneratesWithARelativeContainingAFile()
+    {
         $path = new Path('srv/file.json');
         $string = $path->string();
         $this->assertEquals($string, 'srv/file.json');
     }
 
-    public function test_generates_with_a_relative_containing_a_directory_with_a_file() {
+    public function testGeneratesWithARelativeContainingADirectoryWithAFile()
+    {
         $path = new Path('srv/sub/file.json');
         $string = $path->string();
         $this->assertEquals($string, 'srv/sub/file.json');
     }
 
-    public function test_generates_with_an_unnormalized_relative() {
+    public function testGeneratesWithAnUnnormalizedRelative()
+    {
         $path = new Path('srv////sub///file.json');
         $string = $path->string();
         $this->assertEquals($string, 'srv////sub///file.json');
     }
 
-    public function test_generates_with_an_normalized_relative() {
+    public function testGeneratesWithAnNormalizedRelative()
+    {
         $path = new Path('srv////sub///file.json');
         $normalized = $path->normalize();
         $string = $normalized->string();
         $this->assertEquals($string, 'srv/sub/file.json');
     }
 
-    public function test_generates_with_an_explicit_relative() {
+    public function testGeneratesWithAnExplicitRelative()
+    {
         $path = new Path('./srv');
         $string = $path->string();
         $this->assertEquals($string, './srv');
     }
 
-    public function test_generates_with_an_explicit_relative_containing_a_directory() {
+    public function testGeneratesWithAnExplicitRelativeContainingADirectory()
+    {
         $path = new Path('./srv/sub');
         $string = $path->string();
         $this->assertEquals($string, './srv/sub');
     }
 
-    public function test_generates_with_an_explicit_relative_containing_a_file() {
+    public function testGeneratesWithAnExplicitRelativeContainingAFile()
+    {
         $path = new Path('./srv/file.json');
         $string = $path->string();
         $this->assertEquals($string, './srv/file.json');
     }
 
-    public function test_generates_with_an_explicit_relative_containing_a_directory_with_a_file() {
+    public function testGeneratesWithAnExplicitRelativeContainingADirectoryWithAFile()
+    {
         $path = new Path('./srv/sub/file.json');
         $string = $path->string();
         $this->assertEquals($string, './srv/sub/file.json');
     }
 
-    public function test_generates_with_an_explicit_unnormalized_relative() {
+    public function testGeneratesWithAnExplicitUnnormalizedRelative()
+    {
         $path = new Path('./srv////sub///file.json');
         $string = $path->string();
         $this->assertEquals($string, './srv////sub///file.json');
     }
 
-    public function test_generates_with_an_explicit_normalized_relative() {
+    public function testGeneratesWithAnExplicitNormalizedRelative()
+    {
         $path = new Path('./srv////sub///file.json');
         $normalized = $path->normalize();
         $string = $normalized->string();
         $this->assertEquals($string, 'srv/sub/file.json');
     }
 
-    public function test_generates_with_an_absolute() {
+    public function testGeneratesWithAnAbsolute()
+    {
         $path = new Path('/srv');
         $string = $path->string();
         $this->assertEquals($string, '/srv');
     }
 
-    public function test_generates_with_an_absolute_containing_a_directory() {
+    public function testGeneratesWithAnAbsoluteContainingADirectory()
+    {
         $path = new Path('/srv/sub');
         $string = $path->string();
         $this->assertEquals($string, '/srv/sub');
     }
 
-    public function test_generates_with_an_absolute_containing_a_file() {
+    public function testGeneratesWithAnAbsoluteContainingAFile()
+    {
         $path = new Path('/srv/file.json');
         $string = $path->string();
         $this->assertEquals($string, '/srv/file.json');
     }
 
-    public function test_generates_with_an_absolute_containing_a_directory_with_a_file() {
+    public function testGeneratesWithAnAbsoluteContainingADirectoryWithAFile()
+    {
         $path = new Path('/srv/sub/file.json');
         $string = $path->string();
         $this->assertEquals($string, '/srv/sub/file.json');
     }
 
-    public function test_generates_with_an_unnormalized_absolute() {
+    public function testGeneratesWithAnUnnormalizedAbsolute()
+    {
         $path = new Path('/srv////sub///file.json');
         $string = $path->string();
         $this->assertEquals($string, '/srv////sub///file.json');
     }
 
-    public function test_generates_with_an_normalized_absolute() {
+    public function testGeneratesWithAnNormalizedAbsolute()
+    {
         $path = new Path('/srv////sub///file.json');
         $normalized = $path->normalize();
         $string = $normalized->string();

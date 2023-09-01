@@ -22,15 +22,15 @@ use function Example\sendlog;
 
 final class ExampleUsers
 {
-    private array $descr_user_1;
-    private array $descr_user_2;
-    private array $descr_user_3;
-    private array $descr_user_0;
+    private array $user1Description;
+    private array $user2Description;
+    private array $user3Description;
+    private array $user0Description;
     private array $users;
 
     public function __construct()
     {
-        $this->descr_user_1 = [
+        $this->user1Description = [
             "File author by default",
             "Doesn’t belong to any group",
             "Can review all the changes",
@@ -39,16 +39,16 @@ final class ExampleUsers
             "Can create files from templates using data from the editor",
             "Can see the information about all users",
         ];
-        $this->descr_user_2 = [
+        $this->user2Description = [
             "Belongs to Group2",
             "Can review only his own changes or changes made by users with no group",
-            "Can view comments, edit his own comments and comments left by users with no group. 
+            "Can view comments, edit his own comments and comments left by users with no group.
         Can remove his own comments only",
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Can see the information about users from Group2 and users who don’t belong to any group",
         ];
-        $this->descr_user_3 = [
+        $this->user3Description = [
             "Belongs to Group3",
             "Can review changes made by Group2 users",
             "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
@@ -59,7 +59,7 @@ final class ExampleUsers
             "Can create new files from the editor",
             "Can see the information about Group2 users",
         ];
-        $this->descr_user_0 = [
+        $this->user0Description = [
             "The name is requested when the editor is opened",
             "Doesn’t belong to any group",
             "Can review all the changes",
@@ -83,7 +83,7 @@ final class ExampleUsers
                 null,
                 null,
                 [],
-                $this->descr_user_1,
+                $this->user1Description,
                 true
             ),
             new Users(
@@ -100,7 +100,7 @@ final class ExampleUsers
                 ["group-2", ""],
                 true,
                 [],
-                $this->descr_user_2,
+                $this->user2Description,
                 false
             ),
             new Users(
@@ -117,7 +117,7 @@ final class ExampleUsers
                 ["group-2"],
                 false,
                 ["copy", "download", "print"],
-                $this->descr_user_3,
+                $this->user3Description,
                 false
             ),
             new Users(
@@ -130,7 +130,7 @@ final class ExampleUsers
                 [],
                 null,
                 ["protect"],
-                $this->descr_user_0,
+                $this->user0Description,
                 false
             ),
         ];

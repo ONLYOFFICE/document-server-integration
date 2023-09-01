@@ -15,12 +15,16 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\URL;
 
-final class URLFromComponentsTests extends TestCase {
-    public function test_creates() {
-        $url = URL::from_components(
+final class URLFromComponentsTests extends TestCase
+{
+    public function testCreates()
+    {
+        $url = URL::fromComponents(
             'http',
             'localhost',
             8080,

@@ -15,6 +15,8 @@
 // limitations under the License.
 //
 
+namespace Example\Format\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Format\FormatManager;
 

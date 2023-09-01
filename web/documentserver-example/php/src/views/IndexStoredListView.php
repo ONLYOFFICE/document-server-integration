@@ -86,7 +86,8 @@ class IndexStoredListView extends View
                         $layout .= '<td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=filter&type=desktop" target="_blank">'.
-                        '   <img src="assets/images/filter.svg" alt="Open in editor without access to change the filter"'.
+                        '   <img src="assets/images/filter.svg"'.
+                        ' alt="Open in editor without access to change the filter"'.
                         ' title="Open in editor without access to change the filter" /></a></td>';
                     } else {
                         $layout .= '<td class="contentCells  contentCells-icon"></td>';

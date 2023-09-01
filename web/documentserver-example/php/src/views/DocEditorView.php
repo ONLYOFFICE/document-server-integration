@@ -41,7 +41,7 @@ final class DocEditorView extends View
     {
         parent::__construct($tempName);
 
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
         $formatManager = new FormatManager();
 
         $externalUrl = $request["fileUrl"] ?? "";
@@ -63,8 +63,8 @@ final class DocEditorView extends View
             $filename = tryGetDefaultByType($createExt, $user);
 
             // create the demo file url
-            $new_url = "editor?fileID=" . $filename . "&user=" . $request["user"];
-            header('Location: ' . $new_url, true);
+            $newURL = "editor?fileID=" . $filename . "&user=" . $request["user"];
+            header('Location: ' . $newURL, true);
             exit;
         }
 
@@ -267,7 +267,7 @@ final class DocEditorView extends View
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
-            "apiUrl" => $config_manager->document_server_api_url()->string(),
+            "apiUrl" => $configManager->documentServerAPIURL()->string(),
             "dataInsertImage" => mb_strimwidth(
                 json_encode($dataInsertImage),
                 1,

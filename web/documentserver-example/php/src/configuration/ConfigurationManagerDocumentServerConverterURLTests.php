@@ -15,36 +15,43 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase {
+final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase
+{
     public array $env;
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->env = getenv();
         parent::__construct($name);
     }
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         foreach ($this->env as $key => $value) {
             putenv("{$key}={$value}");
         }
     }
 
-    public function test_assigns_a_default_value() {
-        $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_converter_url();
+    public function testAssignsADefaultValue()
+    {
+        $configManager = new ConfigurationManager();
+        $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
             'http://document-server/ConvertService.ashx',
             $url->string()
         );
     }
 
-    public function test_assigns_a_value_from_the_environment() {
+    public function testAssignsAValueFromTheEnvironment()
+    {
         putenv('DOCUMENT_SERVER_CONVERTER_PATH=/converter');
-        $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_converter_url();
+        $configManager = new ConfigurationManager();
+        $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
             'http://document-server/converter',
             $url->string()
