@@ -1012,7 +1012,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
       },
-      dataCompareFile: {
+      dataDocument: {
         fileType: 'docx',
         url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
         directUrl: !userDirectUrl
@@ -1044,8 +1044,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataCompareFile.token = jwt.sign(
-            argss.dataCompareFile,
+          argss.dataDocument.token = jwt.sign(
+            argss.dataDocument,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
