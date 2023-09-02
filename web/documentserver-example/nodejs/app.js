@@ -81,14 +81,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public'))); // public directory
-// check if there are static files such as .js, .css files, images, samples and process them
-if (config.has('server.static')) {
-  const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; i++) {
-    const staticContentElem = staticContent[i];
-    app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
-  }
-}
 app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
