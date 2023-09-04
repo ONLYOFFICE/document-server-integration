@@ -193,6 +193,37 @@
           }
         }
 
+        var onRequestHistory = function () {
+            var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyInfoUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyInfo = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(historyInfo);
+            }
+        };
+
+        var onRequestHistoryData = function (event) {
+            var version = event.data;
+            var historyDataUri = "IndexServlet?type=historyData&filename=" + config.document.title
+                + "&version=" + version
+                + "&directUrl=" + !!config.document.directUrl;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyDataUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyData = JSON.parse(xhr.responseText);
+                docEditor.setHistoryData(historyData);
+            }
+        };
+
+        var onRequestHistoryClose = function() {
+            document.location.reload();
+        };
+
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -206,33 +237,17 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestCompareFile": onRequestCompareFile,
             "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestRestore": onRequestRestore
+            "onRequestRestore": onRequestRestore,
+            "onRequestHistory": onRequestHistory,
+            "onRequestHistoryData": onRequestHistoryData,
+            "onRequestHistoryClose": onRequestHistoryClose
         };
 
         <%
-            String[] histArray = Model.getHistory();
-            String history = histArray[0];
-            String historyData = histArray[1];
             String usersForMentions = (String) request.getAttribute("usersForMentions");
         %>
 
         if (config.editorConfig.user.id) {
-            <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
-                // the user is trying to show the document version history
-                config.events['onRequestHistory'] = function () {
-                    docEditor.refreshHistory(<%= history %>);  // show the document version history
-                };
-                // the user is trying to click the specific document version in the document version history
-                config.events['onRequestHistoryData'] = function (event) {
-                    var ver = event.data;
-                    var histData = <%= historyData %>;
-                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                // the user is trying to go back to the document from viewing the document version history
-                config.events['onRequestHistoryClose'] = function () {
-                    document.location.reload();
-                };
-            <% } %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function () {
                 docEditor.setUsers({  // set a list of users to mention in the comments

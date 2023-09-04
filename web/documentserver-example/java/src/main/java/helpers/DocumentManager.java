@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,6 +51,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import static utils.Constants.KILOBYTE_SIZE;
 import static utils.Constants.MAX_FILE_SIZE;
@@ -598,5 +600,20 @@ public final class DocumentManager {
             languages.put(couple[0], couple[1]);
         });
         return languages;
+    }
+
+    public static String readFileToEnd(final File file) {
+        String output = "";
+        try {
+            try (FileInputStream is = new FileInputStream(file)) {
+                Scanner scanner = new Scanner(is);  // read data from the source
+                scanner.useDelimiter("\\A");
+                while (scanner.hasNext()) {
+                    output += scanner.next();
+                }
+                scanner.close();
+            }
+        } catch (Exception e) { }
+        return output;
     }
 }
