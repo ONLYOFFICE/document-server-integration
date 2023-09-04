@@ -947,15 +947,16 @@ public class IndexServlet extends HttpServlet {
                         key = DocumentManager.readFileToEnd(new File(verDir + File.separator + "key.txt"));
                     }
 
-                    String fileUrl = DocumentManager.getDownloadUrl(fileName, true);
                     dataObj.put("fileType", FileUtility.getFileExtension(fileName).substring(1));
                     dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? fileUrl : DocumentManager
-                            .getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
+                    dataObj.put("url", i == curVer
+                            ? DocumentManager.getDownloadUrl(fileName, true)
+                            : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
                                     .getFileExtension(fileName), true));
                     if (directUrl.equals("true")) {
-                        dataObj.put("directUrl", i == curVer ? fileUrl : DocumentManager
-                                .getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
+                        dataObj.put("directUrl", i == curVer
+                                ? DocumentManager.getDownloadUrl(fileName, false)
+                                : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
                                         .getFileExtension(fileName), false));
                     }
 
@@ -971,6 +972,9 @@ public class IndexServlet extends HttpServlet {
                         // write key and url information about previous file version
                         prevInfo.put("key", prev.get("key"));
                         prevInfo.put("url", prev.get("url"));
+                        if (directUrl.equals("true")) {
+                            prevInfo.put("directUrl", prev.get("directUrl"));
+                        }
 
                         // write information about previous file version to the data object
                         dataObj.put("previous", prevInfo);
