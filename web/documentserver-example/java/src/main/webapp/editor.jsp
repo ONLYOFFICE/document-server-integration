@@ -184,12 +184,20 @@
           request.open('PUT', 'IndexServlet?type=restore')
           request.send(JSON.stringify(payload))
           request.onload = function () {
-            if (request.status != 200) {
-              response = JSON.parse(request.response)
-              innerAlert(response.error)
-              return
+            const response = JSON.parse(request.responseText);
+            if (response.success && !response.error) {
+              var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", historyInfoUri, false);
+              xhr.send();
+
+              if (xhr.status == 200) {
+                  var historyInfo = JSON.parse(xhr.responseText);
+                  docEditor.refreshHistory(historyInfo);
+              }
+            } else {
+              innerAlert(response.error);
             }
-            document.location.reload()
           }
         }
 
