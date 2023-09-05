@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
+import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
@@ -114,6 +115,8 @@ public class FileController {
     private ServiceConverter serviceConverter;
     @Autowired
     private CallbackManager callbackManager;
+    @Autowired
+    private HistoryManager historyManager;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -536,6 +539,20 @@ public class FileController {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
+    }
+
+    @GetMapping("/history")
+    @ResponseBody
+    public String history(@RequestParam("fileName") final String fileName) {
+        return historyManager.getHistory(fileName);
+    }
+
+    @GetMapping("/historydata")
+    @ResponseBody
+    public String history(@RequestParam("fileName") final String fileName,
+                          @RequestParam("version") final String version,
+                          @RequestParam(value = "directUrl", defaultValue = "false") final Boolean directUrl) {
+        return historyManager.getHistoryData(fileName, version, directUrl);
     }
 
     @PutMapping("/restore")
