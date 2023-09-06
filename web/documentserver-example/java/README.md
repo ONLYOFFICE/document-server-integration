@@ -237,13 +237,39 @@ Make sure that the Document Server has access to the server with the example ins
 
 ## For Docker
 
-1. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed ([installation instructions](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx)).
+### Step 1. Install ONLYOFFICE Docs
+
+Download and install ONLYOFFICE Docs (packaged as Document Server). 
+
+See the detailed guide to learn how to install Document Server [for Docker](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx). 
+
+### Step 2. Install the prerequisites and run the website with the editors
+
+1. Install **Java** following the instructions [here](https://docs.oracle.com/en/java/javase/20/install/installation-jdk-linux-platforms.html#GUID-737A84E4-2EFF-4D38-8E60-3E29D1B884B8).
+
+2. Download the archive with the Java example and unpack the archive:
+
+    ```
+    wget https://api.onlyoffice.com/app_data/editor/Java%20Example.zip
+    ```
+    
+    ```
+    unzip Java\ Example.zip
+    ```
+
+3. Change the current directory for the project directory:
+
+    ```
+   cd Java\ Example/
+   ```
+
+4. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed:
 
 	```
 	nano src/main/resources/settings.properties
 	```
 	
-2. Edit the following lines:
+5. Edit the following lines:
 
 	```
 	storage-folder = app_data
@@ -252,13 +278,19 @@ Make sure that the Document Server has access to the server with the example ins
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-folder** is the path where files will be created and stored.
 
-3. Run the next command in the Java example directory:
+6. Run the next command in the Java example directory:
 
 	```
 	docker-compose up
 	```
 
-4. After it, all the *bin* files will be passed to the *./target* folder.
+7. After it, all the *bin* files will be passed to the *./target* folder.
+
+### Step 3. Check accessibility
+
+In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
+
+Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
 ## Important security info
 
