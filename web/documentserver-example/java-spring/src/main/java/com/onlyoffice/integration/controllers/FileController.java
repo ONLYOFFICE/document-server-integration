@@ -29,6 +29,7 @@ import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.ConvertedData;
 import com.onlyoffice.integration.dto.Reference;
 import com.onlyoffice.integration.dto.ReferenceData;
+import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
@@ -445,25 +446,14 @@ public class FileController {
 
     @PostMapping("/rename")
     @ResponseBody
-    public String rename(@RequestBody final JSONObject body) {
-        String newfilename = (String) body.get("newfilename");
-        String dockey = (String) body.get("dockey");
-        String origExt = "." + (String) body.get("ext");
-        String curExt = newfilename;
-
-        if (newfilename.indexOf(".") != -1) {
-            curExt = (String) fileUtility.getFileExtension(newfilename);
-        }
-
-        if (origExt.compareTo(curExt) != 0) {
-            newfilename += origExt;
-        }
+    public String rename(@RequestBody final Rename body) {
+        String fileName = body.getFileName();
 
         HashMap<String, String> meta = new HashMap<>();
-        meta.put("title", newfilename);
+        meta.put("title", fileName + "." + body.getFileType());
 
         try {
-            callbackManager.commandRequest("meta", dockey, meta);
+            callbackManager.commandRequest("meta", body.getFileKey(), meta);
             return "result ok";
         } catch (Exception e) {
             e.printStackTrace();
