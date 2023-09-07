@@ -31,6 +31,7 @@ import com.onlyoffice.integration.dto.Reference;
 import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
+import com.onlyoffice.integration.dto.SaveAs;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
@@ -415,19 +416,16 @@ public class FileController {
 
     @PostMapping("/saveas")
     @ResponseBody
-    public String saveAs(@RequestBody final JSONObject body, @CookieValue("uid") final String uid) {
-        String title = (String) body.get("title");
-        String saveAsFileUrl = (String) body.get("url");
-
+    public String saveAs(@RequestBody final SaveAs body, @CookieValue("uid") final String uid) {
         try {
-            String fileName = documentManager.getCorrectName(title);
+            String fileName = documentManager.getCorrectName(body.getTitle());
             String curExt = fileUtility.getFileExtension(fileName);
 
             if (!fileUtility.getFileExts().contains(curExt)) {
                 return "{\"error\":\"File type is not supported\"}";
             }
 
-            URL url = new URL(saveAsFileUrl);
+            URL url = new URL(body.getUrl());
             java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
             InputStream stream = connection.getInputStream();
 
