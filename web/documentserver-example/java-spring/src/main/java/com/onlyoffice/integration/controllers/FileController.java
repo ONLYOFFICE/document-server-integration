@@ -27,6 +27,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.ConvertedData;
+import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
@@ -540,13 +541,9 @@ public class FileController {
 
     @PutMapping("/restore")
     @ResponseBody
-    public String restore(@RequestBody final JSONObject body) {
+    public String restore(@RequestBody final Restore body, @CookieValue("uid") final Integer uid) {
         try {
-            String sourceBasename = (String) body.get("fileName");
-            Integer version = (Integer) body.get("version");
-            String userID = (String) body.get("userId");
-
-            String sourceStringFile = storagePathBuilder.getFileLocation(sourceBasename);
+            String sourceStringFile = storagePathBuilder.getFileLocation(body.getFileName());
             File sourceFile = new File(sourceStringFile);
             Path sourcePathFile = sourceFile.toPath();
             String historyDirectory = storagePathBuilder.getHistoryDir(sourcePathFile.toString());
@@ -564,7 +561,7 @@ public class FileController {
             String bumpedKey = serviceConverter.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/"
-                + sourceBasename
+                + body.getFileName()
                 + "/"
                 + Long.toString(sourceFile.lastModified())
             );
@@ -572,8 +569,7 @@ public class FileController {
             bumpedKeyFileWriter.write(bumpedKey);
             bumpedKeyFileWriter.close();
 
-            Integer userInnerID = Integer.parseInt(userID.replace("uid-", ""));
-            User user = userService.findUserById(userInnerID).get();
+            User user = userService.findUserById(uid).get();
 
             Path bumpedChangesPathFile = Paths.get(bumpedVersionStringDirectory, "changes.json");
             String bumpedChangesStringFile = bumpedChangesPathFile.toString();
@@ -596,13 +592,17 @@ public class FileController {
             bumpedChangesFileWriter.write(bumpedChangesContent);
             bumpedChangesFileWriter.close();
 
-            String sourceExtension = fileUtility.getFileExtension(sourceBasename);
+            String sourceExtension = fileUtility.getFileExtension(body.getFileName());
             String previousBasename = "prev" + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = documentManager.versionDir(historyDirectory, version, true);
+            String recoveryVersionStringDirectory = documentManager.versionDir(
+                    historyDirectory,
+                    body.getVersion(),
+                    true
+            );
             Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
             String recoveryStringFile = recoveryPathFile.toString();
             FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);

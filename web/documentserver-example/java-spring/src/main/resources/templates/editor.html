@@ -174,11 +174,9 @@
 
                 function onRequestRestore(event) {
                   const query = new URLSearchParams(window.location.search)
-                  const config = [[${model}]]
                   const payload = {
                     fileName: query.get('fileName'),
-                    version: event.data.version,
-                    userId: config.editorConfig.user.id
+                    version: event.data.version
                   }
                   const request = new XMLHttpRequest()
                   request.open('PUT', 'restore')
