@@ -27,6 +27,8 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.ConvertedData;
+import com.onlyoffice.integration.dto.Reference;
+import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
@@ -75,7 +77,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -472,7 +473,7 @@ public class FileController {
 
     @PostMapping("/reference")
     @ResponseBody
-    public String reference(@RequestBody final JSONObject body) {
+    public String reference(@RequestBody final Reference body) {
         try {
             JSONParser parser = new JSONParser();
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -480,12 +481,11 @@ public class FileController {
             String userAddress = "";
             String fileName = "";
 
-            if (body.containsKey("referenceData")) {
-                LinkedHashMap referenceDataObj = (LinkedHashMap) body.get("referenceData");
-                String instanceId = (String) referenceDataObj.get("instanceId");
+            if (body.getReferenceData() != null) {
+                ReferenceData referenceData = body.getReferenceData();
 
-                if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
-                    JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
+                if (referenceData.getInstanceId().equals(storagePathBuilder.getServerUrl(false))) {
+                    JSONObject fileKey = (JSONObject) parser.parse(referenceData.getFileKey());
                     userAddress = (String) fileKey.get("userAddress");
                     if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
                         fileName = (String) fileKey.get("fileName");
@@ -496,7 +496,7 @@ public class FileController {
 
             if (fileName.equals("")) {
                 try {
-                    String path = (String) body.get("path");
+                    String path = (String) body.getPath();
                     path = fileUtility.getFileName(path);
                     File f = new File(storagePathBuilder.getFileLocation(path));
                     if (f.exists()) {
@@ -511,8 +511,6 @@ public class FileController {
                 return "{ \"error\": \"File not found\"}";
             }
 
-            boolean directUrl = (boolean) body.get("directUrl");
-
             HashMap<String, Object> fileKey = new HashMap<>();
             fileKey.put("fileName", fileName);
             fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
@@ -524,7 +522,7 @@ public class FileController {
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", fileUtility.getFileExtension(fileName).replace(".", ""));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", directUrl ? documentManager.getDownloadUrl(fileName, false) : null);
+            data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
 
