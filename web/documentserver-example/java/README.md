@@ -140,11 +140,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 
 ### Step 2. Install the prerequisites and run the website with the editors
 
-1. Install **Java**:
-
-    ```
-    sudo add-apt-repository ppa:webupd8team/java sudo apt-get update sudo apt-get install oracle-java8-installer
-    ```
+1. Install **Java** following the instructions [here](https://docs.oracle.com/en/java/javase/20/install/installation-jdk-linux-platforms.html#GUID-737A84E4-2EFF-4D38-8E60-3E29D1B884B8).
 
 2. Download the archive with the Java example and unpack the archive:
 

@@ -20,7 +20,6 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
@@ -72,9 +71,6 @@ public class EditorController {
 
     @Autowired
     private UserServices userService;
-
-    @Autowired
-    private HistoryManager historyManager;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -139,9 +135,6 @@ public class EditorController {
         // add attributes to the specified model
         // add file model with the default parameters to the original model
         model.addAttribute("model", fileModel);
-
-        // get file history and add it to the model
-        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
 
         // create the document service api URL and add it to the model
         model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
