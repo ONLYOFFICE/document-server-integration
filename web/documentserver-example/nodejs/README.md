@@ -110,7 +110,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     npm install
     ```
 
-5. Edit the *default.json* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+5. Edit the *config/default.json* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
     ```
     nano config/default.json
