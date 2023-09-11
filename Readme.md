@@ -11,8 +11,10 @@ You should change `http://documentserver` to your server address in these files:
 * [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
 * [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
 * [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
+* [Java Spring](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java-spring) - `web/documentserver-example/java-spring/src/main/resources/application.properties`
 * [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
-* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php) - `web/documentserver-example/php/config.php`
+* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php) - `web/documentserver-example/php/config.json`
+* [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/python) - `web/documentserver-example/python/config.py`
 * [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/ruby) - `web/documentserver-example/ruby/config/application.rb`
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")

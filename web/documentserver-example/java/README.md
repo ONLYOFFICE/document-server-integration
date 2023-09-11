@@ -16,7 +16,7 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 Download the [Java example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *\src\main\resources\settings.properties* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *src/main/resources/settings.properties* file:
 
 ```
 storage-folder = app_data
@@ -158,7 +158,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
    cd Java\ Example/
    ```
 
-4. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+4. Edit the *src/main/resources/settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
 
     ```
     nano src/main/resources/settings.properties
@@ -263,7 +263,7 @@ See the detailed guide to learn how to install Document Server [for Docker](http
    cd Java\ Example/
    ```
 
-4. Edit the *settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed:
+4. Edit the *src/main/resources/settings.properties* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed:
 
 	```
 	nano src/main/resources/settings.properties
