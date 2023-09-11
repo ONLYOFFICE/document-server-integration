@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -27,7 +27,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const mime = require('mime');
 const urllib = require('urllib');
-const urlModule = require("url");
+const urlModule = require('url');
 const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
@@ -500,12 +500,12 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   }
 
   if (!fileName && !!req.body.link) {
-    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) != -1) {
+    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) !== -1) {
       result({ error: 'You do not have access to this site' });
       return;
     }
 
-    let urlObj = urlModule.parse(req.body.link, true);
+    const urlObj = urlModule.parse(req.body.link, true);
     fileName = urlObj.query.fileName;
     if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
       result({ error: 'File is not exist' });
