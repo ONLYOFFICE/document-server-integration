@@ -55,19 +55,36 @@ class ConfigurationManagerExampleURITests < Test::Unit::TestCase
   end
 end
 
-class ConfigurationManagerDocumentServerURITests < Test::Unit::TestCase
+class ConfigurationManagerDocumentServerPublicURITests < Test::Unit::TestCase
   include Enviroment
 
   def test_assigns_a_default_value
     config_manager = ConfigurationManager.new
-    uri = config_manager.document_server_uri
+    uri = config_manager.document_server_public_uri
     assert_equal(uri.to_s, 'http://document-server')
   end
 
   def test_assigns_a_value_from_the_environment
-    ENV['DOCUMENT_SERVER_URL'] = 'http://localhost'
+    ENV['DOCUMENT_SERVER_PUBLIC_URL'] = 'http://localhost'
     config_manager = ConfigurationManager.new
-    uri = config_manager.document_server_uri
+    uri = config_manager.document_server_public_uri
+    assert_equal(uri.to_s, 'http://localhost')
+  end
+end
+
+class ConfigurationManagerDocumentServerPrivateURITests < Test::Unit::TestCase
+  include Enviroment
+
+  def test_assigns_a_default_value
+    config_manager = ConfigurationManager.new
+    uri = config_manager.document_server_private_uri
+    assert_equal(uri.to_s, 'http://document-server')
+  end
+
+  def test_assigns_a_value_from_the_environment
+    ENV['DOCUMENT_SERVER_PRIVATE_URL'] = 'http://localhost'
+    config_manager = ConfigurationManager.new
+    uri = config_manager.document_server_private_uri
     assert_equal(uri.to_s, 'http://localhost')
   end
 end

@@ -1,5 +1,8 @@
 # Change Log
 
+- nodejs: link in referenceData
+- nodejs: onRequestSelectDocument method
+- nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
 - nodejs: submitForm
 - nodejs: key in referenceData
@@ -8,10 +11,11 @@
 - nodejs: using a repo with a list of formats
 - nodejs: delete file without reloading the page
 - nodejs: getting history by a separate request
-- nodejs: restore from history
-- python: restore from history
-- ruby: restore from history
-- php: restore from history
+- csharp-mvc: getting history by a separate request
+- csharp: getting history by a separate request
+- java: getting history by a separate request
+- java-spring: getting history by a separate request
+- restore from history
 
 ## 1.6.0
 - nodejs: setUsers for region protection

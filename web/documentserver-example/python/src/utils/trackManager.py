@@ -16,14 +16,17 @@
 
 """
 
-
-import requests
-import os
+from copy import deepcopy
 import json
+import os
+from urllib.parse import urlparse
+import requests
 from src.configuration import ConfigurationManager
+from src.proxy import ProxyManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
 
 config_manager = ConfigurationManager()
+proxy_manager = ProxyManager(config_manager=config_manager)
 
 # read request body
 def readBody(request):
@@ -45,7 +48,9 @@ def readBody(request):
     return body
 
 # file saving process
-def processSave(body, filename, usAddr):
+def processSave(raw_body, filename, usAddr):
+    body = resolve_process_save_body(raw_body)
+
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
@@ -176,3 +181,19 @@ def commandRequest(method, key, meta = None):
 
     return
 
+def resolve_process_save_body(body):
+    copied = deepcopy(body)
+
+    url = copied.get('url')
+    if url is not None:
+        parsed_url = urlparse(url)
+        resolved_url = proxy_manager.resolve_url(parsed_url)
+        copied['url'] = resolved_url.geturl()
+
+    changes_url = copied.get('changesurl')
+    if changes_url is not None:
+        parsed_url = urlparse(changes_url)
+        resolved_url = proxy_manager.resolve_url(parsed_url)
+        copied['changesurl'] = resolved_url.geturl()
+
+    return copied

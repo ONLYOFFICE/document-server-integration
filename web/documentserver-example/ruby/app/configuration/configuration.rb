@@ -41,9 +41,16 @@ class ConfigurationManager
   end
 
   sig { returns(URI::Generic) }
-  def document_server_uri
-    url = ENV['DOCUMENT_SERVER_URL'] || 'http://document-server'
+  def document_server_public_uri
+    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server'
     URI(url)
+  end
+
+  sig { returns(URI::Generic) }
+  def document_server_private_uri
+    url = ENV['DOCUMENT_SERVER_PRIVATE_URL']
+    return URI(url) if url
+    document_server_public_uri
   end
 
   sig { returns(URI::Generic) }
@@ -51,7 +58,7 @@ class ConfigurationManager
     path =
       ENV['DOCUMENT_SERVER_API_PATH'] ||
       '/web-apps/apps/api/documents/api.js'
-    URI.join(document_server_uri, path)
+    URI.join(document_server_public_uri, path)
   end
 
   sig { returns(URI::Generic) }
@@ -59,7 +66,7 @@ class ConfigurationManager
     path =
       ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
       '/web-apps/apps/api/documents/cache-scripts.html'
-    URI.join(document_server_uri, path)
+    URI.join(document_server_public_uri, path)
   end
 
   sig { returns(URI::Generic) }
@@ -67,7 +74,7 @@ class ConfigurationManager
     path =
       ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
       '/coauthoring/CommandService.ashx'
-    URI.join(document_server_uri, path)
+    URI.join(document_server_private_uri, path)
   end
 
   sig { returns(URI::Generic) }
@@ -75,7 +82,7 @@ class ConfigurationManager
     path =
       ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
       '/ConvertService.ashx'
-    URI.join(document_server_uri, path)
+    URI.join(document_server_private_uri, path)
   end
 
   sig { returns(String) }
@@ -122,30 +129,6 @@ class ConfigurationManager
   sig { returns(Numeric) }
   def convertation_timeout
     120
-  end
-
-  sig { returns(T::Array[String]) }
-  def fillable_file_extensions
-    '.docx|.oform'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def viewable_file_extensions
-    '.djvu|.oxps|.pdf|.xps'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def editable_file_extensions
-    '.csv|.docm|.docx|.docxf|.dotm|.dotx|.epub|.fb2|.html|.odp|.ods|.odt|.otp|.ots|.ott|.potm|.potx|.ppsm|.ppsx|.pptm|.pptx|.rtf|.txt|.xlsm|.xlsx|.xltm|.xltx'
-      .split('|')
-  end
-
-  sig { returns(T::Array[String]) }
-  def convertable_file_extensions
-    '.doc|.dot|.dps|.dpt|.epub|.et|.ett|.fb2|.fodp|.fods|.fodt|.htm|.html|.mht|.mhtml|.odp|.ods|.odt|.otp|.ots|.ott|.pot|.pps|.ppt|.rtf|.stw|.sxc|.sxi|.sxw|.wps|.wpt|.xls|.xlsb|.xlt|.xml'
-      .split('|')
   end
 
   sig { returns(T::Hash[String, String]) }

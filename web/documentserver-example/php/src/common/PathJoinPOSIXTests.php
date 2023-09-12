@@ -15,67 +15,77 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\Path;
 
-final class PathJoinPOSIXTests extends TestCase {
-    public function test_joins_a_relative_to_an_empty_one() {
+final class PathJoinPOSIXTests extends TestCase
+{
+    public function testJoinsARelativeToAnEmptyOne()
+    {
         $path = new Path('');
-        $joined = $path->join_path('srv');
+        $joined = $path->joinPath('srv');
         $this->assertEquals($joined->dirname(), '/');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_a_relative_to_a_relative_one() {
+    public function testJoinsARelativeToARelativeOne()
+    {
         $path = new Path('.');
-        $joined = $path->join_path('srv');
+        $joined = $path->joinPath('srv');
         $this->assertEquals($joined->dirname(), '.');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_a_relative_to_an_absolute_one() {
+    public function testJoinsARelativeToAnAbsoluteOne()
+    {
         $path = new Path('/');
-        $joined = $path->join_path('srv');
+        $joined = $path->joinPath('srv');
         $this->assertEquals($joined->dirname(), '/');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_an_absolute_to_an_empty_one() {
+    public function testJoinsAnAbsoluteToAnEmptyOne()
+    {
         $path = new Path('');
-        $joined = $path->join_path('/srv');
+        $joined = $path->joinPath('/srv');
         $this->assertEquals($joined->dirname(), '/');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_an_absolute_to_a_relative_one() {
+    public function testJoinsAnAbsoluteToARelativeOne()
+    {
         $path = new Path('.');
-        $joined = $path->join_path('/srv');
+        $joined = $path->joinPath('/srv');
         $this->assertEquals($joined->dirname(), '.');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_an_absolute_to_an_absolute_one() {
+    public function testJoinsAnAbsoluteToAnAbsoluteOne()
+    {
         $path = new Path('/');
-        $joined = $path->join_path('/srv');
+        $joined = $path->joinPath('/srv');
         $this->assertEquals($joined->dirname(), '/');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);
         $this->assertEquals($joined->filename(), 'srv');
     }
 
-    public function test_joins_an_unnormalized() {
+    public function testJoinsAnUnnormalized()
+    {
         $path = new Path('');
-        $joined = $path->join_path('../srv');
+        $joined = $path->joinPath('../srv');
         $this->assertEquals($joined->dirname(), '/..');
         $this->assertEquals($joined->basename(), 'srv');
         $this->assertEquals($joined->extension(), null);

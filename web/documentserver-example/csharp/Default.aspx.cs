@@ -633,5 +633,12 @@ namespace OnlineEditorsExample
             string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
             return "&directUrl=" + (isEnabledDirectUrl != null ? isEnabledDirectUrl : "false");
         }
+
+        // get direct url flag
+        public static bool IsEnabledDirectUrl()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return isEnabledDirectUrl != null ? Convert.ToBoolean(isEnabledDirectUrl) : false;
+        }
     }
 }

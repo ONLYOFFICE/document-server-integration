@@ -17,43 +17,51 @@
 
 namespace Example\Common;
 
-final class Path {
+final class Path
+{
     private string $separator = DIRECTORY_SEPARATOR;
     private string $string;
 
-    public function __construct(string $path) {
+    public function __construct(string $path)
+    {
         $this->string = $path;
     }
 
-    public function string(): string {
+    public function string(): string
+    {
         return $this->string;
     }
 
-    public function dirname(): ?string {
+    public function dirname(): ?string
+    {
         $string = $this->string();
         $parsed = pathinfo($string, PATHINFO_DIRNAME);
         return $parsed ?: null;
     }
 
-    public function basename(): ?string {
+    public function basename(): ?string
+    {
         $string = $this->string();
         $parsed = pathinfo($string, PATHINFO_BASENAME);
         return $parsed ?: null;
     }
 
-    public function extension(): ?string {
+    public function extension(): ?string
+    {
         $string = $this->string();
         $parsed = pathinfo($string, PATHINFO_EXTENSION);
         return $parsed ?: null;
     }
 
-    public function filename(): ?string {
+    public function filename(): ?string
+    {
         $string = $this->string();
         $parsed = pathinfo($string, PATHINFO_FILENAME);
         return $parsed ?: null;
     }
 
-    public function normalize(): self {
+    public function normalize(): self
+    {
         $string = $this->string();
         $filtered = array();
         $slugs = explode($this->separator, $string);
@@ -68,13 +76,14 @@ final class Path {
             $filtered[] = $slug;
         }
         $joined = implode($this->separator, $filtered);
-        $escaped_separator = preg_quote($this->separator, $this->separator);
-        $separator_regex = "/{$escaped_separator}{2,}/";
-        $separated = preg_replace($separator_regex, $this->separator, $joined);
+        $escapedSeparator = preg_quote($this->separator, $this->separator);
+        $separatorRegex = "/{$escapedSeparator}{2,}/";
+        $separated = preg_replace($separatorRegex, $this->separator, $joined);
         return new Path($separated);
     }
 
-    public function join_path(string $path): self {
+    public function joinPath(string $path): self
+    {
         $string = $this->string();
         $separator =
             str_ends_with($string, $this->separator) ||
@@ -84,43 +93,48 @@ final class Path {
         return new Path("{$string}{$separator}{$path}");
     }
 
-    public function absolute(): bool {
+    public function absolute(): bool
+    {
         $string = $this->string();
 
-        $nt_regex = '/^[A-Za-z]:\\\\/';
-        if (preg_match($nt_regex, $string)) {
+        $ntRegex = '/^[A-Za-z]:\\\\/';
+        if (preg_match($ntRegex, $string)) {
             return true;
         }
 
-        $nt_separator = '\\';
-        if (str_starts_with($string, $nt_separator)) {
+        $ntSeparator = '\\';
+        if (str_starts_with($string, $ntSeparator)) {
             return true;
         }
 
-        $posix_separator = '/';
-        if (str_starts_with($string, $posix_separator)) {
+        $posixSeparator = '/';
+        if (str_starts_with($string, $posixSeparator)) {
             return true;
         }
 
         return false;
     }
 
-    public function exists(): bool {
+    public function exists(): bool
+    {
         $string = $this->string();
         return file_exists($string);
     }
 
-    public function contents(): string {
+    public function contents(): string
+    {
         $string = $this->string();
         return file_get_contents($string);
     }
 
-    public function directory(): bool {
+    public function directory(): bool
+    {
         $string = $this->string();
         return is_dir($string);
     }
 
-    public function make_directory(): bool {
+    public function makeDirectory(): bool
+    {
         $string = $this->string();
         return mkdir($string);
     }

@@ -17,6 +17,7 @@
 
 namespace Example\Common;
 
-enum HTTPStatus: int {
-    case not_found = 404;
+enum HTTPStatus: int
+{
+    case NotFound = 404;
 }

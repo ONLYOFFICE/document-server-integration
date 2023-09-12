@@ -20,7 +20,7 @@ namespace Example;
 use Exception;
 use Example\Common\Path;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use Example\Helpers\JwtManager;
 
@@ -57,14 +57,14 @@ function getHttpOrigin()
 function saveas()
 {
     try {
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
+        $formatManager = new FormatManager();
 
         $post = json_decode(file_get_contents('php://input'), true);
         $fileurl = $post["url"];
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
-        $configManager = new ConfigManager();
-        $allexts = $configManager->getSuppotredExtensions();
+        $allexts = $formatManager->allExtensions();
         $filename = GetCorrectName($title);
 
         if (!in_array($extension, $allexts)) {
@@ -72,10 +72,10 @@ function saveas()
             return $result;
         }
         $headers = get_headers($fileurl, 1);
-        $content_length = $headers["Content-Length"];
+        $contentLength = $headers["Content-Length"];
         $data = file_get_contents(str_replace(" ", "%20", $fileurl));
 
-        if ($data === false || $content_length <= 0 || $content_length > $config_manager->maximum_file_size()) {
+        if ($data === false || $contentLength <= 0 || $contentLength > $configManager->maximumFileSize()) {
             $result["error"] = "File size is incorrect";
             return $result;
         }
@@ -101,9 +101,9 @@ function saveas()
  */
 function upload()
 {
-    $config_manager = new ConfigurationManager();
+    $configManager = new ConfigurationManager();
+    $formatManager = new FormatManager();
 
-    $configManager = new ConfigManager();
     if ($_FILES['files']['error'] > 0) {
         $result["error"] = 'Error ' . json_encode($_FILES['files']['error']);
         return $result;
@@ -124,13 +124,13 @@ function upload()
         $ext = mb_strtolower(pathinfo($_FILES['files']['name'], PATHINFO_EXTENSION));  // get file extension
 
         // check if the file size is correct (it should be less than the max file size, but greater than 0)
-        if ($filesize <= 0 || $filesize > $config_manager->maximum_file_size()) {
+        if ($filesize <= 0 || $filesize > $configManager->maximumFileSize()) {
             $result["error"] = 'File size is incorrect';  // if not, then an error occurs
             return $result;
         }
 
         // check if the file extension is supported by the editor
-        if (!in_array($ext, $configManager->getSuppotredExtensions())) {
+        if (!in_array($ext, $formatManager->allExtensions())) {
             $result["error"] = 'File type is not supported';  // if not, then an error occurs
             return $result;
         }
@@ -173,7 +173,7 @@ function track()
         return $data;
     }
 
-    $_trackerStatus = [
+    $trackerStatus = [
         0 => 'NotFound',
         1 => 'Editing',
         2 => 'MustSave',
@@ -182,7 +182,7 @@ function track()
         6 => 'MustForceSave',
         7 => 'CorruptedForceSave',
     ];
-    $status = $_trackerStatus[$data->status];  // get status from the request body
+    $status = $trackerStatus[$data->status];  // get status from the request body
 
     $userAddress = $_GET["userAddress"];
     $fileName = basename($_GET["fileName"]);
@@ -220,16 +220,17 @@ function track()
  */
 function convert()
 {
+    $formatManager = new FormatManager();
+
     $post = json_decode(file_get_contents('php://input'), true);
     $fileName = basename($post["filename"]);
     $filePass = $post["filePass"];
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
-    $configManager = new ConfigManager();
 
     // check if the file with such an extension can be converted
-    if (in_array($extension, $configManager->getConvertExtensions()) &&
+    if (in_array($extension, $formatManager->convertibleExtensions()) &&
         $internalExtension != "") {
         $fileUri = $post["fileUri"];
         if ($fileUri == null || $fileUri == "") {
@@ -368,7 +369,7 @@ function csv()
 function historyDownload()
 {
     try {
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
 
         $fileName = basename($_GET["fileName"]);  // get the file name
         $userAddress = $_GET["userAddress"];
@@ -378,8 +379,7 @@ function historyDownload()
 
         $jwtManager = new JwtManager();
         if ($jwtManager->isJwtEnabled()) {
-            $configManager = new ConfigManager();
-            $jwtHeader = $config_manager->jwt_header();
+            $jwtHeader = $configManager->jwtHeader();
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(
                     apache_request_headers()[$jwtHeader],
@@ -416,7 +416,7 @@ function historyDownload()
 function download()
 {
     try {
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
 
         $fileName = $_GET["fileName"];
         $userAddress = $_GET["userAddress"] ?? null;
@@ -424,7 +424,7 @@ function download()
         $jwtManager = new JwtManager();
 
         if ($jwtManager->isJwtEnabled() && $isEmbedded == null && $userAddress) {
-            $jwtHeader = $config_manager->jwt_header();
+            $jwtHeader = $configManager->jwtHeader();
             if (!empty(apache_request_headers()[$jwtHeader])) {
                 $token = $jwtManager->jwtDecode(mb_substr(
                     apache_request_headers()[$jwtHeader],
@@ -464,7 +464,10 @@ function downloadFile($filePath)
 
         // write headers to the response object
         @header('Content-Length: ' . filesize($filePath));
-        @header('Content-Disposition: attachment; filename*=UTF-8\'\'' . str_replace("+", "%20", urlencode(basename($filePath))));
+        @header(
+            'Content-Disposition: attachment; filename*=UTF-8\'\'' .
+            str_replace("+", "%20", urlencode(basename($filePath)))
+        );
         @header('Content-Type: ' . mime_content_type($filePath));
         @header('Access-Control-Allow-Origin: *');
 
@@ -588,31 +591,31 @@ function restore()
         $input = file_get_contents('php://input');
         $body = json_decode($input);
 
-        $source_basename = $body->fileName;
+        $sourceBasename = $body->fileName;
         $version = $body->version;
-        $user_id = $body->userId;
+        $userID = $body->userId;
 
-        $source_file = getStoragePath($source_basename);
-        $history_directory = getHistoryDir($source_file);
+        $sourceFile = getStoragePath($sourceBasename);
+        $historyDirectory = getHistoryDir($sourceFile);
 
-        $bumped_version = getFileVersion($history_directory);
-        $bumped_version_string_directory = getVersionDir($history_directory, $bumped_version);
-        if (!file_exists($bumped_version_string_directory)) {
-            mkdir($bumped_version_string_directory);
+        $bumpedVersion = getFileVersion($historyDirectory);
+        $bumpedVersionStringDirectory = getVersionDir($historyDirectory, $bumpedVersion);
+        if (!file_exists($bumpedVersionStringDirectory)) {
+            mkdir($bumpedVersionStringDirectory);
         }
-        $bumped_version_directory = new Path($bumped_version_string_directory);
+        $bumpedVersionDirectory = new Path($bumpedVersionStringDirectory);
 
-        $bumped_key_file = $bumped_version_directory->join_path('key.txt');
-        $bumped_key_string_file = $bumped_key_file->string();
-        $bumped_key = getDocEditorKey($source_basename);
-        file_put_contents($bumped_key_string_file, $bumped_key, LOCK_EX);
+        $bumpedKeyFile = $bumpedVersionDirectory->joinPath('key.txt');
+        $bumpedKeyStringFile = $bumpedKeyFile->string();
+        $bumpedKey = getDocEditorKey($sourceBasename);
+        file_put_contents($bumpedKeyStringFile, $bumpedKey, LOCK_EX);
 
         $users = new ExampleUsers();
-        $user = $users->getUser($user_id);
+        $user = $users->getUser($userID);
 
-        $bumped_changes_file = $bumped_version_directory->join_path('changes.json');
-        $bumped_changes_string_file = $bumped_changes_file->string();
-        $bumped_changes = [
+        $bumpedChangesFile = $bumpedVersionDirectory->joinPath('changes.json');
+        $bumpedChangesStringFile = $bumpedChangesFile->string();
+        $bumpedChanges = [
             'serverVersion' => null,
             'changes' => array(
                 [
@@ -624,21 +627,21 @@ function restore()
                 ]
             )
         ];
-        $bumped_changes_content = json_encode($bumped_changes, JSON_PRETTY_PRINT);
-        file_put_contents($bumped_changes_string_file, $bumped_changes_content, LOCK_EX);
+        $bumpedChangesContent = json_encode($bumpedChanges, JSON_PRETTY_PRINT);
+        file_put_contents($bumpedChangesStringFile, $bumpedChangesContent, LOCK_EX);
 
-        $source_extension = pathinfo($source_basename, PATHINFO_EXTENSION);
-        $previous_basename = "prev.{$source_extension}";
+        $sourceExtension = pathinfo($sourceBasename, PATHINFO_EXTENSION);
+        $previousBasename = "prev.{$sourceExtension}";
 
-        $bumped_file = $bumped_version_directory->join_path($previous_basename);
-        $bumped_string_file = $bumped_file->string();
-        copy($source_file, $bumped_string_file);
+        $bumpedFile = $bumpedVersionDirectory->joinPath($previousBasename);
+        $bumpedStringFile = $bumpedFile->string();
+        copy($sourceFile, $bumpedStringFile);
 
-        $recovery_version_string_directory = getVersionDir($history_directory, $version);
-        $recovery_version_directory = new Path($recovery_version_string_directory);
-        $recovery_file = $recovery_version_directory->join_path($previous_basename);
-        $recovery_string_file = $recovery_file->string();
-        copy($recovery_string_file, $source_file);
+        $recoveryVersionStringDirectory = getVersionDir($historyDirectory, $version);
+        $recoveryVersionDirectory = new Path($recoveryVersionStringDirectory);
+        $recoveryFile = $recoveryVersionDirectory->joinPath($previousBasename);
+        $recoveryStringFile = $recoveryFile->string();
+        copy($recoveryStringFile, $sourceFile);
 
         return [
             'error' => null,

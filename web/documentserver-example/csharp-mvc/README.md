@@ -14,7 +14,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 Download the [.Net (C# MVC) example](https://api.onlyoffice.com/editors/demopreview) from our site.
 
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *settings.config* file:
+To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *web.appsettings.config* file:
 ```
 <add key="storage-path" value=""/>
 <add key="files.docservice.url.site" value="https://documentserver/" />

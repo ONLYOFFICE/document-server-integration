@@ -389,14 +389,14 @@ DocManager.prototype.getTemplateImageUrl = function getTemplateImageUrl(fileType
   }
 
   if (fileType === fileUtility.fileType.cell) { // for cell type
-    return `${path}/images/file_xlsx.svg`;
+    return `${serverUrl}/images/file_xlsx.svg`;
   }
 
   if (fileType === fileUtility.fileType.slide) { // for slide type
-    return `${path}/images/file_pptx.svg`;
+    return `${serverUrl}/images/file_pptx.svg`;
   }
 
-  return `${path}/images/file_docx.svg`; // the default value
+  return `${serverUrl}/images/file_docx.svg`; // the default value
 };
 
 // get document key

@@ -15,13 +15,17 @@
 #
 
 require 'net/http'
+require 'uri'
 require_relative '../configuration/configuration'
+require_relative '../proxy/proxy'
 
 class TrackHelper
   @config_manager = ConfigurationManager.new
+  @proxy_manager = ProxyManager.new(config_manager: @config_manager)
 
   class << self
     attr_reader :config_manager
+    attr_reader :proxy_manager
   end
 
   @@document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
@@ -68,8 +72,35 @@ class TrackHelper
             return file_data
         end
 
+        def resolve_process_save_body(body)
+          copied = body.dup
+
+          url = copied['url']
+          if url
+            uri = URI(url)
+            resolved_uri = TrackHelper.proxy_manager.resolve_uri(uri)
+            copied['url'] = resolved_uri.to_s
+          end
+
+          changesurl = copied['changesurl']
+          if changesurl
+            uri = URI(changesurl)
+            resolved_uri = TrackHelper.proxy_manager.resolve_uri(uri)
+            copied['changesurl'] = resolved_uri.to_s
+          end
+
+          home = copied['home']
+          if home
+            copied['home'] = resolve_process_save_body(home)
+          end
+
+          copied
+        end
+
         # file saving process
-        def process_save(file_data, file_name, user_address)
+        def process_save(raw_file_data, file_name, user_address)
+            file_data = resolve_process_save_body(raw_file_data)
+
             download_uri = file_data['url']
             if download_uri.eql?(nil)
                 saved = 1
