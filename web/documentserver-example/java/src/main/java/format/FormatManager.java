@@ -25,9 +25,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -35,66 +37,46 @@ import com.google.gson.JsonSyntaxException;
 import entities.FileType;
 
 public final class FormatManager {
-    public List<String> fillableExtensions() throws URISyntaxException,
-                                                    IOException,
-                                                    JsonSyntaxException {
+
+    private List<Format> formats;
+
+    public FormatManager() {
+        formats = this.all();
+    }
+
+
+    public List<Format> getFormats() {
+        return this.formats;
+    }
+
+    public List<Format> getFormatsByAction(String action) {
         return this
-            .fillable()
+                .all()
+                .stream()
+                .filter(format -> format.getActions().contains(action))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> fillableExtensions() {
+        return this
+            .getFormatsByAction("fill")
             .stream()
             .map(format -> format.extension())
             .collect(Collectors.toList());
     }
 
-    public List<Format> fillable() throws URISyntaxException,
-                                          IOException,
-                                          JsonSyntaxException {
+    public List<String> viewableExtensions() {
         return this
-            .all()
-            .stream()
-            .filter(format -> format.getActions().contains("fill"))
-            .collect(Collectors.toList());
-    }
-
-    public List<String> viewableExtensions() throws URISyntaxException,
-                                                    IOException,
-                                                    JsonSyntaxException {
-        return this
-            .viewable()
+            .getFormatsByAction("view")
             .stream()
             .map(format -> format.extension())
             .collect(Collectors.toList());
     }
 
-    public List<Format> viewable() throws URISyntaxException,
-                                          IOException,
-                                          JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .filter(format -> format.getActions().contains("view"))
-            .collect(Collectors.toList());
-    }
-
-    public List<String> editableExtensions() throws URISyntaxException,
-                                                    IOException,
-                                                    JsonSyntaxException {
-        return this
-            .editable()
-            .stream()
+    public List<String> editableExtensions() {
+        return Stream.of(this.getFormatsByAction("edit"), this.getFormatsByAction("edit"))
+            .flatMap(x -> x.stream())
             .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
-
-    public List<Format> editable()  throws URISyntaxException,
-                                           IOException,
-                                           JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .filter(format -> (
-                format.getActions().contains("edit")
-                || format.getActions().contains("lossy-edit")
-            ))
             .collect(Collectors.toList());
     }
 
@@ -112,7 +94,7 @@ public final class FormatManager {
                                              IOException,
                                              JsonSyntaxException {
         return this
-            .all()
+            .formats
             .stream()
             .filter(format -> (
                 format.getType() == FileType.Cell && format.getConvert().contains("xlsx")
@@ -122,85 +104,19 @@ public final class FormatManager {
             .collect(Collectors.toList());
     }
 
-    public List<String> spreadsheetExtensions() throws URISyntaxException,
-                                                       IOException,
-                                                       JsonSyntaxException {
-        return this
-            .spreadsheets()
-            .stream()
-            .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
+    private List<Format> all()  {
+        try {
+            Path path = this.file();
+            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            String contents = String.join(System.lineSeparator(), lines);
+            Gson gson = new Gson();
+            Format[] formats = gson.fromJson(contents, Format[].class);
+            return Arrays.asList(formats);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    public List<Format> spreadsheets() throws URISyntaxException,
-                                              IOException,
-                                              JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .filter(format -> format.getType() == FileType.Cell)
-            .collect(Collectors.toList());
-    }
-
-    public List<String> presentationExtensions() throws URISyntaxException,
-                                                        IOException,
-                                                        JsonSyntaxException {
-        return this
-            .presentations()
-            .stream()
-            .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
-
-    public List<Format> presentations()  throws URISyntaxException,
-                                                IOException,
-                                                JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .filter(format -> format.getType() == FileType.Slide)
-            .collect(Collectors.toList());
-    }
-
-    public List<String> documentExtensions() throws URISyntaxException,
-                                                    IOException,
-                                                    JsonSyntaxException {
-        return this
-            .documents()
-            .stream()
-            .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
-
-    public List<Format> documents() throws URISyntaxException,
-                                           IOException,
-                                           JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .filter(format -> format.getType() == FileType.Word)
-            .collect(Collectors.toList());
-    }
-
-    public List<String> allExtensions() throws URISyntaxException,
-                                               IOException,
-                                               JsonSyntaxException {
-        return this
-            .all()
-            .stream()
-            .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
-
-    public List<Format> all() throws URISyntaxException,
-                                     IOException,
-                                     JsonSyntaxException {
-        Path path = this.file();
-        List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-        String contents = String.join(System.lineSeparator(), lines);
-        Gson gson = new Gson();
-        Format[] formats = gson.fromJson(contents, Format[].class);
-        return Arrays.asList(formats);
+        return new ArrayList<>();
     }
 
     private Path file() throws URISyntaxException {

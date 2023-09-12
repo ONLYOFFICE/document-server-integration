@@ -19,10 +19,12 @@
 package helpers;
 
 import entities.FileType;
+import format.Format;
 import format.FormatManager;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class FileUtility {
@@ -33,19 +35,12 @@ public final class FileUtility {
     // get file type
     public static FileType getFileType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();
+        List<Format> formats  = FileUtility.formatManager.getFormats();
 
-        try {
-            if (FileUtility.formatManager.documentExtensions().contains(ext)) {
-                return FileType.Word;
+        for (Format format : formats) {
+            if (format.getName().equals(ext)) {
+                return format.getType();
             }
-            if (FileUtility.formatManager.spreadsheetExtensions().contains(ext)) {
-                return FileType.Cell;
-            }
-            if (FileUtility.formatManager.presentationExtensions().contains(ext)) {
-                return FileType.Slide;
-            }
-        } catch (Exception error) {
-            error.printStackTrace();
         }
 
         // default file type is word
