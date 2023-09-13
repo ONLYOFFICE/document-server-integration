@@ -77,7 +77,6 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
                     (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));
         }
         String fileName = wrapper.getFileName();  // set the fileName parameter from the editorConfig wrapper
-        String fileExt = fileUtility.getFileExtension(fileName);
         boolean userIsAnon = wrapper.getUser()
                 .getName().equals("Anonymous");  // check if the user from the editorConfig wrapper is anonymous or not
 

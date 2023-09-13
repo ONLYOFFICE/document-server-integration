@@ -85,7 +85,7 @@ public class DefaultFileUtility implements FileUtility {
         if (fileName == null) {
             return null;
         }
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 
@@ -145,10 +145,10 @@ public class DefaultFileUtility implements FileUtility {
             fileName = getFileNameWithoutExtension(fullFileName) + "(" + i + ")";
 
             // create a new path for this file with the correct name and extension
-            path = Paths.get(directory + fileName + fileExtension);
+            path = Paths.get(directory + fileName + "." + fileExtension);
         }
 
-        path = Paths.get(directory + fileName + fileExtension);
+        path = Paths.get(directory + fileName + "." + fileExtension);
         return path;
     }
 
