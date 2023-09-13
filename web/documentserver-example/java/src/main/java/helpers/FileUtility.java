@@ -44,7 +44,7 @@ public final class FileUtility {
         }
 
         // default file type is word
-        return FileType.Word;
+        return FileType.WORD;
     }
 
     // get file name from the url
