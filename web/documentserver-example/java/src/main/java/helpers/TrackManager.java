@@ -150,7 +150,7 @@ public final class TrackManager {
         String newFileName = fileName;
 
         String curExt = FileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
+        String downloadExt = (String) body.get("filetype");  // get the extension of the downloaded file
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
@@ -164,13 +164,13 @@ public final class TrackManager {
                     // get the correct file name if it already exists
                     newFileName = DocumentManager
                             .getCorrectName(FileUtility
-                                    .getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                                    .getFileNameWithoutExtension(fileName) + "." + downloadExt, userAddress);
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e) {
                 newFileName = DocumentManager.getCorrectName(FileUtility
-                        .getFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                        .getFileNameWithoutExtension(fileName) + "." + downloadExt, userAddress);
             }
         }
 
@@ -193,7 +193,7 @@ public final class TrackManager {
         }
 
         // get the path to the previous file version and rename the last file version with it
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev" + curExt));
+        lastVersion.renameTo(new File(versionDir + File.separator + "prev." + curExt));
 
         saveFile(byteArrayFile, toSave); // save document file
 
@@ -236,7 +236,7 @@ public final class TrackManager {
         String downloadUri = (String) body.get("url");
 
         String curExt = FileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "." + (String) body.get("filetype");  // get the extension of the downloaded file
+        String downloadExt = (String) body.get("filetype");  // get the extension of the downloaded file
 
         Boolean newFileName = false;
 
@@ -265,10 +265,10 @@ public final class TrackManager {
             // new file
             if (newFileName) {
                 fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName)
-                        + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
+                        + "-form." + downloadExt, userAddress);  // get the correct file name if it already exists
             } else {
                 fileName = DocumentManager.getCorrectName(FileUtility.getFileNameWithoutExtension(fileName)
-                        + "-form" + curExt, userAddress);
+                        + "-form." + curExt, userAddress);
             }
             forcesavePath = DocumentManager.storagePath(fileName, userAddress);
         } else {

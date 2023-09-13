@@ -63,7 +63,7 @@ public class FileModel {
         document.setDirectUrl(isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "");
 
         // get file extension from the file name
-        document.setFileType(FileUtility.getFileExtension(fileName).replace(".", ""));
+        document.setFileType(FileUtility.getFileExtension(fileName));
         // generate document key
         document.setKey(ServiceConverter
                 .generateRevisionId(DocumentManager

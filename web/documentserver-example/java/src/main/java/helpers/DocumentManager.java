@@ -248,12 +248,12 @@ public final class DocumentManager {
     public static String getCorrectName(final String fileName, final String userAddress) {
         String baseName = FileUtility.getFileNameWithoutExtension(fileName);
         String ext = FileUtility.getFileExtension(fileName);
-        String name = baseName + ext;
+        String name = baseName + "." + ext;
 
         File file = new File(storagePath(name, userAddress));
 
         for (int i = 1; file.exists(); i++) {  // run through all the files with such a name in the storage directory
-            name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+            name = baseName + " (" + i + ")." + ext;  // and add an index to the base name
             file = new File(storagePath(name, userAddress));
         }
 

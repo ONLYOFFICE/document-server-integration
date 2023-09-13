@@ -75,7 +75,7 @@ public final class FileUtility {
         if (fileName == null) {
             return null;
         }
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 
