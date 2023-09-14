@@ -191,7 +191,8 @@ public class FileController {
                 throw new IOException("Could not update a file");  // if the file cannot be updated, an error occurs
             }
 
-            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath) + fileExtension;  // get full file name
+            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath)
+                    + "." + fileExtension;  // get full file name
 
             return createUserMetadata(uid, fullFileName);  // create user metadata and return it
         } catch (Exception e) {
@@ -511,7 +512,7 @@ public class FileController {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName).replace(".", ""));
+            data.put("fileType", fileUtility.getFileExtension(fileName));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
@@ -596,7 +597,7 @@ public class FileController {
             bumpedChangesFileWriter.close();
 
             String sourceExtension = fileUtility.getFileExtension(body.getFileName());
-            String previousBasename = "prev" + sourceExtension;
+            String previousBasename = "prev." + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);

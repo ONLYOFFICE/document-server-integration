@@ -146,8 +146,8 @@ public class DefaultServiceConverter implements ServiceConverter {
         Convert body = new Convert();
         body.setLang(lang);
         body.setUrl(documentUri);
-        body.setOutputtype(toExtension.replace(".", ""));
-        body.setFiletype(fromExt.replace(".", ""));
+        body.setOutputtype(toExtension);
+        body.setFiletype(fromExt);
         body.setTitle(title);
         body.setKey(documentRevId);
         body.setFilePass(filePass);

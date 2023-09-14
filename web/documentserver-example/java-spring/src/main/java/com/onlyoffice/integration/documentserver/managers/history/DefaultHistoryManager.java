@@ -103,14 +103,14 @@ public class DefaultHistoryManager implements HistoryManager {
                 }
 
                 dataObj.put("fileType", fileUtility
-                        .getFileExtension(document.getTitle()).replace(".", ""));
+                        .getFileExtension(document.getTitle()));
                 dataObj.put("key", key);
                 dataObj.put("url", i == curVer ? document.getUrl()
-                        : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility
+                        : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev." + fileUtility
                         .getFileExtension(document.getTitle()), true));
                 if (!document.getDirectUrl().equals("")) {
                     dataObj.put("directUrl", i == curVer ? document.getDirectUrl()
-                            : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev" + fileUtility
+                            : documentManager.getHistoryFileUrl(document.getTitle(), i, "prev." + fileUtility
                             .getFileExtension(document.getTitle()), false));
                 }
                 dataObj.put("version", i);

@@ -16,19 +16,18 @@
  *
  */
 
-var ConverExtList;
-var EditedExtList;
-var UrlConverter;
-var UrlEditor;
-var FillExtList;
+package com.onlyoffice.integration.documentserver.util.service;
 
-if (typeof jQuery !== "undefined") {
-    jQuery.post('/config',
-        function(data) {
-            FillExtList = data.FillExtList.split(',');
-            ConverExtList = data.ConverExtList.split(',');
-            EditedExtList = data.EditedExtList.split(',');
-            UrlConverter = data.UrlConverter;
-            UrlEditor = data.UrlEditor;
-    });
+import com.onlyoffice.integration.documentserver.models.Format;
+
+import java.util.List;
+
+public interface FormatService {
+    List<Format> getFormats();
+    List<Format> getFormatsByAction(String action);
+    List<String> allExtensions();
+    List<String> fillableExtensions();
+    List<String> viewableExtensions();
+    List<String> editableExtensions();
+    List<String> autoConvertExtensions();
 }
