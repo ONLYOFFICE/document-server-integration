@@ -21,51 +21,19 @@ package format;
 import java.util.List;
 
 import entities.FileType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
 public final class Format {
-    private final String name;
 
-    public String getName() {
-        return this.name;
-    }
+    private String name;
+    private FileType type;
+    private List<String>  actions;
+    private List<String> convert;
+    private List<String> mime;
 
-    private final FileType type;
-
-    public FileType getType() {
-        return this.type;
-    }
-
-    private final List<String> actions;
-
-    public List<String> getActions() {
-        return this.actions;
-    }
-
-    private final List<String> convert;
-
-    public List<String> getConvert() {
-        return this.convert;
-    }
-
-    private final List<String> mime;
-
-    public List<String> getMime() {
-        return this.mime;
-    }
-
-    public Format(final String nameParameter,
-                  final FileType typeParameter,
-                  final List<String> actionsParameter,
-                  final List<String> convertParameter,
-                  final List<String> mimeParameter) {
-        this.name = nameParameter;
-        this.type = typeParameter;
-        this.actions = actionsParameter;
-        this.convert = convertParameter;
-        this.mime = mimeParameter;
-    }
-
-    public String extension() {
-        return "." + this.name;
-    }
 }

@@ -8,6 +8,7 @@
 - nodejs: key in referenceData
 - nodejs: change reference source
 - java-spring: using a repo with a list of formats
+- java: using a repo with a list of formats
 - php: using a repo with a list of formats
 - nodejs: using a repo with a list of formats
 - java: using a repo with a list of formats

@@ -44,7 +44,7 @@ public final class FileUtility {
         }
 
         // default file type is word
-        return FileType.Word;
+        return FileType.WORD;
     }
 
     // get file name from the url
@@ -75,7 +75,7 @@ public final class FileUtility {
         if (fileName == null) {
             return null;
         }
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 

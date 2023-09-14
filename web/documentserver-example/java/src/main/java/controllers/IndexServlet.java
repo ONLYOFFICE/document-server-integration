@@ -635,7 +635,7 @@ public class IndexServlet extends HttpServlet {
             String newfilename = (String) body.get("newfilename");
             String dockey = (String) body.get("dockey");
 
-            String origExt = "." + (String) body.get("ext");
+            String origExt = (String) body.get("ext");
             String curExt = newfilename;
 
             if (newfilename.indexOf(".") != -1) {
@@ -643,7 +643,7 @@ public class IndexServlet extends HttpServlet {
             }
 
             if (origExt.compareTo(curExt) != 0) {
-                newfilename += origExt;
+                newfilename += "." + origExt;
             }
 
             HashMap<String, String> meta = new HashMap<>();
@@ -724,7 +724,7 @@ public class IndexServlet extends HttpServlet {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", FileUtility.getFileExtension(fileName).replace(".", ""));
+            data.put("fileType", FileUtility.getFileExtension(fileName));
             data.put("url", DocumentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", directUrl ? DocumentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
@@ -805,7 +805,7 @@ public class IndexServlet extends HttpServlet {
             bumpedChangesFileWriter.close();
 
             String sourceExtension = FileUtility.getFileExtension(sourceBasename);
-            String previousBasename = "prev" + sourceExtension;
+            String previousBasename = "prev." + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
@@ -947,16 +947,16 @@ public class IndexServlet extends HttpServlet {
                         key = DocumentManager.readFileToEnd(new File(verDir + File.separator + "key.txt"));
                     }
 
-                    dataObj.put("fileType", FileUtility.getFileExtension(fileName).substring(1));
+                    dataObj.put("fileType", FileUtility.getFileExtension(fileName));
                     dataObj.put("key", key);
                     dataObj.put("url", i == curVer
                             ? DocumentManager.getDownloadUrl(fileName, true)
-                            : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
+                            : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev." + FileUtility
                                     .getFileExtension(fileName), true));
                     if (directUrl.equals("true")) {
                         dataObj.put("directUrl", i == curVer
                                 ? DocumentManager.getDownloadUrl(fileName, false)
-                                : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev" + FileUtility
+                                : DocumentManager.getDownloadHistoryUrl(fileName, i, "prev." + FileUtility
                                         .getFileExtension(fileName), false));
                     }
 

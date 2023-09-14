@@ -83,49 +83,26 @@ public final class DocumentManager {
 
     // get all the supported file extensions
     public static List<String> getFileExts() {
-        List<String> res = new ArrayList<>();
-
-        res.addAll(getViewedExts());
-        res.addAll(getEditedExts());
-        res.addAll(getConvertExts());
-        res.addAll(getFillExts());
-
-        return res;
+        return DocumentManager.formatManager.allExtensions();
     }
 
     public static List<String> getFillExts() {
-        try {
-            return DocumentManager.formatManager.fillableExtensions();
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
+        return DocumentManager.formatManager.fillableExtensions();
     }
 
     // get file extensions that can be viewed
     public static List<String> getViewedExts() {
-        try {
-            return DocumentManager.formatManager.viewableExtensions();
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
+        return DocumentManager.formatManager.viewableExtensions();
     }
 
     // get file extensions that can be edited
     public static List<String> getEditedExts() {
-        try {
-            return DocumentManager.formatManager.editableExtensions();
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
+        return DocumentManager.formatManager.editableExtensions();
     }
 
     // get file extensions that can be converted
     public static List<String> getConvertExts() {
-        try {
-            return DocumentManager.formatManager.convertibleExtensions();
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
+        return DocumentManager.formatManager.autoConvertExtensions();
     }
 
     // get current user host address
@@ -271,12 +248,12 @@ public final class DocumentManager {
     public static String getCorrectName(final String fileName, final String userAddress) {
         String baseName = FileUtility.getFileNameWithoutExtension(fileName);
         String ext = FileUtility.getFileExtension(fileName);
-        String name = baseName + ext;
+        String name = baseName + "." + ext;
 
         File file = new File(storagePath(name, userAddress));
 
         for (int i = 1; file.exists(); i++) {  // run through all the files with such a name in the storage directory
-            name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+            name = baseName + " (" + i + ")." + ext;  // and add an index to the base name
             file = new File(storagePath(name, userAddress));
         }
 
@@ -513,17 +490,17 @@ public final class DocumentManager {
     // get an editor internal extension
     public static String getInternalExtension(final FileType fileType) {
         // .docx for word file type
-        if (fileType.equals(FileType.Word)) {
+        if (fileType.equals(FileType.WORD)) {
             return ".docx";
         }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell)) {
+        if (fileType.equals(FileType.CELL)) {
             return ".xlsx";
         }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide)) {
+        if (fileType.equals(FileType.SLIDE)) {
             return ".pptx";
         }
 
@@ -535,17 +512,17 @@ public final class DocumentManager {
     public static String getTemplateImageUrl(final FileType fileType) {
         String path = getServerUrl(true) + "/css/img/";
         // for word file type
-        if (fileType.equals(FileType.Word)) {
+        if (fileType.equals(FileType.WORD)) {
             return path + "file_docx.svg";
         }
 
         // .xlsx for cell file type
-        if (fileType.equals(FileType.Cell)) {
+        if (fileType.equals(FileType.CELL)) {
             return path + "file_xlsx.svg";
         }
 
         // .pptx for slide file type
-        if (fileType.equals(FileType.Slide)) {
+        if (fileType.equals(FileType.SLIDE)) {
             return path + "file_pptx.svg";
         }
 

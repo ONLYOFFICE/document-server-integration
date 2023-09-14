@@ -18,23 +18,18 @@
 
 package format;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-
-import entities.FileType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class FormatManager {
 
@@ -44,12 +39,11 @@ public final class FormatManager {
         formats = this.all();
     }
 
-
     public List<Format> getFormats() {
         return this.formats;
     }
 
-    public List<Format> getFormatsByAction(String action) {
+    public List<Format> getFormatsByAction(final String action) {
         return this
                 .all()
                 .stream()
@@ -57,11 +51,19 @@ public final class FormatManager {
                 .collect(Collectors.toList());
     }
 
+    public List<String> allExtensions() {
+        return this
+                .formats
+                .stream()
+                .map(format -> format.getName())
+                .collect(Collectors.toList());
+    }
+
     public List<String> fillableExtensions() {
         return this
             .getFormatsByAction("fill")
             .stream()
-            .map(format -> format.extension())
+            .map(format -> format.getName())
             .collect(Collectors.toList());
     }
 
@@ -69,49 +71,30 @@ public final class FormatManager {
         return this
             .getFormatsByAction("view")
             .stream()
-            .map(format -> format.extension())
+            .map(format -> format.getName())
             .collect(Collectors.toList());
     }
 
     public List<String> editableExtensions() {
-        return Stream.of(this.getFormatsByAction("edit"), this.getFormatsByAction("edit"))
+        return Stream.of(this.getFormatsByAction("edit"), this.getFormatsByAction("lossy-edit"))
             .flatMap(x -> x.stream())
-            .map(format -> format.extension())
+            .map(format -> format.getName())
             .collect(Collectors.toList());
     }
 
-    public List<String> convertibleExtensions() throws URISyntaxException,
-                                                       IOException,
-                                                       JsonSyntaxException {
+    public List<String> autoConvertExtensions() {
         return this
-            .convertible()
-            .stream()
-            .map(format -> format.extension())
-            .collect(Collectors.toList());
-    }
-
-    public List<Format> convertible() throws URISyntaxException,
-                                             IOException,
-                                             JsonSyntaxException {
-        return this
-            .formats
-            .stream()
-            .filter(format -> (
-                format.getType() == FileType.Cell && format.getConvert().contains("xlsx")
-                || format.getType() == FileType.Slide && format.getConvert().contains("pptx")
-                || format.getType() == FileType.Word && format.getConvert().contains("docx")
-            ))
-            .collect(Collectors.toList());
+                .getFormatsByAction("auto-convert")
+                .stream()
+                .map(format -> format.getName())
+                .collect(Collectors.toList());
     }
 
     private List<Format> all()  {
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             Path path = this.file();
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            String contents = String.join(System.lineSeparator(), lines);
-            Gson gson = new Gson();
-            Format[] formats = gson.fromJson(contents, Format[].class);
-            return Arrays.asList(formats);
+            return objectMapper.readValue(Files.readAllBytes(path), new TypeReference<List<Format>>() { });
         } catch (Exception e) {
             e.printStackTrace();
         }
