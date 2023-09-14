@@ -15,20 +15,22 @@
  * limitations under the License.
  *
  */
+package com.onlyoffice.integration.documentserver.models;
 
-var ConverExtList;
-var EditedExtList;
-var UrlConverter;
-var UrlEditor;
-var FillExtList;
+import java.util.List;
 
-if (typeof jQuery !== "undefined") {
-    jQuery.post('/config',
-        function(data) {
-            FillExtList = data.FillExtList.split(',');
-            ConverExtList = data.ConverExtList.split(',');
-            EditedExtList = data.EditedExtList.split(',');
-            UrlConverter = data.UrlConverter;
-            UrlEditor = data.UrlEditor;
-    });
+import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+public class Format {
+    private String name;
+    private DocumentType type;
+    private List<String> actions;
+    private List<String> convert;
+    private List<String> mime;
 }
