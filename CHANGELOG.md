@@ -1,5 +1,6 @@
 # Change Log
 
+- python: onRequestSelectSpreadsheet method
 - nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
 - nodejs: submitForm

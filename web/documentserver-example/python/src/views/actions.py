@@ -311,7 +311,7 @@ def edit(request):
     }
 
     # recipient data for mail merging
-    dataMailMergeRecipients = {
+    dataSpreadsheet = {
         'fileType': 'csv',
         'url': docManager.getServerUrl(True, request) + '/csv',
         'directUrl': docManager.getServerUrl(False, request) + '/csv'
@@ -327,7 +327,7 @@ def edit(request):
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
         dataInsertImage['token'] = jwtManager.encode(dataInsertImage)  # encode the dataInsertImage object into a token
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
-        dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
+        dataSpreadsheet['token'] = jwtManager.encode(dataSpreadsheet)  # encode the dataSpreadsheet object into a token
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
@@ -339,7 +339,7 @@ def edit(request):
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
-        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
+        'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
