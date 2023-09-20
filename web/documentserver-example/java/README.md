@@ -145,11 +145,11 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 2. Download the archive with the Java example and unpack the archive:
 
     ```
-    wget https://api.onlyoffice.com/app_data/editor/Java%20Example.zip
+    wget https://api.onlyoffice.com/app_data/editor/Java.Example.zip
     ```
     
     ```
-    unzip Java\ Example.zip
+    unzip Java.Example.zip
     ```
 
 3. Change the current directory for the project directory:
@@ -250,11 +250,11 @@ See the detailed guide to learn how to install Document Server [for Docker](http
 2. Download the archive with the Java example and unpack the archive:
 
     ```
-    wget https://api.onlyoffice.com/app_data/editor/Java%20Example.zip
+    wget https://api.onlyoffice.com/app_data/editor/Java.Example.zip
     ```
     
     ```
-    unzip Java\ Example.zip
+    unzip Java.Example.zip
     ```
 
 3. Change the current directory for the project directory:
