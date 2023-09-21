@@ -25,11 +25,11 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 2. Download the archive with the Ruby example and unpack the archive:
 
     ```
-    wget "https://api.onlyoffice.com/app_data/editor/Ruby%20Example.zip"
+    wget "https://api.onlyoffice.com/app_data/editor/Ruby.Example.zip"
     ```
 
     ```
-    unzip Ruby\ Example.zip
+    unzip Ruby.Example.zip
     ```
 
 3. Change the current directory for the project directory:
