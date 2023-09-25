@@ -14,7 +14,7 @@
         "debug": "^4.2.0",
         "ejs": "^3.1.5",
         "express": "^4.17.1",
-        "fast-xml-parser": "^4.2.4",
+        "fast-xml-parser": "^4.3.1",
         "formidable": "^1.2.2",
         "he": "^1.2.0",
         "jsonwebtoken": "^9.0.0",
@@ -1509,9 +1509,9 @@
       "integrity": "sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc="
     },
     "node_modules/fast-xml-parser": {
-      "version": "4.2.4",
-      "resolved": "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.2.4.tgz",
-      "integrity": "sha512-fbfMDvgBNIdDJLdLOwacjFAPYt67tr31H9ZhWSm45CDAxvd0I6WTlSOUo7K2P/K5sA5JgMKG64PI3DMcaFdWpQ==",
+      "version": "4.3.1",
+      "resolved": "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.3.1.tgz",
+      "integrity": "sha512-viVv3xb8D+SiS1W4cv4tva3bni08kAkx0gQnWrykMM8nXPc1FxqZPU00dCEVjkiCg4HoXd2jC4x29Nzg/l2DAA==",
       "funding": [
         {
           "type": "paypal",
@@ -5007,9 +5007,9 @@
       "integrity": "sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc="
     },
     "fast-xml-parser": {
-      "version": "4.2.4",
-      "resolved": "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.2.4.tgz",
-      "integrity": "sha512-fbfMDvgBNIdDJLdLOwacjFAPYt67tr31H9ZhWSm45CDAxvd0I6WTlSOUo7K2P/K5sA5JgMKG64PI3DMcaFdWpQ==",
+      "version": "4.3.1",
+      "resolved": "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.3.1.tgz",
+      "integrity": "sha512-viVv3xb8D+SiS1W4cv4tva3bni08kAkx0gQnWrykMM8nXPc1FxqZPU00dCEVjkiCg4HoXd2jC4x29Nzg/l2DAA==",
       "requires": {
         "strnum": "^1.0.5"
       }
