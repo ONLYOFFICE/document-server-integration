@@ -15,6 +15,8 @@
 // limitations under the License.
 //
 
+namespace Example\Proxy\Tests;
+
 use Example\Common\URL;
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
@@ -26,16 +28,16 @@ final class ProxyManagerTests extends TestCase
     {
         $configManager = $this->createStub(ConfigurationManager::class);
         $configManager
-            ->method('document_server_public_url')
+            ->method('documentServerPublicURL')
             ->willReturn(new URL('http://localhost'));
         $configManager
-            ->method('document_server_private_url')
+            ->method('documentServerPrivateURL')
             ->willReturn(new URL('http://proxy'));
 
         $proxyManager = new ProxyManager($configManager);
 
-        $raw_url = 'http://localhost/endpoint?query=string';
-        $url = new URL($raw_url);
+        $rawURL = 'http://localhost/endpoint?query=string';
+        $url = new URL($rawURL);
         $resolvedURL = $proxyManager->resolveURL($url);
 
         $this->assertEquals(
@@ -48,13 +50,13 @@ final class ProxyManagerTests extends TestCase
     {
         $configManager = $this->createStub(ConfigurationManager::class);
         $configManager
-            ->method('document_server_public_url')
+            ->method('documentServerPublicURL')
             ->willReturn(new URL('http://localhost'));
 
         $proxyManager = new ProxyManager($configManager);
 
-        $raw_url = 'http://proxy/endpoint?query=string';
-        $url = new URL($raw_url);
+        $rawURL = 'http://proxy/endpoint?query=string';
+        $url = new URL($rawURL);
         $resolvedURL = $proxyManager->resolveURL($url);
 
         $this->assertEquals(

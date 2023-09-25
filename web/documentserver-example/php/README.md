@@ -145,11 +145,11 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     ```
 
     ```
-    wget https://api.onlyoffice.com/app_data/editor/PHP%20Example.zip
+    wget https://api.onlyoffice.com/app_data/editor/PHP.Example.zip
     ```
 
     ```
-    unzip PHP\ Example.zip
+    unzip PHP.Example.zip
     ```
 
 4. Change the current directory for the project directory:

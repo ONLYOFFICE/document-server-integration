@@ -15,33 +15,40 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerDocumentServerPublicURLTests extends TestCase {
+final class ConfigurationManagerDocumentServerPublicURLTests extends TestCase
+{
     public array $env;
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->env = getenv();
         parent::__construct($name);
     }
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         foreach ($this->env as $key => $value) {
             putenv("{$key}={$value}");
         }
     }
 
-    public function test_assigns_a_default_value() {
-        $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_public_url();
+    public function testAssignsADefaultValue()
+    {
+        $configManager = new ConfigurationManager();
+        $url = $configManager->documentServerPublicURL();
         $this->assertEquals('http://document-server', $url->string());
     }
 
-    public function test_assigns_a_value_from_the_environment() {
+    public function testAssignsAValueFromTheEnvironment()
+    {
         putenv('DOCUMENT_SERVER_PUBLIC_URL=http://localhost');
-        $config_manager = new ConfigurationManager();
-        $url = $config_manager->document_server_public_url();
+        $configManager = new ConfigurationManager();
+        $url = $configManager->documentServerPublicURL();
         $this->assertEquals('http://localhost', $url->string());
     }
 }

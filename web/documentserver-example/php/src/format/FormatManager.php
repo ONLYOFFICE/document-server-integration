@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Example\Common\Path;
 
-final class FormatManager
+class FormatManager
 {
     private Serializer $serializer;
 
@@ -187,16 +187,16 @@ final class FormatManager
     private function file(): Path
     {
         $directory = $this->directory();
-        return $directory->join_path('onlyoffice-docs-formats.json');
+        return $directory->joinPath('onlyoffice-docs-formats.json');
     }
 
     private function directory(): Path
     {
-        $current_directory = new Path(__DIR__);
-        return $current_directory
-            ->join_path('..')
-            ->join_path('..')
-            ->join_path('assets')
-            ->join_path('document-formats');
+        $currentDirectory = new Path(__DIR__);
+        return $currentDirectory
+            ->joinPath('..')
+            ->joinPath('..')
+            ->joinPath('assets')
+            ->joinPath('document-formats');
     }
 }

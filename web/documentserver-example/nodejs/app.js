@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -27,6 +27,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const mime = require('mime');
 const urllib = require('urllib');
+const urlModule = require('url');
 const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
@@ -81,14 +82,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public'))); // public directory
-// check if there are static files such as .js, .css files, images, samples and process them
-if (config.has('server.static')) {
-  const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; i++) {
-    const staticContentElem = staticContent[i];
-    app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
-  }
-}
 app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
@@ -503,6 +496,20 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
                 && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
         ({ fileName } = fileKey);
       }
+    }
+  }
+
+  if (!fileName && !!req.body.link) {
+    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) !== -1) {
+      result({ error: 'You do not have access to this site' });
+      return;
+    }
+
+    const urlObj = urlModule.parse(req.body.link, true);
+    fileName = urlObj.query.fileName;
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+      result({ error: 'File is not exist' });
+      return;
     }
   }
 
@@ -1012,7 +1019,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
       },
-      dataCompareFile: {
+      dataDocument: {
         fileType: 'docx',
         url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
         directUrl: !userDirectUrl
@@ -1044,8 +1051,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataCompareFile.token = jwt.sign(
-            argss.dataCompareFile,
+          argss.dataDocument.token = jwt.sign(
+            argss.dataDocument,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );

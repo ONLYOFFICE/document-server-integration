@@ -31,8 +31,8 @@ final class JwtManager
      */
     public function isJwtEnabled(): bool
     {
-        $config_manager = new ConfigurationManager();
-        return !empty($config_manager->jwt_secret());
+        $configManager = new ConfigurationManager();
+        return !empty($configManager->jwtSecret());
     }
 
     /**
@@ -42,8 +42,8 @@ final class JwtManager
      */
     public function tokenUseForRequest(): bool
     {
-        $config_manager = new ConfigurationManager();
-        return $config_manager->jwt_use_for_request() ?: false;
+        $configManager = new ConfigurationManager();
+        return $configManager->jwtUseForRequest() ?: false;
     }
 
     /**
@@ -55,8 +55,8 @@ final class JwtManager
      */
     public function jwtEncode($payload)
     {
-        $config_manager = new ConfigurationManager();
-        return JWT::encode($payload, $config_manager->jwt_secret(), 'HS256');
+        $configManager = new ConfigurationManager();
+        return JWT::encode($payload, $configManager->jwtSecret(), 'HS256');
     }
 
     /**
@@ -68,11 +68,11 @@ final class JwtManager
      */
     public function jwtDecode($token)
     {
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
         try {
             $payload = JWT::decode(
                 $token,
-                new Key($config_manager->jwt_secret(), 'HS256')
+                new Key($configManager->jwtSecret(), 'HS256')
             );
         } catch (\UnexpectedValueException $e) {
             $payload = "";

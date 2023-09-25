@@ -15,12 +15,15 @@
 #
 
 require_relative '../configuration/configuration'
+require_relative '../format/format'
 
 class DocumentHelper
   @config_manager = ConfigurationManager.new
+  @format_manager = FormatManager.new
 
   class << self
     attr_reader :config_manager
+    attr_reader :format_manager
   end
 
   @@runtime_cache = {}
@@ -41,26 +44,26 @@ class DocumentHelper
 
     # all the supported file extensions
     def file_exts
-      [].concat(viewed_exts).concat(edited_exts).concat(convert_exts).concat(fill_forms_exts)
+      DocumentHelper.format_manager.all_extensions
     end
 
     def fill_forms_exts
-      DocumentHelper.config_manager.fillable_file_extensions
+      DocumentHelper.format_manager.fillable_extensions
     end
 
     # file extensions that can be viewed
     def viewed_exts
-      DocumentHelper.config_manager.viewable_file_extensions
+      DocumentHelper.format_manager.viewable_extensions
     end
 
     # file extensions that can be edited
     def edited_exts
-      DocumentHelper.config_manager.editable_file_extensions
+      DocumentHelper.format_manager.editable_extensions
     end
 
     # file extensions that can be converted
     def convert_exts
-      DocumentHelper.config_manager.convertable_file_extensions
+      DocumentHelper.format_manager.convertible_extensions
     end
 
     # get current user host address

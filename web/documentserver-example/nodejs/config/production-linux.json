@@ -2,12 +2,6 @@
   "server": {
     "siteUrl": "/",
     "maxFileSize": 104857600,
-    "storageFolder": "/var/lib/onlyoffice/documentserver-example/files",
-    "static":[
-      {
-        "name": "/files",
-        "path": "/var/lib/onlyoffice/documentserver-example/files"
-      }
-    ]
+    "storageFolder": "/var/lib/onlyoffice/documentserver-example/files"
   }
 }

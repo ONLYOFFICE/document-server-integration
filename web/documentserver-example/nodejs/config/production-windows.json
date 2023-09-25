@@ -1,13 +1,6 @@
 {
   "server": {
     "siteUrl": "/",
-    "maxFileSize": 104857600,
-    "static":[
-      {
-        "name": "/files",
-        "path": "./files",
-        "options": {"maxAge": "7d"}
-      }
-    ]
+    "maxFileSize": 104857600
   }
 }

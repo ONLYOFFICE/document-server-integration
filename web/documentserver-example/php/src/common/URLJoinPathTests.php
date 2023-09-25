@@ -15,13 +15,17 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\URL;
 
-final class URLJoinPathTests extends TestCase {
-    public function test_joins_a_relative_to_an_empty_one() {
+final class URLJoinPathTests extends TestCase
+{
+    public function testJoinsARelativeToAnEmptyOne()
+    {
         $url = new URL('http://localhost');
-        $joined = $url->join_path('first');
+        $joined = $url->joinPath('first');
         $this->assertEquals('http', $joined->scheme());
         $this->assertEquals('localhost', $joined->host());
         $this->assertEquals(null, $joined->port());
@@ -32,9 +36,10 @@ final class URLJoinPathTests extends TestCase {
         $this->assertEquals(null, $joined->fragment());
     }
 
-    public function test_joins_a_relative() {
+    public function testJoinsARelative()
+    {
         $url = new URL('http://localhost/first');
-        $joined = $url->join_path('second');
+        $joined = $url->joinPath('second');
         $this->assertEquals('http', $joined->scheme());
         $this->assertEquals('localhost', $joined->host());
         $this->assertEquals(null, $joined->port());
@@ -45,9 +50,10 @@ final class URLJoinPathTests extends TestCase {
         $this->assertEquals(null, $joined->fragment());
     }
 
-    public function test_joins_an_absolute_to_an_empty_one() {
+    public function testJoinsAnAbsoluteToAnEmptyOne()
+    {
         $url = new URL('http://localhost');
-        $joined = $url->join_path('/first');
+        $joined = $url->joinPath('/first');
         $this->assertEquals('http', $joined->scheme());
         $this->assertEquals('localhost', $joined->host());
         $this->assertEquals(null, $joined->port());
@@ -58,9 +64,10 @@ final class URLJoinPathTests extends TestCase {
         $this->assertEquals(null, $joined->fragment());
     }
 
-    public function test_joins_an_absolute() {
+    public function testJoinsAnAbsolute()
+    {
         $url = new URL('http://localhost/first');
-        $joined = $url->join_path('/second');
+        $joined = $url->joinPath('/second');
         $this->assertEquals('http', $joined->scheme());
         $this->assertEquals('localhost', $joined->host());
         $this->assertEquals(null, $joined->port());

@@ -158,8 +158,8 @@ public final class ServiceConverter {
         ConvertBody body = new ConvertBody();
         body.setRegion(lang);
         body.setUrl(documentUri);
-        body.setOutputtype(toExtension.replace(".", ""));
-        body.setFiletype(fromExt.replace(".", ""));
+        body.setOutputtype(toExtension);
+        body.setFiletype(fromExt);
         body.setTitle(title);
         body.setKey(documentRevId);
         body.setPassword(filePass);

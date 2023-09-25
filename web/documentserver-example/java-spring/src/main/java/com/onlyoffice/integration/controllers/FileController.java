@@ -22,11 +22,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
+import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.ConvertedData;
+import com.onlyoffice.integration.dto.Reference;
+import com.onlyoffice.integration.dto.ReferenceData;
+import com.onlyoffice.integration.dto.Rename;
+import com.onlyoffice.integration.dto.Restore;
+import com.onlyoffice.integration.dto.SaveAs;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
@@ -74,7 +80,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -114,6 +119,8 @@ public class FileController {
     private ServiceConverter serviceConverter;
     @Autowired
     private CallbackManager callbackManager;
+    @Autowired
+    private HistoryManager historyManager;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -184,7 +191,8 @@ public class FileController {
                 throw new IOException("Could not update a file");  // if the file cannot be updated, an error occurs
             }
 
-            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath) + fileExtension;  // get full file name
+            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath)
+                    + "." + fileExtension;  // get full file name
 
             return createUserMetadata(uid, fullFileName);  // create user metadata and return it
         } catch (Exception e) {
@@ -412,19 +420,16 @@ public class FileController {
 
     @PostMapping("/saveas")
     @ResponseBody
-    public String saveAs(@RequestBody final JSONObject body, @CookieValue("uid") final String uid) {
-        String title = (String) body.get("title");
-        String saveAsFileUrl = (String) body.get("url");
-
+    public String saveAs(@RequestBody final SaveAs body, @CookieValue("uid") final String uid) {
         try {
-            String fileName = documentManager.getCorrectName(title);
+            String fileName = documentManager.getCorrectName(body.getTitle());
             String curExt = fileUtility.getFileExtension(fileName);
 
             if (!fileUtility.getFileExts().contains(curExt)) {
                 return "{\"error\":\"File type is not supported\"}";
             }
 
-            URL url = new URL(saveAsFileUrl);
+            URL url = new URL(body.getUrl());
             java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
             InputStream stream = connection.getInputStream();
 
@@ -443,25 +448,14 @@ public class FileController {
 
     @PostMapping("/rename")
     @ResponseBody
-    public String rename(@RequestBody final JSONObject body) {
-        String newfilename = (String) body.get("newfilename");
-        String dockey = (String) body.get("dockey");
-        String origExt = "." + (String) body.get("ext");
-        String curExt = newfilename;
-
-        if (newfilename.indexOf(".") != -1) {
-            curExt = (String) fileUtility.getFileExtension(newfilename);
-        }
-
-        if (origExt.compareTo(curExt) != 0) {
-            newfilename += origExt;
-        }
+    public String rename(@RequestBody final Rename body) {
+        String fileName = body.getFileName();
 
         HashMap<String, String> meta = new HashMap<>();
-        meta.put("title", newfilename);
+        meta.put("title", fileName + "." + body.getFileType());
 
         try {
-            callbackManager.commandRequest("meta", dockey, meta);
+            callbackManager.commandRequest("meta", body.getFileKey(), meta);
             return "result ok";
         } catch (Exception e) {
             e.printStackTrace();
@@ -471,7 +465,7 @@ public class FileController {
 
     @PostMapping("/reference")
     @ResponseBody
-    public String reference(@RequestBody final JSONObject body) {
+    public String reference(@RequestBody final Reference body) {
         try {
             JSONParser parser = new JSONParser();
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -479,12 +473,11 @@ public class FileController {
             String userAddress = "";
             String fileName = "";
 
-            if (body.containsKey("referenceData")) {
-                LinkedHashMap referenceDataObj = (LinkedHashMap) body.get("referenceData");
-                String instanceId = (String) referenceDataObj.get("instanceId");
+            if (body.getReferenceData() != null) {
+                ReferenceData referenceData = body.getReferenceData();
 
-                if (instanceId.equals(storagePathBuilder.getServerUrl(false))) {
-                    JSONObject fileKey = (JSONObject) parser.parse((String) referenceDataObj.get("fileKey"));
+                if (referenceData.getInstanceId().equals(storagePathBuilder.getServerUrl(false))) {
+                    JSONObject fileKey = (JSONObject) parser.parse(referenceData.getFileKey());
                     userAddress = (String) fileKey.get("userAddress");
                     if (userAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
                         fileName = (String) fileKey.get("fileName");
@@ -495,7 +488,7 @@ public class FileController {
 
             if (fileName.equals("")) {
                 try {
-                    String path = (String) body.get("path");
+                    String path = (String) body.getPath();
                     path = fileUtility.getFileName(path);
                     File f = new File(storagePathBuilder.getFileLocation(path));
                     if (f.exists()) {
@@ -510,8 +503,6 @@ public class FileController {
                 return "{ \"error\": \"File not found\"}";
             }
 
-            boolean directUrl = (boolean) body.get("directUrl");
-
             HashMap<String, Object> fileKey = new HashMap<>();
             fileKey.put("fileName", fileName);
             fileKey.put("userAddress", InetAddress.getLocalHost().getHostAddress());
@@ -521,9 +512,9 @@ public class FileController {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName).replace(".", ""));
+            data.put("fileType", fileUtility.getFileExtension(fileName));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", directUrl ? documentManager.getDownloadUrl(fileName, false) : null);
+            data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
 
@@ -538,15 +529,25 @@ public class FileController {
         }
     }
 
+    @GetMapping("/history")
+    @ResponseBody
+    public String history(@RequestParam("fileName") final String fileName) {
+        return historyManager.getHistory(fileName);
+    }
+
+    @GetMapping("/historydata")
+    @ResponseBody
+    public String history(@RequestParam("fileName") final String fileName,
+                          @RequestParam("version") final String version,
+                          @RequestParam(value = "directUrl", defaultValue = "false") final Boolean directUrl) {
+        return historyManager.getHistoryData(fileName, version, directUrl);
+    }
+
     @PutMapping("/restore")
     @ResponseBody
-    public String restore(@RequestBody final JSONObject body) {
+    public String restore(@RequestBody final Restore body, @CookieValue("uid") final Integer uid) {
         try {
-            String sourceBasename = (String) body.get("fileName");
-            Integer version = (Integer) body.get("version");
-            String userID = (String) body.get("userId");
-
-            String sourceStringFile = storagePathBuilder.getFileLocation(sourceBasename);
+            String sourceStringFile = storagePathBuilder.getFileLocation(body.getFileName());
             File sourceFile = new File(sourceStringFile);
             Path sourcePathFile = sourceFile.toPath();
             String historyDirectory = storagePathBuilder.getHistoryDir(sourcePathFile.toString());
@@ -564,7 +565,7 @@ public class FileController {
             String bumpedKey = serviceConverter.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/"
-                + sourceBasename
+                + body.getFileName()
                 + "/"
                 + Long.toString(sourceFile.lastModified())
             );
@@ -572,8 +573,7 @@ public class FileController {
             bumpedKeyFileWriter.write(bumpedKey);
             bumpedKeyFileWriter.close();
 
-            Integer userInnerID = Integer.parseInt(userID.replace("uid-", ""));
-            User user = userService.findUserById(userInnerID).get();
+            User user = userService.findUserById(uid).get();
 
             Path bumpedChangesPathFile = Paths.get(bumpedVersionStringDirectory, "changes.json");
             String bumpedChangesStringFile = bumpedChangesPathFile.toString();
@@ -596,13 +596,17 @@ public class FileController {
             bumpedChangesFileWriter.write(bumpedChangesContent);
             bumpedChangesFileWriter.close();
 
-            String sourceExtension = fileUtility.getFileExtension(sourceBasename);
-            String previousBasename = "prev" + sourceExtension;
+            String sourceExtension = fileUtility.getFileExtension(body.getFileName());
+            String previousBasename = "prev." + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = documentManager.versionDir(historyDirectory, version, true);
+            String recoveryVersionStringDirectory = documentManager.versionDir(
+                    historyDirectory,
+                    body.getVersion(),
+                    true
+            );
             Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
             String recoveryStringFile = recoveryPathFile.toString();
             FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);

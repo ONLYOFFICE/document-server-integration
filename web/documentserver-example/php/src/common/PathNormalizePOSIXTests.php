@@ -15,11 +15,15 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\Path;
 
-final class PathNormalizePOSIXTests extends TestCase {
-    public function test_normalizes() {
+final class PathNormalizePOSIXTests extends TestCase
+{
+    public function testNormalizes()
+    {
         $path = new Path('./srv///sub/.././sub/file.docx');
         $normalized = $path->normalize();
         $this->assertEquals($normalized->dirname(), 'srv/sub');

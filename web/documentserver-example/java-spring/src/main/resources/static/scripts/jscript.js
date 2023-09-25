@@ -100,10 +100,10 @@ if (typeof jQuery !== "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf(".");
+        var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (ConverExtList.indexOf(posExt) === -1) {
+        if (ConverExtList.includes(posExt) === -1) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -177,10 +177,10 @@ if (typeof jQuery !== "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf(".");
+        var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.indexOf(posExt) !== -1 || FillExtList.indexOf(posExt) !== -1) {
+        if (EditedExtList.includes(posExt) !== -1 || FillExtList.includes(posExt) !== -1) {
             jq("#beginEdit").removeClass("disable");
         }
     };

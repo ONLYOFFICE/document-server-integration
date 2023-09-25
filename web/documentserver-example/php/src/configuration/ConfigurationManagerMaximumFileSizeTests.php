@@ -15,33 +15,40 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerMaximumFileSizeTests extends TestCase {
+final class ConfigurationManagerMaximumFileSizeTests extends TestCase
+{
     public array $env;
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->env = getenv();
         parent::__construct($name);
     }
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         foreach ($this->env as $key => $value) {
             putenv("{$key}={$value}");
         }
     }
 
-    public function test_assigns_a_default_value() {
-        $config_manager = new ConfigurationManager();
-        $size = $config_manager->maximum_file_size();
+    public function testAssignsADefaultValue()
+    {
+        $configManager = new ConfigurationManager();
+        $size = $configManager->maximumFileSize();
         $this->assertEquals(5_242_880, $size);
     }
 
-    public function test_assigns_a_value_from_the_environment() {
+    public function testAssignsAValueFromTheEnvironment()
+    {
         putenv('MAXIMUM_FILE_SIZE=10');
-        $config_manager = new ConfigurationManager();
-        $size = $config_manager->maximum_file_size();
+        $configManager = new ConfigurationManager();
+        $size = $configManager->maximumFileSize();
         $this->assertEquals(10, $size);
     }
 }

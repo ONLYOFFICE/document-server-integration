@@ -18,8 +18,17 @@
 
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
 public enum FileType {
-    Word,
-    Cell,
-    Slide
+    @JsonProperty("word")
+    @SerializedName("word")
+    WORD,
+    @JsonProperty("cell")
+    @SerializedName("cell")
+    CELL,
+    @JsonProperty("slide")
+    @SerializedName("slide")
+    SLIDE
 }

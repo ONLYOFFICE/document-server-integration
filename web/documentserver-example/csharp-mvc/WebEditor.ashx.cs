@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -49,6 +50,15 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "downloadhistory":
                     DownloadHistory(context);
+                    break;
+                case "gethistory":
+                    GetHistory(context);
+                    break;
+                case "getversiondata":
+                    GetVersionData(context);
+                    break;
+                case "restore":
+                    Restore(context);
                     break;
                 case "convert":
                     Convert(context);
@@ -513,6 +523,173 @@ namespace OnlineEditorsExampleMVC
             get { return false; }
         }
 
+        private static void GetHistory(HttpContext context)
+        {
+            var jss = new JavaScriptSerializer();
+            var fileName = context.Request["filename"];
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
+        }
+
+        private static void GetVersionData(HttpContext context)
+        {
+            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
+            var jss = new JavaScriptSerializer();
+
+            var fileName = context.Request["filename"];
+            int version;
+
+            if (!int.TryParse(context.Request["version"], out version))
+            {
+                context.Response.Write("{ \"error\": \"Version number invalid!\"}");
+                return;
+            }
+
+            var versionData = new Dictionary<string, object>();
+
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+            var lastVersion = DocManagerHelper.GetFileVersion(histDir);
+
+            var verDir = DocManagerHelper.VersionDir(histDir, version);
+
+            var key = version == lastVersion
+                ? ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
+                    + "/" + fileName + "/"
+                    + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode())
+                : File.ReadAllText(Path.Combine(verDir, "key.txt"));
+
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            versionData.Add("fileType", ext.Replace(".", ""));
+            versionData.Add("key", key);
+
+            // write file url to the data object
+            string prevFileUrl;
+            string directPrevFileUrl;
+            if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
+            {
+                prevFileUrl = version == lastVersion ? DocManagerHelper.GetDownloadUrl(fileName)
+                    : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetDownloadUrl(fileName, false)
+                    : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
+            }
+            else
+            {
+                prevFileUrl = version == lastVersion ? DocManagerHelper.GetFileUri(fileName, true)
+                    : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext);
+                directPrevFileUrl = version == lastVersion ? DocManagerHelper.GetFileUri(fileName, false)
+                    : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false);
+            }
+
+            versionData.Add("url", prevFileUrl);
+
+            var isEnableDirectUrl = string.Equals(DocManagerHelper.GetDirectUrl(), "true");
+            if (isEnableDirectUrl)
+            {
+                versionData.Add("directUrl", directPrevFileUrl); // write direct url to the data object
+            }
+
+            versionData.Add("version", version);
+            if (version > 1)
+            {
+                var prevVerDir = DocManagerHelper.VersionDir(histDir, version - 1);
+
+                var prevUrl = Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath)
+                    ? DocManagerHelper.GetDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""))
+                    : DocManagerHelper.GetHistoryDownloadUrl(fileName, (version - 1).ToString(), "prev" + ext);
+
+                var prevKey = File.ReadAllText(Path.Combine(prevVerDir, "key.txt"));
+
+                Dictionary<string, object> dataPrev = new Dictionary<string, object>() {  // write information about previous file version to the data object
+                    { "fileType", ext.Replace(".", "") },
+                    { "key", prevKey },  // write key and url information about previous file version
+                    { "url", prevUrl }
+                };
+
+                string directPrevUrl;
+                if (isEnableDirectUrl)
+                {
+                    directPrevUrl = Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath)
+                        ? DocManagerHelper.GetDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""), false)
+                        : DocManagerHelper.GetHistoryDownloadUrl(fileName, version.ToString(), "prev" + ext, false);
+
+                    dataPrev.Add("directUrl", directPrevUrl);
+                }
+
+                versionData.Add("previous", dataPrev);
+
+                if (File.Exists(Path.Combine(prevVerDir, "diff.zip")))
+                {
+                    var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(fileName, (version - 1).ToString(), "diff.zip");
+                    versionData.Add("changesUrl", changesUrl);
+                }
+            }
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(versionData);
+                versionData.Add("token", token);
+            }
+
+            context.Response.Write(jss.Serialize(versionData));
+        }
+
+        private static void Restore(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+
+            var fileName = (string)body["fileName"];
+            var version = (int)body["version"];
+
+            var key = ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
+                + "/" + fileName + "/"
+                + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode());
+
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+            var currentVersionDir = DocManagerHelper.VersionDir(histDir, DocManagerHelper.GetFileVersion(histDir));
+            var verDir = DocManagerHelper.VersionDir(histDir, version);
+
+            if (!Directory.Exists(currentVersionDir)) Directory.CreateDirectory(currentVersionDir);
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            File.Copy(DocManagerHelper.StoragePath(fileName, null), Path.Combine(currentVersionDir, "prev" + ext));
+
+            File.WriteAllText(Path.Combine(currentVersionDir, "key.txt"), key);
+
+            var changesPath = Path.Combine(DocManagerHelper.VersionDir(histDir, version - 1), "changes.json");
+            if (File.Exists(changesPath))
+            {
+                File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
+            }
+
+            File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
+
+            var fileInfo = new FileInfo(DocManagerHelper.StoragePath(fileName, null));
+            fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
+        }
+
         // download a history file
         private static void DownloadHistory(HttpContext context)
         {
@@ -685,6 +862,70 @@ namespace OnlineEditorsExampleMVC
             }
 
             context.Response.Write(jss.Serialize(data));
+        }
+
+        // get the document history
+        private static Dictionary<string, object> GetHistory(string fileName)
+        {
+            var jss = new JavaScriptSerializer();
+            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(fileName, null));
+
+            var history = new Dictionary<string, object>();
+
+            var currentVersion = DocManagerHelper.GetFileVersion(histDir);
+            var currentKey = ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
+                + "/" + fileName + "/"
+                + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode());
+
+            var versionList = new List<Dictionary<string, object>>();
+            for (var versionNum = 1; versionNum <= currentVersion; versionNum++)
+            {
+                var versionObj = new Dictionary<string, object>();
+                var verDir = DocManagerHelper.VersionDir(histDir, versionNum);  // get the path to the given file version
+
+                var key = versionNum == currentVersion ? currentKey : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
+
+                versionObj.Add("key", key);
+                versionObj.Add("version", versionNum);
+
+                var changesPath = Path.Combine(DocManagerHelper.VersionDir(histDir, versionNum - 1), "changes.json");
+                if (versionNum == 1 || !File.Exists(changesPath))  // check if the version number is equal to 1
+                {
+                    var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
+                    if (File.Exists(infoPath))
+                    {
+                        var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
+                        versionObj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
+                        versionObj.Add("user", new Dictionary<string, object>()
+                        {
+                            { "id", info["id"] },
+                            { "name", info["name"] },
+                        });
+                    }
+                }
+                else if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
+                {
+                    // get the path to the changes.json file 
+                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
+                    var changesArray = (ArrayList)changes["changes"];
+                    var change = changesArray.Count > 0
+                        ? (Dictionary<string, object>)changesArray[0]
+                        : new Dictionary<string, object>();
+
+                    // write information about changes to the object
+                    versionObj.Add("changes", change.Count > 0 ? changes["changes"] : null);
+                    versionObj.Add("serverVersion", changes["serverVersion"]);
+                    versionObj.Add("created", change.Count > 0 ? change["created"] : null);
+                    versionObj.Add("user", change.Count > 0 ? change["user"] : null);
+                }
+
+                versionList.Add(versionObj);
+            }
+
+            history.Add("currentVersion", currentVersion);
+            history.Add("history", versionList);
+
+            return history;
         }
 
     }

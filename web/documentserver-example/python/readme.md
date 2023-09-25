@@ -17,11 +17,11 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 2. Download the archive with the Python example and unpack it:
 
     ```
-    wget "https://api.onlyoffice.com/app_data/editor/Python%20Example.zip"
+    wget "https://api.onlyoffice.com/app_data/editor/Python.Example.zip"
     ```
 
     ```
-    unzip Python\ Example.zip
+    unzip Python.Example.zip
     ```
 
 3. Change the current directory for the project directory:

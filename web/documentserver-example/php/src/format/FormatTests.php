@@ -15,6 +15,8 @@
 // limitations under the License.
 //
 
+namespace Example\Format\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;

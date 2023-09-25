@@ -63,7 +63,7 @@ compose-prod: #  Up containers in a production environment.
 
 .PHONY: lint
 lint: #          Lint the source code for the style.
-	@./vendor/bin/phpcs .
+	@./vendor/bin/phpcs src index.php
 
 .PHONY: test
 test: #          Run tests recursively.

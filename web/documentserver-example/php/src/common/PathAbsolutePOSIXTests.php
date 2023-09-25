@@ -15,23 +15,29 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\Path;
 
-final class PathAbsolutePOSIXTests extends TestCase {
-    public function test_recognizes_an_empty_as_a_non_absolute() {
+final class PathAbsolutePOSIXTests extends TestCase
+{
+    public function testRecognizesAnEmptyAsANonAbsolute()
+    {
         $path = new Path('');
         $absolute = $path->absolute();
         $this->assertFalse($absolute);
     }
 
-    public function test_recognizes_a_relative_as_a_non_absolute() {
+    public function testRecognizesARelativeAsANonAbsolute()
+    {
         $path = new Path('.');
         $absolute = $path->absolute();
         $this->assertFalse($absolute);
     }
 
-    public function test_recognizes_an_absolute_as_an_absolute() {
+    public function testRecognizesAnAbsoluteAsAnAbsolute()
+    {
         $path = new Path('/');
         $absolute = $path->absolute();
         $this->assertTrue($absolute);
