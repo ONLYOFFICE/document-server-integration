@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: onRequestSelectSpreadsheet method
 - php: onRequestSelectSpreadsheet method
 - python: onRequestSelectSpreadsheet method
 - nodejs: link in referenceData
