@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: onRequestSelectDocument method
 - php: onRequestSelectDocument method
 - python: onRequestSelectDocument method
 - nodejs: link in referenceData

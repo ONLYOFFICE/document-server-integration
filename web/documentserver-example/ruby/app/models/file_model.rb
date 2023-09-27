@@ -310,7 +310,7 @@ class FileModel
   end
 
   # get compared file information
-  def get_compare_file
+  def dataDocument
     compare_file = is_enable_direct_url == true ? {
       :fileType => "docx",  # file type
       :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx",  # server url to the compared file

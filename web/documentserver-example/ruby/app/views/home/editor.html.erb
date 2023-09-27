@@ -107,8 +107,10 @@
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
-    var onRequestCompareFile = function() {
-        docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);  // select a document for comparing
+    var onRequestSelectDocument = function() {
+        data = <%= raw @file.dataDocument.to_json %>;
+        data.c = event.data.c;
+        docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
 
     // the user is trying to select recipients data by clicking the Mail merge button
@@ -198,7 +200,7 @@
             'onMakeActionLink': onMakeActionLink,
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
-            'onRequestCompareFile': onRequestCompareFile,
+            'onRequestSelectDocument': onRequestSelectDocument,
             'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
             'onRequestRestore': onRequestRestore
         };
