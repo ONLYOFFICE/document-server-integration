@@ -95,12 +95,12 @@ public class EditorServlet extends HttpServlet {
         }
 
         // recipients data for mail merging
-        Map<String, Object> dataMailMergeRecipients = new HashMap<>();
-        dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?"
+        Map<String, Object> dataSpreadsheet = new HashMap<>();
+        dataSpreadsheet.put("fileType", "csv");
+        dataSpreadsheet.put("url", DocumentManager.getServerUrl(true) + "/IndexServlet?"
                 + "type=csv");
         if (isEnableDirectUrl) {
-            dataMailMergeRecipients.put("directUrl", DocumentManager.getServerUrl(false)
+            dataSpreadsheet.put("directUrl", DocumentManager.getServerUrl(false)
                     + "/IndexServlet?type=csv");
         }
 
@@ -117,8 +117,8 @@ public class EditorServlet extends HttpServlet {
             // create token from the dataCompareFile object
             dataCompareFile.put("token", DocumentManager.createToken(dataCompareFile));
 
-            // create token from the dataMailMergeRecipients object
-            dataMailMergeRecipients.put("token", DocumentManager.createToken(dataMailMergeRecipients));
+            // create token from the dataSpreadsheet object
+            dataSpreadsheet.put("token", DocumentManager.createToken(dataSpreadsheet));
         }
 
         Gson gson = new Gson();
@@ -128,7 +128,7 @@ public class EditorServlet extends HttpServlet {
         request.setAttribute("dataInsertImage",  gson.toJson(dataInsertImage)
                 .substring(1, gson.toJson(dataInsertImage).length() - 1));
         request.setAttribute("dataCompareFile",  gson.toJson(dataCompareFile));
-        request.setAttribute("dataMailMergeRecipients", gson.toJson(dataMailMergeRecipients));
+        request.setAttribute("dataSpreadsheet", gson.toJson(dataSpreadsheet));
         request.setAttribute("usersForMentions", !user.getId()
                 .equals("uid-0") ? gson.toJson(usersForMentions) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);

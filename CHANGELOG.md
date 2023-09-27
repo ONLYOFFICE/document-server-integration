@@ -1,5 +1,6 @@
 # Change Log
 
+- java: onRequestSelectSpreadsheet method
 - ruby: onRequestSelectSpreadsheet method
 - php: onRequestSelectSpreadsheet method
 - python: onRequestSelectSpreadsheet method
