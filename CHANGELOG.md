@@ -1,5 +1,6 @@
 # Change Log
 
+- java: onRequestSelectDocument method
 - ruby: onRequestSelectDocument method
 - php: onRequestSelectDocument method
 - python: onRequestSelectDocument method
