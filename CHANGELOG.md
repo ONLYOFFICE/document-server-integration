@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: onRequestSelectSpreadsheet method
 - java-spring: onRequestSelectSpreadsheet method
 - java: onRequestSelectSpreadsheet method
 - ruby: onRequestSelectSpreadsheet method
