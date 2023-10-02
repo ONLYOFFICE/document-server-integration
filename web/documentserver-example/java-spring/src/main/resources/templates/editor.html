@@ -118,7 +118,7 @@
 
                 // the user is trying to select recipients data by clicking the Mail merge button
                 var onRequestSelectSpreadsheet = function (event) {
-                    const temp = Object.assign({}, {"c": event.data.c}, dataSpreadsheet);
+                    const temp = Object.assign({"c": event.data.c}, JSON.parse(dataSpreadsheet));
                     docEditor.setRequestedSpreadsheet(temp);
                 };
 
