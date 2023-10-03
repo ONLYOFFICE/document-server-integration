@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: onRequestSelectDocument method
 - java: onRequestSelectDocument method
 - ruby: onRequestSelectDocument method
 - php: onRequestSelectDocument method
