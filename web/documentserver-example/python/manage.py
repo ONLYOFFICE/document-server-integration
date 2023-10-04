@@ -63,6 +63,7 @@ def routers():
         path('convert', actions.convert),
         path('create', actions.createNew),
         path('csv', actions.csv),
+        path('assets',actions.assets),
         path('download', actions.download),
         path('downloadhistory', actions.downloadhistory),
         path('edit', actions.edit),

@@ -303,11 +303,11 @@ def edit(request):
     # a document which will be compared with the current document
     dataDocument = {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + '/static/sample.docx',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/assets?filename=sample.docx',
+        'directUrl': docManager.getServerUrl(False, request) + '/assets?filename=sample.docx'
     } if isEnableDirectUrl else {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + '/static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/assets?filename=sample.docx'
     }
 
     # recipient data for mail merging
@@ -397,6 +397,13 @@ def files(request):
 # download a csv file
 def csv(request):
     filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
+    response = docManager.download(filePath)
+    return response
+
+# download a sample file
+def assets(request):
+    filename = fileUtils.getFileName(request.GET['filename'])
+    filePath = os.path.join('assets', 'document-templates', 'sample', filename)
     response = docManager.download(filePath)
     return response
 
