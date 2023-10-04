@@ -107,8 +107,8 @@
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
-    var onRequestSelectDocument = function() {
-        data = <%= raw @file.dataDocument.to_json %>;
+    var onRequestSelectDocument = function(event) {
+        var data = <%= raw @file.dataDocument.to_json %>;
         data.c = event.data.c;
         docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
