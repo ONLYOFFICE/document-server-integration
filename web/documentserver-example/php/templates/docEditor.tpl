@@ -143,7 +143,7 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestSelectDocument = function() {
+        var onRequestSelectDocument = function(event) {
             var data = {dataDocument};
             data.c = event.data.c;
             docEditor.setRequestedDocument(data);  // select a document for comparing

@@ -201,11 +201,11 @@ final class DocEditorView extends View
         // a document for comparing
         $dataDocument = $isEnableDirectUrl ? [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
-            "directUrl" => serverPath(false) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/sample.docx",
         ] : [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
         ];
 
         // recipients data for mail merging
