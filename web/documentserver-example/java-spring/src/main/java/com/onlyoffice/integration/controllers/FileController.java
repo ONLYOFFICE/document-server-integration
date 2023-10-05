@@ -48,6 +48,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +71,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -372,8 +374,31 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name")
                                                final String name) {  // get sample files from the assests
-        String fileName = Path.of("assets", "document-templates", "sample", fileUtility.getFileName(name)).toString();
-        return downloadFile(fileName);
+        String serverPath = System.getProperty("user.dir");
+        String contentType = "application/octet-stream";
+        String fileLocation = serverPath
+                    + File.separator + "src"
+                    + File.separator + "main"
+                    + File.separator + "resources"
+                    + File.separator + "assets"
+                    + File.separator + "document-templates"
+                    + File.separator + "sample"
+                    + File.separator + name;
+        Path filePath = Paths.get(fileLocation);  // get the path to the file location
+        Resource resource;
+        try {
+            resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+            return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+        }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @GetMapping("/csv")

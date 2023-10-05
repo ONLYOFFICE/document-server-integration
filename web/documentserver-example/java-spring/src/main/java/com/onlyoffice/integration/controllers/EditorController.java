@@ -143,7 +143,7 @@ public class EditorController {
         model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
 
         // get a document for comparison and add it to the model
-        model.addAttribute("dataCompareFile",  getCompareFile(directUrl));
+        model.addAttribute("dataDocument",  getCompareFile(directUrl));
 
         // get recipients data for mail merging and add it to the model
         model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));
@@ -193,22 +193,22 @@ public class EditorController {
     // get a document that will be compared with the current document
     @SneakyThrows
     private String getCompareFile(final Boolean directUrl) {
-        Map<String, Object> dataCompareFile = new HashMap<>();
-        dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
+        Map<String, Object> dataDocument = new HashMap<>();
+        dataDocument.put("fileType", "docx");
+        dataDocument.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
         if (directUrl) {
-            dataCompareFile.put("directUrl", storagePathBuilder
+            dataDocument.put("directUrl", storagePathBuilder
                     .getServerUrl(false) + "/assets?name=sample.docx");
         }
 
         // check if the document token is enabled
         if (jwtManager.tokenEnabled()) {
 
-            // create token from the dataCompareFile object
-            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));
+            // create token from the dataDocument object
+            dataDocument.put("token", jwtManager.createToken(dataDocument));
         }
 
-        return objectMapper.writeValueAsString(dataCompareFile);
+        return objectMapper.writeValueAsString(dataDocument);
     }
 
     @SneakyThrows
