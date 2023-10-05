@@ -28,6 +28,7 @@ class Application < Rails::Application
     root to: 'home#index'
     match '/convert', to: 'home#convert', via: 'post'
     match '/csv', to: 'home#csv', via: 'get'
+    match '/asset', to: 'home#asset', via: 'get'
     match '/download', to: 'home#download', via: 'get'
     match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
     match '/editor', to: 'home#editor', via: 'get'

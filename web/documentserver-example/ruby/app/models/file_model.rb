@@ -313,11 +313,11 @@ class FileModel
   def dataDocument
     compare_file = is_enable_direct_url == true ? {
       :fileType => "docx",  # file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx",  # server url to the compared file
-      :directUrl => DocumentHelper.get_server_url(false) + "/assets/sample/sample.docx"  # direct url to the compared file
+      :url => DocumentHelper.get_server_url(true) + "/asset?fileName=sample.docx",  # server url to the compared file
+      :directUrl => DocumentHelper.get_server_url(false) + "/asset?fileName=sample.docx"  # direct url to the compared file
     } : {
       :fileType => "docx",  # file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/sample/sample.docx"  # server url to the compared file
+      :url => DocumentHelper.get_server_url(true) + "/asset?fileName=sample.docx"  # server url to the compared file
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
