@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: key in referenceData
 - php: key in referenceData
 - python: key in referenceData
 - ruby: key in referenceData
