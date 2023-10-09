@@ -725,6 +725,10 @@ public class IndexServlet extends HttpServlet {
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", FileUtility.getFileExtension(fileName));
+            data.put("key", ServiceConverter.generateRevisionId(DocumentManager
+                .curUserHostAddress(null) + "/" + fileName + "/"
+                + Long.toString(new File(DocumentManager.storagePath(fileName, null))
+                .lastModified())));
             data.put("url", DocumentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", directUrl ? DocumentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);

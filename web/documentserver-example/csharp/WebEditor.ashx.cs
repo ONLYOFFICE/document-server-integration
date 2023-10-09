@@ -650,6 +650,9 @@ namespace OnlineEditorsExample
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "key", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                        + "/" + Path.GetFileName(_Default.FileUri(fileName, true))
+                        + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode()) },
             { "url",  DocEditor.getDownloadUrl(fileName)},
             { "directUrl", directUrl ? DocEditor.getDownloadUrl(fileName, false) : null},
             { "referenceData", new Dictionary<string, string>()
