@@ -34,13 +34,15 @@ const requestDiscovery = async function requestDiscovery(url) {
     urllib.request(urlModule.parse(url + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
       if (data) {
         // create the discovery XML file with the parameters from the response
-        const discovery = xmlParser.parse(data.toString(), {
+        const xmlParseOptions = {
           attributeNamePrefix: '',
           ignoreAttributes: false,
           parseAttributeValue: true,
-          // eslint-disable-next-line no-unused-vars
-          attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true }),
-        });
+          attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+        };
+        const parser = new xmlParser.XMLParser(xmlParseOptions);
+        // create the discovery XML file with the parameters from the response
+        const discovery = parser.parse(data.toString());
         if (discovery['wopi-discovery']) {
           discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
             let appAction = app.action;
