@@ -1,5 +1,6 @@
 # Change Log
 
+- php: trimming long name of uploading file
 - python: trimming long name of uploading file
 - ruby: trimming long name of uploading file
 - nodejs: trimming long name of uploading file
