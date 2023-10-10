@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: trimming long name of uploading file
 - nodejs: trimming long name of uploading file
 - nodejs: link in referenceData
 - nodejs: onRequestSelectDocument method

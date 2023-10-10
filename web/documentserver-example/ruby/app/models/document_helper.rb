@@ -150,7 +150,7 @@ class DocumentHelper
     # get the correct file name if such a name already exists
     def get_correct_name(file_name, user_address)
       ext = File.extname(file_name)  # get file extension
-      base_name = File.basename(file_name, ext)  # get file name without extension
+      base_name = File.basename(file_name, ext)[0...20] + '[...]'  # get file name without extension
       name = base_name + ext.downcase  # get full file name
       index = 1
 
