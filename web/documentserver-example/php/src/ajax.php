@@ -334,6 +334,20 @@ function files()
 }
 
 /**
+ * Download assets
+ *
+ * @return void
+ */
+function assets()
+{
+    $fileName = basename($_GET["name"]);
+    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
+        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
+        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
+    downloadFile($filePath);
+}
+
+/**
  * Download a csv file
  *
  * @return void
