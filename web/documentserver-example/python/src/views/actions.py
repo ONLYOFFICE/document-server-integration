@@ -400,6 +400,13 @@ def csv(request):
     response = docManager.download(filePath)
     return response
 
+# download a sample file
+def assets(request):
+    filename = fileUtils.getFileName(request.GET['filename'])
+    filePath = os.path.join('assets', 'document-templates', 'sample', filename)
+    response = docManager.download(filePath)
+    return response
+
 # download a file
 def download(request):
     try:
