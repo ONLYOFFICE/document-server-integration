@@ -7,6 +7,13 @@
 - ruby: onRequestSelectDocument method
 - php: onRequestSelectDocument method
 - python: onRequestSelectDocument method
+- csharp: key in referenceData
+- csharp-mvc: key in referenceData
+- java: key in referenceData
+- java-spring: key in referenceData
+- php: key in referenceData
+- python: key in referenceData
+- ruby: key in referenceData
 - nodejs: link in referenceData
 - nodejs: onRequestSelectDocument method
 - nodejs: onRequestSelectSpreadsheet method
