@@ -1,5 +1,6 @@
 # Change Log
 
+- java: trimming long name of uploading file
 - java-spring: trimming long name of uploading file
 - php: trimming long name of uploading file
 - python: trimming long name of uploading file

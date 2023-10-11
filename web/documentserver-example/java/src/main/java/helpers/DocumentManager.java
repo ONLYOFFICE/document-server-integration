@@ -244,9 +244,13 @@ public final class DocumentManager {
         return getFileVersion(historyDir(storagePath(fileName, userAddress)));
     }
 
+    public static final int MAX_NUMBER_OF_CHARACTERS = 20;
     // get a file name with an index if the file with such a name already exists
     public static String getCorrectName(final String fileName, final String userAddress) {
         String baseName = FileUtility.getFileNameWithoutExtension(fileName);
+        if (baseName.length() > MAX_NUMBER_OF_CHARACTERS) {
+            baseName = baseName.substring(0, MAX_NUMBER_OF_CHARACTERS) + "[...]";
+        }
         String ext = FileUtility.getFileExtension(fileName);
         String name = baseName + "." + ext;
 
