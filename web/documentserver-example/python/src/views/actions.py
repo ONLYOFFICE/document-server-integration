@@ -495,6 +495,7 @@ def reference(request):
     
     data = {
         'fileType' : fileUtils.getFileExt(fileName).replace('.', ''),
+        'key': docManager.generateFileKey(fileName,request),
         'url' : docManager.getDownloadUrl(fileName, request),
         'directUrl' : docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
         'referenceData' : {
