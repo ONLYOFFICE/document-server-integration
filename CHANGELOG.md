@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: trimming long name of uploading file
 - java: trimming long name of uploading file
 - java-spring: trimming long name of uploading file
 - php: trimming long name of uploading file
