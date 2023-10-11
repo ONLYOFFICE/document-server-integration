@@ -479,7 +479,7 @@ function GetCorrectName($fileName, $userAddress = null)
     $ext = mb_strtolower($pathParts['extension']);
     $name = $pathParts['basename'];
     // get file name from the basename without extension
-    $baseNameWithoutExt = mb_substr(mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1),0,20) . "[...]";
+    $baseNameWithoutExt = mb_substr(mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1),0,20) . (strlen($fileName)>20?"[...]":"");
     $name = $baseNameWithoutExt . "." . $ext;
 
     // if a file with such a name already exists in this directory

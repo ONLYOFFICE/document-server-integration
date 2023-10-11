@@ -134,11 +134,17 @@ public class DefaultFileUtility implements FileUtility {
         return formatService.allExtensions();
     }
 
+    public static final int MAX_NUMBER_OF_CHARACTERS = 20;
     // generate the file path from file directory and name
     public Path generateFilepath(final String directory, final String fullFileName) {
-        String fileName = getFileNameWithoutExtension(fullFileName).substring(0, 20) + "[...]";  // get file name without extension
+        String fileName = getFileNameWithoutExtension(fullFileName);
+        if (fileName.length() > MAX_NUMBER_OF_CHARACTERS) {
+            fileName = fileName.substring(0, MAX_NUMBER_OF_CHARACTERS) + "[...]";
+        }
+        // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension
-        Path path = Paths.get(directory + fileName + "." + fileExtension);  // get the path to the files with the specified name
+        // get the path to the files with the specified name
+        Path path = Paths.get(directory + fileName + "." + fileExtension);
 
         for (int i = 1; Files.exists(path); i++) {  // run through all the files with the specified name
             // get a name of each file without extension and add an index to it
