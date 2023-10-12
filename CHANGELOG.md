@@ -1,5 +1,6 @@
 # Change Log
 
+- onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - nodejs: link in referenceData

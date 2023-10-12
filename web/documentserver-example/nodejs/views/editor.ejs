@@ -177,7 +177,7 @@
             docEditor.insertImage(data);  // insert an image into the file
         };
 
-        var onRequestSelectDocument = function() {  // the user is trying to select document by clicking the Document from Storage button
+        var onRequestSelectDocument = function(event) {  // the user is trying to select document by clicking the Document from Storage button
             var data = <%- JSON.stringify(dataDocument) %>;
             data.c = event.data.c;
             docEditor.setRequestedDocument(data);  // select a document

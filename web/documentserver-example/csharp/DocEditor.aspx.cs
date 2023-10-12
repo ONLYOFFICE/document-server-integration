@@ -61,7 +61,7 @@ namespace OnlineEditorsExample
 
         protected string DocConfig { get; private set; }
         protected string InsertImageConfig { get; private set; }
-        protected string CompareFileData { get; private set; }
+        protected string DocumentData { get; private set; }
         protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
@@ -308,7 +308,7 @@ namespace OnlineEditorsExample
 
                 // a document which will be compared with the current document
                 Dictionary<string, object> compareFile = GetCompareFile();
-                CompareFileData = jss.Serialize(compareFile);
+                DocumentData = jss.Serialize(compareFile);
 
                 // recipient data for spreadsheet
                 Dictionary<string, object> spreadsheetConfig = GetSpreadsheetConfig();

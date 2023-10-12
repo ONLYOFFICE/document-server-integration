@@ -236,7 +236,7 @@ namespace OnlineEditorsExampleMVC.Models
         }
 
         // get a document which will be compared with the current document
-        public void GetCompareFileData(out string compareConfig)
+        public void GetDocumentData(out string compareConfig)
         {
             var jss = new JavaScriptSerializer();
 

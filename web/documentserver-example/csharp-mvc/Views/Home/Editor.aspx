@@ -129,10 +129,12 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function () {
-            <% string compareFileData; %>
-            <% Model.GetCompareFileData(out compareFileData); %>
-            docEditor.setRevisedFile(<%=compareFileData%>);  // select a document for comparing
+        var onRequestSelectDocument = function (event) {
+            <% string documentData; %>
+            <% Model.GetDocumentData(out documentData); %>
+            var data = <%=documentData%>;
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
@@ -246,7 +248,7 @@
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
+            "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
         };
 
