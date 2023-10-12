@@ -178,8 +178,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
             var baseName = Path.GetFileNameWithoutExtension(fileName);
-            if (baseName.Length>20){
-                baseName = baseName.Substring(0,20) + "[...]";
+            if (baseName.Length > 20){
+                baseName = baseName.Substring(0, 20) + "[...]";
             }
             var ext = Path.GetExtension(fileName).ToLower();
             var name = baseName + ext;
