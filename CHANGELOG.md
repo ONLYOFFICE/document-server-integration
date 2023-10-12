@@ -1,12 +1,6 @@
 # Change Log
 
-- java-spring: onRequestSelectDocument method
-- csharp-mvc: onRequestSelectDocument method
-- csharp: onRequestSelectDocument method
-- java: onRequestSelectDocument method
-- ruby: onRequestSelectDocument method
-- php: onRequestSelectDocument method
-- python: onRequestSelectDocument method
+- onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - nodejs: link in referenceData
