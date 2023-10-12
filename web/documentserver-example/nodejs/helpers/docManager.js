@@ -155,7 +155,7 @@ DocManager.prototype.saveFileData = function saveFileData(fileName, userid, user
   const minutes = (dateCreate.getMinutes() < 10 ? '0' : '') + dateCreate.getMinutes().toString();
   const month = (dateCreate.getMonth() < 10 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
   const sec = (dateCreate.getSeconds() < 10 ? '0' : '') + dateCreate.getSeconds().toString();
-  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()}`
+  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()} `
     + `${dateCreate.getHours()}:${minutes}:${sec}`;
 
   const fileInfo = this.historyPath(fileName, address, true); // get file history information

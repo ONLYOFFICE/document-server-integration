@@ -566,6 +566,7 @@ function reference()
 
     $data = [
         "fileType" => trim(getInternalExtension($fileName), '.'),
+        "key" => getDocEditorKey($fileName),
         "url" => getDownloadUrl($fileName),
         "directUrl" => $post["directUrl"] ? getDownloadUrl($fileName, false) : null,
         "referenceData" => [
