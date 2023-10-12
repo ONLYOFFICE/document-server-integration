@@ -146,7 +146,7 @@ public class EditorController {
         model.addAttribute("dataCompareFile",  getCompareFile(directUrl));
 
         // get recipients data for mail merging and add it to the model
-        model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));
+        model.addAttribute("dataSpreadsheet", getSpreadsheet(directUrl));
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
@@ -212,21 +212,21 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getMailMerge(final Boolean directUrl) {
-        Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
-        dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
+    private String getSpreadsheet(final Boolean directUrl) {
+        Map<String, Object> dataSpreadsheet = new HashMap<>();  // get recipients data for mail merging
+        dataSpreadsheet.put("fileType", "csv");
+        dataSpreadsheet.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
         if (directUrl) {
-            dataMailMergeRecipients.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
+            dataSpreadsheet.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
         }
 
         // check if the document token is enabled
         if (jwtManager.tokenEnabled()) {
 
-            // create token from the dataMailMergeRecipients object
-            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
+            // create token from the dataSpreadsheet object
+            dataSpreadsheet.put("token", jwtManager.createToken(dataSpreadsheet));
         }
 
-        return objectMapper.writeValueAsString(dataMailMergeRecipients);
+        return objectMapper.writeValueAsString(dataSpreadsheet);
     }
 }

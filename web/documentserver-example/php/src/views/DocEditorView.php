@@ -209,7 +209,7 @@ final class DocEditorView extends View
         ];
 
         // recipients data for mail merging
-        $dataMailMergeRecipients = $isEnableDirectUrl ? [
+        $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
             "url" => serverPath(true) . "/csv",
             "directUrl" => serverPath(false) . "/csv",
@@ -228,8 +228,8 @@ final class DocEditorView extends View
             $dataInsertImage["token"] = $jwtManager->jwtEncode($dataInsertImage);
             // encode the dataCompareFile object into the token
             $dataCompareFile["token"] = $jwtManager->jwtEncode($dataCompareFile);
-            // encode the dataMailMergeRecipients object into the token
-            $dataMailMergeRecipients["token"] = $jwtManager->jwtEncode($dataMailMergeRecipients);
+            // encode the dataSpreadsheet object into the token
+            $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
         $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
         $history = $out[0];
@@ -274,7 +274,7 @@ final class DocEditorView extends View
                 mb_strlen(json_encode($dataInsertImage)) - 2
             ),
             "dataCompareFile" => json_encode($dataCompareFile),
-            "dataMailMergeRecipients" => json_encode($dataMailMergeRecipients),
+            "dataSpreadsheet" => json_encode($dataSpreadsheet),
             "fileNotFoundAlert" => !file_exists(getStoragePath($filename)) ? "alert('File not found'); return;" : "",
             "config" => json_encode($config),
             "history" => $historyLayout,
