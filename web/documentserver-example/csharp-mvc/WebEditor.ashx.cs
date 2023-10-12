@@ -840,6 +840,7 @@ namespace OnlineEditorsExampleMVC
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "key",  ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + fileName + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode())},
             { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
             { "directUrl", directUrl ? DocManagerHelper.GetDownloadUrl(fileName, false) : null },
             { "referenceData", new Dictionary<string, string>()

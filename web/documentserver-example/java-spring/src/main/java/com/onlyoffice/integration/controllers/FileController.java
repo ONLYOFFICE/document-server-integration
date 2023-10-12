@@ -513,6 +513,11 @@ public class FileController {
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("key", serviceConverter.generateRevisionId(
+                storagePathBuilder.getStorageLocation()
+                + "/" + fileName + "/"
+                + new File(storagePathBuilder.getFileLocation(fileName)).lastModified()
+                ));
             data.put("url", documentManager.getDownloadUrl(fileName, true));
             data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
