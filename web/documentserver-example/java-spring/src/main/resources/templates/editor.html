@@ -117,9 +117,12 @@
                     docEditor.setRequestedDocument(temp);
                 };
 
+                var dataSpreadsheet = [[${dataSpreadsheet}]];
+
                 // the user is trying to select recipients data by clicking the Mail merge button
-                var onRequestMailMergeRecipients = function (event) {
-                    docEditor.setMailMergeRecipients([[${dataMailMergeRecipients}]]);
+                var onRequestSelectSpreadsheet = function (event) {
+                    const temp = Object.assign({"c": event.data.c}, JSON.parse(dataSpreadsheet));
+                    docEditor.setRequestedSpreadsheet(temp);
                 };
 
                 config = [[${model}]];
@@ -244,7 +247,7 @@
                     "onMetaChange": onMetaChange,
                     "onRequestInsertImage": onRequestInsertImage,
                     "onRequestSelectDocument": onRequestSelectDocument,
-                    "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                    "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
                     "onRequestRestore": onRequestRestore,
                     "onRequestHistory": onRequestHistory,
                     "onRequestHistoryData": onRequestHistoryData,

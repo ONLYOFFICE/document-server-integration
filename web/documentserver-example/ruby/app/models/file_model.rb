@@ -328,8 +328,8 @@ class FileModel
   end
 
   # get mail merge recipients information
-  def dataMailMergeRecipients
-    dataMailMergeRecipients = is_enable_direct_url == true ? {
+  def dataSpreadsheet
+    dataSpreadsheet = is_enable_direct_url == true ? {
       :fileType => "csv",  # file type
       :url => DocumentHelper.get_server_url(true) + "/csv",  # server url to the mail merge recipients file
       :directUrl => DocumentHelper.get_server_url(false) + "/csv"  # direct url to the mail merge recipients file
@@ -339,10 +339,10 @@ class FileModel
     }
 
     if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
-      dataMailMergeRecipients["token"] = JwtHelper.encode(dataMailMergeRecipients)  # encode a payload object into a token and write it to the dataMailMergeRecipients object
+      dataSpreadsheet["token"] = JwtHelper.encode(dataSpreadsheet)  # encode a payload object into a token and write it to the dataSpreadsheet object
     end
 
-    return dataMailMergeRecipients
+    return dataSpreadsheet
   end
 
   # get users data for mentions

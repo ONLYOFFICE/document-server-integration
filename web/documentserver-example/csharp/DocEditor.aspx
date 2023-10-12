@@ -152,8 +152,10 @@
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<%= DataMailMergeRecipients %>);  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {
+            var data = <%= DataSpreadsheet %>;
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for spreadsheet into the file
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -219,7 +221,7 @@
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestSelectDocument': onRequestSelectDocument,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
         };
 
         if (config.editorConfig.user.id) {

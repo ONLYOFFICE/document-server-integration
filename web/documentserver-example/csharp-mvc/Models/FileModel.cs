@@ -320,7 +320,7 @@ namespace OnlineEditorsExampleMVC.Models
         }
 
         // get a mail merge config
-        public void GetMailMergeConfig(out string dataMailMergeRecipients)
+        public void GetSpreadsheetConfig(out string dataSpreadsheet)
         {
             var jss = new JavaScriptSerializer();
 
@@ -361,7 +361,7 @@ namespace OnlineEditorsExampleMVC.Models
                 mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
             }
 
-            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+            dataSpreadsheet = jss.Serialize(mailMergeConfig);
         }
 
         //get a users for mentions
