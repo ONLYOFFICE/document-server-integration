@@ -62,7 +62,7 @@ namespace OnlineEditorsExample
         protected string DocConfig { get; private set; }
         protected string InsertImageConfig { get; private set; }
         protected string CompareFileData { get; private set; }
-        protected string DataMailMergeRecipients { get; private set; }
+        protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
@@ -310,9 +310,9 @@ namespace OnlineEditorsExample
                 Dictionary<string, object> compareFile = GetCompareFile();
                 CompareFileData = jss.Serialize(compareFile);
 
-                // recipient data for mail merging
-                Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
-                DataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+                // recipient data for spreadsheet
+                Dictionary<string, object> spreadsheetConfig = GetSpreadsheetConfig();
+                DataSpreadsheet = jss.Serialize(spreadsheetConfig);
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
@@ -393,43 +393,43 @@ namespace OnlineEditorsExample
             return dataCompareFile;
         }
 
-        // get a mail merge config
-        private Dictionary<string, object> GetMailMergeConfig()
+        // get a spreadsheet config
+        private Dictionary<string, object> GetSpreadsheetConfig()
         {
-            // get the path to the recipients data for mail merging
-            var mailmergeUrl = new UriBuilder(_Default.GetServerUrl(true));
-            mailmergeUrl.Path =
+            // get the path to the recipients data for spreadsheet
+            var spreadsheetUrl = new UriBuilder(_Default.GetServerUrl(true));
+            spreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            mailmergeUrl.Query = "type=csv";
+            spreadsheetUrl.Query = "type=csv";
 
-            var DirectMailMergeUrl = new UriBuilder(_Default.GetServerUrl(false));
-            DirectMailMergeUrl.Path =
+            var DirectSpreadsheetUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectSpreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            DirectMailMergeUrl.Query = "type=csv";
+            DirectSpreadsheetUrl.Query = "type=csv";
 
-            // create a mail merge config
-            Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
+            // create a spreadsheet config
+            Dictionary<string, object> spreadsheetConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString() }
+                    { "url", spreadsheetUrl.ToString() }
                 };
 
             if (_Default.IsEnabledDirectUrl())
             {
-                mailMergeConfig.Add("directUrl", DirectMailMergeUrl.ToString());
+                spreadsheetConfig.Add("directUrl", DirectSpreadsheetUrl.ToString());
             }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
-                var mailmergeToken = JwtManager.Encode(mailMergeConfig);  // encode mailMergeConfig into the token
-                mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
+                var spreadsheetToken = JwtManager.Encode(spreadsheetConfig);  // encode spreadsheetConfig into the token
+                spreadsheetConfig.Add("token", spreadsheetToken);  // and add it to the spreadsheet config
             }
 
-            return mailMergeConfig;
+            return spreadsheetConfig;
         }
 
         // get image url for templates

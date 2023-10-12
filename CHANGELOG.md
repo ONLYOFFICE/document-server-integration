@@ -15,6 +15,8 @@
 - php: key in referenceData
 - python: key in referenceData
 - ruby: key in referenceData
+- onRequestSelectSpreadsheet method
+- key in referenceData
 - nodejs: link in referenceData
 - nodejs: onRequestSelectDocument method
 - nodejs: onRequestSelectSpreadsheet method
