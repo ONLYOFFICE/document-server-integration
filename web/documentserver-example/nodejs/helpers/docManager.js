@@ -152,7 +152,7 @@ DocManager.prototype.saveFileData = function saveFileData(fileName, userid, user
   // get full creation date of the document
   const dateCreate = fileSystem.statSync(this.storagePath(fileName, address)).mtime;
   const minutes = (dateCreate.getMinutes() < 10 ? '0' : '') + dateCreate.getMinutes().toString();
-  const month = (dateCreate.getMonth() < 10 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
+  const month = (dateCreate.getMonth() < 9 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
   const sec = (dateCreate.getSeconds() < 10 ? '0' : '') + dateCreate.getSeconds().toString();
   const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()} `
     + `${dateCreate.getHours()}:${minutes}:${sec}`;
