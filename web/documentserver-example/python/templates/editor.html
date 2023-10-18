@@ -42,6 +42,7 @@
 
         var docEditor;
         var config;
+        var hist;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -200,8 +201,51 @@
               innerAlert(response.error)
               return
             }
-            document.location.reload();
+            data = {
+                fileName: query.get('filename')
+            }
+            const req = new XMLHttpRequest()
+            req.open("POST", '/historyobj')
+            req.send(JSON.stringify(data))
+            req.onload = function () {
+                if (req.status != 200) {
+                    response = JSON.parse(req.response)
+                    innerAlert(response.error)
+                    return
+                }
+                hist = JSON.parse(req.response)
+                docEditor.refreshHistory(hist.history)
+            }
           }
+        }
+        
+        function onRequestHistory(){
+            const query = new URLSearchParams(window.location.search)
+            data = {
+                fileName: query.get('filename')
+            }
+            const req = new XMLHttpRequest()
+            req.open("POST", '/historyobj')
+            req.send(JSON.stringify(data))
+            req.onload = function () {
+                if (req.status != 200) {
+                    response = JSON.parse(req.response)
+                    innerAlert(response.error)
+                    return
+                }
+                hist = JSON.parse(req.response)
+                docEditor.refreshHistory(hist.history)
+            }
+        }
+
+        function onRequestHistoryData(event) {
+            var ver = event.data;
+            var histData = hist.historyData;
+            docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
+        }
+
+        function onRequestHistoryClose(){
+            document.location.reload();
         }
 
         var connectEditor = function () {
@@ -219,31 +263,15 @@
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestCompareFile': onRequestCompareFile,
                 "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-                'onRequestRestore': onRequestRestore
+                'onRequestRestore': onRequestRestore,
+                'onRequestHistory': onRequestHistory,
+                'onRequestHistoryData': onRequestHistoryData,
+                'onRequestHistoryClose': onRequestHistoryClose
             };
 
 
 
             if (config.editorConfig.user.id) {
-
-                {% if history and historyData %}
-
-                    // the user is trying to show the document version history
-                    config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory({{ history | safe }});  // show the document version history
-                    };
-                    // the user is trying to click the specific document version in the document version history
-                    config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = {{ historyData | safe }};
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                    };
-                    // the user is trying to go back to the document from viewing the document version history
-                    config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };
-
-                {% endif %}
 
                 // add mentions for not anonymous users
                 config.events['onRequestUsers'] = function () {

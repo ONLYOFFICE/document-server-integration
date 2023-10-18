@@ -329,12 +329,8 @@ def edit(request):
         dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
         dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
 
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
-
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
-        'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
-        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
@@ -458,6 +454,26 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+def historyobj(request):
+    body = json.loads(request.body)
+    response = {}
+    fileName = None
+
+    try:
+        fileName = body['fileName']
+    except Exception:
+        pass
+
+    if fileName is None:
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+    
+    storagePath = docManager.getStoragePath(fileName, request)
+    docKey = docManager.generateFileKey(fileName, request)
+    fileUri = docManager.getFileUri(fileName, True, request)
+    response = historyManager.getHistoryObject(storagePath, fileName, docKey, fileUri, False, request)
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
 # referenceData
 def reference(request):

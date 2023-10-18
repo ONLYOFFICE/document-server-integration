@@ -101,7 +101,7 @@ def getServerUrl (forDocumentServer, req):
 def getFileUri(filename, forDocumentServer, req):
     host = getServerUrl(forDocumentServer, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
+    return f'{host}/download?fileName={filename}&userAddress={curAdr}'
 
 # get absolute URL to the document storage service
 def getCallbackUrl(filename, req):
