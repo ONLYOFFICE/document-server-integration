@@ -157,6 +157,28 @@ class HomeController < ApplicationController
 
   end
 
+  def historyobj
+    begin
+      data = request.body.read
+      if data == nil || data.empty?
+          return ""
+      end
+      fileData = JSON.parse(data)
+      file = FileModel.new(
+        :file_name => File.basename(fileData['file_name']), 
+        :mode => fileData['mode'], 
+        :type => fileData['type'], 
+        :user_ip => fileData['user_ip'], 
+        :lang => fileData['lang'], 
+        :user => fileData['user'], 
+        :action_data => fileData['action_data'], 
+        :direct_url => fileData['direct_url']
+      )
+      history = file.get_history
+      render json: history
+    end
+  end
+
   # downloading a history file from public
   def downloadhistory
     begin

@@ -30,6 +30,7 @@ class Application < Rails::Application
     match '/csv', to: 'home#csv', via: 'get'
     match '/download', to: 'home#download', via: 'get'
     match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
+    match '/historyobj', to: 'home#historyobj', via: 'post'
     match '/editor', to: 'home#editor', via: 'get'
     match '/files', to: 'home#files', via: 'get'
     match '/index', to: 'home#index', via: 'get'

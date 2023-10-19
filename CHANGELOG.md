@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: getting history via api
 - python: getting history via api
 - nodejs: link in referenceData
 - nodejs: onRequestSelectDocument method
