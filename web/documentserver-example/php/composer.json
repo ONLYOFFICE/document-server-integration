@@ -1,4 +1,5 @@
 {
+    "version": "1.6.0",
     "require": {
         "ext-mbstring": "*",
         "firebase/php-jwt": "^6.8.1",
