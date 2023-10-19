@@ -1,5 +1,6 @@
 # Change Log
 
+- php: getting history via api
 - ruby: getting history via api
 - python: getting history via api
 - nodejs: link in referenceData

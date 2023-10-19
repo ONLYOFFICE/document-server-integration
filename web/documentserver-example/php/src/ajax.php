@@ -408,6 +408,18 @@ function historyDownload()
     }
 }
 
+function historyObj()
+{
+    $input = file_get_contents('php://input');
+    $body = json_decode($input, true);
+    $fileName = $body['fileName'];
+    $filetype = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    $docKey = getDocEditorKey($fileName);
+    $fileuri = fileUri($fileName, true);
+    $historyObject = getHistory($fileName, $filetype, $docKey, $fileuri, false);
+    return $historyObject;
+}
+
 /**
  * Download a file
  *
