@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.7.0
 - nodejs: onRequestSelectDocument method
 - nodejs: onRequestSelectSpreadsheet method
 - nodejs: onRequestOpen
