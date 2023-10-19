@@ -471,8 +471,8 @@ def historyobj(request):
     
     storagePath = docManager.getStoragePath(fileName, request)
     docKey = docManager.generateFileKey(fileName, request)
-    fileUri = docManager.getFileUri(fileName, True, request)
-    response = historyManager.getHistoryObject(storagePath, fileName, docKey, fileUri, False, request)
+    fileUrl = docManager.getDownloadUrl(fileName, request)
+    response = historyManager.getHistoryObject(storagePath, fileName, docKey, fileUrl, False, request)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 # referenceData
