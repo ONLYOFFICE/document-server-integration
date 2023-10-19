@@ -31,6 +31,9 @@ services:
     build:
       context: .
       target: proxy
+    depends_on:
+      - document-server
+      - example
     ports:
       - "80:80"
       - "8080:8080"
