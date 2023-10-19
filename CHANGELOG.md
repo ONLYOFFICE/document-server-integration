@@ -7,14 +7,14 @@
 - nodejs: submitForm
 - nodejs: key in referenceData
 - nodejs: change reference source
-- php: using a repo with a list of formats
 - nodejs: using a repo with a list of formats
 - nodejs: delete file without reloading the page
 - nodejs: getting history by a separate request
 - nodejs: restore from history
+- php: using a repo with a list of formats
+- php: restore from history
 - python: restore from history
 - ruby: restore from history
-- php: restore from history
 - csharp-mvc: getting history by a separate request
 - csharp-mvc: restore from history
 - csharp: getting history by a separate request
