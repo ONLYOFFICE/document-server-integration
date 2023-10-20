@@ -1000,6 +1000,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
+        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
