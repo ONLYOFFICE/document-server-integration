@@ -143,7 +143,6 @@ public class DefaultFileUtility implements FileUtility {
         if (fileName.length() > maxName) {
             fileName = fileName.substring(0, maxName) + "[...]";
         }
-        // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension
         // get the path to the files with the specified name
         Path path = Paths.get(directory + fileName + "." + fileExtension);

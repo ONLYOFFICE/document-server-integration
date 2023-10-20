@@ -536,7 +536,7 @@ DocManager.prototype.getHistory = function getHistory(fileName, content, keyVers
 
   if (content && contentJson) {
     userNameFromJson = oldVersion ? contentJson.username : contentJson.user.name;
-    userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.userid;
+    userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.id;
     createdFromJson = oldVersion ? contentJson.date : contentJson.created;
   }
 
