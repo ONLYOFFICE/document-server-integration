@@ -38,6 +38,8 @@ import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_
 public class DefaultFileUtility implements FileUtility {
     @Value("${filesize-max}")
     private String filesizeMax;
+    @Value("${filename-max}")
+    private String filenameMax;
 
     @Autowired
     private FormatService formatService;
@@ -134,12 +136,12 @@ public class DefaultFileUtility implements FileUtility {
         return formatService.allExtensions();
     }
 
-    public static final int MAX_NUMBER_OF_CHARACTERS = 20;
     // generate the file path from file directory and name
     public Path generateFilepath(final String directory, final String fullFileName) {
+        int maxName = Integer.parseInt(filenameMax);
         String fileName = getFileNameWithoutExtension(fullFileName);
-        if (fileName.length() > MAX_NUMBER_OF_CHARACTERS) {
-            fileName = fileName.substring(0, MAX_NUMBER_OF_CHARACTERS) + "[...]";
+        if (fileName.length() > maxName) {
+            fileName = fileName.substring(0, maxName) + "[...]";
         }
         // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension

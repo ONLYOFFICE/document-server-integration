@@ -538,9 +538,11 @@ namespace OnlineEditorsExample
         // get the correct file name if such a name already exists
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
+            int maxName;
+            int.TryParse(WebConfigurationManager.AppSettings["filename-max"], out maxName);
             var baseName = Path.GetFileNameWithoutExtension(fileName);  // get file name without extension
-            if (baseName.Length > 20){
-                baseName = baseName.Substring(0, 20) + "[...]";
+            if (baseName.Length > maxName){
+                baseName = baseName.Substring(0, maxName) + "[...]";
             }
             var ext = Path.GetExtension(fileName).ToLower();  // get file extension
             var name = baseName + ext;  // get full file name
