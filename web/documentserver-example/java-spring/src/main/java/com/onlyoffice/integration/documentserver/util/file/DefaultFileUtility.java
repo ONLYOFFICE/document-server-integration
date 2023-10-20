@@ -137,11 +137,10 @@ public class DefaultFileUtility implements FileUtility {
     public static final int MAX_NUMBER_OF_CHARACTERS = 20;
     // generate the file path from file directory and name
     public Path generateFilepath(final String directory, final String fullFileName) {
-        String fileName = getFileNameWithoutExtension(fullFileName);
+        String fileName = getFileNameWithoutExtension(fullFileName);  // get file name without extension
         if (fileName.length() > MAX_NUMBER_OF_CHARACTERS) {
             fileName = fileName.substring(0, MAX_NUMBER_OF_CHARACTERS) + "[...]";
         }
-        // get file name without extension
         String fileExtension = getFileExtension(fullFileName);  // get file extension
         // get the path to the files with the specified name
         Path path = Paths.get(directory + fileName + "." + fileExtension);
