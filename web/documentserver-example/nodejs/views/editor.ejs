@@ -198,6 +198,9 @@
                 case "protect":
                     var users = <%- JSON.stringify(usersForProtect) %>;
                     break;
+                case "info":
+                    var users = <%- JSON.stringify(usersInfo) %>;
+                    break;
                 default:
                     users = <%- JSON.stringify(usersForMentions) %>;
             }
