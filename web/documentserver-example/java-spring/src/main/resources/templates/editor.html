@@ -109,9 +109,12 @@
                     docEditor.insertImage(temp);
                 };
 
+                var dataDocument = [[${dataDocument}]];
+
                 // the user is trying to select document for comparing by clicking the Document from Storage button
-                var onRequestCompareFile = function() {
-                    docEditor.setRevisedFile([[${dataCompareFile}]]);
+                var onRequestSelectDocument = function(event) {
+                    const temp = Object.assign({"c": event.data.c}, JSON.parse(dataDocument));
+                    docEditor.setRequestedDocument(temp);
                 };
 
                 var dataSpreadsheet = [[${dataSpreadsheet}]];
@@ -243,7 +246,7 @@
                     "onMakeActionLink": onMakeActionLink,
                     "onMetaChange": onMetaChange,
                     "onRequestInsertImage": onRequestInsertImage,
-                    "onRequestCompareFile": onRequestCompareFile,
+                    "onRequestSelectDocument": onRequestSelectDocument,
                     "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
                     "onRequestRestore": onRequestRestore,
                     "onRequestHistory": onRequestHistory,

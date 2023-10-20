@@ -199,13 +199,13 @@ final class DocEditorView extends View
         ];
 
         // a document for comparing
-        $dataCompareFile = $isEnableDirectUrl ? [
+        $dataDocument = $isEnableDirectUrl ? [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
-            "directUrl" => serverPath(false) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/sample.docx",
         ] : [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
         ];
 
         // recipients data for mail merging
@@ -226,8 +226,8 @@ final class DocEditorView extends View
             $config["token"] = $jwtManager->jwtEncode($config);  // encode config into the token
             // encode the dataInsertImage object into the token
             $dataInsertImage["token"] = $jwtManager->jwtEncode($dataInsertImage);
-            // encode the dataCompareFile object into the token
-            $dataCompareFile["token"] = $jwtManager->jwtEncode($dataCompareFile);
+            // encode the dataDocument object into the token
+            $dataDocument["token"] = $jwtManager->jwtEncode($dataDocument);
             // encode the dataSpreadsheet object into the token
             $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
@@ -273,7 +273,7 @@ final class DocEditorView extends View
                 1,
                 mb_strlen(json_encode($dataInsertImage)) - 2
             ),
-            "dataCompareFile" => json_encode($dataCompareFile),
+            "dataDocument" => json_encode($dataDocument),
             "dataSpreadsheet" => json_encode($dataSpreadsheet),
             "fileNotFoundAlert" => !file_exists(getStoragePath($filename)) ? "alert('File not found'); return;" : "",
             "config" => json_encode($config),

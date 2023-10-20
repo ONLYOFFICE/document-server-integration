@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.6.0';
+    public string $version = '1.7.0';
 
     public function exampleURL(): ?URL
     {
