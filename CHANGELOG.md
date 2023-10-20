@@ -1,13 +1,6 @@
 # Change Log
 
-- csharp: trimming long name of uploading file
-- csharp-mvc: trimming long name of uploading file
-- java: trimming long name of uploading file
-- java-spring: trimming long name of uploading file
-- php: trimming long name of uploading file
-- python: trimming long name of uploading file
-- ruby: trimming long name of uploading file
-- nodejs: trimming long name of uploading file
+- trimming long name of uploading file
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
