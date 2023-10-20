@@ -96,16 +96,20 @@ const descrUser0 = [
 
 const users = [
   new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true),
-  new User('uid-2', 'Mark Pottato', 'pottato@example.com', 'group-2', ['group-2', ''], {
+  new User('uid-2', 'Mark Pottato', 'pottato@example.com', 'group-2',
+  ['group-2', ''], // own and without group
+  {
     view: '',
     edit: ['group-2', ''],
     remove: ['group-2'],
-  }, ['group-2', ''], true, [], descrUser2, false), // own and without group
-  new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com', 'group-3', ['group-2'], {
+  }, ['group-2', ''], true, [], descrUser2, false),
+  new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com', 'group-3',
+  ['group-2'], // other group only
+  {
     view: ['group-3', 'group-2'],
     edit: ['group-2'],
     remove: [],
-  }, ['group-2'], false, ['copy', 'download', 'print'], descrUser3, false), // other group only
+  }, ['group-2'], false, ['copy', 'download', 'print'], descrUser3, false),
   new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false),
 ];
 
