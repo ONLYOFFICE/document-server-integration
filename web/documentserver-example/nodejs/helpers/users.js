@@ -149,7 +149,6 @@ users.getUsersForProtect = function getUsersForProtect(id) {
   this.forEach((user) => {
     if (user.id !== id && user.name != null) {
       result.push({
-        email: user.email,
         id: user.id,
         name: user.name,
       });
