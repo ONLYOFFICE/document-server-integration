@@ -109,14 +109,20 @@
                     docEditor.insertImage(temp);
                 };
 
+                var dataDocument = [[${dataDocument}]];
+
                 // the user is trying to select document for comparing by clicking the Document from Storage button
-                var onRequestCompareFile = function() {
-                    docEditor.setRevisedFile([[${dataCompareFile}]]);
+                var onRequestSelectDocument = function(event) {
+                    const temp = Object.assign({"c": event.data.c}, JSON.parse(dataDocument));
+                    docEditor.setRequestedDocument(temp);
                 };
 
+                var dataSpreadsheet = [[${dataSpreadsheet}]];
+
                 // the user is trying to select recipients data by clicking the Mail merge button
-                var onRequestMailMergeRecipients = function (event) {
-                    docEditor.setMailMergeRecipients([[${dataMailMergeRecipients}]]);
+                var onRequestSelectSpreadsheet = function (event) {
+                    const temp = Object.assign({"c": event.data.c}, JSON.parse(dataSpreadsheet));
+                    docEditor.setRequestedSpreadsheet(temp);
                 };
 
                 config = [[${model}]];
@@ -240,8 +246,8 @@
                     "onMakeActionLink": onMakeActionLink,
                     "onMetaChange": onMetaChange,
                     "onRequestInsertImage": onRequestInsertImage,
-                    "onRequestCompareFile": onRequestCompareFile,
-                    "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+                    "onRequestSelectDocument": onRequestSelectDocument,
+                    "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
                     "onRequestRestore": onRequestRestore,
                     "onRequestHistory": onRequestHistory,
                     "onRequestHistoryData": onRequestHistoryData,

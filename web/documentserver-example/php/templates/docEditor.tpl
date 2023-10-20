@@ -144,14 +144,18 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function() {
-            docEditor.setRevisedFile({dataCompareFile});  // select a document for comparing
+        var onRequestSelectDocument = function(event) {
+            var data = {dataDocument};
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
+        var onRequestSelectSpreadsheet = function (event) {
             // insert recipient data for mail merge into the file
-            docEditor.setMailMergeRecipients({dataMailMergeRecipients});
+            var data = {dataSpreadsheet};
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -282,8 +286,8 @@
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
-                'onRequestCompareFile': onRequestCompareFile,
-                'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+                'onRequestSelectDocument': onRequestSelectDocument,
+                'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
                 'onRequestRestore': onRequestRestore,
                 'onRequestHistoryData': onRequestHistoryData,
