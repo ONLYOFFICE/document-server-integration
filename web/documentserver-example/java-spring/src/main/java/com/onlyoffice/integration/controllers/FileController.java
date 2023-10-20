@@ -149,7 +149,7 @@ public class FileController {
                 .body(resource);
     }
 
-    private ResponseEntity<Resource> downloadSample(final String fileName){
+    private ResponseEntity<Resource> downloadSample(final String fileName) {
         String serverPath = System.getProperty("user.dir");
         String contentType = "application/octet-stream";
         String fileLocation = serverPath
