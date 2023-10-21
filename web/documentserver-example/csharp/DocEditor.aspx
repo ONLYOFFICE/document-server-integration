@@ -194,16 +194,42 @@
             }
         };
 
-        var onRequestReferenceData = function (event) {  // user refresh external data source
+        var onRequestOpen = function (event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
 
-            event.data.directUrl = !!config.document.directUrl;
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
+        var onRequestReferenceData = function (event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function (data, callback) {
+            innerAlert(data);
+
+            data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor.ashx?type=reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 console.log(xhr.responseText);
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
@@ -290,6 +316,8 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            // add link to reference data source file 
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {
