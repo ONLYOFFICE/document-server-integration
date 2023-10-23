@@ -307,21 +307,21 @@ def getFilesInfo(req):
         stats = os.stat(os.path.join(getRootFolder(req), f.get("title"))) # get file information
         result.append( # write file parameters to the file object
             {
-                "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
-                "id" :  generateFileKey(f.get("title"), req),   
-                "contentLength" : "%.2f KB" % (stats.st_size/1024),
-                "pureContentLength" : stats.st_size,
-                "title" :  f.get("title"),
-                "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
+                "version": historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+                "id":  generateFileKey(f.get("title"), req),   
+                "contentLength": "%.2f KB" % (stats.st_size/1024),
+                "pureContentLength": stats.st_size,
+                "title":  f.get("title"),
+                "updated": time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
                 })
-        if fileId : # if file id is defined
-            if fileId == generateFileKey(f.get("title"), req) : # and it is equal to the file key value
+        if fileId: # if file id is defined
+            if fileId == generateFileKey(f.get("title"), req): # and it is equal to the file key value
                 resultID.append(result[-1]) # add file object to the response array
 
-    if fileId :
-        if len(resultID) > 0 : return resultID
-        else : return "File not found"     
-    else :
+    if fileId:
+        if len(resultID) > 0: return resultID
+        else: return "File not found"     
+    else:
         return result
 
 

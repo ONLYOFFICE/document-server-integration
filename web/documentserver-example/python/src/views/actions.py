@@ -185,7 +185,7 @@ def edit(request):
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext):
         edMode = 'fillForms'
         canEdit = True
     submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
@@ -255,9 +255,9 @@ def edit(request):
                 'userInfoGroups': user.userInfoGroups,
                 'protect': 'protect' not in user.deniedPermissions
             },
-            'referenceData' : {
-                'instanceId' : docManager.getServerUrl(False, request),
-                'fileKey' : json.dumps({'fileName' : filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
+            'referenceData': {
+                'instanceId': docManager.getServerUrl(False, request),
+                'fileKey': json.dumps({'fileName': filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
             }
         },
         'editorConfig': {
@@ -270,8 +270,8 @@ def edit(request):
                 "change": False
             } 
             if edMode == 'view' and user.id =='uid-0' else None,
-            'createUrl' : createUrl if user.id !='uid-0' else None,
-            'templates' : templates if user.templates else None,
+            'createUrl': createUrl if user.id !='uid-0' else None,
+            'templates': templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
                 'id': user.id if user.id !='uid-0' else None,
                 'name': user.name,
@@ -343,7 +343,7 @@ def edit(request):
         'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
-        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
+        'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None
@@ -507,15 +507,15 @@ def reference(request):
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
     
     data = {
-        'fileType' : fileUtils.getFileExt(fileName).replace('.', ''),
+        'fileType': fileUtils.getFileExt(fileName).replace('.', ''),
         'key': docManager.generateFileKey(fileName,request),
-        'url' : docManager.getDownloadUrl(fileName, request),
-        'directUrl' : docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
-        'referenceData' : {
-            'instanceId' : docManager.getServerUrl(False, request),
-            'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
+        'url': docManager.getDownloadUrl(fileName, request),
+        'directUrl': docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
+        'referenceData': {
+            'instanceId': docManager.getServerUrl(False, request),
+            'fileKey': json.dumps({'fileName': fileName, 'userAddress': request.META['REMOTE_ADDR']})
         },
-        'path' : fileName
+        'path': fileName
     }
 
     if (jwtManager.isEnabled()):

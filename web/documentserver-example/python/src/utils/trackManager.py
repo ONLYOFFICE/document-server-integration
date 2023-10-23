@@ -142,7 +142,7 @@ def processForceSave(body, filename, usAddr):
     if(isSubmitForm):
         if (newFilename):
             filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + downloadExt, usAddr) # get the correct file name if it already exists
-        else :
+        else:
             filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + curExt, usAddr)
         forcesavePath = docManager.getStoragePath(filename, usAddr)
     else:
