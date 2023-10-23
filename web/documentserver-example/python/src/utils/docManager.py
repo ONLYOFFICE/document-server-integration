@@ -328,7 +328,7 @@ def getFilesInfo(req):
 # download the file
 def download(filePath):
     response = FileResponse(open(filePath, 'rb'), True) # write headers to the response object
-    response['Content-Length'] =  os.path.getsize(filePath)
+    response['Content-Length'] = os.path.getsize(filePath)
     response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.quote_plus(os.path.basename(filePath))
     response['Content-Type'] = magic.from_file(filePath, mime=True)
     response['Access-Control-Allow-Origin'] = "*"
