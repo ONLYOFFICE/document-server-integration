@@ -237,7 +237,7 @@ def saveFile(response, path):
     return
 
 
-# download file from the given url 
+# download file from the given url
 def downloadFileFromUri(uri, path=None, withSave=False):
     resp = requests.get(uri, stream=True, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = resp.status_code
@@ -257,7 +257,7 @@ def createSample(fileType, sample, req):
     if not sample:
         sample = 'false'
 
-    sampleName = 'sample' if sample == 'true' else 'new'  # create sample or new template 
+    sampleName = 'sample' if sample == 'true' else 'new'  # create sample or new template
 
     filename = getCorrectName(f'{sampleName}{ext}', req)  # get file name with an index if such a file name already exists
     path = getStoragePath(filename, req)
@@ -308,7 +308,7 @@ def getFilesInfo(req):
         result.append(  # write file parameters to the file object
             {
                 "version": historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
-                "id":  generateFileKey(f.get("title"), req),   
+                "id":  generateFileKey(f.get("title"), req),
                 "contentLength": "%.2f KB" % (stats.st_size/1024),
                 "pureContentLength": stats.st_size,
                 "title":  f.get("title"),
@@ -319,10 +319,10 @@ def getFilesInfo(req):
                 resultID.append(result[-1])  # add file object to the response array
 
     if fileId:
-        if len(resultID) > 0: 
+        if len(resultID) > 0:
             return resultID
-        else: 
-            return "File not found"     
+        else:
+            return "File not found"
     else:
         return result
 

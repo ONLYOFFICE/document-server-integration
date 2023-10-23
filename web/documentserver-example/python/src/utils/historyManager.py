@@ -194,7 +194,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                     dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False)  # write file direct url to the data object
 
                 if i > 1:  # check if the version number is greater than 1 (the file was modified)
-                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))  # get the path to the changes.json file 
+                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))  # get the path to the changes.json file
                     change = changes['changes'][0]
                     
                     obj['changes'] = changes['changes'] if change else None  # write information about changes to the object
@@ -217,7 +217,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                     dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)  # write the path to the diff.zip archive with differences in this file version
 
                 if jwtManager.isEnabled():
-                    dataObj['token'] = jwtManager.encode(dataObj) 
+                    dataObj['token'] = jwtManager.encode(dataObj)
 
                 hist.append(obj)  # add object dictionary to the hist list
                 histData[str(i - 1)] = dataObj  # write data object information to the history data
