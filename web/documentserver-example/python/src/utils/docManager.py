@@ -128,7 +128,7 @@ def getCreateUrl(fileType, req):
 
 
 # get url to download a file
-def getDownloadUrl(filename, req, isServerUrl = True):
+def getDownloadUrl(filename, req, isServerUrl=True):
     host = getServerUrl(isServerUrl, req)
     curAdr = f'&userAddress={req.META["REMOTE_ADDR"]}' if isServerUrl else ""
     return f'{host}/download?fileName={filename}{curAdr}'
@@ -217,7 +217,7 @@ def getStoredFiles(req):
 
 
 # create a file
-def createFile(stream, path, req = None, meta = False):
+def createFile(stream, path, req=None, meta=False):
     bufSize = 8192
     with io.open(path, 'wb') as out: # write data to the file by streams
         read = stream.read(bufSize)
@@ -238,8 +238,8 @@ def saveFile(response, path):
 
 
 # download file from the given url 
-def downloadFileFromUri(uri, path = None, withSave = False):
-    resp = requests.get(uri, stream=True, verify = config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
+def downloadFileFromUri(uri, path=None, withSave=False):
+    resp = requests.get(uri, stream=True, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = resp.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Document editing service returned status: %s' % status_code)

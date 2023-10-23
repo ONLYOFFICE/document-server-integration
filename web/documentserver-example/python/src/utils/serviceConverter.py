@@ -26,7 +26,7 @@ config_manager = ConfigurationManager()
 
 
 # convert file and give url to a new file
-def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
+def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lang=None):
     if not fromExt: # check if the extension from the request matches the real file extension
         fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
 
@@ -52,7 +52,7 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, l
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
         headers[config_manager.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
-    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers, verify = config_manager.ssl_verify_peer_mode_enabled(), timeout=5) # send the headers and body values to the converter and write the result to the response
+    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5) # send the headers and body values to the converter and write the result to the response
     status_code = response.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Convertation service returned status: %s' % status_code)

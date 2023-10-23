@@ -161,7 +161,7 @@ def processForceSave(body, filename, usAddr):
 
 
 # create a command request
-def commandRequest(method, key, meta = None):
+def commandRequest(method, key, meta=None):
     payload = {
         'c': method,
         'key': key
@@ -177,7 +177,7 @@ def commandRequest(method, key, meta = None):
         headers[config_manager.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-    response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers, verify = config_manager.ssl_verify_peer_mode_enabled())
+    response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled())
 
     if (meta): 
         return response
