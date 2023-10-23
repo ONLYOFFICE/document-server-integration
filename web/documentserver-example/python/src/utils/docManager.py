@@ -319,8 +319,10 @@ def getFilesInfo(req):
                 resultID.append(result[-1])  # add file object to the response array
 
     if fileId:
-        if len(resultID) > 0: return resultID
-        else: return "File not found"     
+        if len(resultID) > 0: 
+            return resultID
+        else: 
+            return "File not found"     
     else:
         return result
 
