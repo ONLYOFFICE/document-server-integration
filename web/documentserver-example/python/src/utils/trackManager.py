@@ -106,7 +106,7 @@ def processSave(raw_body, filename, usAddr):
 
     forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False) # get the path to the forcesaved file version
     if (forcesavePath != ""): # if the forcesaved file version exists
-       os.remove(forcesavePath) # remove it
+        os.remove(forcesavePath) # remove it
 
     return
 
