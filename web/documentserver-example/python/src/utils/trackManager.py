@@ -139,7 +139,7 @@ def processForceSave(body, filename, usAddr):
 
     isSubmitForm = body.get('forcesavetype') == 3  # SubmitForm
 
-    if(isSubmitForm):
+    if (isSubmitForm):
         if (newFilename):
             filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + downloadExt, usAddr)  # get the correct file name if it already exists
         else:
@@ -154,7 +154,7 @@ def processForceSave(body, filename, usAddr):
 
     docManager.saveFile(download, forcesavePath)  # save document file
 
-    if(isSubmitForm):
+    if (isSubmitForm):
         uid = body['actions'][0]['userid']  # get the user id
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr)  # create meta data for forcesaved file
     return
