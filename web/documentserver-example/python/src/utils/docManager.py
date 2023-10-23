@@ -312,7 +312,7 @@ def getFilesInfo(req):
                 "pureContentLength" : stats.st_size,
                 "title" :  f.get("title"),
                 "updated" : time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
-        })
+                })
         if fileId : # if file id is defined
             if fileId == generateFileKey(f.get("title"), req) : # and it is equal to the file key value
                 resultID.append(result[-1]) # add file object to the response array
