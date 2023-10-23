@@ -362,7 +362,7 @@ def track(request):
         if (status == 1):  # editing
             if (body['actions'] and body['actions'][0]['type'] == 0):  # finished edit
                 user = body['actions'][0]['userid']  # the user who finished editing
-                if (not user in body['users']):
+                if (user not in body['users']):
                     trackManager.commandRequest('forcesave', body['key'])  # create a command request with the forcasave method
 
         filename = fileUtils.getFileName(request.GET['filename'])
