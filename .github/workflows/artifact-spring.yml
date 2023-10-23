@@ -3,10 +3,10 @@ name: Artifact Java Spring
 on:
   workflow_dispatch:
   push:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/java-spring/**']
   pull_request:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/java-spring/**']
 
 jobs:
