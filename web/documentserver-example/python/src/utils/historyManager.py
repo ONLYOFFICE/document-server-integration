@@ -229,7 +229,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
             'history': hist
         }
 
-        return { 'history': histObj, 'historyData': histData }
+        return {'history': histObj, 'historyData': histData }
     return {}
 
 

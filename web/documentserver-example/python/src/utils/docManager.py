@@ -306,7 +306,8 @@ def getFilesInfo(req):
     for f in getStoredFiles(req): # run through all the files from the directory
         stats = os.stat(os.path.join(getRootFolder(req), f.get("title"))) # get file information
         result.append( # write file parameters to the file object
-            {   "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+            {
+                "version" : historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
                 "id" :  generateFileKey(f.get("title"), req),   
                 "contentLength" : "%.2f KB" % (stats.st_size/1024),
                 "pureContentLength" : stats.st_size,
