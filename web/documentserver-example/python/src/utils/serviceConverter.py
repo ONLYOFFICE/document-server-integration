@@ -69,7 +69,7 @@ def getResponseUri(json):
         processError(error)
 
     if isEnd:
-        return {'uri': json.get('fileUrl'), 'fileType': json.get('fileType') }
+        return {'uri': json.get('fileUrl'), 'fileType': json.get('fileType')}
 
 
 # display an error that occurs during conversion
