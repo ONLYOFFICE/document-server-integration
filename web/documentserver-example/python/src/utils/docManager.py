@@ -99,7 +99,7 @@ def getCorrectName(filename, req):
 
 
 # get server url
-def getServerUrl (forDocumentServer, req):
+def getServerUrl(forDocumentServer, req):
     example_url = config_manager.example_url()
     if (forDocumentServer and example_url is not None):
         return example_url.geturl()
