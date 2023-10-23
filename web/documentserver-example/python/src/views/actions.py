@@ -266,9 +266,9 @@ def edit(request):
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
             'coEditing': {
-                            "mode": "strict", 
-                            "change": False
-                         } 
+                "mode": "strict", 
+                "change": False
+            } 
             if edMode == 'view' and user.id =='uid-0' else None,
             'createUrl' : createUrl if user.id !='uid-0' else None,
             'templates' : templates if user.templates else None,
