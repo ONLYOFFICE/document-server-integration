@@ -91,7 +91,7 @@ USERS = [
             'remove': ["group-2"]
         },
          ['group-2', ''],
-        True, [], descr_user_2, False),
+         True, [], descr_user_2, False),
     User('uid-3', 'Hamish Mitchell', 'mitchell@example.com',
          'group-3', ['group-2'], {
             'view': ["group-3", "group-2"],
