@@ -336,11 +336,18 @@
             }
         };
 
+        var onDocumentReady = function(){
+            if (config.type === "mobile") {
+                document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
+            }
+        };
+
         config = {
             <%- include("config") %>
         };
         config.events = {
             "onAppReady": onAppReady,
+            "onDocumentReady": fixSize,
             "onDocumentStateChange": onDocumentStateChange,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
