@@ -27,7 +27,7 @@ import urllib.parse
 import magic
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect, FileResponse
+from django.http import FileResponse
 from src.configuration import ConfigurationManager
 from src.format import FormatManager
 from . import fileUtils, historyManager

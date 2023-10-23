@@ -16,7 +16,6 @@
 
 """
 
-import json
 import requests
 
 from src.configuration import ConfigurationManager
