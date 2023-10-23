@@ -128,7 +128,7 @@ def getUsersForMentions(uid):
     usersData = []
     for user in USERS:
         if(user.id != uid and user.name != None and user.email != None):
-            usersData.append({'name':user.name, 'email':user.email})
+            usersData.append({'name': user.name, 'email': user.email})
     return usersData
 
 

@@ -211,7 +211,7 @@ def getStoredFiles(req):
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)),'version':historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
+            fileInfos.append({'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)), 'version': historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))}) # write information about file type, title and url
 
     return fileInfos
 
@@ -312,7 +312,7 @@ def getFilesInfo(req):
                 "contentLength": "%.2f KB" % (stats.st_size/1024),
                 "pureContentLength": stats.st_size,
                 "title":  f.get("title"),
-                "updated": time.strftime("%Y-%m-%dT%X%z",time.gmtime(stats.st_mtime))
+                "updated": time.strftime("%Y-%m-%dT%X%z", time.gmtime(stats.st_mtime))
                 })
         if fileId: # if file id is defined
             if fileId == generateFileKey(f.get("title"), req): # and it is equal to the file key value

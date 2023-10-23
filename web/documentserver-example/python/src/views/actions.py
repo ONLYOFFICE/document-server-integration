@@ -69,7 +69,7 @@ def convert(request):
         filename = fileUtils.getFileName(body.get("filename"))
         filePass = body.get("filePass")
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
-        fileUri = docManager.getDownloadUrl(filename,request)
+        fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
         newExt = 'ooxml'  # convert to .ooxml
 
@@ -496,7 +496,7 @@ def reference(request):
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
-            if os.path.exists(docManager.getStoragePath(path,request)):
+            if os.path.exists(docManager.getStoragePath(path, request)):
                 fileName = path 
         except KeyError:
             response.setdefault('error', 'Path not found')
@@ -508,7 +508,7 @@ def reference(request):
     
     data = {
         'fileType': fileUtils.getFileExt(fileName).replace('.', ''),
-        'key': docManager.generateFileKey(fileName,request),
+        'key': docManager.generateFileKey(fileName, request),
         'url': docManager.getDownloadUrl(fileName, request),
         'directUrl': docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
         'referenceData': {
