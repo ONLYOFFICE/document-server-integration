@@ -28,6 +28,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Reference {
+    private String windowName;
     private Boolean directUrl;
     private ReferenceData referenceData;
     private String path;
