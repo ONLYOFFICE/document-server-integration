@@ -27,12 +27,12 @@ config_manager = ConfigurationManager()
 
 # convert file and give url to a new file
 def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lang=None):
-    if not fromExt: # check if the extension from the request matches the real file extension
-        fromExt = fileUtils.getFileExt(docUri) # if not, overwrite the extension value
+    if not fromExt:  # check if the extension from the request matches the real file extension
+        fromExt = fileUtils.getFileExt(docUri)  # if not, overwrite the extension value
 
     title = fileUtils.getFileName(docUri)
 
-    payload = { # write all the necessary data to the payload object
+    payload = {  # write all the necessary data to the payload object
         'url': docUri,
         'outputtype': toExt.replace('.', ''),
         'filetype': fromExt.replace('.', ''),
@@ -44,15 +44,15 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lan
 
     headers = {'accept': 'application/json'}
 
-    if (isAsync): # check if the operation is asynchronous
-        payload.setdefault('async', True) # and write this information to the payload object
+    if (isAsync):  # check if the operation is asynchronous
+        payload.setdefault('async', True)  # and write this information to the payload object
 
-    if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
-        headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
-        payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-        headers[config_manager.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
+    if (jwtManager.isEnabled() and jwtManager.useForRequest()):  # check if a secret key to generate token exists or not
+        headerToken = jwtManager.encode({'payload': payload})  # encode a payload object into a header token
+        payload['token'] = jwtManager.encode(payload)  # encode a payload object into a body token
+        headers[config_manager.jwt_header()] = f'Bearer {headerToken}'  # add a header Authorization with a header token with Authorization prefix in it
 
-    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5) # send the headers and body values to the converter and write the result to the response
+    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)  # send the headers and body values to the converter and write the result to the response
     status_code = response.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Convertation service returned status: %s' % status_code)

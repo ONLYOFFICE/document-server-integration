@@ -202,7 +202,7 @@ def edit(request):
     actionData = request.GET.get('actionLink')  # get the action data that will be scrolled to (comment or bookmark)
     actionLink = json.loads(actionData) if actionData else None
 
-    templatesImageUrl = docManager.getTemplateImageUrl(fileType, request) # templates image url in the "From Template" section
+    templatesImageUrl = docManager.getTemplateImageUrl(fileType, request)  # templates image url in the "From Template" section
     createUrl = docManager.getCreateUrl(edType, request)
     templates = [
         {
@@ -359,7 +359,7 @@ def track(request):
         body = trackManager.readBody(request)  # read request body
         status = body['status']  # and get status from it
 
-        if (status == 1): # editing
+        if (status == 1):  # editing
             if (body['actions'] and body['actions'][0]['type'] == 0):  # finished edit
                 user = body['actions'][0]['userid']  # the user who finished editing
                 if (not user in body['users']):

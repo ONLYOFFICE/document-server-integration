@@ -53,4 +53,4 @@ def getFileType(str):
     if ext in format_manager.presentation_extensions():
         return 'slide'
 
-    return 'word' # default file type is word
+    return 'word'  # default file type is word
