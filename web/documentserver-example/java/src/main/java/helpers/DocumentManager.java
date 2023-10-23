@@ -246,7 +246,11 @@ public final class DocumentManager {
 
     // get a file name with an index if the file with such a name already exists
     public static String getCorrectName(final String fileName, final String userAddress) {
+        int maxName = Integer.parseInt(ConfigManager.getProperty("filename-max"));
         String baseName = FileUtility.getFileNameWithoutExtension(fileName);
+        if (baseName.length() > maxName) {
+            baseName = baseName.substring(0, maxName) + "[...]";
+        }
         String ext = FileUtility.getFileExtension(fileName);
         String name = baseName + "." + ext;
 

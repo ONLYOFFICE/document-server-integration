@@ -84,7 +84,10 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
 
 // get the correct file name if such a name already exists
 DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddress) {
-  const baseName = fileUtility.getFileName(fileName, true); // get file name from the url without extension
+  // get file name from the url without extension
+  const maxName = configServer.get('maxNameLength');
+  const baseName = fileUtility.getFileName(fileName, true).substr(0, maxName)
+    + (fileName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
   let index = 1;
@@ -154,8 +157,8 @@ DocManager.prototype.saveFileData = function saveFileData(fileName, userid, user
   const minutes = (dateCreate.getMinutes() < 10 ? '0' : '') + dateCreate.getMinutes().toString();
   const month = (dateCreate.getMonth() < 9 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
   const sec = (dateCreate.getSeconds() < 10 ? '0' : '') + dateCreate.getSeconds().toString();
-  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()}`
-    + ` ${dateCreate.getHours()}:${minutes}:${sec}`;
+  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()} `
+    + `${dateCreate.getHours()}:${minutes}:${sec}`;
 
   const fileInfo = this.historyPath(fileName, address, true); // get file history information
   this.createDirectory(fileInfo); // create a new history directory if it doesn't exist
