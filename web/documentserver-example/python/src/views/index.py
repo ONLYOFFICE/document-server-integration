@@ -30,11 +30,13 @@ from src.utils import docManager
 config_manager = ConfigurationManager()
 format_manager = FormatManager()
 
+
 def getDirectUrlParam(request):
     if ('directUrl' in request.GET): 
         return request.GET['directUrl'].lower() in ("true")
     else:
         return False;    
+
 
 def default(request):  # default parameters that will be passed to the template
     context = {

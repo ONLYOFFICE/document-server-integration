@@ -22,10 +22,12 @@ from src.format import FormatManager
 config_manager = ConfigurationManager()
 format_manager = FormatManager()
 
+
 # get file name from the document url
 def getFileName(str):
     ind = str.rfind('/')
     return str[ind+1:]
+
 
 # get file name without extension from the document url
 def getFileNameWithoutExt(str):
@@ -33,11 +35,13 @@ def getFileNameWithoutExt(str):
     ind = fn.rfind('.')
     return fn[:ind]
 
+
 # get file extension from the document url
 def getFileExt(str):
     fn = getFileName(str)
     ind = fn.rfind('.')
     return fn[ind:].lower()
+
 
 # get file type
 def getFileType(str):

@@ -35,24 +35,30 @@ from . import fileUtils, historyManager
 config_manager = ConfigurationManager()
 format_manager = FormatManager()
 
+
 def isCanFillForms(ext):
     return ext in format_manager.fillable_extensions()
+
 
 # check if the file extension can be viewed
 def isCanView(ext):
     return ext in format_manager.viewable_extensions()
 
+
 # check if the file extension can be edited
 def isCanEdit(ext):
     return ext in format_manager.editable_extensions()
+
 
 # check if the file extension can be converted
 def isCanConvert(ext):
     return ext in format_manager.convertible_extensions()
 
+
 # check if the file extension is supported by the editor (it can be viewed or edited or converted)
 def isSupportedExt(ext):
     return isCanView(ext) | isCanEdit(ext) | isCanConvert(ext) | isCanFillForms(ext)
+
 
 # get internal extension for a given file type
 def getInternalExtension(fileType):
@@ -65,6 +71,7 @@ def getInternalExtension(fileType):
 
     return mapping.get(fileType, '.docx') # the default file type is .docx
 
+
 # get image url for templates
 def getTemplateImageUrl(fileType, request):
     path = getServerUrl(True, request) + '/static/images/'
@@ -75,6 +82,7 @@ def getTemplateImageUrl(fileType, request):
     }
 
     return mapping.get(fileType, path + 'file_docx.svg') # the default file type
+
 
 # get file name with an index if such a file name already exists
 def getCorrectName(filename, req):
@@ -89,6 +97,7 @@ def getCorrectName(filename, req):
 
     return name
 
+
 # get server url
 def getServerUrl (forDocumentServer, req):
     example_url = config_manager.example_url()
@@ -97,11 +106,13 @@ def getServerUrl (forDocumentServer, req):
     else:
         return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
+
 # get file url
 def getFileUri(filename, forDocumentServer, req):
     host = getServerUrl(forDocumentServer, req)
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
+
 
 # get absolute URL to the document storage service
 def getCallbackUrl(filename, req):
@@ -109,16 +120,19 @@ def getCallbackUrl(filename, req):
     curAdr = req.META['REMOTE_ADDR']
     return f'{host}/track?filename={filename}&userAddress={curAdr}'
 
+
 # get url to the created file
 def getCreateUrl(fileType, req):
     host = getServerUrl(False, req)
     return f'{host}/create?fileType={fileType}'
+
 
 # get url to download a file
 def getDownloadUrl(filename, req, isServerUrl = True):
     host = getServerUrl(isServerUrl, req)
     curAdr = f'&userAddress={req.META["REMOTE_ADDR"]}' if isServerUrl else ""
     return f'{host}/download?fileName={filename}{curAdr}'
+
 
 # get root folder for the current file
 def getRootFolder(req):
@@ -134,6 +148,7 @@ def getRootFolder(req):
         os.makedirs(directory)
 
     return directory
+
 
 # get the file history path
 def getHistoryPath(filename, file, version, req):
@@ -151,11 +166,13 @@ def getHistoryPath(filename, file, version, req):
 
     return filePath
 
+
 # get the file path
 def getStoragePath(filename, req):
     directory = getRootFolder(req)
 
     return os.path.join(directory, fileUtils.getFileName(filename))
+
 
 # get the path to the forcesaved file version
 def getForcesavePath(filename, req, create):
@@ -182,6 +199,7 @@ def getForcesavePath(filename, req, create):
 
     return directory
 
+
 # get information about all the stored files
 def getStoredFiles(req):
     directory = getRootFolder(req)
@@ -197,6 +215,7 @@ def getStoredFiles(req):
 
     return fileInfos
 
+
 # create a file
 def createFile(stream, path, req = None, meta = False):
     bufSize = 8192
@@ -209,12 +228,14 @@ def createFile(stream, path, req = None, meta = False):
         historyManager.createMeta(path, req) # create meta data for the file if needed
     return
 
+
 # save file
 def saveFile(response, path):
     with open(path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)
     return
+
 
 # download file from the given url 
 def downloadFileFromUri(uri, path = None, withSave = False):
@@ -227,6 +248,7 @@ def downloadFileFromUri(uri, path = None, withSave = False):
             raise RuntimeError('Path for saving file is null')
         saveFile(resp, path)
     return resp
+
 
 # create sample file
 def createSample(fileType, sample, req):
@@ -244,6 +266,7 @@ def createSample(fileType, sample, req):
         createFile(stream, path, req, True)
     return filename
 
+
 # remove file from the directory
 def removeFile(filename, req):
     path = getStoragePath(filename, req)
@@ -252,6 +275,7 @@ def removeFile(filename, req):
     histDir = historyManager.getHistoryDir(path) # get history directory
     if os.path.exists(histDir): # remove all the history information about this file
         shutil.rmtree(histDir)
+
 
 # generate file key
 def generateFileKey(filename, req):
@@ -263,6 +287,7 @@ def generateFileKey(filename, req):
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20] # take the first 20 characters for the key
 
+
 # generate the document key value
 def generateRevisionId(expectedKey):
     if (len(expectedKey) > 20):
@@ -270,6 +295,7 @@ def generateRevisionId(expectedKey):
 
     key = re.sub(r'[^0-9-.a-zA-Z_=]', '_', expectedKey)
     return key[:20]
+
 
 # get files information
 def getFilesInfo(req):
@@ -296,6 +322,7 @@ def getFilesInfo(req):
         else : return "File not found"     
     else :
         return result
+
 
 # download the file
 def download(filePath):

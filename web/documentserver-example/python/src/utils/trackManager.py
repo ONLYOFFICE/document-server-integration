@@ -28,6 +28,7 @@ from . import jwtManager, docManager, historyManager, fileUtils, serviceConverte
 config_manager = ConfigurationManager()
 proxy_manager = ProxyManager(config_manager=config_manager)
 
+
 # read request body
 def readBody(request):
     body = json.loads(request.body)
@@ -46,6 +47,7 @@ def readBody(request):
         if (body.get('payload')): # get the payload object from the request body
             body = body['payload']
     return body
+
 
 # file saving process
 def processSave(raw_body, filename, usAddr):
@@ -108,6 +110,7 @@ def processSave(raw_body, filename, usAddr):
 
     return
 
+
 # file force saving process
 def processForceSave(body, filename, usAddr):
     download = body.get('url')
@@ -156,6 +159,7 @@ def processForceSave(body, filename, usAddr):
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr) # create meta data for forcesaved file
     return
 
+
 # create a command request
 def commandRequest(method, key, meta = None):
     payload = {
@@ -165,7 +169,6 @@ def commandRequest(method, key, meta = None):
 
     if (meta): 
         payload['meta'] = meta
-
 
     headers={'accept': 'application/json'}
 
@@ -180,6 +183,7 @@ def commandRequest(method, key, meta = None):
         return response
 
     return
+
 
 def resolve_process_save_body(body):
     copied = deepcopy(body)

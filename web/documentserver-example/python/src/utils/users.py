@@ -18,6 +18,7 @@
 
 from typing import Optional
 
+
 class User:
     def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates):
         self.id = id
@@ -31,6 +32,7 @@ class User:
         self.descriptions = descriptions
         self.templates = templates
         self.userInfoGroups = userInfoGroups
+
 
 descr_user_1 = [
     "File author by default",
@@ -104,9 +106,11 @@ USERS = [
 
 DEFAULT_USER = USERS[0]
 
+
 # get all users
 def getAllUsers():
     return USERS
+
 
 # get user information from the request
 def getUserFromReq(req):
@@ -118,6 +122,7 @@ def getUserFromReq(req):
 
     return DEFAULT_USER
 
+
 # get users data for mentions
 def getUsersForMentions(uid):
     usersData = []
@@ -125,6 +130,7 @@ def getUsersForMentions(uid):
         if(user.id != uid and user.name != None and user.email != None):
             usersData.append({'name':user.name, 'email':user.email})
     return usersData
+
 
 def find_user(id: Optional[str]) -> User:
     if id is None:

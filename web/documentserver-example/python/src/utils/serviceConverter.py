@@ -24,6 +24,7 @@ from . import fileUtils, jwtManager
 
 config_manager = ConfigurationManager()
 
+
 # convert file and give url to a new file
 def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, lang = None):
     if not fromExt: # check if the extension from the request matches the real file extension
@@ -59,6 +60,7 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, l
 
     return getResponseUri(json)
 
+
 # get response url
 def getResponseUri(json):
     isEnd = json.get('endConvert')
@@ -68,6 +70,7 @@ def getResponseUri(json):
 
     if isEnd:
         return { 'uri': json.get('fileUrl'), 'fileType': json.get('fileType') }
+
 
 # display an error that occurs during conversion
 def processError(error):

@@ -32,6 +32,7 @@ from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager
 
 config_manager = ConfigurationManager()
 
+
 # upload a file from the document storage service to the document editing service
 def upload(request):
     response = {}
@@ -57,6 +58,7 @@ def upload(request):
         response.setdefault('error', e.args[0])  # save an error message to the response variable
 
     return HttpResponse(json.dumps(response), content_type='application/json')  # return http response in json format
+
 
 # convert a file from one format to another
 def convert(request):
@@ -93,6 +95,7 @@ def convert(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # create a new file
 def createNew(request):
     response = {}
@@ -109,6 +112,7 @@ def createNew(request):
         response.setdefault('error', e.args[0])
 
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # save file as...
 def saveAs(request):
@@ -141,6 +145,7 @@ def saveAs(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # rename file
 def rename(request):
     response = {}
@@ -161,6 +166,7 @@ def rename(request):
     response.setdefault('result', trackManager.commandRequest('meta', dockey, meta).json())
 
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # edit a file
 def edit(request):
@@ -344,6 +350,7 @@ def edit(request):
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 
+
 # track the document changes
 def track(request):
     response = {}
@@ -374,6 +381,7 @@ def track(request):
     # the response status is 200 if the changes are saved successfully; otherwise, it is equal to 500
     return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
 
+
 # remove a file
 def remove(request):
     filename = fileUtils.getFileName(request.GET['filename'])
@@ -385,6 +393,7 @@ def remove(request):
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # get file information
 def files(request):
     try:
@@ -394,11 +403,13 @@ def files(request):
         response.setdefault('error', e.args[0])
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # download a csv file
 def csv(request):
     filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
     response = docManager.download(filePath)
     return response
+
 
 # download a file
 def download(request):
@@ -430,6 +441,7 @@ def download(request):
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # download a history file
 def downloadhistory(request):
     try:
@@ -458,6 +470,7 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
 
 # referenceData
 def reference(request):
@@ -509,6 +522,7 @@ def reference(request):
         data['token'] = jwtManager.encode(data)
     
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 @http.PUT()
 def restore(request: HttpRequest) -> HttpResponse:

@@ -25,13 +25,16 @@ from datetime import datetime
 from src.utils import docManager
 from src.utils import jwtManager
     
+
 # get the path to the history direction
 def getHistoryDir(storagePath):
     return f'{storagePath}-hist'
 
+
 # get the path to the given file version
 def getVersionDir(histDir, version):
     return os.path.join(histDir, str(version))
+
 
 # get file version of the given history directory
 def getFileVersion(histDir):
@@ -46,6 +49,7 @@ def getFileVersion(histDir):
     
     return cnt
 
+
 # get the path to the next file version
 def getNextVersionDir(histDir):
     v = getFileVersion(histDir) # get file version of the given history directory
@@ -55,25 +59,31 @@ def getNextVersionDir(histDir):
         os.makedirs(path) # make the directory for this file version
     return path
 
+
 # get the path to a file archive with differences in the given file version
 def getChangesZipPath(verDir):
     return os.path.join(verDir, 'diff.zip')
+
 
 # get the path to a json file with changes of the given file version
 def getChangesHistoryPath(verDir):
     return os.path.join(verDir, 'changes.json')
 
+
 # get the path to the previous file version
 def getPrevFilePath(verDir, ext):
     return os.path.join(verDir, f'prev{ext}')
+
 
 # get the path to a txt file with a key information in it
 def getKeyPath(verDir):
     return os.path.join(verDir, 'key.txt')
 
+
 # get the path to a json file with meta data about this file
 def getMetaPath(histDir):
     return os.path.join(histDir, 'createdInfo.json')
+
 
 # create a json file with file meta data using the storage path and request
 def createMeta(storagePath, req):
@@ -95,6 +105,7 @@ def createMeta(storagePath, req):
     
     return
 
+
 # create a json file with file meta data using the file name, user id, user name and user address
 def createMetaData(filename, uid, uname, usAddr):
     histDir = getHistoryDir(docManager.getStoragePath(filename, usAddr))
@@ -113,22 +124,26 @@ def createMetaData(filename, uid, uname, usAddr):
 
     return
 
+
 # create file with a given content in it
 def writeFile(path, content):
     with io.open(path, 'w') as out:
         out.write(content)
     return
 
+
 # read a file
 def readFile(path):
     with io.open(path, 'r') as stream:
         return stream.read()
+
 
 # get the url to the history file version with a given extension
 def getPublicHistUri(filename, ver, file, req, isServerUrl=True):
     host = docManager.getServerUrl(isServerUrl, req)
     curAdr = f'&userAddress={req.META["REMOTE_ADDR"]}' if isServerUrl else ''
     return f'{host}/downloadhistory?fileName={filename}&ver={ver}&file={file}{curAdr}'
+
 
 # get the meta data of the file
 def getMeta(storagePath):
@@ -140,6 +155,7 @@ def getMeta(storagePath):
             return json.loads(stream.read()) # turn meta data into python format
     
     return None
+
 
 # get the document history of a given file
 def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, req):
