@@ -249,7 +249,7 @@ def edit(request):
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
-                'chat': user.id !='uid-0',
+                'chat': user.id != 'uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups,
@@ -257,7 +257,7 @@ def edit(request):
             },
             'referenceData': {
                 'instanceId': docManager.getServerUrl(False, request),
-                'fileKey': json.dumps({'fileName': filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
+                'fileKey': json.dumps({'fileName': filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id != 'uid-0' else None
             }
         },
         'editorConfig': {
@@ -269,11 +269,11 @@ def edit(request):
                 "mode": "strict", 
                 "change": False
             } 
-            if edMode == 'view' and user.id =='uid-0' else None,
-            'createUrl': createUrl if user.id !='uid-0' else None,
+            if edMode == 'view' and user.id == 'uid-0' else None,
+            'createUrl': createUrl if user.id != 'uid-0' else None,
             'templates': templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
-                'id': user.id if user.id !='uid-0' else None,
+                'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
                 'group': user.group
             },
@@ -346,7 +346,7 @@ def edit(request):
         'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
-        'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None
+        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 

@@ -42,7 +42,7 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass = None, l
         'region': lang
     }
 
-    headers={'accept': 'application/json'}
+    headers = {'accept': 'application/json'}
 
     if (isAsync): # check if the operation is asynchronous
         payload.setdefault('async', True) # and write this information to the payload object

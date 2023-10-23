@@ -170,7 +170,7 @@ def commandRequest(method, key, meta = None):
     if (meta): 
         payload['meta'] = meta
 
-    headers={'accept': 'application/json'}
+    headers = {'accept': 'application/json'}
 
     if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
