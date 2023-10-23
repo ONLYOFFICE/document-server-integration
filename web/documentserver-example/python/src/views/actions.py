@@ -491,7 +491,7 @@ def reference(request):
             userAddress = fileKey['userAddress']
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
-    
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
@@ -500,11 +500,11 @@ def reference(request):
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     if fileName is None:
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     data = {
         'fileType': fileUtils.getFileExt(fileName).replace('.', ''),
         'key': docManager.generateFileKey(fileName, request),
@@ -519,7 +519,7 @@ def reference(request):
 
     if (jwtManager.isEnabled()):
         data['token'] = jwtManager.encode(data)
-    
+
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

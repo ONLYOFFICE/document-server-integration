@@ -185,7 +185,7 @@ def getForcesavePath(filename, req, create):
     directory = storage_directory.joinpath(curAdr)
     if not os.path.exists(directory):  # the directory with host address doesn't exist
         return ""
- 
+
     directory = os.path.join(directory, f'{filename}-hist')  # get the path to the history of the given file
     if (not os.path.exists(directory)):
         if create:  # if the history directory doesn't exist
