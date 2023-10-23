@@ -1,5 +1,6 @@
 # Change Log
 
+- trimming long name of uploading file
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
