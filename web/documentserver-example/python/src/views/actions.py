@@ -171,7 +171,7 @@ def rename(request):
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
-    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true")  if 'directUrl' in request.GET else False
+    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true") if 'directUrl' in request.GET else False
 
     ext = fileUtils.getFileExt(filename)
 
