@@ -502,7 +502,8 @@ def reference(request):
             'instanceId' : docManager.getServerUrl(False, request),
             'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
         },
-        'path' : fileName
+        'path' : fileName,
+        'link' : docManager.getServerUrl(False, request) + '/edit?filename=' + fileName
     }
 
     if (jwtManager.isEnabled()):
