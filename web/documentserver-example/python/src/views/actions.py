@@ -418,7 +418,7 @@ def download(request):
         userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
+        if (jwtManager.isEnabled() and isEmbedded is None and userAddress and jwtManager.useForRequest()):
             token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
@@ -428,7 +428,7 @@ def download(request):
             except Exception:
                 return HttpResponse('JWT validation failed', status=403)
 
-        if (userAddress == None):
+        if (userAddress is None):
             userAddress = request
 
         filePath = docManager.getForcesavePath(fileName, userAddress, False)  # get the path to the forcesaved file version
@@ -451,7 +451,7 @@ def downloadhistory(request):
         version = fileUtils.getFileName(request.GET['ver'])
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
+        if (jwtManager.isEnabled() and isEmbedded is None and jwtManager.useForRequest()):
             token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
