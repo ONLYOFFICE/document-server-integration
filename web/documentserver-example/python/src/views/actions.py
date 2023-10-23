@@ -176,7 +176,6 @@ def edit(request):
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -424,7 +423,7 @@ def download(request):
                 token = token[len('Bearer '):]
 
             try:
-                body = jwtManager.decode(token)
+                jwtManager.decode(token)
             except Exception:
                 return HttpResponse('JWT validation failed', status=403)
 
@@ -456,7 +455,7 @@ def downloadhistory(request):
             if token:
                 token = token[len('Bearer '):]
                 try:
-                    body = jwtManager.decode(token)
+                    jwtManager.decode(token)
                 except Exception:
                     return HttpResponse('JWT validation failed', status=403)
             else:
