@@ -33,7 +33,7 @@ To configure the example, you can edit the environment variables in [`compose-ba
 
 ### On Local Machine
 
-Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the [detailed guide to learn how to install it](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx) on Windows, Linux, or Docker.
+Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the detailed guide to learn how to install it on [Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [Docker](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx).
 
 To run the example on your local machine, you will need [Ruby 3.2.2](https://ruby-lang.org) with [Bundler 2.4.10](https://bundler.io). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
@@ -66,24 +66,14 @@ Make sure that the Document Server has access to the server with the example ins
 
 The example is configured by changing environment variables.
 
-- `BINDING` \
-The address where the server should be started. \
-For example: `0.0.0.0`
-- `DOCUMENT_SERVER_PRIVATE_URL` \
-The URL through which the server will communicate with Document Server. \
-For example: http://proxy:8080
-- `DOCUMENT_SERVER_PUBLIC_URL` \
-The URL through which a user will communicate with Document Server. \
-For example: http://localhost:8080
-- `EXAMPLE_URL` \
-The URL through which Document Server will communicate with the server. \
-For example: http://proxy
-- `JWT_SECRET` \
-JWT authorization secret. Leave blank to disable authorization. \
-For example: `your-256-bit-secret`
-- `PORT` \
-The port on which the server should be running. \
-For example: `80`
+| Name | Description | Example |
+| ------------- | ------------- | ------------- |
+| `BINDING` | The address where the server should be started. | `0.0.0.0` |
+| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080` |
+| `DOCUMENT_SERVER_PUBLIC_URL` | The URL through which a user will communicate with Document Server. | `http://localhost:8080` |
+| `EXAMPLE_URL` | The URL through which Document Server will communicate with the server. | `http://proxy` |
+| `JWT_SECRET` | JWT authorization secret. Leave blank to disable authorization. | `your-256-bit-secret` |
+| `PORT` | The port on which the server should be running. | `80` |
 
 ## Security Info
 
