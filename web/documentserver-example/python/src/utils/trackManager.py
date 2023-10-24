@@ -114,8 +114,6 @@ def processSave(raw_body, filename, usAddr):
     if forcesavePath != "":  # if the forcesaved file version exists
         os.remove(forcesavePath)  # remove it
 
-    return
-
 
 # file force saving process
 def processForceSave(body, filename, usAddr):
@@ -166,7 +164,6 @@ def processForceSave(body, filename, usAddr):
     if isSubmitForm:
         uid = body['actions'][0]['userid']  # get the user id
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr)  # create meta data for forcesaved file
-    return
 
 
 # create a command request

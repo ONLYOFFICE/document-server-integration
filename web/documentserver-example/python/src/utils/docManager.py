@@ -235,7 +235,6 @@ def createFile(stream, path, req=None, meta=False):
             read = stream.read(bufSize)
     if meta:
         historyManager.createMeta(path, req)  # create meta data for the file if needed
-    return
 
 
 # save file
@@ -243,7 +242,6 @@ def saveFile(response, path):
     with open(path, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)
-    return
 
 
 # download file from the given url

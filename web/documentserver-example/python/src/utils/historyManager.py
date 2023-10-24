@@ -103,8 +103,6 @@ def createMeta(storagePath, req):
 
     writeFile(path, json.dumps(obj))
 
-    return
-
 
 # create a json file with file meta data using the file name, user id, user name and user address
 def createMetaData(filename, uid, uname, usAddr):
@@ -122,14 +120,11 @@ def createMetaData(filename, uid, uname, usAddr):
 
     writeFile(path, json.dumps(obj))
 
-    return
-
 
 # create file with a given content in it
 def writeFile(path, content):
     with io.open(path, 'w') as out:
         out.write(content)
-    return
 
 
 # read a file
