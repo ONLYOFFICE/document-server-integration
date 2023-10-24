@@ -205,13 +205,22 @@ def getStoredFiles(req):
     directory = getRootFolder(req)
 
     files = os.listdir(directory)
-    files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)  # sort files by time of last modification
+
+    # sort files by time of last modification
+    files.sort(key=lambda x: os.path.getmtime(os.path.join(directory, x)), reverse=True)
 
     fileInfos = []
 
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
-            fileInfos.append({'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)), 'version': historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))), 'type': fileUtils.getFileType(f), 'title': f, 'url': getFileUri(f, True, req), 'canEdit': isCanEdit(fileUtils.getFileExt(f))})  # write information about file type, title and url
+            fileInfos.append({
+                'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)),
+                'version': historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))),
+                'type': fileUtils.getFileType(f),
+                'title': f,
+                'url': getFileUri(f, True, req),
+                'canEdit': isCanEdit(fileUtils.getFileExt(f))
+                })  # write information about file type, title and url
 
     return fileInfos
 
@@ -258,11 +267,12 @@ def createSample(fileType, sample, req):
         sample = 'false'
 
     sampleName = 'sample' if sample == 'true' else 'new'  # create sample or new template
-
-    filename = getCorrectName(f'{sampleName}{ext}', req)  # get file name with an index if such a file name already exists
+    # get file name with an index if such a file name already exists
+    filename = getCorrectName(f'{sampleName}{ext}', req)
     path = getStoragePath(filename, req)
-
-    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream:  # create sample file of the necessary extension in the directory
+    # create sample file of the necessary extension in the directory
+    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new',
+                              f'{sampleName}{ext}'), 'rb') as stream:
         createFile(stream, path, req, True)
     return filename
 
@@ -282,8 +292,8 @@ def generateFileKey(filename, req):
     path = getStoragePath(filename, req)
     uri = getFileUri(filename, False, req)
     stat = os.stat(path)  # get the directory parameters
-
-    h = str(hash(f'{uri}_{stat.st_mtime_ns}'))  # get the hash value of the file url and the date of its last modification and turn it into a string format
+    # get the hash value of the file url and the date of its last modification and turn it into a string format
+    h = str(hash(f'{uri}_{stat.st_mtime_ns}'))
     replaced = re.sub(r'[^0-9-.a-zA-Z_=]', '_', h)
     return replaced[:20]  # take the first 20 characters for the key
 
@@ -307,7 +317,9 @@ def getFilesInfo(req):
         stats = os.stat(os.path.join(getRootFolder(req), f.get("title")))  # get file information
         result.append(  # write file parameters to the file object
             {
-                "version": historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f.get("title"), req))),
+                "version": historyManager.getFileVersion(historyManager.getHistoryDir(
+                    getStoragePath(f.get("title"), req)
+                    )),
                 "id":  generateFileKey(f.get("title"), req),
                 "contentLength": "%.2f KB" % (stats.st_size/1024),
                 "pureContentLength": stats.st_size,
@@ -331,7 +343,8 @@ def getFilesInfo(req):
 def download(filePath):
     response = FileResponse(open(filePath, 'rb'), True)  # write headers to the response object
     response['Content-Length'] = os.path.getsize(filePath)
-    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.quote_plus(os.path.basename(filePath))
+    response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + \
+                                      urllib.parse.quote_plus(os.path.basename(filePath))
     response['Content-Type'] = magic.from_file(filePath, mime=True)
     response['Access-Control-Allow-Origin'] = "*"
     return response

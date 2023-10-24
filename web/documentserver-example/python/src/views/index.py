@@ -47,4 +47,5 @@ def default(request):  # default parameters that will be passed to the template
         'fillExt': json.dumps(format_manager.fillable_extensions()),
         'directUrl': str(getDirectUrlParam(request)).lower
     }
-    return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format
+    # execute the "index.html" template with context data and return http response in json format
+    return render(request, 'index.html', context)

@@ -188,16 +188,21 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                             'id': meta['uid'],
                             'name': meta['uname']
                         }
-
-                dataObj['url'] = docUrl if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req)  # write file url to the data object
+                # write file url to the data object
+                dataObj['url'] = docUrl if i == version else getPublicHistUri(
+                    filename, i, "prev" + fileUtils.getFileExt(filename), req
+                    )
                 if isEnableDirectUrl:
-                    dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False)  # write file direct url to the data object
+                    # write file direct url to the data object
+                    dataObj['directUrl'] = docManager.getDownloadUrl(filename, req, False) if i == version \
+                        else getPublicHistUri(filename, i, "prev" + fileUtils.getFileExt(filename), req, False)
 
                 if i > 1:  # check if the version number is greater than 1 (the file was modified)
-                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))  # get the path to the changes.json file
+                    # get the path to the changes.json file
+                    changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))
                     change = changes['changes'][0]
-
-                    obj['changes'] = changes['changes'] if change else None  # write information about changes to the object
+                    # write information about changes to the object
+                    obj['changes'] = changes['changes'] if change else None
                     obj['serverVersion'] = changes['serverVersion']
                     obj['created'] = change['created'] if change else None
                     obj['user'] = change['user'] if change else None
@@ -214,7 +219,8 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                         'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo  # write information about previous file version to the data object
-                    dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)  # write the path to the diff.zip archive with differences in this file version
+                    # write the path to the diff.zip archive with differences in this file version
+                    dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)
 
                 if jwtManager.isEnabled():
                     dataObj['token'] = jwtManager.encode(dataObj)

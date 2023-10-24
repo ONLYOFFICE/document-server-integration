@@ -66,9 +66,12 @@ def processSave(raw_body, filename, usAddr):
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
         try:
-            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt, docManager.generateRevisionId(download), False)  # convert file and give url to a new file
+            # convert file and give url to a new file
+            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt,
+                                                              docManager.generateRevisionId(download), False)
             if not convertedData:
-                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt, usAddr)  # get the correct file name if it already exists
+                newFilename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + downloadExt,
+                                                        usAddr)  # get the correct file name if it already exists
             else:
                 download = convertedData['uri']
         except Exception:
@@ -86,25 +89,28 @@ def processSave(raw_body, filename, usAddr):
 
     versionDir = historyManager.getNextVersionDir(histDir)  # get the path to the next file version
 
-    os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt))  # get the path to the previous file version and rename the storage path with it
+    # get the path to the previous file version and rename the storage path with it
+    os.rename(docManager.getStoragePath(filename, usAddr), historyManager.getPrevFilePath(versionDir, curExt))
 
     docManager.saveFile(data, path)  # save document file
 
     dataChanges = docManager.downloadFileFromUri(changesUri)  # download changes file
     if (dataChanges is None):
         raise Exception("Downloaded changes is null")
-    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir))  # save file changes to the diff.zip archive
+    # save file changes to the diff.zip archive
+    docManager.saveFile(dataChanges, historyManager.getChangesZipPath(versionDir))
 
     hist = None
     hist = body.get('changeshistory')
     if (not hist) & ('history' in body):
         hist = json.dumps(body.get('history'))
     if hist:
-        historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist)  # write the history changes to the changes.json file
-
-    historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))  # write the key value to the key.txt file
-
-    forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False)  # get the path to the forcesaved file version
+        # write the history changes to the changes.json file
+        historyManager.writeFile(historyManager.getChangesHistoryPath(versionDir), hist)
+    # write the key value to the key.txt file
+    historyManager.writeFile(historyManager.getKeyPath(versionDir), body.get('key'))
+    # get the path to the forcesaved file version
+    forcesavePath = docManager.getForcesavePath(newFilename, usAddr, False)
     if (forcesavePath != ""):  # if the forcesaved file version exists
         os.remove(forcesavePath)  # remove it
 
@@ -125,7 +131,9 @@ def processForceSave(body, filename, usAddr):
     # convert downloaded file to the file with the current extension if these extensions aren't equal
     if (curExt != downloadExt):
         try:
-            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt, docManager.generateRevisionId(download), False)  # convert file and give url to a new file
+            # convert file and give url to a new file
+            convertedData = serviceConverter.getConvertedData(download, downloadExt, curExt,
+                                                              docManager.generateRevisionId(download), False)
             if not convertedData:
                 newFilename = True
             else:
@@ -141,7 +149,8 @@ def processForceSave(body, filename, usAddr):
 
     if (isSubmitForm):
         if (newFilename):
-            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + downloadExt, usAddr)  # get the correct file name if it already exists
+            filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + downloadExt,
+                                                 usAddr)  # get the correct file name if it already exists
         else:
             filename = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + "-form" + curExt, usAddr)
         forcesavePath = docManager.getStoragePath(filename, usAddr)
@@ -174,10 +183,12 @@ def commandRequest(method, key, meta=None):
 
     if (jwtManager.isEnabled() and jwtManager.useForRequest()):  # check if a secret key to generate token exists or not
         headerToken = jwtManager.encode({'payload': payload})  # encode a payload object into a header token
-        headers[config_manager.jwt_header()] = f'Bearer {headerToken}'  # add a header Authorization with a header token with Authorization prefix in it
+        # add a header Authorization with a header token with Authorization prefix in it
+        headers[config_manager.jwt_header()] = f'Bearer {headerToken}'
 
         payload['token'] = jwtManager.encode(payload)  # encode a payload object into a body token
-    response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled())
+    response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers,
+                             verify=config_manager.ssl_verify_peer_mode_enabled())
 
     if (meta):
         return response

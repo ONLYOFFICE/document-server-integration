@@ -49,9 +49,11 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lan
     if (jwtManager.isEnabled() and jwtManager.useForRequest()):  # check if a secret key to generate token exists or not
         headerToken = jwtManager.encode({'payload': payload})  # encode a payload object into a header token
         payload['token'] = jwtManager.encode(payload)  # encode a payload object into a body token
-        headers[config_manager.jwt_header()] = f'Bearer {headerToken}'  # add a header Authorization with a header token with Authorization prefix in it
-
-    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)  # send the headers and body values to the converter and write the result to the response
+        # add a header Authorization with a header token with Authorization prefix in it
+        headers[config_manager.jwt_header()] = f'Bearer {headerToken}'
+    # send the headers and body values to the converter and write the result to the response
+    response = requests.post(config_manager.document_server_converter_url().geturl(), json=payload, headers=headers,
+                             verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = response.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Convertation service returned status: %s' % status_code)
