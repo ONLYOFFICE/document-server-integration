@@ -16,7 +16,7 @@ To run the example using [Docker](https://docker.com), you will need [Docker Des
 Once you have everything installed, download the release archive and unarchive it.
 
 ```sh
-$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/download/v1.6.0/Ruby.Example.zip
+$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
 $ unzip Ruby.Example.zip
 ```
 
@@ -40,7 +40,7 @@ To run the example on your local machine, you will need [Ruby 3.2.2](https://rub
 Once you have everything installed, download the release archive and unarchive it.
 
 ```sh
-$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/download/v1.6.0/Ruby.Example.zip
+$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
 $ unzip Ruby.Example.zip
 ```
 
