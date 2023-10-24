@@ -33,7 +33,7 @@ To configure the example, you can edit the environment variables in [`compose-ba
 
 ### On Local Machine
 
-Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). See to the [detailed guide to learn how to install it](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx) on Windows, Linux, or Docker.
+Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the [detailed guide to learn how to install it](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx) on Windows, Linux, or Docker.
 
 To run the example on your local machine, you will need [Ruby 3.2.2](https://ruby-lang.org) with [Bundler 2.4.10](https://bundler.io). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
