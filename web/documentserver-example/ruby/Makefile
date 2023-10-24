@@ -22,6 +22,8 @@ help: #          Show help message for each of the Makefile recipes.
 		awk 'BEGIN {FS = ": # "}; {printf "%s: %s\n", $$1, $$2}'
 
 .PHONY: dev
+dev: \
+	export BUNDLE_WITH := development:doc:test
 dev: #           Install development dependencies and initialize the project.
 	@bundle install
 	@bundle exec rake app:update:bin
@@ -30,8 +32,10 @@ ifeq ($(SORBET_SUPPORTED),1)
 endif
 
 .PHONY: prod
+prod: \
+	export BUNDLE_WITHOUT := development:doc:test
 prod: #          Install production dependencies.
-	@bundle install --without development doc test
+	@bundle install
 	@bundle exec rake app:update:bin
 
 .PHONY: server-dev
