@@ -43,7 +43,7 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lan
 
     headers = {'accept': 'application/json'}
 
-    if (isAsync):  # check if the operation is asynchronous
+    if isAsync:  # check if the operation is asynchronous
         payload.setdefault('async', True)  # and write this information to the payload object
 
     if (jwtManager.isEnabled() and jwtManager.useForRequest()):  # check if a secret key to generate token exists or not

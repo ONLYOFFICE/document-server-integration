@@ -40,7 +40,7 @@ def upload(request):
     try:
         fileInfo = request.FILES['uploadedFile']
         # check if the file size exceeds the maximum size allowed (5242880)
-        if ((fileInfo.size > config_manager.maximum_file_size()) | (fileInfo.size <= 0)):
+        if (fileInfo.size > config_manager.maximum_file_size()) | (fileInfo.size <= 0):
             raise Exception('File size is incorrect')
 
         curExt = fileUtils.getFileExt(fileInfo.name)
@@ -137,7 +137,7 @@ def saveAs(request):
         resp = requests.get(saveAsFileUrl, verify=config_manager.ssl_verify_peer_mode_enabled())
 
         # check if the file size exceeds the maximum size allowed (5242880)
-        if ((len(resp.content) > config_manager.maximum_file_size()) | (len(resp.content) <= 0)):
+        if (len(resp.content) > config_manager.maximum_file_size()) | (len(resp.content) <= 0):
             response.setdefault('error', 'File size is incorrect')
             raise Exception('File size is incorrect')
 
@@ -166,7 +166,7 @@ def rename(request):
 
     origExt = '.' + body['ext']
     curExt = fileUtils.getFileExt(newfilename)
-    if (origExt != curExt):
+    if origExt != curExt:
         newfilename += origExt
 
     dockey = body['dockey']
@@ -232,7 +232,7 @@ def edit(request):
         }
     ]
 
-    if (meta):  # if the document meta data exists,
+    if meta:  # if the document meta data exists,
         infObj = {  # write author and creation time parameters to the information object
             'owner': meta['uname'],
             'uploaded': meta['created']
@@ -386,10 +386,10 @@ def track(request):
         body = trackManager.readBody(request)  # read request body
         status = body['status']  # and get status from it
 
-        if (status == 1):  # editing
+        if status == 1:  # editing
             if (body['actions'] and body['actions'][0]['type'] == 0):  # finished edit
                 user = body['actions'][0]['userid']  # the user who finished editing
-                if (user not in body['users']):
+                if user not in body['users']:
                     # create a command request with the forcasave method
                     trackManager.commandRequest('forcesave', body['key'])
 
@@ -458,12 +458,12 @@ def download(request):
             except Exception:
                 return HttpResponse('JWT validation failed', status=403)
 
-        if (userAddress is None):
+        if userAddress is None:
             userAddress = request
 
         # get the path to the forcesaved file version
         filePath = docManager.getForcesavePath(fileName, userAddress, False)
-        if (filePath == ""):
+        if filePath == "":
             filePath = docManager.getStoragePath(fileName, userAddress)  # get file from the storage directory
         response = docManager.download(filePath)  # download this file
         return response
@@ -549,7 +549,7 @@ def reference(request):
         'path': fileName
     }
 
-    if (jwtManager.isEnabled()):
+    if jwtManager.isEnabled():
         data['token'] = jwtManager.encode(data)
 
     return HttpResponse(json.dumps(data), content_type='application/json')

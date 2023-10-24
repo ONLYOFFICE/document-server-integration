@@ -187,7 +187,7 @@ def getForcesavePath(filename, req, create):
         return ""
 
     directory = os.path.join(directory, f'{filename}-hist')  # get the path to the history of the given file
-    if (not os.path.exists(directory)):
+    if not os.path.exists(directory):
         if create:  # if the history directory doesn't exist
             os.makedirs(directory)  # create history directory if it doesn't exist
         else:  # the history directory doesn't exist and we are not supposed to create it
@@ -300,7 +300,7 @@ def generateFileKey(filename, req):
 
 # generate the document key value
 def generateRevisionId(expectedKey):
-    if (len(expectedKey) > 20):
+    if len(expectedKey) > 20:
         expectedKey = str(hash(expectedKey))
 
     key = re.sub(r'[^0-9-.a-zA-Z_=]', '_', expectedKey)

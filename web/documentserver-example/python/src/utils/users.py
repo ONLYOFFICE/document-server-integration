@@ -119,7 +119,7 @@ def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
 
     for user in USERS:
-        if (user.id == uid):
+        if user.id == uid:
             return user
 
     return DEFAULT_USER

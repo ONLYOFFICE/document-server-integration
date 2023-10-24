@@ -30,7 +30,7 @@ format_manager = FormatManager()
 
 
 def getDirectUrlParam(request):
-    if ('directUrl' in request.GET):
+    if 'directUrl' in request.GET:
         return request.GET['directUrl'].lower() in ("true")
     else:
         return False
