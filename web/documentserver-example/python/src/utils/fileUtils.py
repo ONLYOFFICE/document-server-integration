@@ -24,28 +24,28 @@ format_manager = FormatManager()
 
 
 # get file name from the document url
-def getFileName(str):
-    ind = str.rfind('/')
-    return str[ind+1:]
+def getFileName(uri):
+    ind = uri.rfind('/')
+    return uri[ind+1:]
 
 
 # get file name without extension from the document url
-def getFileNameWithoutExt(str):
-    fn = getFileName(str)
+def getFileNameWithoutExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[:ind]
 
 
 # get file extension from the document url
-def getFileExt(str):
-    fn = getFileName(str)
+def getFileExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[ind:].lower()
 
 
 # get file type
-def getFileType(str):
-    ext = getFileExt(str)
+def getFileType(uri):
+    ext = getFileExt(uri)
     if ext in format_manager.document_extensions():
         return 'word'
     if ext in format_manager.spreadsheet_extensions():

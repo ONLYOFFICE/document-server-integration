@@ -20,9 +20,9 @@ from typing import Optional
 
 
 class User:
-    def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions,
-                 descriptions, templates):
-        self.id = id
+    def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
+                 deniedPermissions, descriptions, templates):
+        self.id = uid
         self.name = name
         self.email = email
         self.group = group
@@ -134,11 +134,11 @@ def getUsersForMentions(uid):
     return usersData
 
 
-def find_user(id: Optional[str]) -> User:
-    if id is None:
+def find_user(searchId: Optional[str]) -> User:
+    if searchId is None:
         return DEFAULT_USER
     for user in USERS:
-        if not user.id == id:
+        if not user.id == searchId:
             continue
         return user
     return DEFAULT_USER
