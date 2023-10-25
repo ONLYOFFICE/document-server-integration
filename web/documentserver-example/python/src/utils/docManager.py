@@ -103,8 +103,8 @@ def getServerUrl(forDocumentServer, req):
     example_url = config_manager.example_url()
     if (forDocumentServer and example_url is not None):
         return example_url.geturl()
-    else:
-        return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
+
+    return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
 
 # get file url
@@ -331,10 +331,9 @@ def getFilesInfo(req):
     if fileId:
         if len(resultID) > 0:
             return resultID
-        else:
-            return "File not found"
-    else:
-        return result
+        return "File not found"
+
+    return result
 
 
 # download the file
