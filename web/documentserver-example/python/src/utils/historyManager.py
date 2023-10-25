@@ -20,10 +20,10 @@ import os
 import io
 import json
 
-from . import users, fileUtils
 from datetime import datetime
 from src.utils import docManager
 from src.utils import jwtManager
+from . import users, fileUtils
 
 
 # get the path to the history direction

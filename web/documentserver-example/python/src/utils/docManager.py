@@ -21,9 +21,9 @@ import os
 import shutil
 import io
 import re
-import requests
 import time
 import urllib.parse
+import requests
 import magic
 
 from django.conf import settings
