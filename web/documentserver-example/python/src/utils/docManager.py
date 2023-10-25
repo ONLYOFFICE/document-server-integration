@@ -249,7 +249,7 @@ def downloadFileFromUri(uri, path=None, withSave=False):
     resp = requests.get(uri, stream=True, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = resp.status_code
     if status_code != 200:  # checking status code
-        raise RuntimeError('Document editing service returned status: %s' % status_code)
+        raise RuntimeError(f'Document editing service returned status: {status_code}')
     if withSave:
         if path is None:
             raise RuntimeError('Path for saving file is null')
@@ -319,7 +319,7 @@ def getFilesInfo(req):
                     getStoragePath(f.get("title"), req)
                     )),
                 "id":  generateFileKey(f.get("title"), req),
-                "contentLength": "%.2f KB" % (stats.st_size/1024),
+                "contentLength": f"{(stats.st_size/1024):.2f} KB",
                 "pureContentLength": stats.st_size,
                 "title":  f.get("title"),
                 "updated": time.strftime("%Y-%m-%dT%X%z", time.gmtime(stats.st_mtime))
