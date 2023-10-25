@@ -185,7 +185,7 @@ def commandRequest(method, key, meta=None):
 
         payload['token'] = jwtManager.encode(payload)  # encode a payload object into a body token
     response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers,
-                             verify=config_manager.ssl_verify_peer_mode_enabled())
+                             verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
 
     if meta:
         return response
