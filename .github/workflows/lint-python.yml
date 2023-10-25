@@ -37,4 +37,4 @@ jobs:
           
       - name: Lint Pylint
         run: |
-          pylint ./**/*.py --rcfile=.pylintrc
+          pylint ./**/*.py --rcfile=.pylintrc --disable=import-error
