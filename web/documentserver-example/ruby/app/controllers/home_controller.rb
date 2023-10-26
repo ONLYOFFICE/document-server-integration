@@ -281,14 +281,13 @@ class HomeController < ApplicationController
   # downloading an assets file
   def asset
     file_name = File.basename(params[:fileName])
-    assetPath = Rails.root.join('assets', 'document-templates', 'sample', file_name)
+    asset_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
 
-    # add headers to the response to specify the page parameters
-    response.headers['Content-Length'] = File.size(assetPath).to_s
-    response.headers['Content-Type'] = MimeMagic.by_path(assetPath).type
+    response.headers['Content-Length'] = File.size(asset_path).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(asset_path).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
 
-    send_file assetPath, :x_sendfile => true
+    send_file asset_path, :x_sendfile => true
   end
   
   # downloading a file
