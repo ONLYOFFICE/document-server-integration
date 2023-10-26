@@ -301,17 +301,17 @@ def edit(request):
     }
 
     # a document which will be compared with the current document
-    dataCompareFile = {
+    dataDocument = {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + '/static/sample.docx',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/assets?filename=sample.docx',
+        'directUrl': docManager.getServerUrl(False, request) + '/assets?filename=sample.docx'
     } if isEnableDirectUrl else {
         'fileType': 'docx',
-        'url': docManager.getServerUrl(True, request) + '/static/sample.docx'
+        'url': docManager.getServerUrl(True, request) + '/assets?filename=sample.docx'
     }
 
     # recipient data for mail merging
-    dataMailMergeRecipients = {
+    dataSpreadsheet = {
         'fileType': 'csv',
         'url': docManager.getServerUrl(True, request) + '/csv',
         'directUrl': docManager.getServerUrl(False, request) + '/csv'
@@ -326,8 +326,8 @@ def edit(request):
     if jwtManager.isEnabled():  # if the secret key to generate token exists
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
         dataInsertImage['token'] = jwtManager.encode(dataInsertImage)  # encode the dataInsertImage object into a token
-        dataCompareFile['token'] = jwtManager.encode(dataCompareFile)  # encode the dataCompareFile object into a token
-        dataMailMergeRecipients['token'] = jwtManager.encode(dataMailMergeRecipients)  # encode the dataMailMergeRecipients object into a token
+        dataDocument['token'] = jwtManager.encode(dataDocument)  # encode the dataDocument object into a token
+        dataSpreadsheet['token'] = jwtManager.encode(dataSpreadsheet)  # encode the dataSpreadsheet object into a token
 
     hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
 
@@ -338,8 +338,8 @@ def edit(request):
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
-        'dataCompareFile': dataCompareFile,  # document which will be compared with the current document
-        'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
+        'dataDocument': dataDocument,  # document which will be compared with the current document
+        'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
@@ -502,6 +502,7 @@ def reference(request):
     
     data = {
         'fileType' : fileUtils.getFileExt(fileName).replace('.', ''),
+        'key': docManager.generateFileKey(fileName,request),
         'url' : docManager.getDownloadUrl(fileName, request),
         'directUrl' : docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
         'referenceData' : {

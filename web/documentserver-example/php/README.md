@@ -33,7 +33,7 @@ You can use any web server capable of running PHP code to run the example. We wi
 
 * **IIS**: version 7 or later (refer to [Microsoft official website](https://www.iis.net/learn/application-frameworks/scenario-build-a-php-website-on-iis/configuring-step-1-install-iis-and-php) to learn how to install IIS);
 * **PHP** (download it from the [http://php.net](https://php.net/downloads.php) site);
-* **PHP Manager for IIS** (download it from the [Microsoft open source site](https://phpmanager.codeplex.com/releases/view/69115)).
+* **PHP Manager for IIS** (download it from the [Microsoft open source site](https://www.iis.net/downloads/community/2018/05/php-manager-150-for-iis-10)).
 * **Composer** (download it from the [Composer official website](https://getcomposer.org/download/)).
 
 ### Step 4. IIS configuration

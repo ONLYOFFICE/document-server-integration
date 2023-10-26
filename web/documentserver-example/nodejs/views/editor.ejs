@@ -177,7 +177,7 @@
             docEditor.insertImage(data);  // insert an image into the file
         };
 
-        var onRequestSelectDocument = function() {  // the user is trying to select document by clicking the Document from Storage button
+        var onRequestSelectDocument = function(event) {  // the user is trying to select document by clicking the Document from Storage button
             var data = <%- JSON.stringify(dataDocument) %>;
             data.c = event.data.c;
             docEditor.setRequestedDocument(data);  // select a document
@@ -336,11 +336,18 @@
             }
         };
 
+        var onDocumentReady = function(){
+            if (config.type === "mobile") {
+                document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
+            }
+        };
+
         config = {
             <%- include("config") %>
         };
         config.events = {
             "onAppReady": onAppReady,
+            "onDocumentReady": onDocumentReady,
             "onDocumentStateChange": onDocumentStateChange,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
@@ -386,20 +393,6 @@
             }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
-            fixSize();
-        };
-
-        // get the editor sizes
-        var fixSize = function () {
-            if (config.type !== "mobile") {
-                return;
-            }
-            var wrapEl = document.getElementsByClassName("form");
-            if (wrapEl.length) {
-                wrapEl[0].style.height = screen.availHeight + "px";
-                window.scrollTo(0, -1);
-                wrapEl[0].style.height = window.innerHeight + "px";
-            }
         };
 
         const getFileExt = function (fileName) {
@@ -411,10 +404,8 @@
 
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
-            window.addEventListener("resize", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
-            window.attachEvent("onresize", fixSize);
         }
 
     </script>

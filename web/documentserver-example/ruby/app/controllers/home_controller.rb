@@ -422,6 +422,7 @@ class HomeController < ApplicationController
 
       data = {
         :fileType => File.extname(fileName).downcase.delete("."),
+        :key => ServiceConverter.generate_revision_id("#{DocumentHelper.cur_user_host_address(nil) + '/' + fileName}.#{File.mtime(DocumentHelper.storage_path(fileName, nil)).to_s}"),
         :url => DocumentHelper.get_download_url(fileName),
         :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
         :referenceData => {
