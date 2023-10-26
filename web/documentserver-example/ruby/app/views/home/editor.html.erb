@@ -185,14 +185,7 @@
           innerAlert(response.error)
           return
         }
-        fileData = <%= raw @file.to_json %>;
-        const req = new XMLHttpRequest()
-        req.open("POST", '/historyobj')
-        req.send(JSON.stringify(fileData))
-        req.onload = function () {
-            versionHistory = JSON.parse(req.response)
-            docEditor.refreshHistory(versionHistory.hist)
-        }
+        onRequestHistory()
       }
     }
 

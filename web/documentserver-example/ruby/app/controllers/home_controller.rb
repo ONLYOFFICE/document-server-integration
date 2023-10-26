@@ -163,19 +163,21 @@ class HomeController < ApplicationController
       if data == nil || data.empty?
           return ""
       end
-      fileData = JSON.parse(data)
+      file_data = JSON.parse(data)
       file = FileModel.new(
-        :file_name => File.basename(fileData['file_name']), 
-        :mode => fileData['mode'], 
-        :type => fileData['type'], 
-        :user_ip => fileData['user_ip'], 
-        :lang => fileData['lang'], 
-        :user => fileData['user'], 
-        :action_data => fileData['action_data'], 
-        :direct_url => fileData['direct_url']
+        file_name: File.basename(file_data['file_name']), 
+        mode: file_data['mode'], 
+        type: file_data['type'], 
+        user_ip: file_data['user_ip'], 
+        lang: file_data['lang'], 
+        user: file_data['user'], 
+        action_data: file_data['action_data'], 
+        direct_url: file_data['direct_url']
       )
       history = file.get_history
       render json: history
+    rescue
+      render json: '{ "error": "File not found"}'
     end
   end
 
