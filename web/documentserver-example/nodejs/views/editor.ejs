@@ -242,7 +242,7 @@
         var requestReference = function(data, callback) {
             innerAlert(data);
 
-            event.data.directUrl = !!config.document.directUrl;
+            data.directUrl = !!config.document.directUrl;
 
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "reference");
