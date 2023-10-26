@@ -152,24 +152,18 @@ public class FileController {
     private ResponseEntity<Resource> downloadSample(final String fileName) {
         String serverPath = System.getProperty("user.dir");
         String contentType = "application/octet-stream";
-        String fileLocation = serverPath
-                    + File.separator + "src"
-                    + File.separator + "main"
-                    + File.separator + "resources"
-                    + File.separator + "assets"
-                    + File.separator + "document-templates"
-                    + File.separator + "sample"
-                    + File.separator + fileName;
-        Path filePath = Paths.get(fileLocation);  // get the path to the file location
+        String[] fileLocation = new String[] {serverPath, "src", "main", "resources", "assets", "document-templates",
+                                              "sample", fileName};
+        Path filePath = Paths.get(String.join(File.separator, fileLocation));
         Resource resource;
         try {
             resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
-            return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
         }
         } catch (MalformedURLException e) {
             e.printStackTrace();
