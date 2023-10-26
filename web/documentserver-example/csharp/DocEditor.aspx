@@ -316,7 +316,6 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
-            // add link to reference data source file 
             config.events['onRequestOpen'] = onRequestOpen;
         }
 
