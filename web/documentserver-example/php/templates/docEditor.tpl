@@ -246,27 +246,7 @@
               innerAlert(response.error)
               return
             }
-            const data = {
-                fileName: query.get('fileID')
-            }
-            const req = new XMLHttpRequest()
-            req.open("POST", 'objhistory')
-            req.setRequestHeader('Content-Type', 'application/json')
-            req.send(JSON.stringify(data))
-            req.onload = function () {
-                if (req.status != 200) {
-                    response = JSON.parse(req.response)
-                    innerAlert(response.error)
-                    return
-                }
-                history = JSON.parse(req.response)
-                docEditor.refreshHistory(
-                    {
-                        currentVersion: history[0].currentVersion,
-                        history: history[0].history
-                    }
-                )
-            }
+            onRequestHistory()
           }
         }
 
