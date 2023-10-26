@@ -65,7 +65,7 @@ def routers():
         path('csv', actions.csv),
         path('download', actions.download),
         path('downloadhistory', actions.downloadhistory),
-        path('historyobj',actions.historyobj),
+        path('historyobj', actions.historyobj),
         path('edit', actions.edit),
         path('files', actions.files),
         path('reference', actions.reference),

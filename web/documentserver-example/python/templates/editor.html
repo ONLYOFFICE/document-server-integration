@@ -203,21 +203,7 @@
               innerAlert(response.error)
               return
             }
-            data = {
-                fileName: query.get('filename')
-            }
-            const req = new XMLHttpRequest()
-            req.open("POST", '/historyobj')
-            req.send(JSON.stringify(data))
-            req.onload = function () {
-                if (req.status != 200) {
-                    response = JSON.parse(req.response)
-                    innerAlert(response.error)
-                    return
-                }
-                hist = JSON.parse(req.response)
-                docEditor.refreshHistory(hist.history)
-            }
+            onRequestHistory()
           }
         }
         
