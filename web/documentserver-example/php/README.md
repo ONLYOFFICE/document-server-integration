@@ -29,7 +29,7 @@ $ make compose-prod
 
 By default, the server starts at `localhost:80`.
 
-To configure the example, you can edit the environment variables in [`compose-base.yml`](./compose-base.yml). See [below](#configuration) for more information about environment variables.
+To configure the example, you can edit the environment variables in [`docker-compose.yml`](./docker-compose.yml). See [below](#configuration) for more information about environment variables.
 
 ### On Local Machine
 
