@@ -1,5 +1,6 @@
 # Change Log
 
+- php: setUsers for region protection
 - python: setUsers for region protection
 - ruby: setUsers for region protection
 - trimming long name of uploading file
