@@ -500,8 +500,11 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   }
 
   if (!fileName && !!req.body.link) {
-    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) !== -1) {
-      result({ error: 'You do not have access to this site' });
+    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) === -1) {
+      result({
+        url: req.body.link,
+        directUrl: req.body.link,
+      });
       return;
     }
 
