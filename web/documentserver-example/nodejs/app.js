@@ -500,8 +500,11 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   }
 
   if (!fileName && !!req.body.link) {
-    if (req.body.link.indexOf(req.DocManager.curUserHostAddress()) !== -1) {
-      result({ error: 'You do not have access to this site' });
+    if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
+      result({
+        url: req.body.link,
+        directUrl: req.body.link,
+      });
       return;
     }
 
@@ -930,6 +933,15 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { commentGroups } = user;
     const { userInfoGroups } = user;
 
+    const usersInfo = [];
+    if (user.id !== 'uid-0') {
+      users.getAllUsers().forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersInfo.push(u);
+      }, usersInfo);
+    }
+
     if (fileExt) {
       // create demo document of a given extension
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
@@ -1000,6 +1012,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
+        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
@@ -1033,6 +1046,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
       usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersInfo,
     };
 
     if (cfgSignatureEnable) {

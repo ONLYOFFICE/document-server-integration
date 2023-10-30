@@ -29,6 +29,7 @@ class User {
     deniedPermissions,
     descriptions,
     templates,
+    avatar,
   ) {
     this.id = id;
     this.name = name;
@@ -41,6 +42,7 @@ class User {
     this.deniedPermissions = deniedPermissions;
     this.descriptions = descriptions;
     this.templates = templates;
+    this.avatar = avatar;
   }
 }
 
@@ -53,6 +55,7 @@ const descrUser1 = [
   'Can create files from templates using data from the editor',
   'Can see the information about all users',
   'Can submit forms',
+  'Has an avatar',
 ];
 
 const descrUser2 = [
@@ -63,6 +66,7 @@ const descrUser2 = [
   'Can create new files from the editor',
   'Can see the information about users from Group2 and users who don’t belong to any group',
   'Can’t submit forms',
+  'Has an avatar',
 ];
 
 const descrUser3 = [
@@ -95,7 +99,7 @@ const descrUser0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true),
+  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true),
   new User(
     'uid-2',
     'Mark Pottato',
@@ -112,6 +116,7 @@ const users = [
     [],
     descrUser2,
     false,
+    true,
   ),
   new User(
     'uid-3',
@@ -129,8 +134,9 @@ const users = [
     ['copy', 'download', 'print'],
     descrUser3,
     false,
+    false,
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false),
 ];
 
 // get a list of all the users
