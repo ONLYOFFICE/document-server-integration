@@ -17,7 +17,6 @@
 """
 
 
-import config
 import os
 import shutil
 import io
@@ -27,24 +26,29 @@ import time
 import urllib.parse
 import magic
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
-from src import settings
+from src.configuration import ConfigurationManager
+from src.format import FormatManager
 from . import fileUtils, historyManager
 
+config_manager = ConfigurationManager()
+format_manager = FormatManager()
+
 def isCanFillForms(ext):
-    return ext in config.DOC_SERV_FILLFORMS
+    return ext in format_manager.fillable_extensions()
 
 # check if the file extension can be viewed
 def isCanView(ext):
-    return ext in config.DOC_SERV_VIEWED
+    return ext in format_manager.viewable_extensions()
 
 # check if the file extension can be edited
 def isCanEdit(ext):
-    return ext in config.DOC_SERV_EDITED
+    return ext in format_manager.editable_extensions()
 
 # check if the file extension can be converted
 def isCanConvert(ext):
-    return ext in config.DOC_SERV_CONVERT
+    return ext in format_manager.convertible_extensions()
 
 # check if the file extension is supported by the editor (it can be viewed or edited or converted)
 def isSupportedExt(ext):
@@ -87,8 +91,9 @@ def getCorrectName(filename, req):
 
 # get server url
 def getServerUrl (forDocumentServer, req):
-    if (forDocumentServer and config.EXAMPLE_DOMAIN is not None):
-        return  config.EXAMPLE_DOMAIN 
+    example_url = config_manager.example_url()
+    if (forDocumentServer and example_url is not None):
+        return example_url.geturl()
     else:
         return req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()
 
@@ -122,7 +127,8 @@ def getRootFolder(req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = config.STORAGE_PATH if os.path.isabs(config.STORAGE_PATH) else os.path.join(config.STORAGE_PATH, curAdr)
+    storage_directory = config_manager.storage_path()
+    directory = storage_directory.joinpath(curAdr)
 
     if not os.path.exists(directory): # if such a directory does not exist, make it
         os.makedirs(directory)
@@ -136,7 +142,8 @@ def getHistoryPath(filename, file, version, req):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    storage_directory = config_manager.storage_path()
+    directory = storage_directory.joinpath(curAdr)
     if not os.path.exists(directory): # the directory with host address doesn't exist
         filePath = os.path.join(getRootFolder(req), f'{filename}-hist', version, file)
     else:
@@ -157,7 +164,8 @@ def getForcesavePath(filename, req, create):
     else:
         curAdr = req.META['REMOTE_ADDR']
 
-    directory = os.path.join(config.STORAGE_PATH, curAdr)
+    storage_directory = config_manager.storage_path()
+    directory = storage_directory.joinpath(curAdr)
     if not os.path.exists(directory): # the directory with host address doesn't exist
         return ""
  
@@ -210,7 +218,7 @@ def saveFile(response, path):
 
 # download file from the given url 
 def downloadFileFromUri(uri, path = None, withSave = False):
-    resp = requests.get(uri, stream=True, verify = config.DOC_SERV_VERIFY_PEER, timeout=5)
+    resp = requests.get(uri, stream=True, verify = config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
     status_code = resp.status_code
     if status_code != 200:  # checking status code
         raise RuntimeError('Document editing service returned status: %s' % status_code)
@@ -232,7 +240,7 @@ def createSample(fileType, sample, req):
     filename = getCorrectName(f'{sampleName}{ext}', req) # get file name with an index if such a file name already exists
     path = getStoragePath(filename, req)
 
-    with io.open(os.path.join('assets', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
+    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new', f'{sampleName}{ext}'), 'rb') as stream: # create sample file of the necessary extension in the directory
         createFile(stream, path, req, True)
     return filename
 

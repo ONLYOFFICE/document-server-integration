@@ -1,97 +1,45 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
-# Pick the frameworks you want:
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "action_view/railtie"
-require "sprockets/railtie"
-# require "rails/test_unit/railtie"
+require 'active_model/railtie'
+require 'action_controller/railtie'
+require 'action_view/railtie'
+require 'sprockets/railtie'
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module OnlineEditorsExampleRuby
-  class Application < Rails::Application
+require 'securerandom'
 
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins '*'
-        resource '*',
-                 headers: :any,
-                 methods: [:get, :post, :patch, :delete, :put, :options]
-      end
+class Application < Rails::Application
+  config.middleware.insert_before 0, Rack::Cors do
+    allow do
+      origins '*'
+      resource '*', headers: :any, methods: %i[get post patch delete put options]
     end
+  end
 
-    Rails.configuration.version="1.6.0"
+  config.assets.debug = true
+  config.assets.digest = false
+  config.eager_load = false
+  config.hosts << /.*/
+  config.require_master_key = false
+  config.secret_key_base = SecureRandom.uuid
 
-    Rails.configuration.fileSizeMax=5242880
-    Rails.configuration.storagePath="app_data"
-    Rails.configuration.timeout=120
-
-    Rails.configuration.fillDocs=".docx|.oform"
-    Rails.configuration.viewedDocs=".djvu|.oxps|.pdf|.xps"
-    Rails.configuration.editedDocs=".csv|.docm|.docx|.docxf|.dotm|.dotx|.epub|.fb2|.html|.odp|.ods|.odt|.otp|.ots|.ott|.potm|.potx|.ppsm|.ppsx|.pptm|.pptx|.rtf|.txt|.xlsm|.xlsx|.xltm|.xltx"
-    Rails.configuration.convertDocs=".doc|.dot|.dps|.dpt|.epub|.et|.ett|.fb2|.fodp|.fods|.fodt|.htm|.html|.mht|.mhtml|.odp|.ods|.odt|.otp|.ots|.ott|.pot|.pps|.ppt|.rtf|.stw|.sxc|.sxi|.sxw|.wps|.wpt|.xls|.xlsb|.xlt|.xml"
-
-    Rails.configuration.urlSite="http://documentserver/"
-    Rails.configuration.urlConverter="ConvertService.ashx"
-    Rails.configuration.urlApi="web-apps/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="web-apps/apps/api/documents/cache-scripts.html"
-    Rails.configuration.commandUrl="coauthoring/CommandService.ashx"
-
-    Rails.configuration.urlExample=""
-
-    Rails.configuration.jwtSecret = ""
-    Rails.configuration.header="Authorization"
-    Rails.configuration.token_use_for_request=true
-
-    Rails.configuration.verify_peer_off = "true"
-
-    Rails.configuration.languages={
-      'en' => 'English',
-      'hy' => 'Armenian',
-      'az' => 'Azerbaijani',
-      'eu' => 'Basque',
-      'be' => 'Belarusian',
-      'bg' => 'Bulgarian',
-      'ca' => 'Catalan',
-      'zh' => 'Chinese (Simplified)',
-      'zh-TW' => 'Chinese (Traditional)',
-      'cs' => 'Czech',
-      'da' => 'Danish',
-      'nl' => 'Dutch',
-      'fi' => 'Finnish',
-      'fr' => 'French',
-      'gl' => 'Galego',
-      'de' => 'German',
-      'el' => 'Greek',
-      'hu' => 'Hungarian',
-      'id' => 'Indonesian',
-      'it' => 'Italian',
-      'ja' => 'Japanese',
-      'ko' => 'Korean',
-      'lo' => 'Lao',
-      'lv' => 'Latvian',
-      'ms' => 'Malay (Malaysia)',
-      'no' => 'Norwegian',
-      'pl' => 'Polish',
-      'pt' => 'Portuguese (Brazil)',
-      'pt-PT' => 'Portuguese (Portugal)',
-      'ro' => 'Romanian',
-      'ru' => 'Russian',
-      'si' => 'Sinhala (Sri Lanka)',
-      'sk' => 'Slovak',
-      'sl' => 'Slovenian',
-      'es' => 'Spanish',
-      'sv' => 'Swedish',
-      'tr' => 'Turkish',
-      'uk' => 'Ukrainian',
-      'vi' => 'Vietnamese',
-      'aa-AA' => 'Test Language'
-    }
+  routes.append do
+    root to: 'home#index'
+    match '/convert', to: 'home#convert', via: 'post'
+    match '/csv', to: 'home#csv', via: 'get'
+    match '/download', to: 'home#download', via: 'get'
+    match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
+    match '/editor', to: 'home#editor', via: 'get'
+    match '/files', to: 'home#files', via: 'get'
+    match '/index', to: 'home#index', via: 'get'
+    match '/reference', to: 'home#reference', via: 'post'
+    match '/remove', to: 'home#remove', via: 'get'
+    match '/rename', to: 'home#rename', via: 'post'
+    match '/restore', to: 'home#restore', via: 'put'
+    match '/sample', to: 'home#sample', via: 'get'
+    match '/saveas', to: 'home#saveas', via: 'post'
+    match '/track', to: 'home#track', via: 'post'
+    match '/upload', to: 'home#upload', via: 'post'
   end
 end

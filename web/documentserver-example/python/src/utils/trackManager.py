@@ -16,12 +16,17 @@
 
 """
 
-
-import config
-import requests
-import os
+from copy import deepcopy
 import json
+import os
+from urllib.parse import urlparse
+import requests
+from src.configuration import ConfigurationManager
+from src.proxy import ProxyManager
 from . import jwtManager, docManager, historyManager, fileUtils, serviceConverter
+
+config_manager = ConfigurationManager()
+proxy_manager = ProxyManager(config_manager=config_manager)
 
 # read request body
 def readBody(request):
@@ -30,8 +35,7 @@ def readBody(request):
         token = body.get('token') # get the document token
 
         if (not token): # if JSON web token is not received
-            jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
-            token = request.headers.get(jwtHeader) # get it from the Authorization header
+            token = request.headers.get(config_manager.jwt_header()) # get it from the Authorization header
             if token:
                 token = token[len('Bearer '):] # and save it without Authorization prefix
 
@@ -44,7 +48,9 @@ def readBody(request):
     return body
 
 # file saving process
-def processSave(body, filename, usAddr):
+def processSave(raw_body, filename, usAddr):
+    body = resolve_process_save_body(raw_body)
+
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
@@ -152,8 +158,6 @@ def processForceSave(body, filename, usAddr):
 
 # create a command request
 def commandRequest(method, key, meta = None):
-    documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
-
     payload = {
         'c': method,
         'key': key
@@ -166,15 +170,30 @@ def commandRequest(method, key, meta = None):
     headers={'accept': 'application/json'}
 
     if (jwtManager.isEnabled() and jwtManager.useForRequest()): # check if a secret key to generate token exists or not
-        jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER # get jwt header
         headerToken = jwtManager.encode({'payload': payload}) # encode a payload object into a header token
-        headers[jwtHeader] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
+        headers[config_manager.jwt_header()] = f'Bearer {headerToken}' # add a header Authorization with a header token with Authorization prefix in it
 
         payload['token'] = jwtManager.encode(payload) # encode a payload object into a body token
-    response = requests.post(documentCommandUrl, json=payload, headers=headers, verify = config.DOC_SERV_VERIFY_PEER)
+    response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers, verify = config_manager.ssl_verify_peer_mode_enabled())
 
     if (meta): 
         return response
 
     return
 
+def resolve_process_save_body(body):
+    copied = deepcopy(body)
+
+    url = copied.get('url')
+    if url is not None:
+        parsed_url = urlparse(url)
+        resolved_url = proxy_manager.resolve_url(parsed_url)
+        copied['url'] = resolved_url.geturl()
+
+    changes_url = copied.get('changesurl')
+    if changes_url is not None:
+        parsed_url = urlparse(changes_url)
+        resolved_url = proxy_manager.resolve_url(parsed_url)
+        copied['changesurl'] = resolved_url.geturl()
+
+    return copied

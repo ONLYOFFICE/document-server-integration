@@ -35,6 +35,8 @@ import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -56,14 +59,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -355,13 +364,13 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name")
                                                final String name) {  // get sample files from the assests
-        String fileName = Path.of("assets", "sample", fileUtility.getFileName(name)).toString();
+        String fileName = Path.of("assets", "document-templates", "sample", fileUtility.getFileName(name)).toString();
         return downloadFile(fileName);
     }
 
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv() {  // download a csv file
-        String fileName = Path.of("assets", "sample", "csv.csv").toString();
+        String fileName = Path.of("assets", "document-templates", "sample", "csv.csv").toString();
         return downloadFile(fileName);
     }
 
@@ -526,6 +535,90 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
+        }
+    }
+
+    @PutMapping("/restore")
+    @ResponseBody
+    public String restore(@RequestBody final JSONObject body) {
+        try {
+            String sourceBasename = (String) body.get("fileName");
+            Integer version = (Integer) body.get("version");
+            String userID = (String) body.get("userId");
+
+            String sourceStringFile = storagePathBuilder.getFileLocation(sourceBasename);
+            File sourceFile = new File(sourceStringFile);
+            Path sourcePathFile = sourceFile.toPath();
+            String historyDirectory = storagePathBuilder.getHistoryDir(sourcePathFile.toString());
+
+            Integer bumpedVersion = storagePathBuilder.getFileVersion(historyDirectory, false);
+            String bumpedVersionStringDirectory = documentManager.versionDir(historyDirectory, bumpedVersion, true);
+            File bumpedVersionDirectory = new File(bumpedVersionStringDirectory);
+            if (!bumpedVersionDirectory.exists()) {
+                bumpedVersionDirectory.mkdir();
+            }
+
+            Path bumpedKeyPathFile = Paths.get(bumpedVersionStringDirectory, "key.txt");
+            String bumpedKeyStringFile = bumpedKeyPathFile.toString();
+            File bumpedKeyFile = new File(bumpedKeyStringFile);
+            String bumpedKey = serviceConverter.generateRevisionId(
+                storagePathBuilder.getStorageLocation()
+                + "/"
+                + sourceBasename
+                + "/"
+                + Long.toString(sourceFile.lastModified())
+            );
+            FileWriter bumpedKeyFileWriter = new FileWriter(bumpedKeyFile);
+            bumpedKeyFileWriter.write(bumpedKey);
+            bumpedKeyFileWriter.close();
+
+            Integer userInnerID = Integer.parseInt(userID.replace("uid-", ""));
+            User user = userService.findUserById(userInnerID).get();
+
+            Path bumpedChangesPathFile = Paths.get(bumpedVersionStringDirectory, "changes.json");
+            String bumpedChangesStringFile = bumpedChangesPathFile.toString();
+            File bumpedChangesFile = new File(bumpedChangesStringFile);
+            JSONObject bumpedChangesUser = new JSONObject();
+            // Don't add the `uid-` prefix.
+            // https://github.com/ONLYOFFICE/document-server-integration/issues/437#issuecomment-1663526562
+            bumpedChangesUser.put("id", user.getId());
+            bumpedChangesUser.put("name", user.getName());
+            JSONObject bumpedChangesChangesItem = new JSONObject();
+            bumpedChangesChangesItem.put("created", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            bumpedChangesChangesItem.put("user", bumpedChangesUser);
+            JSONArray bumpedChangesChanges = new JSONArray();
+            bumpedChangesChanges.add(bumpedChangesChangesItem);
+            JSONObject bumpedChanges = new JSONObject();
+            bumpedChanges.put("serverVersion", null);
+            bumpedChanges.put("changes", bumpedChangesChanges);
+            String bumpedChangesContent = bumpedChanges.toJSONString();
+            FileWriter bumpedChangesFileWriter = new FileWriter(bumpedChangesFile);
+            bumpedChangesFileWriter.write(bumpedChangesContent);
+            bumpedChangesFileWriter.close();
+
+            String sourceExtension = fileUtility.getFileExtension(sourceBasename);
+            String previousBasename = "prev" + sourceExtension;
+
+            Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
+            Files.move(sourcePathFile, bumpedFile);
+
+            String recoveryVersionStringDirectory = documentManager.versionDir(historyDirectory, version, true);
+            Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
+            String recoveryStringFile = recoveryPathFile.toString();
+            FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
+            storageMutator.createFile(sourcePathFile, recoveryStream);
+            recoveryStream.close();
+
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", null);
+            responseBody.put("success", true);
+            return responseBody.toJSONString();
+        } catch (Exception error) {
+            error.printStackTrace();
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", error.getMessage());
+            responseBody.put("success", false);
+            return responseBody.toJSONString();
         }
     }
 }

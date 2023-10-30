@@ -35,7 +35,7 @@
 <body>
     <header>
         <div class="center">
-            <a href="">
+            <a href="wopi">
                 <img src="images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
@@ -51,16 +51,16 @@
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
                                         <li>
-                                            <a class="try-editor word reload-page" target="_blank" href="<%= serverUrl %>/wopi-new?fileExt=docx<%= params %>" title="Create new document">Document</a>
+                                            <a class="try-editor word reload-page action-link" target="_blank" href="wopi-new?fileExt=docx" title="Create new document">Document</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor cell reload-page" target="_blank" href="<%= serverUrl %>/wopi-new?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
+                                            <a class="try-editor cell reload-page action-link" target="_blank" href="wopi-new?fileExt=xlsx" title="Create new spreadsheet">Spreadsheet</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor slide reload-page" target="_blank" href="<%= serverUrl %>/wopi-new?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
+                                            <a class="try-editor slide reload-page action-link" target="_blank" href="wopi-new?fileExt=pptx" title="Create new presentation">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form reload-page" target="_blank" href="<%= serverUrl %>/wopi-new?fileExt=docxf<%= params %>" title="Create new form template">Form template</a>
+                                            <a class="try-editor form reload-page action-link" target="_blank" href="wopi-new?fileExt=docxf" title="Create new form template">Form template</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -68,7 +68,7 @@
 
                             <div class="upload-panel clearFix">
                                 <a class="file-upload">Upload file
-                                    <input type="file" id="fileupload" name="uploadedFile" data-url="upload?<%= params %>" />
+                                    <input type="file" id="fileupload" name="uploadedFile" data-url="upload" />
                                 </a>
                             </div>
 
@@ -78,7 +78,7 @@
                                         <td valign="middle">
                                             <span class="select-user">Username</span>
                                             <img id="info" class="info" data-id="user" src="images/info.svg" />
-                                            <select class="select-user" id="user">
+                                            <select class="select-user collectable" name="userid" id="user">
                                                 <% users.forEach(user => { %>
                                                     <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
                                                 <% }) %>
@@ -89,7 +89,7 @@
                                         <td valign="middle">
                                             <span class="select-user">Language</span>
                                             <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
-                                            <select class="select-user" id="language">
+                                            <select class="select-user collectable" name="lang" id="language">
                                                 <% Object.keys(languages).forEach(key => { %>
                                                     <option value="<%= key %>"><%= languages[key] %></option>
                                                 <% }) %>
@@ -100,7 +100,7 @@
                             </table>
 
                             <div class="links-panel links-panel-border clearFix">
-                                <a href="<%= serverUrl %>/" class="">Go to Index page</a>
+                                <a href="./" class="">Go to Index page</a>
                             </div>
                         </div>
                     </td>
@@ -148,7 +148,7 @@
                                                 <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                     <td class="contentCells">
                                                         <% if (storedFiles[i].defaultAction) { %>
-                                                        <a class="stored-edit <%= storedFiles[i].documentType %>" href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %><%= params %>" target="_blank">
+                                                        <a class="stored-edit <%= storedFiles[i].documentType %> action-link" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].defaultAction.name %>" target="_blank">
                                                             <%} else { %>
                                                             <a class="stored-edit <%= storedFiles[i].documentType %>" href="#">
                                                                 <% } %>
@@ -158,7 +158,7 @@
                                                     <% if (storedFiles[i].actions && storedFiles[i].actions.length > 0) { %>
                                                         <td class="contentCells contentCells-wopi contentCells-shift">
                                                             <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
-                                                                <a href="<%= serverUrl %>/wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %><%= params %>" target="_blank">
+                                                                <a class="action-link" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %>" target="_blank">
                                                                     <img
                                                                         src="images/wopi-<%= storedFiles[i].actions[j].name %>.svg"
                                                                         alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
@@ -167,7 +167,7 @@
                                                         </td>
                                                     <% } %>
                                                     <td class="contentCells contentCells-icon contentCells-shift downloadContentCells">
-                                                        <a href="<%= serverUrl %>/wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
+                                                        <a href="wopi/files/<%= encodeURIComponent(storedFiles[i].name) %>/contents">
                                                             <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">

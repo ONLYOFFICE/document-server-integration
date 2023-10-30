@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0",
+  "version": "1.7.0",
   "log": {
     "appenders": [
       {
@@ -22,10 +22,6 @@
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
-    "viewedDocs": [".djvu", ".oxps", ".pdf", ".xps"],
-    "editedDocs": [".csv", ".docm", ".docx", ".docxf", ".dotm", ".dotx", ".epub", ".fb2", ".html", ".odp", ".ods", ".odt", ".otp", ".ots", ".ott", ".potm", ".potx", ".ppsm", ".ppsx", ".pptm", ".pptx", ".rtf", ".txt", ".xlsm", ".xlsx", ".xltm", ".xltx"],
-    "fillDocs": [".docx", ".oform"],
-    "convertedDocs": [".doc", ".dot", ".dps", ".dpt", ".epub", ".et", ".ett", ".fb2", ".fodp", ".fods", ".fodt", ".htm", ".html", ".mht", ".mhtml", ".odp", ".ods", ".odt", ".otp", ".ots", ".ott", ".pot", ".pps", ".ppt", ".rtf", ".stw", ".sxc", ".sxi", ".sxw", ".wps", ".wpt", ".xls", ".xlsb", ".xlt", ".xml"],
     "storageFolder": "./files",
     "storagePath": "/files",
     "maxFileSize": 1073741824,

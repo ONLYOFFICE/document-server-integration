@@ -14,10 +14,17 @@
 # limitations under the License.
 #
 
-class ServiceConverter
+require_relative '../configuration/configuration'
 
-  @@convert_timeout = Rails.configuration.timeout  # get the convertion timeout from the config
-  @@document_converter_url = Rails.configuration.urlSite + Rails.configuration.urlConverter  # get the converter url from the config
+class ServiceConverter
+  @config_manager = ConfigurationManager.new
+
+  class << self
+    attr_reader :config_manager
+  end
+
+  @@convert_timeout = ServiceConverter.config_manager.convertation_timeout
+  @@document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
 
   class << self
 
@@ -61,7 +68,7 @@ class ServiceConverter
 
         if JwtHelper.is_enabled && JwtHelper.use_for_request  # if the signature is enabled
           payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
-          jwtHeader = Rails.configuration.header.empty? ? "Authorization" : Rails.configuration.header;  # get signature authorization header
+          jwtHeader = ServiceConverter.config_manager.jwt_header;  # get signature authorization header
           req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
         end
 

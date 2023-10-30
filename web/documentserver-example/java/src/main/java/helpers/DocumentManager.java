@@ -306,7 +306,12 @@ public final class DocumentManager {
         String demoName = (sample ? "sample." : "new.") + fileExt;
 
         // get the path to the sample document
-        String demoPath = "assets" + File.separator + (sample ? "sample" : "new") + File.separator;
+        String demoPath = "assets"
+            + File.separator
+            + "document-templates"
+            + File.separator
+            + (sample ? "sample" : "new")
+            + File.separator;
 
         // get a file name with an index if the file with such a name already exists
         String fileName = getCorrectName(demoName, null);

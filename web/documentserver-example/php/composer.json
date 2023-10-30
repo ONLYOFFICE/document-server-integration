@@ -1,26 +1,22 @@
 {
+    "require": {
+        "ext-mbstring": "*",
+        "firebase/php-jwt": "^6.8.1",
+        "symfony/serializer": "^6.3",
+        "symfony/property-access": "^6.3"
+    },
     "require-dev": {
-        "squizlabs/php_codesniffer": "*",
-        "ext-mbstring": "*"
+        "squizlabs/php_codesniffer": "^3.7.2",
+        "phpunit/phpunit": "^10.2.6"
     },
-    "scripts": {
-        "code-sniffer": [
-            "./vendor/bin/phpcs --config-set default_standard ruleset.xml",
-            "./vendor/bin/phpcs --config-set colors 1"
-        ],
-        "post-install-cmd": [
-            "@code-sniffer"
-        ],
-        "post-update-cmd": [
-            "@code-sniffer"
-        ]
-    },
-    "autoload-dev": {
+    "autoload": {
         "psr-4": {
-            "OnlineEditorsExamplePhp\\" : "",
-            "OnlineEditorsExamplePhp\\Helpers\\" : "helpers/",
-            "OnlineEditorsExamplePhp\\Views\\" : "views/",
-            "Firebase\\JWT\\" : "lib/jwt/"
+            "Example\\Common\\": "src/common/",
+            "Example\\Configuration\\" : "src/configuration/",
+            "Example\\Format\\" : "src/format/",
+            "Example\\Helpers\\" : "src/helpers/",
+            "Example\\Proxy\\": "src/proxy/",
+            "Example\\Views\\" : "src/views/"
         }
     }
 }

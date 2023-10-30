@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  document-server:
+    container_name: document-server
+    image: onlyoffice/documentserver:7.5
+    expose:
+      - "80"
+    environment:
+      - JWT_SECRET=your-256-bit-secret
+
+  example:
+    container_name: example
+    build:
+      context: .
+    expose:
+      - "80"
+    environment:
+      - ADDRESS=0.0.0.0
+      - DOCUMENT_SERVER_PRIVATE_URL=http://proxy:8080
+      - DOCUMENT_SERVER_PUBLIC_URL=http://localhost:8080
+      - EXAMPLE_URL=http://proxy
+      - JWT_SECRET=your-256-bit-secret
+      - PORT=80
+
+  proxy:
+    container_name: proxy
+    build:
+      context: .
+      target: proxy
+    ports:
+      - "80:80"
+      - "8080:8080"

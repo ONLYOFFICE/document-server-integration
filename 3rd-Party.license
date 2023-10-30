@@ -3,10 +3,6 @@ Document Server integration example uses code from the following 3rd party proje
 
 web/documentserver-example/csharp
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
-
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
 License File:   jQuery.BlockUI.license
@@ -19,13 +15,25 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+JWT           - JWT (JSON Web Token) Implementation for .NET (Public Domain) (https://github.com/jwt-dotnet/jwt/)
+License:        MIT
+License File:   JWT.license
+
+Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://github.com/JamesNK/Newtonsoft.Json)
+License:        MIT
+License File:   Newtonsoft.Json.license
 
 
 web/documentserver-example/csharp-mvc
@@ -34,10 +42,6 @@ Entity Framework - Entity Framework is an object-relational mapper that enables 
 License:        MICROSOFT SOFTWARE SUPPLEMENTAL TERMS, MICROSOFT SOFTWARE LICENSE TERMS
 License File:   EntityFramework.license
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
-
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
 License File:   jQuery.BlockUI.license
@@ -50,19 +54,27 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
 
+JWT           - JWT (JSON Web Token) Implementation for .NET (Public Domain) (https://github.com/jwt-dotnet/jwt/)
+License:        MIT
+License File:   JWT.license
+
 Microsoft.Web.Infrastructure - This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time. (https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm)
 License:        MS-EULA License
 License File:   Microsoft.Web.Infrastructure.license
 
-Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://licenses.nuget.org/MIT)
+Newtonsoft.Json - Json.NET is a popular high-performance JSON framework for .NET (https://github.com/JamesNK/Newtonsoft.Json)
 License:        MIT
 License File:   Newtonsoft.Json.license
 
@@ -73,10 +85,6 @@ License File:   WebGrease.license
 
 web/documentserver-example/java
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
-
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
 License File:   jQuery.BlockUI.license
@@ -89,9 +97,13 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
@@ -104,9 +116,17 @@ License File:   prime-jwt.license
 
 web/documentserver-example/java-spring
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
+Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   gson.license
+
+H2 Database Engine - This software contains unmodified binary redistributions for H2 database engine. H2 is a relational DBMS that can be embedded in java applications. (https://h2database.com/html/license.html)
+License:        MPL 2.0 or EPL 1.0
+License File:   h2database.license
+
+Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   jackson-databind.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -120,13 +140,29 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+JSON.simple   - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt)
+License:        Apache 2.0
+License File:   JSON.simple.license
+
+Project Lombok - Project Lombok is a java library that automatically plugs into your editor and build tools. (https://mvnrepository.com/artifact/org.projectlombok/lombok).
+License:        MIT
+License File    lombok.license
+
+ModelMapper   - ModelMapper is an intelligent object mapping library that automatically maps objects to each other. (https://github.com/modelmapper/modelmapper)
+License:        Apache 2.0
+License File    modelmapper.license
 
 Prime JWT     - is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson. (https://github.com/ws-apps/prime-jwt/blob/master/LICENSE)
 License:        Apache 2.0
@@ -147,22 +183,6 @@ License File:   spring-boot.license
 Spring Data JPA - Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate. (https://github.com/spring-projects/spring-data-jpa/blob/main/LICENSE.txt)
 License:        Apache 2.0
 License File:   spring-data-jpa.license
-
-H2 Database Engine - This software contains unmodified binary redistributions for H2 database engine. H2 is a relational DBMS that can be embedded in java applications. (https://h2database.com/html/license.html)
-License:        MPL 2.0 or EPL 1.0
-License File:   h2database.license
-
-JSON.simple   - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt)
-License:        Apache 2.0
-License File:   JSON.simple.license
-
-Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
-License:        Apache 2.0
-License File:   gson.license
-
-Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
-License:        Apache 2.0
-License File:   jackson-databind.license
 
 
 web/documentserver-example/nodejs
@@ -199,10 +219,6 @@ he            - a robust HTML entity encoder/decoder written in JavaScript. (htt
 License:        MIT
 License File:   he.license
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
-
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
 License File:   jQuery.BlockUI.license
@@ -215,9 +231,13 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
@@ -248,11 +268,8 @@ License:        MIT
 License File:   urllib.license
 
 
-web/documentserver-example/php
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
+web/documentserver-example/php
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -266,9 +283,13 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
@@ -282,16 +303,32 @@ PHP_CodeSniffer - PHP_CodeSniffer is a set of two PHP scripts; the main phpcs sc
 License:        BSD-3-Clause
 License File:   PHP_CodeSniffer.license
 
+PHPUnit         - The PHP Unit Testing framework. (https://github.com/sebastianbergmann/phpunit/blob/main/LICENSE)
+License:        BSD 3-Clause
+License File:   phpunit.license
+
+property-access - Provides functions to read and write from/to an object or array using a simple string notation. (https://github.com/symfony/property-access/blob/6.3/LICENSE)
+License:        MIT
+License File:   property-access.license
+
+serializer      - Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON. (https://github.com/symfony/serializer/blob/6.3/LICENSE)
+License:        MIT
+License File:   serializer.license
+
 
 web/documentserver-example/python
+
+django-stubs  - PEP-484 stubs for Django. (https://github.com/typeddjango/django-stubs/blob/master/LICENSE.md)
+License:        MIT
+License File:   django-stubs.license
 
 Django        - Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. Thanks for checking it out. (https://github.com/django/django/blob/main/LICENSE)
 License:        BSD-3-Clause
 License File:   Django.license
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+flake8        - flake8 is a python tool that glues together pycodestyle, pyflakes, mccabe, and third-party plugins to check the style and quality of some python code. (https://github.com/PyCQA/flake8/blob/main/LICENSE)
 License:        MIT
-License File:   jQuery.license
+License File:   flake8.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -305,56 +342,25 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
-jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
-
-jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.UI.license
-
-PyJWT         - A Python implementation of RFC 7519. (https://github.com/jpadilla/pyjwt/blob/master/LICENSE)
-License:        MIT
-License File:   PyJWT.license
-
-python-magic  - python-magic is a Python interface to the libmagic file type identification library. (https://github.com/ahupp/python-magic/blob/master/LICENSE)
-License:        MIT
-License File:   python-magic.license
-
-requests      - Requests allows you to send HTTP/1.1 requests extremely easily. There’s no need to manually add query strings to your URLs, or to form-encode your PUT & POST data — but nowadays, just use the json method! (https://github.com/psf/requests/blob/main/LICENSE)
-License:        Apache 2.0
-License File:   requests.license
-
-
-web/documentserver-example/python
-
-Django        - Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. Thanks for checking it out. (https://github.com/django/django/blob/main/LICENSE)
-License:        BSD-3-Clause
-License File:   Django.license
-
 jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.license
 
-jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
-License:        MIT, GPL
-License File:   jQuery.BlockUI.license
-
-jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
-License:        MIT
-License File:   jQuery.FileUpload.license
-
-jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
-License:        MIT
-License File:   jQuery.iframe-transport.license
-
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
 License File:   jQuery.UI.license
+
+msgspec       - A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML. (https://github.com/jcrist/msgspec/blob/0.18.1/LICENSE)
+License:        BSD 3-Clause
+License File:   msgspec.license
+
+mypy          - Optional static typing for Python. (https://github.com/python/mypy/blob/master/LICENSE)
+License:        MIT
+License File:   mypy.license
 
 PyJWT         - A Python implementation of RFC 7519. (https://github.com/jpadilla/pyjwt/blob/master/LICENSE)
 License:        MIT
@@ -367,6 +373,10 @@ License File:   python-magic.license
 requests      - Requests allows you to send HTTP/1.1 requests extremely easily. There’s no need to manually add query strings to your URLs, or to form-encode your PUT & POST data — but nowadays, just use the json method! (https://github.com/psf/requests/blob/main/LICENSE)
 License:        Apache 2.0
 License File:   requests.license
+
+typeshed      - Collection of library stubs for Python, with static types. (https://github.com/python/typeshed/blob/main/LICENSE)
+License:        Apache 2.0
+License File:   typeshed.license
 
 
 web/documentserver-example/ruby
@@ -379,13 +389,13 @@ coffee-rails  - CoffeeScript adapter for the Rails asset pipeline. (https://gith
 License:        MIT
 License File:   coffee-rails.license
 
+dalli         - High performance memcached client for Ruby. (https://github.com/petergoldstein/dalli/blob/v3.2.0/LICENSE)
+License:        MIT
+License File:   dalli.license
+
 jbuilder      - Create JSON structures via a Builder-style DSL (https://github.com/rails/jbuilder/blob/master/MIT-LICENSE)
 License:        MIT
 License File:   jbuilder.license
-
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
-License:        MIT
-License File:   jQuery.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -399,9 +409,13 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT
@@ -411,9 +425,17 @@ jquery-rails  - This gem provides jQuery and the jQuery-ujs driver for your Rail
 License:        MIT
 License File:   jquery-rails.license
 
+mimemagic     - А library to detect the mime type of a file by extension or by content. (https://github.com/mimemagicrb/mimemagic/blob/master/LICENSE)
+License:        MIT
+License File:   mimemagic.license
+
 rails         - Rails is a web-application framework that includes everything needed to create database-backed web applications according to the Model-View-Controller (MVC) pattern. (https://github.com/rails/rails/blob/v6.0.3.2/MIT-LICENSE)
 License:        MIT
 License File:   rails.license
+
+rubocop       - A Ruby static code analyzer and formatter, based on the community Ruby style guide. (https://github.com/rubocop/rubocop/blob/v1.52.0/LICENSE.txt)
+License:        MIT
+License File:   rubocop.license
 
 sass-rails    - This gem provides official integration for Ruby on Rails projects with the Sass stylesheet language. (https://github.com/rails/sass-rails/blob/master/MIT-LICENSE)
 License:        MIT
@@ -423,9 +445,13 @@ sdoc          - rdoc generator html with javascript search index. (https://githu
 License:        MIT
 License File:   sdoc.license
 
-sqlite3       - This module allows Ruby programs to interface with the SQLite3 database engine (www.sqlite.org). (https://github.com/sparklemotion/sqlite3-ruby/blob/master/LICENSE)
-License:        BSD-3-Clause
-License File:   sqlite3.license
+sorbet        - A fast, powerful type checker designed for Ruby. (https://github.com/sorbet/sorbet/blob/0.5.10871.20230607144259-d9000e2ba/LICENSE)
+License:        Apache License 2.0
+License File:   sorbet.license
+
+tapioca       - The swiss army knife of RBI generation. (https://github.com/Shopify/tapioca/blob/v0.11.6/LICENSE.txt)
+License:        MIT
+License File:   tapioca.license
 
 turbolinks    - Rails engine for Turbolinks 5 support (https://github.com/turbolinks/turbolinks-rails/blob/master/LICENSE)
 License:        MIT

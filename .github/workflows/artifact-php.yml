@@ -18,14 +18,12 @@ jobs:
       - name: Build Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/php
           mkdir -p ./deploy/'PHP Example'
           rsync -av --exclude='deploy' ./ ./deploy/'PHP Example'
-          cd ./deploy/'PHP Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./deploy/'PHP Example'/assets/document-formats/.git
+          rm -rf ./deploy/'PHP Example'/assets/document-templates/.git
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

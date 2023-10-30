@@ -14,9 +14,12 @@
 # limitations under the License.
 #
 
+require_relative '../configuration/configuration'
+
 class FileModel
 
   attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data, :direct_url
+  attr_reader :config_manager
 
   # set file parameters
   def initialize(attributes = {})
@@ -28,6 +31,7 @@ class FileModel
     @user = attributes[:user]
     @action_data = attributes[:action_data]
     @direct_url = attributes[:direct_url]
+    @config_manager = ConfigurationManager.new
   end
 
   def type
@@ -46,7 +50,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    File.absolute_path?(Rails.configuration.storagePath) ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
+    @config_manager.storage_path.absolute? ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
   end
 
   # get document type from its name (word, cell or slide)

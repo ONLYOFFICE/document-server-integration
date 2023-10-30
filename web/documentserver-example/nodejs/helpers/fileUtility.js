@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -16,79 +16,101 @@
  *
  */
 
-var fileUtility = {};
+const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
+
+const fileUtility = {};
 
 // get file name from the given url
-fileUtility.getFileName = function (url, withoutExtension) {
-    if (!url) return "";
+fileUtility.getFileName = function getFileName(url, withoutExtension) {
+  if (!url) return '';
 
-    var parts = url.split("\\");
-    parts = parts.pop();
-    parts = parts.split("/");
-    var fileName = parts.pop();  // get the file name from the last part of the url
-    fileName = fileName.split("?")[0];
+  let parts = url.split('\\');
+  parts = parts.pop();
+  parts = parts.split('/');
+  let fileName = parts.pop(); // get the file name from the last part of the url
+  [fileName] = fileName.split('?');
 
-    // get file name without extension
-    if (withoutExtension) {
-        return fileName.substring(0, fileName.lastIndexOf("."));
-    }
+  // get file name without extension
+  if (withoutExtension) {
+    return fileName.substring(0, fileName.lastIndexOf('.'));
+  }
 
-    return fileName;
+  return fileName;
 };
 
 // get file extension from the given url
-fileUtility.getFileExtension = function (url, withoutDot) {
-    if (!url) return null;
+fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
+  if (!url) return null;
 
-    var fileName = fileUtility.getFileName(url);  // get file name from the given url
+  const fileName = fileUtility.getFileName(url); // get file name from the given url
 
-    var parts = fileName.toLowerCase().split(".");
+  const parts = fileName.toLowerCase().split('.');
 
-    return withoutDot ? parts.pop() : "." + parts.pop();  // get the extension from the file name with or without dot
+  return withoutDot ? parts.pop() : `.${parts.pop()}`; // get the extension from the file name with or without dot
 };
 
 // get file type from the given url
-fileUtility.getFileType = function (url) {
-    var ext = fileUtility.getFileExtension(url);  // get the file extension from the given url
+fileUtility.getFileType = function getFileType(url) {
+  const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
 
-    if (fileUtility.documentExts.indexOf(ext) != -1) return fileUtility.fileType.word;  // word type for document extensions
-    if (fileUtility.spreadsheetExts.indexOf(ext) != -1) return fileUtility.fileType.cell;  // cell type for spreadsheet extensions
-    if (fileUtility.presentationExts.indexOf(ext) != -1) return fileUtility.fileType.slide;  // slide type for presentation extensions
+  for (let i = 0; i < supportedFormats.length; i++) {
+    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
+  }
 
-    return fileUtility.fileType.word;  // the default file type is word
-}
+  return fileUtility.fileType.word; // the default file type is word
+};
 
 fileUtility.fileType = {
-    word: "word",
-    cell: "cell",
-    slide: "slide"
-}
+  word: 'word',
+  cell: 'cell',
+  slide: 'slide',
+};
 
-// the document extension list
-fileUtility.documentExts = [".doc", ".docx", ".oform", ".docm", ".dot", ".dotx", ".dotm", ".odt", ".fodt", ".ott", ".rtf", ".txt", ".html", ".htm", ".mht", ".xml", ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"];
+fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
+  return supportedFormats.reduce((extensions, format) => [...extensions, format.name], []);
+};
 
-// the spreadsheet extension list
-fileUtility.spreadsheetExts = [".xls", ".xlsx", ".xlsm", ".xlsb", ".xlt", ".xltx", ".xltm", ".ods", ".fods", ".ots", ".csv"];
+fileUtility.getViewExtensions = function getViewExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('view'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
-// the presentation extension list
-fileUtility.presentationExts = [".pps", ".ppsx", ".ppsm", ".ppt", ".pptx", ".pptm", ".pot", ".potx", ".potm", ".odp", ".fodp", ".otp"];
+fileUtility.getEditExtensions = function getEditExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('edit') || format.actions.includes('lossy-edit'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
+
+fileUtility.getFillExtensions = function getFillExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('fill'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
+
+fileUtility.getConvertExtensions = function getConvertExtensions() {
+  return supportedFormats.filter(
+    (format) => format.actions.includes('auto-convert'),
+  ).reduce((extensions, format) => [...extensions, format.name], []);
+};
 
 // get url parameters
-function getUrlParams(url) {
-    try {
-        var query = url.split("?").pop();  // take all the parameters which are placed after ? sign in the file url
-        var params = query.split("&");  // parameters are separated by & sign
-        var map = {};  // write parameters and their values to the map dictionary
-        for (var i = 0; i < params.length; i++) {
-            var parts = param.split("=");
-            map[parts[0]] = parts[1];
-        }
-        return map;
+// eslint-disable-next-line no-unused-vars
+const getUrlParams = function getUrlParams(url) {
+  try {
+    const query = url.split('?').pop(); // take all the parameters which are placed after ? sign in the file url
+    const params = query.split('&'); // parameters are separated by & sign
+    const map = {}; // write parameters and their values to the map dictionary
+    for (let i = 0; i < params.length; i++) {
+      // eslint-disable-next-line no-undef
+      const parts = param.split('=');
+      [, map[parts[0]]] = parts;
     }
-    catch (ex) {
-        return null;
-    }
-}
+    return map;
+  } catch (ex) {
+    return null;
+  }
+};
 
 // save all the functions to the fileUtility module to export it later in other files
 module.exports = fileUtility;

@@ -1,6 +1,6 @@
 {
   "name": "OnlineEditorsExampleNodeJS",
-  "version": "4.1.0",
+  "version": "1.6.0",
   "private": false,
   "scripts": {
     "start": "node ./bin/www",
@@ -22,7 +22,7 @@
     "debug": "^4.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
-    "fast-xml-parser": "^3.19.0",
+    "fast-xml-parser": "^4.3.1",
     "formidable": "^1.2.2",
     "he": "^1.2.0",
     "jsonwebtoken": "^9.0.0",

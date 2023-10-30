@@ -34,29 +34,16 @@ if (typeof jQuery != "undefined") {
     else
         language = jq("#language").val();
 
-
-    jq("#language").change(function() {
-        window.location = "?lang=" + jq(this).val() + "&userid=" + userid + "&directUrl=" + directUrl;
-    });
-
     if ("" != userid && undefined != userid)
         jq("#user").val(userid);
     else
         userid = jq("#user").val();
-
-    jq("#user").change(function() {
-        window.location = "?lang=" + language + "&userid=" + jq(this).val() + "&directUrl=" + directUrl;
-    });
 
 
     if (directUrl)
         jq("#directUrl").prop("checked", directUrl);
     else
         directUrl = jq("#directUrl").prop("checked");
-
-    jq("#directUrl").change(function() {
-        window.location = "?lang=" + language + "&userid=" + userid + "&directUrl=" + jq(this).prop("checked");
-    });
 
 
     jq(function () {
@@ -111,7 +98,7 @@ if (typeof jQuery != "undefined") {
             }
         });
     });
-    
+
     var timer = null;
     var checkConvert = function (filePass) {
         filePass = filePass ? filePass : null;
@@ -126,7 +113,7 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         if (ConverExtList.indexOf(posExt) == -1) {
@@ -207,7 +194,7 @@ if (typeof jQuery != "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});
@@ -230,6 +217,20 @@ if (typeof jQuery != "undefined") {
         }
     });
 
+    jq(document).on("click", ".action-link", function (e) {
+        e.preventDefault();
+        let url = this.href + collectParams(true);
+        let target = null;
+
+        if (e.target.hasAttribute("target")) {
+            target = e.target.getAttribute("target");
+        } else if (e.target.parentNode.hasAttribute("target")) {
+            target = e.target.parentNode.getAttribute("target");
+        }
+
+        target !== null ? window.open(url, target) :  window.location = url;
+    });
+
     jq(document).on("click", "#skipPass", function () {
         jq("#blockPassword").hide();
         loadScripts();
@@ -238,32 +239,32 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
         if (UrlEditor == "wopi-action"){
-            var url = UrlEditor + "/" + fileId + "?action=edit";
+            var url = UrlEditor + "/" + fileId + "?action=edit" + collectParams(true);
         }else{
-            var url = UrlEditor + "?fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+            var url = UrlEditor + "?fileName=" + fileId + collectParams(true);
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload(true);
+        window.location = collectParams();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
         if (UrlEditor == "wopi-action"){
-            var url = UrlEditor + "/" + fileId + "?action=view";
+            var url = UrlEditor + "/" + fileId + "?action=view" + collectParams(true);
         }else{
-            var url = UrlEditor + "?mode=view&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams(true);
         }
         window.open(url, "_blank");
         jq('#hiddenFileName').val("");
         jq.unblockUI();
-        document.location.reload(true);
+        window.location = collectParams();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&fileName=" + fileId + "&lang=" + language + "&userid=" + userid + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?type=embedded&fileName=" + fileId + collectParams(true);
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -272,13 +273,13 @@ if (typeof jQuery != "undefined") {
     });
 
     jq(document).on("click", ".reload-page", function () {
-        setTimeout(function () { document.location.reload(true); }, 1000);
+        setTimeout(function () { window.location = collectParams(); }, 1000);
         return true;
     });
 
     jq(document).on("mouseup", ".reload-page", function (event) {
         if (event.which == 2) {
-            setTimeout(function () { document.location.reload(true); }, 1000);
+            setTimeout(function () { window.location = collectParams(); }, 1000);
         }
         return true;
     });
@@ -288,12 +289,13 @@ if (typeof jQuery != "undefined") {
         jq("#embeddedView").remove();
         jq.unblockUI();
         if (mustReload) {
-            document.location.reload(true);
+            window.location = collectParams();
         }
     });
 
     jq(document).on("click", ".delete-file", function () {
-        var fileName = jq(this).attr("data");
+        const currentElement = jq(this);
+        var fileName = currentElement.attr("data");
 
         var requestAddress = "file?filename=" + fileName;
 
@@ -303,7 +305,16 @@ if (typeof jQuery != "undefined") {
             type: "delete",
             url: requestAddress,
             complete: function (data) {
-                document.location.reload(true);
+                if (JSON.parse(data.responseText).success) {
+                    const parentRow = currentElement.parents('tr')[0];
+                    if (parentRow) {
+                        jq(parentRow).remove();
+                    }
+                    const remainingRows = jq('tr.tableRow');
+                    if (remainingRows.length === 0) {
+                        window.location = collectParams();
+                    }
+                }
             }
         });
     });
@@ -395,3 +406,31 @@ function getUrlVars() {
     }
     return vars;
 };
+
+function collectParams(startParams) {
+    let paramsObjects = Array.prototype.slice.call(document.getElementsByClassName('collectable'));
+    let params = [];
+    let startChar = startParams ? "&" : "?";
+    paramsObjects.forEach( function (element) {
+        if (element.name) {
+            switch (element.type) {
+                case "select-one":
+                case "text":
+                    if (element.value) {
+                        params.push(element.name + "=" + element.value);
+                    }
+                    break;
+                case "checkbox":
+                    params.push(element.name + "=" + element.checked);
+                    break;
+                case "radio":
+                    if (element.checked) {
+                        params.push(element.name + "=" + element.value);
+                    }
+                    break;
+                default:
+            }
+        }
+    });
+    return startChar + params.join("&");
+}

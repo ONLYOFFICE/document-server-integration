@@ -15,12 +15,13 @@
 #
 
 require 'jwt'
+require_relative '../configuration/configuration'
 
 class JwtHelper
 
-    @jwt_secret = Rails.configuration.jwtSecret
-    @token_use_for_request = Rails.configuration.token_use_for_request
-  
+    @jwt_secret = ConfigurationManager.new.jwt_secret
+    @token_use_for_request = ConfigurationManager.new.jwt_use_for_request
+
     class << self
         # check if a secret key to generate token exists or not
         def is_enabled

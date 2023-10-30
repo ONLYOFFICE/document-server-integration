@@ -18,14 +18,11 @@ jobs:
       - name: Build Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/csharp
           mkdir -p ./deploy/'DotNet (Csharp) Example'
           rsync -av --exclude='deploy' ./ ./deploy/'DotNet (Csharp) Example'
-          cd ./deploy/'DotNet (Csharp) Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./deploy/'DotNet (Csharp) Example'/assets/.git
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

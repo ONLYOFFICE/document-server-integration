@@ -17,7 +17,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -234,123 +233,6 @@ namespace OnlineEditorsExampleMVC.Models
             }
 
             return jss.Serialize(config);
-        }
-
-        // get the document history
-        public void GetHistory(out string history, out string historyData)
-        {            
-            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
-            var jss = new JavaScriptSerializer();
-            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
-
-            history = null;
-            historyData = null;
-
-            if (DocManagerHelper.GetFileVersion(histDir) > 0)  // if the file was modified (the file version is greater than 0)
-            {
-                var currentVersion = DocManagerHelper.GetFileVersion(histDir);
-                var hist = new List<Dictionary<string, object>>();
-                var histData = new Dictionary<string, object>();
-
-                for (var i = 1; i <= currentVersion; i++)  // run through all the file versions
-                {
-                    var obj = new Dictionary<string, object>();
-                    var dataObj = new Dictionary<string, object>();
-                    var verDir = DocManagerHelper.VersionDir(histDir, i);  // get the path to the given file version
-
-                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
-
-                    obj.Add("key", key);
-                    obj.Add("version", i);
-
-                    if (i == 1)  // check if the version number is equal to 1
-                    {
-                        var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
-
-                        if (File.Exists(infoPath))
-                        {
-                            var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
-                            obj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
-                            obj.Add("user", new Dictionary<string, object>() {
-                                { "id", info["id"] },
-                                { "name", info["name"] },
-                            });
-                        }
-                    }
-
-                    var ext = Path.GetExtension(FileName).ToLower();
-                    dataObj.Add("fileType", ext.Replace(".", ""));
-                    dataObj.Add("key", key);
-                    // write file url to the data object
-                    string prevFileUrl;
-                    string directPrevFileUrl;
-                    if (Path.IsPathRooted(storagePath) && !string.IsNullOrEmpty(storagePath))
-                    {
-                        prevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext)
-                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
-                        directPrevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext, false)
-                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
-                    }
-                    else {
-                        prevFileUrl = i == currentVersion ? FileUri
-                            : DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext);
-                        directPrevFileUrl = i == currentVersion ? DocManagerHelper.GetHistoryDownloadUrl(FileName, i.ToString(), "prev" + ext, false)
-                            : DocManagerHelper.GetDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
-                    }
-
-                    dataObj.Add("url", prevFileUrl);
-                    if (IsEnabledDirectUrl)
-                    {
-                        dataObj.Add("directUrl", directPrevFileUrl);
-                    }
-                    dataObj.Add("version", i);
-                    if (i > 1)  // check if the version number is greater than 1 (the file was modified)
-                    {
-                        // get the path to the changes.json file
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
-                        var changesArray = (ArrayList)changes["changes"];
-                        var change = changesArray.Count > 0
-                            ? (Dictionary<string, object>)changesArray[0]
-                            : new Dictionary<string, object>();
-
-                        // write information about changes to the object
-                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
-                        obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change.Count > 0  ? change["created"] : null);
-                        obj.Add("user", change.Count > 0 ? change["user"] : null);
-
-                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-                        dataObj.Add("previous", IsEnabledDirectUrl ? new Dictionary<string, object>() {  // write information about previous file version to the data object with direct url
-                            { "fileType", prev["fileType"] },
-                            { "key", prev["key"] },  // write key and url information about previous file version
-                            { "url", prev["url"] },
-                            { "directUrl", prev["directUrl"] },
-                        } : new Dictionary<string, object>() {  // write information about previous file version to the data object without direct url
-                            { "fileType", prev["fileType"] },
-                            { "key", prev["key"] },  // write key and url information about previous file version
-                            { "url", prev["url"] },
-                        });
-                        // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = DocManagerHelper.GetHistoryDownloadUrl(FileName, (i - 1).ToString(), "diff.zip");
-                        dataObj.Add("changesUrl", changesUrl);
-                    }
-                    if(JwtManager.Enabled)
-                    {
-                        var token = JwtManager.Encode(dataObj);
-                        dataObj.Add("token", token);
-                    }
-                    hist.Add(obj);  // add object dictionary to the hist list
-                    histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
-                }
-
-                // write history information about the current file version to the history object
-                history = jss.Serialize(new Dictionary<string, object>()
-                {
-                    { "currentVersion", currentVersion },
-                    { "history", hist }
-                });
-                historyData = jss.Serialize(histData);
-            }
         }
 
         // get a document which will be compared with the current document

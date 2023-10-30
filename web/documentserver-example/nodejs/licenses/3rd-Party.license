@@ -20,13 +20,17 @@ express       - Fast, unopinionated, minimalist web framework for node. (https:/
 License:        MIT
 License File:   express.license
 
+fast-xml-parser - Validate XML, Parse XML to JS/JSON and vice versa, or parse XML to Nimn rapidly without C/C++ based libraries and no callback. (https://github.com/NaturalIntelligence/fast-xml-parser/blob/master/LICENSE)
+License:        MIT
+License File:   fast-xml-parser.license
+
 formidable    - A Node.js module for parsing form data, especially file uploads. (https://github.com/node-formidable/formidable/blob/master/LICENSE)
 License:        MIT
 License File:   formidable.license
 
-jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+he            - a robust HTML entity encoder/decoder written in JavaScript. (https://github.com/mathiasbynens/he/blob/master/LICENSE-MIT.txt)
 License:        MIT
-License File:   jQuery.license
+License File:   he.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -40,9 +44,13 @@ jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https:
 License:        MIT
 License File:   jQuery.iframe-transport.license
 
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
 jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
-License:         OpenJS
-License File:    jQuery.Migrate.license
+License:        OpenJS
+License File:   jQuery.Migrate.license
 
 jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
 License:        MIT

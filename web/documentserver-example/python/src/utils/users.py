@@ -16,7 +16,7 @@
 
 """
 
-from urllib.parse import unquote
+from typing import Optional
 
 class User:
     def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates):
@@ -125,3 +125,12 @@ def getUsersForMentions(uid):
         if(user.id != uid and user.name != None and user.email != None):
             usersData.append({'name':user.name, 'email':user.email})
     return usersData
+
+def find_user(id: Optional[str]) -> User:
+    if id is None:
+        return DEFAULT_USER
+    for user in USERS:
+        if not user.id == id:
+            continue
+        return user
+    return DEFAULT_USER

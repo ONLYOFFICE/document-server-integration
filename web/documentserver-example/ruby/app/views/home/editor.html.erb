@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<script src="<%= Rails.configuration.urlSite + Rails.configuration.urlApi %>"></script>
+<script src="<%= ConfigurationManager.new.document_server_api_uri.to_s %>"></script>
 
 <script type="text/javascript" language="javascript">
 
@@ -164,6 +164,26 @@
         }
     };
 
+    function onRequestRestore(event) {
+      const query = new URLSearchParams(window.location.search)
+      const payload = {
+        fileName: query.get('fileName'),
+        version: event.data.version,
+        userId: query.get('userId')
+      }
+      const request = new XMLHttpRequest()
+      request.open("PUT", '/restore')
+      request.send(JSON.stringify(payload))
+      request.onload = function () {
+        if (request.status != 200) {
+          response = JSON.parse(request.response)
+          innerAlert(response.error)
+          return
+        }
+        document.location.reload();
+      }
+    }
+
     var сonnectEditor = function () {
 
         config = <%= raw @file.get_config.to_json %>;
@@ -180,6 +200,7 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestCompareFile': onRequestCompareFile,
             'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+            'onRequestRestore': onRequestRestore
         };
 
         <%

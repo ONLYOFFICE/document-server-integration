@@ -25,7 +25,5 @@ jobs:
           php-version: '8.2'
           tools: cs2pr, phpcs
           
-      - name: Run phpcs
-        run: |
-          phpcs --version
-          phpcs -q --extensions=php,module,inc,install,test,profile,theme,info --ignore=node_modules,bower_components,vendor,css,js,lib --standard=./ruleset.xml ./
+      - name: Lint
+        run: phpcs src index.php

@@ -6,7 +6,7 @@
             maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="css/images/{docType}.ico" type="image/x-icon" />
+    <link rel="icon" href="assets/images/{docType}.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
@@ -103,7 +103,7 @@
 
             event.data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=reference");
+            xhr.open("POST", "reference");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(event.data));
             xhr.onload = function () {
@@ -161,7 +161,7 @@
                 url: url
             };
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=saveas");
+            xhr.open("POST", "saveas");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
@@ -181,13 +181,34 @@
             };
 
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "webeditor-ajax.php?type=rename");
+            xhr.open("POST", "rename");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
             }
         };
+
+        function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const config = {config}
+          const payload = {
+            fileName: query.get('fileID'),
+            version: event.data.version,
+            userId: query.get('user') || config.editorConfig.user.id
+          }
+          const request = new XMLHttpRequest()
+          request.open("PUT", 'restore')
+          request.send(JSON.stringify(payload))
+          request.onload = function () {
+            if (request.status != 200) {
+              response = JSON.parse(request.response)
+              innerAlert(response.error)
+              return
+            }
+            document.location.reload();
+          }
+        }
 
         var сonnectEditor = function () {
             {fileNotFoundAlert}
@@ -208,6 +229,7 @@
                 'onRequestCompareFile': onRequestCompareFile,
                 'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
                 'onRequestReferenceData': onRequestReferenceData,
+                'onRequestRestore': onRequestRestore
             };
 
                 {history}

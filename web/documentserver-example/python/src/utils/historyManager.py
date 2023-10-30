@@ -19,11 +19,9 @@
 import os
 import io
 import json
-import config
 
 from . import users, fileUtils
 from datetime import datetime
-from src import settings
 from src.utils import docManager
 from src.utils import jwtManager
     
@@ -226,5 +224,5 @@ class CorsHeaderMiddleware:
     def __call__(self, request):
         resp = self.get_response(request)
         if request.path == '/downloadhistory':
-            resp['Access-Control-Allow-Origin'] = config.DOC_SERV_SITE_URL[0:-1]
+            resp['Access-Control-Allow-Origin'] = '*'
         return resp

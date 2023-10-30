@@ -14,7 +14,17 @@
 # limitations under the License.
 #
 
+require_relative '../configuration/configuration'
+require_relative '../format/format'
+
 class DocumentHelper
+  @config_manager = ConfigurationManager.new
+  @format_manager = FormatManager.new
+
+  class << self
+    attr_reader :config_manager
+    attr_reader :format_manager
+  end
 
   @@runtime_cache = {}
   @@remote_ip = nil
@@ -29,51 +39,31 @@ class DocumentHelper
 
     # define max file size
     def file_size_max
-      if Rails.configuration.fileSizeMax == nil
-        5 * 1024 * 1024
-      else
-        Rails.configuration.fileSizeMax  # or get it from the config
-      end
+      DocumentHelper.config_manager.maximum_file_size
     end
 
     # all the supported file extensions
     def file_exts
-      [].concat(viewed_exts).concat(edited_exts).concat(convert_exts).concat(fill_forms_exts)
+      DocumentHelper.format_manager.all_extensions
     end
 
     def fill_forms_exts
-      if Rails.configuration.fillDocs.empty?
-        []
-      else
-        Rails.configuration.fillDocs.split("|")
-      end
+      DocumentHelper.format_manager.fillable_extensions
     end
 
     # file extensions that can be viewed
     def viewed_exts
-      if Rails.configuration.viewedDocs.empty?
-        []
-      else
-        Rails.configuration.viewedDocs.split("|")
-      end
+      DocumentHelper.format_manager.viewable_extensions
     end
 
     # file extensions that can be edited
     def edited_exts
-      if Rails.configuration.editedDocs.empty?
-        []
-      else
-        Rails.configuration.editedDocs.split("|")
-      end
+      DocumentHelper.format_manager.editable_extensions
     end
 
     # file extensions that can be converted
     def convert_exts
-      if Rails.configuration.convertDocs.empty?
-        []
-      else
-        Rails.configuration.convertDocs.split("|")
-      end
+      DocumentHelper.format_manager.convertible_extensions
     end
 
     # get current user host address
@@ -83,8 +73,7 @@ class DocumentHelper
 
     # get the storage path of the given file
     def storage_path(file_name, user_address)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))  # get the path to the directory for the host address
+      directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
       # create a new directory if it doesn't exist
       unless File.directory?(directory)
@@ -97,8 +86,7 @@ class DocumentHelper
 
     # get the path to the forcesaved file version
     def forcesave_path(file_name, user_address, create)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
       # the directory with host address doesn't exist
       unless File.directory?(directory)
@@ -176,8 +164,7 @@ class DocumentHelper
 
     # get all the stored files from the folder
     def get_stored_files(user_address)
-      directory = File.absolute_path?(Rails.configuration.storagePath) ? Rails.configuration.storagePath
-                    : Rails.root.join('public', Rails.configuration.storagePath, cur_user_host_address(user_address))
+      directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
       arr = [];
 
@@ -216,7 +203,7 @@ class DocumentHelper
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name(demo_name, nil)  # get the correct file name if such a name already exists
 
-      src = Rails.root.join('public', 'assets', sample == 'true' ? 'sample' : 'new', demo_name)  # save sample document of a necessary extension to the storage directory
+      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)  # save sample document of a necessary extension to the storage directory
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
@@ -230,7 +217,7 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = get_server_url(for_document_server) + '/' + Rails.configuration.storagePath + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
+      uri = get_server_url(for_document_server) + '/' + DocumentHelper.config_manager.storage_path.to_s + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
 
       return uri
     end
@@ -245,11 +232,11 @@ class DocumentHelper
 
     # get server url
     def get_server_url(for_document_server)
-      if for_document_server && !Rails.configuration.urlExample.empty?
-        return Rails.configuration.urlExample
+      if for_document_server && DocumentHelper.config_manager.example_uri
+        return DocumentHelper.config_manager.example_uri.to_s
       else
         return @@base_url
-      end 
+      end
     end
 
     # get callback url
@@ -344,7 +331,7 @@ class DocumentHelper
     end
     # enable ignore certificate
     def verify_ssl(file_uri, http)
-      if file_uri.start_with?('https') && Rails.configuration.verify_peer_off.eql?('true')
+      if file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
       end
