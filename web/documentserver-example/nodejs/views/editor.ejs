@@ -198,6 +198,18 @@
                 case "protect":
                     var users = <%- JSON.stringify(usersForProtect) %>;
                     break;
+                case "info":
+                    users = [];
+                    var allUsers = <%- JSON.stringify(usersInfo) %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
                 default:
                     users = <%- JSON.stringify(usersForMentions) %>;
             }
