@@ -395,6 +395,26 @@ class HomeController < ApplicationController
         end
       end
 
+      link = body["link"]
+      if fileName.empty? and body.key?("link")
+        if !link.include?(DocumentHelper.get_server_url(false))
+          data = {
+            url: link,
+            directUrl: link
+          }
+          render plain: data.to_json
+          return
+        end
+
+        url_obj = URI(link)
+        query_params = CGI.parse(url_obj.query)
+        fileName = query_params['fileName'].first
+        if !File.exist?(DocumentHelper.storage_path(fileName, nil))
+          render plain: '{ "error": "File is not exist"}'
+          return
+        end
+      end
+
       if fileName.empty? and body.key?("path")
         path = File.basename(body["path"])
         if File.exist?(DocumentHelper.storage_path(path, nil))
