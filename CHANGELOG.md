@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: setUsers for region protection
 - php: setUsers for region protection
 - python: setUsers for region protection
 - ruby: setUsers for region protection
