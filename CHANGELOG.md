@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: setUsers for region protection
 - csharp-mvc: setUsers for region protection
 - java: setUsers for region protection
 - java-spring: setUsers for region protection

@@ -272,9 +272,20 @@
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(UsersForMentions))
             { %>
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        "users": <%= UsersForMentions %>
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case "protect":
+                            var users = <%= UsersForProtect %>;
+                            break;
+                        default:
+                            users = <%= UsersForMentions %>;
+                    }
+                    docEditor.setUsers({
+                        "c": c,
+                        "users": users,
                     });
                 };
             <% } %>
