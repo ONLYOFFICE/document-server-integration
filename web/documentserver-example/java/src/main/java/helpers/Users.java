@@ -84,7 +84,7 @@ public final class Users {
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@example.com",
+        add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
                 false, Arrays.asList("copy", "download", "print"),
@@ -119,6 +119,21 @@ public final class Users {
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", user.getName());
                 data.put("email", user.getEmail());
+                usersData.add(data);
+            }
+        }
+        return usersData;
+    }
+
+    // get a list of users with their names and emails for protect
+    public static List<Map<String, Object>> getUsersForProtect(final String id) {
+        List<Map<String, Object>> usersData = new ArrayList<>();
+        for (User user : users) {
+            if (!user.getId().equals(id) && user.getName() != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
+                data.put("id", user.getId());
                 usersData.add(data);
             }
         }
