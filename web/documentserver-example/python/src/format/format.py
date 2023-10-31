@@ -19,6 +19,7 @@ from msgspec.json import decode
 from msgspec import Struct
 from src.memoize import memoize
 
+
 class Format(Struct):
     name: str
     type: str
@@ -28,6 +29,7 @@ class Format(Struct):
 
     def extension(self) -> str:
         return f'.{self.name}'
+
 
 class FormatManager():
     def fillable_extensions(self) -> list[str]:
