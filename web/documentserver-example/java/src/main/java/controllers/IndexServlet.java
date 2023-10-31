@@ -733,6 +733,7 @@ public class IndexServlet extends HttpServlet {
             data.put("directUrl", directUrl ? DocumentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
+            data.put("link", DocumentManager.getServerUrl(false) + "/EditorServlet?fileName=" + fileName);
 
             if (DocumentManager.tokenEnabled()) {
                 String token = DocumentManager.createToken(data);

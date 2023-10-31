@@ -416,7 +416,8 @@ class HomeController < ApplicationController
           :instanceId => DocumentHelper.get_server_url(false),
           :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
         },
-        :path => fileName
+        :path => fileName,
+        :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
       }
 
       if JwtHelper.is_enabled
