@@ -1,12 +1,6 @@
 # Change Log
 
-- ruby: onRequestOpen
-- java-spring: onRequestOpen
-- java: onRequestOpen
-- csharp-mvc: onRequestOpen
-- csharp: onRequestOpen
-- python: onRequestOpen
-- php: onRequestOpen
+- onRequestOpen method
 - nodejs: user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
