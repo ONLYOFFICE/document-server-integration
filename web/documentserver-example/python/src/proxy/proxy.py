@@ -17,6 +17,7 @@
 from urllib.parse import ParseResult
 from src.configuration import ConfigurationManager
 
+
 class ProxyManager():
     config_manager: ConfigurationManager
 

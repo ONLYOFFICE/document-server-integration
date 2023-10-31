@@ -3,10 +3,10 @@ name: Artifact Python
 on:
   workflow_dispatch:
   push:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/python/**']
   pull_request:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/python/**']
 
 jobs:
@@ -18,14 +18,12 @@ jobs:
       - name: Build Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/python
           mkdir -p ./deploy/'Python Example'
           rsync -av --exclude='deploy' ./ ./deploy/'Python Example'
-          cd ./deploy/'Python Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./deploy/'Python Example'/assets/document-formats/.git
+          rm -rf ./deploy/'Python Example'/assets/document-templates/.git
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

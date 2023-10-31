@@ -20,14 +20,18 @@
 from http import HTTPStatus, HTTPMethod
 from django.http import HttpRequest, HttpResponse
 
+
 def GET():
     return method(HTTPMethod.GET)
+
 
 def POST():
     return method(HTTPMethod.POST)
 
+
 def PUT():
     return method(HTTPMethod.PUT)
+
 
 def method(meth: HTTPMethod):
     def wrapper(func):

@@ -13,8 +13,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Install Zip
-        run: sudo apt-get install zip
+      - name: Clone Submodules
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
       - name: Get Info
         run: |
           echo "version=$(grep -Eo '[0-9]+(\.[0-9]+)+' CHANGELOG.md | head -n 1)" >> $GITHUB_OUTPUT
@@ -25,91 +27,66 @@ jobs:
       - name: Build Csharp MVC Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/csharp-mvc
           mkdir -p ./'DotNet (Csharp MVC) Example'
           rsync -av --exclude='DotNet (Csharp MVC) Example' ./ ./'DotNet (Csharp MVC) Example'
           cd ./'DotNet (Csharp MVC) Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf .git
       - name: Build Csharp Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/csharp
           mkdir -p ./'DotNet (Csharp) Example'
           rsync -av --exclude='DotNet (Csharp) Example' ./ ./'DotNet (Csharp) Example'
-          cd ./'DotNet (Csharp) Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'DotNet (Csharp) Example'/assets/.git
       - name: Build Java Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/java
           mkdir -p ./'Java Example'
           rsync -av --exclude='Java Example' ./ ./'Java Example'
-          cd ./'Java Example'/src/main/resources/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'Java Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./'Java Example'/src/main/resources/assets/document-templates/.git
       - name: Build Nodejs Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/nodejs
           mkdir -p ./'Node.js Example'
           rsync -av --exclude='Node.js Example' ./ ./'Node.js Example'
-          cd ./'Node.js Example'/public/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'Node.js Example'/public/assets/document-formats/.git
+          rm -rf ./'Node.js Example'/public/assets/document-templates/.git
       - name: Build PHP Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/php
           mkdir -p ./'PHP Example'
           rsync -av --exclude='PHP Example' ./ ./'PHP Example'
-          cd ./'PHP Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'PHP Example'/assets/document-formats/.git
+          rm -rf ./'PHP Example'/assets/document-templates/.git
       - name: Build Python Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/python
           mkdir -p ./'Python Example'
           rsync -av --exclude='Python Example' ./ ./'Python Example'
-          cd ./'Python Example'/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'Python Example'/assets/document-formats/.git
+          rm -rf ./'Python Example'/assets/document-templates/.git
       - name: Build Ruby Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/ruby
           mkdir -p ./'Ruby Example'
           rsync -av --exclude='Ruby Example' ./ ./'Ruby Example'
-          cd ./'Ruby Example'/public/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'Ruby Example'/public/assets/document-formats/.git
+          rm -rf ./'Ruby Example'/public/assets/document-templates/.git
       - name: Build Spring Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
-          git submodule update --init --recursive
           cd ./web/documentserver-example/java-spring
           mkdir -p ./'Java Spring Example'
           rsync -av --exclude='Java Spring Example' ./ ./'Java Spring Example'
-          cd ./'Java Spring Example'/src/main/resources/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./'Java Spring Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./'Java Spring Example'/src/main/resources/assets/document-templates/.git
       - name: Pack Artifacts
         run: |
           cd ${{ github.workspace }}/web/documentserver-example/csharp-mvc

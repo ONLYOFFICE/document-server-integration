@@ -1,13 +1,13 @@
 ## Overview
 
-This example will help you integrate ONLYOFFICE Docs into your web application written on Ruby.
+This example will help you integrate ONLYOFFICE Docs into your web application written on Python.
 
 > [!WARNING]  
 > It is intended for testing purposes and demonstrating functionality of the editors. **DO NOT** use this integration example on your own server without proper code modifications. In case you enabled the test example, disable it before going for production.
 
 ## Installation
 
-The Ruby example offers various installation options, but we highly recommend using Docker for this purpose.
+The Python example offers various installation options, but we highly recommend using Docker for this purpose.
 
 ### Using Docker
 
@@ -16,14 +16,14 @@ To run the example using [Docker](https://docker.com), you will need [Docker Des
 Once you have everything installed, download the release archive and unarchive it.
 
 ```sh
-$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
-$ unzip Ruby.Example.zip
+$ curl --output Python.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Python.Example.zip
+$ unzip Python.Example.zip
 ```
 
-Then open the example directory and [up containers](./Makefile#L46).
+Then open the example directory and [up containers](./Makefile#L38).
 
 ```sh
-$ cd "Ruby Example"
+$ cd "Python Example"
 $ make compose-prod
 ```
 
@@ -35,24 +35,24 @@ To configure the example, you can edit the environment variables in [`compose-ba
 
 Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the detailed guide to learn how to install it on [Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [Docker](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx).
 
-To run the example on your local machine, you will need [Ruby 3.2.2](https://ruby-lang.org) with [Bundler 2.4.10](https://bundler.io). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
+To run the example on your local machine, you will need [Python 3.11.4](https://python.org) with [pip 23.1.2](https://pip.pypa.io). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
 Once you have everything installed, download the release archive and unarchive it.
 
 ```sh
-$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
-$ unzip Ruby.Example.zip
+$ curl --output Python.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Python.Example.zip
+$ unzip Python.Example.zip
 ```
 
-Then open the example directory, [install dependencies](./Makefile#L33), and [start the server](./Makefile#L42).
+Then open the example directory, [install dependencies](./Makefile#L13), and [start the server](./Makefile#L21).
 
 ```sh
-$ cd "Ruby Example"
+$ cd "Python Example"
 $ make prod
 $ make server-prod
 ```
 
-By default, the server starts at `0.0.0.0:3000`.
+By default, the server starts at `0.0.0.0:8000`.
 
 To configure the example, you can pass the environment variables before the command that starts the server. See [below](#configuration) for more information about environment variables.
 
@@ -66,14 +66,15 @@ Make sure that the Document Server has access to the server with the example ins
 
 The example is configured by changing environment variables.
 
-| Name | Description | Example |
-| ------------- | ------------- | ------------- |
-| `BINDING` | The address where the server should be started. | `0.0.0.0` |
-| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080` |
-| `DOCUMENT_SERVER_PUBLIC_URL` | The URL through which a user will communicate with Document Server. | `http://localhost:8080` |
-| `EXAMPLE_URL` | The URL through which Document Server will communicate with the server. | `http://proxy` |
-| `JWT_SECRET` | JWT authorization secret. Leave blank to disable authorization. | `your-256-bit-secret` |
-| `PORT` | The port on which the server should be running. | `80` |
+| Name                          | Description                                                             | Example                 |
+| ----------------------------- | ----------------------------------------------------------------------- | ----------------------- |
+| `DEBUG`                       | Disable or enable debug mode.                                           | `false`                 |
+| `ADDRESS`                     | The address where the server should be started.                         | `0.0.0.0`               |
+| `PORT`                        | The port on which the server should be running.                         | `80`                    |
+| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080`     |
+| `DOCUMENT_SERVER_PUBLIC_URL`  | The URL through which a user will communicate with Document Server.     | `http://localhost:8080` |
+| `EXAMPLE_URL`                 | The URL through which Document Server will communicate with the server. | `http://proxy`          |
+| `JWT_SECRET`                  | JWT authorization secret. Leave blank to disable authorization.         | `your-256-bit-secret`   |
 
 ## Security Info
 
