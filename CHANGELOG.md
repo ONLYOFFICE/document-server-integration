@@ -1,5 +1,12 @@
 # Change Log
 
+- ruby: onRequestOpen
+- java-spring: onRequestOpen
+- java: onRequestOpen
+- csharp-mvc: onRequestOpen
+- csharp: onRequestOpen
+- python: onRequestOpen
+- php: onRequestOpen
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
