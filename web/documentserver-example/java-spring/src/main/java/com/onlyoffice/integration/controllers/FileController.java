@@ -522,6 +522,7 @@ public class FileController {
             data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
+            data.put("link", storagePathBuilder.getServerUrl(true) + "/editor?fileName=" + fileName);
 
             if (jwtManager.tokenEnabled()) {
                 String token = jwtManager.createToken(data);

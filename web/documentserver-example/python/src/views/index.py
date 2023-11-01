@@ -16,8 +16,6 @@
 
 """
 
-import re
-import sys
 import json
 
 from django.shortcuts import render
@@ -30,11 +28,13 @@ from src.utils import docManager
 config_manager = ConfigurationManager()
 format_manager = FormatManager()
 
+
 def getDirectUrlParam(request):
-    if ('directUrl' in request.GET): 
+    if 'directUrl' in request.GET:
         return request.GET['directUrl'].lower() in ("true")
-    else:
-        return False;    
+
+    return False
+
 
 def default(request):  # default parameters that will be passed to the template
     context = {
@@ -47,4 +47,5 @@ def default(request):  # default parameters that will be passed to the template
         'fillExt': json.dumps(format_manager.fillable_extensions()),
         'directUrl': str(getDirectUrlParam(request)).lower
     }
-    return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format
+    # execute the "index.html" template with context data and return http response in json format
+    return render(request, 'index.html', context)

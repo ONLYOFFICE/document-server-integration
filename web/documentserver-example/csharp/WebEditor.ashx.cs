@@ -665,7 +665,8 @@ namespace OnlineEditorsExample
                     {"instanceId", _Default.GetServerUrl(false) }
                 }
             },
-            { "path", fileName }
+            { "path", fileName },
+            { "link", _Default.GetServerUrl(false) + "doceditor.aspx?fileID=" + fileName }
             };
 
             if (JwtManager.Enabled)

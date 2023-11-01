@@ -3,6 +3,8 @@
 - php: getting history via api
 - ruby: getting history via api
 - python: getting history via api
+- onRequestOpen method
+- nodejs: user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
 - onRequestSelectDocument method

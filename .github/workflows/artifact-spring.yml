@@ -23,9 +23,8 @@ jobs:
           cd ./web/documentserver-example/java-spring
           mkdir -p ./deploy/'Java Spring Example'
           rsync -av --exclude='deploy' ./ ./deploy/'Java Spring Example'
-          cd ./deploy/'Java Spring Example'/src/main/resources/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./deploy/'Java Spring Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./deploy/'Java Spring Example'/src/main/resources/assets/document-templates/.git
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
