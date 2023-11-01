@@ -18,14 +18,12 @@ jobs:
       - name: Build Artifact
         run: |
           cd ${{ github.workspace }}
-          cwd=$(pwd)
           git submodule update --init --recursive
           cd ./web/documentserver-example/ruby
           mkdir -p ./deploy/'Ruby Example'
           rsync -av --exclude='deploy' ./ ./deploy/'Ruby Example'
-          cd ./deploy/'Ruby Example'/public/assets
-          rm -rf ./.git/
-          rm .git
+          rm -rf ./deploy/'Ruby Example'/public/assets/document-formats/.git
+          rm -rf ./deploy/'Ruby Example'/public/assets/document-templates/.git
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:

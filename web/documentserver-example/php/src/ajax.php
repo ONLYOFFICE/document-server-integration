@@ -562,7 +562,8 @@ function reference()
             ]),
             "instanceId" => serverPath(),
         ],
-        "path" => $fileName
+        "path" => $fileName,
+        "link" => serverPath() . '/editor?fileID=' . $fileName
     ];
 
     if ($jwtManager->isJwtEnabled()) {

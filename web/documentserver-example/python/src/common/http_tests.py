@@ -23,9 +23,11 @@ from . import http
 # Under the hood, HttpRequest uses a settings object.
 settings.configure()
 
+
 @http.GET()
 def endpoint(_: HttpRequest) -> HttpResponse:
     return HttpResponse()
+
 
 class HTTPMethodTests(TestCase):
     def test_returns_a_response_from_the_endpoint(self):

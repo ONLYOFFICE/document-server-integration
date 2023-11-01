@@ -1,5 +1,7 @@
 # Change Log
 
+- onRequestOpen method
+- nodejs: user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
 - onRequestSelectDocument method
