@@ -78,7 +78,8 @@ def getTemplateImageUrl(fileType, request):
 
 # get file name with an index if such a file name already exists
 def getCorrectName(filename, req):
-    basename = fileUtils.getFileNameWithoutExt(filename)
+    maxName = 50
+    basename = fileUtils.getFileNameWithoutExt(filename)[0:maxName] + ('','[...]')[len(filename) > maxName]
     ext = fileUtils.getFileExt(filename)
     name = f'{basename}{ext}'
 

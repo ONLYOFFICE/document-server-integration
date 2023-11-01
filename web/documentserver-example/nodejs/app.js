@@ -934,7 +934,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (user.id !== 'uid-0') {
       users.getAllUsers().forEach((userInfo) => {
         const u = userInfo;
-        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.jpg` : null;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
         usersInfo.push(u);
       }, usersInfo);
     }
@@ -1009,7 +1009,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
-        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.jpg` : null,
+        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
