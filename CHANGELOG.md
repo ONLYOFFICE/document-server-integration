@@ -1,5 +1,6 @@
 # Change Log
 
+- python: user avatar
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
