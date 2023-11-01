@@ -138,7 +138,7 @@ def getUsersForMentions(uid):
 def getUsersForProtect(uid):
     usersData = []
     for user in USERS:
-        if(user.id != uid and user.name != None):
+        if (user.id != uid and user.name is not None):
             usersData.append({'id': user.id, 'name': user.name, 'email': user.email})
     return usersData
 
