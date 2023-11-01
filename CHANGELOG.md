@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: user avatar
 - python: user avatar
 - nodejs: user avatar
 - trimming long name of uploading file

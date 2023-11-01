@@ -158,7 +158,8 @@ class FileModel
         :user => {  # the user currently viewing or editing the document
           :id => !@user.id.eql?("uid-0") ? @user.id : nil,
           :name => @user.name,
-          :group => @user.group
+          :group => @user.group,
+          :image => @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
         },
         :embedded => {  # the parameters for the embedded document type
           :saveUrl => download_url(false),  # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -348,6 +349,31 @@ class FileModel
   # get users data for mentions
   def get_users_mentions
     return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
+  end
+
+  def get_users_info
+    users_info = []
+    if !@user.id.eql?("uid-0")
+      Users.get_all_users().each do |user_info|
+        u = {
+          id: user_info.id,
+          name: user_info.name,
+          email: user_info.email,
+          group: user_info.group, 
+          reviewGroups: user_info.reviewGroups, 
+          commentGroups: user_info.commentGroups, 
+          userInfoGroups: user_info.userInfoGroups, 
+          favorite: user_info.favorite,
+          deniedPermissions: user_info.deniedPermissions, 
+          descriptions: user_info.descriptions, 
+          templates: user_info.templates, 
+          avatar: user_info.avatar
+        }
+        u["image"] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
+        users_info.push(u)
+      end
+    return users_info
+    end
   end
 
   # get direct url existence flag
