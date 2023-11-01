@@ -26,7 +26,6 @@ import urllib.parse
 import requests
 import magic
 
-from django.conf import settings
 from django.http import FileResponse
 from src.configuration import ConfigurationManager
 from src.format import FormatManager

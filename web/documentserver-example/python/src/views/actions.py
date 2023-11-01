@@ -186,7 +186,6 @@ def edit(request):
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, True, request)
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -495,6 +494,7 @@ def downloadhistory(request):
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
+
 def historyobj(request):
     body = json.loads(request.body)
     response = {}
@@ -508,12 +508,13 @@ def historyobj(request):
     if fileName is None:
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     storagePath = docManager.getStoragePath(fileName, request)
     docKey = docManager.generateFileKey(fileName, request)
     fileUrl = docManager.getDownloadUrl(fileName, request)
     response = historyManager.getHistoryObject(storagePath, fileName, docKey, fileUrl, False, request)
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # referenceData
 def reference(request):
