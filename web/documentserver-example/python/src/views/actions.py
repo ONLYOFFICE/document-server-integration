@@ -32,23 +32,27 @@ from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager
 
 config_manager = ConfigurationManager()
 
+
 # upload a file from the document storage service to the document editing service
 def upload(request):
     response = {}
 
     try:
         fileInfo = request.FILES['uploadedFile']
-        if ((fileInfo.size > config_manager.maximum_file_size()) | (fileInfo.size <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        # check if the file size exceeds the maximum size allowed (5242880)
+        if (fileInfo.size > config_manager.maximum_file_size()) | (fileInfo.size <= 0):
             raise Exception('File size is incorrect')
 
         curExt = fileUtils.getFileExt(fileInfo.name)
         if not docManager.isSupportedExt(curExt):  # check if the file extension is supported by the document manager
             raise Exception('File type is not supported')
 
-        name = docManager.getCorrectName(fileInfo.name, request)  # get file name with an index if such a file name already exists
+        # get file name with an index if such a file name already exists
+        name = docManager.getCorrectName(fileInfo.name, request)
         path = docManager.getStoragePath(name, request)
 
-        docManager.createFile(fileInfo.file, path, request, True)  # create file with meta information in the storage directory
+        # create file with meta information in the storage directory
+        docManager.createFile(fileInfo.file, path, request, True)
 
         response.setdefault('filename', name)
         response.setdefault('documentType', fileUtils.getFileType(name))
@@ -57,6 +61,7 @@ def upload(request):
         response.setdefault('error', e.args[0])  # save an error message to the response variable
 
     return HttpResponse(json.dumps(response), content_type='application/json')  # return http response in json format
+
 
 # convert a file from one format to another
 def convert(request):
@@ -67,31 +72,38 @@ def convert(request):
         filename = fileUtils.getFileName(body.get("filename"))
         filePass = body.get("filePass")
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
-        fileUri = docManager.getDownloadUrl(filename,request)
+        fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
         newExt = 'ooxml'  # convert to .ooxml
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
-            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)  # get the url of the converted file
+            # get the url of the converted file
+            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)
 
-            if not convertedData:  # if the converter url is not received, the original file name is passed to the response
+            # if the converter url is not received, the original file name is passed to the response
+            if not convertedData:
                 response.setdefault('step', '0')
                 response.setdefault('filename', filename)
             else:
-                correctName = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request)  # otherwise, create a new name with the necessary extension
+                correctName = docManager.getCorrectName(
+                    fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
+                    )  # otherwise, create a new name with the necessary extension
                 path = docManager.getStoragePath(correctName, request)
-                docManager.downloadFileFromUri(convertedData['uri'], path, True)  # save the file from the new url in the storage directory
+                # save the file from the new url in the storage directory
+                docManager.downloadFileFromUri(convertedData['uri'], path, True)
                 docManager.removeFile(filename, request)  # remove the original file
                 response.setdefault('filename', correctName)  # pass the name of the converted file to the response
         else:
-            response.setdefault('filename', filename)  # if the file can't be converted, the original file name is passed to the response
+            # if the file can't be converted, the original file name is passed to the response
+            response.setdefault('filename', filename)
 
     except Exception as e:
         response.setdefault('error', e.args[0])
 
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # create a new file
 def createNew(request):
@@ -110,6 +122,7 @@ def createNew(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # save file as...
 def saveAs(request):
     response = {}
@@ -121,9 +134,10 @@ def saveAs(request):
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
-        resp = requests.get(saveAsFileUrl, verify = config_manager.ssl_verify_peer_mode_enabled())
+        resp = requests.get(saveAsFileUrl, verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
 
-        if ((len(resp.content) > config_manager.maximum_file_size()) | (len(resp.content) <= 0)):  # check if the file size exceeds the maximum size allowed (5242880)
+        # check if the file size exceeds the maximum size allowed (5242880)
+        if (len(resp.content) > config_manager.maximum_file_size()) | (len(resp.content) <= 0):
             response.setdefault('error', 'File size is incorrect')
             raise Exception('File size is incorrect')
 
@@ -132,7 +146,8 @@ def saveAs(request):
             response.setdefault('error', 'File type is not supported')
             raise Exception('File type is not supported')
 
-        docManager.downloadFileFromUri(saveAsFileUrl, path, True)  # save the file from the new url in the storage directory
+        # save the file from the new url in the storage directory
+        docManager.downloadFileFromUri(saveAsFileUrl, path, True)
 
         response.setdefault('file', filename)
     except Exception as e:
@@ -140,6 +155,7 @@ def saveAs(request):
         response.setdefault('message', e.args[0])
 
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # rename file
 def rename(request):
@@ -150,7 +166,7 @@ def rename(request):
 
     origExt = '.' + body['ext']
     curExt = fileUtils.getFileExt(newfilename)
-    if (origExt != curExt):
+    if origExt != curExt:
         newfilename += origExt
 
     dockey = body['dockey']
@@ -162,32 +178,36 @@ def rename(request):
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # edit a file
 def edit(request):
     filename = fileUtils.getFileName(request.GET['filename'])
-    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true")  if 'directUrl' in request.GET else False
+    isEnableDirectUrl = request.GET['directUrl'].lower() in ("true") if 'directUrl' in request.GET else False
 
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    fileUriUser = docManager.getDownloadUrl(filename, request) + "&dmode=emb"
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
 
-    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
+    # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
+    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext) :
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext):
         edMode = 'fillForms'
         canEdit = True
-    submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False  # if the Submit form button is displayed or hidden
+    # if the Submit form button is displayed or hidden
+    submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     types = ['desktop', 'mobile', 'embedded']
-    edType = request.GET.get('type') if request.GET.get('type') in types else 'desktop'  # get the editor type: embedded/mobile/desktop (the default type is desktop)
-    lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'  # get the editor language (the default language is English)
+    # get the editor type: embedded/mobile/desktop (the default type is desktop)
+    edType = request.GET.get('type') if request.GET.get('type') in types else 'desktop'
+    # get the editor language (the default language is English)
+    lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
 
     storagePath = docManager.getStoragePath(filename, request)
     meta = historyManager.getMeta(storagePath)  # get the document meta data
@@ -196,7 +216,8 @@ def edit(request):
     actionData = request.GET.get('actionLink')  # get the action data that will be scrolled to (comment or bookmark)
     actionLink = json.loads(actionData) if actionData else None
 
-    templatesImageUrl = docManager.getTemplateImageUrl(fileType, request) # templates image url in the "From Template" section
+    # templates image url in the "From Template" section
+    templatesImageUrl = docManager.getTemplateImageUrl(fileType, request)
     createUrl = docManager.getCreateUrl(edType, request)
     templates = [
         {
@@ -211,7 +232,7 @@ def edit(request):
         }
     ]
 
-    if (meta):  # if the document meta data exists,
+    if meta:  # if the document meta data exists,
         infObj = {  # write author and creation time parameters to the information object
             'owner': meta['uname'],
             'uploaded': meta['created']
@@ -234,24 +255,28 @@ def edit(request):
             'key': docKey,
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
-                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') & (edMode != "blockcontent"),
+                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') \
+                & (edMode != "blockcontent"),
                 'copy': 'copy' not in user.deniedPermissions,
                 'download': 'download' not in user.deniedPermissions,
-                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') | (edMode == "blockcontent")),
+                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
+                                   | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') & (edMode != "blockcontent"),
+                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') \
+                & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
                 'review': canEdit & ((edMode == 'edit') | (edMode == 'review')),
-                'chat': user.id !='uid-0',
+                'chat': user.id != 'uid-0',
                 'reviewGroups': user.reviewGroups,
                 'commentGroups': user.commentGroups,
                 'userInfoGroups': user.userInfoGroups,
                 'protect': 'protect' not in user.deniedPermissions
             },
-            'referenceData' : {
-                'instanceId' : docManager.getServerUrl(False, request),
-                'fileKey' : json.dumps({'fileName' : filename, 'userAddress': request.META['REMOTE_ADDR']}) if user.id !='uid-0' else None
+            'referenceData': {
+                'instanceId': docManager.getServerUrl(False, request),
+                'fileKey': json.dumps({'fileName': filename,
+                                       'userAddress': request.META['REMOTE_ADDR']}) if user.id != 'uid-0' else None
             }
         },
         'editorConfig': {
@@ -260,31 +285,35 @@ def edit(request):
             'lang': lang,
             'callbackUrl': docManager.getCallbackUrl(filename, request),  # absolute URL to the document storage service
             'coEditing': {
-                            "mode": "strict", 
-                            "change": False
-                         } 
-                         if edMode == 'view' and user.id =='uid-0' else None,
-            'createUrl' : createUrl if user.id !='uid-0' else None,
-            'templates' : templates if user.templates else None,
+                "mode": "strict",
+                "change": False
+            }
+            if edMode == 'view' and user.id == 'uid-0' else None,
+            'createUrl': createUrl if user.id != 'uid-0' else None,
+            'templates': templates if user.templates else None,
             'user': {  # the user currently viewing or editing the document
-                'id': user.id if user.id !='uid-0' else None,
+                'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
                 'group': user.group
             },
             'embedded': {  # the parameters for the embedded document type
-                'saveUrl': directUrl,  # the absolute URL that will allow the document to be saved onto the user personal computer
-                'embedUrl': directUrl,  # the absolute URL to the document serving as a source file for the document embedded into the web page
+                # the absolute URL that will allow the document to be saved onto the user personal computer
+                'saveUrl': directUrl,
+                # the absolute URL to the document serving as a source file for the document embedded into the web page
+                'embedUrl': directUrl,
                 'shareUrl': directUrl,  # the absolute URL that will allow other users to share this document
                 'toolbarDocked': 'top'  # the place for the embedded viewer toolbar (top or bottom)
             },
             'customization': {  # the parameters for the editor interface
                 'about': True,  # the About section display
-                'comments': True,  
+                'comments': True,
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
-                'goback': {  # settings for the Open file location menu button and upper right corner button 
-                    'url': docManager.getServerUrl(False, request)  # the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                'goback': {  # settings for the Open file location menu button and upper right corner button
+                    # the absolute URL to the website address
+                    # which will be opened when clicking the Open file location menu button
+                    'url': docManager.getServerUrl(False, request)
                 }
             }
         }
@@ -331,21 +360,26 @@ def edit(request):
         dataDocument['token'] = jwtManager.encode(dataDocument)  # encode the dataDocument object into a token
         dataSpreadsheet['token'] = jwtManager.encode(dataSpreadsheet)  # encode the dataSpreadsheet object into a token
 
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)  # get the document history
+    # get the document history
+    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
-        'history': json.dumps(hist['history']) if 'history' in hist else None,  # the information about the current version
-        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,  # the information about the previous document versions if they exist
+        # the information about the current version
+        'history': json.dumps(hist['history']) if 'history' in hist else None,
+        # the information about the previous document versions if they exist
+        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
-        'dataInsertImage': json.dumps(dataInsertImage)[1 : len(json.dumps(dataInsertImage)) - 1],  # the image which will be inserted into the document
+        # the image which will be inserted into the document
+        'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None,
         'usersForProtect': json.dumps(usersForProtect) if user.id !='uid-0' else None
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
+
 
 # track the document changes
 def track(request):
@@ -355,11 +389,12 @@ def track(request):
         body = trackManager.readBody(request)  # read request body
         status = body['status']  # and get status from it
 
-        if (status == 1): # editing
+        if status == 1:  # editing
             if (body['actions'] and body['actions'][0]['type'] == 0):  # finished edit
                 user = body['actions'][0]['userid']  # the user who finished editing
-                if (not user in body['users']):
-                    trackManager.commandRequest('forcesave', body['key'])  # create a command request with the forcasave method
+                if user not in body['users']:
+                    # create a command request with the forcasave method
+                    trackManager.commandRequest('forcesave', body['key'])
 
         filename = fileUtils.getFileName(request.GET['filename'])
         usAddr = request.GET['userAddress']
@@ -370,12 +405,15 @@ def track(request):
             trackManager.processForceSave(body, filename, usAddr)
 
     except Exception as e:
-        response.setdefault("error", 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
+        # set the default error value as 1 (document key is missing or no document with such key could be found)
+        response.setdefault("error", 1)
         response.setdefault("message", str(e.args[0]))
 
     response.setdefault('error', 0)  # if no exceptions are raised, the default error value is 0 (no errors)
     # the response status is 200 if the changes are saved successfully; otherwise, it is equal to 500
-    return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
+    return HttpResponse(json.dumps(response), content_type='application/json',
+                        status=200 if response['error'] == 0 else 500)
+
 
 # remove a file
 def remove(request):
@@ -388,6 +426,7 @@ def remove(request):
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # get file information
 def files(request):
     try:
@@ -397,11 +436,13 @@ def files(request):
         response.setdefault('error', e.args[0])
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 # download a csv file
-def csv(request):
+def csv():
     filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
     response = docManager.download(filePath)
     return response
+
 
 # download a file
 def download(request):
@@ -410,21 +451,22 @@ def download(request):
         userAddress = request.GET.get('userAddress')
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and userAddress and jwtManager.useForRequest()):
+        if (jwtManager.isEnabled() and isEmbedded is None and userAddress and jwtManager.useForRequest()):
             token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
 
             try:
-                body = jwtManager.decode(token)
+                jwtManager.decode(token)
             except Exception:
                 return HttpResponse('JWT validation failed', status=403)
 
-        if (userAddress == None):
+        if userAddress is None:
             userAddress = request
 
-        filePath = docManager.getForcesavePath(fileName, userAddress, False)  # get the path to the forcesaved file version
-        if (filePath == ""):
+        # get the path to the forcesaved file version
+        filePath = docManager.getForcesavePath(fileName, userAddress, False)
+        if filePath == "":
             filePath = docManager.getStoragePath(fileName, userAddress)  # get file from the storage directory
         response = docManager.download(filePath)  # download this file
         return response
@@ -432,6 +474,7 @@ def download(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 # download a history file
 def downloadhistory(request):
@@ -442,12 +485,12 @@ def downloadhistory(request):
         version = fileUtils.getFileName(request.GET['ver'])
         isEmbedded = request.GET.get('dmode')
 
-        if (jwtManager.isEnabled() and isEmbedded == None and jwtManager.useForRequest()):
+        if (jwtManager.isEnabled() and isEmbedded is None and jwtManager.useForRequest()):
             token = request.headers.get(config_manager.jwt_header())
             if token:
                 token = token[len('Bearer '):]
                 try:
-                    body = jwtManager.decode(token)
+                    jwtManager.decode(token)
                 except Exception:
                     return HttpResponse('JWT validation failed', status=403)
             else:
@@ -461,6 +504,7 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
 
 # referenceData
 def reference(request):
@@ -482,36 +526,38 @@ def reference(request):
             userAddress = fileKey['userAddress']
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
-    
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
-            if os.path.exists(docManager.getStoragePath(path,request)):
-                fileName = path 
+            if os.path.exists(docManager.getStoragePath(path, request)):
+                fileName = path
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     if fileName is None:
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-    
+
     data = {
-        'fileType' : fileUtils.getFileExt(fileName).replace('.', ''),
-        'key': docManager.generateFileKey(fileName,request),
-        'url' : docManager.getDownloadUrl(fileName, request),
-        'directUrl' : docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
-        'referenceData' : {
-            'instanceId' : docManager.getServerUrl(False, request),
-            'fileKey' : json.dumps({'fileName' : fileName, 'userAddress': request.META['REMOTE_ADDR']})
+        'fileType': fileUtils.getFileExt(fileName).replace('.', ''),
+        'key': docManager.generateFileKey(fileName, request),
+        'url': docManager.getDownloadUrl(fileName, request),
+        'directUrl': docManager.getDownloadUrl(fileName, request, False) if body["directUrl"] else None,
+        'referenceData': {
+            'instanceId': docManager.getServerUrl(False, request),
+            'fileKey': json.dumps({'fileName': fileName, 'userAddress': request.META['REMOTE_ADDR']})
         },
-        'path' : fileName
+        'path': fileName,
+        'link': docManager.getServerUrl(False, request) + '/edit?filename=' + fileName
     }
 
-    if (jwtManager.isEnabled()):
+    if jwtManager.isEnabled():
         data['token'] = jwtManager.encode(data)
-    
+
     return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 @http.PUT()
 def restore(request: HttpRequest) -> HttpResponse:

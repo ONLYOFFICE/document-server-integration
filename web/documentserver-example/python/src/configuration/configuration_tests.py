@@ -20,10 +20,12 @@ from unittest.mock import patch
 from urllib.parse import urlparse
 from . import ConfigurationManager
 
+
 class ConfigurationManagerTests(TestCase):
     def test_corresponds_the_latest_version(self):
         config_manager = ConfigurationManager()
         self.assertEqual(config_manager.version, '1.6.0')
+
 
 class ConfigurationManagerExampleURLTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -39,6 +41,7 @@ class ConfigurationManagerExampleURLTests(TestCase):
         url = config_manager.example_url()
         self.assertEqual(url.geturl(), 'http://localhost')
 
+
 class ConfigurationManagerDocumentServerPublicURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -53,6 +56,7 @@ class ConfigurationManagerDocumentServerPublicURLTests(TestCase):
         url = config_manager.document_server_public_url()
         self.assertEqual(url.geturl(), 'http://localhost')
 
+
 class ConfigurationManagerDocumentServerPrivateURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -66,6 +70,7 @@ class ConfigurationManagerDocumentServerPrivateURLTests(TestCase):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_private_url()
         self.assertEqual(url.geturl(), 'http://localhost')
+
 
 class ConfigurationManagerDocumentServerAPIURLTests(TestCase):
     @patch.object(
@@ -97,6 +102,7 @@ class ConfigurationManagerDocumentServerAPIURLTests(TestCase):
             'http://localhost/api'
         )
 
+
 class ConfigurationManagerDocumentServerPreloaderURLTests(TestCase):
     @patch.object(
         ConfigurationManager,
@@ -126,6 +132,7 @@ class ConfigurationManagerDocumentServerPreloaderURLTests(TestCase):
             url.geturl(),
             'http://localhost/preloader'
         )
+
 
 class ConfigurationManagerDocumentServerCommandURLTests(TestCase):
     @patch.object(
@@ -157,6 +164,7 @@ class ConfigurationManagerDocumentServerCommandURLTests(TestCase):
             'http://localhost/command'
         )
 
+
 class ConfigurationManagerDocumentServerConverterURLTests(TestCase):
     @patch.object(
         ConfigurationManager,
@@ -187,6 +195,7 @@ class ConfigurationManagerDocumentServerConverterURLTests(TestCase):
             'http://localhost/converter'
         )
 
+
 class ConfigurationManagerJWTSecretTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -200,6 +209,7 @@ class ConfigurationManagerJWTSecretTests(TestCase):
         config_manager = ConfigurationManager()
         secret = config_manager.jwt_secret()
         self.assertEqual(secret, 'your-256-bit-secret')
+
 
 class ConfigurationManagerJWTHeaderTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -215,6 +225,7 @@ class ConfigurationManagerJWTHeaderTests(TestCase):
         header = config_manager.jwt_header()
         self.assertEqual(header, 'Proxy-Authorization')
 
+
 class ConfigurationManagerJWTUseForRequest(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -229,6 +240,7 @@ class ConfigurationManagerJWTUseForRequest(TestCase):
         use = config_manager.jwt_use_for_request()
         self.assertFalse(use)
 
+
 class ConfigurationManagerSSLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -242,6 +254,7 @@ class ConfigurationManagerSSLTests(TestCase):
         config_manager = ConfigurationManager()
         enabled = config_manager.ssl_verify_peer_mode_enabled()
         self.assertTrue(enabled)
+
 
 class ConfigurationManagerStoragePathTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -267,6 +280,7 @@ class ConfigurationManagerStoragePathTests(TestCase):
         path = config_manager.storage_path()
         self.assertEqual(f'{path}', '/directory')
 
+
 class ConfigurationManagerMaximumFileSizeTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -280,6 +294,7 @@ class ConfigurationManagerMaximumFileSizeTests(TestCase):
         config_manager = ConfigurationManager()
         size = config_manager.maximum_file_size()
         self.assertEqual(size, 10)
+
 
 class ConfigurationManagerConversionTimeoutTests(TestCase):
     def test_assigns_a_default_value(self):

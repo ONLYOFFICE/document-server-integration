@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 from src.configuration import ConfigurationManager
 from . import ProxyManager
 
+
 class ProxyManagerTests(TestCase):
     @patch.object(
         ConfigurationManager,

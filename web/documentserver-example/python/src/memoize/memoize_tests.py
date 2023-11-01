@@ -17,12 +17,14 @@
 from unittest import TestCase
 from . import memoize
 
+
 class MemoizeMock():
     counter: int = 1
 
     @memoize
     def method(self) -> int:
         return self.counter
+
 
 class MemoizeTests(TestCase):
     def test(self):
