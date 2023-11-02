@@ -161,6 +161,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
+                    "image" => $user->avatar ? serverPath(true) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -220,6 +221,14 @@ final class DocEditorView extends View
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+        $usersInfo = [];
+        if ($user->id != 'uid-0'){
+            foreach ($userList->getAllUsers() as $userInfo){
+                $u = $userInfo;
+                $u->image = $userInfo->avatar ? serverPath(true) . "/assets/images/" . $userInfo->id . ".png" : null;
+                array_push($usersInfo, $u);
+            }
+        }
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
@@ -249,9 +258,29 @@ final class DocEditorView extends View
                     };";
             }
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        \"users\": {usersForMentions}
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case \"info\":
+                            users = [];
+                            var allUsers = {usersInfo};
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            users = {usersForMentions};
+                    }
+                    docEditor.setUsers({
+                        \"c\": c,
+                        \"users\": users,
                     });
                 };
                 // the user is mentioned in a comment
@@ -279,6 +308,7 @@ final class DocEditorView extends View
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersInfo" => json_encode($usersInfo)
             ];
     }
 }
