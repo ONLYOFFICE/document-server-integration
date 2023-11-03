@@ -58,13 +58,15 @@ public class UserServices {
                            final List<String> removeGroups,
                            final List<String> userInfoGroups, final Boolean favoriteDoc,
                            final Boolean chat,
-                           final Boolean protect) {
+                           final Boolean protect,
+                           final Boolean avatar) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
         newUser.setGroup(groupServices.createGroup(group));  // set the user group
         newUser.setDescriptions(description);  // set the user description
         newUser.setFavorite(favoriteDoc);  // specify if the user has the favorite documents or not
+        newUser.setAvatar(avatar);
 
         List<Group> groupsReview = groupServices
                 .createGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
