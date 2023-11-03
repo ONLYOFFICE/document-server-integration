@@ -257,13 +257,34 @@
 
         <%
             String usersForMentions = (String) request.getAttribute("usersForMentions");
+            String usersInfo = (String) request.getAttribute("usersInfo");
         %>
 
         if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <%=usersForMentions%>
+            config.events['onRequestUsers'] = function (event) {
+                if (event && event.data){
+                    var c = event.data.c;
+                }
+                switch (c) {
+                    case "info":
+                        users = [];
+                        var allUsers = <%=usersInfo%>;
+                        for (var i = 0; i < event.data.id.length; i++) {
+                            for (var j = 0; j < allUsers.length; j++) {
+                                if (allUsers[j].id == event.data.id[i]) {
+                                    users.push(allUsers[j]);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        users = <%=usersForMentions%>;
+                }
+                docEditor.setUsers({
+                    "c": c,
+                    "users": users,
                 });
             };
             // the user is mentioned in a comment

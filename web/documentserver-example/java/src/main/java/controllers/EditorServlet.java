@@ -107,6 +107,8 @@ public class EditorServlet extends HttpServlet {
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.getId());
 
+        List<Map<String, Object>> usersInfo = Users.getUsersInfo();
+
         // check if the document token is enabled
         if (DocumentManager.tokenEnabled()) {
             file.buildToken();  // generate document token
@@ -131,6 +133,7 @@ public class EditorServlet extends HttpServlet {
         request.setAttribute("dataSpreadsheet", gson.toJson(dataSpreadsheet));
         request.setAttribute("usersForMentions", !user.getId()
                 .equals("uid-0") ? gson.toJson(usersForMentions) : null);
+        request.setAttribute("usersInfo", gson.toJson(usersInfo));
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

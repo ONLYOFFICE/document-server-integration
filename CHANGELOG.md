@@ -1,5 +1,6 @@
 # Change Log
 
+- java: user avatar
 - java-spring: user avatar
 - php: user avatar
 - ruby: user avatar
