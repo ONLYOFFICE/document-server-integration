@@ -264,6 +264,10 @@ label .checkbox {
     padding: 16px 0;
 }
 
+.links-panel a {
+    display: block;
+}
+
 .upload-panel,
 .create-panel {
     width: 100%;
@@ -750,7 +754,7 @@ html {
 .tableRow td:first-child {
     display: flex;
     flex-grow: 1;
-    max-width: 25%;
+    max-width: 24%;
 }
 
 .tableHeaderCellFileName {

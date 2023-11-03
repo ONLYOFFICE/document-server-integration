@@ -108,6 +108,69 @@ app.get('/', (req, res) => { // define a handler for default page
   }
 });
 
+app.get('/forgotten', async (req, res) => {
+  function getForgottenList() {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
+        if (err) {
+          reject(err);
+        }
+        else {
+          resolve(JSON.parse(ress.data));
+        }
+      });
+    });
+  }
+
+  function getForgottenFile(key) {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgotten', key, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          const parsedData = JSON.parse(data);
+          resolve({
+            name: parsedData.key,
+            documentType: fileUtility.getFileType(parsedData.url),
+            url: parsedData.url,
+          });
+        }
+      });
+    });
+  }
+
+  try {
+    const forgottenListResponse = await getForgottenList();
+
+    const keys = forgottenListResponse.keys;
+    const forgottenFiles = await Promise.all(keys.map(getForgottenFile));
+
+    req.DocManager = new DocManager(req, res);
+    res.render('forgotten', { forgottenFiles });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { message: 'Server error' });
+  }
+});
+
+app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
+  try {
+    let fileName = req.query.filename;
+    if (fileName) { // if the forgotten file name is defined
+      const result = function result(err, data, ress) {
+        res.write('{"success":true}');
+        res.end();
+      };
+      documentService.commandRequest('deleteForgotten', fileName, result);
+    } else {
+      // TODO: add delete all forgotten files
+    }
+  } catch (ex) {
+    console.log(ex);
+    res.write('Server error');
+  }
+});
+
 app.get('/download', (req, res) => { // define a handler for downloading files
   req.DocManager = new DocManager(req, res);
 
