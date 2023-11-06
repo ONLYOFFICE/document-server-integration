@@ -190,7 +190,8 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null  },
                                             { "name", user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                                         }
                                 },
                                 {
@@ -371,6 +372,14 @@ namespace OnlineEditorsExampleMVC.Models
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+        }
+
+        public void GetUsersInfo(HttpRequest request, out string usersInfo)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersInfo = jss.Serialize(Users.getUsersInfo(user.id));
         }
     }
 }

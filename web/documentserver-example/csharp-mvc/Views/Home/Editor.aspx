@@ -254,6 +254,8 @@
 
         <% string usersForMentions; %>
         <% Model.GetUsersMentions(Request, out usersForMentions); %>
+        <% string usersInfo; %>
+        <% Model.GetUsersInfo(Request, out usersInfo); %>
 
         if (config.editorConfig.user.id) {
             // the user is trying to show the document version history
@@ -269,9 +271,29 @@
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))
             { %>
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        "users": <%= usersForMentions %>
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case "info":
+                            users = [];
+                            var allUsers = <%= usersInfo %>;
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            users = <%= usersForMentions %>;
+                    }
+                    docEditor.setUsers({
+                        "c": c,
+                        "users": users,
                     });
                 };
             <% } %>
