@@ -107,7 +107,7 @@ public class EditorServlet extends HttpServlet {
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.getId());
 
-        List<Map<String, Object>> usersInfo = Users.getUsersInfo();
+        List<Map<String, Object>> usersInfo = Users.getUsersInfo(user.getId());
 
         // check if the document token is enabled
         if (DocumentManager.tokenEnabled()) {

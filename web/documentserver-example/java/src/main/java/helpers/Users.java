@@ -127,16 +127,18 @@ public final class Users {
         return usersData;
     }
 
-    public static List<Map<String, Object>> getUsersInfo() {
+    public static List<Map<String, Object>> getUsersInfo(final String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
-        for (User user : users) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("id", user.getId());
-            data.put("name", user.getName());
-            data.put("email", user.getEmail());
-            data.put("image", user.getAvatar() ? DocumentManager.getServerUrl(false)
-            + "/css/img/" + user.getId() + ".png" : null);
-            usersData.add(data);
+        if (id != "uid-0") {
+            for (User user : users) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", user.getId());
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
+                data.put("image", user.getAvatar() ? DocumentManager.getServerUrl(false)
+                + "/css/img/" + user.getId() + ".png" : null);
+                usersData.add(data);
+            }
         }
         return usersData;
     }
