@@ -1,5 +1,12 @@
 # Change Log
 
+- csharp: setUsers for region protection
+- csharp-mvc: setUsers for region protection
+- java: setUsers for region protection
+- java-spring: setUsers for region protection
+- php: setUsers for region protection
+- python: setUsers for region protection
+- ruby: setUsers for region protection
 - onRequestOpen method
 - nodejs: user avatar
 - trimming long name of uploading file
