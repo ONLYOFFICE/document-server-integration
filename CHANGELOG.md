@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: user avatar
 - csharp-mvc: user avatar
 - java: user avatar
 - java-spring: user avatar

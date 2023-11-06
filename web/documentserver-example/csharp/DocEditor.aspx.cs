@@ -64,6 +64,7 @@ namespace OnlineEditorsExample
         protected string DocumentData { get; private set; }
         protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
+        protected string UsersInfo { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -256,7 +257,8 @@ namespace OnlineEditorsExample
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
                                         }
                                 },
                                 {
@@ -317,6 +319,9 @@ namespace OnlineEditorsExample
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
                 UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
+
+                List<Dictionary<string, object>> usersInfo = Users.getUsersInfo(user.id);
+                UsersInfo = jss.Serialize(usersData);
             }
             catch { }
         }
