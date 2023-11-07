@@ -3,6 +3,7 @@
 - php: getting history via api
 - ruby: getting history via api
 - python: getting history via api
+- setUsers for region protection
 - onRequestOpen method
 - nodejs: user avatar
 - trimming long name of uploading file

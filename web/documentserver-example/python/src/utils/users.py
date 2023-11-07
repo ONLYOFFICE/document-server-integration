@@ -94,7 +94,7 @@ USERS = [
          },
          ['group-2', ''],
          True, [], descr_user_2, False),
-    User('uid-3', 'Hamish Mitchell', 'mitchell@example.com',
+    User('uid-3', 'Hamish Mitchell', None,
          'group-3', ['group-2'], {
              'view': ["group-3", "group-2"],
              'edit': ["group-2"],
@@ -131,6 +131,15 @@ def getUsersForMentions(uid):
     for user in USERS:
         if (user.id != uid and user.name is not None and user.email is not None):
             usersData.append({'name': user.name, 'email': user.email})
+    return usersData
+
+
+# get users data for protect
+def getUsersForProtect(uid):
+    usersData = []
+    for user in USERS:
+        if (user.id != uid and user.name is not None):
+            usersData.append({'id': user.id, 'name': user.name, 'email': user.email})
     return usersData
 
 

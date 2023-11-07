@@ -263,9 +263,20 @@
 
             if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <%= raw @file.get_users_mentions.to_json %>
+            config.events['onRequestUsers'] = function (event) {
+                if (event && event.data){
+                    var c = event.data.c;
+                }
+                switch (c) {
+                    case "protect":
+                        var users = <%= raw @file.get_users_protect.to_json %>;
+                        break;
+                    default:
+                        users = <%= raw @file.get_users_mentions.to_json %>;
+                }
+                docEditor.setUsers({
+                    "c": c,
+                    "users": users,
                 });
             };
             // the user is mentioned in a comment

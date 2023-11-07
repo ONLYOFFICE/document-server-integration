@@ -350,6 +350,8 @@ def edit(request):
 
     # users data for mentions
     usersForMentions = users.getUsersForMentions(user.id)
+    # users data for protect
+    usersForProtect = users.getUsersForProtect(user.id)
 
     if jwtManager.isEnabled():  # if the secret key to generate token exists
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
@@ -365,7 +367,8 @@ def edit(request):
         'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
-        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None
+        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None,
+        'usersForProtect': json.dumps(usersForProtect) if user.id != 'uid-0' else None
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 

@@ -220,6 +220,8 @@ final class DocEditorView extends View
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+        // users data for protect
+        $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
@@ -235,9 +237,20 @@ final class DocEditorView extends View
         $historyLayout = "";
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        \"users\": {usersForMentions}
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case \"protect\":
+                            var users = {usersForProtect};
+                            break;
+                        default:
+                            users = {usersForMentions};
+                    }
+                    docEditor.setUsers({
+                        \"c\": c,
+                        \"users\": users,
                     });
                 };
                 // the user is mentioned in a comment
@@ -265,6 +278,7 @@ final class DocEditorView extends View
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersForProtect" => json_encode($usersForProtect),
             ];
     }
 }

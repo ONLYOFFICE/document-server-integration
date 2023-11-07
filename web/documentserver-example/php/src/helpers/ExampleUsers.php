@@ -106,7 +106,7 @@ final class ExampleUsers
             new Users(
                 "uid-3",
                 "Hamish Mitchell",
-                "mitchell@example.com",
+                null,
                 "group-3",
                 ["group-2"],
                 [
@@ -177,6 +177,28 @@ final class ExampleUsers
         foreach ($this->users as $user) {
             if ($user->id != $id && $user->name != null && $user->email != null) {
                 $usersData[] = [
+                    "name" => $user->name,
+                    "email" => $user->email,
+                ];
+            }
+        }
+        return $usersData;
+    }
+
+    /**
+     * Get a list of users with their names and emails for protect
+     *
+     * @param string|null $id
+     *
+     * @return array
+     */
+    public function getUsersForProtect(?string $id): array
+    {
+        $usersData = [];
+        foreach ($this->users as $user) {
+            if ($user->id != $id && $user->name != null) {
+                $usersData[] = [
+                    "id" => $user->id,
                     "name" => $user->name,
                     "email" => $user->email,
                 ];

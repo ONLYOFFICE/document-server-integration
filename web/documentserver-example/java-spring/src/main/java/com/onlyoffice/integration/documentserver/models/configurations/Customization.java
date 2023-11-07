@@ -33,8 +33,6 @@ import org.springframework.stereotype.Component;
   links, change logos and editor owner details. */
 public class Customization {
     @Autowired
-    private Logo logo;  // the image file at the top left corner of the Editor header
-    @Autowired
     private Goback goback;  // the settings for the Open file location menu button and upper right corner button
     private Boolean autosave = true;  // if the Autosave menu option is enabled or disabled
     private Boolean comments = true;  // if the Comments menu button is displayed or hidden

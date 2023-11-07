@@ -350,6 +350,11 @@ class FileModel
     return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
   end
 
+  # get users data for protect
+  def get_users_protect
+    return !@user.id.eql?("uid-0") ? Users.get_users_for_protect(@user.id) : nil
+  end
+
   # get direct url existence flag
   def is_enable_direct_url
     return @direct_url != nil && @direct_url == "true"

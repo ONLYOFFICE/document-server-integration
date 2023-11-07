@@ -25,6 +25,7 @@ import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
+import com.onlyoffice.integration.dto.Protect;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
@@ -150,6 +151,9 @@ public class EditorController {
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
+
+        // get user data for protect and add it to the model
+        model.addAttribute("usersForProtect", getUserProtect(uid));
         return "editor.html";
     }
 
@@ -167,6 +171,22 @@ public class EditorController {
         }
 
         return usersForMentions;
+    }
+
+    private List<Protect> getUserProtect(final String uid) {  // get user data for protect
+        List<Protect> usersForProtect = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != ANONYMOUS_USER_ID) {
+
+                    // user data includes user names, IDs and emails
+                    usersForProtect.add(new Protect(u.getId(), u.getName(), u.getEmail()));
+                }
+            }
+        }
+
+        return usersForProtect;
     }
 
     @SneakyThrows
