@@ -1,5 +1,6 @@
 # Change Log
 
+- python: convert after uploading only tagged formats
 - php: convert after uploading only tagged formats
 - setUsers for region protection
 - onRequestOpen method
