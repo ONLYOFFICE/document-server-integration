@@ -1,5 +1,6 @@
 # Change Log
 
+- php: convert after uploading only tagged formats
 - setUsers for region protection
 - onRequestOpen method
 - nodejs: user avatar
