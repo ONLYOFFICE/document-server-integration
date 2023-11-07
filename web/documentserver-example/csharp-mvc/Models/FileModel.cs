@@ -381,5 +381,14 @@ namespace OnlineEditorsExampleMVC.Models
             var user = Users.getUser(id);
             usersInfo = jss.Serialize(Users.getUsersInfo(user.id));
         }
+
+        //get a users for protect
+        public void GetUsersProtect(HttpRequest request, out string usersForProtect)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForProtect(user.id)) : null;
+        }
     }
 }

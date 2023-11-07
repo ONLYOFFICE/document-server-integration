@@ -20,6 +20,7 @@ from typing import Optional
 from urllib.parse import ParseResult, urlparse, urljoin
 from src.common import string
 
+
 class ConfigurationManager:
     version = '1.7.0'
 

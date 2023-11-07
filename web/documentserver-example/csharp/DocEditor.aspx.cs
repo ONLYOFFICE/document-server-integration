@@ -65,6 +65,7 @@ namespace OnlineEditorsExample
         protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
         protected string UsersInfo { get; private set; }
+        protected string UsersForProtect { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -322,6 +323,10 @@ namespace OnlineEditorsExample
 
                 List<Dictionary<string, object>> usersInfo = Users.getUsersInfo(user.id);
                 UsersInfo = jss.Serialize(usersData);
+
+                // get users for protect
+                List<Dictionary<string, object>> usersProtectData = Users.getUsersForProtect(user.id);
+                UsersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(usersProtectData) : null;
             }
             catch { }
         }

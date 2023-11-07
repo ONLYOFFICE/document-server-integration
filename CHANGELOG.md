@@ -7,6 +7,8 @@
 - php: user avatar
 - ruby: user avatar
 - python: user avatar
+- setUsers for region protection
+- onRequestOpen method
 - nodejs: user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData

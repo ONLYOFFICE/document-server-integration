@@ -106,6 +106,7 @@ public class EditorServlet extends HttpServlet {
 
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.getId());
+        List<Map<String, Object>> usersForProtect = Users.getUsersForProtect(user.getId());
 
         List<Map<String, Object>> usersInfo = Users.getUsersInfo(user.getId());
 
@@ -134,6 +135,8 @@ public class EditorServlet extends HttpServlet {
         request.setAttribute("usersForMentions", !user.getId()
                 .equals("uid-0") ? gson.toJson(usersForMentions) : null);
         request.setAttribute("usersInfo", gson.toJson(usersInfo));
+        request.setAttribute("usersForProtect", !user.getId()
+                .equals("uid-0") ? gson.toJson(usersForProtect) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

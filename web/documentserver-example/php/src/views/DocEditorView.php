@@ -221,6 +221,10 @@ final class DocEditorView extends View
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+
+        // users data for protect
+        $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
+
         $usersInfo = [];
         if ($user->id != 'uid-0'){
             foreach ($userList->getAllUsers() as $userInfo){
@@ -275,6 +279,9 @@ final class DocEditorView extends View
                                 }
                             }
                             break;
+                        case \"protect\":
+                            var users = {usersForProtect};
+                            break;
                         default:
                             users = {usersForMentions};
                     }
@@ -309,6 +316,7 @@ final class DocEditorView extends View
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
             "usersInfo" => json_encode($usersInfo)
+            "usersForProtect" => json_encode($usersForProtect),
             ];
     }
 }

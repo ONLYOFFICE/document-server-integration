@@ -182,15 +182,39 @@
             }
         };
 
+        var onRequestOpen = function (event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
         var onRequestReferenceData = function (event) {  // user refresh external data source
-            event.data.directUrl = !!config.document.directUrl;
+            innerAlert("onRequestReferenceData");
+
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function (data, callback) {
+            innerAlert(data);
+            data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor.ashx?type=reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 console.log(xhr.responseText);
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
@@ -256,6 +280,8 @@
         <% Model.GetUsersMentions(Request, out usersForMentions); %>
         <% string usersInfo; %>
         <% Model.GetUsersInfo(Request, out usersInfo); %>
+        <% string usersForProtect; %>
+        <% Model.GetUsersProtect(Request, out usersForProtect); %>
 
         if (config.editorConfig.user.id) {
             // the user is trying to show the document version history
@@ -288,6 +314,9 @@
                                 }
                             }
                             break;
+                        case "protect":
+                            var users = <%= usersForProtect %>;
+                            break;
                         default:
                             users = <%= usersForMentions %>;
                     }
@@ -309,6 +338,7 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {

@@ -112,7 +112,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             new User(
                     "uid-3",
                     "Hamish Mitchell",
-                    "mitchell@example.com",
+                    null,
                     "group-3",
                     new List<string>() { "group-2" },
                     new Dictionary<string,object>()
@@ -191,6 +191,25 @@ namespace OnlineEditorsExampleMVC.Helpers
                             {"email", user.email },
                             {"image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                         });
+                }
+            }
+            return usersData;
+        }
+
+        // get a list of users with their names and emails for protect
+        public static List<Dictionary<string, object>> getUsersForProtect(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+            foreach (User user in users)
+            {
+                if (!user.id.Equals(id) && user.name != null)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"name", user.name },
+                        {"email", user.email },
+                        {"id", user.id}
+                    });
                 }
             }
             return usersData;

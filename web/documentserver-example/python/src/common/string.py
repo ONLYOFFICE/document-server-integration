@@ -16,6 +16,7 @@
 
 from typing import Optional
 
+
 def boolean(string: Optional[str], default: bool = False) -> bool:
     '''
     Converts a string that represents a boolean value to its corresponding

@@ -853,7 +853,8 @@ namespace OnlineEditorsExampleMVC
                     { "instanceId", DocManagerHelper.GetServerUrl(false) }
                 }
             },
-            { "path", fileName }
+            { "path", fileName },
+            { "link", DocManagerHelper.GetServerUrl(false) + "Editor?fileName=" + fileName }
             };
 
             if (JwtManager.Enabled)

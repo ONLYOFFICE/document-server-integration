@@ -104,7 +104,7 @@ public class ExampleData {
                 true, true);
 
         // create user 3 with the specified parameters
-        userService.createUser("Hamish Mitchell", "mitchell@example.com", descriptionUserThird,
+        userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
                 new ArrayList<>(), List.of("group-2"), false, true, true, false);
 
