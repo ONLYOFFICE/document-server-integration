@@ -238,7 +238,7 @@ def edit(request):
             u = userInfo
             u.image = docManager.getServerUrl(True, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
             usersInfo.append({"id": u.id, "name": u.name, "email": u.email, "image": u.image, "group": u.group,
-                              "reviewGroups":u.reviewGroups, "commentGroups":u.commentGroups, "favorite": u.favorite,
+                              "reviewGroups": u.reviewGroups, "commentGroups": u.commentGroups, "favorite": u.favorite,
                               "deniedPermissions": u.deniedPermissions, "descriptions": u.descriptions,
                               "templates": u.templates, "userInfoGroups": u.userInfoGroups, "avatar": u.avatar})
 
@@ -305,7 +305,8 @@ def edit(request):
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
                 'group': user.group,
-                'image': docManager.getServerUrl(True, request) + f'/static/images/{user.id}.jpg' if user.avatar else None
+                'image': docManager.getServerUrl(True, request) + f'/static/images/{user.id}.jpg' if user.avatar
+                else None
             },
             'embedded': {  # the parameters for the embedded document type
                 # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -386,7 +387,7 @@ def edit(request):
         'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
-        'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None,
+        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None,
         'usersInfo': json.dumps(usersInfo),
         'usersForProtect': json.dumps(usersForProtect) if user.id != 'uid-0' else None,
     }

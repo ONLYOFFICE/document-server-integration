@@ -226,8 +226,8 @@ final class DocEditorView extends View
         $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
 
         $usersInfo = [];
-        if ($user->id != 'uid-0'){
-            foreach ($userList->getAllUsers() as $userInfo){
+        if ($user->id != 'uid-0') {
+            foreach ($userList->getAllUsers() as $userInfo) {
                 $u = $userInfo;
                 $u->image = $userInfo->avatar ? serverPath(true) . "/assets/images/" . $userInfo->id . ".png" : null;
                 array_push($usersInfo, $u);
@@ -315,7 +315,7 @@ final class DocEditorView extends View
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
-            "usersInfo" => json_encode($usersInfo)
+            "usersInfo" => json_encode($usersInfo),
             "usersForProtect" => json_encode($usersForProtect),
             ];
     }
