@@ -88,9 +88,7 @@ class FormatManager
   sig { returns(T::Array[Format]) }
   def convertible
     all.filter do |format|
-      format.type == 'cell' && format.convert.include?('xlsx') ||
-      format.type == 'slide' && format.convert.include?('pptx') ||
-      format.type == 'word' && format.convert.include?('docx')
+      format.actions.include?('auto-convert')
     end
   end
 

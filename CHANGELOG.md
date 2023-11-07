@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: convert after uploading only tagged formats
 - python: convert after uploading only tagged formats
 - php: convert after uploading only tagged formats
 - setUsers for region protection
