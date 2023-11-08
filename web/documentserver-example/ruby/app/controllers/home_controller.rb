@@ -279,7 +279,7 @@ class HomeController < ApplicationController
   end
 
   # downloading an assets file
-  def asset
+  def assets
     file_name = File.basename(params[:fileName])
     asset_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
 
