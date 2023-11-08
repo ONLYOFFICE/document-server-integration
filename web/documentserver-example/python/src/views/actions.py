@@ -498,24 +498,24 @@ def downloadhistory(request):
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
 
-def historyobj(request):
+def history_obj(request):
     body = json.loads(request.body)
     response = {}
-    fileName = None
+    file_name = None
 
     try:
-        fileName = body['fileName']
+        file_name = body['fileName']
     except Exception:
         pass
 
-    if fileName is None:
+    if file_name is None:
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
-    storagePath = docManager.getStoragePath(fileName, request)
-    docKey = docManager.generateFileKey(fileName, request)
-    fileUrl = docManager.getDownloadUrl(fileName, request)
-    response = historyManager.getHistoryObject(storagePath, fileName, docKey, fileUrl, False, request)
+    storage_path = docManager.getStoragePath(file_name, request)
+    doc_key = docManager.generateFileKey(file_name, request)
+    file_url = docManager.getDownloadUrl(file_name, request)
+    response = historyManager.getHistoryObject(storage_path, file_name, doc_key, file_url, False, request)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
