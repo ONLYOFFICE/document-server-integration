@@ -77,9 +77,7 @@ class FormatManager():
         formats = self.all()
         filtered = filter(
             lambda format: (
-                format.type == 'cell' and 'xlsx' in format.convert or
-                format.type == 'slide' and 'pptx' in format.convert or
-                format.type == 'word' and 'docx' in format.convert
+                'auto-convert' in format.actions
             ),
             formats
         )

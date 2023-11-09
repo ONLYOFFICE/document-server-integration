@@ -147,10 +147,7 @@ class FormatManager
         $formats = $this->all();
         $filtered = [];
         foreach ($formats as $format) {
-            if ($format->type === 'cell' and in_array('xlsx', $format->convert) or
-                $format->type === 'slide' and in_array('pptx', $format->convert) or
-                $format->type === 'word' and in_array('docx', $format->convert)
-            ) {
+            if (in_array('auto-convert', $format->actions)) {
                 $filtered[] = $format;
             }
         }
