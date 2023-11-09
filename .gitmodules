@@ -1,7 +1,3 @@
-[submodule "web/documentserver-example/csharp-mvc/assets"]
-	path = web/documentserver-example/csharp-mvc/assets
-	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/en
 [submodule "web/documentserver-example/csharp/assets"]
 	path = web/documentserver-example/csharp/assets
 	url = https://github.com/ONLYOFFICE/document-templates
@@ -54,3 +50,7 @@
 	path = web/documentserver-example/java-spring/src/main/resources/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
 	branch = master
+[submodule "web/documentserver-example/csharp-mvc/assets/document-templates"]
+	path = web/documentserver-example/csharp-mvc/assets/document-templates
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
