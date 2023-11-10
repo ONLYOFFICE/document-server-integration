@@ -40,39 +40,12 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (ExtsDocument.Contains(ext)) return FileType.Word;  // word type for document extensions
-            if (ExtsSpreadsheet.Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
-            if (ExtsPresentation.Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
+            if (FormatManager.DocumentExtensions().Contains(ext)) return FileType.Word;  // word type for document extensions
+            if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
+            if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
 
             return FileType.Word;  // the default type is word
         }
-
-        // document extensions
-        public static readonly List<string> ExtsDocument = new List<string>
-            {
-                ".doc", ".docx", ".docm",
-                ".dot", ".dotx", ".dotm",
-                ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
-            };
-
-        // spreadsheet extensions
-        public static readonly List<string> ExtsSpreadsheet = new List<string>
-            {
-                ".xls", ".xlsx", ".xlsm", ".xlsb",
-                ".xlt", ".xltx", ".xltm",
-                ".ods", ".fods", ".ots", ".csv"
-            };
-
-        // presentation extensions
-        public static readonly List<string> ExtsPresentation = new List<string>
-            {
-                ".pps", ".ppsx", ".ppsm",
-                ".ppt", ".pptx", ".pptm",
-                ".pot", ".potx", ".potm",
-                ".odp", ".fodp", ".otp"
-            };
     }
 
     public class Format
@@ -98,7 +71,7 @@ namespace OnlineEditorsExampleMVC.Models
         }
     }
 
-    public class FormatManager
+    public static class FormatManager
     {
         public static List<string> FillableExtensions()
         {

@@ -51,24 +51,24 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get file extensions that can be viewed
         public static List<string> ViewedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ViewableExtensions(); }
         }
 
         public static List<string> FillFormExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.FillableExtensions(); }
         }
 
         // get file extensions that can be edited
         public static List<string> EditedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.EditableExtensions(); }
         }
 
         // get file extensions that can be converted
         public static List<string> ConvertExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ConvertibleExtensions(); }
         }
 
         // get current user host address
