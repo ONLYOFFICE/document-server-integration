@@ -1,15 +1,11 @@
 # Change Log
 
-- csharp: user avatar
-- csharp-mvc: user avatar
-- java: user avatar
-- java-spring: user avatar
-- php: user avatar
-- ruby: user avatar
-- python: user avatar
+- ruby: convert after uploading only tagged formats
+- python: convert after uploading only tagged formats
+- php: convert after uploading only tagged formats
 - setUsers for region protection
 - onRequestOpen method
-- nodejs: user avatar
+- user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
 - onRequestSelectDocument method
