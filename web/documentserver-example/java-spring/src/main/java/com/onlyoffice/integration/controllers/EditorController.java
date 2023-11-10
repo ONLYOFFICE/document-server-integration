@@ -25,6 +25,7 @@ import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
+import com.onlyoffice.integration.dto.UserInfo;
 import com.onlyoffice.integration.dto.Protect;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
@@ -118,6 +119,8 @@ public class EditorController {
         }
 
         User user = optionalUser.get();
+        user.setImage(user.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + user.getId() + ".png" : null);
 
         // get file model with the default file parameters
         FileModel fileModel = fileConfigurer.getFileModel(
@@ -152,8 +155,11 @@ public class EditorController {
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
 
+        model.addAttribute("usersInfo", getUsersInfo(uid));
+
         // get user data for protect and add it to the model
         model.addAttribute("usersForProtect", getUserProtect(uid));
+
         return "editor.html";
     }
 
@@ -173,6 +179,19 @@ public class EditorController {
         return usersForMentions;
     }
 
+    private List<UserInfo> getUsersInfo(final String uid) {  // get user data for mentions
+        List<UserInfo> usersInfo = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                String image = u.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + u.getId() + ".png" : null;
+                usersInfo.add(new UserInfo(u.getId(), u.getName(), u.getEmail(), image));
+            }
+        }
+        return usersInfo;
+    }
+
     private List<Protect> getUserProtect(final String uid) {  // get user data for protect
         List<Protect> usersForProtect = new ArrayList<>();
         if (uid != null && !uid.equals("4")) {
@@ -188,6 +207,7 @@ public class EditorController {
 
         return usersForProtect;
     }
+
 
     @SneakyThrows
     private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document

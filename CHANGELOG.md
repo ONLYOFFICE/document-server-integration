@@ -5,7 +5,7 @@
 - php: convert after uploading only tagged formats
 - setUsers for region protection
 - onRequestOpen method
-- nodejs: user avatar
+- user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
 - onRequestSelectDocument method
