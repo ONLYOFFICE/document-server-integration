@@ -15,11 +15,15 @@
 // limitations under the License.
 //
 
+namespace Example\Common\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Common\URL;
 
-final class URLStringTests extends TestCase {
-    public function test_generates() {
+final class URLStringTests extends TestCase
+{
+    public function testGenerates()
+    {
         $url = new URL('http://user:password@localhost:8080/path?q=value#fragment');
         $string = $url->string();
         $this->assertEquals(

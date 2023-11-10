@@ -6,10 +6,11 @@ requires = [
 [project]
 name = "online-editor-example"
 version = "1.6.0"
-requires-python = ">=3.11"
+requires-python = ">=3.11.4"
 dependencies = [
 	"django>=3.1.3",
 	"django-stubs>=4.2.3",
+	"msgspec>=0.18.1",
 	"pyjwt>=2.6.0",
 	"python-magic>=0.4.27",
 	"requests>=2.25.0"

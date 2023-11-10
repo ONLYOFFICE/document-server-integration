@@ -16,16 +16,22 @@ jobs:
       run:
         working-directory: ./web/documentserver-example/ruby
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.0'
-          bundler-cache: true
-      - name: Install dependencies
-        run: | 
-          bundle install
-      - name: Rubocop
-        run: |
-          gem install rubocop
-          rubocop
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.2'
+
+    - name: Update Submodules
+      run: |
+        git submodule update --init --recursive
+
+    - name: Install Dependencies
+      run: |
+        bundle update
+
+    - name: Rubocop
+      run: |
+        bundle exec rubocop

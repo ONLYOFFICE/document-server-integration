@@ -18,7 +18,7 @@
 namespace Example\Views;
 
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use function Example\getStoredFiles;
 
@@ -28,8 +28,9 @@ final class IndexView extends View
     public function __construct($request, $tempName = "index")
     {
         parent::__construct($tempName);
+        $formatManager = new FormatManager();
+
         $storedList = new IndexStoredListView($request);
-        $configManager = new ConfigManager();
         $portalInfo = $this->getPortalInfoStyleDisplay();
 
         $this->tagsValues = [
@@ -42,9 +43,9 @@ final class IndexView extends View
             "editButton" => $this->getEditButton(),
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
-            "fillFormsExtList" => implode(",", $configManager->getFillExtensions()),
-            "converExtList" => implode(",", $configManager->getConvertExtensions()),
-            "editedExtList" => implode(",", $configManager->getEditExtensions()),
+            "fillFormsExtList" => implode(",", $formatManager->fillableExtensions()),
+            "converExtList" => implode(",", $formatManager->convertibleExtensions()),
+            "editedExtList" => implode(",", $formatManager->editableExtensions()),
         ];
     }
 
@@ -62,8 +63,8 @@ final class IndexView extends View
     private function getLanguageListOptionsLayout()
     {
         $layout = "";
-        $config_manager = new ConfigurationManager();
-        foreach ($config_manager->languages() as $key => $language) {
+        $configManager = new ConfigurationManager();
+        foreach ($configManager->languages() as $key => $language) {
             $layout .= '<option value="'.$key.'">'.$language.'</option>'.PHP_EOL;
         }
         return $layout;
@@ -101,8 +102,8 @@ final class IndexView extends View
 
     private function getPreloaderUrl()
     {
-        $config_manager = new ConfigurationManager();
-        return $config_manager->document_server_preloader_url()->string();
+        $configManager = new ConfigurationManager();
+        return $configManager->documentServerPreloaderURL()->string();
     }
 
     private function getEditButton()

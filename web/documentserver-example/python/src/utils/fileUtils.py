@@ -17,34 +17,40 @@
 """
 
 from src.configuration import ConfigurationManager
+from src.format import FormatManager
 
 config_manager = ConfigurationManager()
+format_manager = FormatManager()
+
 
 # get file name from the document url
-def getFileName(str):
-    ind = str.rfind('/')
-    return str[ind+1:]
+def getFileName(uri):
+    ind = uri.rfind('/')
+    return uri[ind+1:]
+
 
 # get file name without extension from the document url
-def getFileNameWithoutExt(str):
-    fn = getFileName(str)
+def getFileNameWithoutExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[:ind]
 
+
 # get file extension from the document url
-def getFileExt(str):
-    fn = getFileName(str)
+def getFileExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[ind:].lower()
 
+
 # get file type
-def getFileType(str):
-    ext = getFileExt(str)
-    if ext in config_manager.document_file_extensions():
+def getFileType(uri):
+    ext = getFileExt(uri)
+    if ext in format_manager.document_extensions():
         return 'word'
-    if ext in config_manager.spreadsheet_file_extensions():
+    if ext in format_manager.spreadsheet_extensions():
         return 'cell'
-    if ext in config_manager.presentation_file_extensions():
+    if ext in format_manager.presentation_extensions():
         return 'slide'
 
-    return 'word' # default file type is word
+    return 'word'  # default file type is word

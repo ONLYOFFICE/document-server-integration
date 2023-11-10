@@ -15,33 +15,40 @@
 // limitations under the License.
 //
 
+namespace Example\Configuration\Tests;
+
 use PHPUnit\Framework\TestCase;
 use Example\Configuration\ConfigurationManager;
 
-final class ConfigurationManagerJWTHeaderTests extends TestCase {
+final class ConfigurationManagerJWTHeaderTests extends TestCase
+{
     public array $env;
 
-    public function __construct(string $name) {
+    public function __construct(string $name)
+    {
         $this->env = getenv();
         parent::__construct($name);
     }
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         foreach ($this->env as $key => $value) {
             putenv("{$key}={$value}");
         }
     }
 
-    public function test_assigns_a_default_value() {
-        $config_manager = new ConfigurationManager();
-        $header = $config_manager->jwt_header();
+    public function testAssignsADefaultValue()
+    {
+        $configManager = new ConfigurationManager();
+        $header = $configManager->jwtHeader();
         $this->assertEquals('Authorization', $header);
     }
 
-    public function test_assigns_a_value_from_the_environment() {
+    public function testAssignsAValueFromTheEnvironment()
+    {
         putenv('JWT_HEADER=Proxy-Authorization');
-        $config_manager = new ConfigurationManager();
-        $header = $config_manager->jwt_header();
+        $configManager = new ConfigurationManager();
+        $header = $configManager->jwtHeader();
         $this->assertEquals('Proxy-Authorization', $header);
     }
 }

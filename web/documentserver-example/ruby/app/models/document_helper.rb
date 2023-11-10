@@ -15,12 +15,15 @@
 #
 
 require_relative '../configuration/configuration'
+require_relative '../format/format'
 
 class DocumentHelper
   @config_manager = ConfigurationManager.new
+  @format_manager = FormatManager.new
 
   class << self
     attr_reader :config_manager
+    attr_reader :format_manager
   end
 
   @@runtime_cache = {}
@@ -41,26 +44,26 @@ class DocumentHelper
 
     # all the supported file extensions
     def file_exts
-      [].concat(viewed_exts).concat(edited_exts).concat(convert_exts).concat(fill_forms_exts)
+      DocumentHelper.format_manager.all_extensions
     end
 
     def fill_forms_exts
-      DocumentHelper.config_manager.fillable_file_extensions
+      DocumentHelper.format_manager.fillable_extensions
     end
 
     # file extensions that can be viewed
     def viewed_exts
-      DocumentHelper.config_manager.viewable_file_extensions
+      DocumentHelper.format_manager.viewable_extensions
     end
 
     # file extensions that can be edited
     def edited_exts
-      DocumentHelper.config_manager.editable_file_extensions
+      DocumentHelper.format_manager.editable_extensions
     end
 
     # file extensions that can be converted
     def convert_exts
-      DocumentHelper.config_manager.convertable_file_extensions
+      DocumentHelper.format_manager.convertible_extensions
     end
 
     # get current user host address
@@ -146,8 +149,10 @@ class DocumentHelper
 
     # get the correct file name if such a name already exists
     def get_correct_name(file_name, user_address)
+      maxName = 50
       ext = File.extname(file_name)  # get file extension
-      base_name = File.basename(file_name, ext)  # get file name without extension
+      # get file name without extension
+      base_name = File.basename(file_name, ext)[0...maxName] + (file_name.length > maxName ? '[...]' : '')
       name = base_name + ext.downcase  # get full file name
       index = 1
 
@@ -200,7 +205,7 @@ class DocumentHelper
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name(demo_name, nil)  # get the correct file name if such a name already exists
 
-      src = Rails.root.join('public', 'assets', sample == 'true' ? 'sample' : 'new', demo_name)  # save sample document of a necessary extension to the storage directory
+      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)  # save sample document of a necessary extension to the storage directory
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest

@@ -90,9 +90,7 @@ fileUtility.getFillExtensions = function getFillExtensions() {
 
 fileUtility.getConvertExtensions = function getConvertExtensions() {
   return supportedFormats.filter(
-    (format) => (format.type === 'word' && format.convert.includes('docx'))
-            || (format.type === 'cell' && format.convert.includes('xlsx'))
-            || (format.type === 'slide' && format.convert.includes('pptx')),
+    (format) => format.actions.includes('auto-convert'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
 

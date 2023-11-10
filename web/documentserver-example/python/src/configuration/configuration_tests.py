@@ -17,12 +17,15 @@
 from os import environ
 from unittest import TestCase
 from unittest.mock import patch
+from urllib.parse import urlparse
 from . import ConfigurationManager
+
 
 class ConfigurationManagerTests(TestCase):
     def test_corresponds_the_latest_version(self):
         config_manager = ConfigurationManager()
         self.assertEqual(config_manager.version, '1.6.0')
+
 
 class ConfigurationManagerExampleURLTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -38,99 +41,160 @@ class ConfigurationManagerExampleURLTests(TestCase):
         url = config_manager.example_url()
         self.assertEqual(url.geturl(), 'http://localhost')
 
-class ConfigurationManagerDocumentServerURLTests(TestCase):
+
+class ConfigurationManagerDocumentServerPublicURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
-        url = config_manager.document_server_url()
+        url = config_manager.document_server_public_url()
         self.assertEqual(url.geturl(), 'http://document-server')
 
     @patch.dict(environ, {
-        'DOCUMENT_SERVER_URL': 'http://localhost'
+        'DOCUMENT_SERVER_PUBLIC_URL': 'http://localhost'
     })
     def test_assigns_a_value_from_the_environment(self):
         config_manager = ConfigurationManager()
-        url = config_manager.document_server_url()
+        url = config_manager.document_server_public_url()
         self.assertEqual(url.geturl(), 'http://localhost')
 
-class ConfigurationManagerDocumentServerAPIURLTests(TestCase):
+
+class ConfigurationManagerDocumentServerPrivateURLTests(TestCase):
     def test_assigns_a_default_value(self):
+        config_manager = ConfigurationManager()
+        url = config_manager.document_server_private_url()
+        self.assertEqual(url.geturl(), 'http://document-server')
+
+    @patch.dict(environ, {
+        'DOCUMENT_SERVER_PRIVATE_URL': 'http://localhost'
+    })
+    def test_assigns_a_value_from_the_environment(self):
+        config_manager = ConfigurationManager()
+        url = config_manager.document_server_private_url()
+        self.assertEqual(url.geturl(), 'http://localhost')
+
+
+class ConfigurationManagerDocumentServerAPIURLTests(TestCase):
+    @patch.object(
+        ConfigurationManager,
+        'document_server_public_url',
+        return_value=urlparse('http://localhost')
+    )
+    def test_assigns_a_default_value(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_api_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/web-apps/apps/api/documents/api.js'
+            'http://localhost/web-apps/apps/api/documents/api.js'
         )
 
+    @patch.object(
+        ConfigurationManager,
+        'document_server_public_url',
+        return_value=urlparse('http://localhost')
+    )
     @patch.dict(environ, {
         'DOCUMENT_SERVER_API_PATH': '/api'
     })
-    def test_assigns_a_value_from_the_environment(self):
+    def test_assigns_a_value_from_the_environment(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_api_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/api'
+            'http://localhost/api'
         )
 
+
 class ConfigurationManagerDocumentServerPreloaderURLTests(TestCase):
-    def test_assigns_a_default_value(self):
+    @patch.object(
+        ConfigurationManager,
+        'document_server_public_url',
+        return_value=urlparse('http://localhost')
+    )
+    def test_assigns_a_default_value(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_preloader_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/web-apps/apps/api/documents/cache-scripts.html'
+            'http://localhost/web-apps/apps/api/documents/cache-scripts.html'
         )
 
+    @patch.object(
+        ConfigurationManager,
+        'document_server_public_url',
+        return_value=urlparse('http://localhost')
+    )
     @patch.dict(environ, {
         'DOCUMENT_SERVER_PRELOADER_PATH': '/preloader'
     })
-    def test_assigns_a_value_from_the_environment(self):
+    def test_assigns_a_value_from_the_environment(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_preloader_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/preloader'
+            'http://localhost/preloader'
         )
 
+
 class ConfigurationManagerDocumentServerCommandURLTests(TestCase):
-    def test_assigns_a_default_value(self):
+    @patch.object(
+        ConfigurationManager,
+        'document_server_private_url',
+        return_value=urlparse('http://localhost')
+    )
+    def test_assigns_a_default_value(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_command_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/coauthoring/CommandService.ashx'
+            'http://localhost/coauthoring/CommandService.ashx'
         )
 
+    @patch.object(
+        ConfigurationManager,
+        'document_server_private_url',
+        return_value=urlparse('http://localhost')
+    )
     @patch.dict(environ, {
         'DOCUMENT_SERVER_COMMAND_PATH': '/command'
     })
-    def test_assigns_a_value_from_the_environment(self):
+    def test_assigns_a_value_from_the_environment(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_command_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/command'
+            'http://localhost/command'
         )
 
+
 class ConfigurationManagerDocumentServerConverterURLTests(TestCase):
-    def test_assigns_a_default_value(self):
+    @patch.object(
+        ConfigurationManager,
+        'document_server_private_url',
+        return_value=urlparse('http://localhost')
+    )
+    def test_assigns_a_default_value(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_converter_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/ConvertService.ashx'
+            'http://localhost/ConvertService.ashx'
         )
 
+    @patch.object(
+        ConfigurationManager,
+        'document_server_private_url',
+        return_value=urlparse('http://localhost')
+    )
     @patch.dict(environ, {
         'DOCUMENT_SERVER_CONVERTER_PATH': '/converter'
     })
-    def test_assigns_a_value_from_the_environment(self):
+    def test_assigns_a_value_from_the_environment(self, _):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_converter_url()
         self.assertEqual(
             url.geturl(),
-            'http://document-server/converter'
+            'http://localhost/converter'
         )
+
 
 class ConfigurationManagerJWTSecretTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -146,6 +210,7 @@ class ConfigurationManagerJWTSecretTests(TestCase):
         secret = config_manager.jwt_secret()
         self.assertEqual(secret, 'your-256-bit-secret')
 
+
 class ConfigurationManagerJWTHeaderTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -159,6 +224,7 @@ class ConfigurationManagerJWTHeaderTests(TestCase):
         config_manager = ConfigurationManager()
         header = config_manager.jwt_header()
         self.assertEqual(header, 'Proxy-Authorization')
+
 
 class ConfigurationManagerJWTUseForRequest(TestCase):
     def test_assigns_a_default_value(self):
@@ -174,6 +240,7 @@ class ConfigurationManagerJWTUseForRequest(TestCase):
         use = config_manager.jwt_use_for_request()
         self.assertFalse(use)
 
+
 class ConfigurationManagerSSLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -187,6 +254,7 @@ class ConfigurationManagerSSLTests(TestCase):
         config_manager = ConfigurationManager()
         enabled = config_manager.ssl_verify_peer_mode_enabled()
         self.assertTrue(enabled)
+
 
 class ConfigurationManagerStoragePathTests(TestCase):
     def test_assigns_a_default_value(self):
@@ -212,6 +280,7 @@ class ConfigurationManagerStoragePathTests(TestCase):
         path = config_manager.storage_path()
         self.assertEqual(f'{path}', '/directory')
 
+
 class ConfigurationManagerMaximumFileSizeTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
@@ -225,6 +294,7 @@ class ConfigurationManagerMaximumFileSizeTests(TestCase):
         config_manager = ConfigurationManager()
         size = config_manager.maximum_file_size()
         self.assertEqual(size, 10)
+
 
 class ConfigurationManagerConversionTimeoutTests(TestCase):
     def test_assigns_a_default_value(self):

@@ -148,7 +148,6 @@
     <Content Include="App_Themes\jquery-ui.css" />
     <Content Include="App_Themes\stylesheet.css" />
     <Content Include="DocEditor.aspx" />
-    <Content Include="script\jquery-1.9.0.min.js" />
     <Content Include="script\jquery-ui.min.js" />
     <Content Include="script\jquery.blockUI.js" />
     <Content Include="script\jquery.dropdownToggle.js" />

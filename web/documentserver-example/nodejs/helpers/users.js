@@ -29,6 +29,7 @@ class User {
     deniedPermissions,
     descriptions,
     templates,
+    avatar,
   ) {
     this.id = id;
     this.name = name;
@@ -41,6 +42,7 @@ class User {
     this.deniedPermissions = deniedPermissions;
     this.descriptions = descriptions;
     this.templates = templates;
+    this.avatar = avatar;
   }
 }
 
@@ -52,7 +54,8 @@ const descrUser1 = [
   'The file favorite state is undefined',
   'Can create files from templates using data from the editor',
   'Can see the information about all users',
-  'Can submit forms'
+  'Can submit forms',
+  'Has an avatar',
 ];
 
 const descrUser2 = [
@@ -62,7 +65,8 @@ const descrUser2 = [
   'This file is marked as favorite',
   'Can create new files from the editor',
   'Can see the information about users from Group2 and users who don’t belong to any group',
-  'Can’t submit forms'
+  'Can’t submit forms',
+  'Has an avatar',
 ];
 
 const descrUser3 = [
@@ -75,7 +79,7 @@ const descrUser3 = [
   'Can’t print the file',
   'Can create new files from the editor',
   'Can see the information about Group2 users',
-  'Can’t submit forms'
+  'Can’t submit forms',
 ];
 
 const descrUser0 = [
@@ -91,22 +95,48 @@ const descrUser0 = [
   'Can\'t view chat',
   'Can\'t protect file',
   'View file without collaboration',
-  'Can’t submit forms'
+  'Can’t submit forms',
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true),
-  new User('uid-2', 'Mark Pottato', 'pottato@example.com', 'group-2', ['group-2', ''], {
-    view: '',
-    edit: ['group-2', ''],
-    remove: ['group-2'],
-  }, ['group-2', ''], true, [], descrUser2, false), // own and without group
-  new User('uid-3', 'Hamish Mitchell', 'mitchell@example.com', 'group-3', ['group-2'], {
-    view: ['group-3', 'group-2'],
-    edit: ['group-2'],
-    remove: [],
-  }, ['group-2'], false, ['copy', 'download', 'print'], descrUser3, false), // other group only
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false),
+  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true),
+  new User(
+    'uid-2',
+    'Mark Pottato',
+    'pottato@example.com',
+    'group-2',
+    ['group-2', ''], // own and without group
+    {
+      view: '',
+      edit: ['group-2', ''],
+      remove: ['group-2'],
+    },
+    ['group-2', ''],
+    true,
+    [],
+    descrUser2,
+    false,
+    true,
+  ),
+  new User(
+    'uid-3',
+    'Hamish Mitchell',
+    'mitchell@example.com',
+    'group-3',
+    ['group-2'], // other group only
+    {
+      view: ['group-3', 'group-2'],
+      edit: ['group-2'],
+      remove: [],
+    },
+    ['group-2'],
+    false,
+    ['copy', 'download', 'print'],
+    descrUser3,
+    false,
+    false,
+  ),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false),
 ];
 
 // get a list of all the users
@@ -145,7 +175,6 @@ users.getUsersForProtect = function getUsersForProtect(id) {
   this.forEach((user) => {
     if (user.id !== id && user.name != null) {
       result.push({
-        email: user.email,
         id: user.id,
         name: user.name,
       });

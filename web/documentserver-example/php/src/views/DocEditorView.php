@@ -18,7 +18,7 @@
 namespace Example\Views;
 
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
+use Example\Format\FormatManager;
 use Example\Helpers\ExampleUsers;
 use Example\Helpers\JwtManager;
 use function Example\doUpload;
@@ -41,10 +41,10 @@ final class DocEditorView extends View
     {
         parent::__construct($tempName);
 
-        $config_manager = new ConfigurationManager();
+        $configManager = new ConfigurationManager();
+        $formatManager = new FormatManager();
 
         $externalUrl = $request["fileUrl"] ?? "";
-        $confgManager = new ConfigManager();
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
@@ -63,8 +63,8 @@ final class DocEditorView extends View
             $filename = tryGetDefaultByType($createExt, $user);
 
             // create the demo file url
-            $new_url = "editor?fileID=" . $filename . "&user=" . $request["user"];
-            header('Location: ' . $new_url, true);
+            $newURL = "editor?fileID=" . $filename . "&user=" . $request["user"];
+            header('Location: ' . $newURL, true);
             exit;
         }
 
@@ -75,10 +75,10 @@ final class DocEditorView extends View
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
-        $canEdit = in_array($ext, $confgManager->getEditExtensions());  // check if the file can be edited
+        $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
         if ((!$canEdit && $editorsMode == "edit"
                 || $editorsMode == "fillForms")
-            && in_array($ext, $confgManager->getFillExtensions())
+            && in_array($ext, $formatManager->fillableExtensions())
         ) {
             $editorsMode = "fillForms";
             $canEdit = true;
@@ -199,17 +199,17 @@ final class DocEditorView extends View
         ];
 
         // a document for comparing
-        $dataCompareFile = $isEnableDirectUrl ? [
+        $dataDocument = $isEnableDirectUrl ? [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
-            "directUrl" => serverPath(false) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/sample.docx",
         ] : [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
         ];
 
         // recipients data for mail merging
-        $dataMailMergeRecipients = $isEnableDirectUrl ? [
+        $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
             "url" => serverPath(true) . "/csv",
             "directUrl" => serverPath(false) . "/csv",
@@ -220,16 +220,18 @@ final class DocEditorView extends View
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+        // users data for protect
+        $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
             $config["token"] = $jwtManager->jwtEncode($config);  // encode config into the token
             // encode the dataInsertImage object into the token
             $dataInsertImage["token"] = $jwtManager->jwtEncode($dataInsertImage);
-            // encode the dataCompareFile object into the token
-            $dataCompareFile["token"] = $jwtManager->jwtEncode($dataCompareFile);
-            // encode the dataMailMergeRecipients object into the token
-            $dataMailMergeRecipients["token"] = $jwtManager->jwtEncode($dataMailMergeRecipients);
+            // encode the dataDocument object into the token
+            $dataDocument["token"] = $jwtManager->jwtEncode($dataDocument);
+            // encode the dataSpreadsheet object into the token
+            $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
         $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
         $history = $out[0];
@@ -249,9 +251,20 @@ final class DocEditorView extends View
                     };";
             }
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        \"users\": {usersForMentions}
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case \"protect\":
+                            var users = {usersForProtect};
+                            break;
+                        default:
+                            users = {usersForMentions};
+                    }
+                    docEditor.setUsers({
+                        \"c\": c,
+                        \"users\": users,
                     });
                 };
                 // the user is mentioned in a comment
@@ -267,18 +280,19 @@ final class DocEditorView extends View
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
-            "apiUrl" => $config_manager->document_server_api_url()->string(),
+            "apiUrl" => $configManager->documentServerAPIURL()->string(),
             "dataInsertImage" => mb_strimwidth(
                 json_encode($dataInsertImage),
                 1,
                 mb_strlen(json_encode($dataInsertImage)) - 2
             ),
-            "dataCompareFile" => json_encode($dataCompareFile),
-            "dataMailMergeRecipients" => json_encode($dataMailMergeRecipients),
+            "dataDocument" => json_encode($dataDocument),
+            "dataSpreadsheet" => json_encode($dataSpreadsheet),
             "fileNotFoundAlert" => !file_exists(getStoragePath($filename)) ? "alert('File not found'); return;" : "",
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersForProtect" => json_encode($usersForProtect),
             ];
     }
 }

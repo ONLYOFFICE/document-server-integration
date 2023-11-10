@@ -19,63 +19,33 @@
 package helpers;
 
 import entities.FileType;
+import format.Format;
+import format.FormatManager;
+
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class FileUtility {
+    private static FormatManager formatManager = new FormatManager();
 
     private FileUtility() { }
 
     // get file type
     public static FileType getFileType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();
+        List<Format> formats  = FileUtility.formatManager.getFormats();
 
-        // word type for document extensions
-        if (extsDocument.contains(ext)) {
-            return FileType.Word;
-        }
-
-        // cell type for spreadsheet extensions
-        if (extsSpreadsheet.contains(ext)) {
-            return FileType.Cell;
-        }
-
-        // slide type for presentation extensions
-        if (extsPresentation.contains(ext)) {
-            return FileType.Slide;
+        for (Format format : formats) {
+            if (format.getName().equals(ext)) {
+                return format.getType();
+            }
         }
 
         // default file type is word
-        return FileType.Word;
+        return FileType.WORD;
     }
-
-    // document extensions
-    private static List<String> extsDocument = Arrays.asList(
-            ".doc", ".docx", ".docm",
-            ".dot", ".dotx", ".dotm",
-            ".odt", ".fodt", ".ott", ".rtf", ".txt",
-            ".html", ".htm", ".mht", ".xml",
-            ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
-    );
-
-    // spreadsheet extensions
-    private static List<String> extsSpreadsheet = Arrays.asList(
-            ".xls", ".xlsx", ".xlsm", ".xlsb",
-            ".xlt", ".xltx", ".xltm",
-            ".ods", ".fods", ".ots", ".csv"
-    );
-
-    // presentation extensions
-    private static List<String> extsPresentation = Arrays.asList(
-            ".pps", ".ppsx", ".ppsm",
-            ".ppt", ".pptx", ".pptm",
-            ".pot", ".potx", ".potm",
-            ".odp", ".fodp", ".otp"
-    );
-
 
     // get file name from the url
     public static String getFileName(final String url) {
@@ -105,7 +75,7 @@ public final class FileUtility {
         if (fileName == null) {
             return null;
         }
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 

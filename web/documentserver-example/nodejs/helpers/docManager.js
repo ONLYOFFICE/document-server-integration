@@ -84,7 +84,10 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
 
 // get the correct file name if such a name already exists
 DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddress) {
-  const baseName = fileUtility.getFileName(fileName, true); // get file name from the url without extension
+  // get file name from the url without extension
+  const maxName = configServer.get('maxNameLength');
+  const baseName = fileUtility.getFileName(fileName, true).substr(0, maxName)
+    + (fileName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
   let index = 1;
@@ -152,9 +155,9 @@ DocManager.prototype.saveFileData = function saveFileData(fileName, userid, user
   // get full creation date of the document
   const dateCreate = fileSystem.statSync(this.storagePath(fileName, address)).mtime;
   const minutes = (dateCreate.getMinutes() < 10 ? '0' : '') + dateCreate.getMinutes().toString();
-  const month = (dateCreate.getMonth() < 10 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
+  const month = (dateCreate.getMonth() < 9 ? '0' : '') + (parseInt(dateCreate.getMonth().toString(), 10) + 1);
   const sec = (dateCreate.getSeconds() < 10 ? '0' : '') + dateCreate.getSeconds().toString();
-  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()}`
+  const dateFormat = `${dateCreate.getFullYear()}-${month}-${dateCreate.getDate()} `
     + `${dateCreate.getHours()}:${minutes}:${sec}`;
 
   const fileInfo = this.historyPath(fileName, address, true); // get file history information
@@ -389,14 +392,14 @@ DocManager.prototype.getTemplateImageUrl = function getTemplateImageUrl(fileType
   }
 
   if (fileType === fileUtility.fileType.cell) { // for cell type
-    return `${path}/images/file_xlsx.svg`;
+    return `${serverUrl}/images/file_xlsx.svg`;
   }
 
   if (fileType === fileUtility.fileType.slide) { // for slide type
-    return `${path}/images/file_pptx.svg`;
+    return `${serverUrl}/images/file_pptx.svg`;
   }
 
-  return `${path}/images/file_docx.svg`; // the default value
+  return `${serverUrl}/images/file_docx.svg`; // the default value
 };
 
 // get document key
@@ -534,7 +537,7 @@ DocManager.prototype.getHistory = function getHistory(fileName, content, keyVers
 
   if (content && contentJson) {
     userNameFromJson = oldVersion ? contentJson.username : contentJson.user.name;
-    userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.userid;
+    userIdFromJson = oldVersion ? contentJson.userid : contentJson.user.id;
     createdFromJson = oldVersion ? contentJson.date : contentJson.created;
   }
 

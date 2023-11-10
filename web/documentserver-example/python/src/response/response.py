@@ -18,6 +18,7 @@ from http import HTTPStatus
 from json import dumps
 from django.http import HttpResponse
 
+
 class ErrorResponse(HttpResponse):
     def __init__(self, message: str, status: HTTPStatus):
         payload = {

@@ -91,7 +91,7 @@ class Users
                 },
                  ["group-2", ""],
                 true, [], @@descr_user_2, false),
-        User.new("uid-3", "Hamish Mitchell", "mitchell@example.com",
+        User.new("uid-3", "Hamish Mitchell", nil,
                 "group-3", ["group-2"], {
                     :view => ["group-3", "group-2"],
                     :edit => ["group-2"],
@@ -126,6 +126,16 @@ class Users
                 end
             end
             return usersData
+        end
+
+        def get_users_for_protect(id)  # get a list of users with their id, names and emails for protect
+            users_data = []
+            for user in @@users do
+                if (!user.id.eql?(id) && user.name != nil)
+                    users_data.push({id: user.id, name: user.name, email: user.email})
+                end
+            end
+            return users_data
         end
 
     end

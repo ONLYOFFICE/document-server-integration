@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -27,6 +27,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const mime = require('mime');
 const urllib = require('urllib');
+const urlModule = require('url');
 const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
@@ -81,14 +82,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public'))); // public directory
-// check if there are static files such as .js, .css files, images, samples and process them
-if (config.has('server.static')) {
-  const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; i++) {
-    const staticContentElem = staticContent[i];
-    app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
-  }
-}
 app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
@@ -506,6 +499,23 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     }
   }
 
+  if (!fileName && !!req.body.link) {
+    if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
+      result({
+        url: req.body.link,
+        directUrl: req.body.link,
+      });
+      return;
+    }
+
+    const urlObj = urlModule.parse(req.body.link, true);
+    fileName = urlObj.query.fileName;
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+      result({ error: 'File is not exist' });
+      return;
+    }
+  }
+
   if (!fileName && !!req.body.path) {
     const filePath = fileUtility.getFileName(req.body.path);
 
@@ -528,6 +538,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl(),
     },
+    link: `${req.DocManager.getServerUrl()}/editor?fileName=${encodeURIComponent(fileName)}`,
     path: fileName,
   };
 
@@ -550,13 +561,16 @@ app.put('/restore', (req, res) => { // define a handler for restore file version
     const filePath = req.DocManager.storagePath(fileName, userAddress);
     const historyPath = req.DocManager.historyPath(fileName, userAddress);
     const newVersion = req.DocManager.countVersion(historyPath) + 1;
-    const versionPath = `${historyPath}\\${version}\\prev${fileUtility.getFileExtension(fileName)}`;
-    const newVersionPath = `${historyPath}\\${newVersion}`;
+    const versionPath = path.join(`${historyPath}`, `${version}`, `prev${fileUtility.getFileExtension(fileName)}`);
+    const newVersionPath = path.join(`${historyPath}`, `${newVersion}`);
 
     if (fileSystem.existsSync(versionPath)) {
       req.DocManager.createDirectory(newVersionPath);
-      req.DocManager.copyFile(filePath, `${newVersionPath}\\prev${fileUtility.getFileExtension(fileName)}`);
-      fileSystem.writeFileSync(`${newVersionPath}\\key.txt`, key);
+      req.DocManager.copyFile(
+        filePath,
+        path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
+      );
+      fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
       req.DocManager.copyFile(versionPath, filePath);
       result.success = true;
     } else {
@@ -683,7 +697,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessSave(resp.uri, body, fileName, userAddress, fileName);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessSave(downloadUri, body, fileName, userAddress, newFileName);
@@ -719,11 +732,15 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           // new file
           if (newFileName) {
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`,
+              userAddress,
+            );
           } else {
             const ext = fileUtility.getFileExtension(fileName);
             correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${ext}`, userAddress);
+              `${fileUtility.getFileName(fileName, true)}-form${ext}`,
+              userAddress,
+            );
           }
           forcesavePath = req.DocManager.storagePath(correctName, userAddress);
         } else {
@@ -779,7 +796,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             try {
               const resp = documentService.getResponseUri(data);
               await callbackProcessForceSave(resp.uri, body, fileName, userAddress, false);
-              return;
             } catch (ex) {
               console.log(ex);
               await callbackProcessForceSave(downloadUri, body, fileName, userAddress, true);
@@ -917,6 +933,15 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { commentGroups } = user;
     const { userInfoGroups } = user;
 
+    const usersInfo = [];
+    if (user.id !== 'uid-0') {
+      users.getAllUsers().forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersInfo.push(u);
+      }, usersInfo);
+    }
+
     if (fileExt) {
       // create demo document of a given extension
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
@@ -987,6 +1012,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
+        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
@@ -1006,20 +1032,21 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
       },
-      dataCompareFile: {
+      dataDocument: {
         fileType: 'docx',
         url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
         directUrl: !userDirectUrl
           ? null
           : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
-      dataMailMergeRecipients: {
+      dataSpreadsheet: {
         fileType: 'csv',
         url: `${req.DocManager.getServerUrl(true)}/csv`,
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
       usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersInfo,
     };
 
     if (cfgSignatureEnable) {
@@ -1038,13 +1065,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataCompareFile.token = jwt.sign(
-            argss.dataCompareFile,
+          argss.dataDocument.token = jwt.sign(
+            argss.dataDocument,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );
-          argss.dataMailMergeRecipients.token = jwt.sign(
-            argss.dataMailMergeRecipients,
+          argss.dataSpreadsheet.token = jwt.sign(
+            argss.dataSpreadsheet,
             cfgSignatureSecret,
             { expiresIn: cfgSignatureSecretExpiresIn },
           );

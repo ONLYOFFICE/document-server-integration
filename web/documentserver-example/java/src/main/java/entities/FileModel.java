@@ -23,12 +23,8 @@ import com.google.gson.reflect.TypeToken;
 import helpers.DocumentManager;
 import helpers.FileUtility;
 import helpers.ServiceConverter;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
 
 public class FileModel {
     private String type = "desktop";
@@ -68,7 +63,7 @@ public class FileModel {
         document.setDirectUrl(isEnableDirectUrl ? DocumentManager.getDownloadUrl(fileName, false) : "");
 
         // get file extension from the file name
-        document.setFileType(FileUtility.getFileExtension(fileName).replace(".", ""));
+        document.setFileType(FileUtility.getFileExtension(fileName));
         // generate document key
         document.setKey(ServiceConverter
                 .generateRevisionId(DocumentManager
@@ -190,128 +185,6 @@ public class FileModel {
 
         // and create token from them
         token = DocumentManager.createToken(map);
-    }
-
-    // get document history
-    public String[] getHistory() {
-        JSONParser parser = new JSONParser();
-
-        // get history directory
-        String histDir = DocumentManager.historyDir(DocumentManager.storagePath(document.getTitle(), null));
-        if (DocumentManager.getFileVersion(histDir) > 0) {
-
-            // get current file version if it is greater than 0
-            Integer curVer = DocumentManager.getFileVersion(histDir);
-
-            List<Object> hist = new ArrayList<>();
-            Map<String, Object> histData = new HashMap<String, Object>();
-
-            for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
-                Map<String, Object> obj = new HashMap<String, Object>();
-                Map<String, Object> dataObj = new HashMap<String, Object>();
-                String verDir = DocumentManager.versionDir(histDir, i);  // get the path to the given file version
-
-                try {
-                    String key = null;
-
-                    // get document key
-                    key = i == curVer
-                            ? document.getKey() : readFileToEnd(new File(verDir + File.separator + "key.txt"));
-
-                    obj.put("key", key);
-                    obj.put("version", i);
-
-                    if (i == 1) {  // check if the version number is equal to 1
-                        String createdInfo = readFileToEnd(new File(histDir + File.separator
-                                + "createdInfo.json")); // get file with meta data
-                        JSONObject json = (JSONObject) parser.parse(createdInfo);  // and turn it into json object
-
-                        // write meta information to the object (user information and creation date)
-                        obj.put("created", json.get("created"));
-                        Map<String, Object> user = new HashMap<String, Object>();
-                        user.put("id", json.get("id"));
-                        user.put("name", json.get("name"));
-                        obj.put("user", user);
-                    }
-
-                    dataObj.put("fileType", FileUtility.getFileExtension(document.getTitle()).substring(1));
-                    dataObj.put("key", key);
-                    dataObj.put("url", i == curVer ? document.getUrl() : DocumentManager
-                            .getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility
-                                    .getFileExtension(document.getTitle()), true));
-                    if (!document.getDirectUrl().equals("")) {
-                        dataObj.put("directUrl", i == curVer ? document.getUrl() : DocumentManager
-                                .getDownloadHistoryUrl(document.getTitle(), i, "prev" + FileUtility
-                                        .getFileExtension(document.getTitle()), false));
-                    }
-                    dataObj.put("version", i);
-
-                    if (i > 1) {  //check if the version number is greater than 1
-                        // if so, get the path to the changes.json file
-                        JSONObject changes = (JSONObject) parser.parse(readFileToEnd(new File(DocumentManager
-                                .versionDir(histDir, i - 1) + File.separator + "changes.json")));
-                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
-
-                        // write information about changes to the object
-                        obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);
-                        obj.put("serverVersion", changes.get("serverVersion"));
-                        obj.put("created", !change.isEmpty() ? change.get("created") : null);
-                        obj.put("user", !change.isEmpty() ? change.get("user") : null);
-
-                        // get the history data from the previous file version
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 2));
-                        Map<String, Object> prevInfo = new HashMap<String, Object>();
-                        prevInfo.put("fileType", prev.get("fileType"));
-
-                        // write key and url information about previous file version
-                        prevInfo.put("key", prev.get("key"));
-                        prevInfo.put("url", prev.get("url"));
-
-                        // write information about previous file version to the data object
-                        dataObj.put("previous", prevInfo);
-                        // write the path to the diff.zip archive with differences in this file version
-                        Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager
-                                .getDownloadHistoryUrl(document.getTitle(), verdiff,
-                                        "diff.zip", true);
-                        dataObj.put("changesUrl", changesUrl);
-                    }
-
-                    if (DocumentManager.tokenEnabled()) {
-                        dataObj.put("token", DocumentManager.createToken(dataObj));
-                    }
-
-                    hist.add(obj);
-                    histData.put(Integer.toString(i - 1), dataObj);
-
-                } catch (Exception ex) { }
-            }
-
-            // write history information about the current file version to the history object
-            Map<String, Object> histObj = new HashMap<String, Object>();
-            histObj.put("currentVersion", curVer);
-            histObj.put("history", hist);
-
-            Gson gson = new Gson();
-            return new String[] {gson.toJson(histObj), gson.toJson(histData) };
-        }
-        return new String[] {"", "" };
-    }
-
-    // read a file
-    private String readFileToEnd(final File file) {
-        String output = "";
-        try {
-            try (FileInputStream is = new FileInputStream(file)) {
-                Scanner scanner = new Scanner(is);  // read data from the source
-                scanner.useDelimiter("\\A");
-                while (scanner.hasNext()) {
-                    output += scanner.next();
-                }
-                scanner.close();
-            }
-        } catch (Exception e) { }
-        return output;
     }
 
     // the document parameters

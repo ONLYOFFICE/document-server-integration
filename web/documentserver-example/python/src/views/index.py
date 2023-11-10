@@ -16,33 +16,36 @@
 
 """
 
-import re
-import sys
 import json
 
 from django.shortcuts import render
 
 from src.configuration import ConfigurationManager
+from src.format import FormatManager
 from src.utils import users
 from src.utils import docManager
 
 config_manager = ConfigurationManager()
+format_manager = FormatManager()
+
 
 def getDirectUrlParam(request):
-    if ('directUrl' in request.GET): 
+    if 'directUrl' in request.GET:
         return request.GET['directUrl'].lower() in ("true")
-    else:
-        return False;    
+
+    return False
+
 
 def default(request):  # default parameters that will be passed to the template
     context = {
         'users': users.USERS,
         'languages': config_manager.languages(),
         'preloadurl': config_manager.document_server_preloader_url().geturl(),
-        'editExt': json.dumps(config_manager.editable_file_extensions()),  # file extensions that can be edited
-        'convExt': json.dumps(config_manager.convertible_file_extensions()),  # file extensions that can be converted
+        'editExt': json.dumps(format_manager.editable_extensions()),  # file extensions that can be edited
+        'convExt': json.dumps(format_manager.convertible_extensions()),  # file extensions that can be converted
         'files': docManager.getStoredFiles(request),  # information about stored files
-        'fillExt': json.dumps(config_manager.fillable_file_extensions()),
+        'fillExt': json.dumps(format_manager.fillable_extensions()),
         'directUrl': str(getDirectUrlParam(request)).lower
     }
-    return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format
+    # execute the "index.html" template with context data and return http response in json format
+    return render(request, 'index.html', context)

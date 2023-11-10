@@ -26,7 +26,9 @@ using System.Diagnostics;
 using System.Web.Configuration;
 using System.Linq;
 using System.Net;
+using System.Collections;
 using System.Net.Sockets;
+using ASC.Api.DocumentConverter;
 
 namespace OnlineEditorsExample
 {
@@ -47,6 +49,15 @@ namespace OnlineEditorsExample
                     break;
                 case "downloadhistory":
                     DownloadHistory(context);
+                    break;
+                case "gethistory":
+                    GetHistory(context);
+                    break;
+                case "getversiondata":
+                    GetVersionData(context);
+                    break;
+                case "restore":
+                    Restore(context);
                     break;
                 case "convert":
                     Convert(context);
@@ -333,6 +344,164 @@ namespace OnlineEditorsExample
             get { return false; }
         }
 
+        private static void GetHistory(HttpContext context)
+        {
+            var jss = new JavaScriptSerializer();
+            var fileName = context.Request["filename"];
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
+        }
+
+        private static void GetVersionData(HttpContext context)
+        {
+            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
+            var jss = new JavaScriptSerializer();
+
+            var fileName = context.Request["filename"];
+            int version;
+
+            if (!int.TryParse(context.Request["version"], out version))
+            {
+                context.Response.Write("{ \"error\": \"Version number invalid!\"}");
+                return;
+            }
+
+            var versionData = new Dictionary<string, object>();
+
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
+            var lastVersion = _Default.GetFileVersion(histDir);
+
+            var verDir = _Default.VersionDir(histDir, version);
+
+            var lastVersionUri = _Default.FileUri(fileName, true);
+            var key = version == lastVersion
+                ? ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                                                           + "/" + Path.GetFileName(lastVersionUri)
+                                                           + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode())
+                : File.ReadAllText(Path.Combine(verDir, "key.txt"));
+
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            versionData.Add("fileType", ext.Replace(".", ""));
+            versionData.Add("key", key);
+
+            var directPrevFileUrl = version == lastVersion ? _Default.FileUri(fileName, false) : MakePublicHistoryUrl(fileName, version.ToString(), "prev" + ext, false);
+            var prevFileUrl = version == lastVersion ? lastVersionUri : MakePublicHistoryUrl(fileName, version.ToString(), "prev" + ext);
+            if (Path.IsPathRooted(storagePath))
+            {
+                prevFileUrl = version == lastVersion ? DocEditor.getDownloadUrl(fileName) : DocEditor.getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+                directPrevFileUrl = version == lastVersion ? DocEditor.getDownloadUrl(fileName, false) : DocEditor.getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
+            }
+
+            versionData.Add("url", prevFileUrl);
+
+            if (_Default.IsEnabledDirectUrl())
+            {
+                versionData.Add("directUrl", directPrevFileUrl); // write direct url to the data object
+            }
+
+            versionData.Add("version", version);
+            if (version > 1)
+            {
+                var prevVerDir = _Default.VersionDir(histDir, version - 1);
+
+                var prevUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "prev" + ext);
+                if (Path.IsPathRooted(storagePath))
+                    prevUrl = DocEditor.getDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""));
+
+                var prevKey = File.ReadAllText(Path.Combine(prevVerDir, "key.txt"));
+
+                Dictionary<string, object> dataPrev = new Dictionary<string, object>() {  // write information about previous file version to the data object
+                    { "fileType", ext.Replace(".", "") },
+                    { "key", prevKey },  // write key and url information about previous file version
+                    { "url", prevUrl }
+                };
+
+                string directPrevUrl;
+                if (_Default.IsEnabledDirectUrl())
+                {
+                    directPrevUrl = Path.IsPathRooted(storagePath)
+                        ? DocEditor.getDownloadUrl(Directory.GetFiles(prevVerDir, "prev.*")[0].Replace(storagePath + "\\", ""), false)
+                        : MakePublicHistoryUrl(fileName, (version - 1).ToString(), "prev" + ext, false);
+
+                    dataPrev.Add("directUrl", directPrevUrl); // write direct url to the data object
+                }
+
+                versionData.Add("previous", dataPrev);
+
+                if (File.Exists(Path.Combine(prevVerDir, "diff.zip")))
+                {
+                    var changesUrl = MakePublicHistoryUrl(fileName, (version - 1).ToString(), "diff.zip");
+                    versionData.Add("changesUrl", changesUrl);
+                }
+            }
+
+            if (JwtManager.Enabled)
+            {
+                var token = JwtManager.Encode(versionData);
+                versionData.Add("token", token);
+            }
+
+            context.Response.Write(jss.Serialize(versionData));
+        }
+
+        private void Restore(HttpContext context)
+        {
+            string fileData;
+            try
+            {
+                using (var receiveStream = context.Request.InputStream)
+                using (var readStream = new StreamReader(receiveStream))
+                {
+                    fileData = readStream.ReadToEnd();
+                    if (string.IsNullOrEmpty(fileData)) return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new HttpException((int)HttpStatusCode.BadRequest, e.Message);
+            }
+
+            var jss = new JavaScriptSerializer();
+            var body = jss.Deserialize<Dictionary<string, object>>(fileData);
+
+            var fileName = (string)body["fileName"];
+            var version = (int)body["version"];
+
+            var lastVersionUri = _Default.FileUri(fileName, true);
+            var key = ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                + "/" + Path.GetFileName(lastVersionUri)
+                + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode());
+
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
+            var currentVersionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));
+            var verDir = _Default.VersionDir(histDir, version);
+
+            if (!Directory.Exists(currentVersionDir)) Directory.CreateDirectory(currentVersionDir);
+
+            var ext = Path.GetExtension(fileName).ToLower();
+            File.Copy(_Default.StoragePath(fileName, null), Path.Combine(currentVersionDir, "prev" + ext));
+
+            File.WriteAllText(Path.Combine(currentVersionDir, "key.txt"), key);
+
+            var changesPath = Path.Combine(_Default.VersionDir(histDir, version - 1), "changes.json");
+            if (File.Exists(changesPath))
+            {
+                File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
+            }
+
+            File.Copy(Path.Combine(verDir, "prev" + ext), _Default.StoragePath(fileName, null), true);
+
+            var fileInfo = new FileInfo(_Default.StoragePath(fileName, null));
+            fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
+
+            var history = GetHistory(fileName);
+
+            context.Response.Write(jss.Serialize(history));
+        }
+
         private static void DownloadHistory(HttpContext context)
         {
             try
@@ -481,6 +650,9 @@ namespace OnlineEditorsExample
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "key", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                        + "/" + Path.GetFileName(_Default.FileUri(fileName, true))
+                        + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode()) },
             { "url",  DocEditor.getDownloadUrl(fileName)},
             { "directUrl", directUrl ? DocEditor.getDownloadUrl(fileName, false) : null},
             { "referenceData", new Dictionary<string, string>()
@@ -493,7 +665,8 @@ namespace OnlineEditorsExample
                     {"instanceId", _Default.GetServerUrl(false) }
                 }
             },
-            { "path", fileName }
+            { "path", fileName },
+            { "link", _Default.GetServerUrl(false) + "doceditor.aspx?fileID=" + fileName }
             };
 
             if (JwtManager.Enabled)
@@ -503,6 +676,85 @@ namespace OnlineEditorsExample
             }
 
             context.Response.Write(jss.Serialize(data));
+        }
+
+        // get the document history
+        private static Dictionary<string, object> GetHistory(string fileName)
+        {
+            var jss = new JavaScriptSerializer();
+            var histDir = _Default.HistoryDir(_Default.StoragePath(fileName, null));
+
+            var history = new Dictionary<string, object>();
+
+            var currentVersion = _Default.GetFileVersion(histDir);
+            var currentFileUri = _Default.FileUri(fileName, true);
+            var currentKey = ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                                                           + "/" + Path.GetFileName(currentFileUri)
+                                                           + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode());
+
+            var versionList = new List<Dictionary<string, object>>();
+            for (var versionNum = 1; versionNum <= currentVersion; versionNum++)
+            {
+                var versionObj = new Dictionary<string, object>();
+                var verDir = _Default.VersionDir(histDir, versionNum);  // get the path to the given file version
+
+                var key = versionNum == currentVersion ? currentKey : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
+
+                versionObj.Add("key", key);
+                versionObj.Add("version", versionNum);
+
+                var changesPath = Path.Combine(_Default.VersionDir(histDir, versionNum - 1), "changes.json");
+                if (versionNum == 1 || !File.Exists(changesPath))  // check if the version number is equal to 1
+                {
+                    var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
+                    if (File.Exists(infoPath))
+                    {
+                        var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
+                        versionObj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
+                        versionObj.Add("user", new Dictionary<string, object>()
+                        {
+                            { "id", info["id"] },
+                            { "name", info["name"] },
+                        });
+                    }
+                }
+                else if (versionNum > 1)  // check if the version number is greater than 1 (the file was modified)
+                {
+                    // get the path to the changes.json file
+                    var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
+                    var changesArray = (ArrayList)changes["changes"];
+                    var change = changesArray.Count > 0
+                        ? (Dictionary<string, object>)changesArray[0]
+                        : new Dictionary<string, object>();
+
+                    // write information about changes to the object
+                    versionObj.Add("changes", change.Count > 0 ? changes["changes"] : null);
+                    versionObj.Add("serverVersion", changes["serverVersion"]);
+                    versionObj.Add("created", change.Count > 0 ? change["created"] : null);
+                    versionObj.Add("user", change.Count > 0 ? change["user"] : null);
+                }
+
+                versionList.Add(versionObj);
+            }
+
+            history.Add("currentVersion", currentVersion);
+            history.Add("history", versionList);
+
+            return history;
+        }
+
+        // create the public history url
+        private static string MakePublicHistoryUrl(string filename, string version, string file, Boolean isServer = true)
+        {
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)) : "";
+            var fileUrl = new UriBuilder(_Default.GetServerUrl(isServer));
+            fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                + "webeditor.ashx";
+            fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
+                + "&ver=" + version + "&file=" + file
+                + userAddress;
+            return fileUrl.ToString();
         }
     }
 }

@@ -172,18 +172,21 @@
         };
 
         var onRequestInsertImage = function(event) {  // the user is trying to insert an image by clicking the Image from Storage button
-            docEditor.insertImage({  // insert an image into the file
-                "c": event.data.c,
-                <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
-            })
+            var data = <%- JSON.stringify(dataInsertImage) %>;
+            data.c = event.data.c;
+            docEditor.insertImage(data);  // insert an image into the file
         };
 
-        var onRequestCompareFile = function() {  // the user is trying to select document for comparing by clicking the Document from Storage button
-            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);  // select a document for comparing
+        var onRequestSelectDocument = function(event) {  // the user is trying to select document by clicking the Document from Storage button
+            var data = <%- JSON.stringify(dataDocument) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document
         };
 
-        var onRequestMailMergeRecipients = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
-            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
+            var data = <%- JSON.stringify(dataSpreadsheet) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
         };
 
         var onRequestUsers = function (event) {
@@ -194,6 +197,18 @@
             switch (c) {
                 case "protect":
                     var users = <%- JSON.stringify(usersForProtect) %>;
+                    break;
+                case "info":
+                    users = [];
+                    var allUsers = <%- JSON.stringify(usersInfo) %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
                     break;
                 default:
                     users = <%- JSON.stringify(usersForMentions) %>;
@@ -211,26 +226,50 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestOpen = function(event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
+
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
         var onRequestReferenceData = function(event) {  // user refresh external data source
             innerAlert("onRequestReferenceData");
-            innerAlert(event.data);
 
-            event.data.directUrl = !!config.document.directUrl;
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function(data, callback) {
+            innerAlert(data);
+
+            data.directUrl = !!config.document.directUrl;
 
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
         var onRequestReferenceSource = function (event) {
           innerAlert("onRequestReferenceSource");
           let xhr = new XMLHttpRequest();
-          xhr.open("GET", "files");
+          xhr.open("GET", "files/");
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send();
           xhr.onload = function () {
@@ -309,19 +348,27 @@
             }
         };
 
+        var onDocumentReady = function(){
+            if (config.type === "mobile") {
+                document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
+            }
+        };
+
         config = {
             <%- include("config") %>
         };
         config.events = {
             "onAppReady": onAppReady,
+            "onDocumentReady": onDocumentReady,
             "onDocumentStateChange": onDocumentStateChange,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestSelectDocument": onRequestSelectDocument,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
+            "onRequestOpen": onRequestOpen,
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
@@ -358,20 +405,6 @@
             }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
-            fixSize();
-        };
-
-        // get the editor sizes
-        var fixSize = function () {
-            if (config.type !== "mobile") {
-                return;
-            }
-            var wrapEl = document.getElementsByClassName("form");
-            if (wrapEl.length) {
-                wrapEl[0].style.height = screen.availHeight + "px";
-                window.scrollTo(0, -1);
-                wrapEl[0].style.height = window.innerHeight + "px";
-            }
         };
 
         const getFileExt = function (fileName) {
@@ -383,10 +416,8 @@
 
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
-            window.addEventListener("resize", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
-            window.attachEvent("onresize", fixSize);
         }
 
     </script>

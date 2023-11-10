@@ -20,10 +20,12 @@ namespace Example\Configuration;
 use Example\Common\Path;
 use Example\Common\URL;
 
-final class ConfigurationManager {
-    public string $version = '1.6.0';
+class ConfigurationManager
+{
+    public string $version = '1.7.0';
 
-    public function example_url(): ?URL {
+    public function exampleURL(): ?URL
+    {
         $url = getenv('EXAMPLE_URL');
         if (!$url) {
             return null;
@@ -31,48 +33,65 @@ final class ConfigurationManager {
         return new URL($url);
     }
 
-    public function document_server_url(): URL {
-        $url = getenv('DOCUMENT_SERVER_URL') ?: 'http://document-server';
+    public function documentServerPublicURL(): URL
+    {
+        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://document-server';
         return new URL($url);
     }
 
-    public function document_server_api_url(): URL {
-        $server_url = $this->document_server_url();
+    public function documentServerPrivateURL(): URL
+    {
+        $url = getenv('DOCUMENT_SERVER_PRIVATE_URL');
+        if (!$url) {
+            return $this->documentServerPublicURL();
+        }
+        return new URL($url);
+    }
+
+    public function documentServerAPIURL(): URL
+    {
+        $serverURL = $this->documentServerPublicURL();
         $path = getenv('DOCUMENT_SERVER_API_PATH')
             ?: 'web-apps/apps/api/documents/api.js';
-        return $server_url->join_path($path);
+        return $serverURL->joinPath($path);
     }
 
-    public function document_server_preloader_url(): URL {
-        $server_url = $this->document_server_url();
+    public function documentServerPreloaderURL(): URL
+    {
+        $serverURL = $this->documentServerPublicURL();
         $path = getenv('DOCUMENT_SERVER_PRELOADER_PATH')
             ?: 'web-apps/apps/api/documents/cache-scripts.html';
-        return $server_url->join_path($path);
+        return $serverURL->joinPath($path);
     }
 
-    public function document_server_command_url(): URL {
-        $server_url = $this->document_server_url();
+    public function documentServerCommandURL(): URL
+    {
+        $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_COMMAND_PATH')
             ?: 'coauthoring/CommandService.ashx';
-        return $server_url->join_path($path);
+        return $serverURL->joinPath($path);
     }
 
-    public function document_server_converter_url(): URL {
-        $server_url = $this->document_server_url();
+    public function documentServerConverterURL(): URL
+    {
+        $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_CONVERTER_PATH')
             ?: 'ConvertService.ashx';
-        return $server_url->join_path($path);
+        return $serverURL->joinPath($path);
     }
 
-    public function jwt_secret(): string {
+    public function jwtSecret(): string
+    {
         return getenv('JWT_SECRET') ?: '';
     }
 
-    public function jwt_header(): string {
+    public function jwtHeader(): string
+    {
         return getenv('JWT_HEADER') ?: 'Authorization';
     }
 
-    public function jwt_use_for_request(): bool {
+    public function jwtUseForRequest(): bool
+    {
         $use = getenv('JWT_USE_FOR_REQUEST');
         if (!$use) {
             return true;
@@ -80,7 +99,8 @@ final class ConfigurationManager {
         return filter_var($use, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function ssl_verify_peer_mode_enabled(): bool {
+    public function sslVerifyPeerModeEnabled(): bool
+    {
         $enabled = getenv('SSL_VERIFY_PEER_MODE_ENABLED');
         if (!$enabled) {
             return false;
@@ -88,23 +108,25 @@ final class ConfigurationManager {
         return filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function storage_path(): Path {
-        $storage_path = getenv('STORAGE_PATH') ?: 'storage';
-        $storage_directory = new Path($storage_path);
-        if ($storage_directory->absolute()) {
-            return $storage_directory;
+    public function storagePath(): Path
+    {
+        $storagePath = getenv('STORAGE_PATH') ?: 'storage';
+        $storageDirectory = new Path($storagePath);
+        if ($storageDirectory->absolute()) {
+            return $storageDirectory;
         }
 
-        $storage_string_directory = $storage_directory->string();
-        $current_directory = new Path(__DIR__);
-        $directory = $current_directory
-            ->join_path('..')
-            ->join_path('..')
-            ->join_path($storage_string_directory);
+        $storageStringDirectory = $storageDirectory->string();
+        $currentDirectory = new Path(__DIR__);
+        $directory = $currentDirectory
+            ->joinPath('..')
+            ->joinPath('..')
+            ->joinPath($storageStringDirectory);
         return $directory->normalize();
     }
 
-    public function single_user(): bool {
+    public function singleUser(): bool
+    {
         $single = getenv('SINGLE_USER');
         if (!$single) {
             return false;
@@ -112,7 +134,8 @@ final class ConfigurationManager {
         return filter_var($single, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function maximum_file_size(): int {
+    public function maximumFileSize(): int
+    {
         $size = getenv('MAXIMUM_FILE_SIZE');
         if (!$size) {
             return 5 * 1024 * 1024;
@@ -120,7 +143,8 @@ final class ConfigurationManager {
         return intval($size);
     }
 
-    public function conversion_timeout(): int {
+    public function conversionTimeout(): int
+    {
         $timeout = getenv('CONVERSION_TIMEOUT');
         if (!$timeout) {
             return 120 * 1000;
@@ -131,7 +155,8 @@ final class ConfigurationManager {
     /**
      * @return string[]
      */
-    public function languages(): array {
+    public function languages(): array
+    {
         return [
             'en' => "English",
             'hy' => 'Armenian',

@@ -19,8 +19,7 @@ namespace Example;
 
 use Exception;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
-use Example\Helpers\ExampleUsers;
+use Example\Format\FormatManager;
 use Example\Helpers\JwtManager;
 use Example\Helpers\Users;
 
@@ -93,10 +92,10 @@ function getClientIp()
  */
 function serverPath($forDocumentServer = null)
 {
-    $config_manager = new ConfigurationManager();
-    $example_url = $config_manager->example_url();
-    return $forDocumentServer && $example_url
-        ? $example_url->string()
+    $configManager = new ConfigurationManager();
+    $exampleURL = $configManager->exampleURL();
+    return $forDocumentServer && $exampleURL
+        ? $exampleURL->string()
         : (getScheme() . '://' . $_SERVER['HTTP_HOST']);
 }
 
@@ -109,8 +108,8 @@ function serverPath($forDocumentServer = null)
  */
 function getCurUserHostAddress($userAddress = null)
 {
-    $config_manager = new ConfigurationManager();
-    if ($config_manager->single_user()) {
+    $configManager = new ConfigurationManager();
+    if ($configManager->singleUser()) {
         return "";
     }
     if (is_null($userAddress)) {
@@ -128,11 +127,10 @@ function getCurUserHostAddress($userAddress = null)
  */
 function getInternalExtension($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $configManager = new ConfigManager();
-
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             if ($format->type === "word") {
                 return ".docx";
@@ -158,11 +156,11 @@ function getInternalExtension($filename)
  */
 function getTemplateImageUrl($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $path = serverPath(true) . "/assets/images/";
 
-    $configManager = new ConfigManager();
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             if ($format->type === "word") {
                 return $path . "file_docx.svg";
@@ -188,10 +186,10 @@ function getTemplateImageUrl($filename)
  */
 function getDocumentType($filename)
 {
+    $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-    $configManager = new ConfigManager();
-    foreach ($configManager->getSuppotredFormats() as $format) {
+    foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
             return $format->type;
         }
@@ -220,20 +218,20 @@ function getScheme()
  */
 function getStoragePath($fileName, $userAddress = null)
 {
-    $config_manager = new ConfigurationManager();
-    $storage_path = $config_manager->storage_path();
+    $configManager = new ConfigurationManager();
+    $storagePath = $configManager->storagePath();
 
-    if (!$storage_path->exists()) {
-        $storage_path->make_directory();
+    if (!$storagePath->exists()) {
+        $storagePath->makeDirectory();
     }
 
-    $user_ip = getCurUserHostAddress($userAddress);
-    $user_directory = $storage_path->join_path($user_ip);
-    if (!$user_directory->exists()) {
-        $user_directory->make_directory();
+    $userIP = getCurUserHostAddress($userAddress);
+    $userDirectory = $storagePath->joinPath($userIP);
+    if (!$userDirectory->exists()) {
+        $userDirectory->makeDirectory();
     }
 
-    $file = $user_directory->join_path($fileName);
+    $file = $userDirectory->joinPath($fileName);
     return $file->string();
 }
 
@@ -248,25 +246,25 @@ function getStoragePath($fileName, $userAddress = null)
  */
 function getForcesavePath($fileName, $userAddress, $create)
 {
-    $config_manager = new ConfigurationManager();
-    $storage_path = $config_manager->storage_path();
+    $configManager = new ConfigurationManager();
+    $storagePath = $configManager->storagePath();
 
-    $user_ip = getCurUserHostAddress($userAddress);
-    $user_directory = $storage_path->join_path($user_ip);
-    if (!$user_directory->exists()) {
+    $userIP = getCurUserHostAddress($userAddress);
+    $userDirectory = $storagePath->joinPath($userIP);
+    if (!$userDirectory->exists()) {
         return '';
     }
 
-    $history_directory = $user_directory->join_path("{$fileName}-hist");
-    if (!$history_directory->exists()) {
+    $historyDirectory = $userDirectory->joinPath("{$fileName}-hist");
+    if (!$historyDirectory->exists()) {
         if ($create) {
-            $history_directory->make_directory();
+            $historyDirectory->makeDirectory();
         } else {
             return '';
         }
     }
 
-    $file = $history_directory->join_path($fileName);
+    $file = $historyDirectory->joinPath($fileName);
     if (!$file->exists() && !$create) {
         return '';
     }
@@ -336,22 +334,22 @@ function getFileVersion($histDir)
  */
 function getStoredFiles()
 {
-    $configManager = new ConfigManager();
+    $formatManager = new FormatManager();
 
-    $config_manager = new ConfigurationManager();
-    $storage_path = $config_manager->storage_path();
+    $configManager = new ConfigurationManager();
+    $storagePath = $configManager->storagePath();
 
-    if (!$storage_path->exists()) {
-        $storage_path->make_directory();
+    if (!$storagePath->exists()) {
+        $storagePath->makeDirectory();
     }
 
-    $user_ip = getCurUserHostAddress();
-    $user_directory = $storage_path->join_path($user_ip);
-    if (!$user_directory->exists()) {
-        $user_directory->make_directory();
+    $userIP = getCurUserHostAddress();
+    $userDirectory = $storagePath->joinPath($userIP);
+    if (!$userDirectory->exists()) {
+        $userDirectory->makeDirectory();
     }
 
-    $directory = $user_directory->string();
+    $directory = $userDirectory->string();
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
@@ -363,8 +361,8 @@ function getStoredFiles()
                 $result[$dat] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
-                    "canEdit" => in_array($ext, $configManager->getEditExtensions()),
-                    "isFillFormDoc" => in_array($ext, $configManager->getFillExtensions()),
+                    "canEdit" => in_array($ext, $formatManager->editableExtensions()),
+                    "isFillFormDoc" => in_array($ext, $formatManager->fillableExtensions()),
                 ];
             }
         }
@@ -382,8 +380,8 @@ function getStoredFiles()
  */
 function getVirtualPath($forDocumentServer)
 {
-    $server_url = serverPath($forDocumentServer);
-    return $server_url . '/' . getCurUserHostAddress() . '/';
+    $serverURL = serverPath($forDocumentServer);
+    return $serverURL . '/' . getCurUserHostAddress() . '/';
 }
 
 /**
@@ -414,14 +412,14 @@ function createMeta($fileName, $uid, $uname, $userAddress = null)
 /**
  * Get the file url
  *
- * @param string $file_name
+ * @param string $fileName
  * @param string $forDocumentServer
  *
  * @return string
  */
-function fileUri($file_name, $forDocumentServer = null)
+function fileUri($fileName, $forDocumentServer = null)
 {
-    $uri = getVirtualPath($forDocumentServer) . rawurlencode($file_name);  // add encoded file name to the virtual path
+    $uri = getVirtualPath($forDocumentServer) . rawurlencode($fileName);  // add encoded file name to the virtual path
     return $uri;
 }
 
@@ -476,12 +474,13 @@ function getFileInfo($fileId)
  */
 function GetCorrectName($fileName, $userAddress = null)
 {
-    $path_parts = pathinfo($fileName);
-
-    $ext = mb_strtolower($path_parts['extension']);
-    $name = $path_parts['basename'];
+    $pathParts = pathinfo($fileName);
+    $maxName = 50;
+    $ext = mb_strtolower($pathParts['extension']);
+    $name = $pathParts['basename'];
     // get file name from the basename without extension
-    $baseNameWithoutExt = mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1);
+    $baseNameWithoutExt = mb_substr(mb_substr($name, 0, mb_strlen($name) - mb_strlen($ext) - 1), 0, $maxName)
+        . (strlen($fileName) > $maxName ? "[...]" : "");
     $name = $baseNameWithoutExt . "." . $ext;
 
     // if a file with such a name already exists in this directory
@@ -518,23 +517,23 @@ function getDocEditorKey($fileName)
  */
 function doUpload($fileUri)
 {
-    $_fileName = GetCorrectName($fileUri);
-    $configManager = new ConfigManager();
+    $formatManager = new FormatManager();
+    $fileName = GetCorrectName($fileUri);
 
     // check if file extension is supported by the editor
-    $ext = mb_strtolower(pathinfo($_fileName, PATHINFO_EXTENSION));
-    if (!in_array($ext, $configManager->getSuppotredExtensions())) {
+    $ext = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    if (!in_array($ext, $formatManager->allExtensions())) {
         throw new Exception("File type is not supported");
     }
 
     // check if the file copy operation is successful
-    if (!@copy($fileUri, getStoragePath($_fileName))) {
+    if (!@copy($fileUri, getStoragePath($fileName))) {
         $errors = error_get_last();
         $err = "Copy file error: " . $errors['type'] . "<br />\n" . $errors['message'];
         throw new Exception($err);
     }
 
-    return $_fileName;
+    return $fileName;
 }
 
 /**
@@ -590,16 +589,16 @@ function processConvServResponceError($errorCode)
 /**
  * Translation key to a supported form.
  *
- * @param string $expected_key Expected key
+ * @param string $expectedKey Expected key
  *
  * @return string key
  */
-function generateRevisionId($expected_key)
+function generateRevisionId($expectedKey)
 {
-    if (mb_strlen($expected_key) > 20) {
-        $expected_key = crc32($expected_key);
+    if (mb_strlen($expectedKey) > 20) {
+        $expectedKey = crc32($expectedKey);
     }  // if the expected key length is greater than 20, calculate the crc32 for it
-    $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expected_key);
+    $key = preg_replace("[^0-9-.a-zA-Z_=]", "_", $expectedKey);
     $key = mb_substr($key, 0, min([mb_strlen($key), 20]));  // the resulting key length is 20 or less
     return $key;
 }
@@ -607,61 +606,61 @@ function generateRevisionId($expected_key)
 /**
  * Request for conversion to a service.
  *
- * @param string $document_uri         Uri for the document to convert
- * @param string $from_extension       Document extension
- * @param string $to_extension         Extension to which to convert
- * @param string $document_revision_id Key for caching on service
- * @param bool   $is_async             Perform conversions asynchronously
- * @param string   $filePass
- * @param string   $lang
+ * @param string $documentURL Uri for the document to convert
+ * @param string $fromExtension Document extension
+ * @param string $toExtension Extension to which to convert
+ * @param string $documentRevisionID Key for caching on service
+ * @param bool $async Perform conversions asynchronously
+ * @param string $filePass
+ * @param string $lang
  *
  * @return string request result of conversion
  */
 function sendRequestToConvertService(
-    $document_uri,
-    $from_extension,
-    $to_extension,
-    $document_revision_id,
-    $is_async,
+    $documentURL,
+    $fromExtension,
+    $toExtension,
+    $documentRevisionID,
+    $async,
     $filePass,
     $lang
 ) {
-    $config_manager = new ConfigurationManager();
+    $configManager = new ConfigurationManager();
 
-    if (empty($from_extension)) {
-        $path_parts = pathinfo($document_uri);
-        $from_extension = mb_strtolower($path_parts['extension']);
+    if (empty($fromExtension)) {
+        $pathParts = pathinfo($documentURL);
+        $fromExtension = mb_strtolower($pathParts['extension']);
     }
 
     // if title is undefined, then replace it with a random guid
-    $title = basename($document_uri);
+    $title = basename($documentURL);
     if (empty($title)) {
         $title = guid();
     }
 
-    if (empty($document_revision_id)) {
-        $document_revision_id = $document_uri;
+    if (empty($documentRevisionID)) {
+        $documentRevisionID = $documentURL;
     }
 
     // generate document token
-    $document_revision_id = generateRevisionId($document_revision_id);
+    $documentRevisionID = generateRevisionId($documentRevisionID);
 
-    $urlToConverter = $config_manager->document_server_converter_url()->string();
+    $urlToConverter = $configManager->documentServerConverterURL()->string();
 
     $arr = [
-        "async" => $is_async,
-        "url" => $document_uri,
-        "outputtype" => trim($to_extension, '.'),
-        "filetype" => trim($from_extension, '.'),
+        "async" => $async,
+        "url" => $documentURL,
+        "outputtype" => trim($toExtension, '.'),
+        "filetype" => trim($fromExtension, '.'),
         "title" => $title,
-        "key" => $document_revision_id,
+        "key" => $documentRevisionID,
         "password" => $filePass,
         "region" => $lang,
     ];
 
     // add header token
     $headerToken = "";
-    $jwtHeader = $config_manager->jwt_header();
+    $jwtHeader = $configManager->jwtHeader();
 
     $jwtManager = new JwtManager();
     if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
@@ -674,7 +673,7 @@ function sendRequestToConvertService(
     // request parameters
     $opts = ['http' => [
         'method' => 'POST',
-        'timeout' => $config_manager->conversion_timeout(),
+        'timeout' => $configManager->conversionTimeout(),
         'header' => "Content-type: application/json\r\n" .
                     "Accept: application/json\r\n" .
                     (empty($headerToken) ? "" : $jwtHeader.": Bearer $headerToken\r\n"),
@@ -683,15 +682,15 @@ function sendRequestToConvertService(
     ];
 
     if (mb_substr($urlToConverter, 0, mb_strlen("https")) === "https") {
-        if ($config_manager->ssl_verify_peer_mode_enabled()) {
+        if ($configManager->sslVerifyPeerModeEnabled()) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
 
     $context = stream_context_create($opts);
-    $response_data = file_get_contents($urlToConverter, false, $context);
+    $responseData = file_get_contents($urlToConverter, false, $context);
 
-    return $response_data;
+    return $responseData;
 }
 
 /**
@@ -702,12 +701,12 @@ function sendRequestToConvertService(
  * getConvertedData("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf",
  * ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
  *
- * @param string $document_uri           Uri for the document to convert
- * @param string $from_extension         Document extension
- * @param string $to_extension           Extension to which to convert
- * @param string $document_revision_id   Key for caching on service
- * @param bool   $is_async               Perform conversions asynchronously
- * @param string $converted_document_uri Uri to the converted document
+ * @param string $documentURL Uri for the document to convert
+ * @param string $fromExtension Document extension
+ * @param string $toExtension Extension to which to convert
+ * @param string $documentRevisionID Key for caching on service
+ * @param bool   $async Perform conversions asynchronously
+ * @param string $convertedDocumentURL Uri to the converted document
  * @param string $filePass               File pass
  * @param string $lang                   Language
  *
@@ -716,22 +715,22 @@ function sendRequestToConvertService(
  * @return array percentage of completion of conversion and fileType from Convert service
  */
 function getConvertedData(
-    $document_uri,
-    $from_extension,
-    $to_extension,
-    $document_revision_id,
-    $is_async,
-    &$converted_document_uri,
+    $documentURL,
+    $fromExtension,
+    $toExtension,
+    $documentRevisionID,
+    $async,
+    &$convertedDocumentURL,
     $filePass,
     $lang
 ) {
-    $converted_document_uri = "";
+    $convertedDocumentURL = "";
     $responceFromConvertService = sendRequestToConvertService(
-        $document_uri,
-        $from_extension,
-        $to_extension,
-        $document_revision_id,
-        $is_async,
+        $documentURL,
+        $fromExtension,
+        $toExtension,
+        $documentRevisionID,
+        $async,
         $filePass,
         $lang
     );
@@ -750,7 +749,7 @@ function getConvertedData(
     // if the conversion is completed successfully
     if ($isEndConvert != null && $isEndConvert == true) {
         // then get the file url
-        $converted_document_uri = $json["fileUrl"];
+        $convertedDocumentURL = $json["fileUrl"];
         $fileType = $json["fileType"];
         $percent = 100;
     } elseif ($percent >= 100) { // otherwise, get the percentage of conversion completion
@@ -758,60 +757,6 @@ function getConvertedData(
     }
 
     return ["percent" => $percent, "fileType" => $fileType];
-}
-
-/**
- * Processing document received from the editing service.
- *
- * @param Response $document_response The result from editing service
- * @param string $response_uri      Uri to the converted document
- *
- * @throws Exception if an error occurs
- *
- * @return int percentage of completion of conversion
- */
-function getResponseUri($document_response, &$response_uri)
-{
-    $response_uri = "";
-    $resultPercent = 0;
-
-    if (!$document_response) {
-        $errs = "Invalid answer format";
-    }
-
-    // if an error occurs, then display an error message
-    $errorElement = $document_response->Error;
-    if ($errorElement != null && $errorElement != "") {
-        processConvServResponceError($document_response->Error);
-    }
-
-    $endConvert = $document_response->EndConvert;
-    if ($endConvert != null && $endConvert == "") {
-        throw new Exception("Invalid answer format");
-    }
-
-    // if the conversion is completed successfully
-    if ($endConvert != null && mb_strtolower($endConvert) == true) {
-        $fileUrl = $document_response->FileUrl;
-        if ($fileUrl == null || $fileUrl == "") {
-            throw new Exception("Invalid answer format");
-        }
-
-        // get the response file url
-        $response_uri = $fileUrl;
-        $resultPercent = 100;
-    } else { // otherwise, get the percentage of conversion completion
-        $percent = $document_response->Percent;
-
-        if ($percent != null && $percent != "") {
-            $resultPercent = $percent;
-        }
-        if ($resultPercent >= 100) {
-            $resultPercent = 99;
-        }
-    }
-
-    return $resultPercent;
 }
 
 /**

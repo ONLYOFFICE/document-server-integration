@@ -17,7 +17,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -61,12 +60,11 @@ namespace OnlineEditorsExample
         }
 
         protected string DocConfig { get; private set; }
-        protected string History { get; private set; }
-        protected string HistoryData { get; private set; }
         protected string InsertImageConfig { get; private set; }
-        protected string CompareFileData { get; private set; }
-        protected string DataMailMergeRecipients { get; private set; }
+        protected string DocumentData { get; private set; }
+        protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
+        protected string UsersForProtect { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -195,7 +193,7 @@ namespace OnlineEditorsExample
                             {
                                 { "title", FileName },
                                 { "url", getDownloadUrl(FileName) },
-                                { "directUrl", IsEnabledDirectUrl() ? directUrl : "" },
+                                { "directUrl", _Default.IsEnabledDirectUrl() ? directUrl : "" },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -311,141 +309,21 @@ namespace OnlineEditorsExample
 
                 // a document which will be compared with the current document
                 Dictionary<string, object> compareFile = GetCompareFile();
-                CompareFileData = jss.Serialize(compareFile);
+                DocumentData = jss.Serialize(compareFile);
 
-                // recipient data for mail merging
-                Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
-                DataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+                // recipient data for spreadsheet
+                Dictionary<string, object> spreadsheetConfig = GetSpreadsheetConfig();
+                DataSpreadsheet = jss.Serialize(spreadsheetConfig);
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
                 UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
 
-                Dictionary<string, object> hist;
-                Dictionary<string, object> histData;
-  
-                // get the document history
-                GetHistory(out hist, out histData);
-                if (hist != null && histData != null)
-                {
-                    History = jss.Serialize(hist);
-                    HistoryData = jss.Serialize(histData);
-                }
+                // get users for protect
+                List<Dictionary<string, object>> usersProtectData = Users.getUsersForProtect(user.id);
+                UsersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(usersProtectData) : null;
             }
             catch { }
-        }
-
-        // get the document history
-        private void GetHistory(out Dictionary<string, object> history, out Dictionary<string, object> historyData)
-        {
-            var storagePath = WebConfigurationManager.AppSettings["storage-path"];
-            var jss = new JavaScriptSerializer();
-            var histDir = _Default.HistoryDir(_Default.StoragePath(FileName, null));
-
-            history = null;
-            historyData = null;
-
-            if (_Default.GetFileVersion(histDir) > 0)  // if the file was modified (the file version is greater than 0)
-            {
-                var currentVersion = _Default.GetFileVersion(histDir);
-                var hist = new List<Dictionary<string, object>>();
-                var histData = new Dictionary<string, object>();
-
-                for (var i = 1; i <= currentVersion; i++)  // run through all the file versions
-                {
-                    var obj = new Dictionary<string, object>();
-                    var dataObj = new Dictionary<string, object>();
-                    var verDir = _Default.VersionDir(histDir, i);  // get the path to the given file version
-
-                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
-
-                    obj.Add("key", key);
-                    obj.Add("version", i);
-
-                    if (i == 1)  // check if the version number is equal to 1
-                    {
-                        var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
-
-                        if (File.Exists(infoPath)) {
-                            var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
-                            obj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
-                            obj.Add("user", new Dictionary<string, object>() {
-                                { "id", info["id"] },
-                                { "name", info["name"] },
-                            });
-                        }
-                    }
-
-                    var ext = Path.GetExtension(FileName).ToLower();
-                    dataObj.Add("fileType", ext.Replace(".", ""));
-                    dataObj.Add("key", key);
-                    // write file url to the data object
-                    var directPrevFileUrl = i == currentVersion ? _Default.FileUri(FileName, false) : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext, false);
-                    var prevFileUrl = i == currentVersion ? FileUri : MakePublicHistoryUrl(FileName, i.ToString(), "prev" + ext);
-                    if (Path.IsPathRooted(storagePath))
-                    {
-                        prevFileUrl = i == currentVersion ? getDownloadUrl(FileName) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""));
-                        directPrevFileUrl = i == currentVersion ? getDownloadUrl(FileName, false) : getDownloadUrl(Directory.GetFiles(verDir, "prev.*")[0].Replace(storagePath + "\\", ""), false);
-                    }
-
-                    dataObj.Add("url", prevFileUrl);  // write file url to the data object
-
-                    if (IsEnabledDirectUrl())
-                    {
-                        dataObj.Add("directUrl", directPrevFileUrl); // write direct url to the data object
-                    } 
-
-                    dataObj.Add("version", i);
-                    if (i > 1)  // check if the version number is greater than 1 (the file was modified)
-                    {
-                        // get the path to the changes.json file 
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(_Default.VersionDir(histDir, i - 1), "changes.json")));
-                        var changesArray = (ArrayList)changes["changes"];
-                        var change = changesArray.Count > 0
-                            ? (Dictionary<string, object>)changesArray[0]
-                            : new Dictionary<string, object>();
-
-                        // write information about changes to the object
-                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
-                        obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change.Count > 0 ? change["created"] : null);
-                        obj.Add("user", change.Count > 0 ? change["user"] : null);
-
-                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-
-                        Dictionary<string, object> dataPrev = new Dictionary<string, object>() {  // write information about previous file version to the data object
-                            { "fileType", prev["fileType"] },
-                            { "key", prev["key"] },  // write key and url information about previous file version
-                            { "url", prev["url"] }
-                        };
-
-                        if (IsEnabledDirectUrl())
-                        {
-                            dataPrev.Add("directUrl", prev["directUrl"]);
-                        }
-
-                        dataObj.Add("previous", dataPrev);
-                        // write the path to the diff.zip archive with differences in this file version
-                        var changesUrl = MakePublicHistoryUrl(FileName, (i - 1).ToString(), "diff.zip");
-                        dataObj.Add("changesUrl", changesUrl);
-                    }
-                    if (JwtManager.Enabled)
-                    {
-                        var token = JwtManager.Encode(dataObj);
-                        dataObj.Add("token", token);
-                    }
-                    hist.Add(obj);  // add object dictionary to the hist list
-                    histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
-                }
-
-                // write history information about the current file version to the history object
-                history = new Dictionary<string, object>()
-                {
-                    { "currentVersion", currentVersion },
-                    { "history", hist }
-                };
-                historyData = histData;
-            }
         }
 
         // get a logo config
@@ -469,7 +347,7 @@ namespace OnlineEditorsExample
                     { "url", InsertImageUrl.ToString()}
                 };
 
-            if (IsEnabledDirectUrl())
+            if (_Default.IsEnabledDirectUrl())
             {
                 logoConfig.Add("directUrl", DirectImageUrl.ToString());
             }
@@ -506,7 +384,7 @@ namespace OnlineEditorsExample
                     { "url", compareFileUrl.ToString() }
                 };
 
-            if (IsEnabledDirectUrl())
+            if (_Default.IsEnabledDirectUrl())
             {
                 dataCompareFile.Add("directUrl", DirectFileUrl.ToString());
             }
@@ -520,43 +398,43 @@ namespace OnlineEditorsExample
             return dataCompareFile;
         }
 
-        // get a mail merge config
-        private Dictionary<string, object> GetMailMergeConfig()
+        // get a spreadsheet config
+        private Dictionary<string, object> GetSpreadsheetConfig()
         {
-            // get the path to the recipients data for mail merging
-            var mailmergeUrl = new UriBuilder(_Default.GetServerUrl(true));
-            mailmergeUrl.Path =
+            // get the path to the recipients data for spreadsheet
+            var spreadsheetUrl = new UriBuilder(_Default.GetServerUrl(true));
+            spreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            mailmergeUrl.Query = "type=csv";
+            spreadsheetUrl.Query = "type=csv";
 
-            var DirectMailMergeUrl = new UriBuilder(_Default.GetServerUrl(false));
-            DirectMailMergeUrl.Path =
+            var DirectSpreadsheetUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectSpreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            DirectMailMergeUrl.Query = "type=csv";
+            DirectSpreadsheetUrl.Query = "type=csv";
 
-            // create a mail merge config
-            Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
+            // create a spreadsheet config
+            Dictionary<string, object> spreadsheetConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString() }
+                    { "url", spreadsheetUrl.ToString() }
                 };
 
-            if (IsEnabledDirectUrl())
+            if (_Default.IsEnabledDirectUrl())
             {
-                mailMergeConfig.Add("directUrl", DirectMailMergeUrl.ToString());
+                spreadsheetConfig.Add("directUrl", DirectSpreadsheetUrl.ToString());
             }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
-                var mailmergeToken = JwtManager.Encode(mailMergeConfig);  // encode mailMergeConfig into the token
-                mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
+                var spreadsheetToken = JwtManager.Encode(spreadsheetConfig);  // encode spreadsheetConfig into the token
+                spreadsheetConfig.Add("token", spreadsheetToken);  // and add it to the spreadsheet config
             }
 
-            return mailMergeConfig;
+            return spreadsheetConfig;
         }
 
         // get image url for templates
@@ -587,21 +465,6 @@ namespace OnlineEditorsExample
             var root = Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? WebConfigurationManager.AppSettings["storage-path"] 
                 : HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"];
             return _Default.GetServerUrl(true) + fullPath.Substring(root.Length).Replace(Path.DirectorySeparatorChar, '/');
-        }
-
-
-        // create the public history url
-        private string MakePublicHistoryUrl(string filename, string version, string file, Boolean isServer = true)
-        {
-            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)) : "";
-            var fileUrl = new UriBuilder(_Default.GetServerUrl(isServer));
-            fileUrl.Path = HttpRuntime.AppDomainAppVirtualPath
-                + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "webeditor.ashx";
-            fileUrl.Query = "type=downloadhistory&fileName=" + HttpUtility.UrlEncode(filename)
-                + "&ver=" + version + "&file=" + file
-                + userAddress;
-            return fileUrl.ToString();
         }
 
         // create demo document
@@ -651,13 +514,6 @@ namespace OnlineEditorsExample
                 { "id", uid },
                 { "name", uname }
             }));
-        }
-
-        // get direct url flag
-        private static bool IsEnabledDirectUrl()
-        {
-            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
-            return isEnabledDirectUrl != null ? Convert.ToBoolean(isEnabledDirectUrl) : false;
         }
     }
 }

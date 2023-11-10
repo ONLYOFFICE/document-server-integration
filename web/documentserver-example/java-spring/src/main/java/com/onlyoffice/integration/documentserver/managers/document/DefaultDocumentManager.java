@@ -69,7 +69,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get URL to the created file
     public String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileUtility.getFileExtension(fileName).replace(".", "");
+        String fileExt = fileUtility.getFileExtension(fileName);
         String url = storagePathBuilder.getServerUrl(true)
                 + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
@@ -79,13 +79,13 @@ public class DefaultDocumentManager implements DocumentManager {
     public String getCorrectName(final String fileName) {
         String baseName = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
         String ext = fileUtility.getFileExtension(fileName);  // get file extension
-        String name = baseName + ext;  // create a full file name
+        String name = baseName + "." + ext;  // create a full file name
 
         Path path = Paths.get(storagePathBuilder.getFileLocation(name));
 
         // run through all the files with such a name in the storage directory
         for (int i = 1; Files.exists(path); i++) {
-            name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+            name = baseName + " (" + i + ")." + ext;  // and add an index to the base name
             path = Paths.get(storagePathBuilder.getFileLocation(name));
         }
 
@@ -217,8 +217,14 @@ public class DefaultDocumentManager implements DocumentManager {
     public String createDemo(final String fileExt, final Boolean sample, final String uid, final String uname) {
         String demoName = (sample ? "sample." : "new.")
                 + fileExt;  // create sample or new template file with the necessary extension
-        String demoPath = "assets" + File.separator  + (sample ? "sample" : "new")
-                + File.separator + demoName;  // get the path to the sample document
+        String demoPath =
+            "assets"
+            + File.separator
+            + "document-templates"
+            + File.separator
+            + (sample ? "sample" : "new")
+            + File.separator
+            + demoName;
 
         // get a file name with an index if the file with such a name already exists
         String fileName = getCorrectName(demoName);

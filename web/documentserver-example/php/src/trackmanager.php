@@ -18,9 +18,10 @@
 namespace Example;
 
 use Exception;
+use Example\Common\URL;
 use Example\Configuration\ConfigurationManager;
-use Example\Helpers\ConfigManager;
 use Example\Helpers\JwtManager;
+use Example\Proxy\ProxyManager;
 
 /**
  * Read request body
@@ -29,18 +30,17 @@ use Example\Helpers\JwtManager;
  */
 function readBody()
 {
-    $config_manager = new ConfigurationManager();
+    $configManager = new ConfigurationManager();
 
     $result["error"] = 0;
-    $configManager = new ConfigManager();
     $jwtManager = new JwtManager();
     // get the body of the post request and check if it is correct
-    if (($body_stream = file_get_contents('php://input')) === false) {
+    if (($bodyStream = file_get_contents('php://input')) === false) {
         $result["error"] = "Bad Request";
         return $result;
     }
 
-    $data = json_decode($body_stream, false);
+    $data = json_decode($bodyStream, false);
 
     // check if the response is correct
     if ($data === null) {
@@ -56,7 +56,7 @@ function readBody()
 
         $inHeader = false;
         $data = "";
-        $jwtHeader = $config_manager->jwt_header();
+        $jwtHeader = $configManager->jwtHeader();
 
         if (!empty($data["token"])) {  // if the document token is in the data
             $data = $jwtManager->jwtDecode($data["token"]);  // decode it
@@ -99,8 +99,10 @@ function readBody()
  *
  * @return array
  */
-function processSave($data, $fileName, $userAddress)
+function processSave($rawData, $fileName, $userAddress)
 {
+    $data = resolveProcessSaveData($rawData);
+
     $downloadUri = $data->url;
     if ($downloadUri === null) {
         $result["error"] = 1;
@@ -138,7 +140,7 @@ function processSave($data, $fileName, $userAddress)
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents(
+    if (!(($newData = file_get_contents(
         $downloadUri,
         false,
         stream_context_create(["http" => ["timeout" => 5]])
@@ -153,7 +155,7 @@ function processSave($data, $fileName, $userAddress)
         // get the path to the previous file version and rename the storage path with it
         rename(getStoragePath($fileName, $userAddress), $verDir .
             DIRECTORY_SEPARATOR . "prev" . $curExt);
-        file_put_contents($storagePath, $new_data, LOCK_EX);  // save file to the storage directory
+        file_put_contents($storagePath, $newData, LOCK_EX);  // save file to the storage directory
 
         if ($changesData = file_get_contents(
             $data->changesurl,
@@ -238,7 +240,7 @@ function processForceSave($data, $fileName, $userAddress)
 
     $saved = 1;
 
-    if (!(($new_data = file_get_contents(
+    if (!(($newData = file_get_contents(
         $downloadUri,
         false,
         stream_context_create(["http" => ["timeout" => 5]])
@@ -266,7 +268,7 @@ function processForceSave($data, $fileName, $userAddress)
             }
         }
 
-        file_put_contents($forcesavePath, $new_data, LOCK_EX);
+        file_put_contents($forcesavePath, $newData, LOCK_EX);
 
         if ($isSubmitForm) {
             $uid = $data->actions[0]->userid;  // get the user id
@@ -292,10 +294,10 @@ function processForceSave($data, $fileName, $userAddress)
  */
 function commandRequest($method, $key, $meta = null)
 {
-    $config_manager = new ConfigurationManager();
+    $configManager = new ConfigurationManager();
 
     $jwtManager = new JwtManager();
-    $documentCommandUrl = $config_manager->document_server_command_url()->string();
+    $documentCommandUrl = $configManager->documentServerCommandURL()->string();
 
     $arr = [
         "c" => $method,
@@ -307,7 +309,7 @@ function commandRequest($method, $key, $meta = null)
     }
 
     $headerToken = "";
-    $jwtHeader = $config_manager->jwt_header();
+    $jwtHeader = $configManager->jwtHeader();
 
     // check if a secret key to generate token exists or not
     if ($jwtManager->isJwtEnabled() && $jwtManager->tokenUseForRequest()) {
@@ -327,13 +329,36 @@ function commandRequest($method, $key, $meta = null)
     ]];
 
     if (mb_substr($documentCommandUrl, 0, mb_strlen("https")) === "https") {
-        if ($config_manager->ssl_verify_peer_mode_enabled()) {
+        if ($configManager->sslVerifyPeerModeEnabled()) {
             $opts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
         }
     }
 
     $context = stream_context_create($opts);
-    $response_data = file_get_contents($documentCommandUrl, false, $context);
+    $responseData = file_get_contents($documentCommandUrl, false, $context);
 
-    return $response_data;
+    return $responseData;
+}
+
+function resolveProcessSaveData($data)
+{
+    $configManager = new ConfigurationManager();
+    $proxyManager = new ProxyManager($configManager);
+    $copied = clone $data;
+
+    $url = $copied->url;
+    if ($url) {
+        $parsedURL = new URL($url);
+        $resolvedURL = $proxyManager->resolveURL($parsedURL);
+        $copied->url = $resolvedURL->string();
+    }
+
+    $changesURL = $copied->changesurl;
+    if ($changesURL) {
+        $parsedURL = new URL($changesURL);
+        $resolvedURL = $proxyManager->resolveURL($parsedURL);
+        $copied->changesurl = $resolvedURL->string();
+    }
+
+    return $copied;
 }

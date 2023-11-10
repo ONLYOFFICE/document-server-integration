@@ -107,13 +107,17 @@
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
-    var onRequestCompareFile = function() {
-        docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);  // select a document for comparing
+    var onRequestSelectDocument = function(event) {
+        var data = <%= raw @file.dataDocument.to_json %>;
+        data.c = event.data.c;
+        docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
 
     // the user is trying to select recipients data by clicking the Mail merge button
-    var onRequestMailMergeRecipients = function (event) {
-        docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);  // insert recipient data for mail merge into the file
+    var onRequestSelectSpreadsheet = function (event) {
+        var data = <%= raw @file.dataSpreadsheet.to_json %>;
+        data.c = event.data.c;
+        docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
     };
 
     var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -151,17 +155,43 @@
         }
     };
 
-    var onRequestReferenceData = function(event) {  // user refresh external data source
+    var onRequestOpen = function(event) {  // user open external data source
+        innerAlert("onRequestOpen");
+        var windowName = event.data.windowName;
         
-        event.data.directUrl = !!config.document.directUrl;
+        requestReference(event.data, function (data) {
+            if (data.error) {
+                var winEditor = window.open("", windowName);
+                winEditor.close();
+                innerAlert(data.error, true);
+                return;
+            }
+            var link = data.link;
+            window.open(link, windowName);
+        });
+    };
+
+    var onRequestReferenceData = function(event) {  // user refresh external data source
+        innerAlert("onRequestReferenceData");
+
+        requestReference(event.data, function (data) {
+            docEditor.setReferenceData(data);
+        });
+    };
+
+    var requestReference = function(data, callback) {
+        innerAlert(data);
+
+        data.directUrl = !!config.document.directUrl;
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "reference");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify(event.data));
+        xhr.send(JSON.stringify(data));
         xhr.onload = function () {
             innerAlert(xhr.responseText);
-            docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            callback(JSON.parse(xhr.responseText));
         }
+
     };
 
     function onRequestRestore(event) {
@@ -198,8 +228,8 @@
             'onMakeActionLink': onMakeActionLink,
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
-            'onRequestCompareFile': onRequestCompareFile,
-            'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+            'onRequestSelectDocument': onRequestSelectDocument,
+            'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
             'onRequestRestore': onRequestRestore
         };
 
@@ -225,9 +255,20 @@
                     };
                 <% end %>
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <%= raw @file.get_users_mentions.to_json %>
+            config.events['onRequestUsers'] = function (event) {
+                if (event && event.data){
+                    var c = event.data.c;
+                }
+                switch (c) {
+                    case "protect":
+                        var users = <%= raw @file.get_users_protect.to_json %>;
+                        break;
+                    default:
+                        users = <%= raw @file.get_users_mentions.to_json %>;
+                }
+                docEditor.setUsers({
+                    "c": c,
+                    "users": users,
                 });
             };
             // the user is mentioned in a comment
@@ -241,6 +282,7 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {
