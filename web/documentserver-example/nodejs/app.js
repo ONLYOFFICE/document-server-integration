@@ -762,6 +762,26 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (isSubmitForm) {
           const uid = body.actions[0].userid;
           req.DocManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
+
+          const { formsdataurl } = body;
+          if (formsdataurl) {
+            const formsdataName = req.DocManager.getCorrectName(
+              `${fileUtility.getFileName(correctName, true)}.txt`,
+              userAddress,
+            );
+            // get the path to the file with forms data
+            const formsdataPath = req.DocManager.storagePath(formsdataName, userAddress);
+            const formsdata = await urllib.request(formsdataurl, { method: 'GET' });
+            const statusFormsdata = formsdata.status;
+            const dataFormsdata = formsdata.data;
+            if (status === 200) {
+              fileSystem.writeFileSync(formsdataPath, dataFormsdata); // write the forms data
+            } else {
+              emitWarning(`Document editing service returned status: ${statusFormsdata}`);
+            }
+          } else {
+            emitWarning('Document editing service do not returned formsdataurl');
+          }
         }
       } catch (ex) {
         response.write('{"error":1}');
