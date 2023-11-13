@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf
 - version number to page meta
 - sr-Latn-CS skin languages
