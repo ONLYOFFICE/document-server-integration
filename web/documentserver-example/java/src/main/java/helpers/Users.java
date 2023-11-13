@@ -37,6 +37,7 @@ public final class Users {
         add("The file favorite state is undefined");
         add("Can create files from templates using data from the editor");
         add("Can see the information about all users");
+        add("Can submit forms");
     }};
 
     private static List<String> descriptionUserSecond = new ArrayList<String>() {{
@@ -47,6 +48,7 @@ public final class Users {
         add("This file is marked as favorite");
         add("Can create new files from the editor");
         add("Can see the information about users from Group2 and users who don’t belong to any group");
+        add("Can’t submit forms");
     }};
 
     private static List<String> descriptionUserThird = new ArrayList<String>() {{
@@ -59,6 +61,7 @@ public final class Users {
         add("Can’t print the file");
         add("Can create new files from the editor");
         add("Can see the information about Group2 users");
+        add("Can’t submit forms");
     }};
 
     private static List<String> descriptionUserZero = new ArrayList<String>() {{
@@ -74,6 +77,7 @@ public final class Users {
         add("Can't view chat");
         add("Can't protect file");
         add("View file without collaboration");
+        add("Can’t submit forms");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
