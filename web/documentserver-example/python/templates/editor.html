@@ -289,6 +289,18 @@
                         var c = event.data.c;
                     }
                     switch (c) {
+                        case "info":
+                            users = [];
+                            var allUsers = {{ usersInfo | safe }};
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
                         case "protect":
                             var users = {{ usersForProtect | safe }};
                             break;

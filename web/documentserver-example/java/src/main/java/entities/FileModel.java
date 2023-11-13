@@ -111,6 +111,8 @@ public class FileModel {
         editorConfig.getUser().setId(!user.getId().equals("uid-0") ? user.getId() : null);
         editorConfig.getUser().setName(user.getName());
         editorConfig.getUser().setGroup(user.getGroup());
+        editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
+        + "/css/img/" + user.getId() + ".png" : null);
 
         // write the absolute URL to the file location
         editorConfig.getCustomization().getGoback()
@@ -521,6 +523,7 @@ public class FileModel {
             private String id;
             private String name;
             private String group;
+            private String image;
 
             public String getId() {
                 return id;
@@ -544,6 +547,10 @@ public class FileModel {
 
             public void setGroup(final String groupParam) {
                 this.group = groupParam;
+            }
+
+            public void setImage(final String imageParam) {
+                this.image = imageParam;
             }
         }
 

@@ -3,9 +3,12 @@
 - php: getting history via api
 - ruby: getting history via api
 - python: getting history via api
+- ruby: convert after uploading only tagged formats
+- python: convert after uploading only tagged formats
+- php: convert after uploading only tagged formats
 - setUsers for region protection
 - onRequestOpen method
-- nodejs: user avatar
+- user avatar
 - trimming long name of uploading file
 - nodejs: link in referenceData
 - onRequestSelectDocument method

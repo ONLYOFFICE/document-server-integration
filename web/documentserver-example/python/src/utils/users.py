@@ -21,7 +21,7 @@ from typing import Optional
 
 class User:
     def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-                 deniedPermissions, descriptions, templates):
+                 deniedPermissions, descriptions, templates, avatar):
         self.id = uid
         self.name = name
         self.email = email
@@ -33,6 +33,7 @@ class User:
         self.descriptions = descriptions
         self.templates = templates
         self.userInfoGroups = userInfoGroups
+        self.avatar = avatar
 
 
 descr_user_1 = [
@@ -42,7 +43,8 @@ descr_user_1 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can create files from templates using data from the editor",
-    "Can see the information about all users"
+    "Can see the information about all users",
+    "Has an avatar"
 ]
 
 descr_user_2 = [
@@ -52,7 +54,8 @@ descr_user_2 = [
      "Can remove his own comments only"),
     "This file is marked as favorite",
     "Can create new files from the editor",
-    "Can see the information about users from Group2 and users who don’t belong to any group"
+    "Can see the information about users from Group2 and users who don’t belong to any group",
+    "Has an avatar"
 ]
 
 descr_user_3 = [
@@ -85,7 +88,7 @@ descr_user_0 = [
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
          '', None, {}, None,
-         None, [], descr_user_1, True),
+         None, [], descr_user_1, True, True),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
          'group-2', ['group-2', ''], {
              'view': "",
@@ -93,17 +96,17 @@ USERS = [
              'remove': ["group-2"]
          },
          ['group-2', ''],
-         True, [], descr_user_2, False),
+         True, [], descr_user_2, False, True),
     User('uid-3', 'Hamish Mitchell', None,
          'group-3', ['group-2'], {
              'view': ["group-3", "group-2"],
              'edit': ["group-2"],
              'remove': []
          }, ['group-2'],
-         False, ["copy", "download", "print"], descr_user_3, False),
+         False, ["copy", "download", "print"], descr_user_3, False, False),
     User('uid-0', None, None,
          '', None, {}, [],
-         None, ["protect"], descr_user_0, False)
+         None, ["protect"], descr_user_0, False, False)
 ]
 
 DEFAULT_USER = USERS[0]
