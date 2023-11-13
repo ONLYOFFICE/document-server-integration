@@ -51,6 +51,7 @@ def configuration():
         'SECRET_KEY': uuid1(),
         'STATIC_ROOT': f'{static_root}',
         'STATIC_URL': static_url,
+        'STORAGE_FOLDER': '/storage/',
         'TEMPLATES': [
             {
                 'BACKEND': 'django.template.backends.django.DjangoTemplates',
