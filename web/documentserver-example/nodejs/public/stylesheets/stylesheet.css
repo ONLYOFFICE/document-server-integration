@@ -567,6 +567,12 @@ footer table tr td:first-child {
     width: 11%;
 }
 
+.tableHeaderCellAction{
+    width: 13%;
+    text-align: right;
+    padding-right: 88px;
+}
+
 .tableHeaderCellDownload{
     width: 13%;
     text-align: right;
@@ -667,7 +673,7 @@ footer table tr td:first-child {
     width: 100%;
 }
 
-.icon-delete {
+.icon-action {
     cursor: pointer;
 }
 
@@ -754,11 +760,11 @@ html {
 }
 
 .tableHeaderCellFileName {
-    width: 30%;
+    width: 20%;
 }
 
 .tableHeaderCellEditors {
-    width: 28%;
+    width: 20%;
 }
 
 .tableHeaderCellViewers {

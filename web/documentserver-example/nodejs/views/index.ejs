@@ -144,8 +144,7 @@
                                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
                                             <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
                                             <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                            <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                            <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            <td class="tableHeaderCell tableHeaderCellAction">Action</td>
                                         </tr>
                                         </thead>
                                     </table>
@@ -230,13 +229,17 @@
                                                         <a class="action-link" href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <img src="images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                                     </td>
-                                                    <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a class="convert-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
+                                                            <img class="icon-action" src="images/convert.svg" alt="Convert" title="Convert" /></a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
                                                             <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                                            <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                            <img class="icon-action" src="images/delete.svg" alt="Delete" title="Delete" /></a>
                                                     </td>
                                                 </tr>
                                             <% } %>
