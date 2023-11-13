@@ -256,6 +256,22 @@ namespace OnlineEditorsExampleMVC.Helpers
                     var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
                     var user = action["userid"].ToString();  // get the user id
                     DocManagerHelper.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
+
+                    string formsDataUrl = fileData["formsdataurl"].ToString();
+
+                    if (!string.IsNullOrEmpty(formsDataUrl))
+                    {
+                        string formsName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + ".txt", userAddress);
+                        string formsPath = DocManagerHelper.StoragePath(formsName, userAddress);
+
+                        var bytesForms = DownloadFile(formsDataUrl);
+
+                        SaveFile(bytesForms, formsPath);
+                    }
+                    else
+                    {
+                        throw new Exception("Document editing service did not return formsDataUrl");
+                    }
                 }
             } catch (Exception)
             {
