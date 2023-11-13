@@ -80,12 +80,6 @@ function routers()
         echo json_encode($response);
         return;
     }
-    if (str_starts_with($path, '/csv')) {
-        $response = csv();
-        $response['status'] = 'success';
-        echo json_encode($response);
-        return;
-    }
     if (str_starts_with($path, '/delete')) {
         $response = delete();
         $response['status'] = isset($response['error']) ? 'error' : 'success';

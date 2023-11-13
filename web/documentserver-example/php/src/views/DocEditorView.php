@@ -211,11 +211,11 @@ final class DocEditorView extends View
         // recipients data for mail merging
         $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
-            "directUrl" => serverPath(false) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/csv.csv",
         ] : [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
         ];
 
         // users data for mentions

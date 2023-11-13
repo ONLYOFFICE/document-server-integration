@@ -334,20 +334,6 @@ function files()
 }
 
 /**
- * Download a csv file
- *
- * @return void
- */
-function csv()
-{
-    $fileName = "csv.csv";
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
-        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
-    downloadFile($filePath);
-}
-
-/**
  * Download a file from history
  *
  * @return array|void
