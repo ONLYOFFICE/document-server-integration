@@ -62,6 +62,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -485,6 +487,22 @@ public class FileController {
                 }
             }
 
+            String link = body.getLink();
+            if (fileName.equals("") && link != null) {
+                if (!link.contains(storagePathBuilder.getServerUrl(true))) {
+                    HashMap<String, String> data = new HashMap<>();
+                    data.put("url", link);
+                    data.put("directUrl", link);
+                    return gson.toJson(data);
+                }
+
+                UriComponents uriComponents = UriComponentsBuilder.fromUriString(body.getLink()).build();
+                fileName = uriComponents.getQueryParams().getFirst("fileName");
+                boolean fileExists = new File(storagePathBuilder.getFileLocation(fileName)).exists();
+                if (!fileExists) {
+                    return "{ \"error\": \"File is not exist\"}";
+                }
+            }
 
             if (fileName.equals("")) {
                 try {

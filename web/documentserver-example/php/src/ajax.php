@@ -553,6 +553,20 @@ function reference()
         }
     }
 
+    $link = $post["link"];
+    if (!isset($filename) && isset($link)) {
+        if (strpos($link, serverPath()) === false) {
+            return ["url" => $link, "directUrl"=> $link];
+        }
+
+        $urlObj = parse_url($link);
+        parse_str($urlObj["query"], $urlParams);
+        $fileName = $urlParams["fileID"];
+        if (!file_exists(getStoragePath($fileName))) {
+            return ["error" => "File does not exist"];
+        }
+    }
+
     if (!isset($filename) && isset($post["path"])) {
         $path = basename($post["path"]);
         if (file_exists(getStoragePath($path))) {
