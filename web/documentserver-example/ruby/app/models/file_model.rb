@@ -257,7 +257,7 @@ else
           obj['user'] = change ? change['user'] : nil
 
           prev = histData[(i - 2).to_s] # get the history data from the previous file version
-          # write key and url information about previous file version with optional direct url
+# write key and url information about previous file version with optional direct url
 dataObj['previous'] = if is_enable_direct_url == true
                         { # write key and url information about previous file version with optional direct url
                                   :fileType => prev['fileType'],
@@ -300,8 +300,8 @@ else
   # get image information
   def get_insert_image
     # image file type
-# server url to the image
-# direct url to the image
+    # server url to the image
+    # direct url to the image
     insert_image = if is_enable_direct_url == true
                      {
                          :fileType => 'png', # image file type
@@ -325,8 +325,8 @@ else
   # get compared file information
   def dataDocument
     # file type
-# server url to the compared file
-# direct url to the compared file
+    # server url to the compared file
+    # direct url to the compared file
     compare_file = if is_enable_direct_url == true
                      {
                          :fileType => 'docx', # file type
@@ -350,8 +350,8 @@ else
   # get mail merge recipients information
   def dataSpreadsheet
     # file type
-# server url to the mail merge recipients file
-# direct url to the mail merge recipients file
+    # server url to the mail merge recipients file
+    # direct url to the mail merge recipients file
     dataSpreadsheet = if is_enable_direct_url == true
                         {
                             :fileType => 'csv', # file type

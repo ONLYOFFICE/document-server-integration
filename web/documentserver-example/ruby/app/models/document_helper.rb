@@ -92,7 +92,7 @@ class DocumentHelper
         return '' unless create
           FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
         
-           # the history directory doesn't exist and we are not supposed to create it
+        # the history directory doesn't exist and we are not supposed to create it
         
       end
 

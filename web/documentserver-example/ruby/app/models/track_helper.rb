@@ -30,7 +30,7 @@ class TrackHelper
   @@document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
 
   class << self
-      # read the request body
+    # read the request body
     def read_body(request)
       body = request.body.read
 
@@ -38,7 +38,7 @@ class TrackHelper
 
       file_data = JSON.parse(body) # parse file data
 
-        # check if a secret key to generate token exists or not
+      # check if a secret key to generate token exists or not
       if JwtHelper.is_enabled && JwtHelper.use_for_request
         inHeader = false
         token = nil
@@ -87,7 +87,7 @@ class TrackHelper
       copied
     end
 
-      # file saving process
+    # file saving process
     def process_save(raw_file_data, file_name, user_address)
       file_data = resolve_process_save_body(raw_file_data)
 
@@ -102,7 +102,7 @@ class TrackHelper
 
       cur_ext = File.extname(file_name).downcase # get current file extension
 
-        # convert downloaded file to the file with the current extension if these extensions aren't equal
+      # convert downloaded file to the file with the current extension if these extensions aren't equal
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
@@ -163,7 +163,7 @@ class TrackHelper
       saved
     end
 
-      # file force saving process
+    # file force saving process
     def process_force_save(file_data, file_name, user_address)
       download_uri = file_data['url']
       if download_uri.eql?(nil)
@@ -177,7 +177,7 @@ class TrackHelper
 
       new_file_name = false
 
-        # convert downloaded file to the file with the current extension if these extensions aren't equal
+      # convert downloaded file to the file with the current extension if these extensions aren't equal
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
@@ -230,9 +230,9 @@ class TrackHelper
       saved
     end
 
-      # send the command request
+    # send the command request
     def command_request(method, key, meta = nil)
-        # create a payload object with the method and key
+      # create a payload object with the method and key
       payload = {
         :c => method,
           :key => key
@@ -267,7 +267,7 @@ class TrackHelper
       return json_data
     end
 
-      # save file from the url
+    # save file from the url
     def download_file(uristr)
       uri = URI.parse(uristr) # parse the url string
       http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server

@@ -336,7 +336,7 @@ class HomeController < ApplicationController
     end
   end
 
-    # Rename...
+  # Rename...
   def rename
     body = JSON.parse(request.body.read)
     dockey = body['dockey']
@@ -354,7 +354,7 @@ class HomeController < ApplicationController
     render plain: "{ \"result\" : \"#{JSON.dump(json_data)}\"}"
   end
 
-    # ReferenceData
+  # ReferenceData
   def reference
     body = JSON.parse(request.body.read)
     fileName = ''
