@@ -110,7 +110,7 @@ class Users
   ]
 
   class << self
-    def get_all_users() # get a list of all the users
+    def get_all_users # get a list of all the users
       @@users
     end
 
