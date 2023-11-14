@@ -89,11 +89,11 @@ class DocumentHelper
 
       directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
       unless File.directory?(directory)
-        if create
+        return '' unless create
           FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
-        else
-          return '' # the history directory doesn't exist and we are not supposed to create it
-        end
+        
+           # the history directory doesn't exist and we are not supposed to create it
+        
       end
 
       directory = File.join(directory, File.basename(file_name)) # get the path to the given file
@@ -223,11 +223,11 @@ class DocumentHelper
 
     # get server url
     def get_server_url(for_document_server)
-      if for_document_server && DocumentHelper.config_manager.example_uri
-        return DocumentHelper.config_manager.example_uri.to_s
-      else
+      return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
+        
+      
         return @@base_url
-      end
+      
     end
 
     # get callback url
@@ -307,19 +307,19 @@ class DocumentHelper
         end
       end
 
-      if !file_id.nil?
-        return '"File not found"'
-      else
+      return '"File not found"' if !file_id.nil?
+        
+      
         return result
-      end
+      
     end
 
     # enable ignore certificate
     def verify_ssl(file_uri, http)
-      if file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
+      return unless file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-      end
+      
     end
   end
 end

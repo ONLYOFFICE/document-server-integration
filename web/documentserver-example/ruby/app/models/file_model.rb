@@ -349,7 +349,7 @@ class FileModel
 
   def get_users_info
     users_info = []
-    unless @user.id.eql?('uid-0')
+    return if @user.id.eql?('uid-0')
       Users.get_all_users().each do |user_info|
         u = {
           id: user_info.id,
@@ -369,7 +369,7 @@ class FileModel
         users_info.push(u)
       end
       return users_info
-    end
+    
   end
 
   # get users data for protect
