@@ -19,7 +19,7 @@ class User
                 :deniedPermissions, :descriptions, :templates, :avatar
 
   def initialize(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-      deniedPermissions, descriptions, templates, avatar)
+                 deniedPermissions, descriptions, templates, avatar)
     @id = id
     @name = name
     @email = email
