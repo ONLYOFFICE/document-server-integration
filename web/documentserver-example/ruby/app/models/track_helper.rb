@@ -138,9 +138,7 @@ class TrackHelper
         save_file(change_data, File.join(ver_dir, 'diff.zip')) # save file with document versions differences
 
         hist_data = file_data['changeshistory']
-        unless hist_data # if there are no changes in the history
-          hist_data = file_data['history'].to_json # write the original history information to the history data
-        end
+        hist_data ||= file_data['history'].to_json
         if hist_data
           File.open(File.join(ver_dir, 'changes.json'), 'wb') do |file| # open the file with document changes
             file.write(hist_data) # and write history data to this file
