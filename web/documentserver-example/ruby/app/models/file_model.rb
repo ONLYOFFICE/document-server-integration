@@ -153,7 +153,7 @@ class FileModel
                                 :mode => 'strict',
                                 :change => false
                               }
-else
+                      else
   nil
                       end,
         :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
@@ -265,7 +265,7 @@ else
                                             :url => prev['url'],
                                             :directUrl => prev['directUrl']
                                           }
-          else
+                                else
             {
                       :fileType => prev['fileType'],
                       :key => prev['key'],
@@ -308,7 +308,7 @@ else
                          :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
                          :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
                        }
-    else
+                   else
       {
           :fileType => 'png', # image file type
           :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
@@ -333,7 +333,7 @@ else
                          :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
                          :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
                        }
-    else
+                   else
       {
           :fileType => 'docx', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
@@ -358,7 +358,7 @@ else
                             :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
                             :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
                           }
-    else
+                      else
       {
           :fileType => 'csv', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file

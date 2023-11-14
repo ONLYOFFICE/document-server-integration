@@ -256,7 +256,7 @@ class DocumentHelper
         '.xlsx'
             when 'slide' # .pptx for slide type
         '.pptx'
-        else
+            else
         '.docx' # the default value is .docx
             end
 
@@ -273,7 +273,7 @@ class DocumentHelper
         "#{path}file_xlsx.svg"
                   when 'slide' # .pptx for slide type
         "#{path}file_pptx.svg"
-        else
+                  else
         "#{path}file_docx.svg" # the default value is .docx
                   end
 
