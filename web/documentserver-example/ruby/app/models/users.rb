@@ -44,7 +44,7 @@ class Users
       'The file favorite state is undefined',
       'Can create files from templates using data from the editor',
       'Can see the information about all users',
-      'Has an avatar',
+      'Has an avatar'
   ]
 
   @@descr_user_2 = [
@@ -54,7 +54,7 @@ class Users
       'This file is marked as favorite',
       'Can create new files from the editor',
       'Can see the information about users from Group2 and users who don’t belong to any group',
-      'Has an avatar',
+      'Has an avatar'
   ]
 
   @@descr_user_3 = [
@@ -66,7 +66,7 @@ class Users
       'Can’t download the file',
       'Can’t print the file',
       'Can create new files from the editor',
-      'Can see the information about Group2 users',
+      'Can see the information about Group2 users'
   ]
 
   @@descr_user_0 = [
