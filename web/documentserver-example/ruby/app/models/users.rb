@@ -16,7 +16,7 @@
 
 class User
   attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite,
-  :deniedPermissions, :descriptions, :templates, :avatar
+                :deniedPermissions, :descriptions, :templates, :avatar
 
   def initialize(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
       deniedPermissions, descriptions, templates, avatar)
@@ -86,27 +86,27 @@ class Users
 
   @@users = [
       User.new("uid-1", "John Smith", "smith@example.com",
-              "", nil, {}, nil,
-              nil, [], @@descr_user_1, true, true),
+               "", nil, {}, nil,
+               nil, [], @@descr_user_1, true, true),
       User.new("uid-2", "Mark Pottato", "pottato@example.com",
-              "group-2", ["group-2", ""], {
+               "group-2", ["group-2", ""], {
                 :view => "",
                   :edit => ["group-2", ""],
                   :remove => ["group-2"]
               },
                ["group-2", ""],
-              true, [], @@descr_user_2, false, true),
+               true, [], @@descr_user_2, false, true),
       User.new("uid-3", "Hamish Mitchell", nil,
-              "group-3", ["group-2"], {
+               "group-3", ["group-2"], {
                 :view => ["group-3", "group-2"],
                   :edit => ["group-2"],
                   :remove => []
               },
                ["group-2"],
-              false, ["copy", "download", "print"], @@descr_user_3, false, false),
+               false, ["copy", "download", "print"], @@descr_user_3, false, false),
       User.new("uid-0", nil, nil,
-              "", nil, {}, [],
-              nil, ["protect"], @@descr_user_0, false, false)
+               "", nil, {}, [],
+               nil, ["protect"], @@descr_user_0, false, false)
   ]
 
   class << self
