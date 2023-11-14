@@ -93,7 +93,7 @@ class DocumentHelper
         return ""
       end
 
-      directory = File.join(directory,"#{File.basename(file_name)}-hist") # get the path to the history of the given file
+      directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
       unless File.directory?(directory)
         if create
           FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
@@ -226,7 +226,7 @@ class DocumentHelper
     end
 
     # get history path url
-    def get_historypath_uri(file_name,version,file,is_serverUrl=true)
+    def get_historypath_uri(file_name, version, file, is_serverUrl=true)
       # for redirection to my link
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
       uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver='+ version.to_s + '&file='+ ERB::Util.url_encode(file) + user_host

@@ -141,7 +141,7 @@ class FileModel
         },
         :referenceData => {
           :instanceId => DocumentHelper.get_server_url(false),
-          :fileKey => !@user.id.eql?("uid-0") ? { :fileName => @file_name,:userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json : nil
+          :fileKey => !@user.id.eql?("uid-0") ? { :fileName => @file_name, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json : nil
         }
       },
       :editorConfig => {
@@ -306,7 +306,7 @@ class FileModel
       insert_image["token"] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
     end
 
-    return insert_image.to_json.tr("{", "").tr("}","")
+    return insert_image.to_json.tr("{", "").tr("}", "")
   end
 
   # get compared file information
