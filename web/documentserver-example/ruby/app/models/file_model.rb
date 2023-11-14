@@ -371,7 +371,7 @@ class FileModel
         u["image"] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
         users_info.push(u)
       end
-    return users_info
+      return users_info
     end
   end
 

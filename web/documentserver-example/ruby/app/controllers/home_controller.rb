@@ -204,9 +204,9 @@ class HomeController < ApplicationController
     if status == 1 # editing
       if file_data['actions'][0]['type'] == 0 # finished edit
         user = file_data['actions'][0]['userid'] # get the user id
-         if !file_data['users'].index(user)
-           json_data = TrackHelper.command_request("forcesave", file_data['key']) # call the forcesave command
-         end
+        if !file_data['users'].index(user)
+          json_data = TrackHelper.command_request("forcesave", file_data['key']) # call the forcesave command
+        end
       end
     end
 
@@ -281,8 +281,8 @@ class HomeController < ApplicationController
         jwtHeader = HomeController.config_manager.jwt_header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
-            hdr.slice!(0, "Bearer ".length)
-            token = JwtHelper.decode(hdr)
+          hdr.slice!(0, "Bearer ".length)
+          token = JwtHelper.decode(hdr)
         end
         if !token || token.eql?("")
           render plain: "JWT validation failed", :status => 403

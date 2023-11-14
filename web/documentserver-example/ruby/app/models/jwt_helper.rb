@@ -47,7 +47,7 @@ class JwtHelper
       end
         # decoded = Array [ {"data"=>"test"}, # payload
         #                   {"alg"=>"HS256"} # header   ]
-        return decoded[0].to_json   #   get json payload
+      return decoded[0].to_json   #   get json payload
     end
   end
 end

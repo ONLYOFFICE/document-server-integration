@@ -21,17 +21,17 @@ class User
   def initialize (id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
       deniedPermissions, descriptions, templates, avatar)
     @id = id
-      @name = name
-      @email = email
-      @group = group
-      @reviewGroups = reviewGroups
-      @commentGroups = commentGroups
-      @favorite = favorite
-      @deniedPermissions = deniedPermissions
-      @descriptions = descriptions
-      @templates = templates
-      @userInfoGroups = userInfoGroups
-      @avatar = avatar
+    @name = name
+    @email = email
+    @group = group
+    @reviewGroups = reviewGroups
+    @commentGroups = commentGroups
+    @favorite = favorite
+    @deniedPermissions = deniedPermissions
+    @descriptions = descriptions
+    @templates = templates
+    @userInfoGroups = userInfoGroups
+    @avatar = avatar
   end
 end
 
@@ -120,27 +120,27 @@ class Users
           return user
         end
       end
-        return @@users[0]
+      return @@users[0]
     end
 
     def get_users_for_mentions(id) # get a list of users with their names and emails for mentions
       usersData = []
-        for user in @@users do
-          if (!user.id.eql?(id) && user.name != nil && user.email != nil)
-            usersData.push({:name => user.name, :email => user.email})
-          end
+      for user in @@users do
+        if (!user.id.eql?(id) && user.name != nil && user.email != nil)
+          usersData.push({:name => user.name, :email => user.email})
         end
-        return usersData
+      end
+      return usersData
     end
 
     def get_users_for_protect(id)  # get a list of users with their id, names and emails for protect
       users_data = []
-        for user in @@users do
-          if (!user.id.eql?(id) && user.name != nil)
-            users_data.push({id: user.id, name: user.name, email: user.email})
-          end
+      for user in @@users do
+        if (!user.id.eql?(id) && user.name != nil)
+          users_data.push({id: user.id, name: user.name, email: user.email})
         end
-        return users_data
+      end
+      return users_data
     end
 
   end
