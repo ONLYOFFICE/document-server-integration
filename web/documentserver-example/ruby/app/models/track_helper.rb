@@ -276,7 +276,7 @@ class TrackHelper
       DocumentHelper.verify_ssl(uristr, http)
 
       req = Net::HTTP::Get.new(uri)
-      res = http.request(req)  # get the response
+      res = http.request(req) # get the response
 
       status_code = res.code
       raise "Document editing service returned status: #{status_code}" if status_code != '200' # checking status code
