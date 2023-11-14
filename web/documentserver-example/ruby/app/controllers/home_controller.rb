@@ -359,7 +359,6 @@ class HomeController < ApplicationController
     body = JSON.parse(request.body.read)
     fileName = ''
 
-
     if body.key?('referenceData')
       referenceData = body['referenceData']
       instanceId = referenceData['instanceId']
