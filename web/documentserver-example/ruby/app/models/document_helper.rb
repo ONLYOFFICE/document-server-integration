@@ -122,7 +122,7 @@ class DocumentHelper
 
     # get the last file version
     def get_file_version(hist_dir)
-      return 1 if !Dir.exist?(hist_dir)
+      return 1 unless Dir.exist?(hist_dir)
 
       ver = 1
       Dir.foreach(hist_dir) { |e| # run through all the file versions

@@ -192,7 +192,7 @@ class HomeController < ApplicationController
 
     if status == 1 && (file_data['actions'][0]['type'] == 0) # finished edit
         user = file_data['actions'][0]['userid'] # get the user id
-        if !file_data['users'].index(user)
+        unless file_data['users'].index(user)
           json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
         end
       end
@@ -216,7 +216,7 @@ class HomeController < ApplicationController
   # removing a file
   def remove
     file_name = File.basename(params[:filename]) # get the file name
-    if !file_name # if it doesn't exist
+    unless file_name # if it doesn't exist
       render plain: '{"success":false}' # report that the operation is unsuccessful
       return
     end
@@ -372,7 +372,7 @@ class HomeController < ApplicationController
 
     link = body['link']
     if fileName.empty? and body.key?('link')
-      if !link.include?(DocumentHelper.get_server_url(false))
+      unless link.include?(DocumentHelper.get_server_url(false))
         data = {
           url: link,
           directUrl: link
@@ -384,7 +384,7 @@ class HomeController < ApplicationController
       url_obj = URI(link)
       query_params = CGI.parse(url_obj.query)
       fileName = query_params['fileName'].first
-      if !File.exist?(DocumentHelper.storage_path(fileName, nil))
+      unless File.exist?(DocumentHelper.storage_path(fileName, nil))
         render plain: '{ "error": "File is not exist"}'
         return
       end
