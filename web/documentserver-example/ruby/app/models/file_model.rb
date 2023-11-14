@@ -148,10 +148,14 @@ class FileModel
         :mode => mode,
         :lang => @lang ? @lang : 'en',
         :callbackUrl => callback_url, # absolute URL to the document storage service
-        :coEditing => editorsmode.eql?('view') && @user.id.eql?('uid-0') ? {
+        :coEditing => if editorsmode.eql?('view') && @user.id.eql?('uid-0')
+  {
           :mode => 'strict',
           :change => false
-        } : nil,
+        }
+else
+  nil
+end,
         :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => { # the user currently viewing or editing the document
@@ -253,16 +257,21 @@ class FileModel
           obj['user'] = change ? change['user'] : nil
 
           prev = histData[(i - 2).to_s] # get the history data from the previous file version
-          dataObj['previous'] = is_enable_direct_url == true ? { # write key and url information about previous file version with optional direct url
+          # write key and url information about previous file version with optional direct url
+dataObj['previous'] = if is_enable_direct_url == true
+  { # write key and url information about previous file version with optional direct url
             :fileType => prev['fileType'],
             :key => prev['key'],
             :url => prev['url'],
             :directUrl => prev['directUrl']
-          } : {
+          }
+else
+  {
             :fileType => prev['fileType'],
             :key => prev['key'],
             :url => prev['url']
           }
+end
 
           # write the path to the diff.zip archive with differences in this file version
           dataObj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
@@ -290,14 +299,21 @@ class FileModel
 
   # get image information
   def get_insert_image
-    insert_image = is_enable_direct_url == true ? {
+    # image file type
+# server url to the image
+# direct url to the image
+insert_image = if is_enable_direct_url == true
+  {
       :fileType => 'png', # image file type
       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
       :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
-    } : {
+    }
+else
+  {
       :fileType => 'png', # image file type
       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
     }
+end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       insert_image['token'] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
@@ -308,14 +324,21 @@ class FileModel
 
   # get compared file information
   def dataDocument
-    compare_file = is_enable_direct_url == true ? {
+    # file type
+# server url to the compared file
+# direct url to the compared file
+compare_file = if is_enable_direct_url == true
+  {
       :fileType => 'docx', # file type
       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
       :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
-    } : {
+    }
+else
+  {
       :fileType => 'docx', # file type
       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
     }
+end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       compare_file['token'] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
@@ -326,14 +349,21 @@ class FileModel
 
   # get mail merge recipients information
   def dataSpreadsheet
-    dataSpreadsheet = is_enable_direct_url == true ? {
+    # file type
+# server url to the mail merge recipients file
+# direct url to the mail merge recipients file
+dataSpreadsheet = if is_enable_direct_url == true
+  {
       :fileType => 'csv', # file type
       :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
       :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
-    } : {
+    }
+else
+  {
       :fileType => 'csv', # file type
       :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
     }
+end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object
