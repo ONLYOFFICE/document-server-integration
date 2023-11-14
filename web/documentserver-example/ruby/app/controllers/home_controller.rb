@@ -26,8 +26,7 @@ class HomeController < ApplicationController
     attr_reader :config_manager
   end
 
-  def index
-  end
+  def index; end
 
   def editor
     DocumentHelper.init(request.remote_ip, request.base_url)
