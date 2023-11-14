@@ -91,7 +91,7 @@ class DocumentHelper
       unless File.directory?(directory)
         return '' unless create
 
-          FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
+        FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
         
         # the history directory doesn't exist and we are not supposed to create it
         
@@ -227,7 +227,7 @@ class DocumentHelper
       return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
         
       
-        return @@base_url
+      return @@base_url
       
     end
 
@@ -302,14 +302,14 @@ class DocumentHelper
           result.push(info) # push info object to the response array
         elsif file_id.eql?(info['id']) # if file id is defined
           result.push(info) # response object will be equal to the info object
-            return result # and it is equal to the document key value
+          return result # and it is equal to the document key value
         end
       end
 
       return '"File not found"' if !file_id.nil?
         
       
-        return result
+      return result
       
     end
 
@@ -317,8 +317,8 @@ class DocumentHelper
     def verify_ssl(file_uri, http)
       return unless file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
 
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
       
     end
   end

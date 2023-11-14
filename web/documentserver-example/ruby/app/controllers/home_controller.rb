@@ -192,9 +192,9 @@ class HomeController < ApplicationController
 
     if status == 1 && (file_data['actions'][0]['type'] == 0) # finished edit
       user = file_data['actions'][0]['userid'] # get the user id
-        unless file_data['users'].index(user)
-          json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
-        end
+      unless file_data['users'].index(user)
+        json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
+      end
     end
 
     if [2, 3].include?(status) # MustSave, Corrupted
