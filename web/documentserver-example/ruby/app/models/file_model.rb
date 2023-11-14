@@ -109,7 +109,7 @@ class FileModel
     ]
 
     config = {
-      :type => type(),
+      :type => type,
       :documentType => document_type,
       :document => {
         :title => @file_name,
@@ -190,8 +190,8 @@ class FileModel
   def get_history
     file_name = @file_name
     file_ext = File.extname(file_name).downcase
-    doc_key = key()
-    doc_uri = file_uri()
+    doc_key = key
+    doc_uri = file_uri
 
     hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil)) # get the path to the file history
     cur_ver = DocumentHelper.get_file_version(hist_dir) # get the file version
@@ -209,7 +209,7 @@ class FileModel
         cur_key = doc_key
         if (i != cur_ver)
           File.open(File.join(ver_dir, 'key.txt'), 'r') do |file|
-            cur_key = file.read()
+            cur_key = file.read
           end
         end
         obj['key'] = cur_key
@@ -217,7 +217,7 @@ class FileModel
 
         if (i == 1) && File.file?(File.join(hist_dir, 'createdInfo.json')) # check if the createdInfo.json file with meta data exists
             File.open(File.join(hist_dir, 'createdInfo.json'), 'r') do |file| # open it
-              cr_info = JSON.parse(file.read()) # parse the file content
+              cr_info = JSON.parse(file.read) # parse the file content
 
               # write information about changes to the object
               obj['created'] = cr_info['created']
@@ -241,7 +241,7 @@ class FileModel
           changes = nil
           change = nil
           File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file| # get the path to the changes.json file
-            changes = JSON.parse(file.read()) # and parse its content
+            changes = JSON.parse(file.read) # and parse its content
           end
 
           change = changes['changes'][0]
@@ -350,7 +350,7 @@ class FileModel
   def get_users_info
     users_info = []
     return if @user.id.eql?('uid-0')
-      Users.get_all_users().each do |user_info|
+      Users.get_all_users.each do |user_info|
         u = {
           id: user_info.id,
           name: user_info.name,
