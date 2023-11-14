@@ -27,7 +27,6 @@ class ServiceConverter
   @@document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
 
   class << self
-
     # get the url of the converted file
     def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
       from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext # get the current document extension
@@ -175,7 +174,5 @@ class ServiceConverter
 
       return result_percent, response_uri, response_file_type
     end
-
   end
-
 end

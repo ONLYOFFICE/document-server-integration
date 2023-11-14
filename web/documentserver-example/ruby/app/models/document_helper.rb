@@ -31,7 +31,6 @@ class DocumentHelper
   @@base_url = nil
 
   class << self
-
     def init (ip, url)
       @@remote_ip = ip
       @@base_url = url
@@ -333,5 +332,4 @@ class DocumentHelper
       end
     end
   end
-
 end

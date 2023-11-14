@@ -17,7 +17,6 @@
 require_relative '../configuration/configuration'
 
 class FileModel
-
   attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data, :direct_url
   attr_reader :config_manager
 
@@ -384,5 +383,4 @@ class FileModel
   def is_enable_direct_url
     return @direct_url != nil && @direct_url == "true"
   end
-
 end

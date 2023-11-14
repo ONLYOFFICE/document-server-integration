@@ -142,6 +142,5 @@ class Users
       end
       return users_data
     end
-
   end
 end

@@ -18,7 +18,6 @@ require 'jwt'
 require_relative '../configuration/configuration'
 
 class JwtHelper
-
   @jwt_secret = ConfigurationManager.new.jwt_secret
   @token_use_for_request = ConfigurationManager.new.jwt_use_for_request
 

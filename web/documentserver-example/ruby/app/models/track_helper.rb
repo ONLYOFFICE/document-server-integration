@@ -31,7 +31,6 @@ class TrackHelper
   @@document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
 
   class << self
-
       # read the request body
     def read_body(request)
       body = request.body.read
