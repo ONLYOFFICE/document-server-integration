@@ -202,7 +202,7 @@ class TrackHelper
 
         if is_submit_form
           file_name = if new_file_name
-            DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
+                        DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
           else
             DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}", user_address)
                       end
