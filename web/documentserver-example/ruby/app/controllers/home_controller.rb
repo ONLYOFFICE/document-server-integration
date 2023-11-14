@@ -83,7 +83,7 @@ class HomeController < ApplicationController
   def convert
     begin
       file_data = request.body.read
-      return '' if file_data == nil || file_data.empty?
+      return '' if file_data.nil? || file_data.empty?
 
       body = JSON.parse(file_data)
 
@@ -116,7 +116,7 @@ class HomeController < ApplicationController
         res = http.request(req)
         data = res.body
 
-        raise 'stream is null' if data == nil
+        raise 'stream is null' if data.nil?
 
         # write a file with a new extension, but with the content from the origin file
         File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
@@ -180,7 +180,7 @@ class HomeController < ApplicationController
   # tracking file changes
   def track
     file_data = TrackHelper.read_body(request) # read the request body
-    if file_data == nil || file_data.empty?
+    if file_data.nil? || file_data.empty?
       render plain: '{"error":1}' # an error occurs if the file is empty
       return
     end
@@ -266,7 +266,7 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
+      if JwtHelper.is_enabled && isEmbedded.nil? && user_address != nil && JwtHelper.use_for_request
         jwtHeader = HomeController.config_manager.jwt_header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]

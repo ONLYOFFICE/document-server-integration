@@ -67,7 +67,7 @@ class DocumentHelper
 
     # get current user host address
     def cur_user_host_address(user_address)
-      (user_address == nil ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_');
+      (user_address.nil? ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_');
     end
 
     # get the storage path of the given file
@@ -298,7 +298,7 @@ class DocumentHelper
           'updated' => File.mtime(directory)
         }
 
-        if file_id == nil # if file id is undefined
+        if file_id.nil? # if file id is undefined
           result.push(info) # push info object to the response array
         else # if file id is defined
           if file_id.eql?(info['id']) # and it is equal to the document key value

@@ -29,11 +29,11 @@ class ServiceConverter
   class << self
     # get the url of the converted file
     def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
-      from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext # get the current document extension
+      from_ext = from_ext.nil? ? File.extname(document_uri).downcase : from_ext # get the current document extension
 
       # get the current document name or uuid
       title = File.basename(URI.parse(document_uri).path)
-      title = title == nil ? UUID.generate.to_s : title
+      title = title.nil? ? UUID.generate.to_s : title
 
       # get the document key
       document_revision_id = document_revision_id.empty? ? document_uri : document_revision_id
@@ -149,7 +149,7 @@ class ServiceConverter
         file_url_element = file_result['fileUrl']
         file_type_element = file_result['fileType']
 
-        if file_url_element == nil # and the file url doesn't exist
+        if file_url_element.nil? # and the file url doesn't exist
           raise 'Invalid answer format'  # get ann error message
         end
 
