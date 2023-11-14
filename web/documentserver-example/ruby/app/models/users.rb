@@ -37,7 +37,7 @@ end
 
 class Users
   @@descr_user_1 = [
-      "File author by default",
+    "File author by default",
       "Doesn’t belong to any group",
       "Can review all the changes",
       "Can perform all actions with comments",
@@ -48,7 +48,7 @@ class Users
   ];
 
   @@descr_user_2 = [
-      "Belongs to Group2",
+    "Belongs to Group2",
       "Can review only his own changes or changes made by users with no group",
       "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
       "This file is marked as favorite",
@@ -58,7 +58,7 @@ class Users
   ];
 
   @@descr_user_3 = [
-      "Belongs to Group3",
+    "Belongs to Group3",
       "Can review changes made by Group2 users",
       "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
       "This file isn’t marked as favorite",
@@ -70,7 +70,7 @@ class Users
   ];
 
   @@descr_user_0 = [
-      "The name is requested when the editor is opened",
+    "The name is requested when the editor is opened",
       "Doesn’t belong to any group",
       "Can review all the changes",
       "Can perform all actions with comments",
@@ -85,9 +85,9 @@ class Users
   ];
 
   @@users = [
-      User.new("uid-1", "John Smith", "smith@example.com",
-               "", nil, {}, nil,
-               nil, [], @@descr_user_1, true, true),
+    User.new("uid-1", "John Smith", "smith@example.com",
+             "", nil, {}, nil,
+             nil, [], @@descr_user_1, true, true),
       User.new("uid-2", "Mark Pottato", "pottato@example.com",
                "group-2", ["group-2", ""], {
                 :view => "",
