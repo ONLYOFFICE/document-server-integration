@@ -32,6 +32,7 @@ class ProxyManager
   sig { params(uri: URI::Generic).returns(URI::Generic) }
   def resolve_uri(uri)
     return uri unless refer_public_url(uri)
+
     redirect_public_url(uri)
   end
 

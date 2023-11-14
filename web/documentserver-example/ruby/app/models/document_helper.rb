@@ -139,6 +139,7 @@ class DocumentHelper
       Dir.foreach(hist_dir) {|e|  # run through all the file versions
         next if e.eql?(".")
         next if e.eql?("..")
+
         if File.directory?(File.join(hist_dir, e))
           ver += 1  # and count them
         end

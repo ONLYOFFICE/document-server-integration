@@ -136,6 +136,7 @@ class FormatManager
   sig { returns(T::Array[Format]) }
   def all
     return @all if defined?(@all)
+
     content = file.read
     hash = JSON.parse(content)
     @all ||= hash.map do |item|

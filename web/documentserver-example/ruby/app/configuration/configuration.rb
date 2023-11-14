@@ -37,6 +37,7 @@ class ConfigurationManager
   def example_uri
     url = ENV['EXAMPLE_URL']
     return nil if url.nil?
+
     URI(url)
   end
 
@@ -50,6 +51,7 @@ class ConfigurationManager
   def document_server_private_uri
     url = ENV['DOCUMENT_SERVER_PRIVATE_URL']
     return URI(url) if url
+
     document_server_public_uri
   end
 
@@ -99,6 +101,7 @@ class ConfigurationManager
   def jwt_use_for_request
     env = ENV['JWT_USE_FOR_REQUEST']
     return ActiveModel::Type::Boolean.new.cast(env) if env
+
     true
   end
 
@@ -106,6 +109,7 @@ class ConfigurationManager
   def ssl_verify_peer_mode_enabled
     env = ENV['SSL_VERIFY_PEER_MODE_ENABLED']
     return ActiveModel::Type::Boolean.new.cast(env) if env
+
     false
   end
 
@@ -114,6 +118,7 @@ class ConfigurationManager
     storage_path = ENV['STORAGE_PATH'] || 'storage'
     storage_directory = Pathname(storage_path)
     return storage_directory if storage_directory.absolute?
+
     current_directory = Pathname(File.expand_path(__dir__))
     directory = current_directory.join('..', '..', storage_directory)
     directory.cleanpath
@@ -123,6 +128,7 @@ class ConfigurationManager
   def maximum_file_size
     env = ENV['MAXIMUM_FILE_SIZE']
     return env.to_i if env
+
     5 * 1024 * 1024
   end
 

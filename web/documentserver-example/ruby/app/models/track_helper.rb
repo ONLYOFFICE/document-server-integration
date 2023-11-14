@@ -303,11 +303,13 @@ class TrackHelper
             if status_code != '200'  # checking status code
                 raise "Document editing service returned status: #{status_code}"
             end
+
             data = res.body  # and take its body
 
             if data == nil
                 raise 'stream is null'
             end
+
             data
         end
 
