@@ -228,7 +228,7 @@ class DocumentHelper
     def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
-      uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver='+ version.to_s + '&file='+ ERB::Util.url_encode(file) + user_host
+      uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver=' + version.to_s + '&file=' + ERB::Util.url_encode(file) + user_host
       return uri
     end
 
@@ -302,7 +302,7 @@ class DocumentHelper
         info = {
           "version" => get_file_version(history_dir(directory)),
           "id" => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory).to_s}"),
-          "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
+          "contentLength" => "#{(File.size(directory) / 1024.0).round(2)} KB",
           "pureContentLength" => File.size(directory),
           "title" => fileName,
           "updated" => File.mtime(directory)

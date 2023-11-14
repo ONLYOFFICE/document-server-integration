@@ -107,7 +107,7 @@ class TrackHelper
       end
 
       new_file_name = file_name
-      download_ext = "."+file_data['filetype'] # get the extension of the downloaded file
+      download_ext = "." + file_data['filetype'] # get the extension of the downloaded file
 
       cur_ext = File.extname(file_name).downcase # get current file extension
 
@@ -184,7 +184,7 @@ class TrackHelper
         return saved
       end
 
-      download_ext = "."+file_data['filetype'] # get the extension of the downloaded file
+      download_ext = "." + file_data['filetype'] # get the extension of the downloaded file
 
       cur_ext = File.extname(file_name).downcase # get current file extension
 
