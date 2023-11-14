@@ -93,7 +93,7 @@ class HomeController < ApplicationController
       end
 
       body = JSON.parse(file_data)
-      
+
       file_name = File.basename(body["filename"])
       lang = cookies[:ulang] ? cookies[:ulang] : "en"
       file_pass = body["filePass"] ? body["filePass"] : nil
@@ -373,7 +373,7 @@ class HomeController < ApplicationController
   def reference
     body = JSON.parse(request.body.read)
     fileName = ""
-    
+
 
     if body.key?("referenceData")
       referenceData = body["referenceData"]

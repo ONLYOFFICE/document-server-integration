@@ -306,7 +306,7 @@ class DocumentHelper
           "contentLength" => "#{(File.size(directory)/ 1024.0).round(2)} KB",
           "pureContentLength" => File.size(directory),
           "title" => fileName,
-          "updated" => File.mtime(directory) 
+          "updated" => File.mtime(directory)
         }
 
         if file_id == nil # if file id is undefined

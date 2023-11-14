@@ -178,7 +178,7 @@ class TrackHelper
     end
 
       # file force saving process
-    def process_force_save(file_data, file_name, user_address)  
+    def process_force_save(file_data, file_name, user_address)
       download_uri = file_data['url']
         if download_uri.eql?(nil)
           saved = 1
@@ -237,7 +237,7 @@ class TrackHelper
 
           if is_submit_form
             uid = file_data['actions'][0]['userid']
-              DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address) # create file meta information with the Filling form tag instead of user name 
+              DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address) # create file meta information with the Filling form tag instead of user name
           end
 
           saved = 0
