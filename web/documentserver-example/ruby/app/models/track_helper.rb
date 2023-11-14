@@ -251,7 +251,7 @@ class TrackHelper
     def command_request(method, key, meta = nil)
         # create a payload object with the method and key
       payload = {
-          :c => method,
+        :c => method,
           :key => key
       }
 
