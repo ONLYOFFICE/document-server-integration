@@ -235,7 +235,7 @@ class TrackHelper
       # create a payload object with the method and key
       payload = {
         :c => method,
-          :key => key
+        :key => key
       }
 
       payload.merge!({ :meta => meta }) if !meta.nil?

@@ -151,7 +151,7 @@ class FileModel
         :coEditing => if editorsmode.eql?('view') && @user.id.eql?('uid-0')
                         {
                           :mode => 'strict',
-                                :change => false
+                          :change => false
                         }
                       else
   nil
@@ -261,15 +261,15 @@ class FileModel
           dataObj['previous'] = if is_enable_direct_url == true
                                   { # write key and url information about previous file version with optional direct url
                                     :fileType => prev['fileType'],
-                                            :key => prev['key'],
-                                            :url => prev['url'],
-                                            :directUrl => prev['directUrl']
+                                    :key => prev['key'],
+                                    :url => prev['url'],
+                                    :directUrl => prev['directUrl']
                                   }
                                 else
             {
               :fileType => prev['fileType'],
-                      :key => prev['key'],
-                      :url => prev['url']
+              :key => prev['key'],
+              :url => prev['url']
             }
                                 end
 
@@ -305,13 +305,13 @@ class FileModel
     insert_image = if is_enable_direct_url == true
                      {
                        :fileType => 'png', # image file type
-                         :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
-                         :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
+                       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
+                       :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
                      }
                    else
       {
         :fileType => 'png', # image file type
-          :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+        :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
       }
                    end
 
@@ -330,13 +330,13 @@ class FileModel
     compare_file = if is_enable_direct_url == true
                      {
                        :fileType => 'docx', # file type
-                         :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
-                         :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
+                       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
+                       :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
                      }
                    else
       {
         :fileType => 'docx', # file type
-          :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
+        :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
       }
                    end
 
@@ -355,13 +355,13 @@ class FileModel
     dataSpreadsheet = if is_enable_direct_url == true
                         {
                           :fileType => 'csv', # file type
-                            :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
-                            :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
+                          :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
+                          :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
                         }
                       else
       {
         :fileType => 'csv', # file type
-          :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
+        :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
       }
                       end
 

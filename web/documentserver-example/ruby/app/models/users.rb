@@ -91,16 +91,16 @@ class Users
       User.new('uid-2', 'Mark Pottato', 'pottato@example.com',
                'group-2', ['group-2', ''], {
                  :view => '',
-                  :edit => ['group-2', ''],
-                  :remove => ['group-2']
+                 :edit => ['group-2', ''],
+                 :remove => ['group-2']
                },
                ['group-2', ''],
                true, [], @@descr_user_2, false, true),
       User.new('uid-3', 'Hamish Mitchell', nil,
                'group-3', ['group-2'], {
                  :view => %w[group-3 group-2],
-                  :edit => ['group-2'],
-                  :remove => []
+                 :edit => ['group-2'],
+                 :remove => []
                },
                ['group-2'],
                false, %w[copy download print], @@descr_user_3, false, false),
