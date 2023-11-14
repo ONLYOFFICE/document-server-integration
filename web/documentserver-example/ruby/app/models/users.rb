@@ -127,7 +127,7 @@ class Users
       usersData = []
       for user in @@users do
         if (!user.id.eql?(id) && user.name != nil && user.email != nil)
-          usersData.push({:name => user.name, :email => user.email})
+          usersData.push({ :name => user.name, :email => user.email })
         end
       end
       return usersData
@@ -137,7 +137,7 @@ class Users
       users_data = []
       for user in @@users do
         if (!user.id.eql?(id) && user.name != nil)
-          users_data.push({id: user.id, name: user.name, email: user.email})
+          users_data.push({ id: user.id, name: user.name, email: user.email })
         end
       end
       return users_data

@@ -426,7 +426,7 @@ class HomeController < ApplicationController
       :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
       :referenceData => {
         :instanceId => DocumentHelper.get_server_url(false),
-        :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
+        :fileKey => { :fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json
       },
       :path => fileName,
       :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
