@@ -90,6 +90,7 @@ class DocumentHelper
       directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
       unless File.directory?(directory)
         return '' unless create
+
           FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
         
         # the history directory doesn't exist and we are not supposed to create it
@@ -315,6 +316,7 @@ class DocumentHelper
     # enable ignore certificate
     def verify_ssl(file_uri, http)
       return unless file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
+
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
       
