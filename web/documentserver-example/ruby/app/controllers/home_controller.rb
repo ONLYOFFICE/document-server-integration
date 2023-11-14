@@ -197,13 +197,13 @@ class HomeController < ApplicationController
         end
       end
 
-    if status == 2 || status == 3 # MustSave, Corrupted
+    if [2, 3].include?(status) # MustSave, Corrupted
       saved = TrackHelper.process_save(file_data, file_name, user_address) # save file
       render plain: "{\"error\":#{saved.to_s}}"
       return
     end
 
-    if status == 6 || status == 7 # MustForceave, CorruptedForcesave
+    if [6, 7].include?(status) # MustForceave, CorruptedForcesave
       saved = TrackHelper.process_force_save(file_data, file_name, user_address) # force save file
       render plain: "{\"error\":#{saved.to_s}}"
       return
