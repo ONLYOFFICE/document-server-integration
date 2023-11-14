@@ -150,9 +150,9 @@ class FileModel
         :callbackUrl => callback_url, # absolute URL to the document storage service
         :coEditing => if editorsmode.eql?('view') && @user.id.eql?('uid-0')
                         {
-                                :mode => 'strict',
+                          :mode => 'strict',
                                 :change => false
-                              }
+                        }
                       else
   nil
                       end,
@@ -260,17 +260,17 @@ class FileModel
 # write key and url information about previous file version with optional direct url
           dataObj['previous'] = if is_enable_direct_url == true
                                   { # write key and url information about previous file version with optional direct url
-                                            :fileType => prev['fileType'],
+                                    :fileType => prev['fileType'],
                                             :key => prev['key'],
                                             :url => prev['url'],
                                             :directUrl => prev['directUrl']
-                                          }
+                                  }
                                 else
             {
-                      :fileType => prev['fileType'],
+              :fileType => prev['fileType'],
                       :key => prev['key'],
                       :url => prev['url']
-                    }
+            }
                                 end
 
           # write the path to the diff.zip archive with differences in this file version
@@ -304,15 +304,15 @@ class FileModel
     # direct url to the image
     insert_image = if is_enable_direct_url == true
                      {
-                         :fileType => 'png', # image file type
+                       :fileType => 'png', # image file type
                          :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
                          :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
-                       }
+                     }
                    else
       {
-          :fileType => 'png', # image file type
+        :fileType => 'png', # image file type
           :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
-        }
+      }
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -329,15 +329,15 @@ class FileModel
     # direct url to the compared file
     compare_file = if is_enable_direct_url == true
                      {
-                         :fileType => 'docx', # file type
+                       :fileType => 'docx', # file type
                          :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
                          :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
-                       }
+                     }
                    else
       {
-          :fileType => 'docx', # file type
+        :fileType => 'docx', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
-        }
+      }
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -354,15 +354,15 @@ class FileModel
     # direct url to the mail merge recipients file
     dataSpreadsheet = if is_enable_direct_url == true
                         {
-                            :fileType => 'csv', # file type
+                          :fileType => 'csv', # file type
                             :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
                             :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
-                          }
+                        }
                       else
       {
-          :fileType => 'csv', # file type
+        :fileType => 'csv', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
-        }
+      }
                       end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
