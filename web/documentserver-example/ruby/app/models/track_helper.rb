@@ -261,7 +261,6 @@ class TrackHelper
 
       data = nil
       begin
-
         uri = URI.parse(@@document_command_url) # parse the document command url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 

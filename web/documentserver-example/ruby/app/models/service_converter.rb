@@ -52,7 +52,6 @@ class ServiceConverter
 
       data = nil
       begin
-
         uri = URI.parse(@@document_converter_url) # create the request url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
