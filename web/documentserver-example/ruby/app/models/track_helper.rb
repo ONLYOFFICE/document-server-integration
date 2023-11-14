@@ -40,22 +40,22 @@ class TrackHelper
                 return ""
             end
 
-            file_data = JSON.parse(body)  # parse file data
+            file_data = JSON.parse(body) # parse file data
 
             # check if a secret key to generate token exists or not
             if JwtHelper.is_enabled && JwtHelper.use_for_request
                 inHeader = false
                 token = nil
-                jwtHeader = TrackHelper.config_manager.jwt_header;  # get the authorization header from the config
-                if file_data["token"]  # if the token is in the body
-                    token = JwtHelper.decode(file_data["token"])  # decode a token into a payload object using a secret key
-                elsif request.headers[jwtHeader]  # if the token is in the header
+                jwtHeader = TrackHelper.config_manager.jwt_header; # get the authorization header from the config
+                if file_data["token"] # if the token is in the body
+                    token = JwtHelper.decode(file_data["token"]) # decode a token into a payload object using a secret key
+                elsif request.headers[jwtHeader] # if the token is in the header
                     hdr = request.headers[jwtHeader]
-                    hdr.slice!(0, "Bearer ".length)  # get token from it (after Bearer prefix)
-                    token = JwtHelper.decode(hdr)  # decode a token into a payload object using a secret key
+                    hdr.slice!(0, "Bearer ".length) # get token from it (after Bearer prefix)
+                    token = JwtHelper.decode(hdr) # decode a token into a payload object using a secret key
                     inHeader = true
                 else
-                    raise "Expected JWT"  # token missing error message
+                    raise "Expected JWT" # token missing error message
                 end
 
                 if !token || token.eql?("")
@@ -108,9 +108,9 @@ class TrackHelper
             end
 
             new_file_name = file_name
-            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+            download_ext = "."+file_data['filetype'] # get the extension of the downloaded file
 
-            cur_ext = File.extname(file_name).downcase  # get current file extension
+            cur_ext = File.extname(file_name).downcase # get current file extension
 
             # convert downloaded file to the file with the current extension if these extensions aren't equal
             unless cur_ext.eql?(download_ext)
@@ -135,16 +135,16 @@ class TrackHelper
             end
 
             begin
-                storage_path = DocumentHelper.storage_path(new_file_name, user_address)  # get the storage directory of the new file
+                storage_path = DocumentHelper.storage_path(new_file_name, user_address) # get the storage directory of the new file
 
-                hist_dir = DocumentHelper.history_dir(storage_path)  # get the history directory of the new file
-                ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir))  # get the path to the specified file version
+                hist_dir = DocumentHelper.history_dir(storage_path) # get the history directory of the new file
+                ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir)) # get the path to the specified file version
 
-                FileUtils.mkdir_p(ver_dir)  # create the version directory if doesn't exist
+                FileUtils.mkdir_p(ver_dir) # create the version directory if doesn't exist
 
-                FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))  # move the file from the storage directory to the previous file version directory
+                FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}")) # move the file from the storage directory to the previous file version directory
 
-                save_file(data, storage_path)  # save the downloaded file to the storage directory
+                save_file(data, storage_path) # save the downloaded file to the storage directory
 
                 change_data = download_file(file_data["changesurl"]) # download file with document versions differences
                 save_file(change_data, File.join(ver_dir, "diff.zip")) # save file with document versions differences
@@ -154,8 +154,8 @@ class TrackHelper
                     hist_data = file_data["history"].to_json # write the original history information to the history data
                 end
                 if hist_data
-                    File.open(File.join(ver_dir, "changes.json"), 'wb') do |file|  # open the file with document changes
-                        file.write(hist_data)  # and write history data to this file
+                    File.open(File.join(ver_dir, "changes.json"), 'wb') do |file| # open the file with document changes
+                        file.write(hist_data) # and write history data to this file
                     end
                 end
 
@@ -164,7 +164,7 @@ class TrackHelper
                     file.write(file_data["key"])
                 end
 
-                forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false)  # get the path to the forcesaved file
+                forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false) # get the path to the forcesaved file
                 unless forcesave_path.eql?("") # if this path is empty
                     File.delete(forcesave_path) # remove it
                 end
@@ -185,9 +185,9 @@ class TrackHelper
                 return saved
             end
 
-            download_ext = "."+file_data['filetype']  # get the extension of the downloaded file
+            download_ext = "."+file_data['filetype'] # get the extension of the downloaded file
 
-            cur_ext = File.extname(file_name).downcase  # get current file extension
+            cur_ext = File.extname(file_name).downcase # get current file extension
 
             new_file_name = false
 
@@ -214,30 +214,30 @@ class TrackHelper
             end
 
             begin
-                is_submit_form = file_data["forcesavetype"].to_i == 3  # check if the forcesave type is equal to 3 (the form was submitted)
+                is_submit_form = file_data["forcesavetype"].to_i == 3 # check if the forcesave type is equal to 3 (the form was submitted)
 
                 if is_submit_form
                     if new_file_name
-                        file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + "-form" + download_ext, user_address)  # get the correct file name if it already exists
+                        file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + "-form" + download_ext, user_address) # get the correct file name if it already exists
                     else
                         file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + "-form" + cur_ext, user_address)
                     end
-                    forcesave_path = DocumentHelper.storage_path(file_name, user_address)  # get the path to the new file
+                    forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
                 else
                     if new_file_name
                         file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
                     end
                     forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
                     if forcesave_path.eql?("")
-                        forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true)  # if the path to the new file doesn't exist, create it
+                        forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true) # if the path to the new file doesn't exist, create it
                     end
                 end
 
-                save_file(data, forcesave_path)  # save the downloaded file to the storage directory
+                save_file(data, forcesave_path) # save the downloaded file to the storage directory
 
                 if is_submit_form
                     uid = file_data['actions'][0]['userid']
-                    DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address)  # create file meta information with the Filling form tag instead of user name 
+                    DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address) # create file meta information with the Filling form tag instead of user name 
                 end
 
                 saved = 0
@@ -263,35 +263,35 @@ class TrackHelper
             data = nil
             begin
 
-                uri = URI.parse(@@document_command_url)  # parse the document command url
-                http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+                uri = URI.parse(@@document_command_url) # parse the document command url
+                http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
                 DocumentHelper.verify_ssl(@@document_command_url, http)
 
-                req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
-                req.add_field("Content-Type", "application/json")  # set headers
+                req = Net::HTTP::Post.new(uri.request_uri) # create the post request
+                req.add_field("Content-Type", "application/json") # set headers
 
-                if JwtHelper.is_enabled && JwtHelper.use_for_request  # if the signature is enabled
-                    payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
-                    jwtHeader = TrackHelper.config_manager.jwt_header;  # get signature authorization header
-                    req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
+                if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
+                    payload["token"] = JwtHelper.encode(payload) # get token and save it to the payload
+                    jwtHeader = TrackHelper.config_manager.jwt_header; # get signature authorization header
+                    req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}") # set it to the request with the Bearer prefix
                 end
 
-                req.body = payload.to_json   # convert the payload object into the json format
-                res = http.request(req)  # get the response
-                data = res.body  # and take its body
+                req.body = payload.to_json # convert the payload object into the json format
+                res = http.request(req) # get the response
+                data = res.body # and take its body
             rescue => ex
                 raise ex.message
             end
 
-            json_data = JSON.parse(data)  # convert the response body into the json format
+            json_data = JSON.parse(data) # convert the response body into the json format
             return json_data
         end
 
         # save file from the url
         def download_file(uristr)
-            uri = URI.parse(uristr)  # parse the url string
-            http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+            uri = URI.parse(uristr) # parse the url string
+            http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
             http.open_timeout = 5
 
             DocumentHelper.verify_ssl(uristr, http)
@@ -304,7 +304,7 @@ class TrackHelper
                 raise "Document editing service returned status: #{status_code}"
             end
 
-            data = res.body  # and take its body
+            data = res.body # and take its body
 
             if data == nil
                 raise 'stream is null'
@@ -314,7 +314,7 @@ class TrackHelper
         end
 
         def save_file(data, path)
-            File.open(path, 'wb') do |file|  # open the file from the path specified
+            File.open(path, 'wb') do |file| # open the file from the path specified
                 file.write(data)  # and write the response data to it
             end
         end

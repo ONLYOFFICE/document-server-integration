@@ -30,7 +30,7 @@ class ServiceConverter
 
     # get the url of the converted file
     def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
-      from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext  # get the current document extension
+      from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext # get the current document extension
 
       # get the current document name or uuid
       title = File.basename(URI.parse(document_uri).path)
@@ -40,7 +40,7 @@ class ServiceConverter
       document_revision_id = document_revision_id.empty? ? document_uri : document_revision_id
       document_revision_id = generate_revision_id(document_revision_id)
 
-      payload = {  # write all the conversion parameters to the payload
+      payload = { # write all the conversion parameters to the payload
         :async => is_async ? true : false,
         :url => document_uri,
         :outputtype => to_ext.delete('.'),
@@ -54,52 +54,52 @@ class ServiceConverter
       data = nil
       begin
 
-        uri = URI.parse(@@document_converter_url)  # create the request url
-        http = Net::HTTP.new(uri.host, uri.port)  # create a connection to the http server
+        uri = URI.parse(@@document_converter_url) # create the request url
+        http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
         DocumentHelper.verify_ssl(@@document_converter_url, http)
 
         http.read_timeout = @@convert_timeout
         http.open_timeout = 5
-        req = Net::HTTP::Post.new(uri.request_uri)  # create the post request
-        req.add_field("Accept", "application/json")  # set headers
+        req = Net::HTTP::Post.new(uri.request_uri) # create the post request
+        req.add_field("Accept", "application/json") # set headers
         req.add_field("Content-Type", "application/json")
 
-        if JwtHelper.is_enabled && JwtHelper.use_for_request  # if the signature is enabled
-          payload["token"] = JwtHelper.encode(payload)  # get token and save it to the payload
-          jwtHeader = ServiceConverter.config_manager.jwt_header;  # get signature authorization header
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}")  # set it to the request with the Bearer prefix
+        if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
+          payload["token"] = JwtHelper.encode(payload) # get token and save it to the payload
+          jwtHeader = ServiceConverter.config_manager.jwt_header; # get signature authorization header
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}") # set it to the request with the Bearer prefix
         end
 
         req.body = payload.to_json
-        res = http.request(req)  # get the response
+        res = http.request(req) # get the response
 
         status_code = res.code.to_i
-        if status_code != 200  # checking status code
+        if status_code != 200 # checking status code
           raise "Conversion service returned status: #{status_code}"
         end
 
-        data = res.body  # and take its body
+        data = res.body # and take its body
       rescue Timeout::Error
         # try again
       rescue => ex
         raise ex.message
       end
 
-      json_data = JSON.parse(data)  # parse response body
-      return get_response_data(json_data)  # get response url
+      json_data = JSON.parse(data) # parse response body
+      return get_response_data(json_data) # get response url
     end
 
     # generate the document key value
     def generate_revision_id(expected_key)
       require 'zlib'
 
-      if expected_key.length > 20  # check if the expected key length is greater than 20
-        expected_key = (Zlib.crc32 expected_key).to_s  # calculate 32-bit crc value from the expected key and turn it into the string
+      if expected_key.length > 20 # check if the expected key length is greater than 20
+        expected_key = (Zlib.crc32 expected_key).to_s # calculate 32-bit crc value from the expected key and turn it into the string
       end
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
-      key[(key.length - [key.length, 20].min)..key.length]  # the resulting key is of the length 20 or less
+      key[(key.length - [key.length, 20].min)..key.length] # the resulting key is of the length 20 or less
     end
 
     # create an error message for the error code
@@ -127,7 +127,7 @@ class ServiceConverter
         when 0
           # public const int c_nErrorNo = 0
         else
-          error_message = 'ErrorCode = ' + error_code.to_s  # default value for the error message
+          error_message = 'ErrorCode = ' + error_code.to_s # default value for the error message
       end
 
       raise error_message
@@ -138,30 +138,30 @@ class ServiceConverter
       file_result = json_data
 
       error_element = file_result['error']
-      if error_element != nil  # if an error occurs
-        process_convert_service_responce_error(error_element.to_i)  # get an error message
+      if error_element != nil # if an error occurs
+        process_convert_service_responce_error(error_element.to_i) # get an error message
       end
 
-      is_end_convert = file_result['endConvert']  # check if the conversion is completed
+      is_end_convert = file_result['endConvert'] # check if the conversion is completed
 
-      result_percent = 0  # the conversion percentage
+      result_percent = 0 # the conversion percentage
       response_uri = ''
       response_file_type = ''
 
-      if is_end_convert  # if the conversion is completed
+      if is_end_convert # if the conversion is completed
 
         file_url_element = file_result['fileUrl']
         file_type_element = file_result['fileType']
 
-        if file_url_element == nil  # and the file url doesn't exist
+        if file_url_element == nil # and the file url doesn't exist
           raise 'Invalid answer format'  # get ann error message
         end
 
         response_uri = file_url_element  # otherwise, get the file url
-        response_file_type = file_type_element  # get the file type
+        response_file_type = file_type_element # get the file type
         result_percent = 100
 
-      else  # if the conversion isn't completed
+      else # if the conversion isn't completed
 
         percent_element = file_result['percent']  # get the percentage value
 

@@ -93,16 +93,16 @@ class DocumentHelper
         return ""
       end
 
-      directory = File.join(directory,"#{File.basename(file_name)}-hist")  # get the path to the history of the given file
+      directory = File.join(directory,"#{File.basename(file_name)}-hist") # get the path to the history of the given file
       unless File.directory?(directory)
         if create
-          FileUtils.mkdir_p(directory)  # create history directory if it doesn't exist
+          FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
         else
-          return ""  # the history directory doesn't exist and we are not supposed to create it
+          return "" # the history directory doesn't exist and we are not supposed to create it
         end
       end
 
-      directory = File.join(directory, File.basename(file_name))  # get the path to the given file
+      directory = File.join(directory, File.basename(file_name)) # get the path to the given file
       unless File.file?(directory)
         if !create
           return ""
@@ -136,12 +136,12 @@ class DocumentHelper
       end
 
       ver = 1
-      Dir.foreach(hist_dir) {|e|  # run through all the file versions
+      Dir.foreach(hist_dir) {|e| # run through all the file versions
         next if e.eql?(".")
         next if e.eql?("..")
 
         if File.directory?(File.join(hist_dir, e))
-          ver += 1  # and count them
+          ver += 1 # and count them
         end
       }
 
@@ -151,14 +151,14 @@ class DocumentHelper
     # get the correct file name if such a name already exists
     def get_correct_name(file_name, user_address)
       maxName = 50
-      ext = File.extname(file_name)  # get file extension
+      ext = File.extname(file_name) # get file extension
       # get file name without extension
       base_name = File.basename(file_name, ext)[0...maxName] + (file_name.length > maxName ? '[...]' : '')
-      name = base_name + ext.downcase  # get full file name
+      name = base_name + ext.downcase # get full file name
       index = 1
 
-      while File.exist?(storage_path(name, user_address))  # if the file with such a name already exists in this directory
-          name = base_name + ' (' + index.to_s + ')' + ext.downcase  # add an index after its base name
+      while File.exist?(storage_path(name, user_address)) # if the file with such a name already exists in this directory
+          name = base_name + ' (' + index.to_s + ')' + ext.downcase # add an index after its base name
           index = index + 1
       end
 
@@ -172,12 +172,12 @@ class DocumentHelper
       arr = [];
 
       if Dir.exist?(directory)
-        Dir.foreach(directory) {|e|  # run through all the elements from the folder
+        Dir.foreach(directory) {|e| # run through all the elements from the folder
           next if e.eql?(".")
           next if e.eql?("..")
-          next if File.directory?(File.join(directory, e))  # if the element is a directory, skip it
+          next if File.directory?(File.join(directory, e)) # if the element is a directory, skip it
 
-          arr.push(e)  # push the file to the array
+          arr.push(e) # push the file to the array
         }
       end
 
@@ -186,7 +186,7 @@ class DocumentHelper
 
     # create file meta information
     def create_meta(file_name, uid, uname, user_address)
-      hist_dir = history_dir(storage_path(file_name, user_address))  # get the path to the file history
+      hist_dir = history_dir(storage_path(file_name, user_address)) # get the path to the file history
 
       # write user name, user uid and the creation time to the json object
       json = {
@@ -204,9 +204,9 @@ class DocumentHelper
     # create demo document
     def create_demo(file_ext, sample, user)
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
-      file_name = get_correct_name(demo_name, nil)  # get the correct file name if such a name already exists
+      file_name = get_correct_name(demo_name, nil) # get the correct file name if such a name already exists
 
-      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)  # save sample document of a necessary extension to the storage directory
+      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name) # save sample document of a necessary extension to the storage directory
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
@@ -244,7 +244,7 @@ class DocumentHelper
 
     # get callback url
     def get_callback(file_name)
-      get_server_url(true) + '/track?fileName=' + ERB::Util.url_encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
+      get_server_url(true) + '/track?fileName=' + ERB::Util.url_encode(file_name) + '&userAddress=' + cur_user_host_address(nil)
     end
 
     # get url to the created file
@@ -255,7 +255,7 @@ class DocumentHelper
     # get url to download a file
     def get_download_url(file_name, is_serverUrl=true)
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
-      get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name)  + user_host
+      get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name) + user_host
     end
 
     # get internal file extension by its type
@@ -265,10 +265,10 @@ class DocumentHelper
           ext = '.docx'
         when 'cell'  # .xlsx for cell type
           ext = '.xlsx'
-        when 'slide'  # .pptx for slide type
+        when 'slide' # .pptx for slide type
           ext = '.pptx'
         else
-          ext = '.docx'  # the default value is .docx
+          ext = '.docx' # the default value is .docx
       end
 
       ext
@@ -282,10 +282,10 @@ class DocumentHelper
           full_path = path + 'file_docx.svg'
         when 'cell'  # .xlsx for cell type
           full_path = path + 'file_xlsx.svg'
-        when 'slide'  # .pptx for slide type
+        when 'slide' # .pptx for slide type
           full_path = path + 'file_pptx.svg'
         else
-          full_path = path + 'file_docx.svg'  # the default value is .docx
+          full_path = path + 'file_docx.svg' # the default value is .docx
       end
 
       full_path
@@ -295,7 +295,7 @@ class DocumentHelper
     def get_files_info(file_id)
       result = [];
 
-      for fileName in get_stored_files(nil)  # run through all the stored files from the folder
+      for fileName in get_stored_files(nil) # run through all the stored files from the folder
         directory = storage_path(fileName, nil)
         uri = cur_user_host_address(nil) + '/' + fileName
 
@@ -309,11 +309,11 @@ class DocumentHelper
           "updated" => File.mtime(directory) 
         }
 
-        if file_id == nil  # if file id is undefined
-          result.push(info)  # push info object to the response array
-        else  # if file id is defined
-          if file_id.eql?(info["id"])  # and it is equal to the document key value
-            result.push(info)  # response object will be equal to the info object
+        if file_id == nil # if file id is undefined
+          result.push(info) # push info object to the response array
+        else # if file id is defined
+          if file_id.eql?(info["id"]) # and it is equal to the document key value
+            result.push(info) # response object will be equal to the info object
             return result
           end
         end
