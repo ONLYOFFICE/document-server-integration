@@ -369,7 +369,7 @@ class HomeController < ApplicationController
     render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
   end
 
-    #ReferenceData
+    # ReferenceData
   def reference
     body = JSON.parse(request.body.read)
     fileName = ""
