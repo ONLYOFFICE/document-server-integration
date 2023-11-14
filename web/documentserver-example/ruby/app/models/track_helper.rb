@@ -112,7 +112,7 @@ class TrackHelper
           else
             download_uri = new_file_uri
           end
-      rescue StandardError => msg
+        rescue StandardError => msg
         new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
         end
       end
@@ -156,7 +156,7 @@ class TrackHelper
         end
 
         saved = 0
-    rescue StandardError => msg
+      rescue StandardError => msg
       saved = 1
       end
 
@@ -187,7 +187,7 @@ class TrackHelper
           else
             download_uri = new_file_uri
           end
-      rescue StandardError => msg
+        rescue StandardError => msg
         new_file_name = true
         end
       end
@@ -223,7 +223,7 @@ class TrackHelper
         end
 
         saved = 0
-    rescue StandardError => msg
+      rescue StandardError => msg
       saved = 1
       end
 
@@ -259,7 +259,7 @@ class TrackHelper
         req.body = payload.to_json # convert the payload object into the json format
         res = http.request(req) # get the response
         data = res.body # and take its body
-    rescue => ex
+      rescue => ex
       raise ex.message
       end
 
