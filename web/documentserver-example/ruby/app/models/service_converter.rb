@@ -30,7 +30,6 @@ class ServiceConverter
 
     # get the url of the converted file
     def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
-
       from_ext = from_ext == nil ? File.extname(document_uri).downcase : from_ext  # get the current document extension
 
       # get the current document name or uuid
@@ -93,7 +92,6 @@ class ServiceConverter
 
     # generate the document key value
     def generate_revision_id(expected_key)
-
       require 'zlib'
 
       if expected_key.length > 20  # check if the expected key length is greater than 20
@@ -102,12 +100,10 @@ class ServiceConverter
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
       key[(key.length - [key.length, 20].min)..key.length]  # the resulting key is of the length 20 or less
-
     end
 
     # create an error message for the error code
     def process_convert_service_responce_error(error_code)
-
       error_message = 'unknown error'
 
       # add an error message to the error message template depending on the error code
@@ -135,12 +131,10 @@ class ServiceConverter
       end
 
       raise error_message
-
     end
 
     # get the response url
     def get_response_data(json_data)
-
       file_result = json_data
 
       error_element = file_result['error']

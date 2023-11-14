@@ -30,26 +30,21 @@ class HomeController < ApplicationController
   end
 
   def editor
-
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :user => user, :action_data => params[:actionLink], :direct_url => params[:directUrl])
-
   end
 
   # creating a sample document
   def sample
-
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
     redirect_to :controller => 'home', :action => 'editor', :fileName => file_name, :userId => user.id
-
   end
 
   # uploading a file
   def upload
-
     DocumentHelper.init(request.remote_ip, request.base_url)
 
     begin
@@ -87,12 +82,10 @@ class HomeController < ApplicationController
     rescue => ex
       render plain: '{ "error": "' + ex.message + '"}'  # write an error message to the response
     end
-
   end
 
   # converting a file
   def convert
-
     begin
       file_data = request.body.read
       if file_data == nil || file_data.empty?
@@ -154,7 +147,6 @@ class HomeController < ApplicationController
     rescue => ex
       render plain: '{ "error": "' + ex.message + '"}'
     end
-
   end
 
   # downloading a history file from public

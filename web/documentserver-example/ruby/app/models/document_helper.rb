@@ -244,29 +244,22 @@ class DocumentHelper
 
     # get callback url
     def get_callback(file_name)
-
       get_server_url(true) + '/track?fileName=' + ERB::Util.url_encode(file_name)  + '&userAddress=' + cur_user_host_address(nil)
-
     end
 
     # get url to the created file
     def get_create_url(document_type)
-
       get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
-
     end
 
     # get url to download a file
     def get_download_url(file_name, is_serverUrl=true)
-
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
       get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name)  + user_host
-
     end
 
     # get internal file extension by its type
     def get_internal_extension(file_type)
-
       case file_type
         when 'word'  # .docx for word type
           ext = '.docx'

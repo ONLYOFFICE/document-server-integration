@@ -289,7 +289,6 @@ class FileModel
     end
 
     return nil
-
   end
 
   # get image information
