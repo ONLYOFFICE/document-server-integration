@@ -101,7 +101,7 @@ class HomeController < ApplicationController
       extension = File.extname(file_name).downcase
       internal_extension = 'ooxml'
 
-      if DocumentHelper.convert_exts.include? (extension) # check if the file with such an extension can be converted
+      if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
         key = ServiceConverter.generate_revision_id(file_uri) # generate document key
         percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang) # get the url and file type of the converted file and the conversion percentage
 
