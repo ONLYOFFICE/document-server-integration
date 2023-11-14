@@ -42,7 +42,7 @@ class JwtHelper
       begin
         decoded = JWT.decode token, @jwt_secret, true, { algorithm: 'HS256' }
       rescue
-      return ''
+        return ''
       end
       # decoded = Array [ {"data"=>"test"}, # payload
       #                   {"alg"=>"HS256"} # header   ]

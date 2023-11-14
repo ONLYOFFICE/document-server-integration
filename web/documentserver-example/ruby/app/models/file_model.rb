@@ -154,7 +154,7 @@ class FileModel
                           :change => false
                         }
                       else
-  nil
+                        nil
                       end,
         :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
         :templates => @user.templates ? templates : nil,
@@ -266,11 +266,11 @@ class FileModel
                                     :directUrl => prev['directUrl']
                                   }
                                 else
-            {
-              :fileType => prev['fileType'],
-              :key => prev['key'],
-              :url => prev['url']
-            }
+                                  {
+                                    :fileType => prev['fileType'],
+                                    :key => prev['key'],
+                                    :url => prev['url']
+                                  }
                                 end
 
           # write the path to the diff.zip archive with differences in this file version
@@ -309,10 +309,10 @@ class FileModel
                        :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
                      }
                    else
-      {
-        :fileType => 'png', # image file type
-        :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
-      }
+                     {
+                       :fileType => 'png', # image file type
+                       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+                     }
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -334,10 +334,10 @@ class FileModel
                        :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
                      }
                    else
-      {
-        :fileType => 'docx', # file type
-        :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
-      }
+                     {
+                       :fileType => 'docx', # file type
+                       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
+                     }
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -359,10 +359,10 @@ class FileModel
                           :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
                         }
                       else
-      {
-        :fileType => 'csv', # file type
-        :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
-      }
+                        {
+                          :fileType => 'csv', # file type
+                          :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
+                        }
                       end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
