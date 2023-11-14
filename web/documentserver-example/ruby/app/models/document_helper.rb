@@ -92,9 +92,9 @@ class DocumentHelper
         return '' unless create
 
         FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
-        
+
         # the history directory doesn't exist and we are not supposed to create it
-        
+
       end
 
       directory = File.join(directory, File.basename(file_name)) # get the path to the given file
@@ -225,10 +225,10 @@ class DocumentHelper
     # get server url
     def get_server_url(for_document_server)
       return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
-        
-      
+
+
       return @@base_url
-      
+
     end
 
     # get callback url
@@ -307,10 +307,10 @@ class DocumentHelper
       end
 
       return '"File not found"' if !file_id.nil?
-        
-      
+
+
       return result
-      
+
     end
 
     # enable ignore certificate
@@ -319,7 +319,7 @@ class DocumentHelper
 
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-      
+
     end
   end
 end

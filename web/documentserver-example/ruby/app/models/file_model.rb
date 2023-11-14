@@ -400,7 +400,7 @@ else
       users_info.push(u)
     end
     return users_info
-    
+
   end
 
   # get users data for protect
