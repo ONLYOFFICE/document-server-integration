@@ -121,7 +121,7 @@ class ServiceConverter
       when -1
         error_message = 'Error occurred in the ConvertService.ashx: Error convertation unknown'
       when 0
-          # public const int c_nErrorNo = 0
+      # public const int c_nErrorNo = 0
       else
         error_message = "ErrorCode = #{error_code.to_s}" # default value for the error message
       end

@@ -257,7 +257,7 @@ class FileModel
           obj['user'] = change ? change['user'] : nil
 
           prev = histData[(i - 2).to_s] # get the history data from the previous file version
-# write key and url information about previous file version with optional direct url
+          # write key and url information about previous file version with optional direct url
           dataObj['previous'] = if is_enable_direct_url == true
                                   { # write key and url information about previous file version with optional direct url
                                     :fileType => prev['fileType'],
