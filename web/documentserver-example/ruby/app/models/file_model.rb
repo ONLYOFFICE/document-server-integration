@@ -200,7 +200,7 @@ end,
     hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil)) # get the path to the file history
     cur_ver = DocumentHelper.get_file_version(hist_dir) # get the file version
 
-    if (cur_ver > 0) # if file was modified
+    if cur_ver > 0 # if file was modified
       hist = []
       histData = {}
 
@@ -211,7 +211,7 @@ end,
 
         # get document key
         cur_key = doc_key
-        if (i != cur_ver)
+        if i != cur_ver
           File.open(File.join(ver_dir, 'key.txt'), 'r') do |file|
             cur_key = file.read
           end
@@ -241,7 +241,7 @@ end,
         end
         dataObj['version'] = i
 
-        if (i > 1) # check if the version number is greater than 1
+        if i > 1 # check if the version number is greater than 1
           changes = nil
           change = nil
           File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file| # get the path to the changes.json file
