@@ -107,23 +107,23 @@ class ServiceConverter
 
       # add an error message to the error message template depending on the error code
       case error_code
-        when -8
+      when -8
           error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
-        when -7
+      when -7
           error_message = 'Error occurred in the ConvertService.ashx: Error document request'
-        when -6
+      when -6
           error_message = 'Error occurred in the ConvertService.ashx: Error database'
-        when -5
+      when -5
           error_message = 'Error occurred in the ConvertService.ashx: Incorrect password'
-        when -4
+      when -4
           error_message = 'Error occurred in the ConvertService.ashx: Error download error'
-        when -3
+      when -3
           error_message = 'Error occurred in the ConvertService.ashx: Error convertation error'
-        when -2
+      when -2
           error_message = 'Error occurred in the ConvertService.ashx: Error convertation timeout'
-        when -1
+      when -1
           error_message = 'Error occurred in the ConvertService.ashx: Error convertation unknown'
-        when 0
+      when 0
           # public const int c_nErrorNo = 0
         else
           error_message = 'ErrorCode = ' + error_code.to_s # default value for the error message
