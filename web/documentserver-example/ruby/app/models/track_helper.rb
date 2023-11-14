@@ -203,11 +203,11 @@ class TrackHelper
         is_submit_form = file_data['forcesavetype'].to_i == 3 # check if the forcesave type is equal to 3 (the form was submitted)
 
         if is_submit_form
-          if new_file_name
-            file_name = DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
+          file_name = if new_file_name
+            DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
           else
-            file_name = DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}", user_address)
-          end
+            DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}", user_address)
+                      end
           forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
         else
           file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) if new_file_name

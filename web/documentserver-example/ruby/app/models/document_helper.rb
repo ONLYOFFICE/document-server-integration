@@ -248,16 +248,16 @@ class DocumentHelper
 
     # get internal file extension by its type
     def get_internal_extension(file_type)
-      case file_type
+      ext = case file_type
       when 'word'  # .docx for word type
-          ext = '.docx'
+          '.docx'
       when 'cell'  # .xlsx for cell type
-          ext = '.xlsx'
+          '.xlsx'
       when 'slide' # .pptx for slide type
-          ext = '.pptx'
+          '.pptx'
         else
-          ext = '.docx' # the default value is .docx
-      end
+          '.docx' # the default value is .docx
+            end
 
       ext
     end
@@ -265,16 +265,16 @@ class DocumentHelper
     # get image url for templates
     def get_template_image_url(file_type)
       path = "#{get_server_url(true)}/assets/"
-      case file_type
+      full_path = case file_type
       when 'word'  # for word type
-          full_path = "#{path}file_docx.svg"
+          "#{path}file_docx.svg"
       when 'cell'  # .xlsx for cell type
-          full_path = "#{path}file_xlsx.svg"
+          "#{path}file_xlsx.svg"
       when 'slide' # .pptx for slide type
-          full_path = "#{path}file_pptx.svg"
+          "#{path}file_pptx.svg"
         else
-          full_path = "#{path}file_docx.svg" # the default value is .docx
-      end
+          "#{path}file_docx.svg" # the default value is .docx
+                  end
 
       full_path
     end
