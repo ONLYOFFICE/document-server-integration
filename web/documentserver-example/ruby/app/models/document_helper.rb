@@ -22,8 +22,7 @@ class DocumentHelper
   @format_manager = FormatManager.new
 
   class << self
-    attr_reader :config_manager
-    attr_reader :format_manager
+    attr_reader :config_manager, :format_manager
   end
 
   @@runtime_cache = {}
