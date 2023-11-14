@@ -73,9 +73,7 @@ class ServiceConverter
         res = http.request(req) # get the response
 
         status_code = res.code.to_i
-        if status_code != 200 # checking status code
-          raise "Conversion service returned status: #{status_code}"
-        end
+        raise "Conversion service returned status: #{status_code}" if status_code != 200 # checking status code
 
         data = res.body # and take its body
       rescue Timeout::Error
@@ -163,9 +161,7 @@ class ServiceConverter
 
         percent_element = file_result['percent']  # get the percentage value
 
-        if percent_element != nil
-          result_percent = percent_element.to_i
-        end
+        result_percent = percent_element.to_i if percent_element != nil
 
         result_percent = result_percent >= 100 ? 99 : result_percent
 

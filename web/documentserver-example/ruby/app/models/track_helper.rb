@@ -35,9 +35,7 @@ class TrackHelper
     def read_body(request)
       body = request.body.read
 
-      if body == nil || body.empty?
-        return ''
-      end
+      return '' if body == nil || body.empty?
 
       file_data = JSON.parse(body) # parse file data
 
@@ -57,15 +55,11 @@ class TrackHelper
           raise 'Expected JWT' # token missing error message
         end
 
-        if !token || token.eql?('')
-          raise 'Invalid JWT signature'
-        end
+        raise 'Invalid JWT signature' if !token || token.eql?('')
 
         file_data = JSON.parse(token)
 
-        if inHeader
-          file_data = file_data['payload']
-        end
+        file_data = file_data['payload'] if inHeader
       end
 
       return file_data
@@ -89,9 +83,7 @@ class TrackHelper
       end
 
       home = copied['home']
-      if home
-        copied['home'] = resolve_process_save_body(home)
-      end
+      copied['home'] = resolve_process_save_body(home) if home
 
       copied
     end
@@ -129,9 +121,7 @@ class TrackHelper
       saved = 1
 
       data = download_file(download_uri) # download document file
-      if data.eql?(nil)
-        return saved
-      end
+      return saved if data.eql?(nil)
 
       begin
         storage_path = DocumentHelper.storage_path(new_file_name, user_address) # get the storage directory of the new file
@@ -208,9 +198,7 @@ class TrackHelper
       saved = 1
 
       data = download_file(download_uri) # download document file
-      if data.eql?(nil)
-        return saved
-      end
+      return saved if data.eql?(nil)
 
       begin
         is_submit_form = file_data['forcesavetype'].to_i == 3 # check if the forcesave type is equal to 3 (the form was submitted)
@@ -223,9 +211,7 @@ class TrackHelper
           end
           forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
         else
-          if new_file_name
-            file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
-          end
+          file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) if new_file_name
           forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
           if forcesave_path.eql?('')
             forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true) # if the path to the new file doesn't exist, create it
@@ -255,9 +241,7 @@ class TrackHelper
           :key => key
       }
 
-      if (meta != nil)
-        payload.merge!({ :meta => meta })
-      end
+      payload.merge!({ :meta => meta }) if (meta != nil)
 
       data = nil
       begin
@@ -298,15 +282,11 @@ class TrackHelper
       res = http.request(req)  # get the response
 
       status_code = res.code
-      if status_code != '200'  # checking status code
-        raise "Document editing service returned status: #{status_code}"
-      end
+      raise "Document editing service returned status: #{status_code}" if status_code != '200' # checking status code
 
       data = res.body # and take its body
 
-      if data == nil
-        raise 'stream is null'
-      end
+      raise 'stream is null' if data == nil
 
       data
     end

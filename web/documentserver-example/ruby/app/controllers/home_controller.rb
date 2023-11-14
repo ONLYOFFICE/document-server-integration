@@ -52,16 +52,12 @@ class HomeController < ApplicationController
       cur_size = http_posted_file.size
 
       # check if the file size exceeds the maximum file size
-      if DocumentHelper.file_size_max < cur_size || cur_size <= 0
-        raise 'File size is incorrect'
-      end
+      raise 'File size is incorrect' if DocumentHelper.file_size_max < cur_size || cur_size <= 0
 
       cur_ext = File.extname(file_name).downcase
 
       # check if the file extension is supported by the editor
-      unless DocumentHelper.file_exts.include? cur_ext
-        raise 'File type is not supported'
-      end
+      raise 'File type is not supported' unless DocumentHelper.file_exts.include? cur_ext
 
       # get the correct file name if such a name already exists
       file_name = DocumentHelper.get_correct_name(file_name, nil)
@@ -87,9 +83,7 @@ class HomeController < ApplicationController
   def convert
     begin
       file_data = request.body.read
-      if file_data == nil || file_data.empty?
-        return ''
-      end
+      return '' if file_data == nil || file_data.empty?
 
       body = JSON.parse(file_data)
 
@@ -122,9 +116,7 @@ class HomeController < ApplicationController
         res = http.request(req)
         data = res.body
 
-        if data == nil
-          raise 'stream is null'
-        end
+        raise 'stream is null' if data == nil
 
         # write a file with a new extension, but with the content from the origin file
         File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
@@ -132,9 +124,7 @@ class HomeController < ApplicationController
         end
 
         old_storage_path = DocumentHelper.storage_path(file_name, nil)
-        if File.exist?(old_storage_path)
-          File.delete(old_storage_path)
-        end
+        File.delete(old_storage_path) if File.exist?(old_storage_path)
 
         file_name = correct_name
         user = Users.get_user(params[:userId])
@@ -356,9 +346,7 @@ class HomeController < ApplicationController
 
     orig_ext = '.' + body['ext']
     cur_ext = File.extname(newfilename).downcase
-    if orig_ext != cur_ext
-      newfilename += orig_ext
-    end
+    newfilename += orig_ext if orig_ext != cur_ext
 
     meta = {
       :title => newfilename
@@ -380,9 +368,7 @@ class HomeController < ApplicationController
       if instanceId == DocumentHelper.get_server_url(false)
         fileKey = JSON.parse(referenceData['fileKey'])
         userAddress = fileKey['userAddress']
-        if userAddress == DocumentHelper.cur_user_host_address(nil)
-          fileName = fileKey['fileName']
-        end
+        fileName = fileKey['fileName'] if userAddress == DocumentHelper.cur_user_host_address(nil)
       end
     end
 
@@ -408,9 +394,7 @@ class HomeController < ApplicationController
 
     if fileName.empty? and body.key?('path')
       path = File.basename(body['path'])
-      if File.exist?(DocumentHelper.storage_path(path, nil))
-        fileName = path
-      end
+      fileName = path if File.exist?(DocumentHelper.storage_path(path, nil))
     end
 
     if fileName.empty?
@@ -431,9 +415,7 @@ class HomeController < ApplicationController
       :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
     }
 
-    if JwtHelper.is_enabled
-      data['token'] = JwtHelper.encode(data)
-    end
+    data['token'] = JwtHelper.encode(data) if JwtHelper.is_enabled
 
     render plain: data.to_json
   end

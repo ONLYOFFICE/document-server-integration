@@ -75,9 +75,7 @@ class DocumentHelper
       directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
       # create a new directory if it doesn't exist
-      unless File.directory?(directory)
-        FileUtils.mkdir_p(directory)
-      end
+      FileUtils.mkdir_p(directory) unless File.directory?(directory)
 
       # put the given file to this directory
       File.join(directory, File.basename(file_name))
@@ -88,9 +86,7 @@ class DocumentHelper
       directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
       # the directory with host address doesn't exist
-      unless File.directory?(directory)
-        return ''
-      end
+      return '' unless File.directory?(directory)
 
       directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
       unless File.directory?(directory)
@@ -103,9 +99,7 @@ class DocumentHelper
 
       directory = File.join(directory, File.basename(file_name)) # get the path to the given file
       unless File.file?(directory)
-        if !create
-          return ''
-        end
+        return '' if !create
       end
 
       return directory.to_s
@@ -116,9 +110,7 @@ class DocumentHelper
       directory = "#{storage_path}-hist"
 
       # create history directory if it doesn't exist
-      unless File.directory?(directory)
-        FileUtils.mkdir_p(directory)
-      end
+      FileUtils.mkdir_p(directory) unless File.directory?(directory)
 
       return directory
     end
@@ -130,9 +122,7 @@ class DocumentHelper
 
     # get the last file version
     def get_file_version(hist_dir)
-      if !Dir.exist?(hist_dir)
-        return 1
-      end
+      return 1 if !Dir.exist?(hist_dir)
 
       ver = 1
       Dir.foreach(hist_dir) { |e| # run through all the file versions
