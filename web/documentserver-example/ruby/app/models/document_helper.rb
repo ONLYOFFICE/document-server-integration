@@ -324,6 +324,7 @@ class DocumentHelper
         return result
       end
     end
+
     # enable ignore certificate
     def verify_ssl(file_uri, http)
       if file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
