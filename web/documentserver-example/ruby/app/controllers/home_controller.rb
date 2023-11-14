@@ -89,7 +89,7 @@ class HomeController < ApplicationController
     begin
       file_data = request.body.read
       if file_data == nil || file_data.empty?
-          return ""
+        return ""
       end
 
       body = JSON.parse(file_data)
@@ -205,7 +205,7 @@ class HomeController < ApplicationController
       if file_data['actions'][0]['type'] == 0 # finished edit
         user = file_data['actions'][0]['userid'] # get the user id
          if !file_data['users'].index(user)
-          json_data = TrackHelper.command_request("forcesave", file_data['key']) # call the forcesave command
+           json_data = TrackHelper.command_request("forcesave", file_data['key']) # call the forcesave command
          end
       end
     end
@@ -280,7 +280,7 @@ class HomeController < ApplicationController
       if JwtHelper.is_enabled && isEmbedded == nil && user_address != nil && JwtHelper.use_for_request
         jwtHeader = HomeController.config_manager.jwt_header;
         if request.headers[jwtHeader]
-            hdr = request.headers[jwtHeader]
+          hdr = request.headers[jwtHeader]
             hdr.slice!(0, "Bearer ".length)
             token = JwtHelper.decode(hdr)
         end
@@ -350,94 +350,94 @@ class HomeController < ApplicationController
   end
 
     # Rename...
-    def rename
-      body = JSON.parse(request.body.read)
-      dockey = body["dockey"]
-      newfilename = body["newfilename"]
+  def rename
+    body = JSON.parse(request.body.read)
+    dockey = body["dockey"]
+    newfilename = body["newfilename"]
 
-      orig_ext = '.' + body["ext"]
-      cur_ext = File.extname(newfilename).downcase
-      if orig_ext != cur_ext
-        newfilename += orig_ext
-      end
-
-      meta = {
-        :title => newfilename
-      }
-
-      json_data = TrackHelper.command_request("meta", dockey, meta)
-      render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    orig_ext = '.' + body["ext"]
+    cur_ext = File.extname(newfilename).downcase
+    if orig_ext != cur_ext
+      newfilename += orig_ext
     end
 
+    meta = {
+      :title => newfilename
+    }
+
+    json_data = TrackHelper.command_request("meta", dockey, meta)
+    render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+  end
+
     #ReferenceData
-    def reference
-      body = JSON.parse(request.body.read)
-      fileName = ""
-      
+  def reference
+    body = JSON.parse(request.body.read)
+    fileName = ""
+    
 
-      if body.key?("referenceData")
-        referenceData = body["referenceData"]
-        instanceId = referenceData["instanceId"]
-        if instanceId == DocumentHelper.get_server_url(false)
-          fileKey = JSON.parse(referenceData["fileKey"])
-          userAddress = fileKey["userAddress"]
-          if userAddress == DocumentHelper.cur_user_host_address(nil)
-            fileName = fileKey["fileName"]
-          end
+    if body.key?("referenceData")
+      referenceData = body["referenceData"]
+      instanceId = referenceData["instanceId"]
+      if instanceId == DocumentHelper.get_server_url(false)
+        fileKey = JSON.parse(referenceData["fileKey"])
+        userAddress = fileKey["userAddress"]
+        if userAddress == DocumentHelper.cur_user_host_address(nil)
+          fileName = fileKey["fileName"]
         end
       end
+    end
 
-      link = body["link"]
-      if fileName.empty? and body.key?("link")
-        if !link.include?(DocumentHelper.get_server_url(false))
-          data = {
-            url: link,
-            directUrl: link
-          }
-          render plain: data.to_json
-          return
-        end
-
-        url_obj = URI(link)
-        query_params = CGI.parse(url_obj.query)
-        fileName = query_params['fileName'].first
-        if !File.exist?(DocumentHelper.storage_path(fileName, nil))
-          render plain: '{ "error": "File is not exist"}'
-          return
-        end
-      end
-
-      if fileName.empty? and body.key?("path")
-        path = File.basename(body["path"])
-        if File.exist?(DocumentHelper.storage_path(path, nil))
-          fileName = path
-        end
-      end
-
-      if fileName.empty?
-        render plain: '{ "error": "File not found"}'
+    link = body["link"]
+    if fileName.empty? and body.key?("link")
+      if !link.include?(DocumentHelper.get_server_url(false))
+        data = {
+          url: link,
+          directUrl: link
+        }
+        render plain: data.to_json
         return
       end
 
-      data = {
-        :fileType => File.extname(fileName).downcase.delete("."),
-        :key => ServiceConverter.generate_revision_id("#{DocumentHelper.cur_user_host_address(nil) + '/' + fileName}.#{File.mtime(DocumentHelper.storage_path(fileName, nil)).to_s}"),
-        :url => DocumentHelper.get_download_url(fileName),
-        :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
-        :referenceData => {
-          :instanceId => DocumentHelper.get_server_url(false),
-          :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
-        },
-        :path => fileName,
-        :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
-      }
-
-      if JwtHelper.is_enabled
-        data["token"] = JwtHelper.encode(data)
+      url_obj = URI(link)
+      query_params = CGI.parse(url_obj.query)
+      fileName = query_params['fileName'].first
+      if !File.exist?(DocumentHelper.storage_path(fileName, nil))
+        render plain: '{ "error": "File is not exist"}'
+        return
       end
-
-      render plain: data.to_json
     end
+
+    if fileName.empty? and body.key?("path")
+      path = File.basename(body["path"])
+      if File.exist?(DocumentHelper.storage_path(path, nil))
+        fileName = path
+      end
+    end
+
+    if fileName.empty?
+      render plain: '{ "error": "File not found"}'
+      return
+    end
+
+    data = {
+      :fileType => File.extname(fileName).downcase.delete("."),
+      :key => ServiceConverter.generate_revision_id("#{DocumentHelper.cur_user_host_address(nil) + '/' + fileName}.#{File.mtime(DocumentHelper.storage_path(fileName, nil)).to_s}"),
+      :url => DocumentHelper.get_download_url(fileName),
+      :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
+      :referenceData => {
+        :instanceId => DocumentHelper.get_server_url(false),
+        :fileKey => {:fileName => fileName,:userAddress => DocumentHelper.cur_user_host_address(nil)}.to_json
+      },
+      :path => fileName,
+      :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
+    }
+
+    if JwtHelper.is_enabled
+      data["token"] = JwtHelper.encode(data)
+    end
+
+    render plain: data.to_json
+  end
 
   def restore
     body = JSON.parse(request.body.read)

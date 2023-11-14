@@ -158,7 +158,7 @@ class DocumentHelper
       index = 1
 
       while File.exist?(storage_path(name, user_address)) # if the file with such a name already exists in this directory
-          name = base_name + ' (' + index.to_s + ')' + ext.downcase # add an index after its base name
+        name = base_name + ' (' + index.to_s + ')' + ext.downcase # add an index after its base name
           index = index + 1
       end
 
