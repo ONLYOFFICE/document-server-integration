@@ -45,7 +45,7 @@ class Users
       'Can create files from templates using data from the editor',
       'Can see the information about all users',
       'Has an avatar',
-  ];
+  ]
 
   @@descr_user_2 = [
     'Belongs to Group2',
@@ -55,7 +55,7 @@ class Users
       'Can create new files from the editor',
       'Can see the information about users from Group2 and users who don’t belong to any group',
       'Has an avatar',
-  ];
+  ]
 
   @@descr_user_3 = [
     'Belongs to Group3',
@@ -67,7 +67,7 @@ class Users
       'Can’t print the file',
       'Can create new files from the editor',
       'Can see the information about Group2 users',
-  ];
+  ]
 
   @@descr_user_0 = [
     'The name is requested when the editor is opened',
@@ -82,7 +82,7 @@ class Users
       "Can't view chat",
       "Can't protect file",
       'View file without collaboration'
-  ];
+  ]
 
   @@users = [
     User.new('uid-1', 'John Smith', 'smith@example.com',

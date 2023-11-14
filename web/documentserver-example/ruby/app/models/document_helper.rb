@@ -67,7 +67,7 @@ class DocumentHelper
 
     # get current user host address
     def cur_user_host_address(user_address)
-      (user_address.nil? ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_');
+      (user_address.nil? ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_')
     end
 
     # get the storage path of the given file
@@ -158,7 +158,7 @@ class DocumentHelper
     def get_stored_files(user_address)
       directory = DocumentHelper.config_manager.storage_path.join(cur_user_host_address(user_address))
 
-      arr = [];
+      arr = []
 
       if Dir.exist?(directory)
         Dir.foreach(directory) { |e| # run through all the elements from the folder
@@ -282,7 +282,7 @@ class DocumentHelper
 
     # get files information
     def get_files_info(file_id)
-      result = [];
+      result = []
 
       for fileName in get_stored_files(nil) # run through all the stored files from the folder
         directory = storage_path(fileName, nil)
