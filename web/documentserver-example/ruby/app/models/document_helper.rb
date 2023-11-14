@@ -308,7 +308,7 @@ class DocumentHelper
         end
       end
 
-      if file_id != nil
+      if !file_id.nil?
         return '"File not found"'
       else
         return result

@@ -379,6 +379,6 @@ class FileModel
 
   # get direct url existence flag
   def is_enable_direct_url
-    return @direct_url != nil && @direct_url == 'true'
+    return !@direct_url.nil? && @direct_url == 'true'
   end
 end

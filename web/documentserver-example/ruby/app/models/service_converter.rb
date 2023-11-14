@@ -134,7 +134,7 @@ class ServiceConverter
       file_result = json_data
 
       error_element = file_result['error']
-      if error_element != nil # if an error occurs
+      if !error_element.nil? # if an error occurs
         process_convert_service_responce_error(error_element.to_i) # get an error message
       end
 
@@ -161,7 +161,7 @@ class ServiceConverter
 
         percent_element = file_result['percent']  # get the percentage value
 
-        result_percent = percent_element.to_i if percent_element != nil
+        result_percent = percent_element.to_i if !percent_element.nil?
 
         result_percent = result_percent >= 100 ? 99 : result_percent
 

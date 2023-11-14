@@ -264,7 +264,7 @@ class HomeController < ApplicationController
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded.nil? && user_address != nil && JwtHelper.use_for_request
+      if JwtHelper.is_enabled && isEmbedded.nil? && !user_address.nil? && JwtHelper.use_for_request
         jwtHeader = HomeController.config_manager.jwt_header
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
