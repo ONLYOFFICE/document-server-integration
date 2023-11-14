@@ -225,7 +225,7 @@ class DocumentHelper
     end
 
     # get history path url
-    def get_historypath_uri(file_name, version, file, is_serverUrl=true)
+    def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
       uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver='+ version.to_s + '&file='+ ERB::Util.url_encode(file) + user_host
@@ -252,7 +252,7 @@ class DocumentHelper
     end
 
     # get url to download a file
-    def get_download_url(file_name, is_serverUrl=true)
+    def get_download_url(file_name, is_serverUrl = true)
       user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
       get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name) + user_host
     end

@@ -75,7 +75,7 @@ class FileModel
   end
 
   # get url to download a file
-  def download_url(is_serverUrl=true)
+  def download_url(is_serverUrl = true)
     DocumentHelper.get_download_url(@file_name, is_serverUrl)
   end
 
