@@ -178,7 +178,7 @@ end,
           :submitForm => submitForm, # the Submit form button state
           :goback => {
             :url => DocumentHelper.get_server_url(false)
-          },
+          }
         }
       }
     }
