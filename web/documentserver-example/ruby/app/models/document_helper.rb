@@ -299,11 +299,9 @@ class DocumentHelper
 
         if file_id.nil? # if file id is undefined
           result.push(info) # push info object to the response array
-        else # if file id is defined
-          if file_id.eql?(info['id']) # and it is equal to the document key value
-            result.push(info) # response object will be equal to the info object
-            return result
-          end
+        elsif file_id.eql?(info['id']) # if file id is defined
+          result.push(info) # response object will be equal to the info object
+            return result # and it is equal to the document key value
         end
       end
 
