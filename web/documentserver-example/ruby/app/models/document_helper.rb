@@ -31,7 +31,7 @@ class DocumentHelper
   @@base_url = nil
 
   class << self
-    def init (ip, url)
+    def init(ip, url)
       @@remote_ip = ip
       @@base_url = url
     end

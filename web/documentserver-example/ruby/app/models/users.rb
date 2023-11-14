@@ -18,7 +18,7 @@ class User
   attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite,
   :deniedPermissions, :descriptions, :templates, :avatar
 
-  def initialize (id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
+  def initialize(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
       deniedPermissions, descriptions, templates, avatar)
     @id = id
     @name = name
