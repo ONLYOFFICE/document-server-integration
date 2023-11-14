@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'byebug', '~> 11.1', :groups => [:development, :test]
+gem 'byebug', '~> 11.1', :groups => %i[development test]
 gem 'coffee-rails', '~> 5.0'
 gem 'dalli', '~> 3.2', :group => :development
 gem 'jbuilder', '~> 2.11'
@@ -13,12 +13,12 @@ gem 'rubocop', '~> 1.52', :group => :development
 gem 'sass-rails', '~> 6.0'
 gem 'sdoc', '~> 2.6', :group => :doc
 gem 'sorbet-runtime', '~> 0.5.10871'
-gem 'test-unit', '~> 3.6', :groups => [:development, :test]
+gem 'test-unit', '~> 3.6', :groups => %i[development test]
 gem 'turbolinks', '~> 5.2'
 gem 'tzinfo-data', '~> 1.2023'
 gem 'uglifier', '~> 4.2'
 gem 'uuid', '~> 2.3'
-gem 'web-console', '~> 4.2', :groups => [:development, :test]
+gem 'web-console', '~> 4.2', :groups => %i[development test]
 gem 'webrick', '~> 1.8'
 
 # Unfortunately, Sorbet only supports Darwin and Linux-based systems.
