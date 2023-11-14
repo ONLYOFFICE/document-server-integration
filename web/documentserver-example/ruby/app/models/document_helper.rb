@@ -135,7 +135,7 @@ class DocumentHelper
       end
 
       ver = 1
-      Dir.foreach(hist_dir) {|e| # run through all the file versions
+      Dir.foreach(hist_dir) { |e| # run through all the file versions
         next if e.eql?(".")
         next if e.eql?("..")
 
@@ -171,7 +171,7 @@ class DocumentHelper
       arr = [];
 
       if Dir.exist?(directory)
-        Dir.foreach(directory) {|e| # run through all the elements from the folder
+        Dir.foreach(directory) { |e| # run through all the elements from the folder
           next if e.eql?(".")
           next if e.eql?("..")
           next if File.directory?(File.join(directory, e)) # if the element is a directory, skip it
