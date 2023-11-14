@@ -98,8 +98,8 @@ class DocumentHelper
       end
 
       directory = File.join(directory, File.basename(file_name)) # get the path to the given file
-      unless File.file?(directory)
-        return '' if !create
+      if !File.file?(directory) && !create
+        return ''
       end
 
       return directory.to_s

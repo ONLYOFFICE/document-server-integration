@@ -215,8 +215,7 @@ class FileModel
         obj['key'] = cur_key
         obj['version'] = i
 
-        if (i == 1) # check if the version number is equal to 1
-          if File.file?(File.join(hist_dir, 'createdInfo.json')) # check if the createdInfo.json file with meta data exists
+        if (i == 1) && File.file?(File.join(hist_dir, 'createdInfo.json')) # check if the createdInfo.json file with meta data exists
             File.open(File.join(hist_dir, 'createdInfo.json'), 'r') do |file| # open it
               cr_info = JSON.parse(file.read()) # parse the file content
 
@@ -228,7 +227,6 @@ class FileModel
               }
             end
           end
-        end
 
         # get the history data from the previous file version and write key and url information about it
         dataObj['fileType'] = file_ext[1..file_ext.length]
