@@ -227,7 +227,6 @@ class DocumentHelper
       return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
 
       return @@base_url
-
     end
 
     # get callback url
@@ -308,7 +307,6 @@ class DocumentHelper
       return '"File not found"' if !file_id.nil?
 
       return result
-
     end
 
     # enable ignore certificate
@@ -317,7 +315,6 @@ class DocumentHelper
 
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
-
     end
   end
 end
