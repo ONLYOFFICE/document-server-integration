@@ -226,7 +226,6 @@ class DocumentHelper
     def get_server_url(for_document_server)
       return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
 
-
       return @@base_url
 
     end
@@ -307,7 +306,6 @@ class DocumentHelper
       end
 
       return '"File not found"' if !file_id.nil?
-
 
       return result
 
