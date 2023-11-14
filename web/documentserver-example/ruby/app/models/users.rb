@@ -98,12 +98,12 @@ class Users
                true, [], @@descr_user_2, false, true),
       User.new('uid-3', 'Hamish Mitchell', nil,
                'group-3', ['group-2'], {
-                :view => ['group-3', 'group-2'],
+                :view => %w[group-3 group-2],
                   :edit => ['group-2'],
                   :remove => []
               },
                ['group-2'],
-               false, ['copy', 'download', 'print'], @@descr_user_3, false, false),
+               false, %w[copy download print], @@descr_user_3, false, false),
       User.new('uid-0', nil, nil,
                '', nil, {}, [],
                nil, ['protect'], @@descr_user_0, false, false)
