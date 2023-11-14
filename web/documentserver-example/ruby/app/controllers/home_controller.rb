@@ -73,9 +73,9 @@ class HomeController < ApplicationController
 
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
-      render plain: '{ "filename": "' + file_name + '", "documentType": "' + document_type + '"}' # write a new file name to the response
+      render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}" # write a new file name to the response
     rescue => ex
-      render plain: '{ "error": "' + ex.message + '"}' # write an error message to the response
+      render plain: "{ \"error\": \"#{ex.message}\"}" # write an error message to the response
     end
   end
 
@@ -100,12 +100,12 @@ class HomeController < ApplicationController
 
         # if the conversion isn't completed, write file name and step values to the response
         if percent != 100
-          render plain: '{ "step" : "' + percent.to_s + '", "filename" : "' + file_name + '"}'
+          render plain: "{ \"step\" : \"#{percent.to_s}\", \"filename\" : \"#{file_name}\"}"
           return
         end
 
         # get the correct file name if such a name already exists
-        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + '.' + new_file_type, nil)
+        correct_name = DocumentHelper.get_correct_name("#{File.basename(file_name, extension)}.#{new_file_type}", nil)
 
         uri = URI.parse(new_file_uri) # create the request url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
@@ -132,9 +132,9 @@ class HomeController < ApplicationController
         DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
       end
 
-      render plain: '{ "filename" : "' + file_name + '"}'
+      render plain: "{ \"filename\" : \"#{file_name}\"}"
     rescue => ex
-      render plain: '{ "error": "' + ex.message + '"}'
+      render plain: "{ \"error\": \"#{ex.message}\"}"
     end
   end
 
@@ -162,14 +162,14 @@ class HomeController < ApplicationController
           return
         end
       end
-      hist_path = DocumentHelper.storage_path(file_name, user_address) + '-hist' # or to the original document
+      hist_path = "#{DocumentHelper.storage_path(file_name, user_address)}-hist" # or to the original document
 
       file_path = File.join(hist_path, version, file)
 
       # add headers to the response to specify the page parameters
       response.headers['Content-Length'] = File.size(file_path).to_s
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file)
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
       send_file file_path, :x_sendfile => true
     rescue => ex
@@ -201,13 +201,13 @@ class HomeController < ApplicationController
 
     if status == 2 || status == 3 # MustSave, Corrupted
       saved = TrackHelper.process_save(file_data, file_name, user_address) # save file
-      render plain: '{"error":' + saved.to_s + '}'
+      render plain: "{\"error\":#{saved.to_s}}"
       return
     end
 
     if status == 6 || status == 7 # MustForceave, CorruptedForcesave
       saved = TrackHelper.process_force_save(file_data, file_name, user_address) # force save file
-      render plain: '{"error":' + saved.to_s + '}'
+      render plain: "{\"error\":#{saved.to_s}}"
       return
     end
 
@@ -254,7 +254,7 @@ class HomeController < ApplicationController
     # add headers to the response to specify the page parameters
     response.headers['Content-Length'] = File.size(csvPath).to_s
     response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
-    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
     send_file csvPath, :x_sendfile => true
   end
@@ -287,7 +287,7 @@ class HomeController < ApplicationController
       # add headers to the response to specify the page parameters
       response.headers['Content-Length'] = File.size(file_path).to_s
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
+      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
       send_file file_path, :x_sendfile => true
     rescue => ex
@@ -330,10 +330,10 @@ class HomeController < ApplicationController
       user = Users.get_user(params[:userId])
       DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
 
-      render plain: '{"file" : "' + file_name + '"}'
+      render plain: "{\"file\" : \"#{file_name}\"}"
       return
     rescue => ex
-      render plain: '{"error":1, "message": "' + ex.message + '"}'
+      render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
       return
     end
   end
@@ -344,7 +344,7 @@ class HomeController < ApplicationController
     dockey = body['dockey']
     newfilename = body['newfilename']
 
-    orig_ext = '.' + body['ext']
+    orig_ext = ".#{body['ext']}"
     cur_ext = File.extname(newfilename).downcase
     newfilename += orig_ext if orig_ext != cur_ext
 
@@ -353,7 +353,7 @@ class HomeController < ApplicationController
     }
 
     json_data = TrackHelper.command_request('meta', dockey, meta)
-    render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
+    render plain: "{ \"result\" : \"#{JSON.dump(json_data)}\"}"
   end
 
     # ReferenceData
@@ -404,7 +404,7 @@ class HomeController < ApplicationController
 
     data = {
       :fileType => File.extname(fileName).downcase.delete('.'),
-      :key => ServiceConverter.generate_revision_id("#{DocumentHelper.cur_user_host_address(nil) + '/' + fileName}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
+      :key => ServiceConverter.generate_revision_id("#{"#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}"}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
       :url => DocumentHelper.get_download_url(fileName),
       :directUrl => body['directUrl'] ? DocumentHelper.get_download_url(fileName, false) : nil,
       :referenceData => {
@@ -412,7 +412,7 @@ class HomeController < ApplicationController
         :fileKey => { :fileName => fileName, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json
       },
       :path => fileName,
-      :link => DocumentHelper.get_server_url(false) + '/editor?fileName=' + fileName
+      :link => "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{fileName}"
     }
 
     data['token'] = JwtHelper.encode(data) if JwtHelper.is_enabled

@@ -147,7 +147,7 @@ class DocumentHelper
       index = 1
 
       while File.exist?(storage_path(name, user_address)) # if the file with such a name already exists in this directory
-        name = base_name + ' (' + index.to_s + ')' + ext.downcase # add an index after its base name
+        name = "#{base_name} (#{index.to_s})#{ext.downcase}" # add an index after its base name
         index = index + 1
       end
 
@@ -209,7 +209,7 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = get_server_url(for_document_server) + '/' + DocumentHelper.config_manager.storage_path.to_s + '/' + cur_user_host_address(nil) + '/' + ERB::Util.url_encode(file_name)
+      uri = "#{get_server_url(for_document_server)}/#{DocumentHelper.config_manager.storage_path.to_s}/#{cur_user_host_address(nil)}/#{ERB::Util.url_encode(file_name)}"
 
       return uri
     end
@@ -217,8 +217,8 @@ class DocumentHelper
     # get history path url
     def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
-      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ''
-      uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver=' + version.to_s + '&file=' + ERB::Util.url_encode(file) + user_host
+      user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
+      uri = "#{get_server_url(is_serverUrl)}/downloadhistory/?fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version.to_s}&file=#{ERB::Util.url_encode(file)}#{user_host}"
       return uri
     end
 
@@ -233,18 +233,18 @@ class DocumentHelper
 
     # get callback url
     def get_callback(file_name)
-      get_server_url(true) + '/track?fileName=' + ERB::Util.url_encode(file_name) + '&userAddress=' + cur_user_host_address(nil)
+      "#{get_server_url(true)}/track?fileName=#{ERB::Util.url_encode(file_name)}&userAddress=#{cur_user_host_address(nil)}"
     end
 
     # get url to the created file
     def get_create_url(document_type)
-      get_server_url(false) + '/sample?fileExt=' + get_internal_extension(document_type).delete('.')
+      "#{get_server_url(false)}/sample?fileExt=#{get_internal_extension(document_type).delete('.')}"
     end
 
     # get url to download a file
     def get_download_url(file_name, is_serverUrl = true)
-      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ''
-      get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name) + user_host
+      user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
+      "#{get_server_url(is_serverUrl)}/download?fileName=#{ERB::Util.url_encode(file_name)}#{user_host}"
     end
 
     # get internal file extension by its type
@@ -265,16 +265,16 @@ class DocumentHelper
 
     # get image url for templates
     def get_template_image_url(file_type)
-      path = get_server_url(true) + '/assets/'
+      path = "#{get_server_url(true)}/assets/"
       case file_type
       when 'word'  # for word type
-          full_path = path + 'file_docx.svg'
+          full_path = "#{path}file_docx.svg"
       when 'cell'  # .xlsx for cell type
-          full_path = path + 'file_xlsx.svg'
+          full_path = "#{path}file_xlsx.svg"
       when 'slide' # .pptx for slide type
-          full_path = path + 'file_pptx.svg'
+          full_path = "#{path}file_pptx.svg"
         else
-          full_path = path + 'file_docx.svg' # the default value is .docx
+          full_path = "#{path}file_docx.svg" # the default value is .docx
       end
 
       full_path
@@ -286,7 +286,7 @@ class DocumentHelper
 
       for fileName in get_stored_files(nil) # run through all the stored files from the folder
         directory = storage_path(fileName, nil)
-        uri = cur_user_host_address(nil) + '/' + fileName
+        uri = "#{cur_user_host_address(nil)}/#{fileName}"
 
         # write file parameters to the info object
         info = {

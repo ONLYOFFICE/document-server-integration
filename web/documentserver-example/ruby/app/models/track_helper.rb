@@ -99,7 +99,7 @@ class TrackHelper
       end
 
       new_file_name = file_name
-      download_ext = '.' + file_data['filetype'] # get the extension of the downloaded file
+      download_ext = ".#{file_data['filetype']}" # get the extension of the downloaded file
 
       cur_ext = File.extname(file_name).downcase # get current file extension
 
@@ -174,7 +174,7 @@ class TrackHelper
         return saved
       end
 
-      download_ext = '.' + file_data['filetype'] # get the extension of the downloaded file
+      download_ext = ".#{file_data['filetype']}" # get the extension of the downloaded file
 
       cur_ext = File.extname(file_name).downcase # get current file extension
 
@@ -205,9 +205,9 @@ class TrackHelper
 
         if is_submit_form
           if new_file_name
-            file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + '-form' + download_ext, user_address) # get the correct file name if it already exists
+            file_name = DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
           else
-            file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + '-form' + cur_ext, user_address)
+            file_name = DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}", user_address)
           end
           forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
         else

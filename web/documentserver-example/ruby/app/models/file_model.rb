@@ -49,7 +49,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    @config_manager.storage_path.absolute? ? download_url + '&dmode=emb' : DocumentHelper.get_file_uri(@file_name, false)
+    @config_manager.storage_path.absolute? ? "#{download_url}&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
   end
 
   # get document type from its name (word, cell or slide)
@@ -59,7 +59,7 @@ class FileModel
 
   # generate the document key value
   def key
-    uri = DocumentHelper.cur_user_host_address(nil) + '/' + @file_name # get current user host address
+    uri = "#{DocumentHelper.cur_user_host_address(nil)}/#{@file_name}" # get current user host address
     stat = File.mtime(DocumentHelper.storage_path(@file_name, nil)) # get the modification time of the given file
     return ServiceConverter.generate_revision_id("#{uri}.#{stat}")
   end
@@ -104,7 +104,7 @@ class FileModel
       {
         :image => templatesImageUrl,
         :title => 'With sample content',
-        :url => create_url + '&sample=true'
+        :url => "#{create_url}&sample=true"
       }
     ]
 
@@ -294,11 +294,11 @@ class FileModel
   def get_insert_image
     insert_image = is_enable_direct_url == true ? {
       :fileType => 'png', # image file type
-      :url => DocumentHelper.get_server_url(true) + '/assets/logo.png', # server url to the image
-      :directUrl => DocumentHelper.get_server_url(false) + '/assets/logo.png' # direct url to the image
+      :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
+      :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
     } : {
       :fileType => 'png', # image file type
-      :url => DocumentHelper.get_server_url(true) + '/assets/logo.png' # server url to the image
+      :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -312,11 +312,11 @@ class FileModel
   def dataDocument
     compare_file = is_enable_direct_url == true ? {
       :fileType => 'docx', # file type
-      :url => DocumentHelper.get_server_url(true) + '/asset?fileName=sample.docx', # server url to the compared file
-      :directUrl => DocumentHelper.get_server_url(false) + '/asset?fileName=sample.docx' # direct url to the compared file
+      :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
+      :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
     } : {
       :fileType => 'docx', # file type
-      :url => DocumentHelper.get_server_url(true) + '/asset?fileName=sample.docx' # server url to the compared file
+      :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
@@ -330,11 +330,11 @@ class FileModel
   def dataSpreadsheet
     dataSpreadsheet = is_enable_direct_url == true ? {
       :fileType => 'csv', # file type
-      :url => DocumentHelper.get_server_url(true) + '/csv', # server url to the mail merge recipients file
-      :directUrl => DocumentHelper.get_server_url(false) + '/csv' # direct url to the mail merge recipients file
+      :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
+      :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
     } : {
       :fileType => 'csv', # file type
-      :url => DocumentHelper.get_server_url(true) + '/csv' # server url to the mail merge recipients file
+      :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
