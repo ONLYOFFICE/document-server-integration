@@ -155,7 +155,7 @@ class FileModel
                               }
 else
   nil
-end,
+                      end,
         :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => { # the user currently viewing or editing the document
@@ -230,7 +230,7 @@ end,
               :name => cr_info['uname']
             }
           end
-          end
+        end
 
         # get the history data from the previous file version and write key and url information about it
         dataObj['fileType'] = file_ext[1..file_ext.length]
@@ -271,7 +271,7 @@ else
             :key => prev['key'],
             :url => prev['url']
           }
-end
+                      end
 
           # write the path to the diff.zip archive with differences in this file version
           dataObj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
@@ -313,7 +313,7 @@ end
           :fileType => 'png', # image file type
           :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
         }
-    end
+                   end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       insert_image['token'] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
@@ -338,7 +338,7 @@ end
           :fileType => 'docx', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
         }
-    end
+                   end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       compare_file['token'] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
@@ -363,7 +363,7 @@ end
           :fileType => 'csv', # file type
           :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
         }
-    end
+                      end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object

@@ -195,7 +195,7 @@ class HomeController < ApplicationController
         unless file_data['users'].index(user)
           json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
         end
-      end
+    end
 
     if [2, 3].include?(status) # MustSave, Corrupted
       saved = TrackHelper.process_save(file_data, file_name, user_address) # save file
