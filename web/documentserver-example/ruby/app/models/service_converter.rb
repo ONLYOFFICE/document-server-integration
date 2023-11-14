@@ -60,11 +60,11 @@ class ServiceConverter
         http.read_timeout = @@convert_timeout
         http.open_timeout = 5
         req = Net::HTTP::Post.new(uri.request_uri) # create the post request
-        req.add_field("Accept", "application/json") # set headers
-        req.add_field("Content-Type", "application/json")
+        req.add_field('Accept', 'application/json') # set headers
+        req.add_field('Content-Type', 'application/json')
 
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
-          payload["token"] = JwtHelper.encode(payload) # get token and save it to the payload
+          payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwtHeader = ServiceConverter.config_manager.jwt_header; # get signature authorization header
           req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}") # set it to the request with the Bearer prefix
         end

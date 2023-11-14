@@ -34,7 +34,7 @@ class FileModel
   end
 
   def type
-    @type ? @type : "desktop" # the default platform type is desktop
+    @type ? @type : 'desktop' # the default platform type is desktop
   end
 
   # get file extension from its name
@@ -49,7 +49,7 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    @config_manager.storage_path.absolute? ? download_url + "&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
+    @config_manager.storage_path.absolute? ? download_url + '&dmode=emb' : DocumentHelper.get_file_uri(@file_name, false)
   end
 
   # get document type from its name (word, cell or slide)
@@ -86,25 +86,25 @@ class FileModel
 
   # get config parameters
   def get_config
-    editorsmode = @mode ? @mode : "edit" # mode: view/edit/review/comment/fillForms/embedded
+    editorsmode = @mode ? @mode : 'edit' # mode: view/edit/review/comment/fillForms/embedded
     canEdit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if (!canEdit && editorsmode.eql?("edit") || editorsmode.eql?("fillForms")) && DocumentHelper.fill_forms_exts.include?(file_ext)
-      editorsmode = "fillForms"
+    if (!canEdit && editorsmode.eql?('edit') || editorsmode.eql?('fillForms')) && DocumentHelper.fill_forms_exts.include?(file_ext)
+      editorsmode = 'fillForms'
       canEdit = true
     end
-    submitForm = editorsmode.eql?("fillForms") && @user.id.eql?("uid-1") && false # the Submit form button state
-    mode = canEdit && !editorsmode.eql?("view") ? "edit" : "view"
+    submitForm = editorsmode.eql?('fillForms') && @user.id.eql?('uid-1') && false # the Submit form button state
+    mode = canEdit && !editorsmode.eql?('view') ? 'edit' : 'view'
     templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
     templates = [
       {
-        :image => "",
-        :title => "Blank",
+        :image => '',
+        :title => 'Blank',
         :url => create_url
       },
       {
         :image => templatesImageUrl,
-        :title => "With sample content",
-        :url => create_url + "&sample=true"
+        :title => 'With sample content',
+        :url => create_url + '&sample=true'
       }
     ]
 
@@ -114,48 +114,48 @@ class FileModel
       :document => {
         :title => @file_name,
         :url => download_url,
-        :directUrl => is_enable_direct_url ? download_url(false) : "",
-        :fileType => file_ext.delete("."),
+        :directUrl => is_enable_direct_url ? download_url(false) : '',
+        :fileType => file_ext.delete('.'),
         :key => key,
         :info => {
-          :owner => "Me",
+          :owner => 'Me',
           :uploaded => Time.now.to_s,
           :favorite => @user.favorite
         },
         :permissions => { # the permission for the document to be edited and downloaded or not
-          :comment => !editorsmode.eql?("view") && !editorsmode.eql?("fillForms") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
-          :copy => !@user.deniedPermissions.include?("copy"),
-          :download => !@user.deniedPermissions.include?("download"),
-          :edit => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("view") || editorsmode.eql?("filter") || editorsmode.eql?("blockcontent")),
-          :print => !@user.deniedPermissions.include?("print"),
-          :fillForms => !editorsmode.eql?("view") && !editorsmode.eql?("comment") && !editorsmode.eql?("embedded") && !editorsmode.eql?("blockcontent"),
-          :modifyFilter => !editorsmode.eql?("filter"),
-          :modifyContentControl => !editorsmode.eql?("blockcontent"),
-          :review => canEdit && (editorsmode.eql?("edit") || editorsmode.eql?("review")),
-          :chat => !@user.id.eql?("uid-0"),
+          :comment => !editorsmode.eql?('view') && !editorsmode.eql?('fillForms') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          :copy => !@user.deniedPermissions.include?('copy'),
+          :download => !@user.deniedPermissions.include?('download'),
+          :edit => canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('view') || editorsmode.eql?('filter') || editorsmode.eql?('blockcontent')),
+          :print => !@user.deniedPermissions.include?('print'),
+          :fillForms => !editorsmode.eql?('view') && !editorsmode.eql?('comment') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          :modifyFilter => !editorsmode.eql?('filter'),
+          :modifyContentControl => !editorsmode.eql?('blockcontent'),
+          :review => canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('review')),
+          :chat => !@user.id.eql?('uid-0'),
           :reviewGroups => @user.reviewGroups,
           :commentGroups => @user.commentGroups,
           :userInfoGroups => @user.userInfoGroups,
-          :protect => !@user.deniedPermissions.include?("protect")
+          :protect => !@user.deniedPermissions.include?('protect')
         },
         :referenceData => {
           :instanceId => DocumentHelper.get_server_url(false),
-          :fileKey => !@user.id.eql?("uid-0") ? { :fileName => @file_name, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json : nil
+          :fileKey => !@user.id.eql?('uid-0') ? { :fileName => @file_name, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json : nil
         }
       },
       :editorConfig => {
         :actionLink => @action_data ? JSON.parse(@action_data) : nil,
         :mode => mode,
-        :lang => @lang ? @lang : "en",
+        :lang => @lang ? @lang : 'en',
         :callbackUrl => callback_url, # absolute URL to the document storage service
-        :coEditing => editorsmode.eql?("view") && @user.id.eql?("uid-0") ? {
-          :mode => "strict",
+        :coEditing => editorsmode.eql?('view') && @user.id.eql?('uid-0') ? {
+          :mode => 'strict',
           :change => false
         } : nil,
-        :createUrl => !@user.id.eql?("uid-0") ? create_url : nil,
+        :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
         :templates => @user.templates ? templates : nil,
         :user => { # the user currently viewing or editing the document
-          :id => !@user.id.eql?("uid-0") ? @user.id : nil,
+          :id => !@user.id.eql?('uid-0') ? @user.id : nil,
           :name => @user.name,
           :group => @user.group,
           :image => @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
@@ -164,7 +164,7 @@ class FileModel
           :saveUrl => download_url(false), # the absolute URL that will allow the document to be saved onto the user personal computer
           :embedUrl => download_url(false),  # the absolute URL to the document serving as a source file for the document embedded into the web page
           :shareUrl => download_url(false),  # the absolute URL that will allow other users to share this document
-          :toolbarDocked => "top" # the place for the embedded viewer toolbar (top or bottom)
+          :toolbarDocked => 'top' # the place for the embedded viewer toolbar (top or bottom)
         },
         :customization => { # the parameters for the editor interface
           :about => true, # the About section display
@@ -180,7 +180,7 @@ class FileModel
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      config["token"] = JwtHelper.encode(config) # encode a payload object into a token and write it to the config
+      config['token'] = JwtHelper.encode(config) # encode a payload object into a token and write it to the config
     end
 
     return config
@@ -208,70 +208,70 @@ class FileModel
         # get document key
         cur_key = doc_key
         if (i != cur_ver)
-          File.open(File.join(ver_dir, "key.txt"), 'r') do |file|
+          File.open(File.join(ver_dir, 'key.txt'), 'r') do |file|
             cur_key = file.read()
           end
         end
-        obj["key"] = cur_key
-        obj["version"] = i
+        obj['key'] = cur_key
+        obj['version'] = i
 
         if (i == 1) # check if the version number is equal to 1
-          if File.file?(File.join(hist_dir, "createdInfo.json")) # check if the createdInfo.json file with meta data exists
-            File.open(File.join(hist_dir, "createdInfo.json"), 'r') do |file| # open it
+          if File.file?(File.join(hist_dir, 'createdInfo.json')) # check if the createdInfo.json file with meta data exists
+            File.open(File.join(hist_dir, 'createdInfo.json'), 'r') do |file| # open it
               cr_info = JSON.parse(file.read()) # parse the file content
 
               # write information about changes to the object
-              obj["created"] = cr_info["created"]
-              obj["user"] = {
-                :id => cr_info["uid"],
-                :name => cr_info["uname"]
+              obj['created'] = cr_info['created']
+              obj['user'] = {
+                :id => cr_info['uid'],
+                :name => cr_info['uname']
               }
             end
           end
         end
 
         # get the history data from the previous file version and write key and url information about it
-        dataObj["fileType"] = file_ext[1..file_ext.length]
-        dataObj["key"] = cur_key
-        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        dataObj['fileType'] = file_ext[1..file_ext.length]
+        dataObj['key'] = cur_key
+        dataObj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if is_enable_direct_url == true
-          dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
+          dataObj['directUrl'] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
         end
-        dataObj["version"] = i
+        dataObj['version'] = i
 
         if (i > 1) # check if the version number is greater than 1
           changes = nil
           change = nil
-          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), "changes.json"), 'r') do |file| # get the path to the changes.json file
+          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file| # get the path to the changes.json file
             changes = JSON.parse(file.read()) # and parse its content
           end
 
-          change = changes["changes"][0]
+          change = changes['changes'][0]
 
           # write information about changes to the object
-          obj["changes"] = change ? changes["changes"] : nil
-          obj["serverVersion"] = changes["serverVersion"]
-          obj["created"] = change ? change["created"] : nil
-          obj["user"] = change ? change["user"] : nil
+          obj['changes'] = change ? changes['changes'] : nil
+          obj['serverVersion'] = changes['serverVersion']
+          obj['created'] = change ? change['created'] : nil
+          obj['user'] = change ? change['user'] : nil
 
           prev = histData[(i - 2).to_s] # get the history data from the previous file version
-          dataObj["previous"] = is_enable_direct_url == true ? { # write key and url information about previous file version with optional direct url
-            :fileType => prev["fileType"],
-            :key => prev["key"],
-            :url => prev["url"],
-            :directUrl => prev["directUrl"]
+          dataObj['previous'] = is_enable_direct_url == true ? { # write key and url information about previous file version with optional direct url
+            :fileType => prev['fileType'],
+            :key => prev['key'],
+            :url => prev['url'],
+            :directUrl => prev['directUrl']
           } : {
-            :fileType => prev["fileType"],
-            :key => prev["key"],
-            :url => prev["url"]
+            :fileType => prev['fileType'],
+            :key => prev['key'],
+            :url => prev['url']
           }
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, i - 1, "diff.zip")
+          dataObj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
         end
 
         if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-          dataObj["token"] = JwtHelper.encode(dataObj) # encode a payload object into a token and write it to the data object
+          dataObj['token'] = JwtHelper.encode(dataObj) # encode a payload object into a token and write it to the data object
         end
 
         hist.push(obj) # add object dictionary to the hist list
@@ -293,34 +293,34 @@ class FileModel
   # get image information
   def get_insert_image
     insert_image = is_enable_direct_url == true ? {
-      :fileType => "png", # image file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png", # server url to the image
-      :directUrl => DocumentHelper.get_server_url(false) + "/assets/logo.png" # direct url to the image
+      :fileType => 'png', # image file type
+      :url => DocumentHelper.get_server_url(true) + '/assets/logo.png', # server url to the image
+      :directUrl => DocumentHelper.get_server_url(false) + '/assets/logo.png' # direct url to the image
     } : {
-      :fileType => "png", # image file type
-      :url => DocumentHelper.get_server_url(true) + "/assets/logo.png" # server url to the image
+      :fileType => 'png', # image file type
+      :url => DocumentHelper.get_server_url(true) + '/assets/logo.png' # server url to the image
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      insert_image["token"] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
+      insert_image['token'] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
     end
 
-    return insert_image.to_json.tr("{", "").tr("}", "")
+    return insert_image.to_json.tr('{', '').tr('}', '')
   end
 
   # get compared file information
   def dataDocument
     compare_file = is_enable_direct_url == true ? {
-      :fileType => "docx", # file type
-      :url => DocumentHelper.get_server_url(true) + "/asset?fileName=sample.docx", # server url to the compared file
-      :directUrl => DocumentHelper.get_server_url(false) + "/asset?fileName=sample.docx" # direct url to the compared file
+      :fileType => 'docx', # file type
+      :url => DocumentHelper.get_server_url(true) + '/asset?fileName=sample.docx', # server url to the compared file
+      :directUrl => DocumentHelper.get_server_url(false) + '/asset?fileName=sample.docx' # direct url to the compared file
     } : {
-      :fileType => "docx", # file type
-      :url => DocumentHelper.get_server_url(true) + "/asset?fileName=sample.docx" # server url to the compared file
+      :fileType => 'docx', # file type
+      :url => DocumentHelper.get_server_url(true) + '/asset?fileName=sample.docx' # server url to the compared file
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      compare_file["token"] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
+      compare_file['token'] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
     end
 
     return compare_file
@@ -329,16 +329,16 @@ class FileModel
   # get mail merge recipients information
   def dataSpreadsheet
     dataSpreadsheet = is_enable_direct_url == true ? {
-      :fileType => "csv", # file type
-      :url => DocumentHelper.get_server_url(true) + "/csv", # server url to the mail merge recipients file
-      :directUrl => DocumentHelper.get_server_url(false) + "/csv" # direct url to the mail merge recipients file
+      :fileType => 'csv', # file type
+      :url => DocumentHelper.get_server_url(true) + '/csv', # server url to the mail merge recipients file
+      :directUrl => DocumentHelper.get_server_url(false) + '/csv' # direct url to the mail merge recipients file
     } : {
-      :fileType => "csv", # file type
-      :url => DocumentHelper.get_server_url(true) + "/csv" # server url to the mail merge recipients file
+      :fileType => 'csv', # file type
+      :url => DocumentHelper.get_server_url(true) + '/csv' # server url to the mail merge recipients file
     }
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      dataSpreadsheet["token"] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object
+      dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object
     end
 
     return dataSpreadsheet
@@ -346,12 +346,12 @@ class FileModel
 
   # get users data for mentions
   def get_users_mentions
-    return !@user.id.eql?("uid-0") ? Users.get_users_for_mentions(@user.id) : nil
+    return !@user.id.eql?('uid-0') ? Users.get_users_for_mentions(@user.id) : nil
   end
 
   def get_users_info
     users_info = []
-    if !@user.id.eql?("uid-0")
+    if !@user.id.eql?('uid-0')
       Users.get_all_users().each do |user_info|
         u = {
           id: user_info.id,
@@ -367,7 +367,7 @@ class FileModel
           templates: user_info.templates,
           avatar: user_info.avatar
         }
-        u["image"] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
+        u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
         users_info.push(u)
       end
       return users_info
@@ -376,11 +376,11 @@ class FileModel
 
   # get users data for protect
   def get_users_protect
-    return !@user.id.eql?("uid-0") ? Users.get_users_for_protect(@user.id) : nil
+    return !@user.id.eql?('uid-0') ? Users.get_users_for_protect(@user.id) : nil
   end
 
   # get direct url existence flag
   def is_enable_direct_url
-    return @direct_url != nil && @direct_url == "true"
+    return @direct_url != nil && @direct_url == 'true'
   end
 end

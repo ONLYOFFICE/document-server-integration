@@ -89,7 +89,7 @@ class DocumentHelper
 
       # the directory with host address doesn't exist
       unless File.directory?(directory)
-        return ""
+        return ''
       end
 
       directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
@@ -97,14 +97,14 @@ class DocumentHelper
         if create
           FileUtils.mkdir_p(directory) # create history directory if it doesn't exist
         else
-          return "" # the history directory doesn't exist and we are not supposed to create it
+          return '' # the history directory doesn't exist and we are not supposed to create it
         end
       end
 
       directory = File.join(directory, File.basename(file_name)) # get the path to the given file
       unless File.file?(directory)
         if !create
-          return ""
+          return ''
         end
       end
 
@@ -136,8 +136,8 @@ class DocumentHelper
 
       ver = 1
       Dir.foreach(hist_dir) { |e| # run through all the file versions
-        next if e.eql?(".")
-        next if e.eql?("..")
+        next if e.eql?('.')
+        next if e.eql?('..')
 
         if File.directory?(File.join(hist_dir, e))
           ver += 1 # and count them
@@ -172,8 +172,8 @@ class DocumentHelper
 
       if Dir.exist?(directory)
         Dir.foreach(directory) { |e| # run through all the elements from the folder
-          next if e.eql?(".")
-          next if e.eql?("..")
+          next if e.eql?('.')
+          next if e.eql?('..')
           next if File.directory?(File.join(directory, e)) # if the element is a directory, skip it
 
           arr.push(e) # push the file to the array
@@ -195,7 +195,7 @@ class DocumentHelper
       }
 
       # write file meta information to the createdInfo.json file
-      File.open(File.join(hist_dir, "createdInfo.json"), 'wb') do |file|
+      File.open(File.join(hist_dir, 'createdInfo.json'), 'wb') do |file|
         file.write(json.to_json)
       end
     end
@@ -227,7 +227,7 @@ class DocumentHelper
     # get history path url
     def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
-      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
+      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ''
       uri = get_server_url(is_serverUrl) + '/downloadhistory/?fileName=' + ERB::Util.url_encode(file_name) + '&ver=' + version.to_s + '&file=' + ERB::Util.url_encode(file) + user_host
       return uri
     end
@@ -253,7 +253,7 @@ class DocumentHelper
 
     # get url to download a file
     def get_download_url(file_name, is_serverUrl = true)
-      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ""
+      user_host = is_serverUrl ? '&userAddress=' + cur_user_host_address(nil) : ''
       get_server_url(is_serverUrl) + '/download?fileName=' + ERB::Util.url_encode(file_name) + user_host
     end
 
@@ -275,7 +275,7 @@ class DocumentHelper
 
     # get image url for templates
     def get_template_image_url(file_type)
-      path = get_server_url(true) + "/assets/"
+      path = get_server_url(true) + '/assets/'
       case file_type
       when 'word'  # for word type
           full_path = path + 'file_docx.svg'
@@ -300,18 +300,18 @@ class DocumentHelper
 
         # write file parameters to the info object
         info = {
-          "version" => get_file_version(history_dir(directory)),
-          "id" => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory)}"),
-          "contentLength" => "#{(File.size(directory) / 1024.0).round(2)} KB",
-          "pureContentLength" => File.size(directory),
-          "title" => fileName,
-          "updated" => File.mtime(directory)
+          'version' => get_file_version(history_dir(directory)),
+          'id' => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory)}"),
+          'contentLength' => "#{(File.size(directory) / 1024.0).round(2)} KB",
+          'pureContentLength' => File.size(directory),
+          'title' => fileName,
+          'updated' => File.mtime(directory)
         }
 
         if file_id == nil # if file id is undefined
           result.push(info) # push info object to the response array
         else # if file id is defined
-          if file_id.eql?(info["id"]) # and it is equal to the document key value
+          if file_id.eql?(info['id']) # and it is equal to the document key value
             result.push(info) # response object will be equal to the info object
             return result
           end
@@ -319,7 +319,7 @@ class DocumentHelper
       end
 
       if file_id != nil
-        return "\"File not found\""
+        return '"File not found"'
       else
         return result
       end

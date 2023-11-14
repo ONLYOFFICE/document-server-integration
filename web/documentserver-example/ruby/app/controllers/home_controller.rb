@@ -89,14 +89,14 @@ class HomeController < ApplicationController
     begin
       file_data = request.body.read
       if file_data == nil || file_data.empty?
-        return ""
+        return ''
       end
 
       body = JSON.parse(file_data)
 
-      file_name = File.basename(body["filename"])
-      lang = cookies[:ulang] ? cookies[:ulang] : "en"
-      file_pass = body["filePass"] ? body["filePass"] : nil
+      file_name = File.basename(body['filename'])
+      lang = cookies[:ulang] ? cookies[:ulang] : 'en'
+      file_pass = body['filePass'] ? body['filePass'] : nil
       file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
       internal_extension = 'ooxml'
@@ -112,7 +112,7 @@ class HomeController < ApplicationController
         end
 
         # get the correct file name if such a name already exists
-        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + "." + new_file_type, nil)
+        correct_name = DocumentHelper.get_correct_name(File.basename(file_name, extension) + '.' + new_file_type, nil)
 
         uri = URI.parse(new_file_uri) # create the request url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
@@ -162,18 +162,18 @@ class HomeController < ApplicationController
         jwtHeader = HomeController.config_manager.jwt_header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
-          hdr.slice!(0, "Bearer ".length)
+          hdr.slice!(0, 'Bearer '.length)
           token = JwtHelper.decode(hdr)
-          if !token || token.eql?("")
-            render plain: "JWT validation failed", :status => 403
+          if !token || token.eql?('')
+            render plain: 'JWT validation failed', :status => 403
             return
           end
         else
-          render plain: "JWT validation failed", :status => 403
+          render plain: 'JWT validation failed', :status => 403
           return
         end
       end
-      hist_path = DocumentHelper.storage_path(file_name, user_address) + "-hist" # or to the original document
+      hist_path = DocumentHelper.storage_path(file_name, user_address) + '-hist' # or to the original document
 
       file_path = File.join(hist_path, version, file)
 
@@ -205,7 +205,7 @@ class HomeController < ApplicationController
       if file_data['actions'][0]['type'] == 0 # finished edit
         user = file_data['actions'][0]['userid'] # get the user id
         if !file_data['users'].index(user)
-          json_data = TrackHelper.command_request("forcesave", file_data['key']) # call the forcesave command
+          json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
         end
       end
     end
@@ -259,7 +259,7 @@ class HomeController < ApplicationController
 
   # downloading a csv file
   def csv
-    file_name = "csv.csv"
+    file_name = 'csv.csv'
     csvPath = Rails.root.join('assets', 'document-templates', 'sample', file_name)
 
     # add headers to the response to specify the page parameters
@@ -281,17 +281,17 @@ class HomeController < ApplicationController
         jwtHeader = HomeController.config_manager.jwt_header;
         if request.headers[jwtHeader]
           hdr = request.headers[jwtHeader]
-          hdr.slice!(0, "Bearer ".length)
+          hdr.slice!(0, 'Bearer '.length)
           token = JwtHelper.decode(hdr)
         end
-        if !token || token.eql?("")
-          render plain: "JWT validation failed", :status => 403
+        if !token || token.eql?('')
+          render plain: 'JWT validation failed', :status => 403
           return
         end
       end
 
       file_path = DocumentHelper.forcesave_path(file_name, user_address, false) # get the path to the force saved document version
-      if file_path.eql?("")
+      if file_path.eql?('')
         file_path = DocumentHelper.storage_path(file_name, user_address) # or to the original document
       end
 
@@ -310,8 +310,8 @@ class HomeController < ApplicationController
   def saveas
     begin
       body = JSON.parse(request.body.read)
-      file_url = body["url"]
-      title = body["title"]
+      file_url = body['url']
+      title = body['title']
       file_name = DocumentHelper.get_correct_name(title, nil)
       extension = File.extname(file_name).downcase
       all_exts = DocumentHelper.convert_exts + DocumentHelper.edited_exts + DocumentHelper.viewed_exts + DocumentHelper.fill_forms_exts
@@ -352,10 +352,10 @@ class HomeController < ApplicationController
     # Rename...
   def rename
     body = JSON.parse(request.body.read)
-    dockey = body["dockey"]
-    newfilename = body["newfilename"]
+    dockey = body['dockey']
+    newfilename = body['newfilename']
 
-    orig_ext = '.' + body["ext"]
+    orig_ext = '.' + body['ext']
     cur_ext = File.extname(newfilename).downcase
     if orig_ext != cur_ext
       newfilename += orig_ext
@@ -365,30 +365,30 @@ class HomeController < ApplicationController
       :title => newfilename
     }
 
-    json_data = TrackHelper.command_request("meta", dockey, meta)
+    json_data = TrackHelper.command_request('meta', dockey, meta)
     render plain: '{ "result" : "' + JSON.dump(json_data) + '"}'
   end
 
     # ReferenceData
   def reference
     body = JSON.parse(request.body.read)
-    fileName = ""
+    fileName = ''
 
 
-    if body.key?("referenceData")
-      referenceData = body["referenceData"]
-      instanceId = referenceData["instanceId"]
+    if body.key?('referenceData')
+      referenceData = body['referenceData']
+      instanceId = referenceData['instanceId']
       if instanceId == DocumentHelper.get_server_url(false)
-        fileKey = JSON.parse(referenceData["fileKey"])
-        userAddress = fileKey["userAddress"]
+        fileKey = JSON.parse(referenceData['fileKey'])
+        userAddress = fileKey['userAddress']
         if userAddress == DocumentHelper.cur_user_host_address(nil)
-          fileName = fileKey["fileName"]
+          fileName = fileKey['fileName']
         end
       end
     end
 
-    link = body["link"]
-    if fileName.empty? and body.key?("link")
+    link = body['link']
+    if fileName.empty? and body.key?('link')
       if !link.include?(DocumentHelper.get_server_url(false))
         data = {
           url: link,
@@ -407,8 +407,8 @@ class HomeController < ApplicationController
       end
     end
 
-    if fileName.empty? and body.key?("path")
-      path = File.basename(body["path"])
+    if fileName.empty? and body.key?('path')
+      path = File.basename(body['path'])
       if File.exist?(DocumentHelper.storage_path(path, nil))
         fileName = path
       end
@@ -420,10 +420,10 @@ class HomeController < ApplicationController
     end
 
     data = {
-      :fileType => File.extname(fileName).downcase.delete("."),
+      :fileType => File.extname(fileName).downcase.delete('.'),
       :key => ServiceConverter.generate_revision_id("#{DocumentHelper.cur_user_host_address(nil) + '/' + fileName}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
       :url => DocumentHelper.get_download_url(fileName),
-      :directUrl => body["directUrl"] ? DocumentHelper.get_download_url(fileName, false) : nil,
+      :directUrl => body['directUrl'] ? DocumentHelper.get_download_url(fileName, false) : nil,
       :referenceData => {
         :instanceId => DocumentHelper.get_server_url(false),
         :fileKey => { :fileName => fileName, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json
@@ -433,7 +433,7 @@ class HomeController < ApplicationController
     }
 
     if JwtHelper.is_enabled
-      data["token"] = JwtHelper.encode(data)
+      data['token'] = JwtHelper.encode(data)
     end
 
     render plain: data.to_json
