@@ -76,7 +76,7 @@ class FormatManager
   def editable
     all.filter do |format|
       format.actions.include?('edit') ||
-      format.actions.include?('lossy-edit')
+        format.actions.include?('lossy-edit')
     end
   end
 
