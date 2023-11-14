@@ -61,7 +61,7 @@ class FileModel
   def key
     uri = DocumentHelper.cur_user_host_address(nil) + '/' + @file_name # get current user host address
     stat = File.mtime(DocumentHelper.storage_path(@file_name, nil)) # get the modification time of the given file
-    return ServiceConverter.generate_revision_id("#{uri}.#{stat.to_s}")
+    return ServiceConverter.generate_revision_id("#{uri}.#{stat}")
   end
 
   # get callback url
