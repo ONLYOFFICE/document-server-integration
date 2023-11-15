@@ -50,8 +50,12 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    @config_manager.storage_path.absolute? ? "#{download_url}&dmode=emb" : DocumentHelper.get_file_uri(@file_name,
+    if @config_manager.storage_path.absolute?
+  "#{download_url}&dmode=emb"
+else
+  DocumentHelper.get_file_uri(@file_name,
                                                                                                        false)
+end
   end
 
   # get document type from its name (word, cell or slide)
@@ -144,8 +148,12 @@ class FileModel
         },
         referenceData: {
           instanceId: DocumentHelper.get_server_url(false),
-          fileKey: !@user.id.eql?('uid-0') ? { fileName: @file_name,
-                                               userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json : nil
+          fileKey: if !@user.id.eql?('uid-0')
+  { fileName: @file_name,
+                                               userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
+else
+  nil
+end
         }
       },
       editorConfig: {
@@ -248,8 +256,12 @@ class FileModel
         dataObj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if is_enable_direct_url == true
           dataObj['directUrl'] =
-            i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}",
+            if i == cur_ver
+  download_url(false)
+else
+  DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}",
                                                                                     false)
+end
         end
         dataObj['version'] = i
 
