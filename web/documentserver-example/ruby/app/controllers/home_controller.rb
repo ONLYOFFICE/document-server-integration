@@ -370,7 +370,7 @@ class HomeController < ApplicationController
     end
 
     link = body['link']
-    if fileName.empty? and body.key?('link')
+    if fileName.empty? && body.key?('link')
       unless link.include?(DocumentHelper.get_server_url(false))
         data = {
           url: link,
@@ -389,7 +389,7 @@ class HomeController < ApplicationController
       end
     end
 
-    if fileName.empty? and body.key?('path')
+    if fileName.empty? && body.key?('path')
       path = File.basename(body['path'])
       fileName = path if File.exist?(DocumentHelper.storage_path(path, nil))
     end
