@@ -151,8 +151,6 @@ end
           fileKey: if !@user.id.eql?('uid-0')
   { fileName: @file_name,
                                                userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
-else
-  nil
 end
         }
       },
@@ -166,8 +164,6 @@ end
                        mode: 'strict',
                        change: false
                      }
-                   else
-                     nil
                    end,
         createUrl: !@user.id.eql?('uid-0') ? create_url : nil,
         templates: @user.templates ? templates : nil,
