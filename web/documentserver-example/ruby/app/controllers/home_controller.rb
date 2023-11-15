@@ -162,7 +162,7 @@ class HomeController < ApplicationController
     user_address = params[:userAddress]
     version = params[:ver]
     file = params[:file]
-    isEmbedded = params[:dmode]
+    params[:dmode]
 
     if JwtHelper.is_enabled && JwtHelper.use_for_request
       jwtHeader = HomeController.config_manager.jwt_header
@@ -190,7 +190,7 @@ class HomeController < ApplicationController
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
     send_file file_path, x_sendfile: true
-  rescue StandardError => ex
+  rescue StandardError
     render plain: '{ "error": "File not found"}'
   end
 
@@ -210,7 +210,7 @@ class HomeController < ApplicationController
     if status == 1 && (file_data['actions'][0]['type']).zero? # finished edit
       user = file_data['actions'][0]['userid'] # get the user id
       unless file_data['users'].index(user)
-        json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
+        TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
       end
     end
 
@@ -306,7 +306,7 @@ class HomeController < ApplicationController
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
     send_file file_path, x_sendfile: true
-  rescue StandardError => ex
+  rescue StandardError
     render plain: '{ "error": "File not found"}'
   end
 

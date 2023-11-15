@@ -108,7 +108,7 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
+          _, new_file_uri, _ = ServiceConverter.get_converted_data(
             download_uri,
             download_ext.delete('.'),
             cur_ext.delete('.'),
@@ -124,7 +124,7 @@ class TrackHelper
           else
             download_uri = new_file_uri
           end
-        rescue StandardError => msg
+        rescue StandardError
           new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext,
                                                           user_address)
         end
@@ -173,7 +173,7 @@ class TrackHelper
         end
 
         saved = 0
-      rescue StandardError => msg
+      rescue StandardError
         saved = 1
       end
 
@@ -198,7 +198,7 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
+          _, new_file_uri, _ = ServiceConverter.get_converted_data(
             download_uri,
             download_ext.delete('.'),
             cur_ext.delete('.'),
@@ -211,7 +211,7 @@ class TrackHelper
           else
             download_uri = new_file_uri
           end
-        rescue StandardError => msg
+        rescue StandardError
           new_file_name = true
         end
       end
@@ -255,7 +255,7 @@ class TrackHelper
         end
 
         saved = 0
-      rescue StandardError => msg
+      rescue StandardError
         saved = 1
       end
 
