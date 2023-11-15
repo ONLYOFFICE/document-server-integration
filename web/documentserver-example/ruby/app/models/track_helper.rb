@@ -234,8 +234,10 @@ class TrackHelper
                       end
           forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
         else
-          file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext,
-                                                      user_address) if new_file_name
+          if new_file_name
+            file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext,
+                                                        user_address)
+          end
           forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
           if forcesave_path.eql?('')
             # if the path to the new file doesn't exist, create it

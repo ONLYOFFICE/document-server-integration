@@ -128,8 +128,10 @@ class Users
     def get_users_for_mentions(id)
       usersData = []
       @@users.each do |user|
-        usersData.push({ name: user.name,
-                         email: user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
+        if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
+          usersData.push({ name: user.name,
+                           email: user.email })
+        end
       end
       usersData
     end
