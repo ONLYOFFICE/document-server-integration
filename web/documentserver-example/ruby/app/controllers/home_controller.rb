@@ -74,7 +74,7 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
       render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}" # write a new file name to the response
-    rescue => ex
+    rescue StandardError => ex
       render plain: "{ \"error\": \"#{ex.message}\"}" # write an error message to the response
     end
   end
@@ -133,7 +133,7 @@ class HomeController < ApplicationController
       end
 
       render plain: "{ \"filename\" : \"#{file_name}\"}"
-    rescue => ex
+    rescue StandardError => ex
       render plain: "{ \"error\": \"#{ex.message}\"}"
     
   end
@@ -172,7 +172,7 @@ class HomeController < ApplicationController
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
       send_file file_path, :x_sendfile => true
-    rescue => ex
+    rescue StandardError => ex
       render plain: '{ "error": "File not found"}'
     
   end
@@ -288,7 +288,7 @@ class HomeController < ApplicationController
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
       send_file file_path, :x_sendfile => true
-    rescue => ex
+    rescue StandardError => ex
       render plain: '{ "error": "File not found"}'
     
   end
@@ -330,7 +330,7 @@ class HomeController < ApplicationController
 
       render plain: "{\"file\" : \"#{file_name}\"}"
       nil
-    rescue => ex
+    rescue StandardError => ex
       render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
       nil
     
@@ -477,7 +477,7 @@ class HomeController < ApplicationController
       error: nil,
       success: true
     }
-  rescue => error
+  rescue StandardError => error
     response.status = :internal_server_error
     render json: {
       error: error.message,

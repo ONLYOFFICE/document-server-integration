@@ -41,7 +41,7 @@ class JwtHelper
     def decode(token)
       begin
         decoded = JWT.decode token, @jwt_secret, true, { algorithm: 'HS256' }
-      rescue
+      rescue StandardError
         return ''
       end
       # decoded = Array [ {"data"=>"test"}, # payload

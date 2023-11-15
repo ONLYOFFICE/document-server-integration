@@ -78,7 +78,7 @@ class ServiceConverter
         data = res.body # and take its body
       rescue Timeout::Error
         # try again
-      rescue => ex
+      rescue StandardError => ex
         raise ex.message
       end
 
