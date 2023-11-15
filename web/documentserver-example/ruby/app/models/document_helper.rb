@@ -216,7 +216,6 @@ class DocumentHelper
         "#{DocumentHelper.config_manager.storage_path}/" \
         "#{cur_user_host_address(nil)}/" \
         "#{ERB::Util.url_encode(file_name)}"
-      
     end
 
     # get history path url
@@ -226,15 +225,13 @@ class DocumentHelper
       "#{get_server_url(is_serverUrl)}/downloadhistory/?"\
        "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
        "&file=#{ERB::Util.url_encode(file)}#{user_host}"
-      
     end
 
     # get server url
     def get_server_url(for_document_server)
-      return DocumentHelper.config_manager.example_uri.to_s if 
+      return DocumentHelper.config_manager.example_uri.to_s if
         for_document_server &&
         DocumentHelper.config_manager.example_uri
-      
 
       @@base_url
     end
@@ -260,34 +257,30 @@ class DocumentHelper
     # get internal file extension by its type
     def get_internal_extension(file_type)
       case file_type
-            when 'word'  # .docx for word type
-              '.docx'
-            when 'cell'  # .xlsx for cell type
-              '.xlsx'
-            when 'slide' # .pptx for slide type
-              '.pptx'
-            else
-              '.docx' # the default value is .docx
-            end
-
-      
+      when 'word'  # .docx for word type
+        '.docx'
+      when 'cell'  # .xlsx for cell type
+        '.xlsx'
+      when 'slide' # .pptx for slide type
+        '.pptx'
+      else
+        '.docx' # the default value is .docx
+      end
     end
 
     # get image url for templates
     def get_template_image_url(file_type)
       path = "#{get_server_url(true)}/assets/"
       case file_type
-                  when 'word'  # for word type
-                    "#{path}file_docx.svg"
-                  when 'cell'  # .xlsx for cell type
-                    "#{path}file_xlsx.svg"
-                  when 'slide' # .pptx for slide type
-                    "#{path}file_pptx.svg"
-                  else
-                    "#{path}file_docx.svg" # the default value is .docx
-                  end
-
-      
+      when 'word'  # for word type
+        "#{path}file_docx.svg"
+      when 'cell'  # .xlsx for cell type
+        "#{path}file_xlsx.svg"
+      when 'slide' # .pptx for slide type
+        "#{path}file_pptx.svg"
+      else
+        "#{path}file_docx.svg" # the default value is .docx
+      end
     end
 
     # get files information

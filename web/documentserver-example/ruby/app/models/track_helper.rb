@@ -297,7 +297,6 @@ class TrackHelper
       end
 
       JSON.parse(data) # convert the response body into the json format
-      
     end
 
     # save file from the url
