@@ -40,14 +40,14 @@ class ServiceConverter
       document_revision_id = generate_revision_id(document_revision_id)
 
       payload = { # write all the conversion parameters to the payload
-        :async => is_async ? true : false,
-        :url => document_uri,
-        :outputtype => to_ext.delete('.'),
-        :filetype => from_ext.delete('.'),
-        :title => title,
-        :key => document_revision_id,
-        :password => file_pass,
-        :region => lang
+        async: is_async ? true : false,
+        url: document_uri,
+        outputtype: to_ext.delete('.'),
+        filetype: from_ext.delete('.'),
+        title:,
+        key: document_revision_id,
+        password: file_pass,
+        region: lang
       }
 
       data = nil
@@ -66,7 +66,7 @@ class ServiceConverter
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwtHeader = ServiceConverter.config_manager.jwt_header; # get signature authorization header
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}") # set it to the request with the Bearer prefix
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}") # set it to the request with the Bearer prefix
         end
 
         req.body = payload.to_json

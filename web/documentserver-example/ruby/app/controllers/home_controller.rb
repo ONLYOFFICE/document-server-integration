@@ -31,7 +31,7 @@ class HomeController < ApplicationController
   def editor
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
-    @file = FileModel.new(:file_name => File.basename(params[:fileName]), :mode => params[:editorsMode], :type => params[:editorsType], :user_ip => request.remote_ip, :lang => cookies[:ulang], :user => user, :action_data => params[:actionLink], :direct_url => params[:directUrl])
+    @file = FileModel.new(file_name: File.basename(params[:fileName]), mode: params[:editorsMode], type: params[:editorsType], user_ip: request.remote_ip, lang: cookies[:ulang], user:, action_data: params[:actionLink], direct_url: params[:directUrl])
   end
 
   # creating a sample document
@@ -39,7 +39,7 @@ class HomeController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
-    redirect_to :controller => 'home', :action => 'editor', :fileName => file_name, :userId => user.id
+    redirect_to controller: 'home', action: 'editor', fileName: file_name, userId: user.id
   end
 
   # uploading a file
@@ -154,11 +154,11 @@ class HomeController < ApplicationController
           hdr.slice!(0, 'Bearer '.length)
           token = JwtHelper.decode(hdr)
           if !token || token.eql?('')
-            render plain: 'JWT validation failed', :status => 403
+            render plain: 'JWT validation failed', status: 403
             return
           end
         else
-          render plain: 'JWT validation failed', :status => 403
+          render plain: 'JWT validation failed', status: 403
           return
         end
       end
@@ -171,7 +171,7 @@ class HomeController < ApplicationController
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
-      send_file file_path, :x_sendfile => true
+      send_file file_path, x_sendfile: true
     rescue StandardError => ex
       render plain: '{ "error": "File not found"}'
     
@@ -254,7 +254,7 @@ class HomeController < ApplicationController
     response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
-    send_file csvPath, :x_sendfile => true
+    send_file csvPath, x_sendfile: true
   end
 
   # downloading a file
@@ -272,7 +272,7 @@ class HomeController < ApplicationController
           token = JwtHelper.decode(hdr)
         end
         if !token || token.eql?('')
-          render plain: 'JWT validation failed', :status => 403
+          render plain: 'JWT validation failed', status: 403
           return
         end
       end
@@ -287,7 +287,7 @@ class HomeController < ApplicationController
       response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
       response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
-      send_file file_path, :x_sendfile => true
+      send_file file_path, x_sendfile: true
     rescue StandardError => ex
       render plain: '{ "error": "File not found"}'
     
@@ -347,7 +347,7 @@ class HomeController < ApplicationController
     newfilename += orig_ext if orig_ext != cur_ext
 
     meta = {
-      :title => newfilename
+      title: newfilename
     }
 
     json_data = TrackHelper.command_request('meta', dockey, meta)
@@ -400,16 +400,16 @@ class HomeController < ApplicationController
     end
 
     data = {
-      :fileType => File.extname(fileName).downcase.delete('.'),
-      :key => ServiceConverter.generate_revision_id("#{"#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}"}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
-      :url => DocumentHelper.get_download_url(fileName),
-      :directUrl => body['directUrl'] ? DocumentHelper.get_download_url(fileName, false) : nil,
-      :referenceData => {
-        :instanceId => DocumentHelper.get_server_url(false),
-        :fileKey => { :fileName => fileName, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json
+      fileType: File.extname(fileName).downcase.delete('.'),
+      key: ServiceConverter.generate_revision_id("#{"#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}"}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
+      url: DocumentHelper.get_download_url(fileName),
+      directUrl: body['directUrl'] ? DocumentHelper.get_download_url(fileName, false) : nil,
+      referenceData: {
+        instanceId: DocumentHelper.get_server_url(false),
+        fileKey: { fileName:, userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
       },
-      :path => fileName,
-      :link => "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{fileName}"
+      path: fileName,
+      link: "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{fileName}"
     }
 
     data['token'] = JwtHelper.encode(data) if JwtHelper.is_enabled

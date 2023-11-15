@@ -90,17 +90,17 @@ class Users
              nil, [], @@descr_user_1, true, true),
     User.new('uid-2', 'Mark Pottato', 'pottato@example.com',
              'group-2', ['group-2', ''], {
-               :view => '',
-               :edit => ['group-2', ''],
-               :remove => ['group-2']
+               view: '',
+               edit: ['group-2', ''],
+               remove: ['group-2']
              },
              ['group-2', ''],
              true, [], @@descr_user_2, false, true),
     User.new('uid-3', 'Hamish Mitchell', nil,
              'group-3', ['group-2'], {
-               :view => %w[group-3 group-2],
-               :edit => ['group-2'],
-               :remove => []
+               view: %w[group-3 group-2],
+               edit: ['group-2'],
+               remove: []
              },
              ['group-2'],
              false, %w[copy download print], @@descr_user_3, false, false),
@@ -126,7 +126,7 @@ class Users
     def get_users_for_mentions(id)
       usersData = []
       @@users.each do |user|
-        usersData.push({ :name => user.name, :email => user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
+        usersData.push({ name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
       end
       usersData
     end

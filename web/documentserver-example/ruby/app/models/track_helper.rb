@@ -234,11 +234,11 @@ class TrackHelper
     def command_request(method, key, meta = nil)
       # create a payload object with the method and key
       payload = {
-        :c => method,
-        :key => key
+        c: method,
+        key:
       }
 
-      payload.merge!({ :meta => meta }) if !meta.nil?
+      payload.merge!({ meta: }) if !meta.nil?
 
       data = nil
       begin
@@ -253,7 +253,7 @@ class TrackHelper
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwtHeader = TrackHelper.config_manager.jwt_header; # get signature authorization header
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ :payload => payload })}") # set it to the request with the Bearer prefix
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}") # set it to the request with the Bearer prefix
         end
 
         req.body = payload.to_json # convert the payload object into the json format

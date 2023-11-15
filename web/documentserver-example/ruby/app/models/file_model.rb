@@ -97,87 +97,87 @@ class FileModel
     templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
     templates = [
       {
-        :image => '',
-        :title => 'Blank',
-        :url => create_url
+        image: '',
+        title: 'Blank',
+        url: create_url
       },
       {
-        :image => templatesImageUrl,
-        :title => 'With sample content',
-        :url => "#{create_url}&sample=true"
+        image: templatesImageUrl,
+        title: 'With sample content',
+        url: "#{create_url}&sample=true"
       }
     ]
 
     config = {
-      :type => type,
-      :documentType => document_type,
-      :document => {
-        :title => @file_name,
-        :url => download_url,
-        :directUrl => is_enable_direct_url ? download_url(false) : '',
-        :fileType => file_ext.delete('.'),
-        :key => key,
-        :info => {
-          :owner => 'Me',
-          :uploaded => Time.now.to_s,
-          :favorite => @user.favorite
+      type:,
+      documentType: document_type,
+      document: {
+        title: @file_name,
+        url: download_url,
+        directUrl: is_enable_direct_url ? download_url(false) : '',
+        fileType: file_ext.delete('.'),
+        key:,
+        info: {
+          owner: 'Me',
+          uploaded: Time.now.to_s,
+          favorite: @user.favorite
         },
-        :permissions => { # the permission for the document to be edited and downloaded or not
-          :comment => !editorsmode.eql?('view') && !editorsmode.eql?('fillForms') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
-          :copy => !@user.deniedPermissions.include?('copy'),
-          :download => !@user.deniedPermissions.include?('download'),
-          :edit => canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('view') || editorsmode.eql?('filter') || editorsmode.eql?('blockcontent')),
-          :print => !@user.deniedPermissions.include?('print'),
-          :fillForms => !editorsmode.eql?('view') && !editorsmode.eql?('comment') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
-          :modifyFilter => !editorsmode.eql?('filter'),
-          :modifyContentControl => !editorsmode.eql?('blockcontent'),
-          :review => canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('review')),
-          :chat => !@user.id.eql?('uid-0'),
-          :reviewGroups => @user.reviewGroups,
-          :commentGroups => @user.commentGroups,
-          :userInfoGroups => @user.userInfoGroups,
-          :protect => !@user.deniedPermissions.include?('protect')
+        permissions: { # the permission for the document to be edited and downloaded or not
+          comment: !editorsmode.eql?('view') && !editorsmode.eql?('fillForms') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          copy: !@user.deniedPermissions.include?('copy'),
+          download: !@user.deniedPermissions.include?('download'),
+          edit: canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('view') || editorsmode.eql?('filter') || editorsmode.eql?('blockcontent')),
+          print: !@user.deniedPermissions.include?('print'),
+          fillForms: !editorsmode.eql?('view') && !editorsmode.eql?('comment') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          modifyFilter: !editorsmode.eql?('filter'),
+          modifyContentControl: !editorsmode.eql?('blockcontent'),
+          review: canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('review')),
+          chat: !@user.id.eql?('uid-0'),
+          reviewGroups: @user.reviewGroups,
+          commentGroups: @user.commentGroups,
+          userInfoGroups: @user.userInfoGroups,
+          protect: !@user.deniedPermissions.include?('protect')
         },
-        :referenceData => {
-          :instanceId => DocumentHelper.get_server_url(false),
-          :fileKey => !@user.id.eql?('uid-0') ? { :fileName => @file_name, :userAddress => DocumentHelper.cur_user_host_address(nil) }.to_json : nil
+        referenceData: {
+          instanceId: DocumentHelper.get_server_url(false),
+          fileKey: !@user.id.eql?('uid-0') ? { fileName: @file_name, userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json : nil
         }
       },
-      :editorConfig => {
-        :actionLink => @action_data ? JSON.parse(@action_data) : nil,
-        :mode => mode,
-        :lang => @lang || 'en',
-        :callbackUrl => callback_url, # absolute URL to the document storage service
-        :coEditing => if editorsmode.eql?('view') && @user.id.eql?('uid-0')
+      editorConfig: {
+        actionLink: @action_data ? JSON.parse(@action_data) : nil,
+        mode:,
+        lang: @lang || 'en',
+        callbackUrl: callback_url, # absolute URL to the document storage service
+        coEditing: if editorsmode.eql?('view') && @user.id.eql?('uid-0')
                         {
-                          :mode => 'strict',
-                          :change => false
+                          mode: 'strict',
+                          change: false
                         }
                       else
                         nil
                       end,
-        :createUrl => !@user.id.eql?('uid-0') ? create_url : nil,
-        :templates => @user.templates ? templates : nil,
-        :user => { # the user currently viewing or editing the document
-          :id => !@user.id.eql?('uid-0') ? @user.id : nil,
-          :name => @user.name,
-          :group => @user.group,
-          :image => @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
+        createUrl: !@user.id.eql?('uid-0') ? create_url : nil,
+        templates: @user.templates ? templates : nil,
+        user: { # the user currently viewing or editing the document
+          id: !@user.id.eql?('uid-0') ? @user.id : nil,
+          name: @user.name,
+          group: @user.group,
+          image: @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
         },
-        :embedded => { # the parameters for the embedded document type
-          :saveUrl => download_url(false), # the absolute URL that will allow the document to be saved onto the user personal computer
-          :embedUrl => download_url(false),  # the absolute URL to the document serving as a source file for the document embedded into the web page
-          :shareUrl => download_url(false),  # the absolute URL that will allow other users to share this document
-          :toolbarDocked => 'top' # the place for the embedded viewer toolbar (top or bottom)
+        embedded: { # the parameters for the embedded document type
+          saveUrl: download_url(false), # the absolute URL that will allow the document to be saved onto the user personal computer
+          embedUrl: download_url(false),  # the absolute URL to the document serving as a source file for the document embedded into the web page
+          shareUrl: download_url(false),  # the absolute URL that will allow other users to share this document
+          toolbarDocked: 'top' # the place for the embedded viewer toolbar (top or bottom)
         },
-        :customization => { # the parameters for the editor interface
-          :about => true, # the About section display
-          :comments => true,
-          :feedback => true, # the Feedback & Support menu button display
-          :forcesave => false, # adding the request for the forced file saving to the callback handler
-          :submitForm => submitForm, # the Submit form button state
-          :goback => {
-            :url => DocumentHelper.get_server_url(false)
+        customization: { # the parameters for the editor interface
+          about: true, # the About section display
+          comments: true,
+          feedback: true, # the Feedback & Support menu button display
+          forcesave: false, # adding the request for the forced file saving to the callback handler
+          submitForm:, # the Submit form button state
+          goback: {
+            url: DocumentHelper.get_server_url(false)
           }
         }
       }
@@ -226,8 +226,8 @@ class FileModel
             # write information about changes to the object
             obj['created'] = cr_info['created']
             obj['user'] = {
-              :id => cr_info['uid'],
-              :name => cr_info['uname']
+              id: cr_info['uid'],
+              name: cr_info['uname']
             }
           end
         end
@@ -260,16 +260,16 @@ class FileModel
           # write key and url information about previous file version with optional direct url
           dataObj['previous'] = if is_enable_direct_url == true
                                   { # write key and url information about previous file version with optional direct url
-                                    :fileType => prev['fileType'],
-                                    :key => prev['key'],
-                                    :url => prev['url'],
-                                    :directUrl => prev['directUrl']
+                                    fileType: prev['fileType'],
+                                    key: prev['key'],
+                                    url: prev['url'],
+                                    directUrl: prev['directUrl']
                                   }
                                 else
                                   {
-                                    :fileType => prev['fileType'],
-                                    :key => prev['key'],
-                                    :url => prev['url']
+                                    fileType: prev['fileType'],
+                                    key: prev['key'],
+                                    url: prev['url']
                                   }
                                 end
 
@@ -286,11 +286,11 @@ class FileModel
       end
 
       return {
-        :hist => { # write history information about the current file version to the hist
-          :currentVersion => cur_ver,
-          :history => hist
+        hist: { # write history information about the current file version to the hist
+          currentVersion: cur_ver,
+          history: hist
         },
-        :histData => histData
+        histData:
       }
     end
 
@@ -304,14 +304,14 @@ class FileModel
     # direct url to the image
     insert_image = if is_enable_direct_url == true
                      {
-                       :fileType => 'png', # image file type
-                       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
-                       :directUrl => "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
+                       fileType: 'png', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
                      }
                    else
                      {
-                       :fileType => 'png', # image file type
-                       :url => "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+                       fileType: 'png', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
                      }
                    end
 
@@ -329,14 +329,14 @@ class FileModel
     # direct url to the compared file
     compare_file = if is_enable_direct_url == true
                      {
-                       :fileType => 'docx', # file type
-                       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
-                       :directUrl => "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
+                       fileType: 'docx', # file type
+                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
                      }
                    else
                      {
-                       :fileType => 'docx', # file type
-                       :url => "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
+                       fileType: 'docx', # file type
+                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
                      }
                    end
 
@@ -354,14 +354,14 @@ class FileModel
     # direct url to the mail merge recipients file
     dataSpreadsheet = if is_enable_direct_url == true
                         {
-                          :fileType => 'csv', # file type
-                          :url => "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
-                          :directUrl => "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
+                          fileType: 'csv', # file type
+                          url: "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
+                          directUrl: "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
                         }
                       else
                         {
-                          :fileType => 'csv', # file type
-                          :url => "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
+                          fileType: 'csv', # file type
+                          url: "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
                         }
                       end
 

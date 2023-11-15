@@ -179,9 +179,9 @@ class DocumentHelper
 
       # write user name, user uid and the creation time to the json object
       json = {
-        :created => Time.now.to_formatted_s(:db),
-        :uid => uid,
-        :uname => uname
+        created: Time.now.to_formatted_s(:db),
+        uid:,
+        uname:
       }
 
       # write file meta information to the createdInfo.json file
