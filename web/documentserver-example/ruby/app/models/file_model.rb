@@ -200,7 +200,7 @@ class FileModel
     hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil)) # get the path to the file history
     cur_ver = DocumentHelper.get_file_version(hist_dir) # get the file version
 
-    if cur_ver > 0 # if file was modified
+    if cur_ver.positive? # if file was modified
       hist = []
       histData = {}
 
