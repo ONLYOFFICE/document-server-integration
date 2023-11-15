@@ -230,10 +230,10 @@ class DocumentHelper
 
     # get server url
     def get_server_url(for_document_server)
-      return DocumentHelper.config_manager.example_uri.to_s if (
+      return DocumentHelper.config_manager.example_uri.to_s if 
         for_document_server &&
         DocumentHelper.config_manager.example_uri
-      )
+      
 
       @@base_url
     end
