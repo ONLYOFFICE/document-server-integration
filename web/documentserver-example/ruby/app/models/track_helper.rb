@@ -108,7 +108,7 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          _, new_file_uri, _ = ServiceConverter.get_converted_data(
+          _, new_file_uri, = ServiceConverter.get_converted_data(
             download_uri,
             download_ext.delete('.'),
             cur_ext.delete('.'),
@@ -198,7 +198,7 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          _, new_file_uri, _ = ServiceConverter.get_converted_data(
+          _, new_file_uri, = ServiceConverter.get_converted_data(
             download_uri,
             download_ext.delete('.'),
             cur_ext.delete('.'),
