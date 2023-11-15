@@ -48,6 +48,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +73,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -147,6 +149,28 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    private ResponseEntity<Resource> downloadSample(final String fileName) {
+        String serverPath = System.getProperty("user.dir");
+        String contentType = "application/octet-stream";
+        String[] fileLocation = new String[] {serverPath, "src", "main", "resources", "assets", "document-templates",
+                                              "sample", fileName};
+        Path filePath = Paths.get(String.join(File.separator, fileLocation));
+        Resource resource;
+        try {
+            resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+        }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // download data from the specified history file
@@ -374,14 +398,12 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name")
                                                final String name) {  // get sample files from the assests
-        String fileName = Path.of("assets", "document-templates", "sample", fileUtility.getFileName(name)).toString();
-        return downloadFile(fileName);
+        return downloadSample(name);
     }
 
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv() {  // download a csv file
-        String fileName = Path.of("assets", "document-templates", "sample", "csv.csv").toString();
-        return downloadFile(fileName);
+        return downloadSample("csv.csv");
     }
 
     @GetMapping("/files")

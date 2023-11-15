@@ -278,6 +278,18 @@ class HomeController < ApplicationController
     send_file csvPath, :x_sendfile => true
   end
 
+  # downloading an assets file
+  def assets
+    file_name = File.basename(params[:fileName])
+    asset_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
+
+    response.headers['Content-Length'] = File.size(asset_path).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(asset_path).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
+
+    send_file asset_path, :x_sendfile => true
+  end
+  
   # downloading a file
   def download
     begin
