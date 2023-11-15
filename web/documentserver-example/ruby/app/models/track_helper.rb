@@ -61,7 +61,7 @@ class TrackHelper
         file_data = file_data['payload'] if inHeader
       end
 
-      return file_data
+      file_data
     end
 
     def resolve_process_save_body(body)
@@ -264,7 +264,7 @@ class TrackHelper
       end
 
       json_data = JSON.parse(data) # convert the response body into the json format
-      return json_data
+      json_data
     end
 
     # save file from the url

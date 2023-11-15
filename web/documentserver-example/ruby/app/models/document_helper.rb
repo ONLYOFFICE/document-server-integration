@@ -102,7 +102,7 @@ class DocumentHelper
         return ''
       end
 
-      return directory.to_s
+      directory.to_s
     end
 
     # get the path to the file history
@@ -112,12 +112,12 @@ class DocumentHelper
       # create history directory if it doesn't exist
       FileUtils.mkdir_p(directory) unless File.directory?(directory)
 
-      return directory
+      directory
     end
 
     # get the path to the specified file version
     def version_dir(hist_dir, ver)
-      return File.join(hist_dir, ver.to_s)
+      File.join(hist_dir, ver.to_s)
     end
 
     # get the last file version
@@ -134,7 +134,7 @@ class DocumentHelper
         end
       end
 
-      return ver
+      ver
     end
 
     # get the correct file name if such a name already exists
@@ -170,7 +170,7 @@ class DocumentHelper
         end
       end
 
-      return arr
+      arr
     end
 
     # create file meta information
@@ -211,7 +211,7 @@ class DocumentHelper
     def get_file_uri(file_name, for_document_server)
       uri = "#{get_server_url(for_document_server)}/#{DocumentHelper.config_manager.storage_path}/#{cur_user_host_address(nil)}/#{ERB::Util.url_encode(file_name)}"
 
-      return uri
+      uri
     end
 
     # get history path url
@@ -219,14 +219,14 @@ class DocumentHelper
       # for redirection to my link
       user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
       uri = "#{get_server_url(is_serverUrl)}/downloadhistory/?fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}&file=#{ERB::Util.url_encode(file)}#{user_host}"
-      return uri
+      uri
     end
 
     # get server url
     def get_server_url(for_document_server)
       return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
 
-      return @@base_url
+      @@base_url
     end
 
     # get callback url
@@ -306,7 +306,7 @@ class DocumentHelper
 
       return '"File not found"' if !file_id.nil?
 
-      return result
+      result
     end
 
     # enable ignore certificate

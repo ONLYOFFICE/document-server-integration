@@ -24,17 +24,17 @@ class JwtHelper
   class << self
     # check if a secret key to generate token exists or not
     def is_enabled
-      return @jwt_secret && !@jwt_secret.empty? ? true : false
+      @jwt_secret && !@jwt_secret.empty? ? true : false
     end
 
     # check if a secret key used for request
     def use_for_request
-      return @token_use_for_request
+      @token_use_for_request
     end
 
     # encode a payload object into a token using a secret key
     def encode(payload)
-      return JWT.encode payload, @jwt_secret, 'HS256' # define the hashing algorithm and get token
+      JWT.encode payload, @jwt_secret, 'HS256' # define the hashing algorithm and get token
     end
 
     # decode a token into a payload object using a secret key
@@ -46,7 +46,7 @@ class JwtHelper
       end
       # decoded = Array [ {"data"=>"test"}, # payload
       #                   {"alg"=>"HS256"} # header   ]
-      return decoded[0].to_json   #   get json payload
+      decoded[0].to_json   #   get json payload
     end
   end
 end

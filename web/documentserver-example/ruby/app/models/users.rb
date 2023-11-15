@@ -119,7 +119,7 @@ class Users
       for user in @@users do
         return user if user.id.eql?(id)
       end
-      return @@users[0]
+      @@users[0]
     end
 
     # get a list of users with their names and emails for mentions
@@ -128,7 +128,7 @@ class Users
       for user in @@users do
         usersData.push({ :name => user.name, :email => user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
       end
-      return usersData
+      usersData
     end
     
     # get a list of users with their id, names and emails for protect
@@ -137,7 +137,7 @@ class Users
       for user in @@users do
         users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
       end
-      return users_data
+      users_data
     end
   end
 end

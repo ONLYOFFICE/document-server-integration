@@ -34,7 +34,7 @@ class FileModel
   end
 
   def type
-    @type ? @type : 'desktop' # the default platform type is desktop
+    @type || 'desktop' # the default platform type is desktop
   end
 
   # get file extension from its name
@@ -61,7 +61,7 @@ class FileModel
   def key
     uri = "#{DocumentHelper.cur_user_host_address(nil)}/#{@file_name}" # get current user host address
     stat = File.mtime(DocumentHelper.storage_path(@file_name, nil)) # get the modification time of the given file
-    return ServiceConverter.generate_revision_id("#{uri}.#{stat}")
+    ServiceConverter.generate_revision_id("#{uri}.#{stat}")
   end
 
   # get callback url
@@ -86,7 +86,7 @@ class FileModel
 
   # get config parameters
   def get_config
-    editorsmode = @mode ? @mode : 'edit' # mode: view/edit/review/comment/fillForms/embedded
+    editorsmode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
     canEdit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
     if (!canEdit && editorsmode.eql?('edit') || editorsmode.eql?('fillForms')) && DocumentHelper.fill_forms_exts.include?(file_ext)
       editorsmode = 'fillForms'
@@ -146,7 +146,7 @@ class FileModel
       :editorConfig => {
         :actionLink => @action_data ? JSON.parse(@action_data) : nil,
         :mode => mode,
-        :lang => @lang ? @lang : 'en',
+        :lang => @lang || 'en',
         :callbackUrl => callback_url, # absolute URL to the document storage service
         :coEditing => if editorsmode.eql?('view') && @user.id.eql?('uid-0')
                         {
@@ -187,7 +187,7 @@ class FileModel
       config['token'] = JwtHelper.encode(config) # encode a payload object into a token and write it to the config
     end
 
-    return config
+    config
   end
 
   # get document history
@@ -294,7 +294,7 @@ class FileModel
       }
     end
 
-    return nil
+    nil
   end
 
   # get image information
@@ -319,7 +319,7 @@ class FileModel
       insert_image['token'] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
     end
 
-    return insert_image.to_json.tr('{', '').tr('}', '')
+    insert_image.to_json.tr('{', '').tr('}', '')
   end
 
   # get compared file information
@@ -344,7 +344,7 @@ class FileModel
       compare_file['token'] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
     end
 
-    return compare_file
+    compare_file
   end
 
   # get mail merge recipients information
@@ -369,12 +369,12 @@ class FileModel
       dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object
     end
 
-    return dataSpreadsheet
+    dataSpreadsheet
   end
 
   # get users data for mentions
   def get_users_mentions
-    return !@user.id.eql?('uid-0') ? Users.get_users_for_mentions(@user.id) : nil
+    !@user.id.eql?('uid-0') ? Users.get_users_for_mentions(@user.id) : nil
   end
 
   def get_users_info
@@ -399,16 +399,16 @@ class FileModel
       u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
       users_info.push(u)
     end
-    return users_info
+    users_info
   end
 
   # get users data for protect
   def get_users_protect
-    return !@user.id.eql?('uid-0') ? Users.get_users_for_protect(@user.id) : nil
+    !@user.id.eql?('uid-0') ? Users.get_users_for_protect(@user.id) : nil
   end
 
   # get direct url existence flag
   def is_enable_direct_url
-    return !@direct_url.nil? && @direct_url == 'true'
+    !@direct_url.nil? && @direct_url == 'true'
   end
 end

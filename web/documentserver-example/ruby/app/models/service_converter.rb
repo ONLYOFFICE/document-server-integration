@@ -83,7 +83,7 @@ class ServiceConverter
       end
 
       json_data = JSON.parse(data) # parse response body
-      return get_response_data(json_data) # get response url
+      get_response_data(json_data) # get response url
     end
 
     # generate the document key value
@@ -167,7 +167,7 @@ class ServiceConverter
 
       end
 
-      return result_percent, response_uri, response_file_type
+      [result_percent, response_uri, response_file_type]
     end
   end
 end

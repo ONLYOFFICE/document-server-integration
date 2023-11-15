@@ -81,15 +81,15 @@ class HomeController < ApplicationController
 
   # converting a file
   def convert
-    begin
+    
       file_data = request.body.read
       return '' if file_data.nil? || file_data.empty?
 
       body = JSON.parse(file_data)
 
       file_name = File.basename(body['filename'])
-      lang = cookies[:ulang] ? cookies[:ulang] : 'en'
-      file_pass = body['filePass'] ? body['filePass'] : nil
+      lang = cookies[:ulang] || 'en'
+      file_pass = body['filePass'] || nil
       file_uri = DocumentHelper.get_download_url(file_name)
       extension = File.extname(file_name).downcase
       internal_extension = 'ooxml'
@@ -135,12 +135,12 @@ class HomeController < ApplicationController
       render plain: "{ \"filename\" : \"#{file_name}\"}"
     rescue => ex
       render plain: "{ \"error\": \"#{ex.message}\"}"
-    end
+    
   end
 
   # downloading a history file from public
   def downloadhistory
-    begin
+    
       file_name = File.basename(params[:fileName])
       user_address = params[:userAddress]
       version = params[:ver]
@@ -174,7 +174,7 @@ class HomeController < ApplicationController
       send_file file_path, :x_sendfile => true
     rescue => ex
       render plain: '{ "error": "File not found"}'
-    end
+    
   end
 
   # tracking file changes
@@ -210,7 +210,7 @@ class HomeController < ApplicationController
     end
 
     render plain: '{"error":0}'
-    return
+    nil
   end
 
   # removing a file
@@ -234,7 +234,7 @@ class HomeController < ApplicationController
     end
 
     render plain: '{"success":true}' # report that the operation is successful
-    return
+    nil
   end
 
   # getting files information
@@ -259,7 +259,7 @@ class HomeController < ApplicationController
 
   # downloading a file
   def download
-    begin
+    
       file_name = File.basename(params[:fileName])
       user_address = params[:userAddress]
       isEmbedded = params[:dmode]
@@ -290,12 +290,12 @@ class HomeController < ApplicationController
       send_file file_path, :x_sendfile => true
     rescue => ex
       render plain: '{ "error": "File not found"}'
-    end
+    
   end
 
   # Save Copy as...
   def saveas
-    begin
+    
       body = JSON.parse(request.body.read)
       file_url = body['url']
       title = body['title']
@@ -329,11 +329,11 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
 
       render plain: "{\"file\" : \"#{file_name}\"}"
-      return
+      nil
     rescue => ex
       render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
-      return
-    end
+      nil
+    
   end
 
   # Rename...
