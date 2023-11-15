@@ -293,8 +293,8 @@ class TrackHelper
         raise ex.message
       end
 
-      json_data = JSON.parse(data) # convert the response body into the json format
-      json_data
+      JSON.parse(data) # convert the response body into the json format
+      
     end
 
     # save file from the url

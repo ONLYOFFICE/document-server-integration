@@ -211,21 +211,21 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = "#{get_server_url(for_document_server)}/" \
+      "#{get_server_url(for_document_server)}/" \
         "#{DocumentHelper.config_manager.storage_path}/" \
         "#{cur_user_host_address(nil)}/" \
         "#{ERB::Util.url_encode(file_name)}"
-      uri
+      
     end
 
     # get history path url
     def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
       user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
-      uri = "#{get_server_url(is_serverUrl)}/downloadhistory/?"\
+      "#{get_server_url(is_serverUrl)}/downloadhistory/?"\
        "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
        "&file=#{ERB::Util.url_encode(file)}#{user_host}"
-      uri
+      
     end
 
     # get server url
@@ -258,7 +258,7 @@ class DocumentHelper
 
     # get internal file extension by its type
     def get_internal_extension(file_type)
-      ext = case file_type
+      case file_type
             when 'word'  # .docx for word type
               '.docx'
             when 'cell'  # .xlsx for cell type
@@ -269,13 +269,13 @@ class DocumentHelper
               '.docx' # the default value is .docx
             end
 
-      ext
+      
     end
 
     # get image url for templates
     def get_template_image_url(file_type)
       path = "#{get_server_url(true)}/assets/"
-      full_path = case file_type
+      case file_type
                   when 'word'  # for word type
                     "#{path}file_docx.svg"
                   when 'cell'  # .xlsx for cell type
@@ -286,7 +286,7 @@ class DocumentHelper
                     "#{path}file_docx.svg" # the default value is .docx
                   end
 
-      full_path
+      
     end
 
     # get files information
