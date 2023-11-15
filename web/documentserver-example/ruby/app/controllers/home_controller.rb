@@ -206,7 +206,7 @@ class HomeController < ApplicationController
     user_address = params[:userAddress]
     file_name = File.basename(params[:fileName])
 
-    if status == 1 && ((file_data['actions'][0]['type']).zero?) # finished edit
+    if status == 1 && (file_data['actions'][0]['type']).zero? # finished edit
       user = file_data['actions'][0]['userid'] # get the user id
       unless file_data['users'].index(user)
         json_data = TrackHelper.command_request('forcesave', file_data['key']) # call the forcesave command
