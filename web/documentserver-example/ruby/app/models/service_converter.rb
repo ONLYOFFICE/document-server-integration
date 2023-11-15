@@ -123,7 +123,7 @@ class ServiceConverter
       when 0
       # public const int c_nErrorNo = 0
       else
-        error_message = "ErrorCode = #{error_code.to_s}" # default value for the error message
+        error_message = "ErrorCode = #{error_code}" # default value for the error message
       end
 
       raise error_message

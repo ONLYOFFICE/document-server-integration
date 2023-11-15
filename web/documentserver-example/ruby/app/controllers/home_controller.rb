@@ -100,7 +100,7 @@ class HomeController < ApplicationController
 
         # if the conversion isn't completed, write file name and step values to the response
         if percent != 100
-          render plain: "{ \"step\" : \"#{percent.to_s}\", \"filename\" : \"#{file_name}\"}"
+          render plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}"
           return
         end
 
@@ -199,13 +199,13 @@ class HomeController < ApplicationController
 
     if [2, 3].include?(status) # MustSave, Corrupted
       saved = TrackHelper.process_save(file_data, file_name, user_address) # save file
-      render plain: "{\"error\":#{saved.to_s}}"
+      render plain: "{\"error\":#{saved}}"
       return
     end
 
     if [6, 7].include?(status) # MustForceave, CorruptedForcesave
       saved = TrackHelper.process_force_save(file_data, file_name, user_address) # force save file
-      render plain: "{\"error\":#{saved.to_s}}"
+      render plain: "{\"error\":#{saved}}"
       return
     end
 
