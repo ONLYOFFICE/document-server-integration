@@ -110,26 +110,29 @@ class Users
   ]
 
   class << self
-    def get_all_users # get a list of all the users
+    def get_all_users
       @@users
     end
 
-    def get_user(id) # get a user by id specified
+    # get a user by id specified
+    def get_user(id)
       for user in @@users do
         return user if user.id.eql?(id)
       end
       return @@users[0]
     end
 
-    def get_users_for_mentions(id) # get a list of users with their names and emails for mentions
+    # get a list of users with their names and emails for mentions
+    def get_users_for_mentions(id)
       usersData = []
       for user in @@users do
         usersData.push({ :name => user.name, :email => user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
       end
       return usersData
     end
-
-    def get_users_for_protect(id)  # get a list of users with their id, names and emails for protect
+    
+    # get a list of users with their id, names and emails for protect
+    def get_users_for_protect(id)
       users_data = []
       for user in @@users do
         users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
