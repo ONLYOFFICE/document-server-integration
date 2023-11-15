@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # (c) Copyright Ascensio System SIA 2023
 #
