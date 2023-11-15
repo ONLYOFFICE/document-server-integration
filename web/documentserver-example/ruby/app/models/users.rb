@@ -116,7 +116,7 @@ class Users
 
     # get a user by id specified
     def get_user(id)
-      for user in @@users do
+      @@users.each do |user|
         return user if user.id.eql?(id)
       end
       @@users[0]
@@ -125,7 +125,7 @@ class Users
     # get a list of users with their names and emails for mentions
     def get_users_for_mentions(id)
       usersData = []
-      for user in @@users do
+      @@users.each do |user|
         usersData.push({ :name => user.name, :email => user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
       end
       usersData
@@ -134,7 +134,7 @@ class Users
     # get a list of users with their id, names and emails for protect
     def get_users_for_protect(id)
       users_data = []
-      for user in @@users do
+      @@users.each do |user|
         users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
       end
       users_data

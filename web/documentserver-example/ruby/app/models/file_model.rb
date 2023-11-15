@@ -204,7 +204,7 @@ class FileModel
       hist = []
       histData = {}
 
-      for i in 1..cur_ver # run through all the file versions
+      (1..cur_ver).each do |i| # run through all the file versions
         obj = {}
         dataObj = {}
         ver_dir = DocumentHelper.version_dir(hist_dir, i) # get the path to the given file version

@@ -282,7 +282,7 @@ class DocumentHelper
     def get_files_info(file_id)
       result = []
 
-      for fileName in get_stored_files(nil) # run through all the stored files from the folder
+      get_stored_files(nil).each do |fileName| # run through all the stored files from the folder
         directory = storage_path(fileName, nil)
         uri = "#{cur_user_host_address(nil)}/#{fileName}"
 
