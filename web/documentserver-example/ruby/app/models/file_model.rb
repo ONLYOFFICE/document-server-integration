@@ -49,7 +49,8 @@ class FileModel
 
   # get file uri for document server
   def file_uri_user
-    @config_manager.storage_path.absolute? ? "#{download_url}&dmode=emb" : DocumentHelper.get_file_uri(@file_name, false)
+    @config_manager.storage_path.absolute? ? "#{download_url}&dmode=emb" : DocumentHelper.get_file_uri(@file_name,
+                                                                                                       false)
   end
 
   # get document type from its name (word, cell or slide)
@@ -88,13 +89,15 @@ class FileModel
   def get_config
     editorsmode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
     canEdit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if (!canEdit && editorsmode.eql?('edit') || editorsmode.eql?('fillForms')) && DocumentHelper.fill_forms_exts.include?(file_ext)
+    if (!canEdit && editorsmode.eql?('edit') || editorsmode.eql?('fillForms')) &&
+       DocumentHelper.fill_forms_exts.include?(file_ext)
       editorsmode = 'fillForms'
       canEdit = true
     end
     submitForm = editorsmode.eql?('fillForms') && @user.id.eql?('uid-1') && false # the Submit form button state
     mode = canEdit && !editorsmode.eql?('view') ? 'edit' : 'view'
-    templatesImageUrl = DocumentHelper.get_template_image_url(document_type) # templates image url in the "From Template" section
+    # templates image url in the "From Template" section
+    templatesImageUrl = DocumentHelper.get_template_image_url(document_type)
     templates = [
       {
         image: '',
@@ -123,12 +126,12 @@ class FileModel
           favorite: @user.favorite
         },
         permissions: { # the permission for the document to be edited and downloaded or not
-          comment: !editorsmode.eql?('view') && !editorsmode.eql?('fillForms') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          comment: !%w[view fillForms embedded blockcontent].include?(editorsmode),
           copy: !@user.deniedPermissions.include?('copy'),
           download: !@user.deniedPermissions.include?('download'),
-          edit: canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('view') || editorsmode.eql?('filter') || editorsmode.eql?('blockcontent')),
+          edit: canEdit && %w[edit view filter blockcontent].include?(editorsmode),
           print: !@user.deniedPermissions.include?('print'),
-          fillForms: !editorsmode.eql?('view') && !editorsmode.eql?('comment') && !editorsmode.eql?('embedded') && !editorsmode.eql?('blockcontent'),
+          fillForms: !%w[view comment embedded blockcontent].include?(editorsmode),
           modifyFilter: !editorsmode.eql?('filter'),
           modifyContentControl: !editorsmode.eql?('blockcontent'),
           review: canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('review')),
@@ -140,7 +143,8 @@ class FileModel
         },
         referenceData: {
           instanceId: DocumentHelper.get_server_url(false),
-          fileKey: !@user.id.eql?('uid-0') ? { fileName: @file_name, userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json : nil
+          fileKey: !@user.id.eql?('uid-0') ? { fileName: @file_name,
+                                               userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json : nil
         }
       },
       editorConfig: {
@@ -149,13 +153,13 @@ class FileModel
         lang: @lang || 'en',
         callbackUrl: callback_url, # absolute URL to the document storage service
         coEditing: if editorsmode.eql?('view') && @user.id.eql?('uid-0')
-                        {
-                          mode: 'strict',
-                          change: false
-                        }
-                      else
-                        nil
-                      end,
+                     {
+                       mode: 'strict',
+                       change: false
+                     }
+                   else
+                     nil
+                   end,
         createUrl: !@user.id.eql?('uid-0') ? create_url : nil,
         templates: @user.templates ? templates : nil,
         user: { # the user currently viewing or editing the document
@@ -165,9 +169,12 @@ class FileModel
           image: @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
         },
         embedded: { # the parameters for the embedded document type
-          saveUrl: download_url(false), # the absolute URL that will allow the document to be saved onto the user personal computer
-          embedUrl: download_url(false),  # the absolute URL to the document serving as a source file for the document embedded into the web page
-          shareUrl: download_url(false),  # the absolute URL that will allow other users to share this document
+          # the absolute URL that will allow the document to be saved onto the user personal computer
+          saveUrl: download_url(false),
+          # the absolute URL to the document serving as a source file for the document embedded into the web page
+          embedUrl: download_url(false),
+          # the absolute URL that will allow other users to share this document
+          shareUrl: download_url(false),
           toolbarDocked: 'top' # the place for the embedded viewer toolbar (top or bottom)
         },
         customization: { # the parameters for the editor interface
@@ -197,7 +204,8 @@ class FileModel
     doc_key = key
     doc_uri = file_uri
 
-    hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil)) # get the path to the file history
+    # get the path to the file history
+    hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil))
     cur_ver = DocumentHelper.get_file_version(hist_dir) # get the file version
 
     if cur_ver.positive? # if file was modified
@@ -219,7 +227,8 @@ class FileModel
         obj['key'] = cur_key
         obj['version'] = i
 
-        if (i == 1) && File.file?(File.join(hist_dir, 'createdInfo.json')) # check if the createdInfo.json file with meta data exists
+        # check if the createdInfo.json file with meta data exists
+        if (i == 1) && File.file?(File.join(hist_dir, 'createdInfo.json'))
           File.open(File.join(hist_dir, 'createdInfo.json'), 'r') do |file| # open it
             cr_info = JSON.parse(file.read) # parse the file content
 
@@ -237,14 +246,17 @@ class FileModel
         dataObj['key'] = cur_key
         dataObj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if is_enable_direct_url == true
-          dataObj['directUrl'] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
+          dataObj['directUrl'] =
+            i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}",
+                                                                                    false)
         end
         dataObj['version'] = i
 
         if i > 1 # check if the version number is greater than 1
           changes = nil
           change = nil
-          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file| # get the path to the changes.json file
+          # get the path to the changes.json file
+          File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file|
             changes = JSON.parse(file.read) # and parse its content
           end
 
@@ -259,7 +271,7 @@ class FileModel
           prev = histData[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
           dataObj['previous'] = if is_enable_direct_url == true
-                                  { # write key and url information about previous file version with optional direct url
+                                  { # write key and url information about previous file version with optional directUrl
                                     fileType: prev['fileType'],
                                     key: prev['key'],
                                     url: prev['url'],
@@ -278,7 +290,8 @@ class FileModel
         end
 
         if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-          dataObj['token'] = JwtHelper.encode(dataObj) # encode a payload object into a token and write it to the data object
+          # encode a payload object into a token and write it to the data object
+          dataObj['token'] = JwtHelper.encode(dataObj)
         end
 
         hist.push(obj) # add object dictionary to the hist list
@@ -316,7 +329,8 @@ class FileModel
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      insert_image['token'] = JwtHelper.encode(insert_image) # encode a payload object into a token and write it to the insert_image object
+      # encode a payload object into a token and write it to the insert_image object
+      insert_image['token'] = JwtHelper.encode(insert_image)
     end
 
     insert_image.to_json.tr('{', '').tr('}', '')
@@ -330,18 +344,22 @@ class FileModel
     compare_file = if is_enable_direct_url == true
                      {
                        fileType: 'docx', # file type
-                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx", # server url to the compared file
-                       directUrl: "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx" # direct url to the compared file
+                       # server url to the compared file
+                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx",
+                       # direct url to the compared file
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/asset?fileName=sample.docx"
                      }
                    else
                      {
                        fileType: 'docx', # file type
-                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx" # server url to the compared file
+                       # server url to the compared file
+                       url: "#{DocumentHelper.get_server_url(true)}/asset?fileName=sample.docx"
                      }
                    end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      compare_file['token'] = JwtHelper.encode(compare_file) # encode a payload object into a token and write it to the compare_file object
+      # encode a payload object into a token and write it to the compare_file object
+      compare_file['token'] = JwtHelper.encode(compare_file)
     end
 
     compare_file
@@ -355,18 +373,22 @@ class FileModel
     dataSpreadsheet = if is_enable_direct_url == true
                         {
                           fileType: 'csv', # file type
-                          url: "#{DocumentHelper.get_server_url(true)}/csv", # server url to the mail merge recipients file
-                          directUrl: "#{DocumentHelper.get_server_url(false)}/csv" # direct url to the mail merge recipients file
+                          # server url to the mail merge recipients file
+                          url: "#{DocumentHelper.get_server_url(true)}/csv",
+                          # direct url to the mail merge recipients file
+                          directUrl: "#{DocumentHelper.get_server_url(false)}/csv"
                         }
                       else
                         {
                           fileType: 'csv', # file type
-                          url: "#{DocumentHelper.get_server_url(true)}/csv" # server url to the mail merge recipients file
+                          # server url to the mail merge recipients file
+                          url: "#{DocumentHelper.get_server_url(true)}/csv"
                         }
                       end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet) # encode a payload object into a token and write it to the dataSpreadsheet object
+      # encode a payload object into a token and write it to the dataSpreadsheet object
+      dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet)
     end
 
     dataSpreadsheet

@@ -106,14 +106,25 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
+            download_uri,
+            download_ext.delete('.'),
+            cur_ext.delete('.'),
+            key,
+            false,
+            nil
+          ) # get the url of the converted file
           if new_file_uri.nil? || new_file_uri.empty?
-            new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) # get the correct file name if it already exists
+            new_file_name = DocumentHelper.get_correct_name(
+              File.basename(file_name, cur_ext) + download_ext,
+              user_address
+            ) # get the correct file name if it already exists
           else
             download_uri = new_file_uri
           end
         rescue StandardError => msg
-          new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
+          new_file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext,
+                                                          user_address)
         end
       end
 
@@ -123,14 +134,17 @@ class TrackHelper
       return saved if data.eql?(nil)
 
       begin
-        storage_path = DocumentHelper.storage_path(new_file_name, user_address) # get the storage directory of the new file
+        # get the storage directory of the new file
+        storage_path = DocumentHelper.storage_path(new_file_name, user_address)
 
         hist_dir = DocumentHelper.history_dir(storage_path) # get the history directory of the new file
-        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir)) # get the path to the specified file version
+        # get the path to the specified file version
+        ver_dir = DocumentHelper.version_dir(hist_dir, DocumentHelper.get_file_version(hist_dir))
 
         FileUtils.mkdir_p(ver_dir) # create the version directory if doesn't exist
 
-        FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}")) # move the file from the storage directory to the previous file version directory
+        # move the file from the storage directory to the previous file version directory
+        FileUtils.move(DocumentHelper.storage_path(file_name, user_address), File.join(ver_dir, "prev#{cur_ext}"))
 
         save_file(data, storage_path) # save the downloaded file to the storage directory
 
@@ -150,7 +164,8 @@ class TrackHelper
           file.write(file_data['key'])
         end
 
-        forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false) # get the path to the forcesaved file
+        # get the path to the forcesaved file
+        forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false)
         unless forcesave_path.eql?('') # if this path is empty
           File.delete(forcesave_path) # remove it
         end
@@ -181,7 +196,14 @@ class TrackHelper
       unless cur_ext.eql?(download_ext)
         key = ServiceConverter.generate_revision_id(download_uri) # get the document key
         begin
-          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(download_uri, download_ext.delete('.'), cur_ext.delete('.'), key, false, nil) # get the url of the converted file
+          percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
+            download_uri,
+            download_ext.delete('.'),
+            cur_ext.delete('.'),
+            key,
+            false,
+            nil
+          ) # get the url of the converted file
           if new_file_uri.nil? || new_file_uri.empty?
             new_file_name = true
           else
@@ -198,20 +220,25 @@ class TrackHelper
       return saved if data.eql?(nil)
 
       begin
-        is_submit_form = file_data['forcesavetype'].to_i == 3 # check if the forcesave type is equal to 3 (the form was submitted)
+        # check if the forcesave type is equal to 3 (the form was submitted)
+        is_submit_form = file_data['forcesavetype'].to_i == 3
 
         if is_submit_form
           file_name = if new_file_name
-                        DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}", user_address) # get the correct file name if it already exists
+                        DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{download_ext}",
+                                                        user_address) # get the correct file name if it already exists
                       else
-                        DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}", user_address)
+                        DocumentHelper.get_correct_name("#{File.basename(file_name, cur_ext)}-form#{cur_ext}",
+                                                        user_address)
                       end
           forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
         else
-          file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address) if new_file_name
+          file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext,
+                                                      user_address) if new_file_name
           forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
           if forcesave_path.eql?('')
-            forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true) # if the path to the new file doesn't exist, create it
+            # if the path to the new file doesn't exist, create it
+            forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true)
           end
         end
 
@@ -219,7 +246,8 @@ class TrackHelper
 
         if is_submit_form
           uid = file_data['actions'][0]['userid']
-          DocumentHelper.create_meta(file_name, uid, 'Filling Form', user_address) # create file meta information with the Filling form tag instead of user name
+          # create file meta information with the Filling form tag instead of user name
+          DocumentHelper.create_meta(file_name, uid, 'Filling Form', user_address)
         end
 
         saved = 0
@@ -253,7 +281,8 @@ class TrackHelper
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwtHeader = TrackHelper.config_manager.jwt_header; # get signature authorization header
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}") # set it to the request with the Bearer prefix
+          # set it to the request with the Bearer prefix
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}")
         end
 
         req.body = payload.to_json # convert the payload object into the json format

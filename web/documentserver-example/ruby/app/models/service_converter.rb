@@ -66,7 +66,8 @@ class ServiceConverter
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwtHeader = ServiceConverter.config_manager.jwt_header; # get signature authorization header
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}") # set it to the request with the Bearer prefix
+          # set it to the request with the Bearer prefix
+          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}")
         end
 
         req.body = payload.to_json
@@ -91,7 +92,8 @@ class ServiceConverter
       require 'zlib'
 
       if expected_key.length > 20 # check if the expected key length is greater than 20
-        expected_key = (Zlib.crc32 expected_key).to_s # calculate 32-bit crc value from the expected key and turn it into the string
+        # calculate 32-bit crc value from the expected key and turn it into the string
+        expected_key = (Zlib.crc32 expected_key).to_s
       end
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')

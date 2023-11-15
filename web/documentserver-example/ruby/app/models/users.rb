@@ -50,7 +50,8 @@ class Users
   @@descr_user_2 = [
     'Belongs to Group2',
     'Can review only his own changes or changes made by users with no group',
-    'Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only',
+    'Can view comments, edit his own comments, and comments left by users with no group. ' \
+    'Can remove his own comments only',
     'This file is marked as favorite',
     'Can create new files from the editor',
     'Can see the information about users from Group2 and users who don’t belong to any group',
@@ -126,11 +127,12 @@ class Users
     def get_users_for_mentions(id)
       usersData = []
       @@users.each do |user|
-        usersData.push({ name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
+        usersData.push({ name: user.name,
+                         email: user.email }) if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
       end
       usersData
     end
-    
+
     # get a list of users with their id, names and emails for protect
     def get_users_for_protect(id)
       users_data = []

@@ -31,7 +31,16 @@ class HomeController < ApplicationController
   def editor
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
-    @file = FileModel.new(file_name: File.basename(params[:fileName]), mode: params[:editorsMode], type: params[:editorsType], user_ip: request.remote_ip, lang: cookies[:ulang], user:, action_data: params[:actionLink], direct_url: params[:directUrl])
+    @file = FileModel.new(
+      file_name: File.basename(params[:fileName]),
+      mode: params[:editorsMode],
+      type: params[:editorsType],
+      user_ip: request.remote_ip,
+      lang: cookies[:ulang],
+      user:,
+      action_data: params[:actionLink],
+      direct_url: params[:directUrl]
+    )
   end
 
   # creating a sample document
@@ -73,7 +82,8 @@ class HomeController < ApplicationController
 
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
-      render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}" # write a new file name to the response
+      # write a new file name to the response
+      render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}"
     rescue StandardError => ex
       render plain: "{ \"error\": \"#{ex.message}\"}" # write an error message to the response
     end
@@ -81,100 +91,105 @@ class HomeController < ApplicationController
 
   # converting a file
   def convert
-    
-      file_data = request.body.read
-      return '' if file_data.nil? || file_data.empty?
+    file_data = request.body.read
+    return '' if file_data.nil? || file_data.empty?
 
-      body = JSON.parse(file_data)
+    body = JSON.parse(file_data)
 
-      file_name = File.basename(body['filename'])
-      lang = cookies[:ulang] || 'en'
-      file_pass = body['filePass'] || nil
-      file_uri = DocumentHelper.get_download_url(file_name)
-      extension = File.extname(file_name).downcase
-      internal_extension = 'ooxml'
+    file_name = File.basename(body['filename'])
+    lang = cookies[:ulang] || 'en'
+    file_pass = body['filePass'] || nil
+    file_uri = DocumentHelper.get_download_url(file_name)
+    extension = File.extname(file_name).downcase
+    internal_extension = 'ooxml'
 
-      if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
-        key = ServiceConverter.generate_revision_id(file_uri) # generate document key
-        percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(file_uri, extension.delete('.'), internal_extension.delete('.'), key, true, file_pass, lang) # get the url and file type of the converted file and the conversion percentage
+    if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
+      key = ServiceConverter.generate_revision_id(file_uri) # generate document key
+      percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
+        file_uri,
+        extension.delete('.'),
+        internal_extension.delete('.'),
+        key,
+        true,
+        file_pass,
+        lang
+      ) # get the url and file type of the converted file and the conversion percentage
 
-        # if the conversion isn't completed, write file name and step values to the response
-        if percent != 100
-          render plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}"
-          return
-        end
-
-        # get the correct file name if such a name already exists
-        correct_name = DocumentHelper.get_correct_name("#{File.basename(file_name, extension)}.#{new_file_type}", nil)
-
-        uri = URI.parse(new_file_uri) # create the request url
-        http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
-
-        DocumentHelper.verify_ssl(new_file_uri, http)
-
-        req = Net::HTTP::Get.new(uri.request_uri) # create the get requets
-        res = http.request(req)
-        data = res.body
-
-        raise 'stream is null' if data.nil?
-
-        # write a file with a new extension, but with the content from the origin file
-        File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
-          file.write(data)
-        end
-
-        old_storage_path = DocumentHelper.storage_path(file_name, nil)
-        File.delete(old_storage_path) if File.exist?(old_storage_path)
-
-        file_name = correct_name
-        user = Users.get_user(params[:userId])
-
-        DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
+      # if the conversion isn't completed, write file name and step values to the response
+      if percent != 100
+        render plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}"
+        return
       end
 
-      render plain: "{ \"filename\" : \"#{file_name}\"}"
-    rescue StandardError => ex
-      render plain: "{ \"error\": \"#{ex.message}\"}"
-    
+      # get the correct file name if such a name already exists
+      correct_name = DocumentHelper.get_correct_name("#{File.basename(file_name, extension)}.#{new_file_type}", nil)
+
+      uri = URI.parse(new_file_uri) # create the request url
+      http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
+
+      DocumentHelper.verify_ssl(new_file_uri, http)
+
+      req = Net::HTTP::Get.new(uri.request_uri) # create the get requets
+      res = http.request(req)
+      data = res.body
+
+      raise 'stream is null' if data.nil?
+
+      # write a file with a new extension, but with the content from the origin file
+      File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
+        file.write(data)
+      end
+
+      old_storage_path = DocumentHelper.storage_path(file_name, nil)
+      File.delete(old_storage_path) if File.exist?(old_storage_path)
+
+      file_name = correct_name
+      user = Users.get_user(params[:userId])
+
+      DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
+    end
+
+    render plain: "{ \"filename\" : \"#{file_name}\"}"
+  rescue StandardError => ex
+    render plain: "{ \"error\": \"#{ex.message}\"}"
   end
 
   # downloading a history file from public
   def downloadhistory
-    
-      file_name = File.basename(params[:fileName])
-      user_address = params[:userAddress]
-      version = params[:ver]
-      file = params[:file]
-      isEmbedded = params[:dmode]
+    file_name = File.basename(params[:fileName])
+    user_address = params[:userAddress]
+    version = params[:ver]
+    file = params[:file]
+    isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && JwtHelper.use_for_request
-        jwtHeader = HomeController.config_manager.jwt_header
-        if request.headers[jwtHeader]
-          hdr = request.headers[jwtHeader]
-          hdr.slice!(0, 'Bearer '.length)
-          token = JwtHelper.decode(hdr)
-          if !token || token.eql?('')
-            render plain: 'JWT validation failed', status: 403
-            return
-          end
-        else
+    if JwtHelper.is_enabled && JwtHelper.use_for_request
+      jwtHeader = HomeController.config_manager.jwt_header
+      if request.headers[jwtHeader]
+        hdr = request.headers[jwtHeader]
+        hdr.slice!(0, 'Bearer '.length)
+        token = JwtHelper.decode(hdr)
+        if !token || token.eql?('')
           render plain: 'JWT validation failed', status: 403
           return
         end
+      else
+        render plain: 'JWT validation failed', status: 403
+        return
       end
-      hist_path = "#{DocumentHelper.storage_path(file_name, user_address)}-hist" # or to the original document
+    end
+    hist_path = "#{DocumentHelper.storage_path(file_name, user_address)}-hist" # or to the original document
 
-      file_path = File.join(hist_path, version, file)
+    file_path = File.join(hist_path, version, file)
 
-      # add headers to the response to specify the page parameters
-      response.headers['Content-Length'] = File.size(file_path).to_s
-      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
+    # add headers to the response to specify the page parameters
+    response.headers['Content-Length'] = File.size(file_path).to_s
+    response.headers['Content-Type'] =
+      MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
-      send_file file_path, x_sendfile: true
-    rescue StandardError => ex
-      render plain: '{ "error": "File not found"}'
-    
+    send_file file_path, x_sendfile: true
+  rescue StandardError => ex
+    render plain: '{ "error": "File not found"}'
   end
 
   # tracking file changes
@@ -259,81 +274,82 @@ class HomeController < ApplicationController
 
   # downloading a file
   def download
-    
-      file_name = File.basename(params[:fileName])
-      user_address = params[:userAddress]
-      isEmbedded = params[:dmode]
+    file_name = File.basename(params[:fileName])
+    user_address = params[:userAddress]
+    isEmbedded = params[:dmode]
 
-      if JwtHelper.is_enabled && isEmbedded.nil? && !user_address.nil? && JwtHelper.use_for_request
-        jwtHeader = HomeController.config_manager.jwt_header
-        if request.headers[jwtHeader]
-          hdr = request.headers[jwtHeader]
-          hdr.slice!(0, 'Bearer '.length)
-          token = JwtHelper.decode(hdr)
-        end
-        if !token || token.eql?('')
-          render plain: 'JWT validation failed', status: 403
-          return
-        end
+    if JwtHelper.is_enabled && isEmbedded.nil? && !user_address.nil? && JwtHelper.use_for_request
+      jwtHeader = HomeController.config_manager.jwt_header
+      if request.headers[jwtHeader]
+        hdr = request.headers[jwtHeader]
+        hdr.slice!(0, 'Bearer '.length)
+        token = JwtHelper.decode(hdr)
       end
-
-      file_path = DocumentHelper.forcesave_path(file_name, user_address, false) # get the path to the force saved document version
-      if file_path.eql?('')
-        file_path = DocumentHelper.storage_path(file_name, user_address) # or to the original document
+      if !token || token.eql?('')
+        render plain: 'JWT validation failed', status: 403
+        return
       end
+    end
 
-      # add headers to the response to specify the page parameters
-      response.headers['Content-Length'] = File.size(file_path).to_s
-      response.headers['Content-Type'] = MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
-      response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
+    # get the path to the force saved document version
+    file_path = DocumentHelper.forcesave_path(file_name, user_address, false)
+    if file_path.eql?('')
+      file_path = DocumentHelper.storage_path(file_name, user_address) # or to the original document
+    end
 
-      send_file file_path, x_sendfile: true
-    rescue StandardError => ex
-      render plain: '{ "error": "File not found"}'
-    
+    # add headers to the response to specify the page parameters
+    response.headers['Content-Length'] = File.size(file_path).to_s
+    response.headers['Content-Type'] =
+      MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
+
+    send_file file_path, x_sendfile: true
+  rescue StandardError => ex
+    render plain: '{ "error": "File not found"}'
   end
 
   # Save Copy as...
   def saveas
-    
-      body = JSON.parse(request.body.read)
-      file_url = body['url']
-      title = body['title']
-      file_name = DocumentHelper.get_correct_name(title, nil)
-      extension = File.extname(file_name).downcase
-      all_exts = DocumentHelper.convert_exts + DocumentHelper.edited_exts + DocumentHelper.viewed_exts + DocumentHelper.fill_forms_exts
+    body = JSON.parse(request.body.read)
+    file_url = body['url']
+    title = body['title']
+    file_name = DocumentHelper.get_correct_name(title, nil)
+    extension = File.extname(file_name).downcase
+    all_exts = DocumentHelper.convert_exts +
+               DocumentHelper.edited_exts +
+               DocumentHelper.viewed_exts +
+               DocumentHelper.fill_forms_exts
 
-      unless all_exts.include?(extension)
-        render plain: '{"error": "File type is not supported"}'
-        return
-      end
+    unless all_exts.include?(extension)
+      render plain: '{"error": "File type is not supported"}'
+      return
+    end
 
-      uri = URI.parse(file_url) # create the request url
-      http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
+    uri = URI.parse(file_url) # create the request url
+    http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
-      DocumentHelper.verify_ssl(file_url, http)
+    DocumentHelper.verify_ssl(file_url, http)
 
-      req = Net::HTTP::Get.new(uri.request_uri) # create the get requets
-      res = http.request(req)
-      data = res.body
+    req = Net::HTTP::Get.new(uri.request_uri) # create the get requets
+    res = http.request(req)
+    data = res.body
 
-      if data.size <= 0 || data.size > HomeController.config_manager.maximum_file_size
-        render plain: '{"error": "File size is incorrect"}'
-        return
-      end
+    if data.size <= 0 || data.size > HomeController.config_manager.maximum_file_size
+      render plain: '{"error": "File size is incorrect"}'
+      return
+    end
 
-      File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
-        file.write(data)
-      end
-      user = Users.get_user(params[:userId])
-      DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
+    File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
+      file.write(data)
+    end
+    user = Users.get_user(params[:userId])
+    DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
 
-      render plain: "{\"file\" : \"#{file_name}\"}"
-      nil
-    rescue StandardError => ex
-      render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
-      nil
-    
+    render plain: "{\"file\" : \"#{file_name}\"}"
+    nil
+  rescue StandardError => ex
+    render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
+    nil
   end
 
   # Rename...
@@ -401,7 +417,10 @@ class HomeController < ApplicationController
 
     data = {
       fileType: File.extname(fileName).downcase.delete('.'),
-      key: ServiceConverter.generate_revision_id("#{"#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}"}.#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"),
+      key: ServiceConverter.generate_revision_id(
+        "#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}" \
+        ".#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"
+      ),
       url: DocumentHelper.get_download_url(fileName),
       directUrl: body['directUrl'] ? DocumentHelper.get_download_url(fileName, false) : nil,
       referenceData: {

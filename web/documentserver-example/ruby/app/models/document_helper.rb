@@ -87,7 +87,8 @@ class DocumentHelper
       # the directory with host address doesn't exist
       return '' unless File.directory?(directory)
 
-      directory = File.join(directory, "#{File.basename(file_name)}-hist") # get the path to the history of the given file
+      # get the path to the history of the given file
+      directory = File.join(directory, "#{File.basename(file_name)}-hist")
       unless File.directory?(directory)
         return '' unless create
 
@@ -146,7 +147,8 @@ class DocumentHelper
       name = base_name + ext.downcase # get full file name
       index = 1
 
-      while File.exist?(storage_path(name, user_address)) # if the file with such a name already exists in this directory
+      # if the file with such a name already exists in this directory
+      while File.exist?(storage_path(name, user_address))
         name = "#{base_name} (#{index})#{ext.downcase}" # add an index after its base name
         index += 1
       end
@@ -195,7 +197,8 @@ class DocumentHelper
       demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
       file_name = get_correct_name(demo_name, nil) # get the correct file name if such a name already exists
 
-      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name) # save sample document of a necessary extension to the storage directory
+      # save sample document of a necessary extension to the storage directory
+      src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)
       dest = storage_path file_name, nil
 
       FileUtils.cp src, dest
@@ -209,8 +212,10 @@ class DocumentHelper
 
     # get file url
     def get_file_uri(file_name, for_document_server)
-      uri = "#{get_server_url(for_document_server)}/#{DocumentHelper.config_manager.storage_path}/#{cur_user_host_address(nil)}/#{ERB::Util.url_encode(file_name)}"
-
+      uri = "#{get_server_url(for_document_server)}/" \
+        "#{DocumentHelper.config_manager.storage_path}/" \
+        "#{cur_user_host_address(nil)}/" \
+        "#{ERB::Util.url_encode(file_name)}"
       uri
     end
 
@@ -218,20 +223,27 @@ class DocumentHelper
     def get_historypath_uri(file_name, version, file, is_serverUrl = true)
       # for redirection to my link
       user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
-      uri = "#{get_server_url(is_serverUrl)}/downloadhistory/?fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}&file=#{ERB::Util.url_encode(file)}#{user_host}"
+      uri = "#{get_server_url(is_serverUrl)}/downloadhistory/?"\
+       "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
+       "&file=#{ERB::Util.url_encode(file)}#{user_host}"
       uri
     end
 
     # get server url
     def get_server_url(for_document_server)
-      return DocumentHelper.config_manager.example_uri.to_s if for_document_server && DocumentHelper.config_manager.example_uri
+      return DocumentHelper.config_manager.example_uri.to_s if (
+        for_document_server &&
+        DocumentHelper.config_manager.example_uri
+      )
 
       @@base_url
     end
 
     # get callback url
     def get_callback(file_name)
-      "#{get_server_url(true)}/track?fileName=#{ERB::Util.url_encode(file_name)}&userAddress=#{cur_user_host_address(nil)}"
+      "#{get_server_url(true)}/track?" \
+      "fileName=#{ERB::Util.url_encode(file_name)}&" \
+      "userAddress=#{cur_user_host_address(nil)}"
     end
 
     # get url to the created file
@@ -314,7 +326,8 @@ class DocumentHelper
       return unless file_uri.start_with?('https') && DocumentHelper.config_manager.ssl_verify_peer_mode_enabled
 
       http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # set the flags for the server certificate verification at the beginning of SSL session
+      # set the flags for the server certificate verification at the beginning of SSL session
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
   end
 end
