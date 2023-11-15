@@ -315,7 +315,7 @@ class DocumentHelper
         end
       end
 
-      return '"File not found"' if !file_id.nil?
+      return '"File not found"' unless file_id.nil?
 
       result
     end

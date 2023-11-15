@@ -267,7 +267,7 @@ class TrackHelper
         key:
       }
 
-      payload.merge!({ meta: }) if !meta.nil?
+      payload.merge!({ meta: }) unless meta.nil?
 
       data = nil
       begin
