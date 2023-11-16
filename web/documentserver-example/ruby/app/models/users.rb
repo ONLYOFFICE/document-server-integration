@@ -38,7 +38,7 @@ class User
 end
 
 class Users
-  @@descr_user_1 = [
+  @descr_user_1 = [
     'File author by default',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -49,7 +49,7 @@ class Users
     'Has an avatar'
   ]
 
-  @@descr_user_2 = [
+  @descr_user_2 = [
     'Belongs to Group2',
     'Can review only his own changes or changes made by users with no group',
     'Can view comments, edit his own comments, and comments left by users with no group. ' \
@@ -60,7 +60,7 @@ class Users
     'Has an avatar'
   ]
 
-  @@descr_user_3 = [
+  @descr_user_3 = [
     'Belongs to Group3',
     'Can review changes made by Group2 users',
     'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
@@ -72,7 +72,7 @@ class Users
     'Can see the information about Group2 users'
   ]
 
-  @@descr_user_0 = [
+  @descr_user_0 = [
     'The name is requested when the editor is opened',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -87,10 +87,10 @@ class Users
     'View file without collaboration'
   ]
 
-  @@users = [
+  @users = [
     User.new('uid-1', 'John Smith', 'smith@example.com',
              '', nil, {}, nil,
-             nil, [], @@descr_user_1, true, true),
+             nil, [], @descr_user_1, true, true),
     User.new('uid-2', 'Mark Pottato', 'pottato@example.com',
              'group-2', ['group-2', ''], {
                view: '',
@@ -98,7 +98,7 @@ class Users
                remove: ['group-2']
              },
              ['group-2', ''],
-             true, [], @@descr_user_2, false, true),
+             true, [], @descr_user_2, false, true),
     User.new('uid-3', 'Hamish Mitchell', nil,
              'group-3', ['group-2'], {
                view: %w[group-3 group-2],
@@ -106,29 +106,29 @@ class Users
                remove: []
              },
              ['group-2'],
-             false, %w[copy download print], @@descr_user_3, false, false),
+             false, %w[copy download print], @descr_user_3, false, false),
     User.new('uid-0', nil, nil,
              '', nil, {}, [],
-             nil, ['protect'], @@descr_user_0, false, false)
+             nil, ['protect'], @descr_user_0, false, false)
   ]
 
   class << self
     def get_all_users
-      @@users
+      @users
     end
 
     # get a user by id specified
     def get_user(id)
-      @@users.each do |user|
+      @users.each do |user|
         return user if user.id.eql?(id)
       end
-      @@users[0]
+      @users[0]
     end
 
     # get a list of users with their names and emails for mentions
     def get_users_for_mentions(id)
       usersData = []
-      @@users.each do |user|
+      @users.each do |user|
         if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
           usersData.push({ name: user.name,
                            email: user.email })
@@ -140,7 +140,7 @@ class Users
     # get a list of users with their id, names and emails for protect
     def get_users_for_protect(id)
       users_data = []
-      @@users.each do |user|
+      @users.each do |user|
         users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
       end
       users_data

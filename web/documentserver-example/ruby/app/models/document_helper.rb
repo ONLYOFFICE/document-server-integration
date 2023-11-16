@@ -27,14 +27,14 @@ class DocumentHelper
     attr_reader :config_manager, :format_manager
   end
 
-  @@runtime_cache = {}
-  @@remote_ip = nil
-  @@base_url = nil
+  @runtime_cache = {}
+  @remote_ip = nil
+  @base_url = nil
 
   class << self
     def init(ip, url)
-      @@remote_ip = ip
-      @@base_url = url
+      @remote_ip = ip
+      @base_url = url
     end
 
     # define max file size
@@ -68,7 +68,7 @@ class DocumentHelper
 
     # get current user host address
     def cur_user_host_address(user_address)
-      (user_address.nil? ? @@remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_')
+      (user_address.nil? ? @remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_')
     end
 
     # get the storage path of the given file
@@ -233,7 +233,7 @@ class DocumentHelper
         for_document_server &&
         DocumentHelper.config_manager.example_uri
 
-      @@base_url
+      @base_url
     end
 
     # get callback url

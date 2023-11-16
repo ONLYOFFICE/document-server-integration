@@ -25,8 +25,8 @@ class ServiceConverter
     attr_reader :config_manager
   end
 
-  @@convert_timeout = ServiceConverter.config_manager.convertation_timeout
-  @@document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
+  @convert_timeout = ServiceConverter.config_manager.convertation_timeout
+  @document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
 
   class << self
     # get the url of the converted file
@@ -54,12 +54,12 @@ class ServiceConverter
 
       data = nil
       begin
-        uri = URI.parse(@@document_converter_url) # create the request url
+        uri = URI.parse(@document_converter_url) # create the request url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
-        DocumentHelper.verify_ssl(@@document_converter_url, http)
+        DocumentHelper.verify_ssl(@document_converter_url, http)
 
-        http.read_timeout = @@convert_timeout
+        http.read_timeout = @convert_timeout
         http.open_timeout = 5
         req = Net::HTTP::Post.new(uri.request_uri) # create the post request
         req.add_field('Accept', 'application/json') # set headers

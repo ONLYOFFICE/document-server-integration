@@ -29,7 +29,7 @@ class TrackHelper
     attr_reader :config_manager, :proxy_manager
   end
 
-  @@document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
+  @document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
 
   class << self
     # read the request body
@@ -274,10 +274,10 @@ class TrackHelper
 
       data = nil
       begin
-        uri = URI.parse(@@document_command_url) # parse the document command url
+        uri = URI.parse(@document_command_url) # parse the document command url
         http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
-        DocumentHelper.verify_ssl(@@document_command_url, http)
+        DocumentHelper.verify_ssl(@document_command_url, http)
 
         req = Net::HTTP::Post.new(uri.request_uri) # create the post request
         req.add_field('Content-Type', 'application/json') # set headers
