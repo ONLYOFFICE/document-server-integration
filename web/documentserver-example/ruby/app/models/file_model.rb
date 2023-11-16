@@ -26,17 +26,13 @@ class FileModel
   def initialize(attributes = {})
     @file_name = attributes[:file_name]
     @mode = attributes[:mode]
-    @type = attributes[:type]
+    @type = attributes[:type] || 'desktop' # the default platform type is desktop
     @user_ip = attributes[:user_ip]
     @lang = attributes[:lang]
     @user = attributes[:user]
     @action_data = attributes[:action_data]
     @direct_url = attributes[:direct_url]
     @config_manager = ConfigurationManager.new
-  end
-
-  def type
-    @type || 'desktop' # the default platform type is desktop
   end
 
   # get file extension from its name
