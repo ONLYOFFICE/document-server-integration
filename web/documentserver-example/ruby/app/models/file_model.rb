@@ -82,8 +82,8 @@ class FileModel
   end
 
   # get url to download a file
-  def download_url(is_serverUrl = true)
-    DocumentHelper.get_download_url(@file_name, is_serverUrl)
+  def download_url(is_serverUrl: true)
+    DocumentHelper.get_download_url(@file_name, is_serverUrl:)
   end
 
   # get current user host address
@@ -123,7 +123,7 @@ class FileModel
       document: {
         title: @file_name,
         url: download_url,
-        directUrl: is_enable_direct_url ? download_url(false) : '',
+        directUrl: is_enable_direct_url ? download_url(is_serverUrl: false) : '',
         fileType: file_ext.delete('.'),
         key:,
         info: {
@@ -176,11 +176,11 @@ class FileModel
         },
         embedded: { # the parameters for the embedded document type
           # the absolute URL that will allow the document to be saved onto the user personal computer
-          saveUrl: download_url(false),
+          saveUrl: download_url(is_serverUrl: false),
           # the absolute URL to the document serving as a source file for the document embedded into the web page
-          embedUrl: download_url(false),
+          embedUrl: download_url(is_serverUrl: false),
           # the absolute URL that will allow other users to share this document
-          shareUrl: download_url(false),
+          shareUrl: download_url(is_serverUrl: false),
           toolbarDocked: 'top' # the place for the embedded viewer toolbar (top or bottom)
         },
         customization: { # the parameters for the editor interface
@@ -254,7 +254,7 @@ class FileModel
         if is_enable_direct_url == true
           dataObj['directUrl'] =
             if i == cur_ver
-              download_url(false)
+              download_url(is_serverUrl: false)
             else
               DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}",
                                                  false)
