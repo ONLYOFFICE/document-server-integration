@@ -292,8 +292,8 @@ class TrackHelper
         req.body = payload.to_json # convert the payload object into the json format
         res = http.request(req) # get the response
         data = res.body # and take its body
-      rescue StandardError => ex
-        raise ex.message
+      rescue StandardError => e
+        raise e.message
       end
 
       JSON.parse(data) # convert the response body into the json format

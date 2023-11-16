@@ -81,8 +81,8 @@ class ServiceConverter
         data = res.body # and take its body
       rescue Timeout::Error
         # try again
-      rescue StandardError => ex
-        raise ex.message
+      rescue StandardError => e
+        raise e.message
       end
 
       json_data = JSON.parse(data) # parse response body

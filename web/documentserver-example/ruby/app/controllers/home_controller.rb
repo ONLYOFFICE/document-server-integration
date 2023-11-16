@@ -86,8 +86,8 @@ class HomeController < ApplicationController
 
       # write a new file name to the response
       render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}"
-    rescue StandardError => ex
-      render plain: "{ \"error\": \"#{ex.message}\"}" # write an error message to the response
+    rescue StandardError => e
+      render plain: "{ \"error\": \"#{e.message}\"}" # write an error message to the response
     end
   end
 
@@ -152,8 +152,8 @@ class HomeController < ApplicationController
     end
 
     render plain: "{ \"filename\" : \"#{file_name}\"}"
-  rescue StandardError => ex
-    render plain: "{ \"error\": \"#{ex.message}\"}"
+  rescue StandardError => e
+    render plain: "{ \"error\": \"#{e.message}\"}"
   end
 
   # downloading a history file from public
@@ -349,8 +349,8 @@ class HomeController < ApplicationController
 
     render plain: "{\"file\" : \"#{file_name}\"}"
     nil
-  rescue StandardError => ex
-    render plain: "{\"error\":1, \"message\": \"#{ex.message}\"}"
+  rescue StandardError => e
+    render plain: "{\"error\":1, \"message\": \"#{e.message}\"}"
     nil
   end
 
@@ -498,10 +498,10 @@ class HomeController < ApplicationController
       error: nil,
       success: true
     }
-  rescue StandardError => error
+  rescue StandardError => e
     response.status = :internal_server_error
     render json: {
-      error: error.message,
+      error: e.message,
       success: false
     }
   end
