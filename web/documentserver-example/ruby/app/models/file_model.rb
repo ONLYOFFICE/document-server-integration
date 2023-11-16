@@ -264,7 +264,6 @@ class FileModel
 
         if i > 1 # check if the version number is greater than 1
           changes = nil
-          nil
           # get the path to the changes.json file
           File.open(File.join(DocumentHelper.version_dir(hist_dir, i - 1), 'changes.json'), 'r') do |file|
             changes = JSON.parse(file.read) # and parse its content
