@@ -21,6 +21,7 @@ require 'sorbet-runtime'
 require 'uri'
 require_relative '../configuration/configuration'
 
+# Class manages URI resolution, redirecting public URLs to private ones based on the configuration.
 class ProxyManager
   extend T::Sig
 

@@ -21,6 +21,7 @@ require 'uri'
 require_relative '../configuration/configuration'
 require_relative '../proxy/proxy'
 
+# Helper class for managing document tracking functionalities, such as saving and processing documents.
 class TrackHelper
   @config_manager = ConfigurationManager.new
   @proxy_manager = ProxyManager.new(config_manager: @config_manager)

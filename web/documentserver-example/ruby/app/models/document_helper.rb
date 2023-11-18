@@ -19,6 +19,7 @@
 require_relative '../configuration/configuration'
 require_relative '../format/format'
 
+# Class that provides various utility methods related to documents.
 class DocumentHelper
   @config_manager = ConfigurationManager.new
   @format_manager = FormatManager.new

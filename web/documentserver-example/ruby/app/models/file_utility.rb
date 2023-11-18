@@ -18,6 +18,7 @@
 
 require_relative '../format/format'
 
+# Determination file type based on extensions, utilizing `@format_manager` for format management.
 class FileUtility
   @format_manager = FormatManager.new
 

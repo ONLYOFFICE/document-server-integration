@@ -16,5 +16,6 @@
 # limitations under the License.
 #
 
+# Helper for application
 module ApplicationHelper
 end

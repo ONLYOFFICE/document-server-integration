@@ -19,6 +19,7 @@
 require 'jwt'
 require_relative '../configuration/configuration'
 
+# Helper class for JSON Web Token (JWT) operations, including encoding and decoding.
 class JwtHelper
   @jwt_secret = ConfigurationManager.new.jwt_secret
   @token_use_for_request = ConfigurationManager.new.jwt_use_for_request

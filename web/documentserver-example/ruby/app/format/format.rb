@@ -20,6 +20,7 @@
 require 'pathname'
 require 'sorbet-runtime'
 
+# Struct representing a document format with properties.
 class Format < T::Struct
   extend T::Sig
 
@@ -40,6 +41,7 @@ class Format < T::Struct
   end
 end
 
+# FormatManager is responsible for managing document formats and providing various lists of supported extensions.
 class FormatManager
   extend T::Sig
 

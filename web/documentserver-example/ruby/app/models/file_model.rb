@@ -18,6 +18,7 @@
 
 require_relative '../configuration/configuration'
 
+# Class for handling file-related operations and information.
 class FileModel
   attr_accessor :file_name, :mode, :type, :user_ip, :lang, :user, :action_data, :direct_url
   attr_reader :config_manager

@@ -18,6 +18,7 @@
 
 require_relative '../configuration/configuration'
 
+# Class responsible for converting documents using a document conversion service.
 class ServiceConverter
   @config_manager = ConfigurationManager.new
 

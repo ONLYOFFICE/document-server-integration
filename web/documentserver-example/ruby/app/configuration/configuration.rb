@@ -22,6 +22,7 @@ require 'pathname'
 require 'sorbet-runtime'
 require 'uri'
 
+# ConfigurationManager manages configuration settings for the application.
 class ConfigurationManager
   extend T::Sig
 

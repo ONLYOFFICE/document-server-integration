@@ -21,6 +21,7 @@ require 'net/http'
 require 'mimemagic'
 require_relative '../configuration/configuration'
 
+# Handling requests controller
 class HomeController < ApplicationController
   @config_manager = ConfigurationManager.new
 

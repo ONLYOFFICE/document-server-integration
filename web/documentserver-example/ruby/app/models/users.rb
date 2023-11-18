@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# Represents a user with various attributes
 class User
   attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite,
                 :deniedPermissions, :descriptions, :templates, :avatar
@@ -37,6 +38,7 @@ class User
   end
 end
 
+# Manages user-related data and operations.
 class Users
   @descr_user_1 = [
     'File author by default',
