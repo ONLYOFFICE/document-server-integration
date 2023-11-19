@@ -89,7 +89,7 @@ class FileModel
   end
 
   # get config parameters
-  def get_config
+  def config
     editors_mode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
     can_edit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
     if (!can_edit && editors_mode.eql?('edit') || editors_mode.eql?('fillForms')) &&
@@ -201,7 +201,7 @@ class FileModel
   end
 
   # get document history
-  def get_history
+  def history
     file_name = @file_name
     file_ext = File.extname(file_name).downcase
     doc_key = key
@@ -317,7 +317,7 @@ class FileModel
   end
 
   # get image information
-  def get_insert_image
+  def insert_image
     # image file type
     # server url to the image
     # direct url to the image
@@ -401,15 +401,15 @@ class FileModel
   end
 
   # get users data for mentions
-  def get_users_mentions
+  def users_mentions
     !@user.id.eql?('uid-0') ? Users.get_users_for_mentions(@user.id) : nil
   end
 
-  def get_users_info
+  def users_info
     users_info = []
     return if @user.id.eql?('uid-0')
 
-    Users.get_all_users.each do |user_info|
+    Users.all_users.each do |user_info|
       u = {
         id: user_info.id,
         name: user_info.name,
@@ -431,7 +431,7 @@ class FileModel
   end
 
   # get users data for protect
-  def get_users_protect
+  def users_protect
     !@user.id.eql?('uid-0') ? Users.get_users_for_protect(@user.id) : nil
   end
 

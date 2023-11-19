@@ -115,7 +115,7 @@ class Users
   ]
 
   class << self
-    def get_all_users
+    def all_users
       @users
     end
 
