@@ -79,8 +79,8 @@ class FileModel
   end
 
   # get url to download a file
-  def download_url(is_serverUrl: true)
-    DocumentHelper.get_download_url(@file_name, is_serverUrl:)
+  def download_url(is_server_url: true)
+    DocumentHelper.get_download_url(@file_name, is_server_url:)
   end
 
   # get current user host address
@@ -90,17 +90,17 @@ class FileModel
 
   # get config parameters
   def get_config
-    editorsmode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
-    canEdit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if (!canEdit && editorsmode.eql?('edit') || editorsmode.eql?('fillForms')) &&
+    editors_mode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
+    can_edit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
+    if (!can_edit && editors_mode.eql?('edit') || editors_mode.eql?('fillForms')) &&
        DocumentHelper.fill_forms_exts.include?(file_ext)
-      editorsmode = 'fillForms'
-      canEdit = true
+      editors_mode = 'fillForms'
+      can_edit = true
     end
-    submitForm = editorsmode.eql?('fillForms') && @user.id.eql?('uid-1') && false # the Submit form button state
-    mode = canEdit && !editorsmode.eql?('view') ? 'edit' : 'view'
+    submit_form = editors_mode.eql?('fillForms') && @user.id.eql?('uid-1') && false # the Submit form button state
+    mode = can_edit && !editors_mode.eql?('view') ? 'edit' : 'view'
     # templates image url in the "From Template" section
-    templatesImageUrl = DocumentHelper.get_template_image_url(document_type)
+    templates_image_url = DocumentHelper.get_template_image_url(document_type)
     templates = [
       {
         image: '',
@@ -108,7 +108,7 @@ class FileModel
         url: create_url
       },
       {
-        image: templatesImageUrl,
+        image: templates_image_url,
         title: 'With sample content',
         url: "#{create_url}&sample=true"
       }
@@ -120,7 +120,7 @@ class FileModel
       document: {
         title: @file_name,
         url: download_url,
-        directUrl: is_enable_direct_url ? download_url(is_serverUrl: false) : '',
+        directUrl: is_enable_direct_url ? download_url(is_server_url: false) : '',
         fileType: file_ext.delete('.'),
         key:,
         info: {
@@ -129,20 +129,20 @@ class FileModel
           favorite: @user.favorite
         },
         permissions: { # the permission for the document to be edited and downloaded or not
-          comment: !%w[view fillForms embedded blockcontent].include?(editorsmode),
-          copy: !@user.deniedPermissions.include?('copy'),
-          download: !@user.deniedPermissions.include?('download'),
-          edit: canEdit && %w[edit view filter blockcontent].include?(editorsmode),
-          print: !@user.deniedPermissions.include?('print'),
-          fillForms: !%w[view comment embedded blockcontent].include?(editorsmode),
-          modifyFilter: !editorsmode.eql?('filter'),
-          modifyContentControl: !editorsmode.eql?('blockcontent'),
-          review: canEdit && (editorsmode.eql?('edit') || editorsmode.eql?('review')),
+          comment: !%w[view fillForms embedded blockcontent].include?(editors_mode),
+          copy: !@user.denied_permissions.include?('copy'),
+          download: !@user.denied_permissions.include?('download'),
+          edit: can_edit && %w[edit view filter blockcontent].include?(editors_mode),
+          print: !@user.denied_permissions.include?('print'),
+          fillForms: !%w[view comment embedded blockcontent].include?(editors_mode),
+          modifyFilter: !editors_mode.eql?('filter'),
+          modifyContentControl: !editors_mode.eql?('blockcontent'),
+          review: can_edit && (editors_mode.eql?('edit') || editors_mode.eql?('review')),
           chat: !@user.id.eql?('uid-0'),
-          reviewGroups: @user.reviewGroups,
-          commentGroups: @user.commentGroups,
-          userInfoGroups: @user.userInfoGroups,
-          protect: !@user.deniedPermissions.include?('protect')
+          reviewGroups: @user.review_groups,
+          commentGroups: @user.comment_groups,
+          userInfoGroups: @user.user_info_groups,
+          protect: !@user.denied_permissions.include?('protect')
         },
         referenceData: {
           instanceId: DocumentHelper.get_server_url(false),
@@ -157,7 +157,7 @@ class FileModel
         mode:,
         lang: @lang || 'en',
         callbackUrl: callback_url, # absolute URL to the document storage service
-        coEditing: if editorsmode.eql?('view') && @user.id.eql?('uid-0')
+        coEditing: if editors_mode.eql?('view') && @user.id.eql?('uid-0')
                      {
                        mode: 'strict',
                        change: false
@@ -173,11 +173,11 @@ class FileModel
         },
         embedded: { # the parameters for the embedded document type
           # the absolute URL that will allow the document to be saved onto the user personal computer
-          saveUrl: download_url(is_serverUrl: false),
+          saveUrl: download_url(is_server_url: false),
           # the absolute URL to the document serving as a source file for the document embedded into the web page
-          embedUrl: download_url(is_serverUrl: false),
+          embedUrl: download_url(is_server_url: false),
           # the absolute URL that will allow other users to share this document
-          shareUrl: download_url(is_serverUrl: false),
+          shareUrl: download_url(is_server_url: false),
           toolbarDocked: 'top' # the place for the embedded viewer toolbar (top or bottom)
         },
         customization: { # the parameters for the editor interface
@@ -185,7 +185,7 @@ class FileModel
           comments: true,
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
-          submitForm:, # the Submit form button state
+          submitForm: submit_form, # the Submit form button state
           goback: {
             url: DocumentHelper.get_server_url(false)
           }
@@ -213,11 +213,11 @@ class FileModel
 
     if cur_ver.positive? # if file was modified
       hist = []
-      histData = {}
+      hist_data = {}
 
       (1..cur_ver).each do |i| # run through all the file versions
         obj = {}
-        dataObj = {}
+        data_obj = {}
         ver_dir = DocumentHelper.version_dir(hist_dir, i) # get the path to the given file version
 
         # get document key
@@ -245,19 +245,19 @@ class FileModel
         end
 
         # get the history data from the previous file version and write key and url information about it
-        dataObj['fileType'] = file_ext[1..file_ext.length]
-        dataObj['key'] = cur_key
-        dataObj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        data_obj['fileType'] = file_ext[1..file_ext.length]
+        data_obj['key'] = cur_key
+        data_obj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if is_enable_direct_url == true
-          dataObj['directUrl'] =
+          data_obj['directUrl'] =
             if i == cur_ver
-              download_url(is_serverUrl: false)
+              download_url(is_server_url: false)
             else
               DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}",
                                                  false)
             end
         end
-        dataObj['version'] = i
+        data_obj['version'] = i
 
         if i > 1 # check if the version number is greater than 1
           changes = nil
@@ -274,34 +274,34 @@ class FileModel
           obj['created'] = change ? change['created'] : nil
           obj['user'] = change ? change['user'] : nil
 
-          prev = histData[(i - 2).to_s] # get the history data from the previous file version
+          prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
-          dataObj['previous'] = if is_enable_direct_url == true
-                                  { # write key and url information about previous file version with optional directUrl
-                                    fileType: prev['fileType'],
-                                    key: prev['key'],
-                                    url: prev['url'],
-                                    directUrl: prev['directUrl']
-                                  }
-                                else
-                                  {
-                                    fileType: prev['fileType'],
-                                    key: prev['key'],
-                                    url: prev['url']
-                                  }
-                                end
+          data obj['previous'] = if is_enable_direct_url == true
+                                   { # write key and url information about previous file version with optional directUrl
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url'],
+                                     directUrl: prev['directUrl']
+                                   }
+                                 else
+                                   {
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url']
+                                   }
+                                 end
 
           # write the path to the diff.zip archive with differences in this file version
-          dataObj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
+          data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
         end
 
         if JwtHelper.is_enabled # check if a secret key to generate token exists or not
           # encode a payload object into a token and write it to the data object
-          dataObj['token'] = JwtHelper.encode(dataObj)
+          data_obj['token'] = JwtHelper.encode(data_obj)
         end
 
         hist.push(obj) # add object dictionary to the hist list
-        histData[(i - 1).to_s] = dataObj # write data object information to the history data
+        hist_data[(i - 1).to_s] = data_obj # write data object information to the history data
       end
 
       return {
@@ -309,7 +309,7 @@ class FileModel
           currentVersion: cur_ver,
           history: hist
         },
-        histData:
+        histData: hist_data
       }
     end
 
@@ -376,28 +376,28 @@ class FileModel
     # file type
     # server url to the mail merge recipients file
     # direct url to the mail merge recipients file
-    dataSpreadsheet = if is_enable_direct_url == true
-                        {
-                          fileType: 'csv', # file type
-                          # server url to the mail merge recipients file
-                          url: "#{DocumentHelper.get_server_url(true)}/csv",
-                          # direct url to the mail merge recipients file
-                          directUrl: "#{DocumentHelper.get_server_url(false)}/csv"
-                        }
-                      else
-                        {
-                          fileType: 'csv', # file type
-                          # server url to the mail merge recipients file
-                          url: "#{DocumentHelper.get_server_url(true)}/csv"
-                        }
-                      end
+    data_spreadsheet = if is_enable_direct_url == true
+                         {
+                           fileType: 'csv', # file type
+                           # server url to the mail merge recipients file
+                           url: "#{DocumentHelper.get_server_url(true)}/csv",
+                           # direct url to the mail merge recipients file
+                           directUrl: "#{DocumentHelper.get_server_url(false)}/csv"
+                         }
+                       else
+                         {
+                           fileType: 'csv', # file type
+                           # server url to the mail merge recipients file
+                           url: "#{DocumentHelper.get_server_url(true)}/csv"
+                         }
+                       end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
       # encode a payload object into a token and write it to the dataSpreadsheet object
-      dataSpreadsheet['token'] = JwtHelper.encode(dataSpreadsheet)
+      data_spreadsheet['token'] = JwtHelper.encode(data_spreadsheet)
     end
 
-    dataSpreadsheet
+    data_spreadsheet
   end
 
   # get users data for mentions
@@ -415,11 +415,11 @@ class FileModel
         name: user_info.name,
         email: user_info.email,
         group: user_info.group,
-        reviewGroups: user_info.reviewGroups,
-        commentGroups: user_info.commentGroups,
-        userInfoGroups: user_info.userInfoGroups,
+        reviewGroups: user_info.review_groups,
+        commentGroups: user_info.comment_groups,
+        userInfoGroups: user_info.user_info_groups,
         favorite: user_info.favorite,
-        deniedPermissions: user_info.deniedPermissions,
+        deniedPermissions: user_info.denied_permissions,
         descriptions: user_info.descriptions,
         templates: user_info.templates,
         avatar: user_info.avatar

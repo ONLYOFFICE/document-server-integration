@@ -18,22 +18,22 @@
 
 # Represents a user with various attributes
 class User
-  attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite,
-                :deniedPermissions, :descriptions, :templates, :avatar
+  attr_accessor :id, :name, :email, :group, :review_groups, :comment_groups, :user_info_groups, :favorite,
+                :denied_permissions, :descriptions, :templates, :avatar
 
-  def initialize(id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-                 deniedPermissions, descriptions, templates, avatar)
+  def initialize(id, name, email, group, review_groups, comment_groups, user_info_groups, favorite,
+                 denied_permissions, descriptions, templates, avatar)
     @id = id
     @name = name
     @email = email
     @group = group
-    @reviewGroups = reviewGroups
-    @commentGroups = commentGroups
+    @review_groups = review_groups
+    @comment_groups = comment_groups
     @favorite = favorite
-    @deniedPermissions = deniedPermissions
+    @denied_permissions = denied_permissions
     @descriptions = descriptions
     @templates = templates
-    @userInfoGroups = userInfoGroups
+    @user_info_groups = user_info_groups
     @avatar = avatar
   end
 end
@@ -129,14 +129,13 @@ class Users
 
     # get a list of users with their names and emails for mentions
     def get_users_for_mentions(id)
-      usersData = []
+      users_data = []
       @users.each do |user|
         if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
-          usersData.push({ name: user.name,
-                           email: user.email })
+          users_data.push({ name: user.name, email: user.email })
         end
       end
-      usersData
+      users_data
     end
 
     # get a list of users with their id, names and emails for protect

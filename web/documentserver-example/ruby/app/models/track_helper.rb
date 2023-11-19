@@ -43,16 +43,16 @@ class TrackHelper
 
       # check if a secret key to generate token exists or not
       if JwtHelper.is_enabled && JwtHelper.use_for_request
-        inHeader = false
+        in_header = false
         token = nil
-        jwtHeader = TrackHelper.config_manager.jwt_header; # get the authorization header from the config
+        jwt_header = TrackHelper.config_manager.jwt_header; # get the authorization header from the config
         if file_data['token'] # if the token is in the body
           token = JwtHelper.decode(file_data['token']) # decode a token into a payload object using a secret key
-        elsif request.headers[jwtHeader] # if the token is in the header
-          hdr = request.headers[jwtHeader]
+        elsif request.headers[jwt_header] # if the token is in the header
+          hdr = request.headers[jwt_header]
           hdr.slice!(0, 'Bearer '.length) # get token from it (after Bearer prefix)
           token = JwtHelper.decode(hdr) # decode a token into a payload object using a secret key
-          inHeader = true
+          in_header = true
         else
           raise 'Expected JWT' # token missing error message
         end
@@ -61,7 +61,7 @@ class TrackHelper
 
         file_data = JSON.parse(token)
 
-        file_data = file_data['payload'] if inHeader
+        file_data = file_data['payload'] if in_header
       end
 
       file_data
@@ -285,9 +285,9 @@ class TrackHelper
 
         if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
-          jwtHeader = TrackHelper.config_manager.jwt_header; # get signature authorization header
+          jwt_header = TrackHelper.config_manager.jwt_header; # get signature authorization header
           # set it to the request with the Bearer prefix
-          req.add_field(jwtHeader, "Bearer #{JwtHelper.encode({ payload: })}")
+          req.add_field(jwt_header, "Bearer #{JwtHelper.encode({ payload: })}")
         end
 
         req.body = payload.to_json # convert the payload object into the json format

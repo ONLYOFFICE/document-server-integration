@@ -141,10 +141,10 @@ class DocumentHelper
 
     # get the correct file name if such a name already exists
     def get_correct_name(file_name, user_address)
-      maxName = 50
+      max_name = 50
       ext = File.extname(file_name) # get file extension
       # get file name without extension
-      base_name = File.basename(file_name, ext)[0...maxName] + (file_name.length > maxName ? '[...]' : '')
+      base_name = File.basename(file_name, ext)[0...max_name] + (file_name.length > max_name ? '[...]' : '')
       name = base_name + ext.downcase # get full file name
       index = 1
 
@@ -220,10 +220,10 @@ class DocumentHelper
     end
 
     # get history path url
-    def get_historypath_uri(file_name, version, file, is_serverUrl: true)
+    def get_historypath_uri(file_name, version, file, is_server_url: true)
       # for redirection to my link
-      user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
-      "#{get_server_url(is_serverUrl)}/downloadhistory/?"\
+      user_host = is_server_url ? "&userAddress=#{cur_user_host_address(nil)}" : ''
+      "#{get_server_url(is_server_url)}/downloadhistory/?"\
        "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
        "&file=#{ERB::Util.url_encode(file)}#{user_host}"
     end
@@ -250,9 +250,9 @@ class DocumentHelper
     end
 
     # get url to download a file
-    def get_download_url(file_name, is_serverUrl: true)
-      user_host = is_serverUrl ? "&userAddress=#{cur_user_host_address(nil)}" : ''
-      "#{get_server_url(is_serverUrl)}/download?fileName=#{ERB::Util.url_encode(file_name)}#{user_host}"
+    def get_download_url(file_name, is_server_url: true)
+      user_host = is_server_url ? "&userAddress=#{cur_user_host_address(nil)}" : ''
+      "#{get_server_url(is_server_url)}/download?fileName=#{ERB::Util.url_encode(file_name)}#{user_host}"
     end
 
     # get internal file extension by its type
@@ -288,9 +288,9 @@ class DocumentHelper
     def get_files_info(file_id)
       result = []
 
-      get_stored_files(nil).each do |fileName| # run through all the stored files from the folder
-        directory = storage_path(fileName, nil)
-        uri = "#{cur_user_host_address(nil)}/#{fileName}"
+      get_stored_files(nil).each do |file_name| # run through all the stored files from the folder
+        directory = storage_path(file_name, nil)
+        uri = "#{cur_user_host_address(nil)}/#{file_name}"
 
         # write file parameters to the info object
         info = {
@@ -298,7 +298,7 @@ class DocumentHelper
           'id' => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory)}"),
           'contentLength' => "#{(File.size(directory) / 1024.0).round(2)} KB",
           'pureContentLength' => File.size(directory),
-          'title' => fileName,
+          'title' => file_name,
           'updated' => File.mtime(directory)
         }
 

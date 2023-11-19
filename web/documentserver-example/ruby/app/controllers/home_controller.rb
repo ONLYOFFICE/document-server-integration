@@ -166,9 +166,9 @@ class HomeController < ApplicationController
     params[:dmode]
 
     if JwtHelper.is_enabled && JwtHelper.use_for_request
-      jwtHeader = HomeController.config_manager.jwt_header
-      if request.headers[jwtHeader]
-        hdr = request.headers[jwtHeader]
+      jwt_header = HomeController.config_manager.jwt_header
+      if request.headers[jwt_header]
+        hdr = request.headers[jwt_header]
         hdr.slice!(0, 'Bearer '.length)
         token = JwtHelper.decode(hdr)
         if !token || token.eql?('')
@@ -258,33 +258,33 @@ class HomeController < ApplicationController
   # getting files information
   def files
     file_id = params[:fileId]
-    filesInfo = DocumentHelper.get_files_info(file_id) # get the information about the file specified by a file id
-    render json: filesInfo
+    files_info = DocumentHelper.get_files_info(file_id) # get the information about the file specified by a file id
+    render json: files_info
   end
 
   # downloading a csv file
   def csv
     file_name = 'csv.csv'
-    csvPath = Rails.root.join('assets', 'document-templates', 'sample', file_name)
+    csv_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
 
     # add headers to the response to specify the page parameters
-    response.headers['Content-Length'] = File.size(csvPath).to_s
-    response.headers['Content-Type'] = MimeMagic.by_path(csvPath).type
+    response.headers['Content-Length'] = File.size(csv_path).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(csv_path).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
-    send_file csvPath, x_sendfile: true
+    send_file csv_path, x_sendfile: true
   end
 
   # downloading a file
   def download
     file_name = File.basename(params[:fileName])
     user_address = params[:userAddress]
-    isEmbedded = params[:dmode]
+    is_embedded = params[:dmode]
 
-    if JwtHelper.is_enabled && isEmbedded.nil? && !user_address.nil? && JwtHelper.use_for_request
-      jwtHeader = HomeController.config_manager.jwt_header
-      if request.headers[jwtHeader]
-        hdr = request.headers[jwtHeader]
+    if JwtHelper.is_enabled && is_embedded.nil? && !user_address.nil? && JwtHelper.use_for_request
+      jwt_header = HomeController.config_manager.jwt_header
+      if request.headers[jwt_header]
+        hdr = request.headers[jwt_header]
         hdr.slice!(0, 'Bearer '.length)
         token = JwtHelper.decode(hdr)
       end
@@ -376,20 +376,20 @@ class HomeController < ApplicationController
   # ReferenceData
   def reference
     body = JSON.parse(request.body.read)
-    fileName = ''
+    file_name = ''
 
     if body.key?('referenceData')
-      referenceData = body['referenceData']
-      instanceId = referenceData['instanceId']
-      if instanceId == DocumentHelper.get_server_url(false)
-        fileKey = JSON.parse(referenceData['fileKey'])
-        userAddress = fileKey['userAddress']
-        fileName = fileKey['fileName'] if userAddress == DocumentHelper.cur_user_host_address(nil)
+      reference_data = body['referenceData']
+      instance_id = reference_data['instanceId']
+      if instance_id == DocumentHelper.get_server_url(false)
+        file_key = JSON.parse(reference_data['fileKey'])
+        user_address = file_key['userAddress']
+        file_name = file_key['fileName'] if user_address == DocumentHelper.cur_user_host_address(nil)
       end
     end
 
     link = body['link']
-    if fileName.empty? && body.key?('link')
+    if file_name.empty? && body.key?('link')
       unless link.include?(DocumentHelper.get_server_url(false))
         data = {
           url: link,
@@ -401,37 +401,37 @@ class HomeController < ApplicationController
 
       url_obj = URI(link)
       query_params = CGI.parse(url_obj.query)
-      fileName = query_params['fileName'].first
-      unless File.exist?(DocumentHelper.storage_path(fileName, nil))
+      file_name = query_params['fileName'].first
+      unless File.exist?(DocumentHelper.storage_path(file_name, nil))
         render plain: '{ "error": "File is not exist"}'
         return
       end
     end
 
-    if fileName.empty? && body.key?('path')
+    if file_name.empty? && body.key?('path')
       path = File.basename(body['path'])
-      fileName = path if File.exist?(DocumentHelper.storage_path(path, nil))
+      file_name = path if File.exist?(DocumentHelper.storage_path(path, nil))
     end
 
-    if fileName.empty?
+    if file_name.empty?
       render plain: '{ "error": "File not found"}'
       return
     end
 
     data = {
-      fileType: File.extname(fileName).downcase.delete('.'),
+      fileType: File.extname(file_name).downcase.delete('.'),
       key: ServiceConverter.generate_revision_id(
-        "#{DocumentHelper.cur_user_host_address(nil)}/#{fileName}" \
-        ".#{File.mtime(DocumentHelper.storage_path(fileName, nil))}"
+        "#{DocumentHelper.cur_user_host_address(nil)}/#{file_name}" \
+        ".#{File.mtime(DocumentHelper.storage_path(file_name, nil))}"
       ),
-      url: DocumentHelper.get_download_url(fileName),
-      directUrl: body['directUrl'] ? DocumentHelper.get_download_url(fileName, is_serverUrl: false) : nil,
+      url: DocumentHelper.get_download_url(file_name),
+      directUrl: body['directUrl'] ? DocumentHelper.get_download_url(file_name, is_serverUrl: false) : nil,
       referenceData: {
         instanceId: DocumentHelper.get_server_url(false),
-        fileKey: { fileName:, userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
+        fileKey: { fileName: file_name, userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
       },
-      path: fileName,
-      link: "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{fileName}"
+      path: file_name,
+      link: "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{file_name}"
     }
 
     data['token'] = JwtHelper.encode(data) if JwtHelper.is_enabled
