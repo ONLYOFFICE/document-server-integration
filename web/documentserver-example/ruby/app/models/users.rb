@@ -40,7 +40,7 @@ end
 
 # Manages user-related data and operations.
 class Users
-  @descr_user_1 = [
+  @descr_user_first = [
     'File author by default',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -51,7 +51,7 @@ class Users
     'Has an avatar'
   ]
 
-  @descr_user_2 = [
+  @descr_user_second = [
     'Belongs to Group2',
     'Can review only his own changes or changes made by users with no group',
     'Can view comments, edit his own comments, and comments left by users with no group. ' \
@@ -62,7 +62,7 @@ class Users
     'Has an avatar'
   ]
 
-  @descr_user_3 = [
+  @descr_user_third = [
     'Belongs to Group3',
     'Can review changes made by Group2 users',
     'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
@@ -74,7 +74,7 @@ class Users
     'Can see the information about Group2 users'
   ]
 
-  @descr_user_0 = [
+  @descr_user_null = [
     'The name is requested when the editor is opened',
     'Doesn’t belong to any group',
     'Can review all the changes',
@@ -92,7 +92,7 @@ class Users
   @users = [
     User.new('uid-1', 'John Smith', 'smith@example.com',
              '', nil, {}, nil,
-             nil, [], @descr_user_1, true, true),
+             nil, [], @descr_user_first, true, true),
     User.new('uid-2', 'Mark Pottato', 'pottato@example.com',
              'group-2', ['group-2', ''], {
                view: '',
@@ -100,7 +100,7 @@ class Users
                remove: ['group-2']
              },
              ['group-2', ''],
-             true, [], @descr_user_2, false, true),
+             true, [], @descr_user_second, false, true),
     User.new('uid-3', 'Hamish Mitchell', nil,
              'group-3', ['group-2'], {
                view: %w[group-3 group-2],
@@ -108,10 +108,10 @@ class Users
                remove: []
              },
              ['group-2'],
-             false, %w[copy download print], @descr_user_3, false, false),
+             false, %w[copy download print], @descr_user_third, false, false),
     User.new('uid-0', nil, nil,
              '', nil, {}, [],
-             nil, ['protect'], @descr_user_0, false, false)
+             nil, ['protect'], @descr_user_null, false, false)
   ]
 
   class << self
