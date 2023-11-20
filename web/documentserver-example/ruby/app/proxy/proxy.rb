@@ -37,7 +37,6 @@ class ProxyManager
     redirect_public_url(uri)
   end
 
-
   sig { params(uri: URI::Generic).returns(T::Boolean) }
   private def refer_public_url(uri)
     public_uri = @config_manager.document_server_public_uri

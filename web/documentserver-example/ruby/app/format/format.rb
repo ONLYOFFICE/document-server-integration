@@ -146,7 +146,6 @@ class FormatManager
     end
   end
 
-
   sig { returns(Pathname) }
   private def file
     directory.join('onlyoffice-docs-formats.json')
