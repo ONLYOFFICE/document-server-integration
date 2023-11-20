@@ -18,8 +18,18 @@
 
 # Represents a user with various attributes
 class User
-  attr_accessor :id, :name, :email, :group, :review_groups, :comment_groups, :user_info_groups, :favorite,
-                :denied_permissions, :descriptions, :templates, :avatar
+  attr_accessor :id, 
+:name, 
+:email, 
+:group, 
+:review_groups, 
+:comment_groups, 
+:user_info_groups, 
+:favorite,
+                :denied_permissions, 
+:descriptions, 
+:templates, 
+:avatar
 
   def initialize(id, name, email, group, review_groups, comment_groups, user_info_groups, favorite,
                  denied_permissions, descriptions, templates, avatar)
@@ -90,28 +100,62 @@ class Users
   ]
 
   @users = [
-    User.new('uid-1', 'John Smith', 'smith@example.com',
-             '', nil, {}, nil,
-             nil, [], @descr_user_first, true, true),
-    User.new('uid-2', 'Mark Pottato', 'pottato@example.com',
-             'group-2', ['group-2', ''], {
+    User.new('uid-1', 
+'John Smith', 
+'smith@example.com',
+             '', 
+nil, 
+{}, 
+nil,
+             nil, 
+[], 
+@descr_user_first, 
+true, 
+true),
+    User.new('uid-2', 
+'Mark Pottato', 
+'pottato@example.com',
+             'group-2', 
+['group-2', ''], 
+{
                view: '',
                edit: ['group-2', ''],
                remove: ['group-2']
              },
              ['group-2', ''],
-             true, [], @descr_user_second, false, true),
-    User.new('uid-3', 'Hamish Mitchell', nil,
-             'group-3', ['group-2'], {
+             true, 
+[], 
+@descr_user_second, 
+false, 
+true),
+    User.new('uid-3', 
+'Hamish Mitchell', 
+nil,
+             'group-3', 
+['group-2'], 
+{
                view: %w[group-3 group-2],
                edit: ['group-2'],
                remove: []
              },
              ['group-2'],
-             false, %w[copy download print], @descr_user_third, false, false),
-    User.new('uid-0', nil, nil,
-             '', nil, {}, [],
-             nil, ['protect'], @descr_user_null, false, false)
+             false, 
+%w[copy download print], 
+@descr_user_third, 
+false, 
+false),
+    User.new('uid-0', 
+nil, 
+nil,
+             '', 
+nil, 
+{}, 
+[],
+             nil, 
+['protect'], 
+@descr_user_null, 
+false, 
+false)
   ]
 
   class << self
