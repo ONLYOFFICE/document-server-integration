@@ -182,7 +182,7 @@ class DocumentHelper
 
     # write user name, user uid and the creation time to the json object
     json = {
-      created: Time.zone.now.to_formatted_s(:db),
+      created: Time.zone.now.to_fs(:db),
       uid:,
       uname:
     }

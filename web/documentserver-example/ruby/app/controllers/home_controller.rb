@@ -472,7 +472,7 @@ class HomeController < ApplicationController
       serverVersion: nil,
       changes: [
         {
-          created: Time.zone.now.to_formatted_s(:db),
+          created: Time.zone.now.to_fs(:db),
           user: {
             id: user.id,
             name: user.name
