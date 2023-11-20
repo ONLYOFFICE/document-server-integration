@@ -305,7 +305,7 @@ class FileModel
                                   key: prev['key'],
                                   url: prev['url']
                                 }
-                                             end
+                              end
           )
 
           # write the path to the diff.zip archive with differences in this file version
