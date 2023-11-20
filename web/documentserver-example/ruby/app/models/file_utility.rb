@@ -24,7 +24,6 @@ class FileUtility
 
   class << self
     attr_reader :format_manager
-
   end
 
   def self.get_file_type(file_name)
