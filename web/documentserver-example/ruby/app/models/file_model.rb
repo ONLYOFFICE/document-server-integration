@@ -305,7 +305,7 @@ userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
                                                  url: prev['url']
                                                }
                                              end
-)
+          )
 
           # write the path to the diff.zip archive with differences in this file version
           data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
