@@ -18,18 +18,18 @@
 
 # Represents a user with various attributes
 class User
-  attr_accessor :id,
-                :name,
-                :email,
-                :group,
-                :review_groups,
-                :comment_groups,
-                :user_info_groups,
-                :favorite,
-                :denied_permissions,
-                :descriptions,
-                :templates,
-                :avatar
+  attr_accessor :id
+  attr_accessor :name
+  attr_accessor :email
+  attr_accessor :group
+  attr_accessor :review_groups
+  attr_accessor :comment_groups
+  attr_accessor :user_info_groups
+  attr_accessor :favorite
+  attr_accessor :denied_permissions
+  attr_accessor :descriptions
+  attr_accessor :templates
+  attr_accessor :avatar
 
   def initialize(id,
 name,

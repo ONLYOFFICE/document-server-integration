@@ -27,7 +27,8 @@ class TrackHelper
   @proxy_manager = ProxyManager.new(config_manager: @config_manager)
 
   class << self
-    attr_reader :config_manager, :proxy_manager
+    attr_reader :config_manager
+    attr_reader :proxy_manager
   end
 
   @document_command_url = TrackHelper.config_manager.document_server_command_uri.to_s
