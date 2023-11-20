@@ -130,12 +130,12 @@ class FileModel
           favorite: @user.favorite
         },
         permissions: { # the permission for the document to be edited and downloaded or not
-          comment: !%w[view fillForms embedded blockcontent].include?(editors_mode),
+          comment: !['view', 'fillForms', 'embedded', 'blockcontent'].include?(editors_mode),
           copy: !@user.denied_permissions.include?('copy'),
           download: !@user.denied_permissions.include?('download'),
-          edit: can_edit && %w[edit view filter blockcontent].include?(editors_mode),
+          edit: can_edit && ['edit', 'view', 'filter', 'blockcontent'].include?(editors_mode),
           print: !@user.denied_permissions.include?('print'),
-          fillForms: !%w[view comment embedded blockcontent].include?(editors_mode),
+          fillForms: !['view', 'comment', 'embedded', 'blockcontent'].include?(editors_mode),
           modifyFilter: !editors_mode.eql?('filter'),
           modifyContentControl: !editors_mode.eql?('blockcontent'),
           review: can_edit && (editors_mode.eql?('edit') || editors_mode.eql?('review')),

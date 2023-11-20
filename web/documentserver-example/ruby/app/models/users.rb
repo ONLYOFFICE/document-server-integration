@@ -137,13 +137,13 @@ class Users
              'group-3',
              ['group-2'],
              {
-                            view: %w[group-3 group-2],
+                            view: ['group-3', 'group-2'],
                             edit: ['group-2'],
                             remove: []
                           },
              ['group-2'],
              false,
-             %w[copy download print],
+             ['copy', 'download', 'print'],
              @descr_user_third,
              false,
              false),
