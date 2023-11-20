@@ -168,11 +168,11 @@ class HomeController < ApplicationController
         hdr.slice!(0, 'Bearer '.length)
         token = JwtHelper.decode(hdr)
         if !token || token.eql?('')
-          render(plain: 'JWT validation failed', status: 403)
+          render(plain: 'JWT validation failed', status: :forbidden)
           return
         end
       else
-        render(plain: 'JWT validation failed', status: 403)
+        render(plain: 'JWT validation failed', status: :forbidden)
         return
       end
     end
@@ -283,7 +283,7 @@ class HomeController < ApplicationController
         token = JwtHelper.decode(hdr)
       end
       if !token || token.eql?('')
-        render(plain: 'JWT validation failed', status: 403)
+        render(plain: 'JWT validation failed', status: :forbidden)
         return
       end
     end
