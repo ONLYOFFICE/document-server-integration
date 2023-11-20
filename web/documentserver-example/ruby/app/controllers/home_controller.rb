@@ -489,13 +489,15 @@ class HomeController < ApplicationController
     FileUtils.cp(source_file, bumped_file)
     FileUtils.cp(recovery_file, source_file)
 
-    render(json: {
+    render(
+json: {
       error: nil,
       success: true
     })
   rescue StandardError => e
     response.status = :internal_server_error
-    render(json: {
+    render(
+json: {
       error: e.message,
       success: false
     })
