@@ -225,7 +225,7 @@ File.basename(file_name, cur_ext) + download_ext,
 
       begin
         # check if the forcesave type is equal to 3 (the form was submitted)
-        is_submit_form = file_data['forcesavetype'].to_i == 3
+        is_submit_form = Integer(file_data['forcesavetype'], 10) == 3
 
         if is_submit_form
           file_name = if new_file_name

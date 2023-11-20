@@ -203,7 +203,7 @@ class HomeController < ApplicationController
       return
     end
 
-    status = file_data['status'].to_i
+    status = Integer(file_data['status'], 10)
 
     user_address = params[:userAddress]
     file_name = File.basename(params[:fileName])
