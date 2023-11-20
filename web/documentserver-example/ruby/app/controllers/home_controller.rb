@@ -239,11 +239,11 @@ class HomeController < ApplicationController
     storage_path = DocumentHelper.storage_path(file_name, nil)
     hist_dir = DocumentHelper.history_dir(storage_path)
 
-     # if the file exists
+      # if the file exists
       FileUtils.rm_f(storage_path) # delete it from the storage path
     
 
-     # if the history directory of this file exists
+      # if the history directory of this file exists
       FileUtils.rm_rf(hist_dir) # delete it
     
 
