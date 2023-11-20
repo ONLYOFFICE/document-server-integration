@@ -156,9 +156,10 @@ class FileModel
         referenceData: {
           instanceId: DocumentHelper.get_server_url(false),
           fileKey: unless @user.id.eql?('uid-0')
-                     { 
+                     {
                        fileName: @file_name,
-userAddress: DocumentHelper.cur_user_host_address(nil) }.to_json
+                       userAddress: DocumentHelper.cur_user_host_address(nil)
+                     }.to_json
                    end
         }
       },
