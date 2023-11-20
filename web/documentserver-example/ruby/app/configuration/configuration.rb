@@ -36,7 +36,7 @@ class ConfigurationManager
 
   sig { returns(T.nilable(URI::Generic)) }
   def example_uri
-    url = ENV['EXAMPLE_URL']
+    url = ENV.fetch('EXAMPLE_URL', nil)
     return nil if url.nil?
 
     URI(url)
@@ -50,7 +50,7 @@ class ConfigurationManager
 
   sig { returns(URI::Generic) }
   def document_server_private_uri
-    url = ENV['DOCUMENT_SERVER_PRIVATE_URL']
+    url = ENV.fetch('DOCUMENT_SERVER_PRIVATE_URL', nil)
     return URI(url) if url
 
     document_server_public_uri
@@ -100,7 +100,7 @@ class ConfigurationManager
 
   sig { returns(T::Boolean) }
   def jwt_use_for_request
-    env = ENV['JWT_USE_FOR_REQUEST']
+    env = ENV.fetch('JWT_USE_FOR_REQUEST', nil)
     return ActiveModel::Type::Boolean.new.cast(env) if env
 
     true
@@ -108,7 +108,7 @@ class ConfigurationManager
 
   sig { returns(T::Boolean) }
   def ssl_verify_peer_mode_enabled
-    env = ENV['SSL_VERIFY_PEER_MODE_ENABLED']
+    env = ENV.fetch('SSL_VERIFY_PEER_MODE_ENABLED', nil)
     return ActiveModel::Type::Boolean.new.cast(env) if env
 
     false
@@ -127,7 +127,7 @@ class ConfigurationManager
 
   sig { returns(Numeric) }
   def maximum_file_size
-    env = ENV['MAXIMUM_FILE_SIZE']
+    env = ENV.fetch('MAXIMUM_FILE_SIZE', nil)
     return env.to_i if env
 
     5 * 1024 * 1024
