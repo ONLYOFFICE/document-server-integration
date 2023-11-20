@@ -446,7 +446,7 @@ class HomeController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
     file_model = FileModel.new(
       {
-        'file_name': source_basename
+        file_name: source_basename
       }
     )
 
@@ -471,13 +471,13 @@ class HomeController < ApplicationController
 
     bumped_changes_file = bumped_version_directory.join('changes.json')
     bumped_changes = {
-      'serverVersion': nil,
-      'changes': [
+      serverVersion: nil,
+      changes: [
         {
-          'created': Time.now.to_formatted_s(:db),
-          'user': {
-            'id': user.id,
-            'name': user.name
+          created: Time.now.to_formatted_s(:db),
+          user: {
+            id: user.id,
+            name: user.name
           }
         }
       ]
