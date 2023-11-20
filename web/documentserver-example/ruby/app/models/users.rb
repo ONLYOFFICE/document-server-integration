@@ -122,7 +122,8 @@ class Users
       [],
       @descr_user_first,
       true,
-      true),
+      true
+),
     User.new(
       'uid-2',
       'Mark Pottato',
@@ -139,7 +140,8 @@ class Users
       [],
       @descr_user_second,
       false,
-      true),
+      true
+),
     User.new(
       'uid-3',
       'Hamish Mitchell',
@@ -156,7 +158,8 @@ class Users
       ['copy', 'download', 'print'],
       @descr_user_third,
       false,
-      false),
+      false
+),
     User.new(
       'uid-0',
       nil,
@@ -169,7 +172,8 @@ class Users
       ['protect'],
       @descr_user_null,
       false,
-      false)
+      false
+)
   ]
 
   class << self

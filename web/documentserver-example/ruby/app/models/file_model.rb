@@ -53,7 +53,8 @@ class FileModel
     else
       DocumentHelper.get_file_uri(
         @file_name,
-        false)
+        false
+)
     end
   end
 
@@ -258,7 +259,8 @@ class FileModel
                 file_name,
                 i,
                 "prev#{file_ext}",
-                false)
+                false
+)
             end
         end
         data_obj['version'] = i
@@ -294,7 +296,8 @@ obj['previous'] = if enable_direct_url? == true
                                      key: prev['key'],
                                      url: prev['url']
                                    }
-                                 end)
+                                 end
+)
 
           # write the path to the diff.zip archive with differences in this file version
           data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')

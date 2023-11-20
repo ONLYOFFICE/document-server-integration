@@ -493,13 +493,15 @@ class HomeController < ApplicationController
 json: {
   error: nil,
       success: true
-})
+}
+)
   rescue StandardError => e
     response.status = :internal_server_error
     render(
 json: {
   error: e.message,
       success: false
-})
+}
+)
   end
 end
