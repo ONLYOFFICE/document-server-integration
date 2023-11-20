@@ -134,7 +134,7 @@ class FileModel
         key:,
         info: {
           owner: 'Me',
-          uploaded: Time.now.to_s,
+          uploaded: Time.zone.now.to_s,
           favorite: @user.favorite
         },
         permissions: { # the permission for the document to be edited and downloaded or not
