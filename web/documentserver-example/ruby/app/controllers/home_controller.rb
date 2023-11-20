@@ -76,9 +76,7 @@ class HomeController < ApplicationController
       document_type = FileUtility.get_file_type(file_name)
 
       # write the uploaded file to the storage directory
-      File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
-        file.write(http_posted_file.read)
-      end
+      File.binwrite(DocumentHelper.storage_path(file_name, nil), http_posted_file.read)
 
       # create file meta information
       user = Users.get_user(params[:userId])
@@ -139,9 +137,7 @@ class HomeController < ApplicationController
       raise('stream is null') if data.nil?
 
       # write a file with a new extension, but with the content from the origin file
-      File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
-        file.write(data)
-      end
+      File.binwrite(DocumentHelper.storage_path(correct_name, nil), data)
 
       old_storage_path = DocumentHelper.storage_path(file_name, nil)
       File.delete(old_storage_path) if File.exist?(old_storage_path)
@@ -342,9 +338,7 @@ class HomeController < ApplicationController
       return
     end
 
-    File.open(DocumentHelper.storage_path(file_name, nil), 'wb') do |file|
-      file.write(data)
-    end
+    File.binwrite(DocumentHelper.storage_path(file_name, nil), data)
     user = Users.get_user(params[:userId])
     DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
 

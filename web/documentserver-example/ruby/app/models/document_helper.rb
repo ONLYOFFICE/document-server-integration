@@ -188,9 +188,7 @@ class DocumentHelper
       }
 
       # write file meta information to the createdInfo.json file
-      File.open(File.join(hist_dir, 'createdInfo.json'), 'wb') do |file|
-        file.write(json.to_json)
-      end
+      File.binwrite(File.join(hist_dir, 'createdInfo.json'), json.to_json)
     end
 
     # create demo document

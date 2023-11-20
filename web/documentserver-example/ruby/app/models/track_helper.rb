@@ -158,15 +158,11 @@ File.basename(file_name, cur_ext) + download_ext,
         hist_data = file_data['changeshistory']
         hist_data ||= file_data['history'].to_json
         if hist_data
-          File.open(File.join(ver_dir, 'changes.json'), 'wb') do |file| # open the file with document changes
-            file.write(hist_data) # and write history data to this file
-          end
+          File.binwrite(File.join(ver_dir, 'changes.json'), hist_data)
         end
 
         # write the key value to the key.txt file
-        File.open(File.join(ver_dir, 'key.txt'), 'wb') do |file|
-          file.write(file_data['key'])
-        end
+        File.binwrite(File.join(ver_dir, 'key.txt'), file_data['key'])
 
         # get the path to the forcesaved file
         forcesave_path = DocumentHelper.forcesave_path(new_file_name, user_address, false)
@@ -326,9 +322,7 @@ File.basename(file_name, cur_ext) + download_ext,
     end
 
     def save_file(data, path)
-      File.open(path, 'wb') do |file| # open the file from the path specified
-        file.write(data)  # and write the response data to it
-      end
+      File.binwrite(path, data)
     end
   end
 end
