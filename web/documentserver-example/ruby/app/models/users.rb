@@ -111,7 +111,7 @@ class Users
 
   @users = [
     User.new(
-'uid-1',
+      'uid-1',
              'John Smith',
              'smith@example.com',
              '',
@@ -124,7 +124,7 @@ class Users
              true,
              true),
     User.new(
-'uid-2',
+      'uid-2',
              'Mark Pottato',
              'pottato@example.com',
              'group-2',
@@ -141,7 +141,7 @@ class Users
              false,
              true),
     User.new(
-'uid-3',
+      'uid-3',
              'Hamish Mitchell',
              nil,
              'group-3',
@@ -158,7 +158,7 @@ class Users
              false,
              false),
     User.new(
-'uid-0',
+      'uid-0',
              nil,
              nil,
              '',
