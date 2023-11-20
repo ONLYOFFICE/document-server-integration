@@ -220,8 +220,8 @@ class DocumentHelper
   def self.get_historypath_uri(file_name, version, file, is_server_url: true)
     # for redirection to my link
     user_host = is_server_url ? "&userAddress=#{cur_user_host_address(nil)}" : ''
-    "#{get_server_url(is_server_url)}/downloadhistory/?"\
-      "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
+    "#{get_server_url(is_server_url)}/downloadhistory/?" \
+      "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}" \
       "&file=#{ERB::Util.url_encode(file)}#{user_host}"
   end
 
