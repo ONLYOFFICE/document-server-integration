@@ -25,14 +25,15 @@ class FileUtility
   class << self
     attr_reader :format_manager
 
-    def get_file_type(file_name)
-      ext = File.extname(file_name).downcase
+  end
 
-      return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
-      return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
-      return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
+  def self.get_file_type(file_name)
+    ext = File.extname(file_name).downcase
 
-      'word'
-    end
+    return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
+    return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
+    return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
+
+    'word'
   end
 end

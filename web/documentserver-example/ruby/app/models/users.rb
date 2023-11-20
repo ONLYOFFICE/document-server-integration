@@ -176,37 +176,35 @@ class Users
 )
   ]
 
-  class << self
-    def all_users
-      @users
-    end
+  def self.all_users
+    @users
+  end
 
-    # get a user by id specified
-    def get_user(id)
-      @users.each do |user|
-        return user if user.id.eql?(id)
-      end
-      @users[0]
+  # get a user by id specified
+  def self.get_user(id)
+    @users.each do |user|
+      return user if user.id.eql?(id)
     end
+    @users[0]
+  end
 
-    # get a list of users with their names and emails for mentions
-    def get_users_for_mentions(id)
-      users_data = []
-      @users.each do |user|
-        if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
-          users_data.push({ name: user.name, email: user.email })
-        end
+  # get a list of users with their names and emails for mentions
+  def self.get_users_for_mentions(id)
+    users_data = []
+    @users.each do |user|
+      if !user.id.eql?(id) && !user.name.nil? && !user.email.nil?
+        users_data.push({ name: user.name, email: user.email })
       end
-      users_data
     end
+    users_data
+  end
 
-    # get a list of users with their id, names and emails for protect
-    def get_users_for_protect(id)
-      users_data = []
-      @users.each do |user|
-        users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
-      end
-      users_data
+  # get a list of users with their id, names and emails for protect
+  def self.get_users_for_protect(id)
+    users_data = []
+    @users.each do |user|
+      users_data.push({ id: user.id, name: user.name, email: user.email }) if !user.id.eql?(id) && !user.name.nil?
     end
+    users_data
   end
 end

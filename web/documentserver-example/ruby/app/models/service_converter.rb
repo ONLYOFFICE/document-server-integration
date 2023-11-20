@@ -29,150 +29,148 @@ class ServiceConverter
   @convert_timeout = ServiceConverter.config_manager.convertation_timeout
   @document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
 
-  class << self
-    # get the url of the converted file
-    def get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
-      from_ext = File.extname(document_uri).downcase if from_ext.nil? # get the current document extension
+  # get the url of the converted file
+  def self.get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
+    from_ext = File.extname(document_uri).downcase if from_ext.nil? # get the current document extension
 
-      # get the current document name or uuid
-      title = File.basename(URI.parse(document_uri).path)
-      title = UUID.generate.to_s if title.nil?
+    # get the current document name or uuid
+    title = File.basename(URI.parse(document_uri).path)
+    title = UUID.generate.to_s if title.nil?
 
-      # get the document key
-      document_revision_id = document_uri if document_revision_id.empty?
-      document_revision_id = generate_revision_id(document_revision_id)
+    # get the document key
+    document_revision_id = document_uri if document_revision_id.empty?
+    document_revision_id = generate_revision_id(document_revision_id)
 
-      payload = { # write all the conversion parameters to the payload
-        async: is_async ? true : false,
-        url: document_uri,
-        outputtype: to_ext.delete('.'),
-        filetype: from_ext.delete('.'),
-        title:,
-        key: document_revision_id,
-        password: file_pass,
-        region: lang
-      }
+    payload = { # write all the conversion parameters to the payload
+      async: is_async ? true : false,
+      url: document_uri,
+      outputtype: to_ext.delete('.'),
+      filetype: from_ext.delete('.'),
+      title:,
+      key: document_revision_id,
+      password: file_pass,
+      region: lang
+    }
 
-      data = nil
-      begin
-        uri = URI.parse(@document_converter_url) # create the request url
-        http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
+    data = nil
+    begin
+      uri = URI.parse(@document_converter_url) # create the request url
+      http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
 
-        DocumentHelper.verify_ssl(@document_converter_url, http)
+      DocumentHelper.verify_ssl(@document_converter_url, http)
 
-        http.read_timeout = @convert_timeout
-        http.open_timeout = 5
-        req = Net::HTTP::Post.new(uri.request_uri) # create the post request
-        req.add_field('Accept', 'application/json') # set headers
-        req.add_field('Content-Type', 'application/json')
+      http.read_timeout = @convert_timeout
+      http.open_timeout = 5
+      req = Net::HTTP::Post.new(uri.request_uri) # create the post request
+      req.add_field('Accept', 'application/json') # set headers
+      req.add_field('Content-Type', 'application/json')
 
-        if JwtHelper.enabled? && JwtHelper.use_for_request # if the signature is enabled
-          payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
-          jwt_header = ServiceConverter.config_manager.jwt_header; # get signature authorization header
-          # set it to the request with the Bearer prefix
-          req.add_field(jwt_header, "Bearer #{JwtHelper.encode({ payload: })}")
-        end
-
-        req.body = payload.to_json
-        res = http.request(req) # get the response
-
-        status_code = Integer(res.code, 10)
-        raise("Conversion service returned status: #{status_code}") if status_code != 200 # checking status code
-
-        data = res.body # and take its body
-      rescue Timeout::Error
-        # try again
-      rescue StandardError => e
-        raise(e.message)
+      if JwtHelper.enabled? && JwtHelper.use_for_request # if the signature is enabled
+        payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
+        jwt_header = ServiceConverter.config_manager.jwt_header; # get signature authorization header
+        # set it to the request with the Bearer prefix
+        req.add_field(jwt_header, "Bearer #{JwtHelper.encode({ payload: })}")
       end
 
-      json_data = JSON.parse(data) # parse response body
-      get_response_data(json_data) # get response url
+      req.body = payload.to_json
+      res = http.request(req) # get the response
+
+      status_code = Integer(res.code, 10)
+      raise("Conversion service returned status: #{status_code}") if status_code != 200 # checking status code
+
+      data = res.body # and take its body
+    rescue Timeout::Error
+      # try again
+    rescue StandardError => e
+      raise(e.message)
     end
 
-    # generate the document key value
-    def generate_revision_id(expected_key)
-      require('zlib')
+    json_data = JSON.parse(data) # parse response body
+    get_response_data(json_data) # get response url
+  end
 
-      if expected_key.length > 20 # check if the expected key length is greater than 20
-        # calculate 32-bit crc value from the expected key and turn it into the string
-        expected_key = Zlib.crc32(expected_key).to_s
-      end
+  # generate the document key value
+  def self.generate_revision_id(expected_key)
+    require('zlib')
 
-      key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
-      key[(key.length - [key.length, 20].min)..key.length] # the resulting key is of the length 20 or less
+    if expected_key.length > 20 # check if the expected key length is greater than 20
+      # calculate 32-bit crc value from the expected key and turn it into the string
+      expected_key = Zlib.crc32(expected_key).to_s
     end
 
-    # create an error message for the error code
-    def process_convert_service_responce_error(error_code)
-      error_message = 'unknown error'
+    key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
+    key[(key.length - [key.length, 20].min)..key.length] # the resulting key is of the length 20 or less
+  end
 
-      # add an error message to the error message template depending on the error code
-      case error_code
-      when -8
-        error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
-      when -7
-        error_message = 'Error occurred in the ConvertService.ashx: Error document request'
-      when -6
-        error_message = 'Error occurred in the ConvertService.ashx: Error database'
-      when -5
-        error_message = 'Error occurred in the ConvertService.ashx: Incorrect password'
-      when -4
-        error_message = 'Error occurred in the ConvertService.ashx: Error download error'
-      when -3
-        error_message = 'Error occurred in the ConvertService.ashx: Error convertation error'
-      when -2
-        error_message = 'Error occurred in the ConvertService.ashx: Error convertation timeout'
-      when -1
-        error_message = 'Error occurred in the ConvertService.ashx: Error convertation unknown'
-      when 0
-      # public const int c_nErrorNo = 0
-      else
-        error_message = "ErrorCode = #{error_code}" # default value for the error message
-      end
+  # create an error message for the error code
+  def self.process_convert_service_responce_error(error_code)
+    error_message = 'unknown error'
 
-      raise(error_message)
+    # add an error message to the error message template depending on the error code
+    case error_code
+    when -8
+      error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
+    when -7
+      error_message = 'Error occurred in the ConvertService.ashx: Error document request'
+    when -6
+      error_message = 'Error occurred in the ConvertService.ashx: Error database'
+    when -5
+      error_message = 'Error occurred in the ConvertService.ashx: Incorrect password'
+    when -4
+      error_message = 'Error occurred in the ConvertService.ashx: Error download error'
+    when -3
+      error_message = 'Error occurred in the ConvertService.ashx: Error convertation error'
+    when -2
+      error_message = 'Error occurred in the ConvertService.ashx: Error convertation timeout'
+    when -1
+      error_message = 'Error occurred in the ConvertService.ashx: Error convertation unknown'
+    when 0
+    # public const int c_nErrorNo = 0
+    else
+      error_message = "ErrorCode = #{error_code}" # default value for the error message
     end
 
-    # get the response url
-    def get_response_data(json_data)
-      file_result = json_data
+    raise(error_message)
+  end
 
-      error_element = file_result['error']
-      unless error_element.nil? # if an error occurs
-        process_convert_service_responce_error(Integer(error_element, 10)) # get an error message
-      end
+  # get the response url
+  def self.get_response_data(json_data)
+    file_result = json_data
 
-      is_end_convert = file_result['endConvert'] # check if the conversion is completed
-
-      result_percent = 0 # the conversion percentage
-      response_uri = ''
-      response_file_type = ''
-
-      if is_end_convert # if the conversion is completed
-
-        file_url_element = file_result['fileUrl']
-        file_type_element = file_result['fileType']
-
-        if file_url_element.nil? # and the file url doesn't exist
-          raise('Invalid answer format')  # get ann error message
-        end
-
-        response_uri = file_url_element  # otherwise, get the file url
-        response_file_type = file_type_element # get the file type
-        result_percent = 100
-
-      else # if the conversion isn't completed
-
-        percent_element = file_result['percent']  # get the percentage value
-
-        result_percent = Integer(percent_element, 10) unless percent_element.nil?
-
-        result_percent = 99 if result_percent >= 100
-
-      end
-
-      [result_percent, response_uri, response_file_type]
+    error_element = file_result['error']
+    unless error_element.nil? # if an error occurs
+      process_convert_service_responce_error(Integer(error_element, 10)) # get an error message
     end
+
+    is_end_convert = file_result['endConvert'] # check if the conversion is completed
+
+    result_percent = 0 # the conversion percentage
+    response_uri = ''
+    response_file_type = ''
+
+    if is_end_convert # if the conversion is completed
+
+      file_url_element = file_result['fileUrl']
+      file_type_element = file_result['fileType']
+
+      if file_url_element.nil? # and the file url doesn't exist
+        raise('Invalid answer format')  # get ann error message
+      end
+
+      response_uri = file_url_element  # otherwise, get the file url
+      response_file_type = file_type_element # get the file type
+      result_percent = 100
+
+    else # if the conversion isn't completed
+
+      percent_element = file_result['percent']  # get the percentage value
+
+      result_percent = Integer(percent_element, 10) unless percent_element.nil?
+
+      result_percent = 99 if result_percent >= 100
+
+    end
+
+    [result_percent, response_uri, response_file_type]
   end
 end
