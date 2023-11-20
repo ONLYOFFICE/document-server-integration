@@ -53,7 +53,7 @@ class FileModel
     else
       DocumentHelper.get_file_uri(
         @file_name,
-                                  false)
+        false)
     end
   end
 
@@ -256,9 +256,9 @@ class FileModel
             else
               DocumentHelper.get_historypath_uri(
                 file_name,
-                                                 i,
-                                                 "prev#{file_ext}",
-                                                 false)
+                i,
+                "prev#{file_ext}",
+                false)
             end
         end
         data_obj['version'] = i
