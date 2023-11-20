@@ -490,7 +490,7 @@ class HomeController < ApplicationController
     render(
       json: {
         error: nil,
-            success: true
+        success: true
       }
 )
   rescue StandardError => e
@@ -498,7 +498,7 @@ class HomeController < ApplicationController
     render(
       json: {
         error: e.message,
-            success: false
+        success: false
       }
 )
   end

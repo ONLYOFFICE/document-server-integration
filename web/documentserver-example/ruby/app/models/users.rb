@@ -132,8 +132,8 @@ class Users
       ['group-2', ''],
       {
         view: '',
-                     edit: ['group-2', ''],
-                     remove: ['group-2']
+        edit: ['group-2', ''],
+        remove: ['group-2']
       },
       ['group-2', ''],
       true,
@@ -150,8 +150,8 @@ class Users
       ['group-2'],
       {
         view: ['group-3', 'group-2'],
-                     edit: ['group-2'],
-                     remove: []
+        edit: ['group-2'],
+        remove: []
       },
       ['group-2'],
       false,
