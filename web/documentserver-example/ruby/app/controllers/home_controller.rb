@@ -165,7 +165,7 @@ class HomeController < ApplicationController
     file = params[:file]
     params[:dmode]
 
-    if JwtHelper.is_enabled && JwtHelper.use_for_request
+    if JwtHelper.enabled? && JwtHelper.use_for_request
       jwt_header = HomeController.config_manager.jwt_header
       if request.headers[jwt_header]
         hdr = request.headers[jwt_header]
@@ -281,7 +281,7 @@ class HomeController < ApplicationController
     user_address = params[:userAddress]
     is_embedded = params[:dmode]
 
-    if JwtHelper.is_enabled && is_embedded.nil? && !user_address.nil? && JwtHelper.use_for_request
+    if JwtHelper.enabled? && is_embedded.nil? && !user_address.nil? && JwtHelper.use_for_request
       jwt_header = HomeController.config_manager.jwt_header
       if request.headers[jwt_header]
         hdr = request.headers[jwt_header]
@@ -434,7 +434,7 @@ class HomeController < ApplicationController
       link: "#{DocumentHelper.get_server_url(false)}/editor?fileName=#{file_name}"
     }
 
-    data['token'] = JwtHelper.encode(data) if JwtHelper.is_enabled
+    data['token'] = JwtHelper.encode(data) if JwtHelper.enabled?
 
     render plain: data.to_json
   end

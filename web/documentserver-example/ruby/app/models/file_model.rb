@@ -120,7 +120,7 @@ class FileModel
       document: {
         title: @file_name,
         url: download_url,
-        directUrl: is_enable_direct_url ? download_url(is_server_url: false) : '',
+        directUrl: enable_direct_url? ? download_url(is_server_url: false) : '',
         fileType: file_ext.delete('.'),
         key:,
         info: {
@@ -193,7 +193,7 @@ class FileModel
       }
     }
 
-    if JwtHelper.is_enabled # check if a secret key to generate token exists or not
+    if JwtHelper.enabled? # check if a secret key to generate token exists or not
       config['token'] = JwtHelper.encode(config) # encode a payload object into a token and write it to the config
     end
 
@@ -248,7 +248,7 @@ class FileModel
         data_obj['fileType'] = file_ext[1..file_ext.length]
         data_obj['key'] = cur_key
         data_obj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
-        if is_enable_direct_url == true
+        if enable_direct_url? == true
           data_obj['directUrl'] =
             if i == cur_ver
               download_url(is_server_url: false)
@@ -276,7 +276,7 @@ class FileModel
 
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
-          data obj['previous'] = if is_enable_direct_url == true
+          data obj['previous'] = if enable_direct_url? == true
                                    { # write key and url information about previous file version with optional directUrl
                                      fileType: prev['fileType'],
                                      key: prev['key'],
@@ -295,7 +295,7 @@ class FileModel
           data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
         end
 
-        if JwtHelper.is_enabled # check if a secret key to generate token exists or not
+        if JwtHelper.enabled? # check if a secret key to generate token exists or not
           # encode a payload object into a token and write it to the data object
           data_obj['token'] = JwtHelper.encode(data_obj)
         end
@@ -321,7 +321,7 @@ class FileModel
     # image file type
     # server url to the image
     # direct url to the image
-    insert_image = if is_enable_direct_url == true
+    insert_image = if enable_direct_url? == true
                      {
                        fileType: 'png', # image file type
                        url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
@@ -334,7 +334,7 @@ class FileModel
                      }
                    end
 
-    if JwtHelper.is_enabled # check if a secret key to generate token exists or not
+    if JwtHelper.enabled? # check if a secret key to generate token exists or not
       # encode a payload object into a token and write it to the insert_image object
       insert_image['token'] = JwtHelper.encode(insert_image)
     end
@@ -347,7 +347,7 @@ class FileModel
     # file type
     # server url to the compared file
     # direct url to the compared file
-    compare_file = if is_enable_direct_url == true
+    compare_file = if enable_direct_url? == true
                      {
                        fileType: 'docx', # file type
                        # server url to the compared file
@@ -363,7 +363,7 @@ class FileModel
                      }
                    end
 
-    if JwtHelper.is_enabled # check if a secret key to generate token exists or not
+    if JwtHelper.enabled? # check if a secret key to generate token exists or not
       # encode a payload object into a token and write it to the compare_file object
       compare_file['token'] = JwtHelper.encode(compare_file)
     end
@@ -376,7 +376,7 @@ class FileModel
     # file type
     # server url to the mail merge recipients file
     # direct url to the mail merge recipients file
-    data_spreadsheet = if is_enable_direct_url == true
+    data_spreadsheet = if enable_direct_url? == true
                          {
                            fileType: 'csv', # file type
                            # server url to the mail merge recipients file
@@ -392,7 +392,7 @@ class FileModel
                          }
                        end
 
-    if JwtHelper.is_enabled # check if a secret key to generate token exists or not
+    if JwtHelper.enabled? # check if a secret key to generate token exists or not
       # encode a payload object into a token and write it to the data_spreadsheet object
       data_spreadsheet['token'] = JwtHelper.encode(data_spreadsheet)
     end
@@ -436,7 +436,7 @@ class FileModel
   end
 
   # get direct url existence flag
-  def is_enable_direct_url
+  def enable_direct_url?
     !@direct_url.nil? && @direct_url == 'true'
   end
 end

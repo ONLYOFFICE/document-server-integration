@@ -26,7 +26,7 @@ class JwtHelper
 
   class << self
     # check if a secret key to generate token exists or not
-    def is_enabled
+    def enabled?
       @jwt_secret && !@jwt_secret.empty? ? true : false
     end
 

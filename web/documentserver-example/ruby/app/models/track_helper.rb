@@ -42,7 +42,7 @@ class TrackHelper
       file_data = JSON.parse(body) # parse file data
 
       # check if a secret key to generate token exists or not
-      if JwtHelper.is_enabled && JwtHelper.use_for_request
+      if JwtHelper.enabled? && JwtHelper.use_for_request
         in_header = false
         token = nil
         jwt_header = TrackHelper.config_manager.jwt_header; # get the authorization header from the config
@@ -283,7 +283,7 @@ class TrackHelper
         req = Net::HTTP::Post.new(uri.request_uri) # create the post request
         req.add_field('Content-Type', 'application/json') # set headers
 
-        if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
+        if JwtHelper.enabled? && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwt_header = TrackHelper.config_manager.jwt_header; # get signature authorization header
           # set it to the request with the Bearer prefix

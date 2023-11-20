@@ -66,7 +66,7 @@ class ServiceConverter
         req.add_field('Accept', 'application/json') # set headers
         req.add_field('Content-Type', 'application/json')
 
-        if JwtHelper.is_enabled && JwtHelper.use_for_request # if the signature is enabled
+        if JwtHelper.enabled? && JwtHelper.use_for_request # if the signature is enabled
           payload['token'] = JwtHelper.encode(payload) # get token and save it to the payload
           jwt_header = ServiceConverter.config_manager.jwt_header; # get signature authorization header
           # set it to the request with the Bearer prefix
