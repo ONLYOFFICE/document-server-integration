@@ -164,10 +164,10 @@ class FileModel
                        change: false
                      }
                    end,
-        createUrl: !@user.id.eql?('uid-0') ? create_url : nil,
+        createUrl: @user.id.eql?('uid-0') ? nil : create_url,
         templates: @user.templates ? templates : nil,
         user: { # the user currently viewing or editing the document
-          id: !@user.id.eql?('uid-0') ? @user.id : nil,
+          id: @user.id.eql?('uid-0') ? nil : @user.id,
           name: @user.name,
           group: @user.group,
           image: @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
@@ -406,7 +406,7 @@ file_name,
 
   # get users data for mentions
   def users_mentions
-    !@user.id.eql?('uid-0') ? Users.get_users_for_mentions(@user.id) : nil
+    @user.id.eql?('uid-0') ? nil : Users.get_users_for_mentions(@user.id)
   end
 
   def users_info
@@ -436,7 +436,7 @@ file_name,
 
   # get users data for protect
   def users_protect
-    !@user.id.eql?('uid-0') ? Users.get_users_for_protect(@user.id) : nil
+    @user.id.eql?('uid-0') ? nil : Users.get_users_for_protect(@user.id)
   end
 
   # get direct url existence flag
