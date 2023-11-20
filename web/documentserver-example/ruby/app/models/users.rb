@@ -31,8 +31,18 @@ class User
                 :templates,
                 :avatar
 
-  def initialize(id, name, email, group, review_groups, comment_groups, user_info_groups, favorite,
-                 denied_permissions, descriptions, templates, avatar)
+  def initialize(id, 
+name, 
+email, 
+group, 
+review_groups, 
+comment_groups, 
+user_info_groups, 
+favorite,
+                 denied_permissions, 
+descriptions, 
+templates, 
+avatar)
     @id = id
     @name = name
     @email = email
