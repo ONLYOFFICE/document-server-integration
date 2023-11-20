@@ -222,8 +222,8 @@ class DocumentHelper
       # for redirection to my link
       user_host = is_server_url ? "&userAddress=#{cur_user_host_address(nil)}" : ''
       "#{get_server_url(is_server_url)}/downloadhistory/?"\
-       "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
-       "&file=#{ERB::Util.url_encode(file)}#{user_host}"
+        "fileName=#{ERB::Util.url_encode(file_name)}&ver=#{version}"\
+        "&file=#{ERB::Util.url_encode(file)}#{user_host}"
     end
 
     # get server url
@@ -238,8 +238,8 @@ class DocumentHelper
     # get callback url
     def get_callback(file_name)
       "#{get_server_url(true)}/track?" \
-      "fileName=#{ERB::Util.url_encode(file_name)}&" \
-      "userAddress=#{cur_user_host_address(nil)}"
+        "fileName=#{ERB::Util.url_encode(file_name)}&" \
+        "userAddress=#{cur_user_host_address(nil)}"
     end
 
     # get url to the created file
