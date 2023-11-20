@@ -146,15 +146,14 @@ class FormatManager
     end
   end
 
-  private
 
   sig { returns(Pathname) }
-  def file
+  private def file
     directory.join('onlyoffice-docs-formats.json')
   end
 
   sig { returns(Pathname) }
-  def directory
+  private def directory
     current_directory = Pathname(T.must(__dir__))
     directory = current_directory.join('..', '..', 'assets', 'document-formats')
     directory.cleanpath

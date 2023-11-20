@@ -37,10 +37,9 @@ class ProxyManager
     redirect_public_url(uri)
   end
 
-  private
 
   sig { params(uri: URI::Generic).returns(T::Boolean) }
-  def refer_public_url(uri)
+  private def refer_public_url(uri)
     public_uri = @config_manager.document_server_public_uri
     uri.scheme == public_uri.scheme &&
       uri.host == public_uri.host &&
@@ -48,7 +47,7 @@ class ProxyManager
   end
 
   sig { params(uri: URI::Generic).returns(URI::Generic) }
-  def redirect_public_url(uri)
+  private def redirect_public_url(uri)
     private_uri = @config_manager.document_server_private_uri
     redirected_uri = uri
     redirected_uri.scheme = private_uri.scheme
