@@ -96,7 +96,7 @@ class ServiceConverter
 
       if expected_key.length > 20 # check if the expected key length is greater than 20
         # calculate 32-bit crc value from the expected key and turn it into the string
-        expected_key = (Zlib.crc32(expected_key)).to_s
+        expected_key = Zlib.crc32(expected_key).to_s
       end
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
