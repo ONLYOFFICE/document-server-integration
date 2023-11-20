@@ -299,12 +299,12 @@ class FileModel
                                   url: prev['url'],
                                   directUrl: prev['directUrl']
                                 }
-                                             else
-                                               {
-                                                 fileType: prev['fileType'],
-                                                 key: prev['key'],
-                                                 url: prev['url']
-                                               }
+                              else
+                                {
+                                  fileType: prev['fileType'],
+                                  key: prev['key'],
+                                  url: prev['url']
+                                }
                                              end
           )
 
