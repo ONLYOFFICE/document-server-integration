@@ -149,7 +149,7 @@ class ConfigurationManager
       bg: 'Bulgarian',
       ca: 'Catalan',
       zh: 'Chinese (Simplified)',
-      "zh-TW": 'Chinese (Traditional)',
+      'zh-TW': 'Chinese (Traditional)',
       cs: 'Czech',
       da: 'Danish',
       nl: 'Dutch',
@@ -169,7 +169,7 @@ class ConfigurationManager
       no: 'Norwegian',
       pl: 'Polish',
       pt: 'Portuguese (Brazil)',
-      "pt-PT": 'Portuguese (Portugal)',
+      'pt-PT': 'Portuguese (Portugal)',
       ro: 'Romanian',
       ru: 'Russian',
       si: 'Sinhala (Sri Lanka)',
@@ -180,7 +180,7 @@ class ConfigurationManager
       tr: 'Turkish',
       uk: 'Ukrainian',
       vi: 'Vietnamese',
-      "aa-AA": 'Test Language'
+      'aa-AA': 'Test Language'
     }
   end
 end
