@@ -37,7 +37,7 @@ class TrackHelper
   def self.read_body(request)
     body = request.body.read
 
-    return '' if body.nil? || body.empty?
+    return '' if body.blank?
 
     file_data = JSON.parse(body) # parse file data
 
@@ -117,7 +117,7 @@ class TrackHelper
           false,
           nil
         ) # get the url of the converted file
-        if new_file_uri.nil? || new_file_uri.empty?
+        if new_file_uri.blank?
           new_file_name = DocumentHelper.get_correct_name(
             File.basename(file_name, cur_ext) + download_ext,
             user_address
@@ -205,7 +205,7 @@ class TrackHelper
           false,
           nil
         ) # get the url of the converted file
-        if new_file_uri.nil? || new_file_uri.empty?
+        if new_file_uri.blank?
           new_file_name = true
         else
           download_uri = new_file_uri

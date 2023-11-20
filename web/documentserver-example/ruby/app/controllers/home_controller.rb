@@ -93,7 +93,7 @@ class HomeController < ApplicationController
   # converting a file
   def convert
     file_data = request.body.read
-    return '' if file_data.nil? || file_data.empty?
+    return '' if file_data.blank?
 
     body = JSON.parse(file_data)
 
@@ -194,7 +194,7 @@ class HomeController < ApplicationController
   # tracking file changes
   def track
     file_data = TrackHelper.read_body(request) # read the request body
-    if file_data.nil? || file_data.empty?
+    if file_data.blank?
       render(plain: '{"error":1}') # an error occurs if the file is empty
       return
     end
