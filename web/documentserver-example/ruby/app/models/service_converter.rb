@@ -154,10 +154,10 @@ class ServiceConverter
       file_type_element = file_result['fileType']
 
       if file_url_element.nil? # and the file url doesn't exist
-        raise('Invalid answer format')  # get ann error message
+        raise('Invalid answer format') # get ann error message
       end
 
-      response_uri = file_url_element  # otherwise, get the file url
+      response_uri = file_url_element # otherwise, get the file url
       response_file_type = file_type_element # get the file type
       result_percent = 100
 
