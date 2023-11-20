@@ -100,7 +100,8 @@ class Users
   ]
 
   @users = [
-    User.new('uid-1',
+    User.new(
+'uid-1',
              'John Smith',
              'smith@example.com',
              '',
@@ -112,7 +113,8 @@ class Users
              @descr_user_first,
              true,
              true),
-    User.new('uid-2',
+    User.new(
+'uid-2',
              'Mark Pottato',
              'pottato@example.com',
              'group-2',
@@ -128,7 +130,8 @@ class Users
              @descr_user_second,
              false,
              true),
-    User.new('uid-3',
+    User.new(
+'uid-3',
              'Hamish Mitchell',
              nil,
              'group-3',
@@ -144,7 +147,8 @@ class Users
              @descr_user_third,
              false,
              false),
-    User.new('uid-0',
+    User.new(
+'uid-0',
              nil,
              nil,
              '',
