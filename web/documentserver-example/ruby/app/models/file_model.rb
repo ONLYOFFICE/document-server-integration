@@ -254,8 +254,8 @@ class FileModel
               download_url(is_server_url: false)
             else
               DocumentHelper.get_historypath_uri(file_name,
-i,
-"prev#{file_ext}",
+                                                 i,
+                                                 "prev#{file_ext}",
                                                  false)
             end
         end
