@@ -140,7 +140,7 @@ class HomeController < ApplicationController
       File.binwrite(DocumentHelper.storage_path(correct_name, nil), data)
 
       old_storage_path = DocumentHelper.storage_path(file_name, nil)
-      File.delete(old_storage_path) if File.exist?(old_storage_path)
+      FileUtils.rm_f(old_storage_path)
 
       file_name = correct_name
       user = Users.get_user(params[:userId])
@@ -239,13 +239,13 @@ class HomeController < ApplicationController
     storage_path = DocumentHelper.storage_path(file_name, nil)
     hist_dir = DocumentHelper.history_dir(storage_path)
 
-    if File.exist?(storage_path) # if the file exists
-      File.delete(storage_path) # delete it from the storage path
-    end
+     # if the file exists
+      FileUtils.rm_f(storage_path) # delete it from the storage path
+    
 
-    if Dir.exist?(hist_dir) # if the history directory of this file exists
-      FileUtils.remove_entry_secure(hist_dir) # delete it
-    end
+     # if the history directory of this file exists
+      FileUtils.rm_rf(hist_dir) # delete it
+    
 
     render(plain: '{"success":true}') # report that the operation is successful
     nil
