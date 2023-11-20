@@ -291,20 +291,20 @@ fileName: @file_name,
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
           data(
-obj['previous'] = if enable_direct_url? == true
-                    { # write key and url information about previous file version with optional directUrl
-                      fileType: prev['fileType'],
-                      key: prev['key'],
-                      url: prev['url'],
-                      directUrl: prev['directUrl']
-                    }
-                                 else
-                                   {
-                                     fileType: prev['fileType'],
-                                     key: prev['key'],
-                                     url: prev['url']
-                                   }
-                                 end
+            obj['previous'] = if enable_direct_url? == true
+                                { # write key and url information about previous file version with optional directUrl
+                                  fileType: prev['fileType'],
+                                  key: prev['key'],
+                                  url: prev['url'],
+                                  directUrl: prev['directUrl']
+                                }
+                                             else
+                                               {
+                                                 fileType: prev['fileType'],
+                                                 key: prev['key'],
+                                                 url: prev['url']
+                                               }
+                                             end
 )
 
           # write the path to the diff.zip archive with differences in this file version
