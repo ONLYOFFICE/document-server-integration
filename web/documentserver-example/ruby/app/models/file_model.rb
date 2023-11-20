@@ -138,12 +138,12 @@ class FileModel
           favorite: @user.favorite
         },
         permissions: { # the permission for the document to be edited and downloaded or not
-          comment: !['view', 'fillForms', 'embedded', 'blockcontent'].include?(editors_mode),
-          copy: !@user.denied_permissions.include?('copy'),
-          download: !@user.denied_permissions.include?('download'),
+          comment: ['view', 'fillForms', 'embedded', 'blockcontent'].exclude?(editors_mode),
+          copy: @user.denied_permissions.exclude?('copy'),
+          download: @user.denied_permissions.exclude?('download'),
           edit: can_edit && ['edit', 'view', 'filter', 'blockcontent'].include?(editors_mode),
-          print: !@user.denied_permissions.include?('print'),
-          fillForms: !['view', 'comment', 'embedded', 'blockcontent'].include?(editors_mode),
+          print: @user.denied_permissions.exclude?('print'),
+          fillForms: ['view', 'comment', 'embedded', 'blockcontent'].exclude?(editors_mode),
           modifyFilter: !editors_mode.eql?('filter'),
           modifyContentControl: !editors_mode.eql?('blockcontent'),
           review: can_edit && (editors_mode.eql?('edit') || editors_mode.eql?('review')),
@@ -151,7 +151,7 @@ class FileModel
           reviewGroups: @user.review_groups,
           commentGroups: @user.comment_groups,
           userInfoGroups: @user.user_info_groups,
-          protect: !@user.denied_permissions.include?('protect')
+          protect: @user.denied_permissions.exclude?('protect')
         },
         referenceData: {
           instanceId: DocumentHelper.get_server_url(false),
