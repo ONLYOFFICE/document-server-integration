@@ -240,11 +240,11 @@ class HomeController < ApplicationController
     hist_dir = DocumentHelper.history_dir(storage_path)
 
       # if the file exists
-      FileUtils.rm_f(storage_path) # delete it from the storage path
+    FileUtils.rm_f(storage_path) # delete it from the storage path
     
 
       # if the history directory of this file exists
-      FileUtils.rm_rf(hist_dir) # delete it
+    FileUtils.rm_rf(hist_dir) # delete it
     
 
     render(plain: '{"success":true}') # report that the operation is successful
