@@ -294,12 +294,12 @@ class DocumentHelper
 
         # write file parameters to the info object
         info = {
-          :version => get_file_version(history_dir(directory)),
-          :id => ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory)}"),
-          :contentLength => "#{(File.size(directory) / 1024.0).round(2)} KB",
-          :pureContentLength => File.size(directory),
-          :title => file_name,
-          :updated => File.mtime(directory)
+          version: get_file_version(history_dir(directory)),
+          id: ServiceConverter.generate_revision_id("#{uri}.#{File.mtime(directory)}"),
+          contentLength: "#{(File.size(directory) / 1024.0).round(2)} KB",
+          pureContentLength: File.size(directory),
+          title: file_name,
+          updated: File.mtime(directory)
         }
 
         if file_id.nil? # if file id is undefined
