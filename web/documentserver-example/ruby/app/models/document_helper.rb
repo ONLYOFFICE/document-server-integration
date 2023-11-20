@@ -200,9 +200,9 @@ class DocumentHelper
 
       # save sample document of a necessary extension to the storage directory
       src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)
-      dest = storage_path file_name, nil
+      dest = storage_path(file_name, nil)
 
-      FileUtils.cp src, dest
+      FileUtils.cp(src, dest)
 
       # save file meta data to the file
 

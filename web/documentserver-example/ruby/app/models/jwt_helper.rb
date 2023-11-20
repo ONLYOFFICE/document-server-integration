@@ -37,13 +37,13 @@ class JwtHelper
 
     # encode a payload object into a token using a secret key
     def encode(payload)
-      JWT.encode payload, @jwt_secret, 'HS256' # define the hashing algorithm and get token
+      JWT.encode(payload, @jwt_secret, 'HS256') # define the hashing algorithm and get token
     end
 
     # decode a token into a payload object using a secret key
     def decode(token)
       begin
-        decoded = JWT.decode token, @jwt_secret, true, { algorithm: 'HS256' }
+        decoded = JWT.decode(token, @jwt_secret, true, { algorithm: 'HS256' })
       rescue StandardError
         return ''
       end

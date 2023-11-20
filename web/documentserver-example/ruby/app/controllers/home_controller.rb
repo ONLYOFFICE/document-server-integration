@@ -51,7 +51,7 @@ class HomeController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
-    redirect_to controller: 'home', action: 'editor', fileName: file_name, userId: user.id
+    redirect_to(controller: 'home', action: 'editor', fileName: file_name, userId: user.id)
   end
 
   # uploading a file
@@ -64,12 +64,12 @@ class HomeController < ApplicationController
       cur_size = http_posted_file.size
 
       # check if the file size exceeds the maximum file size
-      raise 'File size is incorrect' if DocumentHelper.file_size_max < cur_size || cur_size <= 0
+      raise('File size is incorrect') if DocumentHelper.file_size_max < cur_size || cur_size <= 0
 
       cur_ext = File.extname(file_name).downcase
 
       # check if the file extension is supported by the editor
-      raise 'File type is not supported' unless DocumentHelper.file_exts.include? cur_ext
+      raise('File type is not supported') unless DocumentHelper.file_exts.include?(cur_ext)
 
       # get the correct file name if such a name already exists
       file_name = DocumentHelper.get_correct_name(file_name, nil)
@@ -86,9 +86,9 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil)
 
       # write a new file name to the response
-      render plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}"
+      render(plain: "{ \"filename\": \"#{file_name}\", \"documentType\": \"#{document_type}\"}")
     rescue StandardError => e
-      render plain: "{ \"error\": \"#{e.message}\"}" # write an error message to the response
+      render(plain: "{ \"error\": \"#{e.message}\"}") # write an error message to the response
     end
   end
 
@@ -120,7 +120,7 @@ class HomeController < ApplicationController
 
       # if the conversion isn't completed, write file name and step values to the response
       if percent != 100
-        render plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}"
+        render(plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}")
         return
       end
 
@@ -136,7 +136,7 @@ class HomeController < ApplicationController
       res = http.request(req)
       data = res.body
 
-      raise 'stream is null' if data.nil?
+      raise('stream is null') if data.nil?
 
       # write a file with a new extension, but with the content from the origin file
       File.open(DocumentHelper.storage_path(correct_name, nil), 'wb') do |file|
@@ -152,9 +152,9 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
     end
 
-    render plain: "{ \"filename\" : \"#{file_name}\"}"
+    render(plain: "{ \"filename\" : \"#{file_name}\"}")
   rescue StandardError => e
-    render plain: "{ \"error\": \"#{e.message}\"}"
+    render(plain: "{ \"error\": \"#{e.message}\"}")
   end
 
   # downloading a history file from public
@@ -172,11 +172,11 @@ class HomeController < ApplicationController
         hdr.slice!(0, 'Bearer '.length)
         token = JwtHelper.decode(hdr)
         if !token || token.eql?('')
-          render plain: 'JWT validation failed', status: 403
+          render(plain: 'JWT validation failed', status: 403)
           return
         end
       else
-        render plain: 'JWT validation failed', status: 403
+        render(plain: 'JWT validation failed', status: 403)
         return
       end
     end
@@ -190,16 +190,16 @@ class HomeController < ApplicationController
       MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file)}"
 
-    send_file file_path, x_sendfile: true
+    send_file(file_path, x_sendfile: true)
   rescue StandardError
-    render plain: '{ "error": "File not found"}'
+    render(plain: '{ "error": "File not found"}')
   end
 
   # tracking file changes
   def track
     file_data = TrackHelper.read_body(request) # read the request body
     if file_data.nil? || file_data.empty?
-      render plain: '{"error":1}' # an error occurs if the file is empty
+      render(plain: '{"error":1}') # an error occurs if the file is empty
       return
     end
 
@@ -217,17 +217,17 @@ class HomeController < ApplicationController
 
     if [2, 3].include?(status) # MustSave, Corrupted
       saved = TrackHelper.process_save(file_data, file_name, user_address) # save file
-      render plain: "{\"error\":#{saved}}"
+      render(plain: "{\"error\":#{saved}}")
       return
     end
 
     if [6, 7].include?(status) # MustForceave, CorruptedForcesave
       saved = TrackHelper.process_force_save(file_data, file_name, user_address) # force save file
-      render plain: "{\"error\":#{saved}}"
+      render(plain: "{\"error\":#{saved}}")
       return
     end
 
-    render plain: '{"error":0}'
+    render(plain: '{"error":0}')
     nil
   end
 
@@ -235,7 +235,7 @@ class HomeController < ApplicationController
   def remove
     file_name = File.basename(params[:filename]) # get the file name
     unless file_name # if it doesn't exist
-      render plain: '{"success":false}' # report that the operation is unsuccessful
+      render(plain: '{"success":false}') # report that the operation is unsuccessful
       return
     end
 
@@ -251,7 +251,7 @@ class HomeController < ApplicationController
       FileUtils.remove_entry_secure(hist_dir) # delete it
     end
 
-    render plain: '{"success":true}' # report that the operation is successful
+    render(plain: '{"success":true}') # report that the operation is successful
     nil
   end
 
@@ -259,7 +259,7 @@ class HomeController < ApplicationController
   def files
     file_id = params[:fileId]
     files_info = DocumentHelper.get_files_info(file_id) # get the information about the file specified by a file id
-    render json: files_info
+    render(json: files_info)
   end
 
   # downloading a csv file
@@ -272,7 +272,7 @@ class HomeController < ApplicationController
     response.headers['Content-Type'] = MimeMagic.by_path(csv_path).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
-    send_file csv_path, x_sendfile: true
+    send_file(csv_path, x_sendfile: true)
   end
 
   # downloading a file
@@ -289,7 +289,7 @@ class HomeController < ApplicationController
         token = JwtHelper.decode(hdr)
       end
       if !token || token.eql?('')
-        render plain: 'JWT validation failed', status: 403
+        render(plain: 'JWT validation failed', status: 403)
         return
       end
     end
@@ -306,9 +306,9 @@ class HomeController < ApplicationController
       MimeMagic.by_path(file_path).eql?(nil) ? nil : MimeMagic.by_path(file_path).type
     response.headers['Content-Disposition'] = "attachment;filename*=UTF-8''#{ERB::Util.url_encode(file_name)}"
 
-    send_file file_path, x_sendfile: true
+    send_file(file_path, x_sendfile: true)
   rescue StandardError
-    render plain: '{ "error": "File not found"}'
+    render(plain: '{ "error": "File not found"}')
   end
 
   # Save Copy as...
@@ -324,7 +324,7 @@ class HomeController < ApplicationController
                DocumentHelper.fill_forms_exts
 
     unless all_exts.include?(extension)
-      render plain: '{"error": "File type is not supported"}'
+      render(plain: '{"error": "File type is not supported"}')
       return
     end
 
@@ -338,7 +338,7 @@ class HomeController < ApplicationController
     data = res.body
 
     if data.size <= 0 || data.size > HomeController.config_manager.maximum_file_size
-      render plain: '{"error": "File size is incorrect"}'
+      render(plain: '{"error": "File size is incorrect"}')
       return
     end
 
@@ -348,10 +348,10 @@ class HomeController < ApplicationController
     user = Users.get_user(params[:userId])
     DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
 
-    render plain: "{\"file\" : \"#{file_name}\"}"
+    render(plain: "{\"file\" : \"#{file_name}\"}")
     nil
   rescue StandardError => e
-    render plain: "{\"error\":1, \"message\": \"#{e.message}\"}"
+    render(plain: "{\"error\":1, \"message\": \"#{e.message}\"}")
     nil
   end
 
@@ -370,7 +370,7 @@ class HomeController < ApplicationController
     }
 
     json_data = TrackHelper.command_request('meta', dockey, meta)
-    render plain: "{ \"result\" : \"#{JSON.dump(json_data)}\"}"
+    render(plain: "{ \"result\" : \"#{JSON.dump(json_data)}\"}")
   end
 
   # ReferenceData
@@ -395,7 +395,7 @@ class HomeController < ApplicationController
           url: link,
           directUrl: link
         }
-        render plain: data.to_json
+        render(plain: data.to_json)
         return
       end
 
@@ -403,7 +403,7 @@ class HomeController < ApplicationController
       query_params = CGI.parse(url_obj.query)
       file_name = query_params['fileName'].first
       unless File.exist?(DocumentHelper.storage_path(file_name, nil))
-        render plain: '{ "error": "File is not exist"}'
+        render(plain: '{ "error": "File is not exist"}')
         return
       end
     end
@@ -414,7 +414,7 @@ class HomeController < ApplicationController
     end
 
     if file_name.empty?
-      render plain: '{ "error": "File not found"}'
+      render(plain: '{ "error": "File not found"}')
       return
     end
 
@@ -436,7 +436,7 @@ class HomeController < ApplicationController
 
     data['token'] = JwtHelper.encode(data) if JwtHelper.enabled?
 
-    render plain: data.to_json
+    render(plain: data.to_json)
   end
 
   def restore
@@ -495,15 +495,15 @@ class HomeController < ApplicationController
     FileUtils.cp(source_file, bumped_file)
     FileUtils.cp(recovery_file, source_file)
 
-    render json: {
+    render(json: {
       error: nil,
       success: true
-    }
+    })
   rescue StandardError => e
     response.status = :internal_server_error
-    render json: {
+    render(json: {
       error: e.message,
       success: false
-    }
+    })
   end
 end

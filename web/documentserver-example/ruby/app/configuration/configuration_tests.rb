@@ -28,7 +28,7 @@ module Enviroment
   end
 
   def setup
-    ENV.replace @env
+    ENV.replace(@env)
   end
 end
 

@@ -77,13 +77,13 @@ class ServiceConverter
         res = http.request(req) # get the response
 
         status_code = Integer(res.code, 10)
-        raise "Conversion service returned status: #{status_code}" if status_code != 200 # checking status code
+        raise("Conversion service returned status: #{status_code}") if status_code != 200 # checking status code
 
         data = res.body # and take its body
       rescue Timeout::Error
         # try again
       rescue StandardError => e
-        raise e.message
+        raise(e.message)
       end
 
       json_data = JSON.parse(data) # parse response body
@@ -92,11 +92,11 @@ class ServiceConverter
 
     # generate the document key value
     def generate_revision_id(expected_key)
-      require 'zlib'
+      require('zlib')
 
       if expected_key.length > 20 # check if the expected key length is greater than 20
         # calculate 32-bit crc value from the expected key and turn it into the string
-        expected_key = (Zlib.crc32 expected_key).to_s
+        expected_key = (Zlib.crc32(expected_key)).to_s
       end
 
       key = expected_key.gsub(/[^0-9a-zA-Z.=]/, '_')
@@ -131,7 +131,7 @@ class ServiceConverter
         error_message = "ErrorCode = #{error_code}" # default value for the error message
       end
 
-      raise error_message
+      raise(error_message)
     end
 
     # get the response url
@@ -155,7 +155,7 @@ class ServiceConverter
         file_type_element = file_result['fileType']
 
         if file_url_element.nil? # and the file url doesn't exist
-          raise 'Invalid answer format'  # get ann error message
+          raise('Invalid answer format')  # get ann error message
         end
 
         response_uri = file_url_element  # otherwise, get the file url

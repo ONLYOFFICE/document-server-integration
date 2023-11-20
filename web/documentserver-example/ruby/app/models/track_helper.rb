@@ -54,10 +54,10 @@ class TrackHelper
           token = JwtHelper.decode(hdr) # decode a token into a payload object using a secret key
           in_header = true
         else
-          raise 'Expected JWT' # token missing error message
+          raise('Expected JWT') # token missing error message
         end
 
-        raise 'Invalid JWT signature' if !token || token.eql?('')
+        raise('Invalid JWT signature') if !token || token.eql?('')
 
         file_data = JSON.parse(token)
 
@@ -298,7 +298,7 @@ File.basename(file_name, cur_ext) + download_ext,
         res = http.request(req) # get the response
         data = res.body # and take its body
       rescue StandardError => e
-        raise e.message
+        raise(e.message)
       end
 
       JSON.parse(data) # convert the response body into the json format
@@ -316,11 +316,11 @@ File.basename(file_name, cur_ext) + download_ext,
       res = http.request(req) # get the response
 
       status_code = res.code
-      raise "Document editing service returned status: #{status_code}" if status_code != '200' # checking status code
+      raise("Document editing service returned status: #{status_code}") if status_code != '200' # checking status code
 
       data = res.body # and take its body
 
-      raise 'stream is null' if data.nil?
+      raise('stream is null') if data.nil?
 
       data
     end
