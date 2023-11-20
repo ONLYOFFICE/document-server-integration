@@ -41,8 +41,8 @@ class ProxyManager
   private def refer_public_url(uri)
     public_uri = @config_manager.document_server_public_uri
     uri.scheme == public_uri.scheme &&
-      uri.host == public_uri.host &&
-      uri.port == public_uri.port
+    uri.host == public_uri.host &&
+    uri.port == public_uri.port
   end
 
   sig { params(uri: URI::Generic).returns(URI::Generic) }
