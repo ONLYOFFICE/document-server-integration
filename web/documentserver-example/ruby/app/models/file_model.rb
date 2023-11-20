@@ -284,12 +284,12 @@ class FileModel
           # write key and url information about previous file version with optional direct url
           data(
 obj['previous'] = if enable_direct_url? == true
-                                   { # write key and url information about previous file version with optional directUrl
-                                     fileType: prev['fileType'],
-                                     key: prev['key'],
-                                     url: prev['url'],
-                                     directUrl: prev['directUrl']
-                                   }
+                    { # write key and url information about previous file version with optional directUrl
+                      fileType: prev['fileType'],
+                      key: prev['key'],
+                      url: prev['url'],
+                      directUrl: prev['directUrl']
+                    }
                                  else
                                    {
                                      fileType: prev['fileType'],
