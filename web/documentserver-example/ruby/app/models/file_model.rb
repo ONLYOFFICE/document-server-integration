@@ -54,7 +54,7 @@ class FileModel
       DocumentHelper.get_file_uri(
         @file_name,
         false
-)
+      )
     end
   end
 
@@ -260,7 +260,7 @@ class FileModel
                 i,
                 "prev#{file_ext}",
                 false
-)
+              )
             end
         end
         data_obj['version'] = i

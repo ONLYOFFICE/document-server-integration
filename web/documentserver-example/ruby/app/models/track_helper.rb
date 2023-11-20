@@ -128,7 +128,7 @@ class TrackHelper
         new_file_name = DocumentHelper.get_correct_name(
           File.basename(file_name, cur_ext) + download_ext,
           user_address
-)
+        )
       end
     end
 
@@ -228,12 +228,12 @@ class TrackHelper
                       DocumentHelper.get_correct_name(
                         "#{File.basename(file_name, cur_ext)}-form#{download_ext}",
                         user_address
-) # get the correct file name if it already exists
+                      ) # get the correct file name if it already exists
                     else
                       DocumentHelper.get_correct_name(
                         "#{File.basename(file_name, cur_ext)}-form#{cur_ext}",
                         user_address
-)
+                      )
                     end
         forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
       else
@@ -241,7 +241,7 @@ class TrackHelper
           file_name = DocumentHelper.get_correct_name(
             File.basename(file_name, cur_ext) + download_ext,
             user_address
-)
+          )
         end
         forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
         if forcesave_path.eql?('')
