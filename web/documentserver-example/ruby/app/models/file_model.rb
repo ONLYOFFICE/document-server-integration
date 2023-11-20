@@ -343,7 +343,7 @@ class FileModel
   end
 
   # get compared file information
-  def dataDocument
+  def data_document
     # file type
     # server url to the compared file
     # direct url to the compared file
@@ -372,7 +372,7 @@ class FileModel
   end
 
   # get mail merge recipients information
-  def dataSpreadsheet
+  def data_spreadsheet
     # file type
     # server url to the mail merge recipients file
     # direct url to the mail merge recipients file
@@ -393,7 +393,7 @@ class FileModel
                        end
 
     if JwtHelper.is_enabled # check if a secret key to generate token exists or not
-      # encode a payload object into a token and write it to the dataSpreadsheet object
+      # encode a payload object into a token and write it to the data_spreadsheet object
       data_spreadsheet['token'] = JwtHelper.encode(data_spreadsheet)
     end
 

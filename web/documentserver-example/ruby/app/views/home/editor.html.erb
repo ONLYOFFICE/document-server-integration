@@ -108,14 +108,14 @@
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
     var onRequestSelectDocument = function(event) {
-        var data = <%= raw @file.dataDocument.to_json %>;
+        var data = <%= raw @file.data_document.to_json %>;
         data.c = event.data.c;
         docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
 
     // the user is trying to select recipients data by clicking the Mail merge button
     var onRequestSelectSpreadsheet = function (event) {
-        var data = <%= raw @file.dataSpreadsheet.to_json %>;
+        var data = <%= raw @file.data_spreadsheet.to_json %>;
         data.c = event.data.c;
         docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
     };
