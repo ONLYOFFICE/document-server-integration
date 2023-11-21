@@ -29,6 +29,7 @@ from src.common import http
 from src.configuration import ConfigurationManager
 from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
+from urllib.parse import urlparse, parse_qs
 
 config_manager = ConfigurationManager()
 
@@ -232,6 +233,16 @@ def edit(request):
         }
     ]
 
+    usersInfo = []
+    if user.id != 'uid-0':
+        for userInfo in users.getAllUsers():
+            u = userInfo
+            u.image = docManager.getServerUrl(True, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
+            usersInfo.append({"id": u.id, "name": u.name, "email": u.email, "image": u.image, "group": u.group,
+                              "reviewGroups": u.reviewGroups, "commentGroups": u.commentGroups, "favorite": u.favorite,
+                              "deniedPermissions": u.deniedPermissions, "descriptions": u.descriptions,
+                              "templates": u.templates, "userInfoGroups": u.userInfoGroups, "avatar": u.avatar})
+
     if meta:  # if the document meta data exists,
         infObj = {  # write author and creation time parameters to the information object
             'owner': meta['uname'],
@@ -294,7 +305,9 @@ def edit(request):
             'user': {  # the user currently viewing or editing the document
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
-                'group': user.group
+                'group': user.group,
+                'image': docManager.getServerUrl(True, request) + f'/static/images/{user.id}.jpg' if user.avatar
+                else None
             },
             'embedded': {  # the parameters for the embedded document type
                 # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -376,7 +389,8 @@ def edit(request):
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None,
-        'usersForProtect': json.dumps(usersForProtect) if user.id != 'uid-0' else None
+        'usersInfo': json.dumps(usersInfo),
+        'usersForProtect': json.dumps(usersForProtect) if user.id != 'uid-0' else None,
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 
@@ -440,6 +454,14 @@ def files(request):
 # download a csv file
 def csv():
     filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
+    response = docManager.download(filePath)
+    return response
+
+
+# download a sample file
+def assets(request):
+    filename = fileUtils.getFileName(request.GET['filename'])
+    filePath = os.path.join('assets', 'document-templates', 'sample', filename)
     response = docManager.download(filePath)
     return response
 
@@ -527,18 +549,34 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
+    link = body['link']
+    if not fileName and link:
+        if docManager.getServerUrl(False, request) not in link:
+            data = {
+                'url': link,
+                'directUrl': link
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+
+        url_obj = urlparse(link)
+        query = parse_qs(url_obj.query)
+        if 'filename' in query:
+            fileName = query['filename'][0]
+            if not os.path.exists(docManager.getStoragePath(fileName, request)):
+                response.setdefault('error', 'File does not exist')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
             if os.path.exists(docManager.getStoragePath(path, request)):
                 fileName = path
+            else:
+                response.setdefault('error', 'File not found')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-
-    if fileName is None:
-        response.setdefault('error', 'File not found')
-        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
     data = {
         'fileType': fileUtils.getFileExt(fileName).replace('.', ''),

@@ -334,34 +334,6 @@ function files()
 }
 
 /**
- * Download assets
- *
- * @return void
- */
-function assets()
-{
-    $fileName = basename($_GET["name"]);
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
-        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
-    downloadFile($filePath);
-}
-
-/**
- * Download a csv file
- *
- * @return void
- */
-function csv()
-{
-    $fileName = "csv.csv";
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
-        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
-    downloadFile($filePath);
-}
-
-/**
  * Download a file from history
  *
  * @return array|void
@@ -550,6 +522,20 @@ function reference()
             if ($userAddress == getCurUserHostAddress()) {
                 $fileName = $fileKey->fileName;
             }
+        }
+    }
+
+    $link = $post["link"];
+    if (!isset($filename) && isset($link)) {
+        if (strpos($link, serverPath()) === false) {
+            return ["url" => $link, "directUrl"=> $link];
+        }
+
+        $urlObj = parse_url($link);
+        parse_str($urlObj["query"], $urlParams);
+        $fileName = $urlParams["fileID"];
+        if (!file_exists(getStoragePath($fileName))) {
+            return ["error" => "File does not exist"];
         }
     }
 

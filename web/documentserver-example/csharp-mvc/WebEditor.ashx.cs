@@ -812,6 +812,27 @@ namespace OnlineEditorsExampleMVC
                 }
             }
 
+            if (fileName == "" && body.ContainsKey("link"))
+            {
+                string link = body["link"].ToString();
+                if (!link.Contains(DocManagerHelper.GetServerUrl(false)))
+                {
+                    context.Response.Write(jss.Serialize(new Dictionary<string, string>() {
+                        { "url", link },
+                        { "directUrl", link }
+                    }));
+                    return;
+                }
+
+                Uri linkUri = new Uri(link);
+                fileName = HttpUtility.ParseQueryString(linkUri.Query).Get("fileName");
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(DocManagerHelper.StoragePath(fileName, null)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+            }
+
             if (fileName == "")
             {
                 try

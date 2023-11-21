@@ -60,6 +60,7 @@ public class ExampleData {
                 "Can create a file from a template with data from the editor",
                 "Can see the information about all users",
                 "Can view chat",
+                "Has an avatar",
                 "Can submit forms"
         );
 
@@ -74,6 +75,7 @@ public class ExampleData {
                 "Can create a file from an editor",
                 "Can see the information about users from Group2 and users who don’t belong to any group",
                 "Can view chat",
+                "Has an avatar",
                 "Can’t submit forms"
         );
 
@@ -97,23 +99,23 @@ public class ExampleData {
         userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null, true, true);
+                List.of(FilterState.NULL.toString()), null, true, true, true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true);
+                true, true);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
-                new ArrayList<>(), List.of("group-2"), false, true, true);
+                new ArrayList<>(), List.of("group-2"), false, true, true, false);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false, false);
+                new ArrayList<>(), null, false, false, false);
     }
 }

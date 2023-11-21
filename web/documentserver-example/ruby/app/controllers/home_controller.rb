@@ -278,6 +278,18 @@ class HomeController < ApplicationController
     send_file csvPath, :x_sendfile => true
   end
 
+  # downloading an assets file
+  def assets
+    file_name = File.basename(params[:fileName])
+    asset_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
+
+    response.headers['Content-Length'] = File.size(asset_path).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(asset_path).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
+
+    send_file asset_path, :x_sendfile => true
+  end
+  
   # downloading a file
   def download
     begin
@@ -392,6 +404,26 @@ class HomeController < ApplicationController
           if userAddress == DocumentHelper.cur_user_host_address(nil)
             fileName = fileKey["fileName"]
           end
+        end
+      end
+
+      link = body["link"]
+      if fileName.empty? and body.key?("link")
+        if !link.include?(DocumentHelper.get_server_url(false))
+          data = {
+            url: link,
+            directUrl: link
+          }
+          render plain: data.to_json
+          return
+        end
+
+        url_obj = URI(link)
+        query_params = CGI.parse(url_obj.query)
+        fileName = query_params['fileName'].first
+        if !File.exist?(DocumentHelper.storage_path(fileName, nil))
+          render plain: '{ "error": "File is not exist"}'
+          return
         end
       end
 

@@ -15,9 +15,11 @@
 #
 
 class User
-    attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite, :deniedPermissions, :descriptions, :templates
+    attr_accessor :id, :name, :email, :group, :reviewGroups, :commentGroups, :userInfoGroups, :favorite,
+    :deniedPermissions, :descriptions, :templates, :avatar
 
-    def initialize (id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates)
+    def initialize (id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
+        deniedPermissions, descriptions, templates, avatar)
         @id = id
         @name = name
         @email = email
@@ -29,6 +31,7 @@ class User
         @descriptions = descriptions
         @templates = templates
         @userInfoGroups = userInfoGroups
+        @avatar = avatar
     end
 end
 
@@ -41,7 +44,8 @@ class Users
         "The file favorite state is undefined",
         "Can create files from templates using data from the editor",
         "Can see the information about all users",
-        "Can submit forms"
+        "Has an avatar",
+        "Can submit forms",
     ];
 
     @@descr_user_2 = [
@@ -51,7 +55,8 @@ class Users
         "This file is marked as favorite",
         "Can create new files from the editor",
         "Can see the information about users from Group2 and users who don’t belong to any group",
-        "Can't submit forms"
+        "Has an avatar",
+        "Can't submit forms",
     ];
 
     @@descr_user_3 = [
@@ -64,7 +69,7 @@ class Users
         "Can’t print the file",
         "Can create new files from the editor",
         "Can see the information about Group2 users",
-        "Can't submit forms"
+        "Can't submit forms",
     ];
 
     @@descr_user_0 = [
@@ -86,7 +91,7 @@ class Users
     @@users = [
         User.new("uid-1", "John Smith", "smith@example.com",
                 "", nil, {}, nil,
-                nil, [], @@descr_user_1, true),
+                nil, [], @@descr_user_1, true, true),
         User.new("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", ["group-2", ""], {
                     :view => "",
@@ -94,7 +99,7 @@ class Users
                     :remove => ["group-2"]
                 },
                  ["group-2", ""],
-                true, [], @@descr_user_2, false),
+                true, [], @@descr_user_2, false, true),
         User.new("uid-3", "Hamish Mitchell", nil,
                 "group-3", ["group-2"], {
                     :view => ["group-3", "group-2"],
@@ -102,10 +107,10 @@ class Users
                     :remove => []
                 },
                  ["group-2"],
-                false, ["copy", "download", "print"], @@descr_user_3, false),
+                false, ["copy", "download", "print"], @@descr_user_3, false, false),
         User.new("uid-0", nil, nil,
                 "", nil, {}, [],
-                nil, ["protect"], @@descr_user_0, false)
+                nil, ["protect"], @@descr_user_0, false, false)
     ]
 
     class << self
