@@ -47,8 +47,7 @@ compose-prod: #  Up containers in a production environment.
 
 .PHONY: lint
 lint: #          Lint the source code for style and check for types.
-	@flake8
-	@mypy .
+	@flake8 --count --show-source --statistics
 
 .PHONY: test
 test: #          Recursively run the tests.
