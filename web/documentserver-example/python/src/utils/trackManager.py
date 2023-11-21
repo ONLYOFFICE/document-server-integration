@@ -170,10 +170,10 @@ def processForceSave(body, filename, usAddr):
             data_name = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + ".txt", usAddr)
             data_path = docManager.getStoragePath(data_name, usAddr)
 
-            forms_data = docManager.downloadFileFromUri(forms_data_url);
+            forms_data = docManager.downloadFileFromUri(forms_data_url)
 
             if data is None:
-                raise Exception("Document editing service didn't return forms_data");
+                raise Exception("Document editing service didn't return forms_data")
             else:
                 with open(data_path, 'w') as file:
                     file.write(forms_data.text)
