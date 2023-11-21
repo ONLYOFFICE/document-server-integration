@@ -29,6 +29,7 @@ using System.Net;
 using System.Collections;
 using System.Net.Sockets;
 using ASC.Api.DocumentConverter;
+using Newtonsoft.Json;
 
 namespace OnlineEditorsExample
 {
@@ -275,7 +276,7 @@ namespace OnlineEditorsExample
         private static void Assets(HttpContext context)
         {
             var fileName = Path.GetFileName(context.Request["filename"]);
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -283,7 +284,7 @@ namespace OnlineEditorsExample
         private static void GetCsv(HttpContext context)
         {
             var fileName = "csv.csv";
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -619,6 +620,27 @@ namespace OnlineEditorsExample
                     {
                         fileName = (string)fileKeyObj["fileName"];
                     }
+                }
+            }
+
+            if (fileName == "" && body.ContainsKey("link"))
+            {
+                string link = body["link"].ToString();
+                if (!link.Contains(_Default.GetServerUrl(false)))
+                {
+                    context.Response.Write(jss.Serialize(new Dictionary<string, string>() {
+                        { "url", link },
+                        { "directUrl", link }
+                    }));
+                    return;
+                }
+
+                Uri linkUri = new Uri(link);
+                fileName = HttpUtility.ParseQueryString(linkUri.Query).Get("fileID");
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(_Default.StoragePath(fileName, null)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
                 }
             }
 

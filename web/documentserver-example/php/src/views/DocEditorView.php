@@ -161,6 +161,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
+                    "image" => $user->avatar ? serverPath(true) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -211,17 +212,27 @@ final class DocEditorView extends View
         // recipients data for mail merging
         $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
-            "directUrl" => serverPath(false) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/csv.csv",
         ] : [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
         ];
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+
         // users data for protect
         $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
+
+        $usersInfo = [];
+        if ($user->id != 'uid-0') {
+            foreach ($userList->getAllUsers() as $userInfo) {
+                $u = $userInfo;
+                $u->image = $userInfo->avatar ? serverPath(true) . "/assets/images/" . $userInfo->id . ".png" : null;
+                array_push($usersInfo, $u);
+            }
+        }
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
@@ -256,6 +267,18 @@ final class DocEditorView extends View
                         var c = event.data.c;
                     }
                     switch (c) {
+                        case \"info\":
+                            users = [];
+                            var allUsers = {usersInfo};
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
                         case \"protect\":
                             var users = {usersForProtect};
                             break;
@@ -292,6 +315,7 @@ final class DocEditorView extends View
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersInfo" => json_encode($usersInfo),
             "usersForProtect" => json_encode($usersForProtect),
             ];
     }

@@ -38,6 +38,7 @@ final class ExampleUsers
             "The file favorite state is undefined",
             "Can create files from templates using data from the editor",
             "Can see the information about all users",
+            "Has an avatar",
         ];
         $this->user2Description = [
             "Belongs to Group2",
@@ -47,6 +48,7 @@ final class ExampleUsers
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Can see the information about users from Group2 and users who don’t belong to any group",
+            "Has an avatar",
         ];
         $this->user3Description = [
             "Belongs to Group3",
@@ -84,6 +86,7 @@ final class ExampleUsers
                 null,
                 [],
                 $this->user1Description,
+                true,
                 true
             ),
             new Users(
@@ -101,7 +104,8 @@ final class ExampleUsers
                 true,
                 [],
                 $this->user2Description,
-                false
+                false,
+                true
             ),
             new Users(
                 "uid-3",
@@ -118,6 +122,7 @@ final class ExampleUsers
                 false,
                 ["copy", "download", "print"],
                 $this->user3Description,
+                false,
                 false
             ),
             new Users(
@@ -131,6 +136,7 @@ final class ExampleUsers
                 null,
                 ["protect"],
                 $this->user0Description,
+                false,
                 false
             ),
         ];

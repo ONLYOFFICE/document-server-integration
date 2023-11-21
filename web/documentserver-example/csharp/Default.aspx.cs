@@ -30,46 +30,6 @@ using ASC.Api.DocumentConverter;
 
 namespace OnlineEditorsExample
 {
-    internal static class FileType
-    {
-        // the spreadsheet extension list
-        public static readonly List<string> ExtsSpreadsheet = new List<string>
-            {
-                ".xls", ".xlsx", ".xlsm", ".xlsb",
-                ".xlt", ".xltx", ".xltm",
-                ".ods", ".fods", ".ots", ".csv"
-            };
-
-        // the presentation extension list
-        public static readonly List<string> ExtsPresentation = new List<string>
-            {
-                ".pps", ".ppsx", ".ppsm",
-                ".ppt", ".pptx", ".pptm",
-                ".pot", ".potx", ".potm",
-                ".odp", ".fodp", ".otp"
-            };
-
-        // the document extension list
-        public static readonly List<string> ExtsDocument = new List<string>
-            {
-                ".doc", ".docx", ".docm",
-                ".dot", ".dotx", ".dotm",
-                ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
-            };
-
-        // get an internal file extension
-        public static string GetInternalExtension(string extension)
-        {
-            extension = Path.GetExtension(extension).ToLower();  // get file extension
-            if (ExtsDocument.Contains(extension)) return ".docx";  // .docx for text document extensions
-            if (ExtsSpreadsheet.Contains(extension)) return ".xlsx";  // .xlsx for spreadsheet extensions
-            if (ExtsPresentation.Contains(extension)) return ".pptx";  // .pptx for presentation extensions
-            return string.Empty;
-        }
-    }
-
     public partial class _Default : Page
     {
 
@@ -115,24 +75,24 @@ namespace OnlineEditorsExample
         // file extensions that can be viewed
         private static List<string> ViewedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ViewableExtensions(); }
         }
-        
+
         public static List<string> FillFormsExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.FillableExtensions(); }
         }
 
         // file extensions that can be edited
         public static List<string> EditedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.EditableExtensions(); }
         }
 
         // file extensions that can be converted
         public static List<string> ConvertExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ConvertibleExtensions(); }
         }
 
         private static string _fileName;
@@ -284,9 +244,9 @@ namespace OnlineEditorsExample
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (FileType.ExtsDocument.Contains(ext)) return "word";  // word for text document extensions
-            if (FileType.ExtsSpreadsheet.Contains(ext)) return "cell";  // cell for spreadsheet extensions
-            if (FileType.ExtsPresentation.Contains(ext)) return "slide";  // slide for presentation extensions
+            if (FormatManager.DocumentExtensions().Contains(ext)) return "word";  // word for text document extensions
+            if (FormatManager.SpreadsheetExtensions().Contains(ext)) return "cell";  // cell for spreadsheet extensions
+            if (FormatManager.PresentationExtensions().Contains(ext)) return "slide";  // slide for presentation extensions
 
             return "word";  // the default document type is word
         }

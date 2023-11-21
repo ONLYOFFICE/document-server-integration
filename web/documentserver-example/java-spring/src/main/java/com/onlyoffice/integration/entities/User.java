@@ -45,4 +45,6 @@ public class User extends AbstractEntity {
     @ElementCollection
     @CollectionTable(name = "user_descriptions")
     private List<String> descriptions;
+    private Boolean avatar;
+    private String image;
 }

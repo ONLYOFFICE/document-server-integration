@@ -30,7 +30,8 @@ namespace OnlineEditorsExample
             "Can perform all actions with comments",
             "The file favorite state is undefined",
             "Can create files from templates using data from the editor",
-            "Can see the information about all users"
+            "Can see the information about all users",
+            "Has an avatar"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -40,7 +41,8 @@ namespace OnlineEditorsExample
             "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
             "This file is marked as favorite",
             "Can create new files from the editor",
-            "Can see the information about users from Group2 and users who don’t belong to any group"
+            "Can see the information about users from Group2 and users who don’t belong to any group",
+            "Has an avatar"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -84,6 +86,7 @@ namespace OnlineEditorsExample
                     null,
                     new List<string>(),
                     descr_user_1,
+                    true,
                     true
                 ),
             new User(
@@ -102,7 +105,8 @@ namespace OnlineEditorsExample
                     true,
                     new List<string>(),
                     descr_user_2,
-                    false
+                    false,
+                    true
                 ),
             new User(
                     "uid-3",
@@ -120,6 +124,7 @@ namespace OnlineEditorsExample
                     false,
                     new List<string>() { "copy", "download", "print" },
                     descr_user_3,
+                    false,
                     false
                 ),
             new User(
@@ -133,6 +138,7 @@ namespace OnlineEditorsExample
                     null,
                     new List<string>() { "protect" },
                     descr_user_0,
+                    false,
                     false
                 )
         };
@@ -166,6 +172,24 @@ namespace OnlineEditorsExample
                     {
                         {"name", user.name },
                         {"email", user.email },
+                    });
+                }
+            }
+            return usersData;
+        }
+
+        public static List<Dictionary<string, object>> getUsersInfo(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+            if(id != "uid-0"){
+                foreach (User user in users)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"id", user.id},
+                        {"name", user.name },
+                        {"email", user.email },
+                        {"image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
                     });
                 }
             }
@@ -206,8 +230,9 @@ namespace OnlineEditorsExample
         public List<string> descriptions;
         public bool templates;
         public List<string> userInfoGroups;
+        public bool avatar;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar)
         {
             this.id = id;
             this.name = name;
@@ -220,6 +245,7 @@ namespace OnlineEditorsExample
             this.descriptions = descriptions;
             this.templates = templates;
             this.userInfoGroups = userInfoGroups;
+            this.avatar = avatar;
         }
     }
 }

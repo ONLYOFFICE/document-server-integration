@@ -18,20 +18,16 @@
 
 package com.onlyoffice.integration.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Reference {
-    private Boolean directUrl;
-    private ReferenceData referenceData;
-    private String path;
-    private String link;
+public class UserInfo {
+    private Integer id;
+    private String name;
+    private String email;
+    private String image;
 }
