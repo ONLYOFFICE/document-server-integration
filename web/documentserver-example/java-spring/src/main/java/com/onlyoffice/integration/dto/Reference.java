@@ -33,4 +33,5 @@ public class Reference {
     private Boolean directUrl;
     private ReferenceData referenceData;
     private String path;
+    private String link;
 }

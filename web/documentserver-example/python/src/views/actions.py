@@ -29,6 +29,7 @@ from src.common import http
 from src.configuration import ConfigurationManager
 from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
+from urllib.parse import urlparse, parse_qs
 
 config_manager = ConfigurationManager()
 
@@ -449,6 +450,14 @@ def csv():
     return response
 
 
+# download a sample file
+def assets(request):
+    filename = fileUtils.getFileName(request.GET['filename'])
+    filePath = os.path.join('assets', 'document-templates', 'sample', filename)
+    response = docManager.download(filePath)
+    return response
+
+
 # download a file
 def download(request):
     try:
@@ -553,18 +562,34 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
+    link = body['link']
+    if not fileName and link:
+        if docManager.getServerUrl(False, request) not in link:
+            data = {
+                'url': link,
+                'directUrl': link
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+
+        url_obj = urlparse(link)
+        query = parse_qs(url_obj.query)
+        if 'filename' in query:
+            fileName = query['filename'][0]
+            if not os.path.exists(docManager.getStoragePath(fileName, request)):
+                response.setdefault('error', 'File does not exist')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
             if os.path.exists(docManager.getStoragePath(path, request)):
                 fileName = path
+            else:
+                response.setdefault('error', 'File not found')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-
-    if fileName is None:
-        response.setdefault('error', 'File not found')
-        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
     data = {
         'fileType': fileUtils.getFileExt(fileName).replace('.', ''),

@@ -74,20 +74,8 @@ function routers()
         $view->render();
         return;
     }
-    if (str_starts_with($path, '/assets')) {
-        $response = assets();
-        $response['status'] = 'success';
-        echo json_encode($response);
-        return;
-    }
     if (str_starts_with($path, '/convert')) {
         $response = convert();
-        $response['status'] = 'success';
-        echo json_encode($response);
-        return;
-    }
-    if (str_starts_with($path, '/csv')) {
-        $response = csv();
         $response['status'] = 'success';
         echo json_encode($response);
         return;

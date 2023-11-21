@@ -694,6 +694,33 @@ public class IndexServlet extends HttpServlet {
                 }
             }
 
+            Object link = body.get("link");
+            if (fileName.equals("") && link != null) {
+                if (!((String) link).contains(DocumentManager.getServerUrl(false))) {
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put("url", link);
+                    data.put("directUrl", link);
+                    writer.write(gson.toJson(data));
+                    return;
+                }
+
+                URL url = new URL((String) link);
+                String query = url.getQuery();
+                String[] parameters = query.split("&");
+                for (String parameter : parameters) {
+                    String[] keyValue = parameter.split("=");
+                    if (keyValue.length == 2 && "fileName".equals(keyValue[0])) {
+                        fileName = keyValue[1];
+                        break;
+                    }
+                }
+                boolean fileExists = new File(DocumentManager.storagePath(fileName, null)).exists();
+                if (!fileExists) {
+                    writer.write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+            }
+
             if (fileName.equals("")) {
                 try {
                     String path = (String) body.get("path");
