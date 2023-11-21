@@ -1,13 +1,7 @@
 # Change Log
 
+- link in referenceData
 - using a repo with a list of formats
-- php: link in referenceData
-- ruby: link in referenceData
-- java: link in referenceData
-- java-spring: link in referenceData
-- csharp-mvc: link in referenceData
-- csharp: link in referenceData
-- python: link in referenceData
 - ruby: convert after uploading only tagged formats
 - python: convert after uploading only tagged formats
 - php: convert after uploading only tagged formats
@@ -15,7 +9,6 @@
 - onRequestOpen method
 - user avatar
 - trimming long name of uploading file
-- nodejs: link in referenceData
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
