@@ -73,6 +73,7 @@ namespace OnlineEditorsExampleMVC.Models
 
     public static class FormatManager
     {
+        private static List<Format> cachedFormats;
         public static List<string> FillableExtensions()
         {
             return Fillable()
@@ -182,11 +183,16 @@ namespace OnlineEditorsExampleMVC.Models
 
         public static List<Format> All()
         {
-            var path = GetPath();
-            var lines = File.ReadLines(path, Encoding.UTF8);
-            var contents = string.Join(Environment.NewLine, lines);
-            var formats = JsonConvert.DeserializeObject<Format[]>(contents);
-            return formats.ToList();
+            if (cachedFormats == null)
+            {
+                var path = GetPath();
+                var lines = File.ReadLines(path, Encoding.UTF8);
+                var contents = string.Join(Environment.NewLine, lines);
+                var formats = JsonConvert.DeserializeObject<Format[]>(contents);
+                cachedFormats = formats.ToList();
+            }
+
+            return cachedFormats;
         }
 
         private static string GetPath()
