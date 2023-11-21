@@ -16,8 +16,13 @@
  *
  */
 
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using static OnlineEditorsExampleMVC.Models.FileUtility;
+using System.Linq;
+using System.Text;
 
 namespace OnlineEditorsExampleMVC.Models
 {
@@ -35,38 +40,178 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
-            if (ExtsDocument.Contains(ext)) return FileType.Word;  // word type for document extensions
-            if (ExtsSpreadsheet.Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
-            if (ExtsPresentation.Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
+            if (FormatManager.DocumentExtensions().Contains(ext)) return FileType.Word;  // word type for document extensions
+            if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
+            if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
 
             return FileType.Word;  // the default type is word
         }
+    }
 
-        // document extensions
-        public static readonly List<string> ExtsDocument = new List<string>
-            {
-                ".doc", ".docx", ".docm",
-                ".dot", ".dotx", ".dotm",
-                ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                ".html", ".htm", ".mht", ".xml",
-                ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps", ".oform"
-            };
+    public class Format
+    {
+        public string Name { get; }
+        public FileType Type { get; }
+        public List<string> Actions { get; }
+        public List<string> Convert { get; }
+        public List<string> Mime { get; }
 
-        // spreadsheet extensions
-        public static readonly List<string> ExtsSpreadsheet = new List<string>
-            {
-                ".xls", ".xlsx", ".xlsm", ".xlsb",
-                ".xlt", ".xltx", ".xltm",
-                ".ods", ".fods", ".ots", ".csv"
-            };
+        public Format(string name, FileType type, List<string> actions, List<string> convert, List<string> mime)
+        {
+            Name = name;
+            Type = type;
+            Actions = actions;
+            Convert = convert;
+            Mime = mime;
+        }
 
-        // presentation extensions
-        public static readonly List<string> ExtsPresentation = new List<string>
+        public string Extension()
+        {
+            return "." + Name;
+        }
+    }
+
+    public static class FormatManager
+    {
+        private static List<Format> cachedFormats;
+        public static List<string> FillableExtensions()
+        {
+            return Fillable()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Fillable()
+        {
+            return All()
+                .Where(format => format.Actions.Contains("fill"))
+                .ToList();
+        }
+
+        public static List<string> ViewableExtensions()
+        {
+            return Viewable()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Viewable()
+        {
+            return All()
+                .Where(format => format.Actions.Contains("view"))
+                .ToList();
+        }
+
+        public static List<string> EditableExtensions()
+        {
+            return Editable()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Editable()
+        {
+            return All()
+                .Where(format => format.Actions.Contains("edit") || format.Actions.Contains("lossy-edit"))
+                .ToList();
+        }
+
+        public static List<string> ConvertibleExtensions()
+        {
+            return Convertible()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Convertible()
+        {
+            return All()
+                .Where(format => (format.Type == FileType.Cell && format.Convert.Contains("xlsx"))
+                                || (format.Type == FileType.Slide && format.Convert.Contains("pptx"))
+                                || (format.Type == FileType.Word && format.Convert.Contains("docx")))
+                .ToList();
+        }
+
+        public static List<string> SpreadsheetExtensions()
+        {
+            return Spreadsheets()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Spreadsheets()
+        {
+            return All()
+                .Where(format => format.Type == FileType.Cell)
+                .ToList();
+        }
+
+        public static List<string> PresentationExtensions()
+        {
+            return Presentations()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Presentations()
+        {
+            return All()
+                .Where(format => format.Type == FileType.Slide)
+                .ToList();
+        }
+
+        public static List<string> DocumentExtensions()
+        {
+            return Documents()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Documents()
+        {
+            return All()
+                .Where(format => format.Type == FileType.Word)
+                .ToList();
+        }
+
+        public static List<string> AllExtensions()
+        {
+            return All()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> All()
+        {
+            if (cachedFormats == null)
             {
-                ".pps", ".ppsx", ".ppsm",
-                ".ppt", ".pptx", ".pptm",
-                ".pot", ".potx", ".potm",
-                ".odp", ".fodp", ".otp"
-            };
+                var path = GetPath();
+                var lines = File.ReadLines(path, Encoding.UTF8);
+                var contents = string.Join(Environment.NewLine, lines);
+                var formats = JsonConvert.DeserializeObject<Format[]>(contents);
+                cachedFormats = formats.ToList();
+            }
+
+            return cachedFormats;
+        }
+
+        private static string GetPath()
+        {
+            string path = Path.Combine(GetDirectory(), "onlyoffice-docs-formats.json");
+            if (File.Exists(path))
+            {
+                return path;
+            }
+            else
+            {
+                throw new FileNotFoundException("The JSON file does not exist.");
+            }
+        }
+
+        private static string GetDirectory()
+        {
+            string directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "document-formats");
+            return Path.GetFullPath(directory);
+        }
     }
 }

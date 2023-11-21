@@ -1,5 +1,6 @@
 # Change Log
 
+- using a repo with a list of formats
 - php: link in referenceData
 - ruby: link in referenceData
 - java: link in referenceData
@@ -19,11 +20,7 @@
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - restore from history
-- python: using a repo with a list of formats
-- ruby: using a repo with a list of formats
-- java: using a repo with a list of formats
 - java: getting history by a separate request
-- java-spring: using a repo with a list of formats
 - java-spring: getting history by a separate request
 
 ## 1.7.0
