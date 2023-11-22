@@ -172,7 +172,7 @@ def processForceSave(body, filename, usAddr):
 
             forms_data = docManager.downloadFileFromUri(forms_data_url)
 
-            if data is None:
+            if forms_data is None:
                 raise Exception("Document editing service didn't return forms_data")
             else:
                 with open(data_path, 'w') as file:
