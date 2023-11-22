@@ -10,6 +10,8 @@
 - csharp-mvc: link in referenceData
 - csharp: link in referenceData
 - python: link in referenceData
+- link in referenceData
+- using a repo with a list of formats
 - ruby: convert after uploading only tagged formats
 - python: convert after uploading only tagged formats
 - php: convert after uploading only tagged formats
@@ -17,16 +19,11 @@
 - onRequestOpen method
 - user avatar
 - trimming long name of uploading file
-- nodejs: link in referenceData
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - restore from history
-- python: using a repo with a list of formats
-- ruby: using a repo with a list of formats
-- java: using a repo with a list of formats
 - java: getting history by a separate request
-- java-spring: using a repo with a list of formats
 - java-spring: getting history by a separate request
 
 ## 1.7.0

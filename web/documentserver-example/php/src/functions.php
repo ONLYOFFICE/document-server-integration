@@ -353,12 +353,13 @@ function getStoredFiles()
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
+    $index = 0;
     foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName, [".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
                 $ext = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
-                $result[$dat] = (object) [  // and write the file to the result
+                $result[$dat + $index++] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
                     "canEdit" => in_array($ext, $formatManager->editableExtensions()),

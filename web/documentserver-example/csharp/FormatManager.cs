@@ -1,4 +1,4 @@
-﻿/**
+/**
  *
  * (c) Copyright Ascensio System SIA 2023
  *
@@ -16,47 +16,24 @@
  *
  */
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static OnlineEditorsExampleMVC.Models.FileUtility;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
-namespace OnlineEditorsExampleMVC.Models
+namespace OnlineEditorsExample
 {
-    public static class FileUtility
-    {
-        public enum FileType
-        {
-            Word,
-            Cell,
-            Slide
-        }
-
-        // get file type
-        public static FileType GetFileType(string fileName)
-        {
-            var ext = Path.GetExtension(fileName).ToLower();
-
-            if (FormatManager.DocumentExtensions().Contains(ext)) return FileType.Word;  // word type for document extensions
-            if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
-            if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
-
-            return FileType.Word;  // the default type is word
-        }
-    }
-
     public class Format
     {
         public string Name { get; }
-        public FileType Type { get; }
+        public string Type { get; }
         public List<string> Actions { get; }
         public List<string> Convert { get; }
         public List<string> Mime { get; }
 
-        public Format(string name, FileType type, List<string> actions, List<string> convert, List<string> mime)
+        public Format(string name, string type, List<string> actions, List<string> convert, List<string> mime)
         {
             Name = name;
             Type = type;
@@ -71,9 +48,10 @@ namespace OnlineEditorsExampleMVC.Models
         }
     }
 
-    public static class FormatManager
+    public class FormatManager
     {
         private static List<Format> cachedFormats;
+
         public static List<string> FillableExtensions()
         {
             return Fillable()
@@ -126,9 +104,9 @@ namespace OnlineEditorsExampleMVC.Models
         public static List<Format> Convertible()
         {
             return All()
-                .Where(format => (format.Type == FileType.Cell && format.Convert.Contains("xlsx"))
-                                || (format.Type == FileType.Slide && format.Convert.Contains("pptx"))
-                                || (format.Type == FileType.Word && format.Convert.Contains("docx")))
+                .Where(format => (format.Type == "cell" && format.Convert.Contains("xlsx"))
+                                || (format.Type == "slide" && format.Convert.Contains("pptx"))
+                                || (format.Type == "word" && format.Convert.Contains("docx")))
                 .ToList();
         }
 
@@ -142,7 +120,7 @@ namespace OnlineEditorsExampleMVC.Models
         public static List<Format> Spreadsheets()
         {
             return All()
-                .Where(format => format.Type == FileType.Cell)
+                .Where(format => format.Type == "cell")
                 .ToList();
         }
 
@@ -156,7 +134,7 @@ namespace OnlineEditorsExampleMVC.Models
         public static List<Format> Presentations()
         {
             return All()
-                .Where(format => format.Type == FileType.Slide)
+                .Where(format => format.Type == "slide")
                 .ToList();
         }
 
@@ -170,7 +148,7 @@ namespace OnlineEditorsExampleMVC.Models
         public static List<Format> Documents()
         {
             return All()
-                .Where(format => format.Type == FileType.Word)
+                .Where(format => format.Type == "word")
                 .ToList();
         }
 
@@ -183,8 +161,7 @@ namespace OnlineEditorsExampleMVC.Models
 
         public static List<Format> All()
         {
-            if (cachedFormats == null)
-            {
+            if (cachedFormats == null) { 
                 var path = GetPath();
                 var lines = File.ReadLines(path, Encoding.UTF8);
                 var contents = string.Join(Environment.NewLine, lines);

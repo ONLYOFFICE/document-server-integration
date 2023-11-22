@@ -453,7 +453,7 @@ namespace OnlineEditorsExampleMVC
         private static void Assets(HttpContext context)
         {
             var fileName = Path.GetFileName(context.Request["filename"]);
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -461,7 +461,7 @@ namespace OnlineEditorsExampleMVC
         private static void GetCsv(HttpContext context)
         {
             var fileName = "csv.csv";
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
