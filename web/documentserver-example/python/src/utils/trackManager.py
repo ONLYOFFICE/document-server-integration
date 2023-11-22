@@ -159,11 +159,26 @@ def processForceSave(body, filename, usAddr):
         if forcesavePath == "":
             forcesavePath = docManager.getForcesavePath(filename, usAddr, True)
 
-    docManager.saveFile(download, forcesavePath)  # save document file
+    docManager.saveFile(data, forcesavePath)  # save document file
 
     if isSubmitForm:
         uid = body['actions'][0]['userid']  # get the user id
         historyManager.createMetaData(filename, uid, "Filling Form", usAddr)  # create meta data for forcesaved file
+
+        forms_data_url = body.get('formsdataurl')
+        if forms_data_url:
+            data_name = docManager.getCorrectName(fileUtils.getFileNameWithoutExt(filename) + ".txt", usAddr)
+            data_path = docManager.getStoragePath(data_name, usAddr)
+
+            forms_data = docManager.downloadFileFromUri(forms_data_url)
+
+            if forms_data is None:
+                raise Exception("Document editing service didn't return forms_data")
+            else:
+                with open(data_path, 'w') as file:
+                    file.write(forms_data.text)
+        else:
+            raise Exception('Document editing service did not return forms_data_url')
 
 
 # create a command request

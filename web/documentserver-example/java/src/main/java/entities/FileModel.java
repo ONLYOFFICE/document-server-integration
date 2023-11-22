@@ -154,7 +154,7 @@ public class FileModel {
         String fileExt = FileUtility.getFileExtension(document.getTitle());
         Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.getCustomization().setSubmitForm(false);
+        editorConfig.getCustomization().setSubmitForm(true);
 
         if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
                 && DocumentManager.getFillExts().contains(fileExt)) {
