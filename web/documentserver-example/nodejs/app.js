@@ -774,7 +774,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             const formsdata = await urllib.request(formsdataurl, { method: 'GET' });
             const statusFormsdata = formsdata.status;
             const dataFormsdata = formsdata.data;
-            if (status === 200) {
+            if (statusFormsdata === 200) {
               fileSystem.writeFileSync(formsdataPath, dataFormsdata); // write the forms data
             } else {
               emitWarning(`Document editing service returned status: ${statusFormsdata}`);
