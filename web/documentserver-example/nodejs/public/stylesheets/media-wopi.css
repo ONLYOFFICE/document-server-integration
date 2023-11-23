@@ -33,6 +33,15 @@
     position: absolute;
     width: 100%;
 }
+.tableHeaderCellFileName{
+    width: 30%;
+}
+
+@media (max-width: 1280px) and (min-width: 1080px) {
+    .tableHeaderCellViewers {
+        width: 24%;
+    }
+}
 
 @media (min-width: 1280px) {
     .tableHeaderCellRemove{
@@ -40,6 +49,7 @@
         text-align: center;
     }
     .tableHeaderCellDownload{
+        width: 13%;
         padding-right: 11px;
     }
     .tableHeaderCellViewers{
@@ -58,6 +68,9 @@
     .tableRow td:first-child {
         max-width: 45%;
     }
+    .tableHeaderCellViewers {
+        width: 23%;
+    }
 }
 @media (max-width: 986px) and (min-width: 890px){
     .tableHeaderCellRemove{
@@ -68,11 +81,14 @@
         padding-right: 0;
     }
     .tableHeaderCellViewers{
-        width: 24%;
+        width: 22%;
         padding-right: 0;
     }
     .tableRow td:first-child {
         max-width: 40%;
+    }
+    .contentCells-wopi {
+        padding-right: 114px;
     }
 }
 @media (max-width: 890px) and (min-width: 769px){
@@ -84,6 +100,9 @@
     }
     .contentCells-wopi{
         width: unset;
+    }
+    .tableHeaderCellRemove {
+        width: 5%;
     }
 }
 @media (max-width: 769px) {
@@ -112,7 +131,7 @@
 }
 @media (max-width: 769px) and (min-width: 320px){
     .contentCells-icon {
-        width: 1%;
+        width: 9%;
     }
 }
 @media (max-width: 508px) {
