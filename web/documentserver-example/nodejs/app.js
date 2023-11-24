@@ -321,7 +321,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
-  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  let convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  if (req.body.forceConv) convExt = req.body.forceConv;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -398,7 +399,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       writeResult(correctName, result, null); // write a file with a new name to the result object
     } catch (e) {
-      console.log(e); // display error message in the console
+      if (!e.message.includes('-9')) console.log(e); // display error message in the console
       writeResult(null, null, e.message);
     }
   };
