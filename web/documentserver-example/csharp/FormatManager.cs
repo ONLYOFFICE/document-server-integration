@@ -104,9 +104,7 @@ namespace OnlineEditorsExample
         public static List<Format> Convertible()
         {
             return All()
-                .Where(format => (format.Type == "cell" && format.Convert.Contains("xlsx"))
-                                || (format.Type == "slide" && format.Convert.Contains("pptx"))
-                                || (format.Type == "word" && format.Convert.Contains("docx")))
+                .Where(format => format.Actions.Contains("auto-convert"))
                 .ToList();
         }
 

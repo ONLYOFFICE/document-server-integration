@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: convert after uploading only tagged formats
 - csharp-mvc: convert after uploading only tagged formats
 - link in referenceData
 - using a repo with a list of formats
