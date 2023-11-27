@@ -126,9 +126,7 @@ namespace OnlineEditorsExampleMVC.Models
         public static List<Format> Convertible()
         {
             return All()
-                .Where(format => (format.Type == FileType.Cell && format.Convert.Contains("xlsx"))
-                                || (format.Type == FileType.Slide && format.Convert.Contains("pptx"))
-                                || (format.Type == FileType.Word && format.Convert.Contains("docx")))
+                .Where(format => format.Actions.Contains("auto-convert"))
                 .ToList();
         }
 
