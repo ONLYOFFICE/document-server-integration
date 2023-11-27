@@ -26,6 +26,7 @@ import urllib.parse
 import requests
 import magic
 
+from django.conf import settings
 from django.http import FileResponse
 from src.configuration import ConfigurationManager
 from src.format import FormatManager
@@ -111,7 +112,7 @@ def getServerUrl(forDocumentServer, req):
 def getFileUri(filename, forDocumentServer, req):
     host = getServerUrl(forDocumentServer, req)
     curAdr = req.META['REMOTE_ADDR']
-    return f'{host}{config_manager.storage_path}{curAdr}/{filename}'
+    return f'{host}{settings.STATIC_URL}{curAdr}/{filename}'
 
 
 # get absolute URL to the document storage service
