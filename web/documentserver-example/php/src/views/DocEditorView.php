@@ -244,7 +244,7 @@ final class DocEditorView extends View
             // encode the dataSpreadsheet object into the token
             $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
-        
+
         $historyLayout = "";
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
