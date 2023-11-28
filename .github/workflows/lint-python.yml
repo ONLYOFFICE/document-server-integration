@@ -32,3 +32,8 @@ jobs:
       - name: Lint Flake8
         run: |
           make lint
+
+      # TODO: Configure mypy
+      # - name: Types mypy
+      #   run: |
+      #     make types
