@@ -31,7 +31,8 @@ namespace OnlineEditorsExample
             "The file favorite state is undefined",
             "Can create files from templates using data from the editor",
             "Can see the information about all users",
-            "Has an avatar"
+            "Has an avatar",
+            "Can submit forms"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -42,7 +43,8 @@ namespace OnlineEditorsExample
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Can see the information about users from Group2 and users who don’t belong to any group",
-            "Has an avatar"
+            "Has an avatar",
+            "Can’t submit forms"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -55,7 +57,8 @@ namespace OnlineEditorsExample
             "Can’t download the file",
             "Can’t print the file",
             "Can create new files from the editor",
-            "Can see the information about Group2 users"
+            "Can see the information about Group2 users",
+            "Can’t submit forms"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -72,6 +75,7 @@ namespace OnlineEditorsExample
             "Can't view chat",
             "Can't protect file",
             "View file without collaboration",
+            "Can’t submit forms"
         };
 
         private static List<User> users = new List<User>() {

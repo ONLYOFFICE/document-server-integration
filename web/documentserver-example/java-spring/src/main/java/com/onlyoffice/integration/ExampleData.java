@@ -46,7 +46,8 @@ public class ExampleData {
                 "Can't rename files from the editor",
                 "Can't view chat",
                 "Can't protect file",
-                "View file without collaboration"
+                "View file without collaboration",
+                "Can’t submit forms"
         );
 
         // the description for user 1
@@ -59,7 +60,8 @@ public class ExampleData {
                 "Can create a file from a template with data from the editor",
                 "Can see the information about all users",
                 "Can view chat",
-                "Has an avatar"
+                "Has an avatar",
+                "Can submit forms"
         );
 
         // the description for user 2
@@ -73,7 +75,8 @@ public class ExampleData {
                 "Can create a file from an editor",
                 "Can see the information about users from Group2 and users who don’t belong to any group",
                 "Can view chat",
-                "Has an avatar"
+                "Has an avatar",
+                "Can’t submit forms"
         );
 
         // the description for user 3
@@ -88,7 +91,8 @@ public class ExampleData {
                 "He can’t print the file",
                 "Can create a file from an editor",
                 "Can see the information about Group2 users",
-                "Can view chat"
+                "Can view chat",
+                "Can’t submit forms"
         );
 
         // create user 1 with the specified parameters

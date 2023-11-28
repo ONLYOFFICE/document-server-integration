@@ -88,7 +88,7 @@ namespace OnlineEditorsExampleMVC.Models
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or not
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state

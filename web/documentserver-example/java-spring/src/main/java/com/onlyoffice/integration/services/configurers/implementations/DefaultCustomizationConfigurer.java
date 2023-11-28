@@ -34,6 +34,5 @@ public class DefaultCustomizationConfigurer implements CustomizationConfigurer<D
     public void configure(final Customization customization, final DefaultCustomizationWrapper wrapper) {
         Action action = wrapper.getAction();  // get the action parameter from the customization wrapper
         User user = wrapper.getUser();
-        customization.setSubmitForm(false);  // set the submitForm parameter to the customization config
     }
 }
