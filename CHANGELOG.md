@@ -1,8 +1,6 @@
 # Change Log
 
-- php: getting history via api
-- ruby: getting history via api
-- python: getting history via api
+- getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats
 - link in referenceData
@@ -14,8 +12,6 @@
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - restore from history
-- java: getting history by a separate request
-- java-spring: getting history by a separate request
 
 ## 1.7.0
 - nodejs: onRequestSelectDocument method
