@@ -27,6 +27,7 @@
 
     var docEditor;
     var config;
+    var versionHistory;
 
     var innerAlert = function (message, inEditor) {
         if (console && console.log)
@@ -210,8 +211,29 @@
           innerAlert(response.error)
           return
         }
-        document.location.reload();
+        onRequestHistory()
       }
+    }
+
+    function onRequestHistory() {
+        fileData = <%= raw @file.to_json %>;
+        const req = new XMLHttpRequest()
+        req.open("POST", '/historyobj')
+        req.send(JSON.stringify(fileData))
+        req.onload = function () {
+            versionHistory = JSON.parse(req.response)
+            docEditor.refreshHistory(versionHistory.hist)
+        }
+    }
+
+    function onRequestHistoryData(event){
+        var ver = event.data;
+        var histData = versionHistory.histData;
+        docEditor.setHistoryData(histData[ver - 1]);
+    }
+
+    function onRequestHistoryClose(){
+        document.location.reload();
     }
 
     var сonnectEditor = function () {
@@ -230,30 +252,16 @@
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestSelectDocument': onRequestSelectDocument,
             'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
-            'onRequestRestore': onRequestRestore
+            'onRequestRestore': onRequestRestore,
+            'onRequestHistory': onRequestHistory,
+            'onRequestHistoryData': onRequestHistoryData,
+            'onRequestHistoryClose': onRequestHistoryClose
         };
 
         <%
-            history = @file.get_history
             usersMentions = @file.get_users_mentions %>
 
             if (config.editorConfig.user.id) {
-                <% if history %>
-                    // the user is trying to show the document version history
-                    config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(<%= raw history[:hist].to_json %>);  // show the document version history
-                    };
-                    // the user is trying to click the specific document version in the document version history
-                    config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = <%= raw history[:histData].to_json %>;
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                    };
-                    // the user is trying to go back to the document from viewing the document version history
-                    config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };
-                <% end %>
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = function (event) {
                 if (event && event.data){

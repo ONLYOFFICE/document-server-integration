@@ -1,5 +1,8 @@
 # Change Log
 
+- php: getting history via api
+- ruby: getting history via api
+- python: getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats
 - link in referenceData

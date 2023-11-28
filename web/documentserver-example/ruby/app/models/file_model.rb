@@ -234,7 +234,7 @@ class FileModel
         # get the history data from the previous file version and write key and url information about it
         dataObj["fileType"] = file_ext[1..file_ext.length]
         dataObj["key"] = cur_key
-        dataObj["url"] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        dataObj["url"] = i == cur_ver ? DocumentHelper.get_download_url(file_name, true) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if is_enable_direct_url == true
           dataObj["directUrl"] = i == cur_ver ? download_url(false) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}", false)
         end

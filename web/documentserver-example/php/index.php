@@ -103,6 +103,11 @@ function routers()
         echo json_encode($response);
         return;
     }
+    if (str_starts_with($path, '/objhistory')) {
+        $response = historyObj();
+        echo json_encode($response);
+        return;
+    }
     if (str_starts_with($path, '/reference')) {
         $response = reference();
         $response['status'] = 'success';

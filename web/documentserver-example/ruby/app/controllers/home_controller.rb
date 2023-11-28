@@ -157,6 +157,30 @@ class HomeController < ApplicationController
 
   end
 
+  def historyobj
+    begin
+      data = request.body.read
+      if data == nil || data.empty?
+          return ""
+      end
+      file_data = JSON.parse(data)
+      file = FileModel.new(
+        file_name: File.basename(file_data['file_name']), 
+        mode: file_data['mode'], 
+        type: file_data['type'], 
+        user_ip: file_data['user_ip'], 
+        lang: file_data['lang'], 
+        user: file_data['user'], 
+        action_data: file_data['action_data'], 
+        direct_url: file_data['direct_url']
+      )
+      history = file.get_history
+      render json: history
+    rescue
+      render json: '{ "error": "File not found"}'
+    end
+  end
+
   # downloading a history file from public
   def downloadhistory
     begin

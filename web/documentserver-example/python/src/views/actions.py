@@ -187,7 +187,6 @@ def edit(request):
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, True, request)
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -373,15 +372,8 @@ def edit(request):
         dataDocument['token'] = jwtManager.encode(dataDocument)  # encode the dataDocument object into a token
         dataSpreadsheet['token'] = jwtManager.encode(dataSpreadsheet)  # encode the dataSpreadsheet object into a token
 
-    # get the document history
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)
-
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
-        # the information about the current version
-        'history': json.dumps(hist['history']) if 'history' in hist else None,
-        # the information about the previous document versions if they exist
-        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         # the image which will be inserted into the document
@@ -526,6 +518,27 @@ def downloadhistory(request):
         response = {}
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+
+def history_obj(request):
+    body = json.loads(request.body)
+    response = {}
+    file_name = None
+
+    try:
+        file_name = body['fileName']
+    except Exception:
+        pass
+
+    if file_name is None:
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+    storage_path = docManager.getStoragePath(file_name, request)
+    doc_key = docManager.generateFileKey(file_name, request)
+    file_url = docManager.getDownloadUrl(file_name, request)
+    response = historyManager.getHistoryObject(storage_path, file_name, doc_key, file_url, False, request)
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 # referenceData

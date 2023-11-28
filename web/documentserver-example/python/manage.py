@@ -71,6 +71,7 @@ def routers():
         path('assets', actions.assets),
         path('download', actions.download),
         path('downloadhistory', actions.downloadhistory),
+        path('historyobj', actions.history_obj),
         path('edit', actions.edit),
         path('files', actions.files),
         path('reference', actions.reference),
