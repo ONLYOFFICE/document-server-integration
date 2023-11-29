@@ -267,8 +267,11 @@ class FileModel
             :url => prev["url"]
           }
 
-          # write the path to the diff.zip archive with differences in this file version
-          dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, i - 1, "diff.zip")
+          diff_path = [hist_dir, (i - 1).to_s, "diff.zip"].join(File::SEPARATOR)
+          if File.exist?(diff_path)
+            # write the path to the diff.zip archive with differences in this file version
+            dataObj["changesUrl"] = DocumentHelper.get_historypath_uri(file_name, i - 1, "diff.zip")
+          end
         end
 
         if JwtHelper.is_enabled  # check if a secret key to generate token exists or not
