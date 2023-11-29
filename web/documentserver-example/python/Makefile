@@ -46,8 +46,11 @@ compose-prod: #  Up containers in a production environment.
 		up --detach
 
 .PHONY: lint
-lint: #          Lint the source code for style and check for types.
-	@flake8
+lint: #          Lint the source code for style.
+	@flake8 --count --show-source --statistics
+
+.PHONY: types
+types: #		 Check the source code for types.
 	@mypy .
 
 .PHONY: test
