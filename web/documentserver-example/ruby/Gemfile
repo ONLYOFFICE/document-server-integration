@@ -12,6 +12,7 @@ gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dab
 gem 'rack-cors', '~> 2.0'
 gem 'rails', '~> 7.0.8'
 gem 'rubocop', '~> 1.52', group: :development
+gem 'rubocop-rails', '~> 2.20', group: :development
 gem 'sass-rails', '~> 6.0'
 gem 'sdoc', '~> 2.6', group: :doc
 gem 'sorbet-runtime', '~> 0.5.10871'
