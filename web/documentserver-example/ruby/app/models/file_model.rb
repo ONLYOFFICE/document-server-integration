@@ -216,7 +216,7 @@ class FileModel
     file_name = @file_name
     file_ext = File.extname(file_name).downcase
     doc_key = key
-    doc_uri = file_uri
+    file_uri
 
     # get the path to the file history
     hist_dir = DocumentHelper.history_dir(DocumentHelper.storage_path(@file_name, nil))
@@ -258,7 +258,19 @@ class FileModel
         # get the history data from the previous file version and write key and url information about it
         data_obj['fileType'] = file_ext[1..file_ext.length]
         data_obj['key'] = cur_key
-        data_obj['url'] = i == cur_ver ? DocumentHelper.get_download_url(file_name, true) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        data_obj['url'] =
+          if i == cur_ver
+            DocumentHelper.get_download_url(
+              file_name,
+              true
+            )
+          else
+            DocumentHelper.get_historypath_uri(
+              file_name,
+              i,
+              "prev#{file_ext}"
+            )
+          end
         if enable_direct_url? == true
           data_obj['directUrl'] =
             if i == cur_ver
@@ -308,7 +320,7 @@ class FileModel
                               end
           )
 
-          diff_path = [hist_dir, (i - 1).to_s, "diff.zip"].join(File::SEPARATOR)
+          diff_path = [hist_dir, (i - 1).to_s, 'diff.zip'].join(File::SEPARATOR)
           if File.exist?(diff_path)
             # write the path to the diff.zip archive with differences in this file version
             data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')

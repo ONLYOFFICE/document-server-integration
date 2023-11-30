@@ -236,44 +236,13 @@ class TrackHelper
                         user_address
                       )
                     end
-                    forcesave_path = DocumentHelper.storage_path(file_name, user_address)  # get the path to the new file
-                else
-                    if new_file_name
-                        file_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + download_ext, user_address)
-                    end
-                    forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
-                    if forcesave_path.eql?("")
-                        forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, true)  # if the path to the new file doesn't exist, create it
-                    end
-                end
-
-                save_file(data, forcesave_path)  # save the downloaded file to the storage directory
-
-                if is_submit_form
-                    uid = file_data['actions'][0]['userid']
-                    DocumentHelper.create_meta(file_name, uid, "Filling Form", user_address)  # create file meta information with the Filling form tag instead of user name 
-
-                    forms_data_url = file_data["formsdataurl"].to_s
-
-                    if forms_data_url && !forms_data_url.eql?("")
-                        forms_name = DocumentHelper.get_correct_name(File.basename(file_name, cur_ext) + ".txt", user_address)
-                        forms_path = DocumentHelper.storage_path(forms_name, user_address)
-                        forms = download_file(forms_data_url)
-                        if forms.eql?(nil)
-                            return saved
-                        end
-                        save_file(forms, forms_path)
-                    else
-                        raise 'Document editing service did not return formsDataUrl'
-                    end
-                end
-
-                saved = 0
-            rescue StandardError => msg
-                saved = 1
-            end
-
-            saved
+        forcesave_path = DocumentHelper.storage_path(file_name, user_address) # get the path to the new file
+      else
+        if new_file_name
+          file_name = DocumentHelper.get_correct_name(
+            File.basename(file_name, cur_ext) + download_ext,
+            user_address
+          )
         end
         forcesave_path = DocumentHelper.forcesave_path(file_name, user_address, false)
         if forcesave_path.eql?('')
@@ -288,6 +257,23 @@ class TrackHelper
         uid = file_data['actions'][0]['userid']
         # create file meta information with the Filling form tag instead of user name
         DocumentHelper.create_meta(file_name, uid, 'Filling Form', user_address)
+
+        forms_data_url = file_data['formsdataurl'].to_s
+
+        unless forms_data_url && !forms_data_url.eql?('')
+          raise('Document editing service did not return formsDataUrl')
+        end
+        forms_name = DocumentHelper.get_correct_name(
+          "#{File.basename(file_name, cur_ext)}.txt",
+          user_address
+        )
+        forms_path = DocumentHelper.storage_path(forms_name, user_address)
+        forms = download_file(forms_data_url)
+        if forms.eql?(nil)
+          return saved
+        end
+        save_file(forms, forms_path)
+
       end
 
       saved = 0
