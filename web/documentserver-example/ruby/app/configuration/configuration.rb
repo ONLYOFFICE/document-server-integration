@@ -22,6 +22,7 @@ require 'pathname'
 require 'sorbet-runtime'
 require 'uri'
 
+# ConfigurationManager manages configuration settings for the application.
 class ConfigurationManager
   extend T::Sig
 
@@ -35,8 +36,9 @@ class ConfigurationManager
 
   sig { returns(T.nilable(URI::Generic)) }
   def example_uri
-    url = ENV['EXAMPLE_URL']
+    url = ENV.fetch('EXAMPLE_URL', nil)
     return nil if url.nil?
+
     URI(url)
   end
 
@@ -48,8 +50,9 @@ class ConfigurationManager
 
   sig { returns(URI::Generic) }
   def document_server_private_uri
-    url = ENV['DOCUMENT_SERVER_PRIVATE_URL']
+    url = ENV.fetch('DOCUMENT_SERVER_PRIVATE_URL', nil)
     return URI(url) if url
+
     document_server_public_uri
   end
 
@@ -97,15 +100,17 @@ class ConfigurationManager
 
   sig { returns(T::Boolean) }
   def jwt_use_for_request
-    env = ENV['JWT_USE_FOR_REQUEST']
+    env = ENV.fetch('JWT_USE_FOR_REQUEST', nil)
     return ActiveModel::Type::Boolean.new.cast(env) if env
+
     true
   end
 
   sig { returns(T::Boolean) }
   def ssl_verify_peer_mode_enabled
-    env = ENV['SSL_VERIFY_PEER_MODE_ENABLED']
+    env = ENV.fetch('SSL_VERIFY_PEER_MODE_ENABLED', nil)
     return ActiveModel::Type::Boolean.new.cast(env) if env
+
     false
   end
 
@@ -114,6 +119,7 @@ class ConfigurationManager
     storage_path = ENV['STORAGE_PATH'] || 'storage'
     storage_directory = Pathname(storage_path)
     return storage_directory if storage_directory.absolute?
+
     current_directory = Pathname(File.expand_path(__dir__))
     directory = current_directory.join('..', '..', storage_directory)
     directory.cleanpath
@@ -121,8 +127,9 @@ class ConfigurationManager
 
   sig { returns(Numeric) }
   def maximum_file_size
-    env = ENV['MAXIMUM_FILE_SIZE']
-    return env.to_i if env
+    env = ENV.fetch('MAXIMUM_FILE_SIZE', nil)
+    return Integer(env, 10) if env
+
     5 * 1024 * 1024
   end
 
@@ -134,46 +141,46 @@ class ConfigurationManager
   sig { returns(T::Hash[String, String]) }
   def languages
     {
-      'en' => 'English',
-      'hy' => 'Armenian',
-      'az' => 'Azerbaijani',
-      'eu' => 'Basque',
-      'be' => 'Belarusian',
-      'bg' => 'Bulgarian',
-      'ca' => 'Catalan',
-      'zh' => 'Chinese (Simplified)',
-      'zh-TW' => 'Chinese (Traditional)',
-      'cs' => 'Czech',
-      'da' => 'Danish',
-      'nl' => 'Dutch',
-      'fi' => 'Finnish',
-      'fr' => 'French',
-      'gl' => 'Galego',
-      'de' => 'German',
-      'el' => 'Greek',
-      'hu' => 'Hungarian',
-      'id' => 'Indonesian',
-      'it' => 'Italian',
-      'ja' => 'Japanese',
-      'ko' => 'Korean',
-      'lo' => 'Lao',
-      'lv' => 'Latvian',
-      'ms' => 'Malay (Malaysia)',
-      'no' => 'Norwegian',
-      'pl' => 'Polish',
-      'pt' => 'Portuguese (Brazil)',
-      'pt-PT' => 'Portuguese (Portugal)',
-      'ro' => 'Romanian',
-      'ru' => 'Russian',
-      'si' => 'Sinhala (Sri Lanka)',
-      'sk' => 'Slovak',
-      'sl' => 'Slovenian',
-      'es' => 'Spanish',
-      'sv' => 'Swedish',
-      'tr' => 'Turkish',
-      'uk' => 'Ukrainian',
-      'vi' => 'Vietnamese',
-      'aa-AA' => 'Test Language'
+      en: 'English',
+      hy: 'Armenian',
+      az: 'Azerbaijani',
+      eu: 'Basque',
+      be: 'Belarusian',
+      bg: 'Bulgarian',
+      ca: 'Catalan',
+      zh: 'Chinese (Simplified)',
+      'zh-TW': 'Chinese (Traditional)',
+      cs: 'Czech',
+      da: 'Danish',
+      nl: 'Dutch',
+      fi: 'Finnish',
+      fr: 'French',
+      gl: 'Galego',
+      de: 'German',
+      el: 'Greek',
+      hu: 'Hungarian',
+      id: 'Indonesian',
+      it: 'Italian',
+      ja: 'Japanese',
+      ko: 'Korean',
+      lo: 'Lao',
+      lv: 'Latvian',
+      ms: 'Malay (Malaysia)',
+      no: 'Norwegian',
+      pl: 'Polish',
+      pt: 'Portuguese (Brazil)',
+      'pt-PT': 'Portuguese (Portugal)',
+      ro: 'Romanian',
+      ru: 'Russian',
+      si: 'Sinhala (Sri Lanka)',
+      sk: 'Slovak',
+      sl: 'Slovenian',
+      es: 'Spanish',
+      sv: 'Swedish',
+      tr: 'Turkish',
+      uk: 'Ukrainian',
+      vi: 'Vietnamese',
+      'aa-AA': 'Test Language'
     }
   end
 end

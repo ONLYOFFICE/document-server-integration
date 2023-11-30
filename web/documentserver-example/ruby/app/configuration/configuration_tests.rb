@@ -20,6 +20,7 @@
 require 'test/unit'
 require_relative 'configuration'
 
+# Enviroment module provides a mechanism for capturing and restoring the environment.
 module Enviroment
   def initialize(name)
     @env = ENV.to_hash
@@ -27,10 +28,11 @@ module Enviroment
   end
 
   def setup
-    ENV.replace @env
+    ENV.replace(@env)
   end
 end
 
+# For testing the ConfigurationManager class.
 class ConfigurationManagerTests < Test::Unit::TestCase
   def test_corresponds_the_latest_version
     config_manager = ConfigurationManager.new
@@ -38,6 +40,7 @@ class ConfigurationManagerTests < Test::Unit::TestCase
   end
 end
 
+# For testing the example_uri method of ConfigurationManager.
 class ConfigurationManagerExampleURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -55,6 +58,7 @@ class ConfigurationManagerExampleURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_public_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerPublicURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -72,6 +76,7 @@ class ConfigurationManagerDocumentServerPublicURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_private_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerPrivateURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -89,6 +94,7 @@ class ConfigurationManagerDocumentServerPrivateURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_api_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerAPIURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -112,6 +118,7 @@ class ConfigurationManagerDocumentServerAPIURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_preloader_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerPreloaderURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -135,6 +142,7 @@ class ConfigurationManagerDocumentServerPreloaderURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_command_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerCommandURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -158,6 +166,7 @@ class ConfigurationManagerDocumentServerCommandURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the document_server_converter_uri method of ConfigurationManager.
 class ConfigurationManagerDocumentServerConverterURITests < Test::Unit::TestCase
   include Enviroment
 
@@ -181,6 +190,7 @@ class ConfigurationManagerDocumentServerConverterURITests < Test::Unit::TestCase
   end
 end
 
+# For testing the jwt_secret method of ConfigurationManager.
 class ConfigurationManagerJWTSecretTests < Test::Unit::TestCase
   include Enviroment
 
@@ -198,6 +208,7 @@ class ConfigurationManagerJWTSecretTests < Test::Unit::TestCase
   end
 end
 
+# For testing the jwt_header method of ConfigurationManager.
 class ConfigurationManagerJWTHeaderTests < Test::Unit::TestCase
   include Enviroment
 
@@ -215,6 +226,7 @@ class ConfigurationManagerJWTHeaderTests < Test::Unit::TestCase
   end
 end
 
+# For testing the jwt_use_for_request method of ConfigurationManager.
 class ConfigurationManagerJWTUseForRequest < Test::Unit::TestCase
   include Enviroment
 
@@ -232,6 +244,7 @@ class ConfigurationManagerJWTUseForRequest < Test::Unit::TestCase
   end
 end
 
+# For testing the ssl_verify_peer_mode_enabled method of ConfigurationManager.
 class ConfigurationManagerSSLTests < Test::Unit::TestCase
   include Enviroment
 
@@ -249,6 +262,7 @@ class ConfigurationManagerSSLTests < Test::Unit::TestCase
   end
 end
 
+# For testing the storage_path method of ConfigurationManager.
 class ConfigurationManagerStoragePathTests < Test::Unit::TestCase
   include Enviroment
 
@@ -275,6 +289,7 @@ class ConfigurationManagerStoragePathTests < Test::Unit::TestCase
   end
 end
 
+# For testing the maximum_file_size method of ConfigurationManager.
 class ConfigurationManagerMaximumFileSizeTests < Test::Unit::TestCase
   include Enviroment
 
@@ -292,6 +307,7 @@ class ConfigurationManagerMaximumFileSizeTests < Test::Unit::TestCase
   end
 end
 
+# For testing the convertation_timeout method of ConfigurationManager.
 class ConfigurationManagerConversionTimeoutTests < Test::Unit::TestCase
   def test_assigns_a_default_value
     config_manager = ConfigurationManager.new
