@@ -154,7 +154,7 @@ namespace OnlineEditorsExample
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
@@ -494,7 +494,7 @@ namespace OnlineEditorsExample
                     return;
             }
             var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;  // create demo document name with the necessary extension
-            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
+            var demoPath = "assets\\document-templates\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
 
             FileName = _Default.GetCorrectName(demoName);  // get file name with an index if such a file name already exists
 

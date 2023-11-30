@@ -45,6 +45,7 @@
 
         var docEditor;
         var config;
+        let history;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -218,6 +219,41 @@
             }
         };
 
+        function onRequestHistory() {
+            const query = new URLSearchParams(window.location.search)
+            const data = {
+                fileName: query.get('fileID')
+            }
+            const req = new XMLHttpRequest()
+            req.open("POST", 'objhistory')
+            req.setRequestHeader('Content-Type', 'application/json')
+            req.send(JSON.stringify(data))
+            req.onload = function () {
+                if (req.status != 200) {
+                    response = JSON.parse(req.response)
+                    innerAlert(response.error)
+                    return
+                }
+                history = JSON.parse(req.response)
+                docEditor.refreshHistory(
+                    {
+                        currentVersion: history[0].currentVersion,
+                        history: history[0].history
+                    }
+                )
+            }
+        }
+
+        function onRequestHistoryData(event) {
+            var ver = event.data;
+            var histData = history[1]
+            docEditor.setHistoryData(histData[ver - 1])
+        }
+
+        function onRequestHistoryClose() {
+            document.location.reload()
+        }
+
         function onRequestRestore(event) {
           const query = new URLSearchParams(window.location.search)
           const config = {config}
@@ -235,7 +271,7 @@
               innerAlert(response.error)
               return
             }
-            document.location.reload();
+            onRequestHistory()
           }
         }
 
@@ -259,6 +295,9 @@
                 'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
                 'onRequestRestore': onRequestRestore,
+                'onRequestHistoryData': onRequestHistoryData,
+                'onRequestHistory': onRequestHistory,
+                'onRequestHistoryClose': onRequestHistoryClose
                 "onRequestOpen": onRequestOpen,
             };
 

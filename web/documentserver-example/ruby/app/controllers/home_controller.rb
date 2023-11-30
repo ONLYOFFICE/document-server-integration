@@ -153,6 +153,30 @@ class HomeController < ApplicationController
     render(plain: "{ \"error\": \"#{e.message}\"}")
   end
 
+  def historyobj
+    begin
+      data = request.body.read
+      if data == nil || data.empty?
+          return ""
+      end
+      file_data = JSON.parse(data)
+      file = FileModel.new(
+        file_name: File.basename(file_data['file_name']), 
+        mode: file_data['mode'], 
+        type: file_data['type'], 
+        user_ip: file_data['user_ip'], 
+        lang: file_data['lang'], 
+        user: file_data['user'], 
+        action_data: file_data['action_data'], 
+        direct_url: file_data['direct_url']
+      )
+      history = file.get_history
+      render json: history
+    rescue
+      render json: '{ "error": "File not found"}'
+    end
+  end
+
   # downloading a history file from public
   def downloadhistory
     file_name = File.basename(params[:fileName])
@@ -269,6 +293,18 @@ class HomeController < ApplicationController
     send_file(csv_path, x_sendfile: true)
   end
 
+  # downloading an assets file
+  def assets
+    file_name = File.basename(params[:fileName])
+    asset_path = Rails.root.join('assets', 'document-templates', 'sample', file_name)
+
+    response.headers['Content-Length'] = File.size(asset_path).to_s
+    response.headers['Content-Type'] = MimeMagic.by_path(asset_path).type
+    response.headers['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + ERB::Util.url_encode(file_name)
+
+    send_file asset_path, :x_sendfile => true
+  end
+  
   # downloading a file
   def download
     file_name = File.basename(params[:fileName])

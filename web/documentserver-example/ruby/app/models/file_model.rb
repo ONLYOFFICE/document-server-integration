@@ -106,7 +106,7 @@ class FileModel
       editors_mode = 'fillForms'
       can_edit = true
     end
-    submit_form = editors_mode.eql?('fillForms') && @user.id.eql?('uid-1') && false # the Submit form button state
+    submit_form = editors_mode.eql?('fillForms') && @user.id.eql?('uid-1') # the Submit form button state
     mode = can_edit && !editors_mode.eql?('view') ? 'edit' : 'view'
     # templates image url in the "From Template" section
     templates_image_url = DocumentHelper.get_template_image_url(document_type)
@@ -258,7 +258,7 @@ class FileModel
         # get the history data from the previous file version and write key and url information about it
         data_obj['fileType'] = file_ext[1..file_ext.length]
         data_obj['key'] = cur_key
-        data_obj['url'] = i == cur_ver ? doc_uri : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
+        data_obj['url'] = i == cur_ver ? DocumentHelper.get_download_url(file_name, true) : DocumentHelper.get_historypath_uri(file_name, i, "prev#{file_ext}")
         if enable_direct_url? == true
           data_obj['directUrl'] =
             if i == cur_ver
@@ -308,8 +308,11 @@ class FileModel
                               end
           )
 
-          # write the path to the diff.zip archive with differences in this file version
-          data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
+          diff_path = [hist_dir, (i - 1).to_s, "diff.zip"].join(File::SEPARATOR)
+          if File.exist?(diff_path)
+            # write the path to the diff.zip archive with differences in this file version
+            data_obj['changesUrl'] = DocumentHelper.get_historypath_uri(file_name, i - 1, 'diff.zip')
+          end
         end
 
         if JwtHelper.enabled? # check if a secret key to generate token exists or not
