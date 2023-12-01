@@ -45,7 +45,8 @@ def default(request):  # default parameters that will be passed to the template
         'convExt': json.dumps(format_manager.convertible_extensions()),  # file extensions that can be converted
         'files': docManager.getStoredFiles(request),  # information about stored files
         'fillExt': json.dumps(format_manager.fillable_extensions()),
-        'directUrl': str(getDirectUrlParam(request)).lower
+        'directUrl': str(getDirectUrlParam(request)).lower,
+        'serverVersion': config_manager.getVersion()
     }
     # execute the "index.html" template with context data and return http response in json format
     return render(request, 'index.html', context)
