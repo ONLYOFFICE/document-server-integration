@@ -55,7 +55,7 @@ String.prototype.hashCode = function hashCode() {
   const len = this.length;
   let ret = 0;
   for (let i = 0; i < len; i++) {
-    ret = Math.trunc(31 * ret + this.charCodeAt(i));
+    ret = Math.imul(ret, 31) + this.charCodeAt(i);
   }
   return ret;
 };
