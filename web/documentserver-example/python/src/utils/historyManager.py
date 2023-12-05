@@ -214,8 +214,11 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                         'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo  # write information about previous file version to the data object
-                    # write the path to the diff.zip archive with differences in this file version
-                    dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)
+
+                    diffPath = os.path.sep.join([histDir, str(i - 1), "diff.zip"])
+                    if (os.path.exists(diffPath)):
+                        # write the path to the diff.zip archive with differences in this file version
+                        dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)
 
                 if jwtManager.isEnabled():
                     dataObj['token'] = jwtManager.encode(dataObj)

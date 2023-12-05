@@ -103,20 +103,20 @@
     var onRequestInsertImage = function(event) {
         docEditor.insertImage({  // insert an image into the file
             "c": event.data.c,
-            <%= raw @file.get_insert_image %>
+            <%= raw @file.insert_image %>
         })
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
     var onRequestSelectDocument = function(event) {
-        var data = <%= raw @file.dataDocument.to_json %>;
+        var data = <%= raw @file.data_document.to_json %>;
         data.c = event.data.c;
         docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
 
     // the user is trying to select recipients data by clicking the Mail merge button
     var onRequestSelectSpreadsheet = function (event) {
-        var data = <%= raw @file.dataSpreadsheet.to_json %>;
+        var data = <%= raw @file.data_spreadsheet.to_json %>;
         data.c = event.data.c;
         docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
     };
@@ -238,7 +238,7 @@
 
     var сonnectEditor = function () {
 
-        config = <%= raw @file.get_config.to_json %>;
+        config = <%= raw @file.config.to_json %>;
 
         config.width = "100%";
         config.height = "100%";
@@ -259,7 +259,7 @@
         };
 
         <%
-            usersMentions = @file.get_users_mentions %>
+            usersMentions = @file.users_mentions %>
 
             if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
@@ -270,7 +270,7 @@
                 switch (c) {
                     case "info":
                         users = [];
-                        var allUsers = <%= raw @file.get_users_info.to_json %>;
+                        var allUsers = <%= raw @file.users_info.to_json %>;
                         for (var i = 0; i < event.data.id.length; i++) {
                             for (var j = 0; j < allUsers.length; j++) {
                                 if (allUsers[j].id == event.data.id[i]) {
@@ -281,10 +281,10 @@
                         }
                         break;
                     case "protect":
-                        var users = <%= raw @file.get_users_protect.to_json %>;
+                        var users = <%= raw @file.users_protect.to_json %>;
                         break;
                     default:
-                        users = <%= raw @file.get_users_mentions.to_json %>;
+                        users = <%= raw @file.users_mentions.to_json %>;
                 }
                 docEditor.setUsers({
                     "c": c,

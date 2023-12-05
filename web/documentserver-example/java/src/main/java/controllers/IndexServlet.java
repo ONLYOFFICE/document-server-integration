@@ -995,9 +995,10 @@ public class IndexServlet extends HttpServlet {
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
+                        Integer verdiff = i - 1;
 
                         // get the history data from the previous file version
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 1));
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(verdiff));
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
                         prevInfo.put("fileType", prev.get("fileType"));
 
@@ -1010,12 +1011,16 @@ public class IndexServlet extends HttpServlet {
 
                         // write information about previous file version to the data object
                         dataObj.put("previous", prevInfo);
-                        // write the path to the diff.zip archive with differences in this file version
-                        Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager
-                                .getDownloadHistoryUrl(fileName, verdiff,
-                                        "diff.zip", true);
-                        dataObj.put("changesUrl", changesUrl);
+
+                        String diffPath = Paths.get(histDir, String.valueOf(verdiff), "diff.zip").toString();
+                        File diffFile = new File(diffPath);
+                        if (diffFile.exists()) {
+                            // write the path to the diff.zip archive with differences in this file version
+                            String changesUrl = DocumentManager
+                                    .getDownloadHistoryUrl(fileName, verdiff,
+                                            "diff.zip", true);
+                            dataObj.put("changesUrl", changesUrl);
+                        }
                     }
 
                     if (DocumentManager.tokenEnabled()) {

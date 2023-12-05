@@ -951,8 +951,11 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                     "url" => $prev["url"],
                 ];
 
-                // write the path to the diff.zip archive with differences in this file version
-                $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+                $diffPath = implode(DIRECTORY_SEPARATOR, [$histDir, ($i - 1), "diff.zip"]);
+                if (file_exists($diffPath)) {
+                    // write the path to the diff.zip archive with differences in this file version
+                    $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+                }
             }
 
             $jwtManager = new JwtManager();
