@@ -246,6 +246,14 @@ final class DocEditorView extends View
         }
 
         $historyLayout = "";
+
+        if ($user -> id == "uid-3") {
+            $historyLayout .= "
+                config.events['onRequestHistoryClose'] = null;
+                config.events['onRequestRestore'] = null;   
+            ";
+        }
+
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
                 config.events['onRequestUsers'] = function (event) {
