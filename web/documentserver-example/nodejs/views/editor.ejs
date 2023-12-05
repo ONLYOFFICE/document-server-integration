@@ -384,6 +384,11 @@
             config.events.onRequestReferenceSource = onRequestReferenceSource;
         }
 
+        if (<%- JSON.stringify(editor.userid) %> == "uid-3") {
+            config.events["onRequestHistoryClose"] = null;
+            config.events["onRequestRestore"] = null;      
+        }
+
         if (config.editorConfig.createUrl) {
             config.events.onRequestSaveAs = onRequestSaveAs;
         }
