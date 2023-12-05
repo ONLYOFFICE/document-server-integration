@@ -275,10 +275,15 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
-            "onRequestRestore": onRequestRestore,
             "onRequestHistory": onRequestHistory,
             "onRequestHistoryData": onRequestHistoryData,
-            "onRequestHistoryClose": onRequestHistoryClose
+            "onRequestHistoryClose": onRequestHistoryClose,
+            "onRequestRestore": onRequestRestore   
+        };
+        
+        if (config.editorConfig.user.id == "uid-3"){
+            config.events['onRequestHistoryClose'] = null;
+            config.events['onRequestRestore'] = null;
         };
 
         <%
