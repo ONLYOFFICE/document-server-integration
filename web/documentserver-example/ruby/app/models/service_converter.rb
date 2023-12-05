@@ -163,7 +163,7 @@ class ServiceConverter
 
     else # if the conversion isn't completed
 
-      percent_element = file_result['percent']  # get the percentage value
+      percent_element = file_result['percent'] # get the percentage value
 
       result_percent = Integer(percent_element, 10) unless percent_element.nil?
 
