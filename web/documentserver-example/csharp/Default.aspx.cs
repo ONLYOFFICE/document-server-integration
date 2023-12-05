@@ -33,6 +33,12 @@ namespace OnlineEditorsExample
     public partial class _Default : Page
     {
 
+        //get server version
+        public static string GetVersion()
+        {
+            return WebConfigurationManager.AppSettings["version"];
+        }
+        
         // get the virtual path
         public static string VirtualPath
         {

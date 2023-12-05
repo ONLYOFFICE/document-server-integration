@@ -31,6 +31,12 @@ namespace OnlineEditorsExampleMVC.Helpers
 {
     public class DocManagerHelper
     {
+        //get server version
+        public static string GetVersion()
+        {
+            return WebConfigurationManager.AppSettings["version"];
+        }
+
         // get max file size
         public static long MaxFileSize
         {

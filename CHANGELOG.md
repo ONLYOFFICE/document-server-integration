@@ -1,5 +1,6 @@
 # Change Log
 
+- version number to page meta
 - sr-Latn-CS skin languages
 - getting history via api
 - using a repo with a list of formats

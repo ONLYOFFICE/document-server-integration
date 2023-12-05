@@ -76,6 +76,9 @@ public class IndexController {
     @Value("${files.docservice.languages}")
     private String langs;
 
+    @Value("${server.version}")
+    private String serverVersion;
+
     @GetMapping("${url.index}")
     public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
                         final Model model) {
@@ -124,6 +127,7 @@ public class IndexController {
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
         model.addAttribute("directUrl", directUrl);
+        model.addAttribute("serverVersion", serverVersion);
 
         return "index.html";
     }
