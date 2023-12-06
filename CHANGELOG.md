@@ -13,7 +13,7 @@
 - nodejs: filling pdf
 - version number to page meta
 - ar skin languages
-- sr-Latn-CS skin languages
+- sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats
