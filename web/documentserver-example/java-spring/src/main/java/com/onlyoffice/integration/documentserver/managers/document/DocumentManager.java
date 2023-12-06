@@ -39,4 +39,5 @@ public interface DocumentManager {
     // create demo document
     String createDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception;
     String getCreateUrl(String fileName, Boolean sample);  // get URL to the created file
+    Boolean isExtendedPDFFile(String fileName);
 }

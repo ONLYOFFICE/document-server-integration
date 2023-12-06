@@ -20,11 +20,14 @@ package com.onlyoffice.integration.documentserver.managers.document;
 
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
+import com.onlyoffice.integration.documentserver.util.Constants;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -242,5 +245,53 @@ public class DefaultDocumentManager implements DocumentManager {
         storageMutator.createMeta(fileName, uid, uname);  // create meta information of the demo file
 
         return fileName;
+    }
+
+    @SneakyThrows
+    public Boolean isExtendedPDFFile(final String fileName) {
+        Resource resource = storageMutator.loadFileAsResource(fileName);
+
+        byte[] bytes = resource.getInputStream().readNBytes(4096);
+
+        String pBuffer = new String(bytes, "Windows-1252");
+
+        int indexFirst = pBuffer.indexOf("%\315\312\322\251\015");
+        if (indexFirst == -1) {
+            return false;
+        }
+
+        String pFirst = pBuffer.substring(indexFirst + 6);
+
+        if (!pFirst.startsWith("1 0 obj\012<<\012")) {
+            return false;
+        }
+
+        pFirst = pFirst.substring(11);
+
+        int indexStream = pFirst.indexOf("stream\015\012");
+        int indexMeta = pFirst.indexOf(Constants.G_FORMAT_OFORM_PDF_META_TAG);
+
+        if (indexStream == -1 || indexMeta == -1 || indexStream < indexMeta) {
+            return false;
+        }
+
+        String pMeta = pFirst.substring(indexMeta);
+        pMeta = pMeta.substring(Constants.G_FORMAT_OFORM_PDF_META_TAG.length() + 3);
+
+        int indexMetaLast = pMeta.indexOf(" ");
+
+        if (indexMetaLast == -1) {
+            return false;
+        }
+
+        pMeta = pMeta.substring(indexMetaLast + 1);
+
+        indexMetaLast = pMeta.indexOf(" ");
+
+        if (indexMetaLast == -1) {
+            return false;
+        }
+
+        return true;
     }
 }
