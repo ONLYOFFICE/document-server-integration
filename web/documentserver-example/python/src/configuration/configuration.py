@@ -154,7 +154,7 @@ class ConfigurationManager:
             'pt-PT': 'Portuguese (Portugal)',
             'ro': 'Romanian',
             'ru': 'Russian',
-            'sr-Latn-CS': 'Serbian',
+            'sr-Latn-RS': 'Serbian',
             'si': 'Sinhala (Sri Lanka)',
             'sk': 'Slovak',
             'sl': 'Slovenian',
