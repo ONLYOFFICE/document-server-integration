@@ -280,7 +280,7 @@
             "onRequestHistoryData": onRequestHistoryData,
             "onRequestHistoryClose": onRequestHistoryClose
         };
-        
+
         if (config.editorConfig.user.id == "uid-3") {
             config.events['onRequestHistoryClose'] = null;
             config.events['onRequestRestore'] = null;
