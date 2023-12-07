@@ -24,6 +24,9 @@ from src.common import string
 class ConfigurationManager:
     version = '1.7.0'
 
+    def getVersion(self) -> str:
+        return self.version
+
     def example_url(self) -> Optional[ParseResult]:
         url = environ.get('EXAMPLE_URL')
         if not url:
@@ -151,6 +154,7 @@ class ConfigurationManager:
             'pt-PT': 'Portuguese (Portugal)',
             'ro': 'Romanian',
             'ru': 'Russian',
+            'sr-Latn-RS': 'Serbian',
             'si': 'Sinhala (Sri Lanka)',
             'sk': 'Slovak',
             'sl': 'Slovenian',

@@ -1,5 +1,7 @@
 # Change Log
 
+- version number to page meta
+- sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats

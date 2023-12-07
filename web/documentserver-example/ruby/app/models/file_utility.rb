@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # (c) Copyright Ascensio System SIA 2023
 #
@@ -16,20 +18,21 @@
 
 require_relative '../format/format'
 
+# Determination file type based on extensions, utilizing `@format_manager` for format management.
 class FileUtility
   @format_manager = FormatManager.new
 
   class << self
     attr_reader :format_manager
+  end
 
-    def get_file_type(file_name)
-      ext = File.extname(file_name).downcase
+  def self.get_file_type(file_name)
+    ext = File.extname(file_name).downcase
 
-      return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
-      return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
-      return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
+    return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
+    return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
+    return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
 
-      'word'
-    end
+    'word'
   end
 end

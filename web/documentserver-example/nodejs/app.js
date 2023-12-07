@@ -55,7 +55,7 @@ String.prototype.hashCode = function hashCode() {
   const len = this.length;
   let ret = 0;
   for (let i = 0; i < len; i++) {
-    ret = Math.trunc(31 * ret + this.charCodeAt(i));
+    ret = Math.imul(ret, 31) + this.charCodeAt(i);
   }
   return ret;
 };
@@ -100,6 +100,7 @@ app.get('/', (req, res) => { // define a handler for default page
       params: req.DocManager.getCustomParams(),
       users,
       languages: configServer.get('languages'),
+      serverVersion: config.get('version'),
     });
   } catch (ex) {
     console.log(ex); // display error message in the console

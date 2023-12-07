@@ -29,6 +29,7 @@ final class IndexView extends View
     {
         parent::__construct($tempName);
         $formatManager = new FormatManager();
+        $configManager = new ConfigurationManager();
 
         $storedList = new IndexStoredListView($request);
         $portalInfo = $this->getPortalInfoStyleDisplay();
@@ -46,6 +47,7 @@ final class IndexView extends View
             "fillFormsExtList" => implode(",", $formatManager->fillableExtensions()),
             "converExtList" => implode(",", $formatManager->convertibleExtensions()),
             "editedExtList" => implode(",", $formatManager->editableExtensions()),
+            "serverVersion" => $configManager -> getVersion(),
         ];
     }
 

@@ -24,6 +24,11 @@ class ConfigurationManager
 {
     public string $version = '1.7.0';
 
+    public function getVersion(): string
+    {
+        return $this -> version;
+    }
+
     public function exampleURL(): ?URL
     {
         $url = getenv('EXAMPLE_URL');
@@ -189,6 +194,7 @@ class ConfigurationManager
             'pt-PT' => 'Portuguese (Portugal)',
             'ro' => 'Romanian',
             'ru' => 'Russian',
+            'sr-Latn-RS' => 'Serbian',
             'si' => 'Sinhala (Sri Lanka)',
             'sk' => 'Slovak',
             'sl' => 'Slovenian',
