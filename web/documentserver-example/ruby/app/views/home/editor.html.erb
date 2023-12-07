@@ -261,9 +261,9 @@
         <%
             usersMentions = @file.get_users_mentions %>
 
-            if (config.editorConfig.user.id == "uid-3"){
+            if (config.editorConfig.user.id == "uid-3") {
                 config.events["onRequestHistoryClose"] = null;
-                config.events["onRequestRestore"] = null;   
+                config.events["onRequestRestore"] = null;
             };
 
             if (config.editorConfig.user.id) {
