@@ -996,8 +996,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
+    const ext = fileUtility.getFileExtension(fileName, true);
+    let isForm = 'null';
     if (mode === 'fillForms') {
       submitForm = userid === 'uid-1';
+      isForm = req.DocManager.isExtendedPDFFile(fileName);
     }
 
     // file config data
@@ -1005,12 +1008,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       apiUrl: siteUrl + configServer.get('apiUrl'),
       file: {
         name: fileName,
-        ext: fileUtility.getFileExtension(fileName, true),
+        ext: ext,
         uri: url,
         directUrl: !userDirectUrl ? null : directUrl,
         uriUser: directUrl,
         created: new Date().toDateString(),
         favorite: user.favorite != null ? user.favorite : 'null',
+        isForm: isForm,
       },
       editor: {
         type,
