@@ -285,7 +285,11 @@ final class DocEditorView extends View
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
-                config.events['onRequestEditRights'] = onRequestEditRights;";
+                config.events['onRequestEditRights'] = onRequestEditRights;
+                config.events['onRequestRestore'] = onRequestRestore;
+                config.events['onRequestHistory'] = onRequestHistory;
+                config.events['onRequestHistoryData'] = onRequestHistoryData;
+                config.events['onRequestHistoryClose'] = onRequestHistoryClose;";
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
