@@ -20,12 +20,15 @@ package com.onlyoffice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
+import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.request.DefaultRequestManager;
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.security.DefaultJwtManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
+import com.onlyoffice.service.convert.ConvertService;
+import com.onlyoffice.service.convert.DefaultConvertService;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -100,6 +103,13 @@ public class IntegrationConfiguration {
     public RequestManager requestManager(final UrlManager urlManager,  final JwtManager jwtManager,
                                          final SettingsManager settingsManager) {
         return new DefaultRequestManager(urlManager, jwtManager, settingsManager);
+    }
+
+    @Bean
+    public ConvertService convertService(final DocumentManager documentManager, final UrlManager urlManager,
+                                         final RequestManager requestManager,
+                                         final SettingsManager settingsManager) {
+        return new DefaultConvertService(documentManager, urlManager, requestManager, settingsManager);
     }
 
 }
