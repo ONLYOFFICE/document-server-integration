@@ -27,7 +27,6 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
-import com.onlyoffice.integration.dto.ConvertedData;
 import com.onlyoffice.integration.dto.Reference;
 import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Rename;
@@ -35,13 +34,17 @@ import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
 import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
-import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 
+import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.model.convertservice.ConvertRequest;
+import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.service.convert.ConvertService;
+import org.apache.http.HttpEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -125,6 +128,12 @@ public class FileController {
     private CallbackManager callbackManager;
     @Autowired
     private HistoryManager historyManager;
+    @Autowired
+    private com.onlyoffice.manager.document.DocumentManager documentManagerSdk;
+    @Autowired
+    private ConvertService convertService;
+    @Autowired
+    private RequestManager requestManager;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -235,56 +244,54 @@ public class FileController {
                           @CookieValue("uid") final String uid, @CookieValue("ulang") final String lang) {
         // get file name
         String fileName = body.getFileName();
-
-        // get URL for downloading a file with the specified name
-        String fileUri = documentManager.getDownloadUrl(fileName, true);
-
         // get file password if it exists
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
-
-        // get file extension
-        String fileExt = fileUtility.getFileExtension(fileName);
-
-        // get document type (word, cell or slide)
-        DocumentType type = fileUtility.getDocumentType(fileName);
-
         // convert to .ooxml
         String internalFileExt = "ooxml";
 
         try {
             // check if the file with such an extension can be converted
-            if (fileUtility.getConvertExts().contains(fileExt)) {
-                String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
-                ConvertedData response = serviceConverter  // get the URL to the converted file
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+            if (documentManagerSdk.getDefaultConvertExtension(fileName) != null) {
+                ConvertRequest convertRequest = ConvertRequest.builder()
+                        .password(filePass)
+                        .outputtype(internalFileExt)
+                        .region(lang)
+                        .async(true)
+                        .build();
 
-                String newFileUri = response.getUri();
-                String newFileType = "." + response.getFileType();
+                ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
 
-                if (newFileUri.isEmpty()) {
+                String newFileUri = convertResponse.getFileUrl();
+                String newFileType = convertResponse.getFileType();
+
+                if (newFileType == null || newFileUri.isEmpty()) {
                     return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
                 }
 
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
-                String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + newFileType;
+                final String oldFileName = fileName;
+                String nameWithInternalExt = documentManagerSdk.getBaseName(fileName) + "." + newFileType;
                 String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
-                URL url = new URL(newFileUri);
-                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-                InputStream stream = connection.getInputStream();  // get input stream of the converted file
+                fileName = requestManager.executeGetRequest(newFileUri, new RequestManager.Callback<String>() {
+                    public String doWork(final Object response) throws IOException {
+                        InputStream stream = ((HttpEntity) response).getContent(); // get input stream of the converted
+                        // file
 
-                if (stream == null) {
-                    connection.disconnect();
-                    throw new RuntimeException("Input stream is null");
-                }
+                        if (stream == null) {
+                            throw new RuntimeException("Input stream is null");
+                        }
 
-                // remove source file
-                storageMutator.deleteFile(fileName);
 
-                // create the converted file with input stream
-                storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
-                fileName = correctedName;
+                        // remove source file
+                        storageMutator.deleteFile(oldFileName);
+
+                        // create the converted file with input stream
+                        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
+                        return correctedName;
+                    }
+                });
             }
 
             // create meta information about the converted file with the user ID and name specified

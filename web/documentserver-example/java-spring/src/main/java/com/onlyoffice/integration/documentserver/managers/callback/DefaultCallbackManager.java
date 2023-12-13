@@ -27,16 +27,21 @@ import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.dto.Action;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.dto.Track;
+import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.model.convertservice.ConvertRequest;
+import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
+import org.apache.http.HttpEntity;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -46,8 +51,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.onlyoffice.integration.documentserver.util.Constants.FILE_SAVE_TIMEOUT;
 
 // todo: Refactoring
 @Component
@@ -75,6 +78,10 @@ public class DefaultCallbackManager implements CallbackManager {
     private ObjectMapper objectMapper;
     @Autowired
     private ServiceConverter serviceConverter;
+    @Autowired
+    private ConvertService convertService;
+    @Autowired
+    private RequestManager requestManager;
 
     // download file from url
     @SneakyThrows
@@ -83,23 +90,18 @@ public class DefaultCallbackManager implements CallbackManager {
             throw new RuntimeException("Url argument is not specified");  // URL isn't specified
         }
 
-        URL uri = new URL(url);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) uri.openConnection();
-        connection.setConnectTimeout(FILE_SAVE_TIMEOUT);
-        InputStream stream = connection.getInputStream();  // get input stream of the file information from the URL
+        return requestManager.executeGetRequest(url, new RequestManager.Callback<byte[]>() {
+            public byte[] doWork(final Object response) throws IOException {
+                InputStream stream = ((HttpEntity) response).getContent(); // get input stream of the converted
+                // file
 
-        int statusCode = connection.getResponseCode();
-        if (statusCode != HttpStatus.OK.value()) {  // checking status code
-            connection.disconnect();
-            throw new RuntimeException("Document editing service returned status: " + statusCode);
-        }
+                if (stream == null) {
+                    throw new RuntimeException("Input stream is null");
+                }
 
-        if (stream == null) {
-            connection.disconnect();
-            throw new RuntimeException("Input stream is null");
-        }
-
-        return stream.readAllBytes();
+                return stream.readAllBytes();
+            }
+        });
     }
 
     // file saving
@@ -126,11 +128,19 @@ public class DefaultCallbackManager implements CallbackManager {
         // convert downloaded file to the file with the current extension if these extensions aren't equal
         if (!curExt.equals(downloadExt)) {
             try {
-                String newFileUri = serviceConverter
-                        .getConvertedData(downloadUri, downloadExt, curExt,
-                                serviceConverter.generateRevisionId(downloadUri), null, false,
-                                null).getUri();  // convert a file and get URL to a new file
-                if (newFileUri.isEmpty()) {
+                ConvertRequest convertRequest = ConvertRequest.builder()
+                        .key(serviceConverter.generateRevisionId(downloadUri))
+                        .url(downloadUri)
+                        .outputtype(curExt)
+                        .async(false)
+                        .build();
+
+                // convert a file and get URL to a new file
+                ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
+
+                String newFileUri = convertResponse.getFileUrl();
+
+                if (newFileUri == null || newFileUri.isEmpty()) {
                     newFileName = documentManager
                             .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "."
                                     + downloadExt);  // get the correct file name if it already exists
@@ -277,11 +287,19 @@ public class DefaultCallbackManager implements CallbackManager {
         // todo: Extract function
         if (!curExt.equals(downloadExt)) {
             try {
-                // convert file and get URL to a new file
-                String newFileUri = serviceConverter
-                        .getConvertedData(downloadUri, downloadExt, curExt, serviceConverter
-                                .generateRevisionId(downloadUri), null, false, null).getUri();
-                if (newFileUri.isEmpty()) {
+                ConvertRequest convertRequest = ConvertRequest.builder()
+                        .key(serviceConverter.generateRevisionId(downloadUri))
+                        .url(downloadUri)
+                        .outputtype(curExt)
+                        .async(false)
+                        .build();
+
+                // convert a file and get URL to a new file
+                ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
+
+                String newFileUri = convertResponse.getFileUrl();
+
+                if (newFileUri == null || newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {
                     downloadUri = newFileUri;
