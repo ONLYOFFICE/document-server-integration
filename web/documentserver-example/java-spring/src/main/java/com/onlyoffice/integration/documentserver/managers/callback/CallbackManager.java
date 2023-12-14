@@ -18,11 +18,12 @@
 
 package com.onlyoffice.integration.documentserver.managers.callback;
 
-import com.onlyoffice.integration.dto.Track;
+import com.onlyoffice.model.documenteditor.Callback;
+
 import java.util.HashMap;
 
 public interface CallbackManager {  // specify the callback manager functions
-    void processSave(Track body, String fileName);  // file saving process
+    void processSave(Callback callback, String fileName);
     void commandRequest(String method, String key, HashMap meta);  // create a command request
-    void processForceSave(Track body, String fileName);  // file force saving process
+    void processForceSave(Callback callback, String fileName);
 }

@@ -24,12 +24,12 @@ import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
-import com.onlyoffice.integration.dto.Action;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
-import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.model.documenteditor.callback.ForcesaveType;
 import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
@@ -115,14 +115,14 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @SneakyThrows
-    public void processSave(final Track body, final String fileName) {  // file saving process
-        String downloadUri = body.getUrl();
-        String changesUri = body.getChangesurl();
-        String key = body.getKey();
+    public void processSave(final Callback callback, final String fileName) {  // file saving process
+        String downloadUri = callback.getUrl();
+        String changesUri = callback.getChangesurl();
+        String key = callback.getKey();
         String newFileName = fileName;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = body.getFiletype(); // get an extension of the downloaded file
+        String downloadExt = callback.getFiletype(); // get an extension of the downloaded file
 
         // todo: Refactoring
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -182,13 +182,13 @@ public class DefaultCallbackManager implements CallbackManager {
                     .of(versionDir + File.separator + "diff.zip")); // save file changes to the diff.zip archive
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
-            jsonChanges.put("changes", body.getHistory().getChanges());  // put the changes to the json object
-            jsonChanges.put("serverVersion", body.getHistory()
+            jsonChanges.put("changes", callback.getHistory().getChanges());  // put the changes to the json object
+            jsonChanges.put("serverVersion", callback.getHistory()
                     .getServerVersion());  // put the server version to the json object
             String history = objectMapper.writeValueAsString(jsonChanges);
 
-            if (history == null && body.getHistory() != null) {
-                history = objectMapper.writeValueAsString(body.getHistory());
+            if (history == null && callback.getHistory() != null) {
+                history = objectMapper.writeValueAsString(callback.getHistory());
             }
 
             if (history != null && !history.isEmpty()) {
@@ -273,13 +273,13 @@ public class DefaultCallbackManager implements CallbackManager {
         }
 
     @SneakyThrows
-    public void processForceSave(final Track body, final String fileNameParam) {  // file force saving process
+    public void processForceSave(final Callback callback, final String fileNameParam) {  // file force saving process
 
-        String downloadUri = body.getUrl();
+        String downloadUri = callback.getUrl();
         String fileName = fileNameParam;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = body.getFiletype();  // get an extension of the downloaded file
+        String downloadExt = callback.getFiletype();  // get an extension of the downloaded file
 
         Boolean newFileName = false;
 
@@ -314,7 +314,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
         // todo: Use ENUMS
         // todo: Pointless toString conversion
-        boolean isSubmitForm = body.getForcesavetype().toString().equals("3");
+        boolean isSubmitForm = callback.getForcesavetype().equals(ForcesaveType.SUBMIT_FORM);
 
         // todo: Extract function
         if (isSubmitForm) {  // if the form is submitted
@@ -328,14 +328,14 @@ public class DefaultCallbackManager implements CallbackManager {
                         .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form." + curExt);
             }
             forcesavePath = storagePathBuilder.getFileLocation(fileName);  // create forcesave path if it doesn't exist
-            List<Action> actions =  body.getActions();
-            Action action = actions.get(0);
+            List<com.onlyoffice.model.documenteditor.callback.Action> actions = callback.getActions();
+            com.onlyoffice.model.documenteditor.callback.Action action = actions.get(0);
             String user = action.getUserid();  // get the user ID
             // create meta data for the forcesaved file
             storageMutator.createMeta(fileName, user, "Filling Form");
 
             try {
-                String formsDataUrl = body.getFormsdataurl();
+                String formsDataUrl = callback.getFormsdataurl();
 
                 if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
                     String formsName = documentManager.getCorrectName(fileUtility
