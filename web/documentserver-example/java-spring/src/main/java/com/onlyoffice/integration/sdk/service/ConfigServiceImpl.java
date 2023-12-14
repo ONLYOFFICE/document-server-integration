@@ -19,7 +19,6 @@
 package com.onlyoffice.integration.sdk.service;
 
 import com.google.gson.Gson;
-import com.onlyoffice.integration.documentserver.managers.template.TemplateManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.Group;
@@ -45,7 +44,6 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Gob
 import com.onlyoffice.model.documenteditor.config.editorconfig.embedded.Toolbar;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -66,10 +64,6 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
 
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
-
-    @Autowired
-    @Qualifier("sample")
-    private TemplateManager templateManager;
 
     @Autowired
     private UrlManager urlManager;
