@@ -36,13 +36,17 @@ import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.model.commandservice.CommandRequest;
+import com.onlyoffice.model.commandservice.CommandResponse;
+import com.onlyoffice.model.commandservice.commandrequest.Command;
+import com.onlyoffice.model.commandservice.commandrequest.Meta;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import org.apache.http.HttpEntity;
@@ -124,8 +128,6 @@ public class FileController {
     @Autowired
     private ServiceConverter serviceConverter;
     @Autowired
-    private CallbackManager callbackManager;
-    @Autowired
     private HistoryManager historyManager;
     @Autowired
     private com.onlyoffice.manager.document.DocumentManager documentManagerSdk;
@@ -137,6 +139,8 @@ public class FileController {
     private SettingsManager settingsManager;
     @Autowired
     private CallbackService callbackService;
+    @Autowired
+    private CommandService commandService;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -481,14 +485,18 @@ public class FileController {
     @PostMapping("/rename")
     @ResponseBody
     public String rename(@RequestBody final Rename body) {
-        String fileName = body.getFileName();
-
-        HashMap<String, String> meta = new HashMap<>();
-        meta.put("title", fileName + "." + body.getFileType());
+        CommandRequest commandRequest = CommandRequest.builder()
+                .key(body.getFileKey())
+                .c(Command.META)
+                .meta(Meta.builder()
+                        .title(body.getFileName() + "." + body.getFileType())
+                        .build())
+                .build();
 
         try {
-            callbackManager.commandRequest("meta", body.getFileKey(), meta);
-            return "result ok";
+
+            CommandResponse commandResponse = commandService.processCommand(commandRequest, body.getFileName());
+            return commandResponse.getError().getDescription();
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
