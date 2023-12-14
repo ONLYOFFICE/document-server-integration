@@ -190,7 +190,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                             .url(getUrlManager().getCreateUrl(fileName))
                             .build(), // create a blank template
                     Template.builder()
-                            .image(templateManager.getTemplateImageUrl(fileName))
+                            .image(urlManager.getTemplateImageUrl(fileName))
                             .title("With sample content")
                             .url(urlManager.getCreateSampleUrl(fileName))
                             .build()// create a template with sample content using the template image

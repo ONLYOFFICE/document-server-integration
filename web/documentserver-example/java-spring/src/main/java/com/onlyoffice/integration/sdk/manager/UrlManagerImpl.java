@@ -18,11 +18,12 @@
 
 package com.onlyoffice.integration.sdk.manager;
 
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -111,6 +112,21 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
             return filePath;
         } catch (UnsupportedEncodingException | UnknownHostException e) {
             return "";
+        }
+    }
+
+    public String getTemplateImageUrl(final String fileName) {
+        DocumentType documentType = documentManager.getDocumentType(fileName);  // get the file type
+        String path = storagePathBuilder.getServerUrl(true);  // get server URL
+        switch (documentType) {
+            case WORD: // get URL to the template image for the word document type
+                return path + "/css/img/file_docx.svg";
+            case SLIDE: // get URL to the template image for the slide document type
+                return path + "/css/img/file_pptx.svg";
+            case CELL: // get URL to the template image for the cell document type
+                return path + "/css/img/file_xlsx.svg";
+            default: // get URL to the template image for the default document type (word)
+                return path + "/css/img/file_docx.svg";
         }
     }
 

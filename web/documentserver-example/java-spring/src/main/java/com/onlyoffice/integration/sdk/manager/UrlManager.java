@@ -21,4 +21,5 @@ package com.onlyoffice.integration.sdk.manager;
 public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
     String getCreateSampleUrl(String fileId);
     String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer);
+    String getTemplateImageUrl(String fileName);
 }
