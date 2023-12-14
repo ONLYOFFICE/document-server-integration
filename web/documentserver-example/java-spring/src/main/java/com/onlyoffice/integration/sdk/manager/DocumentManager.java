@@ -16,14 +16,14 @@
  *
  */
 
-package com.onlyoffice.integration.documentserver.managers.document;
+package com.onlyoffice.integration.sdk.manager;
 
+import java.util.ArrayList;
+import java.util.Map;
 
-// specify the document manager functions
-public interface DocumentManager {
-
-    // get a file name with an index if the file with such a name already exists
+public interface DocumentManager extends com.onlyoffice.manager.document.DocumentManager {
     String getCorrectName(String fileName);
-    //  get the path to the file version by the history path and file version
-    String versionDir(String path, Integer version, boolean historyPath);
+    ArrayList<Map<String, Object>> getFilesInfo();
+    ArrayList<Map<String, Object>> getFilesInfo(String fileId);
+    String createDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception;
 }
