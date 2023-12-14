@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.managers.history;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
@@ -56,9 +55,6 @@ public class DefaultHistoryManager implements HistoryManager {
     private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
-    private DocumentManager documentManager;
-
-    @Autowired
     private JwtManager jwtManager;
 
     @Autowired
@@ -91,8 +87,7 @@ public class DefaultHistoryManager implements HistoryManager {
             List<Version> history = new ArrayList<>();
 
             for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
-                String verDir = documentManager
-                        .versionDir(histDir, i, true);  // get the path to the given file version
+                String verDir = versionDir(histDir, i, true);  // get the path to the given file version
 
                 String key;
                 if (i == curVer) {
@@ -125,8 +120,8 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
-                    InputStream changesSteam = new FileInputStream(documentManager
-                            .versionDir(histDir, i - 1, true) + File.separator + "changes.json");
+                    InputStream changesSteam = new FileInputStream(
+                            versionDir(histDir, i - 1, true) + File.separator + "changes.json");
 
                     History changes = objectMapper.readValue(changesSteam, History.class);
 
@@ -165,8 +160,7 @@ public class DefaultHistoryManager implements HistoryManager {
             Map<String, HistoryData> historyDataMap = new HashMap<>();
 
             for (Integer i = 1; i <= curVer; i++) {  // run through all the file versions
-                String verDir = documentManager
-                        .versionDir(histDir, i, true);  // get the path to the given file version
+                String verDir = versionDir(histDir, i, true);  // get the path to the given file version
 
                 String key;
                 if (i == curVer) {
@@ -231,6 +225,14 @@ public class DefaultHistoryManager implements HistoryManager {
             }
         }
         return "";
+    }
+
+    @Override
+    public String versionDir(final String path, final Integer version, final boolean historyPath) {
+        if (!historyPath) {
+            return storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(path)) + version;
+        }
+        return path + File.separator + version;
     }
 
 
