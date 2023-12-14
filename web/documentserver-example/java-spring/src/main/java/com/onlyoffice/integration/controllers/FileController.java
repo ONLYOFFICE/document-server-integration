@@ -32,7 +32,6 @@ import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 
@@ -112,8 +111,6 @@ public class FileController {
     private String docserviceUrlCommand;
 
     @Autowired
-    private FileUtility fileUtility;
-    @Autowired
     private DocumentManager documentManager;
     @Autowired
     private JwtManager jwtManager;
@@ -145,7 +142,7 @@ public class FileController {
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
-        String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
+        String documentType = documentManagerSdk.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             storageMutator.createMeta(fullFileName,  // create meta information with the user ID and name specified
@@ -212,17 +209,17 @@ public class FileController {
                              @CookieValue("uid") final String uid) {
         try {
             String fullFileName = file.getOriginalFilename();  // get file name
-            String fileExtension = fileUtility.getFileExtension(fullFileName);  // get file extension
+            String fileExtension = documentManagerSdk.getExtension(fullFileName);  // get file extension
             long fileSize = file.getSize();  // get file size
             byte[] bytes = file.getBytes();  // get file in bytes
 
             // check if the file size exceeds the maximum file size or is less than 0
-            if (fileUtility.getMaxFileSize() < fileSize || fileSize <= 0) {
+            if (documentManagerSdk.getMaxFileSize() < fileSize || fileSize <= 0) {
                 return "{ \"error\": \"File size is incorrect\"}";  // if so, write an error message to the response
             }
 
             // check if file extension is supported by the editor
-            if (!fileUtility.getFileExts().contains(fileExtension)) {
+            if (documentManagerSdk.getDocumentType(fullFileName) != null) {
 
                 // if not, write an error message to the response
                 return "{ \"error\": \"File type is not supported\"}";
@@ -233,7 +230,7 @@ public class FileController {
                 throw new IOException("Could not update a file");  // if the file cannot be updated, an error occurs
             }
 
-            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath)
+            fullFileName = documentManagerSdk.getBaseName(fileNamePath)
                     + "." + fileExtension;  // get full file name
 
             return createUserMetadata(uid, fullFileName);  // create user metadata and return it
@@ -314,7 +311,7 @@ public class FileController {
     @ResponseBody
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
-            String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
+            String fullFileName = documentManagerSdk.getDocumentName(body.getFileName());  // get full file name
 
             // delete a file from the storage and return the status of this operation (true or false)
             boolean fileSuccess = storageMutator.deleteFile(fullFileName);
@@ -459,9 +456,8 @@ public class FileController {
     public String saveAs(@RequestBody final SaveAs body, @CookieValue("uid") final String uid) {
         try {
             String fileName = documentManager.getCorrectName(body.getTitle());
-            String curExt = fileUtility.getFileExtension(fileName);
 
-            if (!fileUtility.getFileExts().contains(curExt)) {
+            if (documentManagerSdk.getDocumentType(fileName) != null) {
                 return "{\"error\":\"File type is not supported\"}";
             }
 
@@ -545,7 +541,8 @@ public class FileController {
             if (fileName.equals("")) {
                 try {
                     String path = (String) body.getPath();
-                    path = fileUtility.getFileName(path);
+                    path = path.substring(path.lastIndexOf('/') + 1);
+                    path = path.split("\\?")[0];
                     File f = new File(storagePathBuilder.getFileLocation(path));
                     if (f.exists()) {
                         fileName = path;
@@ -568,7 +565,7 @@ public class FileController {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName));
+            data.put("fileType", documentManagerSdk.getDocumentName(fileName));
             data.put("key", serviceConverter.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/" + fileName + "/"
@@ -658,7 +655,7 @@ public class FileController {
             bumpedChangesFileWriter.write(bumpedChangesContent);
             bumpedChangesFileWriter.close();
 
-            String sourceExtension = fileUtility.getFileExtension(body.getFileName());
+            String sourceExtension = documentManagerSdk.getExtension(body.getFileName());
             String previousBasename = "prev." + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
