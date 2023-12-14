@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
@@ -38,6 +37,7 @@ import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 
 import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.CommandResponse;
@@ -336,13 +336,13 @@ public class FileController {
                                              @RequestParam("file") final String file) { // history file
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
+            if (settingsManager.isSecurityEnabled()) {
                 String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
-                    jwtManager.readToken(token);  // read the token
+                    jwtManager.verify(token);  // read the token
                 } else {
                     return null;
                 }
@@ -360,13 +360,13 @@ public class FileController {
                                                  final String userAddress) {
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && userAddress != null && jwtManager.tokenUseForRequest()) {
+            if (settingsManager.isSecurityEnabled() && userAddress != null) {
                 String header = request.getHeader(documentJwtHeader == null // get the document JWT header
                         || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
-                    jwtManager.readToken(token);  // read the token
+                    jwtManager.verify(token);  // read the token
                 } else {
                     return null;
                 }
@@ -580,7 +580,7 @@ public class FileController {
             data.put("path", fileName);
             data.put("link", storagePathBuilder.getServerUrl(true) + "/editor?fileName=" + fileName);
 
-            if (jwtManager.tokenEnabled()) {
+            if (settingsManager.isSecurityEnabled()) {
                 String token = jwtManager.createToken(data);
                 data.put("token", token);
             }

@@ -21,11 +21,12 @@ package com.onlyoffice.integration.documentserver.managers.history;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.filemodel.Document;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.manager.settings.SettingsManager;
 import lombok.SneakyThrows;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -66,6 +67,9 @@ public class DefaultHistoryManager implements HistoryManager {
 
     @Autowired
     private ServiceConverter serviceConverter;
+
+    @Autowired
+    private SettingsManager settingsManager;
 
     // todo: Refactoring
     @SneakyThrows
@@ -146,7 +150,7 @@ public class DefaultHistoryManager implements HistoryManager {
                             .getHistoryFileUrl(document.getTitle(), verdiff, "diff.zip", true));
                 }
 
-                if (jwtManager.tokenEnabled()) {
+                if (settingsManager.isSecurityEnabled()) {
                     dataObj.put("token", jwtManager.createToken(dataObj));
                 }
 
@@ -302,7 +306,7 @@ public class DefaultHistoryManager implements HistoryManager {
                     }
                 }
 
-                if (jwtManager.tokenEnabled()) {
+                if (settingsManager.isSecurityEnabled()) {
                     dataObj.put("token", jwtManager.createToken(dataObj));
                 }
 

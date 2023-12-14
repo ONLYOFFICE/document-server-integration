@@ -19,7 +19,6 @@
 package com.onlyoffice.integration.documentserver.util.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.ConvertErrorType;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import lombok.SneakyThrows;
@@ -51,8 +50,6 @@ public class DefaultServiceConverter implements ServiceConverter {
     private String docserviceTimeout;
     private int convertTimeout;
 
-    @Autowired
-    private JwtManager jwtManager;
     @Autowired
     private FileUtility fileUtility;
     @Autowired

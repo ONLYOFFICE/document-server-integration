@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.managers.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
@@ -65,8 +64,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
     @Autowired
     private DocumentManager documentManager;
-    @Autowired
-    private JwtManager jwtManager;
     @Autowired
     private FileUtility fileUtility;
     @Autowired
