@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.manager.request.RequestManager;
@@ -65,8 +64,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
     @Autowired
     private DocumentManager documentManager;
-    @Autowired
-    private FileUtility fileUtility;
     @Autowired
     private FileStorageMutator storageMutator;
     @Autowired
@@ -143,7 +140,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String key = callback.getKey();
         String newFileName = fileName;
 
-        String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
+        String curExt = documentManager.getExtension(fileName);  // get current file extension
         String downloadExt = callback.getFiletype(); // get an extension of the downloaded file
 
         // todo: Refactoring
@@ -164,14 +161,14 @@ public class DefaultCallbackManager implements CallbackManager {
 
                 if (newFileUri == null || newFileUri.isEmpty()) {
                     newFileName = documentManager
-                            .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "."
+                            .getCorrectName(documentManager.getBaseName(fileName) + "."
                                     + downloadExt);  // get the correct file name if it already exists
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e) {
                 newFileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "." + downloadExt);
+                        .getCorrectName(documentManager.getBaseName(fileName) + "." + downloadExt);
             }
         }
 
@@ -232,7 +229,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String downloadUri = callback.getUrl();
         String fileName = fileNameParam;
 
-        String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
+        String curExt = documentManager.getExtension(fileName);  // get current file extension
         String downloadExt = callback.getFiletype();  // get an extension of the downloaded file
 
         Boolean newFileName = false;
@@ -275,11 +272,11 @@ public class DefaultCallbackManager implements CallbackManager {
             if (newFileName) {
                 // get the correct file name if it already exists
                 fileName = documentManager
-                        .getCorrectName(fileUtility
-                                .getFileNameWithoutExtension(fileName) + "-form." + downloadExt);
+                        .getCorrectName(documentManager
+                                .getBaseName(fileName) + "-form." + downloadExt);
             } else {
                 fileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form." + curExt);
+                        .getCorrectName(documentManager.getBaseName(fileName) + "-form." + curExt);
             }
             forcesavePath = storagePathBuilder.getFileLocation(fileName);  // create forcesave path if it doesn't exist
             List<com.onlyoffice.model.documenteditor.callback.Action> actions = callback.getActions();
@@ -292,8 +289,8 @@ public class DefaultCallbackManager implements CallbackManager {
                 String formsDataUrl = callback.getFormsdataurl();
 
                 if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
-                    String formsName = documentManager.getCorrectName(fileUtility
-                            .getFileNameWithoutExtension(fileName) + ".txt");
+                    String formsName = documentManager.getCorrectName(documentManager
+                            .getBaseName(fileName) + ".txt");
                     String formsPath = storagePathBuilder.getFileLocation(formsName);
 
                     byte[] byteArrayFormsData = getDownloadFile(formsDataUrl);
@@ -308,7 +305,7 @@ public class DefaultCallbackManager implements CallbackManager {
         } else {
             if (newFileName) {
                 fileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
+                        .getCorrectName(documentManager.getBaseName(fileName) + "." + downloadExt);
             }
 
             forcesavePath = storagePathBuilder.getForcesavePath(fileName, false);
