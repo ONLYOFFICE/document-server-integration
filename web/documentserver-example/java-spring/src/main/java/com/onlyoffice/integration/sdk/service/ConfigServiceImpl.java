@@ -24,11 +24,11 @@ import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
-import com.onlyoffice.manager.url.UrlManager;
 import com.onlyoffice.model.common.User;
 import com.onlyoffice.model.documenteditor.Config;
 import com.onlyoffice.model.documenteditor.config.document.Info;
@@ -71,10 +71,13 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
     @Qualifier("sample")
     private TemplateManager templateManager;
 
+    @Autowired
+    private UrlManager urlManager;
 
-    public ConfigServiceImpl(final DocumentManager documentManager, final UrlManager urlManager,
+
+    public ConfigServiceImpl(final DocumentManager documentManager, final UrlManager argUrlManager,
                              final JwtManager jwtManager, final SettingsManager settingsManager) {
-        super(documentManager, urlManager, jwtManager, settingsManager);
+        super(documentManager, argUrlManager, jwtManager, settingsManager);
     }
 
     @Override
@@ -189,9 +192,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                     Template.builder()
                             .image(templateManager.getTemplateImageUrl(fileName))
                             .title("With sample content")
-                            .url(getUrlManager().getCreateUrl(
-                                    fileName).replace("sample=false", "sample=true")
-                            )
+                            .url(urlManager.getCreateSampleUrl(fileName))
                             .build()// create a template with sample content using the template image
             );
         }

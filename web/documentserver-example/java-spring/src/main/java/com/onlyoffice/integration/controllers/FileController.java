@@ -38,6 +38,7 @@ import com.onlyoffice.integration.documentserver.managers.document.DocumentManag
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.manager.url.UrlManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.CommandResponse;
 import com.onlyoffice.model.commandservice.commandrequest.Command;
@@ -138,11 +139,14 @@ public class FileController {
     private CallbackService callbackService;
     @Autowired
     private CommandService commandService;
+    @Autowired
+    private UrlManager urlManager;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
-        String documentType = documentManagerSdk.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
+        // get document type
+        String documentType = documentManagerSdk.getDocumentType(fullFileName).toString().toLowerCase();
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             storageMutator.createMeta(fullFileName,  // create meta information with the user ID and name specified
@@ -571,8 +575,8 @@ public class FileController {
                 + "/" + fileName + "/"
                 + new File(storagePathBuilder.getFileLocation(fileName)).lastModified()
                 ));
-            data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
+            data.put("url", urlManager.getFileUrl(fileName));
+            data.put("directUrl", body.getDirectUrl() ? urlManager.getDirectFileUrl(fileName) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
             data.put("link", storagePathBuilder.getServerUrl(true) + "/editor?fileName=" + fileName);

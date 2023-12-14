@@ -20,7 +20,6 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Mentions;
@@ -85,9 +84,6 @@ public class EditorController {
 
     @Autowired
     private ConfigService configService;
-
-    @Autowired
-    private DocumentManager documentManager;
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page

@@ -24,6 +24,7 @@ import com.onlyoffice.integration.documentserver.managers.document.DocumentManag
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.common.User;
@@ -74,6 +75,9 @@ public class DefaultHistoryManager implements HistoryManager {
 
     @Autowired
     private SettingsManager settingsManager;
+
+    @Autowired
+    private UrlManager urlManager;
 
     // todo: Refactoring
     @SneakyThrows
@@ -176,15 +180,15 @@ public class DefaultHistoryManager implements HistoryManager {
                 HistoryData historyData = HistoryData.builder()
                         .fileType(fileUtility.getFileExtension(fileName).replace(".", ""))
                         .key(key)
-                        .url(i == curVer ? documentManager.getDownloadUrl(fileName, true)
-                                : documentManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
+                        .url(i == curVer ? urlManager.getFileUrl(fileName)
+                                : urlManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
                                 .getFileExtension(fileName), true))
                         .build();
 
                 if (directUrl) {
                     historyData.setDirectUrl(i == curVer
-                            ? documentManager.getDownloadUrl(fileName, false)
-                            : documentManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
+                            ? urlManager.getDirectFileUrl(fileName)
+                            : urlManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
                             .getFileExtension(fileName), false)
                     );
                 }
@@ -208,7 +212,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     if (diffExists(histDir, verdiff)) {
                         // write the path to the diff.zip archive with differences in this file version
-                        historyData.setChangesUrl(documentManager
+                        historyData.setChangesUrl(urlManager
                                 .getHistoryFileUrl(fileName, verdiff, "diff.zip", true));
                     }
                 }

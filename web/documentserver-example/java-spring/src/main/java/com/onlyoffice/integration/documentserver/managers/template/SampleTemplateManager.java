@@ -23,6 +23,7 @@ import com.onlyoffice.integration.documentserver.models.filemodel.Template;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -39,16 +40,18 @@ public class SampleTemplateManager implements TemplateManager {
     private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
+    private UrlManager urlManager;
+
+    @Autowired
     private FileUtility fileUtility;
 
     // create a template document with the specified name
     public List<Template> createTemplates(final String fileName) {
         List<Template> templates = List.of(
-                new Template("", "Blank", documentManager
-                        .getCreateUrl(fileName, false)),  // create a blank template
-                new Template(getTemplateImageUrl(fileName), "With sample content", documentManager
-                        .getCreateUrl(fileName,
-                                true))  // create a template with sample content using the template image
+                new Template("", "Blank", urlManager
+                        .getCreateUrl(fileName)),  // create a blank template
+                new Template(getTemplateImageUrl(fileName), "With sample content", urlManager
+                        .getCreateSampleUrl(fileName)) // create a template with sample content using the template image
         );
 
         return templates;

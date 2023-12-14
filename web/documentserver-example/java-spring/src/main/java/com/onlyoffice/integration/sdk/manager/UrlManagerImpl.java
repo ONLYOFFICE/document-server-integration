@@ -20,22 +20,34 @@ package com.onlyoffice.integration.sdk.manager;
 
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
+import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+
 @Component
-public class UrlManagerImpl extends DefaultUrlManager {
+public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
 
     @Value("${url.index}")
     private String indexMapping;
+    @Value("${url.download}")
+    private String downloadUrl;
+    @Value("${url.track}")
+    private String trackUrl;
 
     @Autowired
     private DocumentManager documentManager;
+    @Autowired
+    private FileUtility fileUtility;
 
     public UrlManagerImpl(final SettingsManager settingsManager) {
         super(settingsManager);
@@ -43,25 +55,87 @@ public class UrlManagerImpl extends DefaultUrlManager {
 
     @Override
     public String getFileUrl(final String fileId) {
-        return documentManager.getDownloadUrl(fileId, true);
+        return getDownloadUrl(fileId, true);
     }
 
     @Override
     public String getDirectFileUrl(final String fileId) {
-        return documentManager.getDownloadUrl(fileId, false);
+        return getDownloadUrl(fileId, false);
     }
 
+    @Override
     public String getCreateUrl(final String fileId) {
-        return documentManager.getCreateUrl(fileId, false);
+        return getCreateUrl(fileId, false);
+    }
+
+    @Override
+    public String getCreateSampleUrl(final String fileId) {
+        return getCreateUrl(fileId, true);
     }
 
     @Override
     public String getCallbackUrl(final String fileId) {
-        return documentManager.getCallback(fileId);
+        String serverPath = storagePathBuilder.getServerUrl(true);
+        String storageAddress = storagePathBuilder.getStorageLocation();
+        try {
+            String query = trackUrl + "?fileName="
+                    + URLEncoder.encode(fileId, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&userAddress=" + URLEncoder
+                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
+            return serverPath + query;
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
     }
 
     @Override
     public String getGobackUrl(final String fileId) {
         return storagePathBuilder.getServerUrl(false) + indexMapping;
+    }
+
+    // get file URL
+    public String getHistoryFileUrl(final String fileName, final Integer version, final String file,
+                                    final Boolean forDocumentServer) {
+        try {
+            String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
+            String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
+            String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
+                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost().getHostAddress())
+                    + InetAddress.getLocalHost().getHostAddress().length() + 1);
+            String userAddress = forDocumentServer ? "&userAddress" + URLEncoder
+                    .encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String filePath = serverPath + "/downloadhistory?fileName=" + URLEncoder
+                    .encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + "&ver=" + version + "&file=" + file
+                    + userAddress;
+            return filePath;
+        } catch (UnsupportedEncodingException | UnknownHostException e) {
+            return "";
+        }
+    }
+
+    // get URL to download a file
+    private String getDownloadUrl(final String fileName, final Boolean isServer) {
+        String serverPath = storagePathBuilder.getServerUrl(isServer);
+        String storageAddress = storagePathBuilder.getStorageLocation();
+        try {
+            String userAddress = isServer ? "&userAddress=" + URLEncoder
+                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
+            String query = downloadUrl + "?fileName="
+                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
+                    + userAddress;
+
+            return serverPath + query;
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
+    }
+
+    // get URL to the created file
+    private String getCreateUrl(final String fileName, final Boolean sample) {
+        String fileExt = fileUtility.getFileExtension(fileName);
+        String url = storagePathBuilder.getServerUrl(true)
+                + "/create?fileExt=" + fileExt + "&sample=" + sample;
+        return url;
     }
 }

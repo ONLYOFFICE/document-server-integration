@@ -67,14 +67,6 @@ public class DefaultDocumentManager implements DocumentManager {
     @Autowired
     private ServiceConverter serviceConverter;
 
-    // get URL to the created file
-    public String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileUtility.getFileExtension(fileName);
-        String url = storagePathBuilder.getServerUrl(true)
-                + "/create?fileExt=" + fileExt + "&sample=" + sample;
-        return url;
-    }
-
     // get a file name with an index if the file with such a name already exists
     public String getCorrectName(final String fileName) {
         String baseName = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
@@ -90,27 +82,6 @@ public class DefaultDocumentManager implements DocumentManager {
         }
 
         return name;
-    }
-
-    // get file URL
-    public String getFileUri(final String fileName, final Boolean forDocumentServer) {
-        try {
-            String serverPath = storagePathBuilder.getServerUrl(forDocumentServer);  // get server URL
-            String hostAddress = storagePathBuilder.getStorageLocation();  // get the storage directory
-            String filePathDownload = !fileName.contains(InetAddress.getLocalHost().getHostAddress()) ? fileName
-                    : fileName.substring(fileName.indexOf(InetAddress.getLocalHost()
-                    .getHostAddress()) + InetAddress.getLocalHost().getHostAddress().length() + 1);
-            if (!filesStorage.isEmpty() && filePathDownload.contains(filesStorage)) {
-                filePathDownload = filePathDownload.substring(filesStorage.length() + 1);
-            }
-
-            String filePath = serverPath + "/download?fileName=" + URLEncoder
-                    .encode(filePathDownload, java.nio.charset.StandardCharsets.UTF_8.toString()) + "&userAddress"
-                    + URLEncoder.encode(hostAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-            return filePath;
-        } catch (UnsupportedEncodingException | UnknownHostException e) {
-            return "";
-        }
     }
 
     // get file URL
@@ -130,38 +101,6 @@ public class DefaultDocumentManager implements DocumentManager {
                 + userAddress;
             return filePath;
         } catch (UnsupportedEncodingException | UnknownHostException e) {
-            return "";
-        }
-    }
-
-    // get the callback URL
-    public String getCallback(final String fileName) {
-        String serverPath = storagePathBuilder.getServerUrl(true);
-        String storageAddress = storagePathBuilder.getStorageLocation();
-        try {
-            String query = trackUrl + "?fileName="
-                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + "&userAddress=" + URLEncoder
-                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString());
-            return serverPath + query;
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-    }
-
-    // get URL to download a file
-    public String getDownloadUrl(final String fileName, final Boolean isServer) {
-        String serverPath = storagePathBuilder.getServerUrl(isServer);
-        String storageAddress = storagePathBuilder.getStorageLocation();
-        try {
-            String userAddress = isServer ? "&userAddress=" + URLEncoder
-                    .encode(storageAddress, java.nio.charset.StandardCharsets.UTF_8.toString()) : "";
-            String query = downloadUrl + "?fileName="
-                    + URLEncoder.encode(fileName, java.nio.charset.StandardCharsets.UTF_8.toString())
-                    + userAddress;
-
-            return serverPath + query;
-        } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
