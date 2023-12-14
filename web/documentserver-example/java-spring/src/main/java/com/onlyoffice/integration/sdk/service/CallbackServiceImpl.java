@@ -22,8 +22,6 @@ import com.onlyoffice.integration.documentserver.managers.callback.CallbackManag
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.documenteditor.Callback;
-import com.onlyoffice.model.documenteditor.callback.Action;
-import com.onlyoffice.model.documenteditor.callback.action.Type;
 import com.onlyoffice.service.documenteditor.callback.DefaultCallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +42,7 @@ public class CallbackServiceImpl extends DefaultCallbackService {
 
     @Override
     public void handlerEditing(final Callback callback, final String fileId) throws Exception {
-        Action action = callback.getActions().get(0);  // get the user ID who is editing the document
-        if (action.getType().equals(Type.CONNECTED)) {  // if this value is not equal to the user ID
-            String user = action.getUserid();  // get user ID
-            if (!callback.getUsers().contains(user)) {  // if this user is not specified in the body
-                String key = callback.getKey();  // get document key
-                // create a command request to forcibly save the document being edited without closing it
-                callbackManager.commandRequest("forcesave", key, null);
-
-            }
-        }
+        callbackManager.processEditing(callback, fileId);
     }
 
     @Override
