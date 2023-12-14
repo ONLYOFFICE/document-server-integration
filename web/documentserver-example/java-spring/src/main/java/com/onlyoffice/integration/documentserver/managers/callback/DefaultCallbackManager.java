@@ -19,11 +19,12 @@
 package com.onlyoffice.integration.documentserver.managers.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
+import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.commandrequest.Command;
@@ -80,6 +81,8 @@ public class DefaultCallbackManager implements CallbackManager {
     private RequestManager requestManager;
     @Autowired
     private CommandService commandService;
+    @Autowired
+    private HistoryManager historyManager;
 
     // download file from url
     @SneakyThrows
@@ -182,7 +185,7 @@ public class DefaultCallbackManager implements CallbackManager {
             Path histDir = Paths.get(storagePathBuilder.getHistoryDir(storagePath));  // get the history directory
             storageMutator.createDirectory(histDir);  // and create it
 
-            String versionDir = documentManager
+            String versionDir = historyManager
                     .versionDir(histDir.toAbsolutePath().toString(),  // get the file version directory
                     storagePathBuilder
                             .getFileVersion(histDir.toAbsolutePath().toString(), false), true);
