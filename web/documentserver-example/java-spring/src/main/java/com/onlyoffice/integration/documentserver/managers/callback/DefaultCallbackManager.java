@@ -26,12 +26,15 @@ import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.model.commandservice.CommandRequest;
+import com.onlyoffice.model.commandservice.commandrequest.Command;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.model.documenteditor.callback.Action;
 import com.onlyoffice.model.documenteditor.callback.ForcesaveType;
 import com.onlyoffice.model.documenteditor.callback.action.Type;
+import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
@@ -45,15 +48,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 // todo: Refactoring
 @Component
 @Primary
@@ -84,6 +81,8 @@ public class DefaultCallbackManager implements CallbackManager {
     private ConvertService convertService;
     @Autowired
     private RequestManager requestManager;
+    @Autowired
+    private CommandService commandService;
 
     // download file from url
     @SneakyThrows
@@ -117,14 +116,22 @@ public class DefaultCallbackManager implements CallbackManager {
     }
 
     @Override
-    public void processEditing(Callback callback, String fileName) {
+    public void processEditing(final Callback callback, final String fileName) {
         Action action = callback.getActions().get(0);  // get the user ID who is editing the document
         if (action.getType().equals(Type.CONNECTED)) {  // if this value is not equal to the user ID
             String user = action.getUserid();  // get user ID
             if (!callback.getUsers().contains(user)) {  // if this user is not specified in the body
-                String key = callback.getKey();  // get document key
+                CommandRequest commandRequest = CommandRequest.builder()
+                        .c(Command.FORCESAVE)
+                        .key(callback.getKey())
+                        .build();
+
                 // create a command request to forcibly save the document being edited without closing it
-                commandRequest("forcesave", key, null);
+                try {
+                    commandService.processCommand(commandRequest, fileName);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -218,74 +225,6 @@ public class DefaultCallbackManager implements CallbackManager {
             storageMutator.deleteFile(storagePathBuilder.getForcesavePath(newFileName, false));
         }
     }
-
-    // todo: Replace (String method) with (Enum method)
-    @SneakyThrows
-    public void commandRequest(final String method,
-                               final String key,
-                               final HashMap meta) {  // create a command request
-        String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
-
-        URL url = new URL(documentCommandUrl);
-        java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("c", method);
-        params.put("key", key);
-
-        if (meta != null) {
-            params.put("meta", meta);
-        }
-
-        String headerToken;
-        // check if a secret key to generate token exists or not
-        if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
-            Map<String, Object> payloadMap = new HashMap<>();
-            payloadMap.put("payload", params);
-            headerToken = jwtManager.createToken(payloadMap);  // encode a payload object into a header token
-
-            // add a header Authorization with a header token and Authorization prefix in it
-            connection.setRequestProperty(documentJwtHeader.equals("")
-                    ? "Authorization" : documentJwtHeader, "Bearer " + headerToken);
-
-            String token = jwtManager.createToken(params);  // encode a payload object into a body token
-            params.put("token", token);
-        }
-
-        String bodyString = objectMapper.writeValueAsString(params);
-
-        byte[] bodyByte = bodyString.getBytes(StandardCharsets.UTF_8);
-
-        connection.setRequestMethod("POST");  // set the request method
-        connection
-                .setRequestProperty("Content-Type", "application/json; charset=UTF-8");  // set the Content-Type header
-        connection.setDoOutput(true);  // set the doOutput field to true
-        connection.connect();
-
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(bodyByte);  // write bytes to the output stream
-        }
-
-        InputStream stream = connection.getInputStream();  // get input stream
-
-        if (stream == null) {
-            throw new RuntimeException("Could not get an answer");
-        }
-
-        String jsonString = serviceConverter.convertStreamToString(stream);  // convert stream to json string
-        connection.disconnect();
-
-        JSONObject response = serviceConverter.convertStringToJSON(jsonString);  // convert json string to json object
-        // todo: Add errors ENUM
-        String responseCode = response.get("error").toString();
-        switch (responseCode) {
-            case "0":
-            case "4":
-                break;
-            default:
-                throw new RuntimeException(response.toJSONString());
-            }
-        }
 
     @SneakyThrows
     public void processForceSave(final Callback callback, final String fileNameParam) {  // file force saving process
