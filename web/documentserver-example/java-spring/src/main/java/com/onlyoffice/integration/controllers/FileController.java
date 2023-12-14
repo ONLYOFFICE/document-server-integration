@@ -21,7 +21,6 @@ package com.onlyoffice.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
@@ -32,7 +31,6 @@ import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
-import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
@@ -41,9 +39,12 @@ import com.onlyoffice.integration.documentserver.managers.document.DocumentManag
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 
 import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.service.convert.ConvertService;
+import com.onlyoffice.service.documenteditor.callback.CallbackService;
 import org.apache.http.HttpEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -119,8 +120,6 @@ public class FileController {
     @Autowired
     private UserServices userService;
     @Autowired
-    private CallbackHandler callbackHandler;
-    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ServiceConverter serviceConverter;
@@ -134,6 +133,10 @@ public class FileController {
     private ConvertService convertService;
     @Autowired
     private RequestManager requestManager;
+    @Autowired
+    private SettingsManager settingsManager;
+    @Autowired
+    private CallbackService callbackService;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -425,28 +428,26 @@ public class FileController {
     public String track(final HttpServletRequest request,  // track file changes
                         @RequestParam("fileName") final String fileName,
                         @RequestParam("userAddress") final String userAddress,
-                        @RequestBody final Track body) {
-        Track track;
+                        @RequestBody final Callback body) {
+        Callback callback;
         try {
             String bodyString = objectMapper
                     .writeValueAsString(body);  // write the request body to the object mapper as a string
-            String header = request.getHeader(documentJwtHeader == null  // get the request header
-                    || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
 
             if (bodyString.isEmpty()) {  // if the request body is empty, an error occurs
                 throw new RuntimeException("{\"error\":1,\"message\":\"Request payload is empty\"}");
             }
 
-            JSONObject bodyCheck = jwtManager.parseBody(bodyString, header);  // parse the request body
-            track = objectMapper.readValue(bodyCheck.toJSONString(), Track.class);  // read the request body
+            String authorizationHeader = request.getHeader(settingsManager.getSecurityHeader());
+            callback = callbackService.verifyCallback(body, authorizationHeader);
+
+            callbackService.processCallback(callback, fileName);
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
 
-        int error = callbackHandler.handle(track, fileName);
-
-        return "{\"error\":" + error + "}";
+        return "{\"error\":\"0\"}";
     }
 
     @PostMapping("/saveas")
