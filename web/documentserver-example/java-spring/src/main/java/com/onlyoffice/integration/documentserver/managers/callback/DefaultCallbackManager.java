@@ -29,7 +29,9 @@ import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.model.documenteditor.callback.Action;
 import com.onlyoffice.model.documenteditor.callback.ForcesaveType;
+import com.onlyoffice.model.documenteditor.callback.action.Type;
 import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
@@ -112,6 +114,19 @@ public class DefaultCallbackManager implements CallbackManager {
         }
         // update a file or create a new one
         storageMutator.createOrUpdateFile(path, new ByteArrayInputStream(byteArray));
+    }
+
+    @Override
+    public void processEditing(Callback callback, String fileName) {
+        Action action = callback.getActions().get(0);  // get the user ID who is editing the document
+        if (action.getType().equals(Type.CONNECTED)) {  // if this value is not equal to the user ID
+            String user = action.getUserid();  // get user ID
+            if (!callback.getUsers().contains(user)) {  // if this user is not specified in the body
+                String key = callback.getKey();  // get document key
+                // create a command request to forcibly save the document being edited without closing it
+                commandRequest("forcesave", key, null);
+            }
+        }
     }
 
     @SneakyThrows

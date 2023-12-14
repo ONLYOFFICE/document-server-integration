@@ -23,6 +23,7 @@ import com.onlyoffice.model.documenteditor.Callback;
 import java.util.HashMap;
 
 public interface CallbackManager {  // specify the callback manager functions
+    void processEditing(Callback callback, String fileName);
     void processSave(Callback callback, String fileName);
     void commandRequest(String method, String key, HashMap meta);  // create a command request
     void processForceSave(Callback callback, String fileName);
