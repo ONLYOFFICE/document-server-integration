@@ -19,7 +19,6 @@
 package com.onlyoffice.integration.sdk.manager;
 
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
@@ -35,9 +34,6 @@ import java.net.UnknownHostException;
 
 @Component
 public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
-    @Autowired
-    private FileStoragePathBuilder storagePathBuilder;
-
     @Value("${url.index}")
     private String indexMapping;
     @Value("${url.download}")
@@ -46,9 +42,9 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     private String trackUrl;
 
     @Autowired
-    private DocumentManager documentManager;
+    private FileStoragePathBuilder storagePathBuilder;
     @Autowired
-    private FileUtility fileUtility;
+    private DocumentManager documentManager;
 
     public UrlManagerImpl(final SettingsManager settingsManager) {
         super(settingsManager);
@@ -149,7 +145,7 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
 
     // get URL to the created file
     private String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileUtility.getFileExtension(fileName);
+        String fileExt = documentManager.getExtension(fileName);
         String url = storagePathBuilder.getServerUrl(true)
                 + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
