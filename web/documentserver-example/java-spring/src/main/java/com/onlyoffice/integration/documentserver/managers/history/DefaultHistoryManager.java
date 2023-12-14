@@ -21,8 +21,8 @@ package com.onlyoffice.integration.documentserver.managers.history;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
@@ -58,9 +58,6 @@ public class DefaultHistoryManager implements HistoryManager {
     private JwtManager jwtManager;
 
     @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
     private JSONParser parser;
 
     @Autowired
@@ -74,6 +71,9 @@ public class DefaultHistoryManager implements HistoryManager {
 
     @Autowired
     private UrlManager urlManager;
+
+    @Autowired
+    private DocumentManager documentManager;
 
     // todo: Refactoring
     @SneakyThrows
@@ -172,18 +172,18 @@ public class DefaultHistoryManager implements HistoryManager {
                     key = readFileToEnd(new File(verDir + File.separator + "key.txt"));
                 }
                 HistoryData historyData = HistoryData.builder()
-                        .fileType(fileUtility.getFileExtension(fileName).replace(".", ""))
+                        .fileType(documentManager.getExtension(fileName))
                         .key(key)
                         .url(i == curVer ? urlManager.getFileUrl(fileName)
-                                : urlManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
-                                .getFileExtension(fileName), true))
+                                : urlManager.getHistoryFileUrl(fileName, i, "prev" + documentManager
+                                .getExtension(fileName), true))
                         .build();
 
                 if (directUrl) {
                     historyData.setDirectUrl(i == curVer
                             ? urlManager.getDirectFileUrl(fileName)
-                            : urlManager.getHistoryFileUrl(fileName, i, "prev" + fileUtility
-                            .getFileExtension(fileName), false)
+                            : urlManager.getHistoryFileUrl(fileName, i, "prev" + documentManager
+                            .getExtension(fileName), false)
                     );
                 }
                 historyData.setVersion(String.valueOf(i));
