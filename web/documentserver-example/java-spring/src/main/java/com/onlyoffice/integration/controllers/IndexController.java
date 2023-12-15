@@ -21,8 +21,8 @@ package com.onlyoffice.integration.controllers;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,13 +53,13 @@ public class IndexController {
     private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
     private Misc mistUtility;
 
     @Autowired
     private UserServices userService;
+
+    @Autowired
+    private DocumentManager documentManager;
 
     @Value("${files.docservice.url.site}")
     private String docserviceSite;
@@ -105,15 +105,14 @@ public class IndexController {
 
         for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
-            docTypes.add(fileUtility
+            docTypes.add(documentManager
                     .getDocumentType(fileName)
                     .toString()
                     .toLowerCase());  // add a document type of each file to the list
-            filesEditable.add(fileUtility.getEditedExts()
-                    .contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
+            filesEditable.add(documentManager.isEditable(fileName));  // specify if a file is editable or not
             versions.add(" [" + storagePathBuilder.
                     getFileVersion(fileName, true) + "]");  // add a file version to the list
-            isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
+            isFillFormDoc.add(documentManager.isFillable(fileName));
         }
 
         // add all the parameters to the model
@@ -137,12 +136,34 @@ public class IndexController {
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
 
-        configuration.put("FillExtList", String.join(",", fileUtility
-                .getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility
-                .getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility
-                .getEditedExts()));  // put a list of the extensions that can be edited to config
+        List<String> fillExtList = documentManager.getFormats().stream()
+                .filter(format -> format.getActions().contains("fill"))
+                .map(format -> format.getName())
+                .collect(Collectors.toList());
+
+        List<String> converExtList = documentManager.getFormats().stream()
+                .filter(format -> format.getActions().contains("auto-convert"))
+                .map(format -> format.getName())
+                .collect(Collectors.toList());
+
+        List<String> editedExtList = documentManager.getFormats().stream()
+                .filter(format -> format.getActions().contains("edit"))
+                .map(format -> format.getName())
+                .collect(Collectors.toList());
+
+        for (Map.Entry<String, Boolean> lossyEditable : documentManager.getLossyEditableMap().entrySet()) {
+            if (lossyEditable.getValue()) {
+                editedExtList.add(lossyEditable.getKey());
+            }
+        }
+
+
+        // put a list of the extensions that can be filled to config
+        configuration.put("FillExtList", String.join(",", fillExtList));
+        // put a list of the extensions that can be converted to config
+        configuration.put("ConverExtList", String.join(",", converExtList));
+        // put a list of the extensions that can be edited to config
+        configuration.put("EditedExtList", String.join(",", editedExtList));
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 
