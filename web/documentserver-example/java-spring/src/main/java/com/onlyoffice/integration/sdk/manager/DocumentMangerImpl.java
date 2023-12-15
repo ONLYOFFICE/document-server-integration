@@ -71,13 +71,7 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
 
     @Override
     public String getDocumentName(final String fileId) {
-       File file = new File(storagePathBuilder.getFileLocation(fileId));
-
-       if (file.exists()) {
-           return file.getName();
-       }
-
-       return null;
+        return storagePathBuilder.getFileName(fileId);
     }
 
     @Override
