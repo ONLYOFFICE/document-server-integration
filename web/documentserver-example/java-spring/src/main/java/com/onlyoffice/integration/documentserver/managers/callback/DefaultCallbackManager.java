@@ -56,10 +56,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
     @Value("${files.docservice.url.site}")
     private String docserviceUrlSite;
-    @Value("${files.docservice.url.command}")
-    private String docserviceUrlCommand;
-    @Value("${files.docservice.header}")
-    private String documentJwtHeader;
 
     @Autowired
     private DocumentManager documentManager;

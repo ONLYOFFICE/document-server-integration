@@ -98,17 +98,11 @@ import java.util.Optional;
 @Controller
 public class FileController {
 
-    @Value("${files.docservice.header}")
-    private String documentJwtHeader;
-
     @Value("${filesize-max}")
     private String filesizeMax;
 
     @Value("${files.docservice.url.site}")
     private String docserviceUrlSite;
-
-    @Value("${files.docservice.url.command}")
-    private String docserviceUrlCommand;
 
     @Autowired
     private JwtManager jwtManager;
@@ -333,8 +327,7 @@ public class FileController {
         try {
             // check if a token is enabled or not
             if (settingsManager.isSecurityEnabled()) {
-                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
-                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                String header = request.getHeader(settingsManager.getSecurityHeader());
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
@@ -357,8 +350,7 @@ public class FileController {
         try {
             // check if a token is enabled or not
             if (settingsManager.isSecurityEnabled() && userAddress != null) {
-                String header = request.getHeader(documentJwtHeader == null // get the document JWT header
-                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+                String header = request.getHeader(settingsManager.getSecurityHeader());
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
