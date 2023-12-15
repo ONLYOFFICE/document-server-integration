@@ -259,6 +259,41 @@
             }
         }
 
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = <%= usersInfo %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = <%= usersForProtect %>;
+                    break;
+                default:
+                    users = <%= usersForMentions %>;
+            }
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -297,42 +332,11 @@
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))
             { %>
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case "info":
-                            users = [];
-                            var allUsers = <%= usersInfo %>;
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case "protect":
-                            var users = <%= usersForProtect %>;
-                            break;
-                        default:
-                            users = <%= usersForMentions %>;
-                    }
-                    docEditor.setUsers({
-                        "c": c,
-                        "users": users,
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
             <% } %>
 
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
