@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

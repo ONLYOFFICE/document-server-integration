@@ -26,7 +26,6 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.Reference;
-import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
@@ -45,6 +44,7 @@ import com.onlyoffice.model.commandservice.commandrequest.Meta;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
 import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
@@ -53,7 +53,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -97,12 +96,6 @@ import java.util.Optional;
 @CrossOrigin("*")
 @Controller
 public class FileController {
-
-    @Value("${filesize-max}")
-    private String filesizeMax;
-
-    @Value("${files.docservice.url.site}")
-    private String docserviceUrlSite;
 
     @Autowired
     private JwtManager jwtManager;
@@ -456,7 +449,7 @@ public class FileController {
             java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
             InputStream stream = connection.getInputStream();
 
-            if (Integer.parseInt(filesizeMax) < stream.available() || stream.available() <= 0) {
+            if (documentManager.getMaxFileSize() < stream.available() || stream.available() <= 0) {
                 return "{\"error\":\"File size is incorrect\"}";
             }
             storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
