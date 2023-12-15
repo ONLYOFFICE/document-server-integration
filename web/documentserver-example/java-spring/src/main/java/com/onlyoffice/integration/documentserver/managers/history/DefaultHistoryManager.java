@@ -21,7 +21,6 @@ package com.onlyoffice.integration.documentserver.managers.history;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.manager.security.JwtManager;
@@ -64,9 +63,6 @@ public class DefaultHistoryManager implements HistoryManager {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ServiceConverter serviceConverter;
-
-    @Autowired
     private SettingsManager settingsManager;
 
     @Autowired
@@ -91,7 +87,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 String key;
                 if (i == curVer) {
-                    key = serviceConverter
+                    key = documentManager
                             .generateRevisionId(storagePathBuilder.getStorageLocation()
                                     + "/" + fileName + "/"
                                     + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());
@@ -164,7 +160,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 String key;
                 if (i == curVer) {
-                    key = serviceConverter
+                    key = documentManager
                             .generateRevisionId(storagePathBuilder.getStorageLocation()
                                     + "/" + fileName + "/"
                                     + new File(storagePathBuilder.getFileLocation(fileName)).lastModified());

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
@@ -70,8 +69,6 @@ public class DefaultCallbackManager implements CallbackManager {
     private FileStoragePathBuilder storagePathBuilder;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private ServiceConverter serviceConverter;
     @Autowired
     private ConvertService convertService;
     @Autowired
@@ -148,7 +145,7 @@ public class DefaultCallbackManager implements CallbackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 ConvertRequest convertRequest = ConvertRequest.builder()
-                        .key(serviceConverter.generateRevisionId(downloadUri))
+                        .key(documentManager.generateRevisionId(downloadUri))
                         .url(downloadUri)
                         .outputtype(curExt)
                         .async(false)
@@ -239,7 +236,7 @@ public class DefaultCallbackManager implements CallbackManager {
         if (!curExt.equals(downloadExt)) {
             try {
                 ConvertRequest convertRequest = ConvertRequest.builder()
-                        .key(serviceConverter.generateRevisionId(downloadUri))
+                        .key(documentManager.generateRevisionId(downloadUri))
                         .url(downloadUri)
                         .outputtype(curExt)
                         .async(false)

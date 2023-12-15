@@ -33,7 +33,6 @@ import com.onlyoffice.integration.dto.SaveAs;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.security.JwtManager;
@@ -121,8 +120,6 @@ public class FileController {
     private UserServices userService;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private ServiceConverter serviceConverter;
     @Autowired
     private HistoryManager historyManager;
     @Autowired
@@ -568,7 +565,7 @@ public class FileController {
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("fileType", documentManager.getDocumentName(fileName));
-            data.put("key", serviceConverter.generateRevisionId(
+            data.put("key", documentManager.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/" + fileName + "/"
                 + new File(storagePathBuilder.getFileLocation(fileName)).lastModified()
@@ -623,7 +620,7 @@ public class FileController {
             Path bumpedKeyPathFile = Paths.get(bumpedVersionStringDirectory, "key.txt");
             String bumpedKeyStringFile = bumpedKeyPathFile.toString();
             File bumpedKeyFile = new File(bumpedKeyStringFile);
-            String bumpedKey = serviceConverter.generateRevisionId(
+            String bumpedKey = documentManager.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/"
                 + body.getFileName()
