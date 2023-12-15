@@ -23,6 +23,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,11 +62,8 @@ public class IndexController {
     @Autowired
     private DocumentManager documentManager;
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
-
-    @Value("${files.docservice.url.preloader}")
-    private String docservicePreloader;
+    @Autowired
+    private UrlManager urlManager;
 
     @Value("${url.converter}")
     private String urlConverter;
@@ -121,7 +119,7 @@ public class IndexController {
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
-        model.addAttribute("datadocs", docserviceSite + docservicePreloader);
+        model.addAttribute("datadocs", urlManager.getDocumentServerPreloaderApiUrl());
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);

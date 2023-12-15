@@ -26,6 +26,7 @@ import com.onlyoffice.integration.dto.Mentions;
 import com.onlyoffice.integration.dto.Protect;
 import com.onlyoffice.integration.dto.UserInfo;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.sdk.service.ConfigService;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.manager.security.JwtManager;
@@ -58,12 +59,6 @@ import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS
 @Controller
 public class EditorController {
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
-
-    @Value("${files.docservice.url.api}")
-    private String docserviceApiUrl;
-
     @Value("${files.docservice.languages}")
     private String langs;
 
@@ -84,6 +79,9 @@ public class EditorController {
 
     @Autowired
     private ConfigService configService;
+
+    @Autowired
+    private UrlManager urlManager;
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
@@ -143,7 +141,7 @@ public class EditorController {
         model.addAttribute("model", config);
 
         // create the document service api URL and add it to the model
-        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
+        model.addAttribute("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
 
         // get an image and add it to the model
         model.addAttribute("dataInsertImage",  getInsertImage(directUrl));

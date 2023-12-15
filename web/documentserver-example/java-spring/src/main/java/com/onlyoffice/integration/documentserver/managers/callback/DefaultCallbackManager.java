@@ -38,7 +38,6 @@ import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -53,9 +52,6 @@ import java.util.List;
 @Component
 @Primary
 public class DefaultCallbackManager implements CallbackManager {
-
-    @Value("${files.docservice.url.site}")
-    private String docserviceUrlSite;
 
     @Autowired
     private DocumentManager documentManager;
