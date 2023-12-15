@@ -26,9 +26,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_SIZE;
@@ -134,29 +131,6 @@ public class DefaultFileUtility implements FileUtility {
     // get all the supported file extensions
     public List<String> getFileExts() {
         return formatService.allExtensions();
-    }
-
-    // generate the file path from file directory and name
-    public Path generateFilepath(final String directory, final String fullFileName) {
-        int maxName = Integer.parseInt(filenameMax);
-        String fileName = getFileNameWithoutExtension(fullFileName);
-        if (fileName.length() > maxName) {
-            fileName = fileName.substring(0, maxName) + "[...]";
-        }
-        String fileExtension = getFileExtension(fullFileName);  // get file extension
-        // get the path to the files with the specified name
-        Path path = Paths.get(directory + fileName + "." + fileExtension);
-
-        for (int i = 1; Files.exists(path); i++) {  // run through all the files with the specified name
-            // get a name of each file without extension and add an index to it
-            fileName = fileName + "(" + i + ")";
-
-            // create a new path for this file with the correct name and extension
-            path = Paths.get(directory + fileName + "." + fileExtension);
-        }
-
-        path = Paths.get(directory + fileName + "." + fileExtension);
-        return path;
     }
 
     // get maximum file size

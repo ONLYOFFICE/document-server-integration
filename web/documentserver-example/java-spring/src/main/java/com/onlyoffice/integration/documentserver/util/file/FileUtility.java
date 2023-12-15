@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.util.file;
 
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
 
-import java.nio.file.Path;
 import java.util.List;
 
 // specify the file utility functions
@@ -35,7 +34,5 @@ public interface FileUtility {
     List<String> getViewedExts();  // get file extensions that can be viewed
     List<String> getEditedExts();  // get file extensions that can be edited
     List<String> getConvertExts();  // get file extensions that can be converted
-    Path generateFilepath(String directory, String fullFileName);  /* generate the file path
-     from file directory and name */
     long getMaxFileSize();  // get maximum file size
 }

@@ -18,7 +18,6 @@
 
 package com.onlyoffice.integration.documentserver.storage;
 
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.json.simple.JSONObject;
@@ -71,10 +70,10 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     private String historyPostfix;
 
     @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
     private HttpServletRequest request;
+
+    @Value("${filename-max}")
+    private String filenameMax;
 
     /*
         This Storage configuration method should be called whenever a new storage folder is required
@@ -90,6 +89,17 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         }
         this.storageAddress.replaceAll("[^0-9a-zA-Z.=]", "_");
         createDirectory(Paths.get(getStorageLocation()));
+    }
+
+    public String getFileName(final String url) {
+        if (url == null) {
+            return "";
+        }
+
+        // get file name from the last part of URL
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+        fileName = fileName.split("\\?")[0];
+        return fileName;
     }
 
     // get the storage directory
@@ -116,7 +126,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         if (fileName.contains(File.separator)) {
             return getStorageLocation() + fileName;
         }
-        return getStorageLocation() + fileUtility.getFileName(fileName);
+        return getStorageLocation() + getFileName(fileName);
     }
 
     // create a new directory if it does not exist
@@ -160,8 +170,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             return false;
         }
 
-        String filenameWithoutExt = fileUtility
-                .getFileNameWithoutExtension(fileName);  // get file name without extension
+        String filenameWithoutExt = getFileNameWithoutExtension(fileName);  // get file name without extension
 
         Path filePath = fileName.contains(File.separator)
                 ? Paths.get(fileName) : Paths.get(getFileLocation(fileName));  // get the path to the file
@@ -188,8 +197,8 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
         Path fileHistoryPath = Paths
                 .get(getStorageLocation() + getHistoryDir(fileName));  // get the path to the history file
-        Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + getHistoryDir(fileUtility
-                .getFileNameWithoutExtension(fileName)));  // get the path to the history file without extension
+        Path fileHistoryPathWithoutExt = Paths.get(getStorageLocation() + getHistoryDir(
+                getFileNameWithoutExtension(fileName)));  // get the path to the history file without extension
 
         /* delete the specified history file; for directories,
          recursively delete any nested directories or files as well */
@@ -204,8 +213,7 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
 
     // update a file
     public String updateFile(final String fileName, final byte[] bytes) {
-        Path path = fileUtility
-                .generateFilepath(getStorageLocation(), fileName);  // generate the path to the specified file
+        Path path = generateFilepath(getStorageLocation(), fileName);  // generate the path to the specified file
         try {
             Files.write(path, bytes);  // write new information in the bytes format to the file
             return path.getFileName().toString();
@@ -388,5 +396,45 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             e.printStackTrace();
             return 0;
         }
+    }
+
+    public Path generateFilepath(final String directory, final String fullFileName) {
+        int maxName = Integer.parseInt(filenameMax);
+        String fileName = getFileNameWithoutExtension(fullFileName);
+        if (fileName.length() > maxName) {
+            fileName = fileName.substring(0, maxName) + "[...]";
+        }
+        String fileExtension = getFileExtension(fullFileName);  // get file extension
+        // get the path to the files with the specified name
+        Path path = Paths.get(directory + fileName + "." + fileExtension);
+
+        for (int i = 1; Files.exists(path); i++) {  // run through all the files with the specified name
+            // get a name of each file without extension and add an index to it
+            fileName = fileName + "(" + i + ")";
+
+            // create a new path for this file with the correct name and extension
+            path = Paths.get(directory + fileName + "." + fileExtension);
+        }
+
+        path = Paths.get(directory + fileName + "." + fileExtension);
+        return path;
+    }
+
+    private String getFileNameWithoutExtension(final String url) {
+        String fileName = getFileName(url);
+        if (fileName == null) {
+            return null;
+        }
+        String fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+        return fileNameWithoutExt;
+    }
+
+    private String getFileExtension(final String url) {
+        String fileName = getFileName(url);
+        if (fileName == null) {
+            return null;
+        }
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
+        return fileExt.toLowerCase();
     }
 }
