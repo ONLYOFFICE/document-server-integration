@@ -332,10 +332,6 @@
                 'onRequestSelectDocument': onRequestSelectDocument,
                 'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
-                'onRequestRestore': onRequestRestore,
-                'onRequestHistoryData': onRequestHistoryData,
-                'onRequestHistory': onRequestHistory,
-                'onRequestHistoryClose': onRequestHistoryClose,
                 "onRequestOpen": onRequestOpen,
             };
 

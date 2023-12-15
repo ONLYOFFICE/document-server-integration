@@ -311,11 +311,7 @@
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestSelectDocument": onRequestSelectDocument,
-            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
-            "onRequestRestore": onRequestRestore,
-            "onRequestHistory": onRequestHistory,
-            "onRequestHistoryData": onRequestHistoryData,
-            "onRequestHistoryClose": onRequestHistoryClose
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet
         };
 
         if (config.editorConfig.user.id) {
@@ -329,6 +325,10 @@
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
             config.events['onRequestOpen'] = onRequestOpen;
+            config.events['onRequestRestore'] = onRequestRestore;
+            config.events['onRequestHistory'] = onRequestHistory;
+            config.events['onRequestHistoryData'] = onRequestHistoryData;
+            config.events['onRequestHistoryClose'] = onRequestHistoryClose;
         }
 
         if (config.editorConfig.createUrl) {
