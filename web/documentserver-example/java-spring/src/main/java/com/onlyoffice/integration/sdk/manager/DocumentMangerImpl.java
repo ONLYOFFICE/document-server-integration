@@ -20,7 +20,6 @@ package com.onlyoffice.integration.sdk.manager;
 
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.manager.document.DefaultDocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +47,6 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
     private FileStoragePathBuilder storagePathBuilder;
     @Autowired
     private FileStorageMutator storageMutator;
-    @Autowired
-    private ServiceConverter serviceConverter;
 
     public DocumentMangerImpl(final SettingsManager settingsManager) {
         super(settingsManager);
@@ -61,10 +58,7 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
                 + "/" + fileId + "/"
                 + new File(storagePathBuilder.getFileLocation(fileId)).lastModified();
 
-        String formatKey = expectedKey.length() > MAX_KEY_LENGTH
-                ? Integer.toString(expectedKey.hashCode()) : expectedKey;
-        String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
-        key = key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));
+        String key = generateRevisionId(expectedKey);
 
         return embedded ? key + "_embedded" : key;
     }
@@ -100,8 +94,7 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
         for (File file : storageMutator.getStoredFiles()) {
             Map<String, Object> map = new LinkedHashMap<>();  // write all the parameters to the map
             map.put("version", storagePathBuilder.getFileVersion(file.getName(), false));
-            map.put("id", serviceConverter
-                    .generateRevisionId(storagePathBuilder.getStorageLocation()
+            map.put("id", generateRevisionId(storagePathBuilder.getStorageLocation()
                             + "/" + file.getName() + "/"
                             + Paths.get(storagePathBuilder.getFileLocation(file.getName()))
                             .toFile()
@@ -162,5 +155,17 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
         storageMutator.createMeta(fileName, uid, uname);  // create meta information of the demo file
 
         return fileName;
+    }
+
+    // generate document key
+    @Override
+    public String generateRevisionId(final String expectedKey) {
+        /* if the expected key length is greater than 20
+        then he expected key is hashed and a fixed length value is stored in the string format */
+        String formatKey = expectedKey.length() > MAX_KEY_LENGTH
+                ? Integer.toString(expectedKey.hashCode()) : expectedKey;
+        String key = formatKey.replace("[^0-9-.a-zA-Z_=]", "_");
+
+        return key.substring(0, Math.min(key.length(), MAX_KEY_LENGTH));  // the resulting key length is 20 or less
     }
 }

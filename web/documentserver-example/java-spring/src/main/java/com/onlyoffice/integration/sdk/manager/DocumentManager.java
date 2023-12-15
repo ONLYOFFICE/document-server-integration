@@ -26,4 +26,5 @@ public interface DocumentManager extends com.onlyoffice.manager.document.Documen
     ArrayList<Map<String, Object>> getFilesInfo();
     ArrayList<Map<String, Object>> getFilesInfo(String fileId);
     String createDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception;
+    String generateRevisionId(String expectedKey);
 }
