@@ -23,6 +23,7 @@ import com.onlyoffice.integration.documentserver.managers.history.HistoryManager
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.commandrequest.Command;
@@ -69,6 +70,9 @@ public class DefaultCallbackManager implements CallbackManager {
     private CommandService commandService;
     @Autowired
     private HistoryManager historyManager;
+
+    @Autowired
+    private UrlManager urlManager;
 
     // download file from url
     @SneakyThrows
@@ -131,6 +135,9 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String curExt = documentManager.getExtension(fileName);  // get current file extension
         String downloadExt = callback.getFiletype(); // get an extension of the downloaded file
+
+        downloadUri = urlManager.replaceToInnerDocumentServerUrl(downloadUri);
+        changesUri = urlManager.replaceToInnerDocumentServerUrl(changesUri);
 
         // todo: Refactoring
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -221,6 +228,8 @@ public class DefaultCallbackManager implements CallbackManager {
         String curExt = documentManager.getExtension(fileName);  // get current file extension
         String downloadExt = callback.getFiletype();  // get an extension of the downloaded file
 
+        downloadUri = urlManager.replaceToInnerDocumentServerUrl(downloadUri);
+
         Boolean newFileName = false;
 
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -276,6 +285,8 @@ public class DefaultCallbackManager implements CallbackManager {
 
             try {
                 String formsDataUrl = callback.getFormsdataurl();
+
+                formsDataUrl = urlManager.replaceToInnerDocumentServerUrl(formsDataUrl);
 
                 if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
                     String formsName = documentManager.getCorrectName(documentManager

@@ -446,6 +446,8 @@ public class FileController {
 
             String url = body.getUrl();
 
+            url = urlManager.replaceToInnerDocumentServerUrl(url);
+
             return requestManager.executeGetRequest(url, new RequestManager.Callback<String>() {
                 @Override
                 public String doWork(final Object response) throws Exception {
