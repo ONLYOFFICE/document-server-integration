@@ -80,7 +80,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -441,22 +440,27 @@ public class FileController {
         try {
             String fileName = documentManager.getCorrectName(body.getTitle());
 
-            if (documentManager.getDocumentType(fileName) != null) {
+            if (documentManager.getDocumentType(fileName) == null) {
                 return "{\"error\":\"File type is not supported\"}";
             }
 
-            URL url = new URL(body.getUrl());
-            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-            InputStream stream = connection.getInputStream();
+            String url = body.getUrl();
 
-            if (documentManager.getMaxFileSize() < stream.available() || stream.available() <= 0) {
-                return "{\"error\":\"File size is incorrect\"}";
-            }
-            storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
-            createUserMetadata(uid, fileName);
+            return requestManager.executeGetRequest(url, new RequestManager.Callback<String>() {
+                @Override
+                public String doWork(final Object response) throws Exception {
+                    InputStream stream = ((HttpEntity) response).getContent();
 
-            return "{\"file\":  \"" + fileName + "\"}";
-        } catch (IOException e) {
+                    if (documentManager.getMaxFileSize() < stream.available() || stream.available() <= 0) {
+                        return "{\"error\":\"File size is incorrect\"}";
+                    }
+                    storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
+                    createUserMetadata(uid, fileName);
+
+                    return "{\"file\":  \"" + fileName + "\"}";
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
