@@ -261,10 +261,12 @@ final class DocEditorView extends View
                 config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
                 config.events['onRequestEditRights'] = onRequestEditRights;
-                config.events['onRequestRestore'] = onRequestRestore;
                 config.events['onRequestHistory'] = onRequestHistory;
-                config.events['onRequestHistoryData'] = onRequestHistoryData;
-                config.events['onRequestHistoryClose'] = onRequestHistoryClose;";
+                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+            if ($user->id != "uid-3") {
+                $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;";
+            }
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
