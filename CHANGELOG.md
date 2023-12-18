@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: filling pdf
 - version number to page meta
 - ar skin languages
 - sr-Latn-CS skin languages
