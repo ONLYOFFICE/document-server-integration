@@ -64,6 +64,8 @@ public final class Users {
         add("Can create new files from the editor");
         add("Can see the information about Group2 users");
         add("Can’t submit forms");
+        add("Can't close history");
+        add("Can't restore the file version");
     }};
 
     private static List<String> descriptionUserZero = new ArrayList<String>() {{

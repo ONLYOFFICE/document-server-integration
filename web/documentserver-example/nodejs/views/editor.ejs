@@ -373,13 +373,15 @@
             config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
-            config.events.onRequestHistoryClose = onRequestHistoryClose;
-            config.events.onRequestRestore = onRequestRestore;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
+            if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
+                config.events.onRequestHistoryClose = onRequestHistoryClose;
+                config.events.onRequestRestore = onRequestRestore;
+            }
         }
 
         if (config.editorConfig.createUrl) {

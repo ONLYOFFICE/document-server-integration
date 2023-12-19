@@ -325,10 +325,12 @@
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
             config.events['onRequestOpen'] = onRequestOpen;
-            config.events['onRequestRestore'] = onRequestRestore;
             config.events['onRequestHistory'] = onRequestHistory;
             config.events['onRequestHistoryData'] = onRequestHistoryData;
-            config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+            if (config.editorConfig.user.id != "uid-3") {
+                config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
         }
 
         if (config.editorConfig.createUrl) {

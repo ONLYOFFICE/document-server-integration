@@ -259,6 +259,13 @@
             }
         }
 
+        <% string usersForMentions; %>
+        <% Model.GetUsersMentions(Request, out usersForMentions); %>
+        <% string usersInfo; %>
+        <% Model.GetUsersInfo(Request, out usersInfo); %>
+        <% string usersForProtect; %>
+        <% Model.GetUsersProtect(Request, out usersForProtect); %>
+
         var onRequestUsers = function (event) {
             if (event && event.data){
                 var c = event.data.c;
@@ -311,23 +318,18 @@
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
         };
 
-        <% string usersForMentions; %>
-        <% Model.GetUsersMentions(Request, out usersForMentions); %>
-        <% string usersInfo; %>
-        <% Model.GetUsersInfo(Request, out usersInfo); %>
-        <% string usersForProtect; %>
-        <% Model.GetUsersProtect(Request, out usersForProtect); %>
-
         if (config.editorConfig.user.id) {
             // the user is trying to show the document version history
             config.events['onRequestHistory'] = onRequestHistory;
             // the user is trying to click the specific document version in the document version history
             config.events['onRequestHistoryData'] = onRequestHistoryData;
             // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            config.events['onRequestRestore'] = onRequestRestore;
+            if (config.editorConfig.user.id !== "uid-3") {
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))

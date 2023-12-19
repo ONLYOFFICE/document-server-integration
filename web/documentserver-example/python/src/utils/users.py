@@ -70,7 +70,9 @@ descr_user_3 = [
     "Can’t print the file",
     "Can create new files from the editor",
     "Can see the information about Group2 users",
-    "Can’t submit forms"
+    "Can’t submit forms",
+    "Can't close history",
+    "Can't restore the file version"
 ]
 
 descr_user_0 = [
