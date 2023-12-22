@@ -21,7 +21,7 @@ from typing import Optional
 
 class User:
     def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-                 deniedPermissions, descriptions, templates, avatar):
+                 deniedPermissions, descriptions, templates, avatar, goback):
         self.id = uid
         self.name = name
         self.email = email
@@ -34,6 +34,7 @@ class User:
         self.templates = templates
         self.userInfoGroups = userInfoGroups
         self.avatar = avatar
+        self.goback = goback
 
 
 descr_user_1 = [
@@ -92,7 +93,7 @@ descr_user_0 = [
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
          '', None, {}, None,
-         None, [], descr_user_1, True, True),
+         None, [], descr_user_1, True, True, {}),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
          'group-2', ['group-2', ''], {
              'view': "",
@@ -100,17 +101,18 @@ USERS = [
              'remove': ["group-2"]
          },
          ['group-2', ''],
-         True, [], descr_user_2, False, True),
+         True, [], descr_user_2, False, True, {'text': "Go to Documents"}),
     User('uid-3', 'Hamish Mitchell', None,
          'group-3', ['group-2'], {
              'view': ["group-3", "group-2"],
              'edit': ["group-2"],
              'remove': []
          }, ['group-2'],
-         False, ["copy", "download", "print"], descr_user_3, False, False),
+         False, ["copy", "download", "print"], descr_user_3, False, False,
+         {'blank': False}),
     User('uid-0', None, None,
          '', None, {}, [],
-         None, ["protect"], descr_user_0, False, False)
+         None, ["protect"], descr_user_0, False, False, None)
 ]
 
 DEFAULT_USER = USERS[0]
