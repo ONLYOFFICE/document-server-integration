@@ -122,6 +122,9 @@ class FileModel
         url: "#{create_url}&sample=true"
       }
     ]
+    unless @user.goback.nil?
+      @user.goback[:url] = DocumentHelper.get_server_url(false)
+    end
 
     config = {
       type:,
@@ -197,9 +200,7 @@ class FileModel
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
-          goback: {
-            url: DocumentHelper.get_server_url(false)
-          }
+          goback: @user.goback.nil? ? '' : @user.goback
         }
       }
     }
