@@ -34,5 +34,11 @@ public class DefaultCustomizationConfigurer implements CustomizationConfigurer<D
     public void configure(final Customization customization, final DefaultCustomizationWrapper wrapper) {
         Action action = wrapper.getAction();  // get the action parameter from the customization wrapper
         User user = wrapper.getUser();
+        if (user != null && user.getGoback() != null) {
+            customization.getGoback().setText(user.getGoback().getText());
+            customization.getGoback().setBlank(user.getGoback().getBlank());
+        } else {
+            customization.getGoback().setUrl("");
+        }
     }
 }
