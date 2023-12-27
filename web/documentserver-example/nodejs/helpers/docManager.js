@@ -621,6 +621,7 @@ DocManager.prototype.isExtendedPDFFile = function isExtendedPDFFile(fileName) {
   const fd = fileSystem.openSync(filePath, 'r');
 
   fileSystem.readSync(fd, buffer, 0, bufferSize);
+  fileSystem.closeSync(fd);
 
   const pBuffer = buffer.toString('latin1');
 
