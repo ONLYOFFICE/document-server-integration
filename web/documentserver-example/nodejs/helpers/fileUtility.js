@@ -20,6 +20,10 @@ const supportedFormats = require('../public/assets/document-formats/onlyoffice-d
 
 const fileUtility = {};
 
+fileUtility.getFormats = function getFormats() {
+  return supportedFormats;
+};
+
 // get file name from the given url
 fileUtility.getFileName = function getFileName(url, withoutExtension) {
   if (!url) return '';

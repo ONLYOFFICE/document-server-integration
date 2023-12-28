@@ -19,6 +19,15 @@
 var language;
 var userid;
 var directUrl;
+var Formats;
+
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            Formats = data;
+        })
+}
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();

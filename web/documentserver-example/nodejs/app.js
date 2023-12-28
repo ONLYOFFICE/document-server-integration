@@ -1150,6 +1150,17 @@ app.post('/historyObj', (req, res) => {
   res.end();
 });
 
+app.get('/formats', (req, res) => {
+  try {
+    const formats = fileUtility.getFormats();
+    res.json(formats);
+  } catch (ex) {
+    console.log(ex); // display error message in the console
+    res.status(500); // write status parameter to the response
+    res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
+});
+
 wopiApp.registerRoutes(app);
 
 // "Not found" error with 404 status
