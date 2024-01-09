@@ -20,6 +20,10 @@ const supportedFormats = require('../public/assets/document-formats/onlyoffice-d
 
 const fileUtility = {};
 
+fileUtility.getFormats = function getFormats() {
+  return supportedFormats;
+};
+
 // get file name from the given url
 fileUtility.getFileName = function getFileName(url, withoutExtension) {
   if (!url) return '';
@@ -54,10 +58,10 @@ fileUtility.getFileType = function getFileType(url) {
   const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
 
   for (let i = 0; i < supportedFormats.length; i++) {
-    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
+    if (supportedFormats[i].name === ext && supportedFormats[i].type !== '') return supportedFormats[i].type;
   }
 
-  return fileUtility.fileType.word; // the default file type is word
+  return null; // the default file type is null
 };
 
 fileUtility.fileType = {

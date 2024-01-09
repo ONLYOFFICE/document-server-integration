@@ -233,6 +233,41 @@
             }
         };
 
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = <%= UsersInfo %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = <%= UsersForProtect %>;
+                    break;
+                default:
+                    users = <%= UsersForMentions %>;
+            }
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -275,65 +310,36 @@
                     docEditor.setHistoryData(JSON.parse(xhr.responseText));  // send the link to the document for viewing the version history
                 }
             };
-            config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
-                document.location.reload();
-            };
-            config.events['onRequestRestore'] = function (event) {
-                var fileName = "<%= FileName %>";
-                var version = event.data.version;
-                var data = {
-                    fileName: fileName,
-                    version: version
+            if (config.editorConfig.user.id !== "uid-3") {
+                config.events['onRequestHistoryClose'] = function () {  // the user is trying to go back to the document from viewing the document version history
+                    document.location.reload();
                 };
+                config.events['onRequestRestore'] = function (event) {
+                    var fileName = "<%= FileName %>";
+                    var version = event.data.version;
+                    var data = {
+                        fileName: fileName,
+                        version: version
+                    };
 
-                let xhr = new XMLHttpRequest();
-                xhr.open("POST", "webeditor.ashx?type=restore&directUrl=" + !!config.document.directUrl);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.send(JSON.stringify(data));
-                xhr.onload = function () {
-                    docEditor.refreshHistory(JSON.parse(xhr.responseText));
-                }
-            };
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "webeditor.ashx?type=restore&directUrl=" + !!config.document.directUrl);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify(data));
+                    xhr.onload = function () {
+                        docEditor.refreshHistory(JSON.parse(xhr.responseText));
+                    }
+                };
+            }
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(UsersForMentions))
             { %>
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case "info":
-                            users = [];
-                            var allUsers = <%= UsersInfo %>;
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case "protect":
-                            var users = <%= UsersForProtect %>;
-                            break;
-                        default:
-                            users = <%= UsersForMentions %>;
-                    }
-                    docEditor.setUsers({
-                        "c": c,
-                        "users": users,
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
             <% } %>
 
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;

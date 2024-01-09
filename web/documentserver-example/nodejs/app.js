@@ -321,6 +321,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
+  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -368,20 +369,32 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
 
       // write a file with a new extension, but with the content from the origin file
-      fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
-      fileSystem.unlinkSync(req.DocManager.storagePath(fileName)); // remove file with the origin extension
+      if (fileUtility.getFileType(correctName) !== null) {
+        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
+      } else {
+        writeResult(newFileUri, result, 'FileTypeIsNotSupported');
+        return;
+      }
+      // remove file with the origin extension
+      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
+      if (!('fileExt' in req.body)) {
+        fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
-      fileSystem.renameSync(
-        path.join(correctHistoryPath, `${fileName}.txt`),
-        path.join(correctHistoryPath, `${correctName}.txt`),
-      ); // change the name of the .txt file with document information
+        fileSystem.renameSync(
+          path.join(correctHistoryPath, `${fileName}.txt`),
+          path.join(correctHistoryPath, `${correctName}.txt`),
+        ); // change the name of the .txt file with document information
+      } else if (newFileType !== null) {
+        const user = users.getUser(req.query.userid);
+
+        req.DocManager.saveFileData(correctName, user.id, user.name);
+      }
 
       writeResult(correctName, result, null); // write a file with a new name to the result object
     } catch (e) {
@@ -392,14 +405,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
   try {
     // check if the file with such an extension can be converted
-    if (fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) {
+    if ((fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) || ('fileExt' in req.body)) {
       const storagePath = req.DocManager.storagePath(fileName);
       const stat = fileSystem.statSync(storagePath);
       let key = fileUri + stat.mtime.getTime();
 
       key = documentService.generateRevisionId(key); // get document key
       // get the url to the converted file
-      documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass, lang);
+      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang);
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);
@@ -1152,6 +1165,17 @@ app.post('/historyObj', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.write(JSON.stringify(historyObj));
   res.end();
+});
+
+app.get('/formats', (req, res) => {
+  try {
+    const formats = fileUtility.getFormats();
+    res.json(formats);
+  } catch (ex) {
+    console.log(ex); // display error message in the console
+    res.status(500); // write status parameter to the response
+    res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
 });
 
 wopiApp.registerRoutes(app);

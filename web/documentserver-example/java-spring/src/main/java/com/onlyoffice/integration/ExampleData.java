@@ -93,7 +93,9 @@ public class ExampleData {
                 "Can create a file from an editor",
                 "Can see the information about Group2 users",
                 "Can view chat",
-                "Can’t submit forms"
+                "Can’t submit forms",
+                "Can't close history",
+                "Can't restore the file version"
         );
 
         // create user 1 with the specified parameters

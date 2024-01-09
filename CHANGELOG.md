@@ -1,6 +1,7 @@
 # Change Log
 
 - different goback for users
+- nodejs: converting function on index page
 - version number to page meta
 - sr-Latn-RS skin languages
 - getting history via api

@@ -349,9 +349,7 @@
         };
 
         var onDocumentReady = function(){
-            if (config.type === "mobile") {
-                document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
-            }
+            fixSize();
         };
 
         config = {
@@ -375,13 +373,15 @@
             config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
-            config.events.onRequestHistoryClose = onRequestHistoryClose;
-            config.events.onRequestRestore = onRequestRestore;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
+            if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
+                config.events.onRequestHistoryClose = onRequestHistoryClose;
+                config.events.onRequestRestore = onRequestRestore;
+            }
         }
 
         if (config.editorConfig.createUrl) {
@@ -405,6 +405,20 @@
             }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            fixSize();
+        };
+
+        // get the editor sizes
+        var fixSize = function () {
+            if (config.type !== "mobile") {
+                return;
+            }
+            var wrapEl = document.getElementsByClassName("form");
+            if (wrapEl.length) {
+                wrapEl[0].style.height = screen.availHeight + "px";
+                window.scrollTo(0, -1);
+                wrapEl[0].style.height = window.innerHeight + "px";
+            }
         };
 
         const getFileExt = function (fileName) {
@@ -416,8 +430,10 @@
 
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
+            window.addEventListener("resize", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
+            window.attachEvent("onresize", fixSize);
         }
 
     </script>

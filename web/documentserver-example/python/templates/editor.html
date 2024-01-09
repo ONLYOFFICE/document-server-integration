@@ -258,6 +258,43 @@
             document.location.reload();
         }
 
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "protect":
+                    var users = {{ usersForProtect | safe }};
+                    break;
+                case "info":
+                    users = [];
+                    var allUsers = {{ usersInfo | safe }};
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    users = {{ usersForMentions | safe }};
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         var connectEditor = function () {
 
             config = {{ cfg | safe }}
@@ -272,52 +309,15 @@
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestSelectDocument': onRequestSelectDocument,
-                "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
-                'onRequestRestore': onRequestRestore,
-                'onRequestHistory': onRequestHistory,
-                'onRequestHistoryData': onRequestHistoryData,
-                'onRequestHistoryClose': onRequestHistoryClose
+                "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet
             };
-
-
 
             if (config.editorConfig.user.id) {
 
                 // add mentions for not anonymous users
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case "info":
-                            users = [];
-                            var allUsers = {{ usersInfo | safe }};
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case "protect":
-                            var users = {{ usersForProtect | safe }};
-                            break;
-                        default:
-                            users = {{ usersForMentions | safe }};
-                    }
-                    docEditor.setUsers({
-                        "c": c,
-                        "users": users,
-                    })
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
                 // the user is mentioned in a comment
-                config.events['onRequestSendNotify'] = function (event) {
-                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                    var data = JSON.stringify(event.data);
-                    innerAlert("onRequestSendNotify: " + data);
-                };
+                config.events['onRequestSendNotify'] = onRequestSendNotify;
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
                 config.events['onRequestReferenceData'] = onRequestReferenceData;
@@ -325,6 +325,12 @@
                 // prevent switch the document from the viewing into the editing mode for anonymous users
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestOpen'] = onRequestOpen;
+                config.events['onRequestHistory'] = onRequestHistory;
+                config.events['onRequestHistoryData'] = onRequestHistoryData;
+                if (config.editorConfig.user.id != "uid-3") {
+                    config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                    config.events['onRequestRestore'] = onRequestRestore;
+                }
             }
 
             if (config.editorConfig.createUrl) {
