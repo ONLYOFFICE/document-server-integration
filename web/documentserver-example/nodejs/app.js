@@ -1009,6 +1009,10 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
     const submitForm = mode === 'fillForms' && userid === 'uid-1';
 
+    if (user.goback != null) {
+      user.goback.url = `${req.DocManager.getServerUrl()}`;
+    }
+
     // file config data
     const argss = {
       apiUrl: siteUrl + configServer.get('apiUrl'),
@@ -1042,7 +1046,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         print: !user.deniedPermissions.includes('print'),
         mode: mode !== 'view' ? 'edit' : 'view',
         canBackToFolder: type !== 'embedded',
-        backUrl: `${req.DocManager.getServerUrl()}/`,
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
@@ -1060,6 +1063,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
+        goback: user.goback != null ? user.goback : '',
       },
       dataInsertImage: {
         fileType: 'png',

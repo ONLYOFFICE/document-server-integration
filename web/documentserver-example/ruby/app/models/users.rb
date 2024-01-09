@@ -30,6 +30,7 @@ class User
   attr_accessor :descriptions
   attr_accessor :templates
   attr_accessor :avatar
+  attr_accessor :goback
 
   def initialize(
     id,
@@ -43,7 +44,8 @@ class User
     denied_permissions,
     descriptions,
     templates,
-    avatar
+    avatar,
+    goback
   )
     @id = id
     @name = name
@@ -57,6 +59,7 @@ class User
     @templates = templates
     @user_info_groups = user_info_groups
     @avatar = avatar
+    @goback = goback
   end
 end
 
@@ -130,7 +133,8 @@ class Users
       [],
       @descr_user_first,
       true,
-      true
+      true,
+      {}
     ),
     User.new(
       'uid-2',
@@ -148,7 +152,8 @@ class Users
       [],
       @descr_user_second,
       false,
-      true
+      true,
+      { text: 'Go to Documents' }
     ),
     User.new(
       'uid-3',
@@ -166,7 +171,8 @@ class Users
       ['copy', 'download', 'print'],
       @descr_user_third,
       false,
-      false
+      false,
+      { blank: false }
     ),
     User.new(
       'uid-0',
@@ -180,7 +186,8 @@ class Users
       ['protect'],
       @descr_user_null,
       false,
-      false
+      false,
+      nil
     )
   ]
 

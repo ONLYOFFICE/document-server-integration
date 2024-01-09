@@ -93,7 +93,8 @@ final class ExampleUsers
                 [],
                 $this->user1Description,
                 true,
-                true
+                true,
+                []
             ),
             new Users(
                 "uid-2",
@@ -111,7 +112,8 @@ final class ExampleUsers
                 [],
                 $this->user2Description,
                 false,
-                true
+                true,
+                ["text" => "Go to Documents",]
             ),
             new Users(
                 "uid-3",
@@ -129,7 +131,8 @@ final class ExampleUsers
                 ["copy", "download", "print"],
                 $this->user3Description,
                 false,
-                false
+                false,
+                ["blank" => false,]
             ),
             new Users(
                 "uid-0",
@@ -143,7 +146,8 @@ final class ExampleUsers
                 ["protect"],
                 $this->user0Description,
                 false,
-                false
+                false,
+                null
             ),
         ];
     }

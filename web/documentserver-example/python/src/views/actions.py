@@ -253,6 +253,8 @@ def edit(request):
             'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
     infObj['favorite'] = user.favorite
+    if user.goback is not None:
+        user.goback['url'] = docManager.getServerUrl(False, request)
     # specify the document config
     edConfig = {
         'type': edType,
@@ -322,11 +324,8 @@ def edit(request):
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
-                'goback': {  # settings for the Open file location menu button and upper right corner button
-                    # the absolute URL to the website address
-                    # which will be opened when clicking the Open file location menu button
-                    'url': docManager.getServerUrl(False, request)
-                }
+                # settings for the Open file location menu button and upper right corner button
+                'goback':  user.goback if user.goback is not None else '',
             }
         }
     }

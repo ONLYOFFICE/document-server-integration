@@ -30,6 +30,7 @@ class User {
     descriptions,
     templates,
     avatar,
+    goback,
   ) {
     this.id = id;
     this.name = name;
@@ -43,6 +44,7 @@ class User {
     this.descriptions = descriptions;
     this.templates = templates;
     this.avatar = avatar;
+    this.goback = goback;
   }
 }
 
@@ -101,7 +103,7 @@ const descrUser0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true),
+  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true, {}),
   new User(
     'uid-2',
     'Mark Pottato',
@@ -119,6 +121,7 @@ const users = [
     descrUser2,
     false,
     true,
+    { text: 'Go to Documents' },
   ),
   new User(
     'uid-3',
@@ -137,8 +140,9 @@ const users = [
     descrUser3,
     false,
     false,
+    { blank: false },
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null),
 ];
 
 // get a list of all the users

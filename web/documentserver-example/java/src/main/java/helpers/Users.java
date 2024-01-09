@@ -19,6 +19,7 @@
 package helpers;
 
 import entities.CommentGroups;
+import entities.Goback;
 import entities.User;
 
 import java.util.ArrayList;
@@ -87,19 +88,20 @@ public final class Users {
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
-                null, new ArrayList<String>(), descriptionUserFirst, true, true));
+                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback()));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
-                true, new ArrayList<String>(), descriptionUserSecond, false, true));
+                true, new ArrayList<String>(), descriptionUserSecond, false, true,
+                new Goback("Go to Documents", null)));
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
                 false, Arrays.asList("copy", "download", "print"),
-                descriptionUserThird, false, false));
+                descriptionUserThird, false, false, new Goback(null, false)));
         add(new User("uid-0", null, null,
                 "", null, null, null,
-                null, Arrays.asList("protect"), descriptionUserZero, false, false));
+                null, Arrays.asList("protect"), descriptionUserZero, false, false, null));
     }};
 
     private Users() { }
