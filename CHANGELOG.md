@@ -1,5 +1,6 @@
 # Change Log
 
+- different goback for users
 - version number to page meta
 - sr-Latn-RS skin languages
 - getting history via api
