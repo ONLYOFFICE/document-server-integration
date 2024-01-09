@@ -274,6 +274,33 @@ label .checkbox {
     opacity: 100%;
 }
 
+.button.forceConvert {
+    font-size: 11px;
+    color: #FFFFFF;
+    padding: 8px 8px;
+    margin-right: 10px;
+}
+
+.button.forceConvert.disable {
+    cursor: default;
+}
+
+.button.forceConvert.pale {
+    opacity: 30%;
+}
+
+.button.forceConvert.document {
+    background: #446995;
+}
+
+.button.forceConvert.spreadsheet {
+    background: #40865C;
+}
+
+.button.forceConvert.presentation {
+    background: #AA5252;
+}
+
 .upload-panel {
     float: left;
     padding: 24px 0;
@@ -891,4 +918,14 @@ html {
 
 .user-descr > b {
     margin-left: 25px;
+}
+
+.buttonsMobile.indent{
+    padding-left: 35px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
 }
