@@ -381,6 +381,10 @@ DocManager.prototype.getInternalExtension = function getInternalExtension(fileTy
     return '.pptx';
   }
 
+  if (fileType === fileUtility.fileType.pdf) { // .pptx for pdf type
+    return '.pdf';
+  }
+
   return '.docx'; // the default value is .docx
 };
 
@@ -604,6 +608,59 @@ DocManager.prototype.getFilesInfo = function getFilesInfo(fileId) {
     if (responseObject !== undefined) return responseObject;
     return 'File not found';
   } return responseArray;
+};
+
+DocManager.prototype.isExtendedPDFFile = function isExtendedPDFFile(fileName) {
+  let filePath = this.forcesavePath(fileName, null, false);
+  if (filePath === '') {
+    filePath = this.storagePath(fileName);
+  }
+
+  const bufferSize = 110;
+  const buffer = Buffer.alloc(bufferSize);
+  const fd = fileSystem.openSync(filePath, 'r');
+
+  fileSystem.readSync(fd, buffer, 0, bufferSize);
+  fileSystem.closeSync(fd);
+
+  const pBuffer = buffer.toString('latin1');
+
+  const indexFirst = pBuffer.indexOf('%\xCD\xCA\xD2\xA9\x0D');
+  if (indexFirst === -1) {
+    return false;
+  }
+
+  let pFirst = pBuffer.substring(indexFirst + 6);
+
+  if (!pFirst.startsWith('1 0 obj\x0A<<\x0A')) {
+    return false;
+  }
+
+  pFirst = pFirst.substring(11);
+
+  const indexStream = pFirst.indexOf('stream\x0D\x0A');
+  const indexMeta = pFirst.indexOf(configServer.get('gFormatOformPdfMetaTag'));
+
+  if (indexStream === -1 || indexMeta === -1 || indexStream < indexMeta) {
+    return false;
+  }
+
+  let pMeta = pFirst.substring(indexMeta);
+  pMeta = pMeta.substring(configServer.get('gFormatOformPdfMetaTag').length + 3);
+
+  let indexMetaLast = pMeta.indexOf(' ');
+  if (indexMetaLast === -1) {
+    return false;
+  }
+
+  pMeta = pMeta.substring(indexMetaLast + 1);
+
+  indexMetaLast = pMeta.indexOf(' ');
+  if (indexMetaLast === -1) {
+    return false;
+  }
+
+  return true;
 };
 
 DocManager.prototype.getInstanceId = function getInstanceId() {
