@@ -998,7 +998,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let submitForm = false;
     const ext = fileUtility.getFileExtension(fileName, true);
     let isForm = 'null';
-    if (mode === 'fillForms') {
+    if (!req.query.checkform && ext === 'pdf') {
       submitForm = userid === 'uid-1';
       isForm = req.DocManager.isExtendedPDFFile(fileName);
     }
