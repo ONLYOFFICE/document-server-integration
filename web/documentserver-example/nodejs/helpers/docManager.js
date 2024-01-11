@@ -381,10 +381,6 @@ DocManager.prototype.getInternalExtension = function getInternalExtension(fileTy
     return '.pptx';
   }
 
-  if (fileType === fileUtility.fileType.pdf) { // .pptx for pdf type
-    return '.pdf';
-  }
-
   return '.docx'; // the default value is .docx
 };
 

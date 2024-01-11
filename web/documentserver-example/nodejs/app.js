@@ -995,6 +995,12 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       mode = 'view';
     }
 
+    const ext = fileUtility.getFileExtension(fileName, true);
+    let isForm = 'null';
+    if (!req.query.checkform && ext === 'pdf') {
+      isForm = req.DocManager.isExtendedPDFFile(fileName);
+    }
+
     let submitForm = false;
     const ext = fileUtility.getFileExtension(fileName, true);
     let isForm = 'null';
