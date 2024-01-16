@@ -132,6 +132,8 @@ def saveAs(request):
         body = json.loads(request.body)
         saveAsFileUrl = body.get('url')
         title = body.get('title')
+        saveAsFileUrl = saveAsFileUrl.replace(config_manager.document_server_public_url().geturl(),
+                                              config_manager.document_server_private_url().geturl())
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
@@ -153,7 +155,7 @@ def saveAs(request):
         response.setdefault('file', filename)
     except Exception as e:
         response.setdefault('error', 1)
-        response.setdefault('message', e.args[0])
+        response.setdefault('message', str(e.args[0]))
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
