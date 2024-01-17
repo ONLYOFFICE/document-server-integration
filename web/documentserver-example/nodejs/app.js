@@ -936,18 +936,21 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
     const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
-    const templates = [
-      {
-        image: '',
-        title: 'Blank',
-        url: createUrl,
-      },
-      {
-        image: templatesImageUrl,
-        title: 'With sample content',
-        url: `${createUrl}&sample=true`,
-      },
-    ];
+    let templates = null;
+    if (createUrl != null) {
+      templates = [
+        {
+          image: '',
+          title: 'Blank',
+          url: createUrl,
+        },
+        {
+          image: templatesImageUrl,
+          title: 'With sample content',
+          url: `${createUrl}&sample=true`,
+        },
+      ];
+    }
 
     const userGroup = user.group;
     const { reviewGroups } = user;
