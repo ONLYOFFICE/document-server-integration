@@ -163,7 +163,8 @@ class ConfigurationManager
     public function languages(): array
     {
         return [
-            'en' => "English",
+            'en' => 'English',
+            'ar' => 'Arabic',
             'hy' => 'Armenian',
             'az' => 'Azerbaijani',
             'eu' => 'Basque',
