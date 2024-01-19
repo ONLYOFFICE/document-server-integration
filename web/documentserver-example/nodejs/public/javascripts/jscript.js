@@ -469,6 +469,22 @@ if (typeof jQuery != "undefined") {
         });
     });
 
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "file",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location = collectParams();
+                    }
+                }
+            });
+        }
+    });
+
     jq("#createSample").click(function () {
         jq(".try-editor").each(function () {
             var href = jq(this).attr("href");

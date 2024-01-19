@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: delete all files
 - nodejs: handling conversion -9 error
 - different goback for users
 - nodejs: converting function on index page

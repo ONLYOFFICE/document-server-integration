@@ -83,7 +83,8 @@
         margin-left: 0;
     }
 
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 90%;
     }
 
@@ -105,6 +106,10 @@
 
     .tableHeaderCellRemove {
         padding-left: 0px;
+    }
+
+    .storedHeaderClearAll {
+        padding-right: 48px;
     }
 }
 
@@ -179,7 +184,8 @@
 }
 
 @media (max-width: 715px) {
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 45%;
     }
 }
@@ -277,7 +283,8 @@
         padding-left: 0;
     }
 
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 75%;
     }
 
@@ -298,6 +305,10 @@
     .firstContentCellViewers {
         margin-left: 0;
     }
+
+    .storedHeaderClearAll {
+        padding-right: 18px;
+    }
 }
 
 @media (max-width: 890px) and (min-width: 769px ) {
@@ -312,7 +323,8 @@
         width: 580px;
     }
 
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 95%;
     }
 
@@ -348,6 +360,10 @@
         width: 19%;
         padding-right: 45px;
     }
+
+    .storedHeaderClearAll {
+        padding-right: 8px;
+    }
 }
 
 @media (max-width: 890px) {
@@ -372,6 +388,10 @@
 @media (max-width: 769px) {
     .tableRow td:first-child {
         max-width: 100%;
+    }
+
+    .storedHeaderClearAll {
+        padding-right: 0px;
     }
 }
 
@@ -431,7 +451,8 @@
         padding: 16px 0 6px;
     }
 
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 40%;
     }
 
@@ -571,7 +592,8 @@
 }
 
 @media (max-width: 510px)  and (min-width: 470px) {
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 35%;
     }
 
@@ -597,7 +619,8 @@
 }
 
 @media (max-width: 470px)  and (min-width: 420px) {
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 30%;
     }
     .tableRow td:first-child{
@@ -632,7 +655,8 @@
 }
 
 @media (max-width: 420px) and (min-width: 320px) {
-    .tableRow {
+    .tableRow,
+    .storedHeader {
         width: 25%;
     }
 
@@ -668,6 +692,10 @@
         padding-right: 2px;
         width: 11%;
     }
+
+    .header-list {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 1160px) {
@@ -682,7 +710,8 @@
     }
 }
 @media (max-width: 769px) and (min-width: 715px){
-    .tableRow{
+    .tableRow,
+    .storedHeader {
         width: 50%;
     }
 }
