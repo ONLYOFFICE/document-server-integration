@@ -214,7 +214,11 @@ DocManager.prototype.getCallback = function getCallback(fileName) {
 // get url to the created file
 DocManager.prototype.getCreateUrl = function getCreateUrl(docType, userid, type, lang) {
   const server = this.getServerUrl();
-  const ext = this.getInternalExtension(docType).replace('.', '');
+  let ext = this.getInternalExtension(docType);
+  if (ext === null) {
+    return null;
+  }
+  ext = ext.replace('.', '');
   const handler = `/editor?fileExt=${ext}&userid=${userid}&type=${type}&lang=${lang}`;
 
   return server + handler;
@@ -381,7 +385,7 @@ DocManager.prototype.getInternalExtension = function getInternalExtension(fileTy
     return '.pptx';
   }
 
-  return '.docx'; // the default value is .docx
+  return null; // the default value is null
 };
 
 // get the template image url
