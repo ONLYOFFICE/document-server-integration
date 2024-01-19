@@ -4,6 +4,7 @@
 - different goback for users
 - nodejs: converting function on index page
 - version number to page meta
+- ar skin languages
 - sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats

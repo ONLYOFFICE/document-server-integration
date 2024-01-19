@@ -142,6 +142,7 @@ class ConfigurationManager
   def languages
     {
       en: 'English',
+      ar: 'Arabic',
       hy: 'Armenian',
       az: 'Azerbaijani',
       eu: 'Basque',
