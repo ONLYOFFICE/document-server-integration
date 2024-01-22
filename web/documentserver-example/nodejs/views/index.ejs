@@ -106,10 +106,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <div class="links-panel links-panel-border clearFix">
-                                    <a href="wopi" class="">Go to WOPI page</a>
-                                </div>
                             </div>
                         </div>
                     </td>
@@ -137,6 +133,13 @@
                             <%if (storedFiles.length > 0)
                                 {%>
                                 <div class="stored-list">
+                                    <div class="links-panel">
+                                        <a href="./" class="links-panel-current">
+                                            <img src="images/home.svg" alt="Home" class="links-panel-home"/>
+                                        </a>
+                                        <a href="wopi">Wopi</a>
+                                        <a href="wopi">Forgotten files</a>
+                                    </div>
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
                                             <span class="header-list">Your documents</span>
