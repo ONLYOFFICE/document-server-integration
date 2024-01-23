@@ -200,7 +200,7 @@ if (typeof jQuery != "undefined") {
 
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf('.');
-        posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
+        posExt = 0 <= posExt ? fileName.substring(posExt + 1).trim().toLowerCase() : '';
 
         if (EditedExtList.indexOf(posExt) != -1 || FillFormsExtList.indexOf(posExt) != -1) {
             jq("#beginEdit").removeClass("disable");
