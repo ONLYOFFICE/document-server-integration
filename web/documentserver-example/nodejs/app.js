@@ -936,18 +936,21 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
     const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
-    const templates = [
-      {
-        image: '',
-        title: 'Blank',
-        url: createUrl,
-      },
-      {
-        image: templatesImageUrl,
-        title: 'With sample content',
-        url: `${createUrl}&sample=true`,
-      },
-    ];
+    let templates = null;
+    if (createUrl != null) {
+      templates = [
+        {
+          image: '',
+          title: 'Blank',
+          url: createUrl,
+        },
+        {
+          image: templatesImageUrl,
+          title: 'With sample content',
+          url: `${createUrl}&sample=true`,
+        },
+      ];
+    }
 
     const userGroup = user.group;
     const { reviewGroups } = user;
@@ -994,7 +997,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (!canEdit && mode === 'edit') {
       mode = 'view';
     }
-    const submitForm = mode === 'fillForms' && userid === 'uid-1';
+
+    let submitForm = false;
+    if (mode === 'fillForms') {
+      submitForm = userid === 'uid-1';
+    }
 
     // file config data
     const argss = {
