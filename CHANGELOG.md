@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf
 - version number to page meta
