@@ -68,6 +68,7 @@ fileUtility.fileType = {
   word: 'word',
   cell: 'cell',
   slide: 'slide',
+  pdf: 'pdf',
 };
 
 fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
