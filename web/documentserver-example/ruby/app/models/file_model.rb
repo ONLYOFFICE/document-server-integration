@@ -356,14 +356,14 @@ class FileModel
     # direct url to the image
     insert_image = if enable_direct_url? == true
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
-                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg", # server url to the image
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.svg" # direct url to the image
                      }
                    else
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg" # server url to the image
                      }
                    end
 

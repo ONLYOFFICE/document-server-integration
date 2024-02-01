@@ -291,20 +291,20 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             // create a logo config
             var logoConfig = new Dictionary<string, object>
             {
-                { "fileType", "png"},
+                { "fileType", "svg"},
                 { "url", mailMergeUrl.ToString()}
             };
 

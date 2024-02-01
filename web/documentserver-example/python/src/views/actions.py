@@ -334,12 +334,12 @@ def edit(request):
 
     # an image which will be inserted into the document
     dataInsertImage = {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.svg'
     } if isEnableDirectUrl else {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg'
     }
 
     # a document which will be compared with the current document

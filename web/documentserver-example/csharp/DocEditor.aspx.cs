@@ -340,17 +340,17 @@ namespace OnlineEditorsExample
             var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
             InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             var DirectImageUrl = new UriBuilder(_Default.GetServerUrl(false));
             DirectImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             // create a logo config
             Dictionary<string, object> logoConfig = new Dictionary<string, object>
                 {
-                    { "fileType", "png"},
+                    { "fileType", "svg"},
                     { "url", InsertImageUrl.ToString()}
                 };
 

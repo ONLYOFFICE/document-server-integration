@@ -1074,9 +1074,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         goback: user.goback != null ? user.goback : '',
       },
       dataInsertImage: {
-        fileType: 'png',
-        url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
+        fileType: 'svg',
+        url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
       },
       dataDocument: {
         fileType: 'docx',
