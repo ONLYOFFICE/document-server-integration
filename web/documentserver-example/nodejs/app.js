@@ -922,14 +922,25 @@ app.get('/editor', (req, res) => { // define a handler for editing document
   try {
     req.DocManager = new DocManager(req, res);
 
-    const fileName = fileUtility.getFileName(req.query.fileName);
     let { fileExt } = req.query;
-    const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
-    const userDirectUrl = req.query.directUrl === 'true';
-
     const userid = user.id;
     const { name } = user;
+
+    if (fileExt) {
+      // create demo document of a given extension
+      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
+
+      // get the redirect path
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
+      res.redirect(redirectPath);
+      return;
+    }
+
+    const fileName = fileUtility.getFileName(req.query.fileName);
+    const lang = req.DocManager.getLang();
+    const userDirectUrl = req.query.directUrl === 'true';
 
     let actionData = 'null';
     if (req.query.action) {
@@ -980,16 +991,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       }, usersInfo);
     }
 
-    if (fileExt) {
-      // create demo document of a given extension
-      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
-
-      // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
-      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
-      res.redirect(redirectPath);
-      return;
-    }
     fileExt = fileUtility.getFileExtension(fileName);
 
     const userAddress = req.DocManager.curUserHostAddress();
