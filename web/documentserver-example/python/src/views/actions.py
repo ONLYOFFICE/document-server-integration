@@ -563,7 +563,7 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
-    link = body['link']
+    link = body.get('link', None)
     if not fileName and link:
         if docManager.getServerUrl(False, request) not in link:
             data = {
