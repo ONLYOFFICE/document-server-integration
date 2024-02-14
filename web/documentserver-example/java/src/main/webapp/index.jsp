@@ -69,7 +69,7 @@
                                                 <a class="try-editor slide" data-type="pptx">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">Form template</a>
+                                                <a class="try-editor form" data-type="docxf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="create-sample">
