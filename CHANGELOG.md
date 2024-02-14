@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: delete all files
 - change insert image
 - nodejs: handling conversion -9 error
 - different goback for users
