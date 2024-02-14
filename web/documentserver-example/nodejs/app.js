@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -922,14 +922,25 @@ app.get('/editor', (req, res) => { // define a handler for editing document
   try {
     req.DocManager = new DocManager(req, res);
 
-    const fileName = fileUtility.getFileName(req.query.fileName);
     let { fileExt } = req.query;
-    const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
-    const userDirectUrl = req.query.directUrl === 'true';
-
     const userid = user.id;
     const { name } = user;
+
+    if (fileExt) {
+      // create demo document of a given extension
+      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
+
+      // get the redirect path
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
+      res.redirect(redirectPath);
+      return;
+    }
+
+    const fileName = fileUtility.getFileName(req.query.fileName);
+    const lang = req.DocManager.getLang();
+    const userDirectUrl = req.query.directUrl === 'true';
 
     let actionData = 'null';
     if (req.query.action) {
@@ -950,18 +961,21 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
     const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
-    const templates = [
-      {
-        image: '',
-        title: 'Blank',
-        url: createUrl,
-      },
-      {
-        image: templatesImageUrl,
-        title: 'With sample content',
-        url: `${createUrl}&sample=true`,
-      },
-    ];
+    let templates = null;
+    if (createUrl != null) {
+      templates = [
+        {
+          image: '',
+          title: 'Blank',
+          url: createUrl,
+        },
+        {
+          image: templatesImageUrl,
+          title: 'With sample content',
+          url: `${createUrl}&sample=true`,
+        },
+      ];
+    }
 
     const userGroup = user.group;
     const { reviewGroups } = user;
@@ -977,16 +991,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       }, usersInfo);
     }
 
-    if (fileExt) {
-      // create demo document of a given extension
-      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
-
-      // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
-      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
-      res.redirect(redirectPath);
-      return;
-    }
     fileExt = fileUtility.getFileExtension(fileName);
 
     const userAddress = req.DocManager.curUserHostAddress();
@@ -1008,7 +1012,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (!canEdit && mode === 'edit') {
       mode = 'view';
     }
-    const submitForm = mode === 'fillForms' && userid === 'uid-1';
+
+    let submitForm = false;
+    if (mode === 'fillForms') {
+      submitForm = userid === 'uid-1';
+    }
 
     if (user.goback != null) {
       user.goback.url = `${req.DocManager.getServerUrl()}`;
@@ -1067,9 +1075,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         goback: user.goback != null ? user.goback : '',
       },
       dataInsertImage: {
-        fileType: 'png',
-        url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
+        fileType: 'svg',
+        url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
       },
       dataDocument: {
         fileType: 'docx',

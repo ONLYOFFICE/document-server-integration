@@ -310,7 +310,7 @@
         var onRequestSendNotify = function (event) {
             event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
             var data = JSON.stringify(event.data);
-            innerAlert(\"onRequestSendNotify: \" + data);
+            innerAlert("onRequestSendNotify: " + data);
         };
 
         var сonnectEditor = function () {

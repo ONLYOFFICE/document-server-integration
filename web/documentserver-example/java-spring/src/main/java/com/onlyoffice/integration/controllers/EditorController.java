@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,11 +212,11 @@ public class EditorController {
     @SneakyThrows
     private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg");
         if (directUrl) {
             dataInsertImage.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/css/img/logo.png");
+                    .getServerUrl(false) + "/css/img/logo.svg");
         }
 
         // check if the document token is enabled

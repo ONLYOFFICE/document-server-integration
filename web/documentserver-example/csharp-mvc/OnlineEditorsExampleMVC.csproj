@@ -145,7 +145,6 @@
     <Content Include="Content\images\icon_xlsx.svg" />
     <Content Include="Content\images\info.svg" />
     <Content Include="Content\images\loader16.gif" />
-    <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\logo.svg" />
     <Content Include="Content\images\mobile-fill-forms.svg" />
     <Content Include="Content\images\mobile.svg" />

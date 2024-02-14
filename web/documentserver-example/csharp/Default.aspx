@@ -17,7 +17,7 @@
     <title>ONLYOFFICE</title>
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">Form template</a>
+                                                <a class="try-editor form" data-type="docxf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="side-option">

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ exports.registerRoutes = function registerRoutes(app) {
     const docsExtEdit = []; // Supported extensions for WOPI
 
     actions.forEach((el) => {
-      if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
+      if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
     });
 
     // Checking supported extensions

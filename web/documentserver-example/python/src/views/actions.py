@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -334,12 +334,12 @@ def edit(request):
 
     # an image which will be inserted into the document
     dataInsertImage = {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.svg'
     } if isEnableDirectUrl else {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg'
     }
 
     # a document which will be compared with the current document
@@ -563,7 +563,7 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
-    link = body['link']
+    link = body.get('link', None)
     if not fileName and link:
         if docManager.getServerUrl(False, request) not in link:
             data = {

@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,12 +192,12 @@ final class DocEditorView extends View
 
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
-            "directUrl" => serverPath(false) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
+            "directUrl" => serverPath(false) . "/assets/images/logo.svg",
         ] : [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
         ];
 
         // a document for comparing
