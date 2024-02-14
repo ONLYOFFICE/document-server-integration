@@ -53,7 +53,7 @@ exports.registerRoutes = function registerRoutes(app) {
     const docsExtEdit = []; // Supported extensions for WOPI
 
     actions.forEach((el) => {
-      if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
+      if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
     });
 
     // Checking supported extensions
