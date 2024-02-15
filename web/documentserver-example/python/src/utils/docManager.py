@@ -74,7 +74,7 @@ def getInternalExtension(fileType):
 
 # get image url for templates
 def getTemplateImageUrl(fileType, request):
-    path = getServerUrl(True, request) + '/static/images/'
+    path = getServerUrl(False, request) + '/static/images/'
     mapping = {
         'word': path + 'file_docx.svg',
         'cell': path + 'file_xlsx.svg',
