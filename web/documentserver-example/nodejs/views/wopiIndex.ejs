@@ -105,6 +105,12 @@
                             <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                             <% if (!wopiEnable)
                                { %>
+                                <div class="links-panel">
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home" class="links-panel-home"/>
+                                    </a>
+                                    <a href="wopi" class="links-panel-current">Wopi</a>
+                                </div>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
                                     Before you get started with a demo sample of ONLYOFFICE Docs, please enable the WOPI protocol.
@@ -126,11 +132,10 @@
                             { %>
                                 <div class="stored-list">
                                     <div class="links-panel">
-                                        <a href="./" class="links-panel-current">
+                                        <a href="./">
                                             <img src="images/home.svg" alt="Home" class="links-panel-home"/>
                                         </a>
-                                        <a href="wopi">Wopi</a>
-                                        <a href="wopi">Forgotten files</a>
+                                        <a href="wopi" class="links-panel-current">Wopi</a>
                                     </div>
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
@@ -140,7 +145,6 @@
                                             <div class="clear-all">Clear all</div>
                                         </div>
                                     </div>
-                                    <span class="header-list">Your documents</span>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                         <thead>
                                         <tr>
