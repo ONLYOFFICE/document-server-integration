@@ -3,7 +3,7 @@ version: "3.8"
 services:
   document-server:
     container_name: document-server
-    image: onlyoffice/documentserver:7.5
+    image: onlyoffice/documentserver:8.0
     expose:
       - "80"
     environment:
