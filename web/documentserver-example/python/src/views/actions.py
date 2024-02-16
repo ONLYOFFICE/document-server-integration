@@ -238,7 +238,7 @@ def edit(request):
     if user.id != 'uid-0':
         for userInfo in users.getAllUsers():
             u = userInfo
-            u.image = docManager.getServerUrl(True, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
+            u.image = docManager.getServerUrl(False, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
             usersInfo.append({"id": u.id, "name": u.name, "email": u.email, "image": u.image, "group": u.group,
                               "reviewGroups": u.reviewGroups, "commentGroups": u.commentGroups, "favorite": u.favorite,
                               "deniedPermissions": u.deniedPermissions, "descriptions": u.descriptions,
@@ -309,7 +309,7 @@ def edit(request):
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
                 'group': user.group,
-                'image': docManager.getServerUrl(True, request) + f'/static/images/{user.id}.jpg' if user.avatar
+                'image': docManager.getServerUrl(False, request) + f'/static/images/{user.id}.jpg' if user.avatar
                 else None
             },
             'embedded': {  # the parameters for the embedded document type
