@@ -269,6 +269,13 @@ app.post('/create', (req, res) => {
   const fileUrl = req.body.url;
 
   try {
+    if (urlModule.parse(fileUrl).host !== urlModule.parse(siteUrl).host) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ error: 'File domain is incorrect' }));
+      res.end();
+      return;
+    }
+
     req.DocManager = new DocManager(req, res);
     req.DocManager.storagePath(''); // mkdir if not exist
 
