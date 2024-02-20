@@ -158,7 +158,7 @@ function getTemplateImageUrl($filename)
 {
     $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $path = serverPath(true) . "/assets/images/";
+    $path = serverPath(false) . "/assets/images/";
 
     foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {

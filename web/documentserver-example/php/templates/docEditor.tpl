@@ -297,7 +297,7 @@
                 'onRequestRestore': onRequestRestore,
                 'onRequestHistoryData': onRequestHistoryData,
                 'onRequestHistory': onRequestHistory,
-                'onRequestHistoryClose': onRequestHistoryClose
+                'onRequestHistoryClose': onRequestHistoryClose,
                 "onRequestOpen": onRequestOpen,
             };
 
