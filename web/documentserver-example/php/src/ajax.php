@@ -537,7 +537,7 @@ function reference()
         }
     }
 
-    $link = $post["link"];
+    $link = $post["link"] ?? null;
     if (!isset($filename) && isset($link)) {
         if (strpos($link, serverPath()) === false) {
             return ["url" => $link, "directUrl"=> $link];
