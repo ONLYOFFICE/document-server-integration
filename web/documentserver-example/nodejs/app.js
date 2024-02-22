@@ -974,6 +974,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     if (fileExt) {
+      fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
       // create demo document of a given extension
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
