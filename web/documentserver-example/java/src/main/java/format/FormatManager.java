@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class FormatManager {
@@ -93,6 +94,7 @@ public final class FormatManager {
     private List<Format> all()  {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
             Path path = this.file();
             return objectMapper.readValue(Files.readAllBytes(path), new TypeReference<List<Format>>() { });
         } catch (Exception e) {
