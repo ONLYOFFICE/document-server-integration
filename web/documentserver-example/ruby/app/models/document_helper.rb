@@ -269,7 +269,7 @@ class DocumentHelper
 
   # get image url for templates
   def self.get_template_image_url(file_type)
-    path = "#{get_server_url(true)}/assets/"
+    path = "#{get_server_url(false)}/assets/"
     case file_type
     when 'word'  # for word type
       "#{path}file_docx.svg"
