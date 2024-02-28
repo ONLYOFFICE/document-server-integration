@@ -269,14 +269,19 @@ app.post('/create', (req, res) => {
   const fileUrl = req.body.url;
 
   try {
-    if (urlModule.parse(fileUrl).host !== urlModule.parse(siteUrl).host) {
+    req.DocManager = new DocManager(req, res);
+
+    let host = siteUrl;
+    if (host.indexOf('/') === 0) {
+      host = req.DocManager.getServerHost();
+    }
+    if (urlModule.parse(fileUrl).host !== urlModule.parse(host).host) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write(JSON.stringify({ error: 'File domain is incorrect' }));
       res.end();
       return;
     }
 
-    req.DocManager = new DocManager(req, res);
     req.DocManager.storagePath(''); // mkdir if not exist
 
     const fileName = req.DocManager.getCorrectName(title);
