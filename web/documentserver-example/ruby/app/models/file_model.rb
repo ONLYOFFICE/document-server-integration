@@ -183,7 +183,7 @@ class FileModel
           id: @user.id.eql?('uid-0') ? nil : @user.id,
           name: @user.name,
           group: @user.group,
-          image: @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
+          image: @user.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{@user.id}.png" : nil
         },
         embedded: { # the parameters for the embedded document type
           # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -457,7 +457,7 @@ class FileModel
         templates: user_info.templates,
         avatar: user_info.avatar
       }
-      u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
+      u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{user_info.id}.png" : nil
       users_info.push(u)
     end
     users_info
