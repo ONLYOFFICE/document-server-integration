@@ -27,57 +27,67 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function requestDiscovery(url) {
+const requestDiscovery = async function requestDiscovery() {
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
+    const uri = siteUrl + configServer.get('wopi.discovery');
     const actions = [];
-    urllib.request(urlModule.parse(url + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
-      if (data) {
-        // create the discovery XML file with the parameters from the response
-        const xmlParseOptions = {
-          attributeNamePrefix: '',
-          ignoreAttributes: false,
-          parseAttributeValue: true,
-          attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
-        };
-        const parser = new xmlParser.XMLParser(xmlParseOptions);
-        // create the discovery XML file with the parameters from the response
-        const discovery = parser.parse(data.toString());
-        if (discovery['wopi-discovery']) {
-          discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
-            let appAction = app.action;
-            if (!Array.isArray(appAction)) {
-              appAction = [appAction];
-            }
-            appAction.forEach((action) => {
-              actions.push({ // write all the parameters to the actions element
-                app: app.name,
-                favIconUrl: app.favIconUrl,
-                checkLicense: app.checkLicense === 'true',
-                name: action.name,
-                ext: action.ext || '',
-                progid: action.progid || '',
-                isDefault: !!action.default,
-                urlsrc: action.urlsrc,
-                requires: action.requires || '',
+
+    // parse url to allow request by relative url after
+    // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(
+      urlModule.parse(uri),
+      {
+        method: 'GET',
+      },
+      (err, data) => {
+        if (data) {
+          // create the discovery XML file with the parameters from the response
+          const xmlParseOptions = {
+            attributeNamePrefix: '',
+            ignoreAttributes: false,
+            parseAttributeValue: true,
+            attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+          };
+          const parser = new xmlParser.XMLParser(xmlParseOptions);
+          // create the discovery XML file with the parameters from the response
+          const discovery = parser.parse(data.toString());
+          if (discovery['wopi-discovery']) {
+            discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
+              let appAction = app.action;
+              if (!Array.isArray(appAction)) {
+                appAction = [appAction];
+              }
+              appAction.forEach((action) => {
+                actions.push({ // write all the parameters to the actions element
+                  app: app.name,
+                  favIconUrl: app.favIconUrl,
+                  checkLicense: app.checkLicense === 'true',
+                  name: action.name,
+                  ext: action.ext || '',
+                  progid: action.progid || '',
+                  isDefault: !!action.default,
+                  urlsrc: action.urlsrc,
+                  requires: action.requires || '',
+                });
               });
             });
-          });
+          }
         }
-      }
-      resolve(actions);
-    });
+        resolve(actions);
+      },
+    );
   });
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo(url) {
+const getDiscoveryInfo = async function getDiscoveryInfo() {
   let actions = [];
 
   if (cache) return cache;
 
   try {
-    actions = await requestDiscovery(url);
+    actions = await requestDiscovery();
   } catch (e) {
     return actions;
   }
@@ -89,16 +99,6 @@ const getDiscoveryInfo = async function getDiscoveryInfo(url) {
   }, 1000 * 60 * 60); // 1 hour
 
   return actions;
-};
-
-const initWopi = async function initWopi(DocManager) {
-  let absSiteUrl = siteUrl;
-  if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = DocManager.getServerHost() + siteUrl;
-  }
-
-  // get the wopi discovery information
-  await getDiscoveryInfo(absSiteUrl);
 };
 
 // get actions of the specified extension
@@ -149,7 +149,6 @@ const getActionUrl = function getActionUrl(host, userAddress, action, filename) 
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
-exports.initWopi = initWopi;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;

@@ -45,8 +45,6 @@ exports.registerRoutes = function registerRoutes(app) {
   app.get('/wopi', async (req, res) => {
     req.DocManager = new DocManager(req, res);
 
-    await utils.initWopi(req.DocManager);
-
     // get the wopi discovery information
     const actions = await utils.getDiscoveryInfo();
     const wopiEnable = actions.length !== 0;
@@ -110,8 +108,6 @@ exports.registerRoutes = function registerRoutes(app) {
   app.get('/wopi-action/:id', async (req, res) => {
     try {
       req.DocManager = new DocManager(req, res);
-
-      await utils.initWopi(req.DocManager);
 
       let fileName = req.DocManager.getCorrectName(req.params.id);
       const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
