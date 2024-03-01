@@ -76,7 +76,7 @@ function routers()
     }
     if (str_starts_with($path, '/convert')) {
         $response = convert();
-        $response['status'] = 'success';
+        $response['status'] = isset($response['error']) ? 'error' : 'success';
         echo json_encode($response);
         return;
     }

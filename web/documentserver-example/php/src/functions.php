@@ -553,6 +553,9 @@ function processConvServResponceError($errorCode)
 
     // add the error message to the error message template depending on the error code
     switch ($errorCode) {
+        case -9:
+            $errorMessage = $errorMessageTemplate . "Error conversion output format";
+            break;
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;
