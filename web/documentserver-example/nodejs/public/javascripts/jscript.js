@@ -227,7 +227,7 @@ if (typeof jQuery != "undefined") {
         const currentElement = jq(this);
         var fileType = currentElement.attr("data");
         var filePass = jq("#hiddenFileName").attr("placeholder");
-        jq("div[id='forceConvert']").addClass("disable, pale");
+        jq("div[id='forceConvert']").addClass(["disable", "pale"]);
         currentElement.removeClass("pale");
         checkConvert(filePass, fileType);
     });
