@@ -274,30 +274,30 @@ label .checkbox {
     opacity: 100%;
 }
 
-.button.forceConvert {
+.button.file-type {
     font-size: 11px;
     color: #FFFFFF;
     padding: 8px 8px;
     margin-right: 10px;
 }
 
-.button.forceConvert.disable {
+.button.file-type.disable {
     cursor: default;
 }
 
-.button.forceConvert.pale {
+.button.file-type.pale {
     opacity: 30%;
 }
 
-.button.forceConvert.document {
+.button.file-type.document {
     background: #446995;
 }
 
-.button.forceConvert.spreadsheet {
+.button.file-type.spreadsheet {
     background: #40865C;
 }
 
-.button.forceConvert.presentation {
+.button.file-type.presentation {
     background: #AA5252;
 }
 
