@@ -13,6 +13,7 @@ You should change `http://documentserver` to your server address in these files:
 * [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
 * [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
 * [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php) - `web/documentserver-example/php/config.php`
+* [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/python) - `/web/documentserver-example/python`
 * [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/ruby) - `web/documentserver-example/ruby/config/application.rb`
 
 More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
