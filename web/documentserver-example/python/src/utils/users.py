@@ -18,8 +18,10 @@
 
 from typing import Optional
 
+
 class User:
-    def __init__(self, id, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite, deniedPermissions, descriptions, templates):
+    def __init__(self, id, name, email, group, reviewGroups, commentGroups,
+                 userInfoGroups, favorite, deniedPermissions, descriptions, templates):
         self.id = id
         self.name = name
         self.email = email
@@ -31,6 +33,7 @@ class User:
         self.descriptions = descriptions
         self.templates = templates
         self.userInfoGroups = userInfoGroups
+
 
 descr_user_1 = [
     "File author by default",
@@ -80,35 +83,39 @@ descr_user_0 = [
 
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
-        '', None, {}, None,
-        None, [], descr_user_1, True),
+         '', None, {}, None,
+         None, [], descr_user_1, True),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
-        'group-2', ['group-2', ''], {
-            'view': "",
-            'edit': ["group-2", ""],
-            'remove': ["group-2"]
-        },
+         'group-2', ['group-2', ''], {
+             'view': "",
+             'edit': ["group-2", ""],
+             'remove': ["group-2"]
+         },
          ['group-2', ''],
-        True, [], descr_user_2, False),
+         True, [], descr_user_2, False),
     User('uid-3', 'Hamish Mitchell', 'mitchell@example.com',
-        'group-3', ['group-2'], {
-            'view': ["group-3", "group-2"],
-            'edit': ["group-2"],
-            'remove': []
-        }, ['group-2'],
-        False, ["copy", "download", "print"], descr_user_3, False),
+         'group-3', ['group-2'], {
+             'view': ["group-3", "group-2"],
+             'edit': ["group-2"],
+             'remove': []
+         }, ['group-2'],
+         False, ["copy", "download", "print"], descr_user_3, False),
     User('uid-0', None, None,
-        '', None, {}, [],
-        None, ["protect"], descr_user_0, False)
+         '', None, {}, [],
+         None, ["protect"], descr_user_0, False)
 ]
 
 DEFAULT_USER = USERS[0]
 
 # get all users
+
+
 def getAllUsers():
     return USERS
 
 # get user information from the request
+
+
 def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
 
@@ -119,12 +126,15 @@ def getUserFromReq(req):
     return DEFAULT_USER
 
 # get users data for mentions
+
+
 def getUsersForMentions(uid):
     usersData = []
     for user in USERS:
-        if(user.id != uid and user.name != None and user.email != None):
-            usersData.append({'name':user.name, 'email':user.email})
+        if (user.id != uid and user.name != None and user.email != None):
+            usersData.append({'name': user.name, 'email': user.email})
     return usersData
+
 
 def find_user(id: Optional[str]) -> User:
     if id is None:

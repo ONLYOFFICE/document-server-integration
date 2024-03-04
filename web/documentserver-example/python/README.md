@@ -11,7 +11,9 @@ The Python example offers various installation options, but we highly recommend 
 
 ### Using Docker
 
-To run the example using [Docker](https://docker.com), you will need [Docker Desktop 4.17.0](https://docs.docker.com/desktop) or [Docker Engine 20.10.23](https://docs.docker.com/engine) with [Docker Compose 2.15.1](https://docs.docker.com/compose). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
+You can run this example in Docker on a local machine or can be deployed on a virtual machine on a cloud infrastructure provider.
+
+To run the example using [Docker](https://docker.com), you will need [Docker Desktop 4.17.0](https://docs.docker.com/desktop) for a local machine or [Docker Engine 20.10.23](https://docs.docker.com/engine) on the cloud with [Docker Compose 2.15.1](https://docs.docker.com/compose). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
 Once you have everything installed, download the release archive and unarchive it.
 
@@ -27,7 +29,7 @@ $ cd "Python Example"
 $ make compose-prod
 ```
 
-By default, the server starts at `localhost:80`.
+By default, the server starts at `localhost:80` on the machine that you are using. You will see a page with the welcome to ONLYOFFICE Document Editors.
 
 To configure the example, you can edit the environment variables in [`compose-base.yml`](./compose-base.yml). See [below](#configuration) for more information about environment variables.
 
@@ -51,10 +53,9 @@ $ cd "Python Example"
 $ make prod
 $ make server-prod
 ```
+The `make prod` command installs the dependancies into the Python environment you have activated. The `make server-prod` starts up the python server using the `manage.py` file. More details of these commands are in the `Makerfile`.
 
-By default, the server starts at `0.0.0.0:8000`.
-
-To configure the example, you can pass the environment variables before the command that starts the server. See [below](#configuration) for more information about environment variables.
+By default, the server starts at `0.0.0.0:8000`. To configure the example, you can pass the environment variables before the command that starts the server. See [below](#configuration) for more information about environment variables. You will need to configure the example that will be on `0.0.0.0:8000` to access documentserver 
 
 ## Post Installation
 

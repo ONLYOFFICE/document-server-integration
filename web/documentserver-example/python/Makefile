@@ -28,22 +28,14 @@ compose-dev: #   Up containers in a development environment.
 	@docker-compose \
 		--file compose-base.yml \
 		--file compose-dev.yml \
-		build
-	@docker-compose \
-		--file compose-base.yml \
-		--file compose-dev.yml \
-		up --detach
+		up --build --detach
 
 .PHONY: compose-prod
 compose-prod: #  Up containers in a production environment.
 	@docker-compose \
 		--file compose-base.yml \
 		--file compose-prod.yml \
-		build
-	@docker-compose \
-		--file compose-base.yml \
-		--file compose-prod.yml \
-		up --detach
+		up --build --detach
 
 .PHONY: lint
 lint: #          Lint the source code for style and check for types.

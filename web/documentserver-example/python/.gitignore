@@ -1,3 +1,12 @@
 *.egg-info
 build
 storage
+__pycache__
+.python-version
+.venv
+venv.bak/
+venv/
+.env
+env/
+env.bak/
+ENV/

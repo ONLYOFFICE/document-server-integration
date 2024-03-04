@@ -20,8 +20,9 @@ from typing import Optional
 from urllib.parse import ParseResult, urlparse, urljoin
 from src.common import string
 
+
 class ConfigurationManager:
-    version = '1.7.0'
+    version = '1.6.0'
 
     def example_url(self) -> Optional[ParseResult]:
         url = environ.get('EXAMPLE_URL')

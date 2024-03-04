@@ -8,12 +8,12 @@ name = "online-editor-example"
 version = "1.6.0"
 requires-python = ">=3.11"
 dependencies = [
-	"django>=3.1.3",
-	"django-stubs>=4.2.3",
-	"msgspec>=0.18.1",
-	"pyjwt>=2.6.0",
+	"django>=4.2.10",
+	"django-stubs>=4.2.7",
+	"msgspec>=0.18.6",
+	"pyjwt>=2.8.0",
 	"python-magic>=0.4.27",
-	"requests>=2.25.0"
+	"requests>=2.31.0"
 ]
 
 [project.license]
@@ -25,8 +25,8 @@ email = "support@onlyoffice.com"
 
 [project.optional-dependencies]
 development = [
-	"flake8>=6.0.0",
-	"mypy>=1.4.1",
+	"flake8>=7.0.0",
+	"mypy>=1.8.0",
 	"types-requests>=2.31.0"
 ]
 
