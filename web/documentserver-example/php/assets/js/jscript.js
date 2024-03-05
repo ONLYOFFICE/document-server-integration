@@ -199,7 +199,7 @@ if (typeof jQuery != "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
         if (EditedExtList.indexOf(posExt) != -1 || FillFormsExtList.indexOf(posExt) != -1) {
