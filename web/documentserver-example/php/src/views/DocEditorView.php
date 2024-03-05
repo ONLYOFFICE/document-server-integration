@@ -48,7 +48,7 @@ final class DocEditorView extends View
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
-        $user = $userList->getUser($request["user"]);
+        $user = $userList->getUser($request["user"] ?? null);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
