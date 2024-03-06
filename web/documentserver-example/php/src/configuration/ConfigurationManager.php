@@ -40,7 +40,7 @@ class ConfigurationManager
 
     public function documentServerPublicURL(): URL
     {
-        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://document-server';
+        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://documentserver';
         return new URL($url);
     }
 

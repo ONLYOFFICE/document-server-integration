@@ -44,7 +44,7 @@ class ConfigurationManager
 
   sig { returns(URI::Generic) }
   def document_server_public_uri
-    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server'
+    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://documentserver'
     URI(url)
   end
 
