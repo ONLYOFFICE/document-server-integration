@@ -299,12 +299,15 @@ function convert()
 function delete()
 {
     try {
-        $fileName = basename($_GET["fileName"]);
+        if(isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
+            $fileName = basename($_GET["fileName"]);
+            $filePath = getStoragePath($fileName);
 
-        $filePath = getStoragePath($fileName);
-
-        unlink($filePath);  // delete a file
-        delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+            unlink($filePath);  // delete a file
+            delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+        } else {
+            delTree(getStoragePath('')); // delete the user's folder and all the containing files
+        }
     } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();

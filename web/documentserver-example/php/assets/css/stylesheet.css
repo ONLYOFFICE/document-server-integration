@@ -594,6 +594,29 @@ footer table tr td:first-child {
     width: 4%;
 }
 
+.storedHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.storedHeaderClearAll {
+    padding-right: 52px;
+}
+
+.clear-all {
+    display: inline-block;
+    width: 100px;
+    padding: 2px;
+    outline: 1px solid #E5E5E5;
+    text-align: center;
+    cursor:pointer;
+    text-transform: uppercase;
+    background-color: #F5F5F5;
+    color: #666666;
+}
+
 .select-user {
     color: #444444;
     font-family: Open Sans;
