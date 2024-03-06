@@ -20,6 +20,7 @@ from datetime import datetime
 from http import HTTPStatus
 import json
 import os
+import shutil
 from pathlib import Path
 from shutil import copy
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -424,11 +425,16 @@ def track(request):
 
 # remove a file
 def remove(request):
-    filename = fileUtils.getFileName(request.GET['filename'])
+    filename = request.GET.get('filename', '')
+    if filename:
+        filename = fileUtils.getFileName(filename)
+        docManager.removeFile(filename, request)
+    else:
+        folder = docManager.getRootFolder(request)
+        if os.path.exists(folder):
+            shutil.rmtree(folder) # remove the user's directory and all the containing files
 
     response = {}
-
-    docManager.removeFile(filename, request)
 
     response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
