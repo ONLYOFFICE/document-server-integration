@@ -293,6 +293,25 @@ if (typeof jQuery != "undefined") {
         });
     });
 
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            var requestAddress = "webeditor.ashx"
+                + "?type=remove";
+
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                url: requestAddress,
+                complete: function (data) {
+                    console.log(data.responseText);
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
+    });
+
         function showUserTooltip (isMobile) {
         if ( jq("div#portal-info").is(":hidden") ) {
             jq("div#portal-info").show();
