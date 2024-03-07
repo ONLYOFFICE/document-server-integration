@@ -151,7 +151,14 @@
                                 if (storedFiles.Any())
                                 { %>
                                 <div class="stored-list">
-                                    <span class="header-list">Your documents</span>
+                                    <div class="storedHeader">
+                                        <div class="storedHeaderText">
+                                            <span class="header-list">Your documents</span>
+                                        </div>
+                                        <div class="storedHeaderClearAll">
+                                            <div class="clear-all">Clear all</div>
+                                        </div>
+                                    </div>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                         <thead>
                                             <tr>
