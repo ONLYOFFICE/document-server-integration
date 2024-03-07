@@ -137,7 +137,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass, lang: language, fileType: fileType},
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileType},
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
