@@ -97,7 +97,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (fileUri, filePass) {
+    var checkConvert = function (fileUri, filePass, fileExt) {
 		filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
@@ -132,7 +132,7 @@ if (typeof jQuery != "undefined") {
                 contentType: "text/xml",
                 type: "post",
                 dataType: "json",
-                data: JSON.stringify({filename : fileName, fileUri : fileUri || "", filePass: filePass}),
+                data: JSON.stringify({filename: fileName, fileUri: fileUri || "", filePass: filePass, fileExt: fileExt}),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -153,6 +153,12 @@ if (typeof jQuery != "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("Error conversion output format")){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -164,7 +170,7 @@ if (typeof jQuery != "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step < 100) {
-                        checkConvert(response.fileUri, filePass);
+                        checkConvert(response.fileUri, filePass, fileExt);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -227,6 +233,15 @@ if (typeof jQuery != "undefined") {
             setCookie("ulang", langSel.val());
         });
     };
+
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileExt = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(null, filePass, fileExt);
+    });
 
     jq(document).on("click", "#enterPass", function () {
         var filePass = jq("#filePass").val();

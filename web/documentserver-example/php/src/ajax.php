@@ -228,6 +228,7 @@ function convert()
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
+    $conversionExtension = $post['fileExt'] ?? $internalExtension;
 
     // check if the file with such an extension can be converted
     if (in_array($extension, $formatManager->convertibleExtensions()) &&
@@ -245,7 +246,7 @@ function convert()
             $convertedData = getConvertedData(
                 $fileUri,
                 $extension,
-                $internalExtension,
+                $conversionExtension,
                 $key,
                 true,
                 $newFileUri,
