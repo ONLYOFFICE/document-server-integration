@@ -657,7 +657,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           const zip = await urllib.request(downloadZip, { method: 'GET' });
           const statusZip = zip.status;
           const dataZip = zip.data;
-          if (status === 200) {
+          if (statusZip === 200) {
             fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
           } else {
             emitWarning(`Document editing service returned status: ${statusZip}`);
