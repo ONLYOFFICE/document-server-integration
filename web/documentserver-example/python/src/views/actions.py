@@ -430,9 +430,7 @@ def remove(request):
         filename = fileUtils.getFileName(filename)
         docManager.removeFile(filename, request)
     else:
-        folder = docManager.getRootFolder(request)
-        if os.path.exists(folder):
-            shutil.rmtree(folder) # remove the user's directory and all the containing files
+        docManager.removeUserFolder(request)
 
     response = {}
 
