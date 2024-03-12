@@ -1,5 +1,12 @@
 # Change Log
 
+- php: delete all files
+- java: delete all files
+- java-spring: delete all files
+- python: delete all files
+- ruby: delete all files
+- csharp: delete all files
+- csharp-mvc: delete all files
 - nodejs: delete all files
 - change insert image
 - nodejs: handling conversion -9 error
