@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: handling conversion -9 error
 - java: handling conversion -9 error
 - ruby: handling conversion -9 error
 - python: handling conversion -9 error

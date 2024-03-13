@@ -31,6 +31,8 @@ public class Converter {
     private String fileName;
     @JsonProperty("filePass")
     private String filePass;
+    @JsonProperty("fileExt")
+    private String fileExt;
     @JsonProperty("lang")
     private String lang;
 }
