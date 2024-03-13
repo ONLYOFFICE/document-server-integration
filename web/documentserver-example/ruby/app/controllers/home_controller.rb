@@ -169,7 +169,7 @@ class HomeController < ApplicationController
       action_data: file_data['action_data'],
       direct_url: file_data['direct_url']
     )
-    history = file.get_history
+    history = file.history
     render(json: history)
   rescue StandardError
     render(json: '{ "error": "File not found"}')
