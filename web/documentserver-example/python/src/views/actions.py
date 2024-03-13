@@ -425,16 +425,19 @@ def track(request):
 
 # remove a file
 def remove(request):
-    filename = request.GET.get('filename', '')
-    if filename:
-        filename = fileUtils.getFileName(filename)
-        docManager.removeFile(filename, request)
-    else:
-        docManager.removeUserFolder(request)
-
     response = {}
 
-    response.setdefault('success', True)
+    try:
+        filename = request.GET.get('filename', '')
+        if filename:
+            filename = fileUtils.getFileName(filename)
+            docManager.removeFile(filename, request)
+        else:
+            docManager.removeUserFolder(request)
+        response.setdefault('success', True)
+    except Exception as e:
+        response.setdefault('error', str(e.args[0]))
+
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 

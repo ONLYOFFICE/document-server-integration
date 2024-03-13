@@ -287,9 +287,12 @@ def removeFile(filename, req):
 
 # remove the user's directory and all the containing files
 def removeUserFolder(req):
-    path = getRootFolder(req)
-    if os.path.exists(path):
-        shutil.rmtree(path)
+    path = os.path.normpath(getRootFolder(req))
+
+    if not path.startswith(str(config_manager.storage_path())) or not os.path.exists(path):
+        raise FileNotFoundError
+
+    shutil.rmtree(path)
 
 # generate file key
 def generateFileKey(filename, req):
