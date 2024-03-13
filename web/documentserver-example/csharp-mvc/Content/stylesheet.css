@@ -230,6 +230,33 @@ label .checkbox {
     color: #FF6F3D;
 }
 
+.button.file-type {
+    font-size: 11px;
+    color: #FFFFFF;
+    padding: 8px 8px;
+    margin-right: 10px;
+}
+
+.button.file-type.disable {
+    cursor: default;
+}
+
+.button.file-type.pale {
+    opacity: 30%;
+}
+
+.button.file-type.document {
+    background: #446995;
+}
+
+.button.file-type.spreadsheet {
+    background: #40865C;
+}
+
+.button.file-type.presentation {
+    background: #AA5252;
+}
+
 .upload-panel {
     float: left;
     padding: 24px 0;
@@ -739,6 +766,16 @@ html {
 
 .user-descr > b {
     margin-left: 25px;
+}
+
+.buttonsMobile.indent{
+    padding-left: 35px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
 }
 
 .tooltip {
