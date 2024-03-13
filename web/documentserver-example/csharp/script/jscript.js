@@ -303,7 +303,6 @@ if (typeof jQuery != "undefined") {
                 contentType: "text/xml",
                 url: requestAddress,
                 complete: function (data) {
-                    console.log(data.responseText);
                     if (JSON.parse(data.responseText).success) {
                         window.location.reload(true);
                     }
