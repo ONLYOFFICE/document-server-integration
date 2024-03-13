@@ -108,6 +108,8 @@ class ServiceConverter
 
     # add an error message to the error message template depending on the error code
     case error_code
+    when -9
+      error_message = 'Error occurred in the ConvertService.ashx: Error conversion output format'
     when -8
       error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
     when -7
