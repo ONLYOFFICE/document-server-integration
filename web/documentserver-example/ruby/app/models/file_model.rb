@@ -302,7 +302,7 @@ class FileModel
 
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
-          obj['previous'] = if enable_direct_url? == true
+          data_obj['previous'] = if enable_direct_url? == true
                               { # write key and url information about previous file version with optional directUrl
                                 fileType: prev['fileType'],
                                 key: prev['key'],
