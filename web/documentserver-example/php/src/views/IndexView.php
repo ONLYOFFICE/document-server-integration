@@ -44,9 +44,6 @@ final class IndexView extends View
             "editButton" => $this->getEditButton(),
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
-            "fillFormsExtList" => implode(",", $formatManager->fillableExtensions()),
-            "converExtList" => implode(",", $formatManager->convertibleExtensions()),
-            "editedExtList" => implode(",", $formatManager->editableExtensions()),
             "serverVersion" => $configManager -> getVersion(),
         ];
     }
