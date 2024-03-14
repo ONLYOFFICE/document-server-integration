@@ -261,8 +261,7 @@ class FileModel
         data_obj['url'] =
           if i == cur_ver
             DocumentHelper.get_download_url(
-              file_name,
-              true
+              file_name
             )
           else
             DocumentHelper.get_historypath_uri(
@@ -303,22 +302,20 @@ class FileModel
 
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
-          data(
-            obj['previous'] = if enable_direct_url? == true
-                                { # write key and url information about previous file version with optional directUrl
-                                  fileType: prev['fileType'],
-                                  key: prev['key'],
-                                  url: prev['url'],
-                                  directUrl: prev['directUrl']
-                                }
-                              else
-                                {
-                                  fileType: prev['fileType'],
-                                  key: prev['key'],
-                                  url: prev['url']
-                                }
-                              end
-          )
+          data_obj['previous'] = if enable_direct_url? == true
+                              { # write key and url information about previous file version with optional directUrl
+                                fileType: prev['fileType'],
+                                key: prev['key'],
+                                url: prev['url'],
+                                directUrl: prev['directUrl']
+                              }
+                            else
+                              {
+                                fileType: prev['fileType'],
+                                key: prev['key'],
+                                url: prev['url']
+                              }
+                            end
 
           diff_path = [hist_dir, (i - 1).to_s, 'diff.zip'].join(File::SEPARATOR)
           if File.exist?(diff_path)
