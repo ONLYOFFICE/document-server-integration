@@ -338,12 +338,11 @@
     <script type="text/javascript" src="{% static "js/jquery.blockUI.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.iframe-transport.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jquery.fileupload.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/format.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/format-manager.js" %}"></script>
     <script type="text/javascript" src="{% static "js/jscript.js" %}"></script>
 
     <script type="text/javascript">
-        var FillExtList = {{ fillExt | safe }};
-        var ConverExtList = {{ convExt | safe }};
-        var EditedExtList = {{ editExt | safe }};
         var UrlConverter = "convert";
         var UrlEditor = "edit";
     </script>
