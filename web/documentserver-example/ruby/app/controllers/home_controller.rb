@@ -169,7 +169,7 @@ class HomeController < ApplicationController
       action_data: file_data['action_data'],
       direct_url: file_data['direct_url']
     )
-    history = file.get_history
+    history = file.history
     render(json: history)
   rescue StandardError
     render(json: '{ "error": "File not found"}')
@@ -342,7 +342,10 @@ class HomeController < ApplicationController
   # Save Copy as...
   def saveas
     body = JSON.parse(request.body.read)
-    file_url = body['url']
+    file_url = body['url'].sub(
+      HomeController.config_manager.document_server_public_uri.to_s,
+      HomeController.config_manager.document_server_private_uri.to_s
+    )
     title = body['title']
     file_name = DocumentHelper.get_correct_name(title, nil)
     extension = File.extname(file_name).downcase
@@ -377,7 +380,7 @@ class HomeController < ApplicationController
     render(plain: "{\"file\" : \"#{file_name}\"}")
     nil
   rescue StandardError => e
-    render(plain: "{\"error\":1, \"message\": \"#{e.message}\"}")
+    render(plain: JSON.generate({ error: 1, message: e.message }))
     nil
   end
 
