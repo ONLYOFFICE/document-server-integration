@@ -51,7 +51,7 @@ DocManager.prototype.createDirectory = function createDirectory(directory) {
 
 // get the language from the request
 DocManager.prototype.getLang = function getLang() {
-  if (/^[a-z]{2}(-[A-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
+  if (/^[a-z]{2}(-[a-zA-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
   return 'en';
