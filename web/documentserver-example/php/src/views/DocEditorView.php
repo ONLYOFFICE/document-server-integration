@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ final class DocEditorView extends View
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
-        $user = $userList->getUser($request["user"]);
+        $user = $userList->getUser($request["user"] ?? null);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
@@ -85,7 +85,7 @@ final class DocEditorView extends View
         }
 
         // check if the Submit form button is displayed or not
-        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
+        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1";
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
 
@@ -161,6 +161,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
+                    "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -199,59 +200,80 @@ final class DocEditorView extends View
         ];
 
         // a document for comparing
-        $dataCompareFile = $isEnableDirectUrl ? [
+        $dataDocument = $isEnableDirectUrl ? [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
-            "directUrl" => serverPath(false) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/sample.docx",
         ] : [
             "fileType" => "docx",
-            "url" => serverPath(true) . "/assets?name=sample.docx",
+            "url" => serverPath(true) . "/assets/document-templates/sample/sample.docx",
         ];
 
         // recipients data for mail merging
-        $dataMailMergeRecipients = $isEnableDirectUrl ? [
+        $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
-            "directUrl" => serverPath(false) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/csv.csv",
         ] : [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
         ];
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+
+        // users data for protect
+        $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
+
+        $usersInfo = [];
+        if ($user->id != 'uid-0') {
+            foreach ($userList->getAllUsers() as $userInfo) {
+                $u = $userInfo;
+                $u->image = $userInfo->avatar ? serverPath(false) . "/assets/images/" . $userInfo->id . ".png" : null;
+                array_push($usersInfo, $u);
+            }
+        }
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
             $config["token"] = $jwtManager->jwtEncode($config);  // encode config into the token
             // encode the dataInsertImage object into the token
             $dataInsertImage["token"] = $jwtManager->jwtEncode($dataInsertImage);
-            // encode the dataCompareFile object into the token
-            $dataCompareFile["token"] = $jwtManager->jwtEncode($dataCompareFile);
-            // encode the dataMailMergeRecipients object into the token
-            $dataMailMergeRecipients["token"] = $jwtManager->jwtEncode($dataMailMergeRecipients);
+            // encode the dataDocument object into the token
+            $dataDocument["token"] = $jwtManager->jwtEncode($dataDocument);
+            // encode the dataSpreadsheet object into the token
+            $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
-        $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
-        $history = $out[0];
-        $historyData = $out[1];
+
         $historyLayout = "";
         if ($user->id != "uid-0") {
-            if ($history != null && $historyData != null) {
-                $historyLayout .= " config.events['onRequestHistory'] = function () {
-                        // show the document version history
-                        docEditor.refreshHistory(".json_encode($history).");};";
-                $historyLayout .= " config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = ".json_encode($historyData).";".
-                    "docEditor.setHistoryData(histData[ver - 1]);};
-                     config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };";
-            }
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        \"users\": {usersForMentions}
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case \"info\":
+                            users = [];
+                            var allUsers = {usersInfo};
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        case \"protect\":
+                            var users = {usersForProtect};
+                            break;
+                        default:
+                            users = {usersForMentions};
+                    }
+                    docEditor.setUsers({
+                        \"c\": c,
+                        \"users\": users,
                     });
                 };
                 // the user is mentioned in a comment
@@ -273,12 +295,14 @@ final class DocEditorView extends View
                 1,
                 mb_strlen(json_encode($dataInsertImage)) - 2
             ),
-            "dataCompareFile" => json_encode($dataCompareFile),
-            "dataMailMergeRecipients" => json_encode($dataMailMergeRecipients),
+            "dataDocument" => json_encode($dataDocument),
+            "dataSpreadsheet" => json_encode($dataSpreadsheet),
             "fileNotFoundAlert" => !file_exists(getStoragePath($filename)) ? "alert('File not found'); return;" : "",
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersInfo" => json_encode($usersInfo),
+            "usersForProtect" => json_encode($usersForProtect),
             ];
     }
 }

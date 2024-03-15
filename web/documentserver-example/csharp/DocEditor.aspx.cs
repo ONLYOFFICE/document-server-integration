@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,11 @@ namespace OnlineEditorsExample
 
         protected string DocConfig { get; private set; }
         protected string InsertImageConfig { get; private set; }
-        protected string CompareFileData { get; private set; }
-        protected string DataMailMergeRecipients { get; private set; }
+        protected string DocumentData { get; private set; }
+        protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
+        protected string UsersInfo { get; private set; }
+        protected string UsersForProtect { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -152,7 +154,7 @@ namespace OnlineEditorsExample
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
@@ -256,7 +258,8 @@ namespace OnlineEditorsExample
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
                                         }
                                 },
                                 {
@@ -308,15 +311,22 @@ namespace OnlineEditorsExample
 
                 // a document which will be compared with the current document
                 Dictionary<string, object> compareFile = GetCompareFile();
-                CompareFileData = jss.Serialize(compareFile);
+                DocumentData = jss.Serialize(compareFile);
 
-                // recipient data for mail merging
-                Dictionary<string, object> mailMergeConfig = GetMailMergeConfig();
-                DataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+                // recipient data for spreadsheet
+                Dictionary<string, object> spreadsheetConfig = GetSpreadsheetConfig();
+                DataSpreadsheet = jss.Serialize(spreadsheetConfig);
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
                 UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
+
+                List<Dictionary<string, object>> usersInfo = Users.getUsersInfo(user.id);
+                UsersInfo = jss.Serialize(usersData);
+
+                // get users for protect
+                List<Dictionary<string, object>> usersProtectData = Users.getUsersForProtect(user.id);
+                UsersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(usersProtectData) : null;
             }
             catch { }
         }
@@ -393,43 +403,43 @@ namespace OnlineEditorsExample
             return dataCompareFile;
         }
 
-        // get a mail merge config
-        private Dictionary<string, object> GetMailMergeConfig()
+        // get a spreadsheet config
+        private Dictionary<string, object> GetSpreadsheetConfig()
         {
-            // get the path to the recipients data for mail merging
-            var mailmergeUrl = new UriBuilder(_Default.GetServerUrl(true));
-            mailmergeUrl.Path =
+            // get the path to the recipients data for spreadsheet
+            var spreadsheetUrl = new UriBuilder(_Default.GetServerUrl(true));
+            spreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            mailmergeUrl.Query = "type=csv";
+            spreadsheetUrl.Query = "type=csv";
 
-            var DirectMailMergeUrl = new UriBuilder(_Default.GetServerUrl(false));
-            DirectMailMergeUrl.Path =
+            var DirectSpreadsheetUrl = new UriBuilder(_Default.GetServerUrl(false));
+            DirectSpreadsheetUrl.Path =
                     HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                     + "webeditor.ashx";
-            DirectMailMergeUrl.Query = "type=csv";
+            DirectSpreadsheetUrl.Query = "type=csv";
 
-            // create a mail merge config
-            Dictionary<string, object> mailMergeConfig = new Dictionary<string, object>
+            // create a spreadsheet config
+            Dictionary<string, object> spreadsheetConfig = new Dictionary<string, object>
                 {
                     { "fileType", "csv" },
-                    { "url", mailmergeUrl.ToString() }
+                    { "url", spreadsheetUrl.ToString() }
                 };
 
             if (_Default.IsEnabledDirectUrl())
             {
-                mailMergeConfig.Add("directUrl", DirectMailMergeUrl.ToString());
+                spreadsheetConfig.Add("directUrl", DirectSpreadsheetUrl.ToString());
             }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
-                var mailmergeToken = JwtManager.Encode(mailMergeConfig);  // encode mailMergeConfig into the token
-                mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
+                var spreadsheetToken = JwtManager.Encode(spreadsheetConfig);  // encode spreadsheetConfig into the token
+                spreadsheetConfig.Add("token", spreadsheetToken);  // and add it to the spreadsheet config
             }
 
-            return mailMergeConfig;
+            return spreadsheetConfig;
         }
 
         // get image url for templates
@@ -484,7 +494,7 @@ namespace OnlineEditorsExample
                     return;
             }
             var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;  // create demo document name with the necessary extension
-            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
+            var demoPath = "assets\\document-templates\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
 
             FileName = _Default.GetCorrectName(demoName);  // get file name with an index if such a file name already exists
 

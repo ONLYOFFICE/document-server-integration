@@ -1,5 +1,5 @@
 <%#
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
                         <a class="try-editor slide" data-type="pptx">Presentation</a>
                       </li>
                       <li>
-                        <a class="try-editor form" data-type="docxf">Form template</a>
+                        <a class="try-editor form" data-type="docxf">PDF form</a>
                       </li>
                   </ul>
                   <label class="side-option">
@@ -62,7 +62,7 @@
                       <span class="select-user">Username</span>
                       <img id="info" class="info" data-id="user" src="assets/info.svg" />
                       <select class="select-user" id="user">
-                        <% for user in Users.get_all_users() do %>
+                        <% for user in Users.all_users() do %>
                           <option value="<%= user.id %>"><%= user.name ? user.name : "Anonymous" %></option>
                         <% end %>
                       </select>
@@ -110,7 +110,7 @@
               </span>
               <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
               <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
-              <% for user in Users.get_all_users() do %>
+              <% for user in Users.all_users() do %>
                 <div class="user-descr">
                   <b><%= user.name ? user.name : "Anonymous" %></b>
                   <ul>

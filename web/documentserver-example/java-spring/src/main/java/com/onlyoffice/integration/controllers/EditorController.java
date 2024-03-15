@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
+import com.onlyoffice.integration.dto.UserInfo;
+import com.onlyoffice.integration.dto.Protect;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
@@ -74,9 +75,6 @@ public class EditorController {
     private UserServices userService;
 
     @Autowired
-    private HistoryManager historyManager;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -121,6 +119,8 @@ public class EditorController {
         }
 
         User user = optionalUser.get();
+        user.setImage(user.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + user.getId() + ".png" : null);
 
         // get file model with the default file parameters
         FileModel fileModel = fileConfigurer.getFileModel(
@@ -140,9 +140,6 @@ public class EditorController {
         // add file model with the default parameters to the original model
         model.addAttribute("model", fileModel);
 
-        // get file history and add it to the model
-        model.addAttribute("fileHistory", historyManager.getHistory(fileModel.getDocument()));
-
         // create the document service api URL and add it to the model
         model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
 
@@ -150,13 +147,19 @@ public class EditorController {
         model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
 
         // get a document for comparison and add it to the model
-        model.addAttribute("dataCompareFile",  getCompareFile(directUrl));
+        model.addAttribute("dataDocument",  getCompareFile(directUrl));
 
         // get recipients data for mail merging and add it to the model
-        model.addAttribute("dataMailMergeRecipients", getMailMerge(directUrl));
+        model.addAttribute("dataSpreadsheet", getSpreadsheet(directUrl));
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
+
+        model.addAttribute("usersInfo", getUsersInfo(uid));
+
+        // get user data for protect and add it to the model
+        model.addAttribute("usersForProtect", getUserProtect(uid));
+
         return "editor.html";
     }
 
@@ -175,6 +178,36 @@ public class EditorController {
 
         return usersForMentions;
     }
+
+    private List<UserInfo> getUsersInfo(final String uid) {  // get user data for mentions
+        List<UserInfo> usersInfo = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                String image = u.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + u.getId() + ".png" : null;
+                usersInfo.add(new UserInfo(u.getId(), u.getName(), u.getEmail(), image));
+            }
+        }
+        return usersInfo;
+    }
+
+    private List<Protect> getUserProtect(final String uid) {  // get user data for protect
+        List<Protect> usersForProtect = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != ANONYMOUS_USER_ID) {
+
+                    // user data includes user names, IDs and emails
+                    usersForProtect.add(new Protect(u.getId(), u.getName(), u.getEmail()));
+                }
+            }
+        }
+
+        return usersForProtect;
+    }
+
 
     @SneakyThrows
     private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
@@ -200,40 +233,40 @@ public class EditorController {
     // get a document that will be compared with the current document
     @SneakyThrows
     private String getCompareFile(final Boolean directUrl) {
-        Map<String, Object> dataCompareFile = new HashMap<>();
-        dataCompareFile.put("fileType", "docx");
-        dataCompareFile.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
+        Map<String, Object> dataDocument = new HashMap<>();
+        dataDocument.put("fileType", "docx");
+        dataDocument.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
         if (directUrl) {
-            dataCompareFile.put("directUrl", storagePathBuilder
+            dataDocument.put("directUrl", storagePathBuilder
                     .getServerUrl(false) + "/assets?name=sample.docx");
         }
 
         // check if the document token is enabled
         if (jwtManager.tokenEnabled()) {
 
-            // create token from the dataCompareFile object
-            dataCompareFile.put("token", jwtManager.createToken(dataCompareFile));
+            // create token from the dataDocument object
+            dataDocument.put("token", jwtManager.createToken(dataDocument));
         }
 
-        return objectMapper.writeValueAsString(dataCompareFile);
+        return objectMapper.writeValueAsString(dataDocument);
     }
 
     @SneakyThrows
-    private String getMailMerge(final Boolean directUrl) {
-        Map<String, Object> dataMailMergeRecipients = new HashMap<>();  // get recipients data for mail merging
-        dataMailMergeRecipients.put("fileType", "csv");
-        dataMailMergeRecipients.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
+    private String getSpreadsheet(final Boolean directUrl) {
+        Map<String, Object> dataSpreadsheet = new HashMap<>();  // get recipients data for mail merging
+        dataSpreadsheet.put("fileType", "csv");
+        dataSpreadsheet.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
         if (directUrl) {
-            dataMailMergeRecipients.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
+            dataSpreadsheet.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
         }
 
         // check if the document token is enabled
         if (jwtManager.tokenEnabled()) {
 
-            // create token from the dataMailMergeRecipients object
-            dataMailMergeRecipients.put("token", jwtManager.createToken(dataMailMergeRecipients));
+            // create token from the dataSpreadsheet object
+            dataSpreadsheet.put("token", jwtManager.createToken(dataSpreadsheet));
         }
 
-        return objectMapper.writeValueAsString(dataMailMergeRecipients);
+        return objectMapper.writeValueAsString(dataSpreadsheet);
     }
 }

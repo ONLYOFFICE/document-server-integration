@@ -15,7 +15,7 @@
     <title>ONLYOFFICE</title>
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -145,13 +145,17 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function () {
-            docEditor.setRevisedFile(<%= CompareFileData %>);  // select a document for comparing
+        var onRequestSelectDocument = function (event) {
+            var data = <%= DocumentData %>;
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(<%= DataMailMergeRecipients %>);  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {
+            var data = <%= DataSpreadsheet %>;
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for spreadsheet into the file
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -190,16 +194,42 @@
             }
         };
 
-        var onRequestReferenceData = function (event) {  // user refresh external data source
+        var onRequestOpen = function (event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
 
-            event.data.directUrl = !!config.document.directUrl;
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
+        var onRequestReferenceData = function (event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function (data, callback) {
+            innerAlert(data);
+
+            data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "webeditor.ashx?type=reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 console.log(xhr.responseText);
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
@@ -216,8 +246,8 @@
             'onMakeActionLink': onMakeActionLink,
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
-            'onRequestCompareFile': onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            'onRequestSelectDocument': onRequestSelectDocument,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
         };
 
         if (config.editorConfig.user.id) {
@@ -268,9 +298,32 @@
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(UsersForMentions))
             { %>
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        "users": <%= UsersForMentions %>
+                config.events['onRequestUsers'] = function (event) {
+                    if (event && event.data){
+                        var c = event.data.c;
+                    }
+                    switch (c) {
+                        case "info":
+                            users = [];
+                            var allUsers = <%= UsersInfo %>;
+                            for (var i = 0; i < event.data.id.length; i++) {
+                                for (var j = 0; j < allUsers.length; j++) {
+                                    if (allUsers[j].id == event.data.id[i]) {
+                                        users.push(allUsers[j]);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        case "protect":
+                            var users = <%= UsersForProtect %>;
+                            break;
+                        default:
+                            users = <%= UsersForMentions %>;
+                    }
+                    docEditor.setUsers({
+                        "c": c,
+                        "users": users,
                     });
                 };
             <% } %>
@@ -286,6 +339,7 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {

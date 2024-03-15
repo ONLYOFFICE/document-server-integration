@@ -5,7 +5,7 @@ namespace Example\Helpers;
 use function Example\sendlog;
 
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ final class ExampleUsers
             "The file favorite state is undefined",
             "Can create files from templates using data from the editor",
             "Can see the information about all users",
+            "Has an avatar",
+            "Can submit forms"
         ];
         $this->user2Description = [
             "Belongs to Group2",
@@ -47,6 +49,8 @@ final class ExampleUsers
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Can see the information about users from Group2 and users who don’t belong to any group",
+            "Has an avatar",
+            "Can’t submit forms"
         ];
         $this->user3Description = [
             "Belongs to Group3",
@@ -58,6 +62,7 @@ final class ExampleUsers
             "Can’t print the file",
             "Can create new files from the editor",
             "Can see the information about Group2 users",
+            "Can’t submit forms"
         ];
         $this->user0Description = [
             "The name is requested when the editor is opened",
@@ -71,6 +76,7 @@ final class ExampleUsers
             "Can't rename files from the editor",
             "Can't view chat",
             "View file without collaboration",
+            "Can’t submit forms"
         ];
         $this->users = [
             new Users(
@@ -84,6 +90,7 @@ final class ExampleUsers
                 null,
                 [],
                 $this->user1Description,
+                true,
                 true
             ),
             new Users(
@@ -101,12 +108,13 @@ final class ExampleUsers
                 true,
                 [],
                 $this->user2Description,
-                false
+                false,
+                true
             ),
             new Users(
                 "uid-3",
                 "Hamish Mitchell",
-                "mitchell@example.com",
+                null,
                 "group-3",
                 ["group-2"],
                 [
@@ -118,6 +126,7 @@ final class ExampleUsers
                 false,
                 ["copy", "download", "print"],
                 $this->user3Description,
+                false,
                 false
             ),
             new Users(
@@ -131,6 +140,7 @@ final class ExampleUsers
                 null,
                 ["protect"],
                 $this->user0Description,
+                false,
                 false
             ),
         ];
@@ -177,6 +187,28 @@ final class ExampleUsers
         foreach ($this->users as $user) {
             if ($user->id != $id && $user->name != null && $user->email != null) {
                 $usersData[] = [
+                    "name" => $user->name,
+                    "email" => $user->email,
+                ];
+            }
+        }
+        return $usersData;
+    }
+
+    /**
+     * Get a list of users with their names and emails for protect
+     *
+     * @param string|null $id
+     *
+     * @return array
+     */
+    public function getUsersForProtect(?string $id): array
+    {
+        $usersData = [];
+        foreach ($this->users as $user) {
+            if ($user->id != $id && $user->name != null) {
+                $usersData[] = [
+                    "id" => $user->id,
                     "name" => $user->name,
                     "email" => $user->email,
                 ];

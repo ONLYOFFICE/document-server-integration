@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,9 +23,11 @@ from . import http
 # Under the hood, HttpRequest uses a settings object.
 settings.configure()
 
+
 @http.GET()
 def endpoint(_: HttpRequest) -> HttpResponse:
     return HttpResponse()
+
 
 class HTTPMethodTests(TestCase):
     def test_returns_a_response_from_the_endpoint(self):

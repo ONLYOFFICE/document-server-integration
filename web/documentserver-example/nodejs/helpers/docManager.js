@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ DocManager.prototype.createDirectory = function createDirectory(directory) {
 
 // get the language from the request
 DocManager.prototype.getLang = function getLang() {
-  if (/^[a-z]{2}(-[A-Z]{2})?$/i.test(this.req.query.lang)) {
+  if (/^[a-z]{2}(-[A-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
   return 'en';
@@ -84,7 +84,10 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
 
 // get the correct file name if such a name already exists
 DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddress) {
-  const baseName = fileUtility.getFileName(fileName, true); // get file name from the url without extension
+  // get file name from the url without extension
+  const maxName = configServer.get('maxNameLength');
+  const baseName = fileUtility.getFileName(fileName, true).substr(0, maxName)
+    + (fileName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
   let index = 1;
@@ -211,7 +214,11 @@ DocManager.prototype.getCallback = function getCallback(fileName) {
 // get url to the created file
 DocManager.prototype.getCreateUrl = function getCreateUrl(docType, userid, type, lang) {
   const server = this.getServerUrl();
-  const ext = this.getInternalExtension(docType).replace('.', '');
+  let ext = this.getInternalExtension(docType);
+  if (ext === null) {
+    return null;
+  }
+  ext = ext.replace('.', '');
   const handler = `/editor?fileExt=${ext}&userid=${userid}&type=${type}&lang=${lang}`;
 
   return server + handler;
@@ -378,7 +385,7 @@ DocManager.prototype.getInternalExtension = function getInternalExtension(fileTy
     return '.pptx';
   }
 
-  return '.docx'; // the default value is .docx
+  return null; // the default value is null
 };
 
 // get the template image url

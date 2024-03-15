@@ -13,9 +13,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content=<%= DocManagerHelper.GetVersion() %> />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -67,7 +68,7 @@
                                             <a class="try-editor slide" data-type="pptx">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form" data-type="docxf">Form template</a>
+                                            <a class="try-editor form" data-type="docxf">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">

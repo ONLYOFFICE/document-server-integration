@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -453,7 +453,7 @@ namespace OnlineEditorsExampleMVC
         private static void Assets(HttpContext context)
         {
             var fileName = Path.GetFileName(context.Request["filename"]);
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -461,7 +461,7 @@ namespace OnlineEditorsExampleMVC
         private static void GetCsv(HttpContext context)
         {
             var fileName = "csv.csv";
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -812,6 +812,27 @@ namespace OnlineEditorsExampleMVC
                 }
             }
 
+            if (fileName == "" && body.ContainsKey("link"))
+            {
+                string link = body["link"].ToString();
+                if (!link.Contains(DocManagerHelper.GetServerUrl(false)))
+                {
+                    context.Response.Write(jss.Serialize(new Dictionary<string, string>() {
+                        { "url", link },
+                        { "directUrl", link }
+                    }));
+                    return;
+                }
+
+                Uri linkUri = new Uri(link);
+                fileName = HttpUtility.ParseQueryString(linkUri.Query).Get("fileName");
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(DocManagerHelper.StoragePath(fileName, null)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+            }
+
             if (fileName == "")
             {
                 try
@@ -840,6 +861,7 @@ namespace OnlineEditorsExampleMVC
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "key",  ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + fileName + "/" + File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode())},
             { "url",  DocManagerHelper.GetDownloadUrl(fileName)},
             { "directUrl", directUrl ? DocManagerHelper.GetDownloadUrl(fileName, false) : null },
             { "referenceData", new Dictionary<string, string>()
@@ -852,7 +874,8 @@ namespace OnlineEditorsExampleMVC
                     { "instanceId", DocManagerHelper.GetServerUrl(false) }
                 }
             },
-            { "path", fileName }
+            { "path", fileName },
+            { "link", DocManagerHelper.GetServerUrl(false) + "Editor?fileName=" + fileName }
             };
 
             if (JwtManager.Enabled)

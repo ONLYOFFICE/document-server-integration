@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -468,6 +468,11 @@ footer table tr td:first-child {
 .stored-edit.slide, 
 .uploadFileName.slide {
     background-image: url("../images/icon_pptx.svg");
+}
+
+.stored-edit.pdf,
+.uploadFileName.pdf {
+    background-image: url("../images/icon_pdf.svg");
 }
 
 .stored-edit span {

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,6 @@ public class DefaultEditorConfigConfigurer implements EditorConfigConfigurer<Def
                     (JavaType) new TypeToken<HashMap<String, Object>>() { }.getType()));
         }
         String fileName = wrapper.getFileName();  // set the fileName parameter from the editorConfig wrapper
-        String fileExt = fileUtility.getFileExtension(fileName);
         boolean userIsAnon = wrapper.getUser()
                 .getName().equals("Anonymous");  // check if the user from the editorConfig wrapper is anonymous or not
 

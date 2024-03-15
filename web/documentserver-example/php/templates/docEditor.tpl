@@ -45,6 +45,7 @@
 
         var docEditor;
         var config;
+        let history;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -98,18 +99,43 @@
             return link;
         };
 
-        var onRequestReferenceData = function(event) {  // user refresh external data source
-            innerAlert("onRequestReferenceData: " + JSON.stringify(event.data));
+        var onRequestOpen = function(event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
 
-            event.data.directUrl = !!config.document.directUrl;
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function(data, callback) {
+            innerAlert(data);
+
+            data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
                 console.log(JSON.parse(xhr.responseText));
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
@@ -143,14 +169,18 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function() {
-            docEditor.setRevisedFile({dataCompareFile});  // select a document for comparing
+        var onRequestSelectDocument = function(event) {
+            var data = {dataDocument};
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
+        var onRequestSelectSpreadsheet = function (event) {
             // insert recipient data for mail merge into the file
-            docEditor.setMailMergeRecipients({dataMailMergeRecipients});
+            var data = {dataSpreadsheet};
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -189,6 +219,41 @@
             }
         };
 
+        function onRequestHistory() {
+            const query = new URLSearchParams(window.location.search)
+            const data = {
+                fileName: query.get('fileID')
+            }
+            const req = new XMLHttpRequest()
+            req.open("POST", 'objhistory')
+            req.setRequestHeader('Content-Type', 'application/json')
+            req.send(JSON.stringify(data))
+            req.onload = function () {
+                if (req.status != 200) {
+                    response = JSON.parse(req.response)
+                    innerAlert(response.error)
+                    return
+                }
+                history = JSON.parse(req.response)
+                docEditor.refreshHistory(
+                    {
+                        currentVersion: history[0].currentVersion,
+                        history: history[0].history
+                    }
+                )
+            }
+        }
+
+        function onRequestHistoryData(event) {
+            var ver = event.data;
+            var histData = history[1]
+            docEditor.setHistoryData(histData[ver - 1])
+        }
+
+        function onRequestHistoryClose() {
+            document.location.reload()
+        }
+
         function onRequestRestore(event) {
           const query = new URLSearchParams(window.location.search)
           const config = {config}
@@ -206,7 +271,7 @@
               innerAlert(response.error)
               return
             }
-            document.location.reload();
+            onRequestHistory()
           }
         }
 
@@ -226,10 +291,14 @@
                 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
-                'onRequestCompareFile': onRequestCompareFile,
-                'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
+                'onRequestSelectDocument': onRequestSelectDocument,
+                'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
-                'onRequestRestore': onRequestRestore
+                'onRequestRestore': onRequestRestore,
+                'onRequestHistoryData': onRequestHistoryData,
+                'onRequestHistory': onRequestHistory,
+                'onRequestHistoryClose': onRequestHistoryClose,
+                "onRequestOpen": onRequestOpen,
             };
 
                 {history}

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 """
 
-import re
-import sys
 import json
 
 from django.shortcuts import render
@@ -30,11 +28,13 @@ from src.utils import docManager
 config_manager = ConfigurationManager()
 format_manager = FormatManager()
 
+
 def getDirectUrlParam(request):
-    if ('directUrl' in request.GET): 
+    if 'directUrl' in request.GET:
         return request.GET['directUrl'].lower() in ("true")
-    else:
-        return False;    
+
+    return False
+
 
 def default(request):  # default parameters that will be passed to the template
     context = {
@@ -45,6 +45,8 @@ def default(request):  # default parameters that will be passed to the template
         'convExt': json.dumps(format_manager.convertible_extensions()),  # file extensions that can be converted
         'files': docManager.getStoredFiles(request),  # information about stored files
         'fillExt': json.dumps(format_manager.fillable_extensions()),
-        'directUrl': str(getDirectUrlParam(request)).lower
+        'directUrl': str(getDirectUrlParam(request)).lower,
+        'serverVersion': config_manager.getVersion()
     }
-    return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format
+    # execute the "index.html" template with context data and return http response in json format
+    return render(request, 'index.html', context)

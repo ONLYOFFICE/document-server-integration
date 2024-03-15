@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,7 +145,8 @@ const getDefaultAction = async function getDefaultAction(ext) {
 
 // get the action url
 const getActionUrl = function getActionUrl(host, userAddress, action, filename) {
-  return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${host}/wopi/files/${filename}@${userAddress}`;
+  const WOPISrc = `${host}/wopi/files/${filename}@${userAddress}`;
+  return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
 exports.initWopi = initWopi;

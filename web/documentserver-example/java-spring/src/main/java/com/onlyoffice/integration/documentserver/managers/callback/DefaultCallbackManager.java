@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String newFileName = fileName;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "." + body.getFiletype(); // get an extension of the downloaded file
+        String downloadExt = body.getFiletype(); // get an extension of the downloaded file
 
         // todo: Refactoring
         // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -132,14 +132,14 @@ public class DefaultCallbackManager implements CallbackManager {
                                 null).getUri();  // convert a file and get URL to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = documentManager
-                            .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName)
+                            .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "."
                                     + downloadExt);  // get the correct file name if it already exists
                 } else {
                     downloadUri = newFileUri;
                 }
             } catch (Exception e) {
                 newFileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + downloadExt);
+                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "." + downloadExt);
             }
         }
 
@@ -163,7 +163,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
             storageMutator.createDirectory(ver);  // create the file version directory
 
-            lastVersion.toFile().renameTo(new File(versionDir + File.separator + "prev" + curExt));
+            lastVersion.toFile().renameTo(new File(versionDir + File.separator + "prev." + curExt));
 
             saveFile(byteArrayFile, toSave); // save document file
 
@@ -269,7 +269,7 @@ public class DefaultCallbackManager implements CallbackManager {
         String fileName = fileNameParam;
 
         String curExt = fileUtility.getFileExtension(fileName);  // get current file extension
-        String downloadExt = "." + body.getFiletype();  // get an extension of the downloaded file
+        String downloadExt = body.getFiletype();  // get an extension of the downloaded file
 
         Boolean newFileName = false;
 
@@ -304,10 +304,10 @@ public class DefaultCallbackManager implements CallbackManager {
                 // get the correct file name if it already exists
                 fileName = documentManager
                         .getCorrectName(fileUtility
-                                .getFileNameWithoutExtension(fileName) + "-form" + downloadExt);
+                                .getFileNameWithoutExtension(fileName) + "-form." + downloadExt);
             } else {
                 fileName = documentManager
-                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form" + curExt);
+                        .getCorrectName(fileUtility.getFileNameWithoutExtension(fileName) + "-form." + curExt);
             }
             forcesavePath = storagePathBuilder.getFileLocation(fileName);  // create forcesave path if it doesn't exist
             List<Action> actions =  body.getActions();
@@ -315,6 +315,24 @@ public class DefaultCallbackManager implements CallbackManager {
             String user = action.getUserid();  // get the user ID
             // create meta data for the forcesaved file
             storageMutator.createMeta(fileName, user, "Filling Form");
+
+            try {
+                String formsDataUrl = body.getFormsdataurl();
+
+                if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
+                    String formsName = documentManager.getCorrectName(fileUtility
+                            .getFileNameWithoutExtension(fileName) + ".txt");
+                    String formsPath = storagePathBuilder.getFileLocation(formsName);
+
+                    byte[] byteArrayFormsData = getDownloadFile(formsDataUrl);
+
+                    saveFile(byteArrayFormsData, Paths.get(formsPath));
+                } else {
+                    throw new RuntimeException("Document editing service did not return formsDataUrl");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             if (newFileName) {
                 fileName = documentManager

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class DefaultDocumentManager implements DocumentManager {
 
     // get URL to the created file
     public String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = fileUtility.getFileExtension(fileName).replace(".", "");
+        String fileExt = fileUtility.getFileExtension(fileName);
         String url = storagePathBuilder.getServerUrl(true)
                 + "/create?fileExt=" + fileExt + "&sample=" + sample;
         return url;
@@ -79,13 +79,13 @@ public class DefaultDocumentManager implements DocumentManager {
     public String getCorrectName(final String fileName) {
         String baseName = fileUtility.getFileNameWithoutExtension(fileName);  // get file name without extension
         String ext = fileUtility.getFileExtension(fileName);  // get file extension
-        String name = baseName + ext;  // create a full file name
+        String name = baseName + "." + ext;  // create a full file name
 
         Path path = Paths.get(storagePathBuilder.getFileLocation(name));
 
         // run through all the files with such a name in the storage directory
         for (int i = 1; Files.exists(path); i++) {
-            name = baseName + " (" + i + ")" + ext;  // and add an index to the base name
+            name = baseName + " (" + i + ")." + ext;  // and add an index to the base name
             path = Paths.get(storagePathBuilder.getFileLocation(name));
         }
 

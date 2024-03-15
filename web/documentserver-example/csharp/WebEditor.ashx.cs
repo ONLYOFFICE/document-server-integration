@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ using System.Net;
 using System.Collections;
 using System.Net.Sockets;
 using ASC.Api.DocumentConverter;
+using Newtonsoft.Json;
 
 namespace OnlineEditorsExample
 {
@@ -275,7 +276,7 @@ namespace OnlineEditorsExample
         private static void Assets(HttpContext context)
         {
             var fileName = Path.GetFileName(context.Request["filename"]);
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -283,7 +284,7 @@ namespace OnlineEditorsExample
         private static void GetCsv(HttpContext context)
         {
             var fileName = "csv.csv";
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -622,6 +623,27 @@ namespace OnlineEditorsExample
                 }
             }
 
+            if (fileName == "" && body.ContainsKey("link"))
+            {
+                string link = body["link"].ToString();
+                if (!link.Contains(_Default.GetServerUrl(false)))
+                {
+                    context.Response.Write(jss.Serialize(new Dictionary<string, string>() {
+                        { "url", link },
+                        { "directUrl", link }
+                    }));
+                    return;
+                }
+
+                Uri linkUri = new Uri(link);
+                fileName = HttpUtility.ParseQueryString(linkUri.Query).Get("fileID");
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(_Default.StoragePath(fileName, null)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+            }
+
             if (fileName == "")
             {
                 try
@@ -650,6 +672,9 @@ namespace OnlineEditorsExample
 
             var data = new Dictionary<string, object>() {
             { "fileType", (Path.GetExtension(fileName) ?? "").ToLower().Trim('.') },
+            { "key", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                        + "/" + Path.GetFileName(_Default.FileUri(fileName, true))
+                        + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode()) },
             { "url",  DocEditor.getDownloadUrl(fileName)},
             { "directUrl", directUrl ? DocEditor.getDownloadUrl(fileName, false) : null},
             { "referenceData", new Dictionary<string, string>()
@@ -662,7 +687,8 @@ namespace OnlineEditorsExample
                     {"instanceId", _Default.GetServerUrl(false) }
                 }
             },
-            { "path", fileName }
+            { "path", fileName },
+            { "link", _Default.GetServerUrl(false) + "doceditor.aspx?fileID=" + fileName }
             };
 
             if (JwtManager.Enabled)

@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -273,6 +273,25 @@ function processForceSave($data, $fileName, $userAddress)
         if ($isSubmitForm) {
             $uid = $data->actions[0]->userid;  // get the user id
             createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
+
+            $formsDataUrl = $data->formsdataurl;
+            if ($formsDataUrl) {
+                $formsName = getCorrectName($baseNameWithoutExt . ".txt", $userAddress);
+                $formsPath = getStoragePath($formsName, $userAddress);
+
+                if (!(($formsData = file_get_contents(
+                    $formsDataUrl,
+                    false,
+                    stream_context_create(["http" => ["timeout" => 5]])
+                )) === false)
+                ) {
+                    file_put_contents($formsPath, $formsData, LOCK_EX);
+                } else {
+                    throw new Exception("Document editing service didn't return formsData");
+                }
+            } else {
+                throw new Exception('Document editing service did not return formsDataUrl');
+            }
         }
 
         $saved = 0;

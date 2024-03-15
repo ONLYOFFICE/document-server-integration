@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ from unittest import TestCase
 from msgspec.json import decode
 from . import Format, FormatManager
 
+
 class FormatTests(TestCase):
     json = \
         '''
@@ -35,12 +36,14 @@ class FormatTests(TestCase):
         form = decode(self.json, type=Format)
         self.assertEqual(form.extension(), '.djvu')
 
+
 class FormatManagerAllTests(TestCase):
     def test_loads(self):
         format_manager = FormatManager()
         formats = format_manager.all()
         empty = len(formats) == 0
         self.assertFalse(empty)
+
 
 class FormatManagerDocumentsTests(TestCase):
     def test_loads(self):
@@ -49,12 +52,14 @@ class FormatManagerDocumentsTests(TestCase):
         empty = len(formats) == 0
         self.assertFalse(empty)
 
+
 class FormatManagerPresentationsTests(TestCase):
     def test_loads(self):
         format_manager = FormatManager()
         formats = format_manager.presentations()
         empty = len(formats) == 0
         self.assertFalse(empty)
+
 
 class FormatManagerSpreadsheetsTests(TestCase):
     def test_loads(self):
@@ -63,12 +68,14 @@ class FormatManagerSpreadsheetsTests(TestCase):
         empty = len(formats) == 0
         self.assertFalse(empty)
 
+
 class FormatManagerConvertibleTests(TestCase):
     def test_loads(self):
         format_manager = FormatManager()
         formats = format_manager.convertible()
         empty = len(formats) == 0
         self.assertFalse(empty)
+
 
 class FormatManagerEditableTests(TestCase):
     def test_loads(self):
@@ -77,12 +84,14 @@ class FormatManagerEditableTests(TestCase):
         empty = len(formats) == 0
         self.assertFalse(empty)
 
+
 class FormatManagerViewableTests(TestCase):
     def test_loads(self):
         format_manager = FormatManager()
         formats = format_manager.viewable()
         empty = len(formats) == 0
         self.assertFalse(empty)
+
 
 class FormatManagerFillableTests(TestCase):
     def test_loads(self):

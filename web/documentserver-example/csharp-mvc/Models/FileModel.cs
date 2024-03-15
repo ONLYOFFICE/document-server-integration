@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ namespace OnlineEditorsExampleMVC.Models
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or not
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
@@ -190,7 +190,8 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null  },
                                             { "name", user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                                         }
                                 },
                                 {
@@ -236,7 +237,7 @@ namespace OnlineEditorsExampleMVC.Models
         }
 
         // get a document which will be compared with the current document
-        public void GetCompareFileData(out string compareConfig)
+        public void GetDocumentData(out string compareConfig)
         {
             var jss = new JavaScriptSerializer();
 
@@ -320,7 +321,7 @@ namespace OnlineEditorsExampleMVC.Models
         }
 
         // get a mail merge config
-        public void GetMailMergeConfig(out string dataMailMergeRecipients)
+        public void GetSpreadsheetConfig(out string dataSpreadsheet)
         {
             var jss = new JavaScriptSerializer();
 
@@ -361,7 +362,7 @@ namespace OnlineEditorsExampleMVC.Models
                 mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
             }
 
-            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+            dataSpreadsheet = jss.Serialize(mailMergeConfig);
         }
 
         //get a users for mentions
@@ -371,6 +372,23 @@ namespace OnlineEditorsExampleMVC.Models
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+        }
+
+        public void GetUsersInfo(HttpRequest request, out string usersInfo)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersInfo = jss.Serialize(Users.getUsersInfo(user.id));
+        }
+
+        //get a users for protect
+        public void GetUsersProtect(HttpRequest request, out string usersForProtect)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForProtect(user.id)) : null;
         }
     }
 }

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,8 +146,8 @@ public class DefaultServiceConverter implements ServiceConverter {
         Convert body = new Convert();
         body.setLang(lang);
         body.setUrl(documentUri);
-        body.setOutputtype(toExtension.replace(".", ""));
-        body.setFiletype(fromExt.replace(".", ""));
+        body.setOutputtype(toExtension);
+        body.setFiletype(fromExt);
         body.setTitle(title);
         body.setKey(documentRevId);
         body.setFilePass(filePass);

@@ -113,6 +113,10 @@ Prime JWT     - is intended to be fast and easy to use. Prime JWT has a single e
 License:        Apache 2.0
 License File:   prime-jwt.license
 
+Project Lombok - Spice up your java: Automatic Resource Management, automatic generation of getters, setters, equals, hashCode and toString, and more! (https://projectlombok.org/LICENSE)
+License:        MIT
+License File:   lombok.license
+
 
 web/documentserver-example/java-spring
 

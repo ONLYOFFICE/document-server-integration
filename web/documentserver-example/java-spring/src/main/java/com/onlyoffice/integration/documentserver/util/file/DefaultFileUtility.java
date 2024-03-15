@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@
 
 package com.onlyoffice.integration.documentserver.util.file;
 
+import com.onlyoffice.integration.documentserver.models.Format;
 import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
+import com.onlyoffice.integration.documentserver.util.service.FormatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,8 +29,6 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_SIZE;
@@ -37,56 +38,21 @@ import static com.onlyoffice.integration.documentserver.util.Constants.MAX_FILE_
 public class DefaultFileUtility implements FileUtility {
     @Value("${filesize-max}")
     private String filesizeMax;
+    @Value("${filename-max}")
+    private String filenameMax;
 
-    @Value("${files.docservice.viewed-docs}")
-    private String docserviceViewedDocs;
-
-    @Value("${files.docservice.edited-docs}")
-    private String docserviceEditedDocs;
-
-    @Value("${files.docservice.convert-docs}")
-    private String docserviceConvertDocs;
-
-    @Value("${files.docservice.fillforms-docs}")
-    private String docserviceFillDocs;
-
-    // document extensions
-    private List<String> extsDocument = Arrays.asList(
-                            ".doc", ".docx", ".docm",
-                            ".dot", ".dotx", ".dotm",
-                            ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                            ".html", ".htm", ".mht", ".xml",
-                            ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oform");
-
-    // spreadsheet extensions
-    private List<String> extsSpreadsheet = Arrays.asList(
-                            ".xls", ".xlsx", ".xlsm", ".xlsb",
-                            ".xlt", ".xltx", ".xltm",
-                            ".ods", ".fods", ".ots", ".csv");
-
-    // presentation extensions
-    private List<String> extsPresentation = Arrays.asList(
-                            ".pps", ".ppsx", ".ppsm",
-                            ".ppt", ".pptx", ".pptm",
-                            ".pot", ".potx", ".potm",
-                            ".odp", ".fodp", ".otp");
+    @Autowired
+    private FormatService formatService;
 
     // get the document type
     public DocumentType getDocumentType(final String fileName) {
         String ext = getFileExtension(fileName).toLowerCase();  // get file extension from its name
-        // word type for document extensions
-        if (extsDocument.contains(ext)) {
-            return DocumentType.word;
-        }
 
-        // cell type for spreadsheet extensions
-        if (extsSpreadsheet.contains(ext)) {
-            return DocumentType.cell;
-        }
-
-        // slide type for presentation extensions
-        if (extsPresentation.contains(ext)) {
-            return DocumentType.slide;
+        List<Format> formats = formatService.getFormats();
+        for (Format format : formats) {
+            if (format.getName().equals(ext)) {
+                return format.getType();
+            }
         }
 
         // default file type is word
@@ -121,7 +87,7 @@ public class DefaultFileUtility implements FileUtility {
         if (fileName == null) {
             return null;
         }
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 
@@ -147,51 +113,49 @@ public class DefaultFileUtility implements FileUtility {
     }
 
     public List<String> getFillExts() {
-        return Arrays.asList(docserviceFillDocs.split("\\|"));
+        return formatService.fillableExtensions();
     }
 
     // get file extensions that can be viewed
     public List<String> getViewedExts() {
-        return Arrays.asList(docserviceViewedDocs.split("\\|"));
+        return formatService.viewableExtensions();
     }
 
     // get file extensions that can be edited
     public List<String> getEditedExts() {
-        return Arrays.asList(docserviceEditedDocs.split("\\|"));
+        return formatService.editableExtensions();
     }
 
     // get file extensions that can be converted
     public List<String> getConvertExts() {
-        return Arrays.asList(docserviceConvertDocs.split("\\|"));
+        return formatService.autoConvertExtensions();
     }
 
     // get all the supported file extensions
     public List<String> getFileExts() {
-        List<String> res = new ArrayList<>();
-
-        res.addAll(getViewedExts());
-        res.addAll(getEditedExts());
-        res.addAll(getConvertExts());
-        res.addAll(getFillExts());
-
-        return res;
+        return formatService.allExtensions();
     }
 
     // generate the file path from file directory and name
     public Path generateFilepath(final String directory, final String fullFileName) {
-        String fileName = getFileNameWithoutExtension(fullFileName);  // get file name without extension
+        int maxName = Integer.parseInt(filenameMax);
+        String fileName = getFileNameWithoutExtension(fullFileName);
+        if (fileName.length() > maxName) {
+            fileName = fileName.substring(0, maxName) + "[...]";
+        }
         String fileExtension = getFileExtension(fullFileName);  // get file extension
-        Path path = Paths.get(directory + fullFileName);  // get the path to the files with the specified name
+        // get the path to the files with the specified name
+        Path path = Paths.get(directory + fileName + "." + fileExtension);
 
         for (int i = 1; Files.exists(path); i++) {  // run through all the files with the specified name
             // get a name of each file without extension and add an index to it
-            fileName = getFileNameWithoutExtension(fullFileName) + "(" + i + ")";
+            fileName = fileName + "(" + i + ")";
 
             // create a new path for this file with the correct name and extension
-            path = Paths.get(directory + fileName + fileExtension);
+            path = Paths.get(directory + fileName + "." + fileExtension);
         }
 
-        path = Paths.get(directory + fileName + fileExtension);
+        path = Paths.get(directory + fileName + "." + fileExtension);
         return path;
     }
 

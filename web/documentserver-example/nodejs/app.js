@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const mime = require('mime');
 const urllib = require('urllib');
+const urlModule = require('url');
 const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
@@ -54,7 +55,7 @@ String.prototype.hashCode = function hashCode() {
   const len = this.length;
   let ret = 0;
   for (let i = 0; i < len; i++) {
-    ret = Math.trunc(31 * ret + this.charCodeAt(i));
+    ret = Math.imul(ret, 31) + this.charCodeAt(i);
   }
   return ret;
 };
@@ -81,14 +82,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public'))); // public directory
-// check if there are static files such as .js, .css files, images, samples and process them
-if (config.has('server.static')) {
-  const staticContent = config.get('server.static');
-  for (let i = 0; i < staticContent.length; i++) {
-    const staticContentElem = staticContent[i];
-    app.use(staticContentElem.name, express.static(staticContentElem.path, staticContentElem.options));
-  }
-}
 app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
@@ -107,6 +100,7 @@ app.get('/', (req, res) => { // define a handler for default page
       params: req.DocManager.getCustomParams(),
       users,
       languages: configServer.get('languages'),
+      serverVersion: config.get('version'),
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
@@ -276,6 +270,18 @@ app.post('/create', (req, res) => {
 
   try {
     req.DocManager = new DocManager(req, res);
+
+    let host = siteUrl;
+    if (host.indexOf('/') === 0) {
+      host = req.DocManager.getServerHost();
+    }
+    if (urlModule.parse(fileUrl).host !== urlModule.parse(host).host) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ error: 'File domain is incorrect' }));
+      res.end();
+      return;
+    }
+
     req.DocManager.storagePath(''); // mkdir if not exist
 
     const fileName = req.DocManager.getCorrectName(title);
@@ -503,6 +509,23 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
                 && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
         ({ fileName } = fileKey);
       }
+    }
+  }
+
+  if (!fileName && !!req.body.link) {
+    if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
+      result({
+        url: req.body.link,
+        directUrl: req.body.link,
+      });
+      return;
+    }
+
+    const urlObj = urlModule.parse(req.body.link, true);
+    fileName = urlObj.query.fileName;
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+      result({ error: 'File is not exist' });
+      return;
     }
   }
 
@@ -752,6 +775,26 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (isSubmitForm) {
           const uid = body.actions[0].userid;
           req.DocManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
+
+          const { formsdataurl } = body;
+          if (formsdataurl) {
+            const formsdataName = req.DocManager.getCorrectName(
+              `${fileUtility.getFileName(correctName, true)}.txt`,
+              userAddress,
+            );
+            // get the path to the file with forms data
+            const formsdataPath = req.DocManager.storagePath(formsdataName, userAddress);
+            const formsdata = await urllib.request(formsdataurl, { method: 'GET' });
+            const statusFormsdata = formsdata.status;
+            const dataFormsdata = formsdata.data;
+            if (statusFormsdata === 200) {
+              fileSystem.writeFileSync(formsdataPath, dataFormsdata); // write the forms data
+            } else {
+              emitWarning(`Document editing service returned status: ${statusFormsdata}`);
+            }
+          } else {
+            emitWarning('Document editing service do not returned formsdataurl');
+          }
         }
       } catch (ex) {
         response.write('{"error":1}');
@@ -905,25 +948,38 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
     const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
-    const templates = [
-      {
-        image: '',
-        title: 'Blank',
-        url: createUrl,
-      },
-      {
-        image: templatesImageUrl,
-        title: 'With sample content',
-        url: `${createUrl}&sample=true`,
-      },
-    ];
+    let templates = null;
+    if (createUrl != null) {
+      templates = [
+        {
+          image: '',
+          title: 'Blank',
+          url: createUrl,
+        },
+        {
+          image: templatesImageUrl,
+          title: 'With sample content',
+          url: `${createUrl}&sample=true`,
+        },
+      ];
+    }
 
     const userGroup = user.group;
     const { reviewGroups } = user;
     const { commentGroups } = user;
     const { userInfoGroups } = user;
 
+    const usersInfo = [];
+    if (user.id !== 'uid-0') {
+      users.getAllUsers().forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersInfo.push(u);
+      }, usersInfo);
+    }
+
     if (fileExt) {
+      fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
       // create demo document of a given extension
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
@@ -954,7 +1010,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (!canEdit && mode === 'edit') {
       mode = 'view';
     }
-    const submitForm = mode === 'fillForms' && userid === 'uid-1';
+
+    let submitForm = false;
+    if (mode === 'fillForms') {
+      submitForm = userid === 'uid-1';
+    }
 
     // file config data
     const argss = {
@@ -993,6 +1053,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
+        userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
         reviewGroups: JSON.stringify(reviewGroups),
@@ -1026,6 +1087,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
       usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersInfo,
     };
 
     if (cfgSignatureEnable) {

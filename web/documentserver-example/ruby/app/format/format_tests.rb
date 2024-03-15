@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ require 'json'
 require 'test/unit'
 require_relative 'format'
 
+# Test case for the Format class.
 class FormatTests < Test::Unit::TestCase
   def test_generates_extension
     content =
@@ -39,6 +40,7 @@ class FormatTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "all" formats.
 class FormatManagerAllTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -46,6 +48,7 @@ class FormatManagerAllTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "documents" formats.
 class FormatManagerDocumentsTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -53,6 +56,7 @@ class FormatManagerDocumentsTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "presentations" formats.
 class FormatManagerPresentationsTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -60,6 +64,7 @@ class FormatManagerPresentationsTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "spreadsheets" formats.
 class FormatManagerSpreadsheetsTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -67,6 +72,7 @@ class FormatManagerSpreadsheetsTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "all convertible" formats.
 class FormatManagerConvertibleTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -74,6 +80,7 @@ class FormatManagerConvertibleTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "all editable" formats.
 class FormatManagerEditableTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -81,6 +88,7 @@ class FormatManagerEditableTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "all viewable" formats.
 class FormatManagerViewableTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new
@@ -88,6 +96,7 @@ class FormatManagerViewableTests < Test::Unit::TestCase
   end
 end
 
+# Test case for the FormatManager class, checks availability "all filable" formats.
 class FormatManagerFilableTests < Test::Unit::TestCase
   def test_loads
     format_manager = FormatManager.new

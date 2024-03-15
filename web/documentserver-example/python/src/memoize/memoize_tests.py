@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,12 +17,14 @@
 from unittest import TestCase
 from . import memoize
 
+
 class MemoizeMock():
     counter: int = 1
 
     @memoize
     def method(self) -> int:
         return self.counter
+
 
 class MemoizeTests(TestCase):
     def test(self):

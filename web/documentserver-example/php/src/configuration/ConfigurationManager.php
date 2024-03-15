@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2023
+// (c) Copyright Ascensio System SIA 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.7.0';
+    public string $version = '1.8.0';
+
+    public function getVersion(): string
+    {
+        return $this -> version;
+    }
 
     public function exampleURL(): ?URL
     {
@@ -158,7 +163,8 @@ class ConfigurationManager
     public function languages(): array
     {
         return [
-            'en' => "English",
+            'en' => 'English',
+            'ar' => 'Arabic',
             'hy' => 'Armenian',
             'az' => 'Azerbaijani',
             'eu' => 'Basque',
@@ -189,6 +195,7 @@ class ConfigurationManager
             'pt-PT' => 'Portuguese (Portugal)',
             'ro' => 'Romanian',
             'ru' => 'Russian',
+            'sr-Latn-CS' => 'Serbian',
             'si' => 'Sinhala (Sri Lanka)',
             'sk' => 'Slovak',
             'sl' => 'Slovenian',

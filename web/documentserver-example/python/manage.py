@@ -11,9 +11,11 @@ from django.urls import path
 from src.common import string
 from src.views import actions, index
 
+
 def debug():
     env = environ.get('DEBUG')
     return string.boolean(env, True)
+
 
 def address():
     env = environ.get('ADDRESS')
@@ -23,11 +25,13 @@ def address():
         return RunServer.default_addr
     return '0.0.0.0'
 
+
 def port():
     env = environ.get('PORT')
     if env:
         return int(env)
     return RunServer.default_port
+
 
 def configuration():
     file = Path(__file__)
@@ -57,14 +61,17 @@ def configuration():
         ]
     }
 
+
 def routers():
     main = [
         path('', index.default),
         path('convert', actions.convert),
         path('create', actions.createNew),
         path('csv', actions.csv),
+        path('assets', actions.assets),
         path('download', actions.download),
         path('downloadhistory', actions.downloadhistory),
+        path('historyobj', actions.history_obj),
         path('edit', actions.edit),
         path('files', actions.files),
         path('reference', actions.reference),
@@ -80,6 +87,7 @@ def routers():
         document_root=settings.STATIC_ROOT
     )
     return main
+
 
 settings.configure(**configuration())
 urlpatterns = routers()

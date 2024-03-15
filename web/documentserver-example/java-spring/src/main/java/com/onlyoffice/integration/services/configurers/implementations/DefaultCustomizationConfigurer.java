@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,5 @@ public class DefaultCustomizationConfigurer implements CustomizationConfigurer<D
     public void configure(final Customization customization, final DefaultCustomizationWrapper wrapper) {
         Action action = wrapper.getAction();  // get the action parameter from the customization wrapper
         User user = wrapper.getUser();
-        customization.setSubmitForm(false);  // set the submitForm parameter to the customization config
     }
 }

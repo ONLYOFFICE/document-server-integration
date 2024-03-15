@@ -1,5 +1,5 @@
 <%#
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 
     var docEditor;
     var config;
+    var versionHistory;
 
     var innerAlert = function (message, inEditor) {
         if (console && console.log)
@@ -102,18 +103,22 @@
     var onRequestInsertImage = function(event) {
         docEditor.insertImage({  // insert an image into the file
             "c": event.data.c,
-            <%= raw @file.get_insert_image %>
+            <%= raw @file.insert_image %>
         })
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button
-    var onRequestCompareFile = function() {
-        docEditor.setRevisedFile(<%= raw @file.get_compare_file.to_json %>);  // select a document for comparing
+    var onRequestSelectDocument = function(event) {
+        var data = <%= raw @file.data_document.to_json %>;
+        data.c = event.data.c;
+        docEditor.setRequestedDocument(data);  // select a document for comparing
     }; 
 
     // the user is trying to select recipients data by clicking the Mail merge button
-    var onRequestMailMergeRecipients = function (event) {
-        docEditor.setMailMergeRecipients(<%= raw @file.dataMailMergeRecipients.to_json %>);  // insert recipient data for mail merge into the file
+    var onRequestSelectSpreadsheet = function (event) {
+        var data = <%= raw @file.data_spreadsheet.to_json %>;
+        data.c = event.data.c;
+        docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
     };
 
     var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -151,17 +156,43 @@
         }
     };
 
-    var onRequestReferenceData = function(event) {  // user refresh external data source
+    var onRequestOpen = function(event) {  // user open external data source
+        innerAlert("onRequestOpen");
+        var windowName = event.data.windowName;
         
-        event.data.directUrl = !!config.document.directUrl;
+        requestReference(event.data, function (data) {
+            if (data.error) {
+                var winEditor = window.open("", windowName);
+                winEditor.close();
+                innerAlert(data.error, true);
+                return;
+            }
+            var link = data.link;
+            window.open(link, windowName);
+        });
+    };
+
+    var onRequestReferenceData = function(event) {  // user refresh external data source
+        innerAlert("onRequestReferenceData");
+
+        requestReference(event.data, function (data) {
+            docEditor.setReferenceData(data);
+        });
+    };
+
+    var requestReference = function(data, callback) {
+        innerAlert(data);
+
+        data.directUrl = !!config.document.directUrl;
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "reference");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify(event.data));
+        xhr.send(JSON.stringify(data));
         xhr.onload = function () {
             innerAlert(xhr.responseText);
-            docEditor.setReferenceData(JSON.parse(xhr.responseText));
+            callback(JSON.parse(xhr.responseText));
         }
+
     };
 
     function onRequestRestore(event) {
@@ -180,13 +211,34 @@
           innerAlert(response.error)
           return
         }
-        document.location.reload();
+        onRequestHistory()
       }
+    }
+
+    function onRequestHistory() {
+        fileData = <%= raw @file.to_json %>;
+        const req = new XMLHttpRequest()
+        req.open("POST", '/historyobj')
+        req.send(JSON.stringify(fileData))
+        req.onload = function () {
+            versionHistory = JSON.parse(req.response)
+            docEditor.refreshHistory(versionHistory.hist)
+        }
+    }
+
+    function onRequestHistoryData(event){
+        var ver = event.data;
+        var histData = versionHistory.histData;
+        docEditor.setHistoryData(histData[ver - 1]);
+    }
+
+    function onRequestHistoryClose(){
+        document.location.reload();
     }
 
     var сonnectEditor = function () {
 
-        config = <%= raw @file.get_config.to_json %>;
+        config = <%= raw @file.config.to_json %>;
 
         config.width = "100%";
         config.height = "100%";
@@ -198,36 +250,45 @@
             'onMakeActionLink': onMakeActionLink,
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
-            'onRequestCompareFile': onRequestCompareFile,
-            'onRequestMailMergeRecipients': onRequestMailMergeRecipients,
-            'onRequestRestore': onRequestRestore
+            'onRequestSelectDocument': onRequestSelectDocument,
+            'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
+            'onRequestRestore': onRequestRestore,
+            'onRequestHistory': onRequestHistory,
+            'onRequestHistoryData': onRequestHistoryData,
+            'onRequestHistoryClose': onRequestHistoryClose
         };
 
         <%
-            history = @file.get_history
-            usersMentions = @file.get_users_mentions %>
+            usersMentions = @file.users_mentions %>
 
             if (config.editorConfig.user.id) {
-                <% if history %>
-                    // the user is trying to show the document version history
-                    config.events['onRequestHistory'] = function () {
-                        docEditor.refreshHistory(<%= raw history[:hist].to_json %>);  // show the document version history
-                    };
-                    // the user is trying to click the specific document version in the document version history
-                    config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = <%= raw history[:histData].to_json %>;
-                        docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                    };
-                    // the user is trying to go back to the document from viewing the document version history
-                    config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };
-                <% end %>
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <%= raw @file.get_users_mentions.to_json %>
+            config.events['onRequestUsers'] = function (event) {
+                if (event && event.data){
+                    var c = event.data.c;
+                }
+                switch (c) {
+                    case "info":
+                        users = [];
+                        var allUsers = <%= raw @file.users_info.to_json %>;
+                        for (var i = 0; i < event.data.id.length; i++) {
+                            for (var j = 0; j < allUsers.length; j++) {
+                                if (allUsers[j].id == event.data.id[i]) {
+                                    users.push(allUsers[j]);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "protect":
+                        var users = <%= raw @file.users_protect.to_json %>;
+                        break;
+                    default:
+                        users = <%= raw @file.users_mentions.to_json %>;
+                }
+                docEditor.setUsers({
+                    "c": c,
+                    "users": users,
                 });
             };
             // the user is mentioned in a comment
@@ -241,6 +302,7 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {

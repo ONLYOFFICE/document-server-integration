@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,12 @@ from typing import Optional
 from urllib.parse import ParseResult, urlparse, urljoin
 from src.common import string
 
+
 class ConfigurationManager:
-    version = '1.7.0'
+    version = '1.8.0'
+
+    def getVersion(self) -> str:
+        return self.version
 
     def example_url(self) -> Optional[ParseResult]:
         url = environ.get('EXAMPLE_URL')
@@ -120,6 +124,7 @@ class ConfigurationManager:
     def languages(self) -> dict[str, str]:
         return {
             'en': 'English',
+            'ar': 'Arabic',
             'hy': 'Armenian',
             'az': 'Azerbaijani',
             'eu': 'Basque',
@@ -150,6 +155,7 @@ class ConfigurationManager:
             'pt-PT': 'Portuguese (Portugal)',
             'ro': 'Romanian',
             'ru': 'Russian',
+            'sr-Latn-CS': 'Serbian',
             'si': 'Sinhala (Sri Lanka)',
             'sk': 'Slovak',
             'sl': 'Slovenian',

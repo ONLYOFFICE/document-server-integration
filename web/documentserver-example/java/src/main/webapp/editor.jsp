@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2023
+        * (c) Copyright Ascensio System SIA 2024
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -117,13 +117,17 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function() {
-            docEditor.setRevisedFile(${dataCompareFile});  // select a document for comparing
+        var onRequestSelectDocument = function(event) {
+            var data = ${dataDocument};
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(${dataMailMergeRecipients});  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {
+            var data = ${dataSpreadsheet};
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -161,15 +165,41 @@
             }
         };
 
+        var onRequestOpen = function(event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
+
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
         var onRequestReferenceData = function(event) {  // user refresh external data source
-            event.data.directUrl = !!config.document.directUrl;
+            innerAlert("onRequestReferenceData");
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function(data, callback) {
+            innerAlert(data);
+            data.directUrl = !!config.document.directUrl;
+
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "IndexServlet?type=reference");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(event.data));
+            xhr.send(JSON.stringify(data));
             xhr.onload = function () {
                 innerAlert(xhr.responseText);
-                docEditor.setReferenceData(JSON.parse(xhr.responseText));
+                callback(JSON.parse(xhr.responseText));
             }
         };
 
@@ -184,14 +214,53 @@
           request.open('PUT', 'IndexServlet?type=restore')
           request.send(JSON.stringify(payload))
           request.onload = function () {
-            if (request.status != 200) {
-              response = JSON.parse(request.response)
-              innerAlert(response.error)
-              return
+            const response = JSON.parse(request.responseText);
+            if (response.success && !response.error) {
+              var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", historyInfoUri, false);
+              xhr.send();
+
+              if (xhr.status == 200) {
+                  var historyInfo = JSON.parse(xhr.responseText);
+                  docEditor.refreshHistory(historyInfo);
+              }
+            } else {
+              innerAlert(response.error);
             }
-            document.location.reload()
           }
         }
+
+        var onRequestHistory = function () {
+            var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyInfoUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyInfo = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(historyInfo);
+            }
+        };
+
+        var onRequestHistoryData = function (event) {
+            var version = event.data;
+            var historyDataUri = "IndexServlet?type=historyData&filename=" + config.document.title
+                + "&version=" + version
+                + "&directUrl=" + !!config.document.directUrl;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyDataUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyData = JSON.parse(xhr.responseText);
+                docEditor.setHistoryData(historyData);
+            }
+        };
+
+        var onRequestHistoryClose = function() {
+            document.location.reload();
+        };
 
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
@@ -204,39 +273,48 @@
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
-            "onRequestRestore": onRequestRestore
+            "onRequestSelectDocument": onRequestSelectDocument,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
+            "onRequestRestore": onRequestRestore,
+            "onRequestHistory": onRequestHistory,
+            "onRequestHistoryData": onRequestHistoryData,
+            "onRequestHistoryClose": onRequestHistoryClose
         };
 
         <%
-            String[] histArray = Model.getHistory();
-            String history = histArray[0];
-            String historyData = histArray[1];
             String usersForMentions = (String) request.getAttribute("usersForMentions");
+            String usersInfo = (String) request.getAttribute("usersInfo");
+            String usersForProtect = (String) request.getAttribute("usersForProtect");
         %>
 
         if (config.editorConfig.user.id) {
-            <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
-                // the user is trying to show the document version history
-                config.events['onRequestHistory'] = function () {
-                    docEditor.refreshHistory(<%= history %>);  // show the document version history
-                };
-                // the user is trying to click the specific document version in the document version history
-                config.events['onRequestHistoryData'] = function (event) {
-                    var ver = event.data;
-                    var histData = <%= historyData %>;
-                    docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-                };
-                // the user is trying to go back to the document from viewing the document version history
-                config.events['onRequestHistoryClose'] = function () {
-                    document.location.reload();
-                };
-            <% } %>
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": <%=usersForMentions%>
+            config.events['onRequestUsers'] = function (event) {
+                if (event && event.data){
+                    var c = event.data.c;
+                }
+                switch (c) {
+                    case "info":
+                        users = [];
+                        var allUsers = <%=usersInfo%>;
+                        for (var i = 0; i < event.data.id.length; i++) {
+                            for (var j = 0; j < allUsers.length; j++) {
+                                if (allUsers[j].id == event.data.id[i]) {
+                                    users.push(allUsers[j]);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "protect":
+                        var users = <%=usersForProtect%>;
+                        break;
+                    default:
+                        users = <%=usersForMentions%>;
+                }
+                docEditor.setUsers({
+                    "c": c,
+                    "users": users,
                 });
             };
             // the user is mentioned in a comment
@@ -250,6 +328,7 @@
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
         }
 
         if (config.editorConfig.createUrl) {

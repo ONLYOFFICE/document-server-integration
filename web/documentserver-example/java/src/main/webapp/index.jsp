@@ -16,9 +16,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width" />
+        <meta name="server-version" content="<%= ConfigManager.getProperty("version") %>" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2023
+        * (c) Copyright Ascensio System SIA 2024
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -68,7 +69,7 @@
                                                 <a class="try-editor slide" data-type="pptx">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">Form template</a>
+                                                <a class="try-editor form" data-type="docxf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="create-sample">
@@ -349,7 +350,7 @@
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                             </td>
                             <td class="copy">
-                                &copy; Ascensio Systems SIA 2023. All rights reserved.
+                                &copy; Ascensio Systems SIA 2024. All rights reserved.
                             </td>
                         </tr>
                     </tbody>
@@ -367,9 +368,9 @@
         <script type="text/javascript" src="scripts/jscript.js"></script>
 
         <script language="javascript" type="text/javascript">
-            var FillExtList = "<%= String.join(",", DocumentManager.getFillExts()) %>";
-            var ConverExtList = "<%= String.join(",", DocumentManager.getConvertExts()) %>";
-            var EditedExtList = "<%= String.join(",", DocumentManager.getEditedExts()) %>";
+            var FillExtList = "<%= String.join(",", DocumentManager.getFillExts()) %>".split(",");
+            var ConverExtList = "<%= String.join(",", DocumentManager.getConvertExts()) %>".split(",");
+            var EditedExtList = "<%= String.join(",", DocumentManager.getEditedExts()) %>".split(",");
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
 
