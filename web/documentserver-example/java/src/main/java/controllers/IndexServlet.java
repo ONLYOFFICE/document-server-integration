@@ -29,6 +29,7 @@ import helpers.FileUtility;
 import helpers.ServiceConverter;
 import helpers.TrackManager;
 import helpers.Users;
+import format.FormatManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -138,6 +139,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "historydata":
                 historyData(request, response, writer);
+                break;
+            case "formats":
+                formats(request, response, writer);
                 break;
             default:
                 break;
@@ -1037,6 +1041,16 @@ public class IndexServlet extends HttpServlet {
             return;
         }
         writer.write("{}");
+    }
+
+    private static void formats(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("formats", (new FormatManager()).getFormats());
+        response.setContentType("application/json");
+        Gson gson = new Gson();
+        writer.write(gson.toJson(data));
     }
 
     // process get request
