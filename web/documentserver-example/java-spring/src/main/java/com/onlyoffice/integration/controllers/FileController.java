@@ -41,6 +41,7 @@ import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
 import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
 import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
+import com.onlyoffice.integration.documentserver.util.service.FormatService;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -125,6 +126,8 @@ public class FileController {
     private CallbackManager callbackManager;
     @Autowired
     private HistoryManager historyManager;
+    @Autowired
+    private FormatService formatService;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
@@ -670,5 +673,14 @@ public class FileController {
             responseBody.put("success", false);
             return responseBody.toJSONString();
         }
+    }
+
+    @GetMapping("/formats")
+    @ResponseBody
+    public String formats() {  // return all the supported formats
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("formats", formatService.getFormats());
+        Gson gson = new Gson();
+        return gson.toJson(data);
     }
 }

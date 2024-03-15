@@ -17,6 +17,27 @@
  */
 
 var directUrl;
+var formatManager;
+
+window.onload = function () {
+    fetch('/formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
@@ -103,7 +124,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (ConverExtList.includes(posExt) === -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -180,7 +201,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.includes(posExt) !== -1 || FillExtList.includes(posExt) !== -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };

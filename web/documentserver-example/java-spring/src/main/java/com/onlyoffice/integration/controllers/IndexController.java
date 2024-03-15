@@ -136,13 +136,6 @@ public class IndexController {
     @ResponseBody
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
-
-        configuration.put("FillExtList", String.join(",", fileUtility
-                .getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility
-                .getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility
-                .getEditedExts()));  // put a list of the extensions that can be edited to config
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 
