@@ -1,17 +1,10 @@
 # Change Log
 
+- handling conversion -9 error
 - nodejs: wopi formsubmit icon
-- csharp-mvc: handling conversion -9 error
-- csharp: handling conversion -9 error
-- java-spring: handling conversion -9 error
-- java: handling conversion -9 error
-- ruby: handling conversion -9 error
-- python: handling conversion -9 error
-- php: handling conversion -9 error
 - nodejs: tabs menu
 - nodejs: delete all files
 - change insert image
-- nodejs: handling conversion -9 error
 - different goback for users
 - nodejs: converting function on index page
 
