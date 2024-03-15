@@ -536,4 +536,13 @@ class HomeController < ApplicationController
       }
     )
   end
+
+  # return all supported formats
+  def formats
+    render(
+      json: JSON.generate({
+        formats: FormatManager.new.all.map {|format| format.serialize}
+      })
+    )
+  end
 end
