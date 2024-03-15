@@ -23,6 +23,7 @@ using System.IO;
 using static OnlineEditorsExampleMVC.Models.FileUtility;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Converters;
 
 namespace OnlineEditorsExampleMVC.Models
 {
@@ -48,9 +49,21 @@ namespace OnlineEditorsExampleMVC.Models
         }
     }
 
+    public class EmptyTolerantStringEnumConverter : StringEnumConverter
+    {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.String && string.IsNullOrWhiteSpace(reader.Value.ToString()))
+                return Activator.CreateInstance(objectType);
+
+            return base.ReadJson(reader, objectType, existingValue, serializer);
+        }       
+    }
+
     public class Format
     {
         public string Name { get; }
+        [JsonConverter(typeof(EmptyTolerantStringEnumConverter))]
         public FileType Type { get; }
         public List<string> Actions { get; }
         public List<string> Convert { get; }

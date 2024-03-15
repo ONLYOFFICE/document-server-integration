@@ -98,10 +98,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <div class="links-panel links-panel-border clearFix">
-                                <a href="./" class="">Go to Index page</a>
-                            </div>
                         </div>
                     </td>
                     <td class="section">
@@ -109,6 +105,12 @@
                             <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                             <% if (!wopiEnable)
                                { %>
+                                <div class="links-panel">
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home" class="links-panel-home"/>
+                                    </a>
+                                    <a href="wopi" class="links-panel-current">Wopi</a>
+                                </div>
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
                                     Before you get started with a demo sample of ONLYOFFICE Docs, please enable the WOPI protocol.
@@ -129,6 +131,12 @@
                         <% if (storedFiles.length > 0)
                             { %>
                                 <div class="stored-list">
+                                    <div class="links-panel">
+                                        <a href="./">
+                                            <img src="images/home.svg" alt="Home" class="links-panel-home"/>
+                                        </a>
+                                        <a href="wopi" class="links-panel-current">Wopi</a>
+                                    </div>
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
                                             <span class="header-list">Your documents</span>

@@ -36,7 +36,7 @@ class ConfigurationManager:
     def document_server_public_url(self) -> ParseResult:
         url = (
             environ.get('DOCUMENT_SERVER_PUBLIC_URL') or
-            'http://document-server'
+            'http://documentserver'
         )
         return urlparse(url)
 

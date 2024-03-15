@@ -331,22 +331,45 @@ label .checkbox {
     width: 192px;
 }
 
-.create-panel,
-.links-panel {
+.create-panel {
     float: left;
     padding: 16px 0;
+}
+
+.links-panel {
+    display: flex;
+    column-gap: 30px;
+    margin-bottom: 35px;
+    align-items: center;
+}
+
+.links-panel-current {
+    position: relative;
+}
+
+.links-panel-current::after {
+    content: "";
+    background-color: #ff6f3d;
+    position: absolute;
+    left: -10%;
+    bottom: -8px;
+    width: 120%;
+    height: 2.5px;
+}
+
+.links-panel a {
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.links-panel-home {
+    width: 22px;
 }
 
 .upload-panel,
 .create-panel {
     width: 100%;
     border-bottom: 1px solid #D0D5DA;
-}
-
-.links-panel-border {
-    margin-top: 24px;
-    width: 100%;
-    border-top: 1px solid #D0D5DA;
 }
 
 #mainProgress {
@@ -837,7 +860,7 @@ footer table tr td:first-child {
     overflow-x: auto;
     position: absolute;
     right: 0;
-    top: 71px;
+    top: 130px;
     scrollbar-color: #D0D5DA transparent;
     scrollbar-width: thin;
 }

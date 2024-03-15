@@ -48,7 +48,7 @@ final class DocEditorView extends View
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
-        $user = $userList->getUser($request["user"]);
+        $user = $userList->getUser($request["user"] ?? null);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
@@ -165,7 +165,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
-                    "image" => $user->avatar ? serverPath(true) . "/assets/images/" . $user->id . ".png" : null
+                    "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -230,7 +230,7 @@ final class DocEditorView extends View
         if ($user->id != 'uid-0') {
             foreach ($userList->getAllUsers() as $userInfo) {
                 $u = $userInfo;
-                $u->image = $userInfo->avatar ? serverPath(true) . "/assets/images/" . $userInfo->id . ".png" : null;
+                $u->image = $userInfo->avatar ? serverPath(false) . "/assets/images/" . $userInfo->id . ".png" : null;
                 array_push($usersInfo, $u);
             }
         }

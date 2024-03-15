@@ -158,7 +158,7 @@ function getTemplateImageUrl($filename)
 {
     $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $path = serverPath(true) . "/assets/images/";
+    $path = serverPath(false) . "/assets/images/";
 
     foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
@@ -553,6 +553,9 @@ function processConvServResponceError($errorCode)
 
     // add the error message to the error message template depending on the error code
     switch ($errorCode) {
+        case -9:
+            $errorMessage = $errorMessageTemplate . "Error conversion output format";
+            break;
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;

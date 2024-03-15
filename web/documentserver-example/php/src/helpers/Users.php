@@ -33,6 +33,7 @@ final class Users
     public ?array $userInfoGroups;
 
     public ?bool $avatar;
+    public ?string $image;
     public ?array $goback;
 
     /**

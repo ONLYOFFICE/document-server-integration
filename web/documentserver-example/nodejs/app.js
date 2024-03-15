@@ -270,6 +270,18 @@ app.post('/create', (req, res) => {
 
   try {
     req.DocManager = new DocManager(req, res);
+
+    let host = siteUrl;
+    if (host.indexOf('/') === 0) {
+      host = req.DocManager.getServerHost();
+    }
+    if (urlModule.parse(fileUrl).host !== urlModule.parse(host).host) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(JSON.stringify({ error: 'File domain is incorrect' }));
+      res.end();
+      return;
+    }
+
     req.DocManager.storagePath(''); // mkdir if not exist
 
     const fileName = req.DocManager.getCorrectName(title);
@@ -645,7 +657,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           const zip = await urllib.request(downloadZip, { method: 'GET' });
           const statusZip = zip.status;
           const dataZip = zip.data;
-          if (status === 200) {
+          if (statusZip === 200) {
             fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
           } else {
             emitWarning(`Document editing service returned status: ${statusZip}`);
@@ -928,6 +940,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { name } = user;
 
     if (fileExt) {
+      fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
       // create demo document of a given extension
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
@@ -983,12 +996,19 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { userInfoGroups } = user;
 
     const usersInfo = [];
+    const usersForProtect = [];
     if (user.id !== 'uid-0') {
       users.getAllUsers().forEach((userInfo) => {
         const u = userInfo;
         u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
         usersInfo.push(u);
       }, usersInfo);
+
+      users.getUsersForProtect(user.id).forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersForProtect.push(u);
+      }, usersForProtect);
     }
 
     fileExt = fileUtility.getFileExtension(fileName);
@@ -1092,7 +1112,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
-      usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersForProtect,
       usersInfo,
     };
 

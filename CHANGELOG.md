@@ -1,13 +1,9 @@
 # Change Log
 
-- php: delete all files
-- java: delete all files
-- java-spring: delete all files
-- python: delete all files
-- ruby: delete all files
-- csharp: delete all files
-- csharp-mvc: delete all files
-- nodejs: delete all files
+- delete all files
+- nodejs: wopi formsubmit icon
+- php: handling conversion -9 error
+- nodejs: tabs menu
 - change insert image
 - nodejs: handling conversion -9 error
 - different goback for users

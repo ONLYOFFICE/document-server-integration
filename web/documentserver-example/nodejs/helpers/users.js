@@ -180,10 +180,7 @@ users.getUsersForProtect = function getUsersForProtect(id) {
   const result = [];
   this.forEach((user) => {
     if (user.id !== id && user.name != null) {
-      result.push({
-        id: user.id,
-        name: user.name,
-      });
+      result.push(user);
     }
   });
   return result;
