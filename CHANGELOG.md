@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: wopi formsubmit icon
 - nodejs: close editor
 
 ## 1.8.0
