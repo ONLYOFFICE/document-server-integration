@@ -357,9 +357,6 @@
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
 
     <script language="javascript" type="text/javascript">
-        var FillExtList = '<%= string.Join(",", DocManagerHelper.FillFormExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';
         var UrlConverter = '<%= Url.Content("~/webeditor.ashx?type=convert") %>';
         var UrlEditor = '<%= Url.Action("editor", "Home") %>';
     </script>

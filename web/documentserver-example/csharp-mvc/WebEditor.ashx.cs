@@ -87,6 +87,9 @@ namespace OnlineEditorsExampleMVC
                 case "reference":
                     Reference(context);
                     break;
+                case "formats":
+                    Formats(context);
+                    break;
             }
         }
 
@@ -951,6 +954,25 @@ namespace OnlineEditorsExampleMVC
             return history;
         }
 
+        // return all the supported formats
+        private static void Formats(HttpContext context)
+        {
+            try
+            {
+                Dictionary<string, object> data = new Dictionary<string, object>
+                {
+                    { "formats", FormatManager.All() }
+                };
+                context.Response.ContentType = "application/json";
+                var jss = new JavaScriptSerializer();
+
+                context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
     }
  
 }
