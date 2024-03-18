@@ -285,6 +285,7 @@ def removeFile(filename, req):
     if os.path.exists(histDir):  # remove all the history information about this file
         shutil.rmtree(histDir)
 
+
 # remove the user's directory and all the containing files
 def removeUserFolder(req):
     path = os.path.normpath(getRootFolder(req))
@@ -293,6 +294,7 @@ def removeUserFolder(req):
         raise FileNotFoundError
 
     shutil.rmtree(path)
+
 
 # generate file key
 def generateFileKey(filename, req):

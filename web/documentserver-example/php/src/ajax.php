@@ -300,7 +300,7 @@ function convert()
 function delete()
 {
     try {
-        if(isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
+        if (isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
             $fileName = basename($_GET["fileName"]);
             $filePath = getStoragePath($fileName);
 

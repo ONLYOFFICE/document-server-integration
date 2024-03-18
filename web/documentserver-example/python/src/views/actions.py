@@ -20,7 +20,6 @@ from datetime import datetime
 from http import HTTPStatus
 import json
 import os
-import shutil
 from pathlib import Path
 from shutil import copy
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
