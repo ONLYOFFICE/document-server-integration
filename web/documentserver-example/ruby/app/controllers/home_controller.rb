@@ -253,7 +253,7 @@ class HomeController < ApplicationController
   def remove
     DocumentHelper.init(request.remote_ip, request.base_url)
 
-    if params[:filename] && params[:filename].present?
+    if params[:filename].present?
       file_name = File.basename(params[:filename]) # get the file name
       unless file_name # if it doesn't exist
         render(plain: '{"success":false}') # report that the operation is unsuccessful
