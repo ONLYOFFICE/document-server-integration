@@ -103,7 +103,21 @@ const descrUser0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true, { blank: false }),
+  new User(
+    'uid-1',
+    'John Smith',
+    'smith@example.com',
+    null,
+    null,
+    {},
+    null,
+    null,
+    [],
+    descrUser1,
+    true,
+    true,
+    { blank: false },
+  ),
   new User(
     'uid-2',
     'Mark Pottato',
