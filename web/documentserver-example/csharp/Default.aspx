@@ -364,12 +364,9 @@
     <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
+    <script language="javascript" type="text/javascript" src="script/format.js"></script>
+    <script language="javascript" type="text/javascript" src="script/format-manager.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
-    <script language="javascript" type="text/javascript">
-        var FillFormExtList = '<%= string.Join(",", FillFormsExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
-    </script>
 
 </body>
 </html>
