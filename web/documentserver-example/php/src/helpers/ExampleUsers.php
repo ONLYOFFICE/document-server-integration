@@ -94,7 +94,7 @@ final class ExampleUsers
                 $this->user1Description,
                 true,
                 true,
-                []
+                ["blank" => false,]
             ),
             new Users(
                 "uid-2",
@@ -132,7 +132,7 @@ final class ExampleUsers
                 $this->user3Description,
                 false,
                 false,
-                ["blank" => false,]
+                null
             ),
             new Users(
                 "uid-0",

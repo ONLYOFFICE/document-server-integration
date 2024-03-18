@@ -94,7 +94,7 @@ namespace OnlineEditorsExample
                     descr_user_1,
                     true,
                     true,
-                    new Goback()
+                    new Goback(null, false)
                 ),
             new User(
                     "uid-2",
@@ -134,7 +134,7 @@ namespace OnlineEditorsExample
                     descr_user_3,
                     false,
                     false,
-                    new Goback(null,false)
+                    null
                 ),
             new User(
                     "uid-0",

@@ -134,7 +134,7 @@ class Users
       @descr_user_first,
       true,
       true,
-      {}
+      { blank: false }
     ),
     User.new(
       'uid-2',
@@ -172,7 +172,7 @@ class Users
       @descr_user_third,
       false,
       false,
-      { blank: false }
+      nil
     ),
     User.new(
       'uid-0',
