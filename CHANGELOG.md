@@ -8,6 +8,7 @@
 - nodejs: handling conversion -9 error
 - different goback for users
 - nodejs: converting function on index page
+- nodejs: close editor
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType

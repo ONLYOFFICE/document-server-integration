@@ -1093,6 +1093,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
         goback: user.goback != null ? user.goback : '',
+        close: user.close,
       },
       dataInsertImage: {
         fileType: 'svg',

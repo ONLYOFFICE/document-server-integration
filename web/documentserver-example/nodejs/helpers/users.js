@@ -31,6 +31,7 @@ class User {
     templates,
     avatar,
     goback,
+    close,
   ) {
     this.id = id;
     this.name = name;
@@ -45,6 +46,7 @@ class User {
     this.templates = templates;
     this.avatar = avatar;
     this.goback = goback;
+    this.close = close;
   }
 }
 
@@ -117,6 +119,7 @@ const users = [
     true,
     true,
     { blank: false },
+    { visible: false },
   ),
   new User(
     'uid-2',
@@ -136,6 +139,7 @@ const users = [
     false,
     true,
     { text: 'Go to Documents' },
+    {},
   ),
   new User(
     'uid-3',
@@ -155,8 +159,9 @@ const users = [
     false,
     false,
     null,
+    {},
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null),
 ];
 
 // get a list of all the users
