@@ -1067,6 +1067,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
+        close: user.close,
       },
       dataInsertImage: {
         fileType: 'png',

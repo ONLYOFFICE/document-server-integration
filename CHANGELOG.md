@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: close editor
+
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf

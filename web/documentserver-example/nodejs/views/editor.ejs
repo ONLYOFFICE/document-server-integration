@@ -57,6 +57,11 @@
             document.title = title + (event.data ? "*" : "");
         };
 
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
             if (event.data.favorite) {
                 var favorite = !!event.data.favorite;
@@ -372,6 +377,7 @@
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestClose = onRequestClose;
             config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
