@@ -141,7 +141,7 @@ class ServiceConverter
 
     error_element = file_result['error']
     unless error_element.nil? # if an error occurs
-      process_convert_service_responce_error(Integer(error_element, 10)) # get an error message
+      process_convert_service_responce_error(Integer(error_element)) # get an error message
     end
 
     is_end_convert = file_result['endConvert'] # check if the conversion is completed
