@@ -1199,7 +1199,7 @@ app.get('/formats', (req, res) => {
   try {
     const formats = fileUtility.getFormats();
     res.json({
-      "formats": formats
+      formats,
     });
   } catch (ex) {
     console.log(ex); // display error message in the console

@@ -16,8 +16,6 @@
 
 """
 
-import json
-
 from django.shortcuts import render
 
 from src.configuration import ConfigurationManager
