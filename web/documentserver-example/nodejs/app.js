@@ -994,12 +994,19 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { userInfoGroups } = user;
 
     const usersInfo = [];
+    const usersForProtect = [];
     if (user.id !== 'uid-0') {
       users.getAllUsers().forEach((userInfo) => {
         const u = userInfo;
         u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
         usersInfo.push(u);
       }, usersInfo);
+
+      users.getUsersForProtect(user.id).forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersForProtect.push(u);
+      }, usersForProtect);
     }
 
     fileExt = fileUtility.getFileExtension(fileName);
@@ -1084,6 +1091,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
         goback: user.goback != null ? user.goback : '',
+        close: user.close,
       },
       dataInsertImage: {
         fileType: 'svg',
@@ -1103,7 +1111,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
-      usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersForProtect,
       usersInfo,
     };
 

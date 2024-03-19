@@ -165,7 +165,13 @@ class ServiceConverter
 
       percent_element = file_result['percent'] # get the percentage value
 
-      result_percent = Integer(percent_element, 10) unless percent_element.nil?
+      result_percent = unless percent_element.nil?
+                         if percent_element.is_a?(String)
+                           Integer(percent_element, 10)
+                         else
+                           Integer(percent_element)
+                         end
+                       end
 
       result_percent = 99 if result_percent >= 100
 
