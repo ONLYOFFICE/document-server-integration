@@ -128,7 +128,7 @@ final class DocEditorView extends View
                             $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
                     "print" => !in_array("print", $user->deniedPermissions),
                     "fillForms" => $editorsMode != "view" && $editorsMode != "comment"
-                        && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+                        && $editorsMode != "blockcontent",
                     "modifyFilter" => $editorsMode != "filter",
                     "modifyContentControl" => $editorsMode != "blockcontent",
                     "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),

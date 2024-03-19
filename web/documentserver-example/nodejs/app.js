@@ -1041,7 +1041,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         chat: userid !== 'uid-0',
         coEditing: mode === 'view' && userid === 'uid-0' ? { mode: 'strict', change: false } : null,
         comment: mode !== 'view' && mode !== 'fillForms' && mode !== 'embedded' && mode !== 'blockcontent',
-        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'embedded' && mode !== 'blockcontent',
+        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'blockcontent',
         modifyFilter: mode !== 'filter',
         modifyContentControl: mode !== 'blockcontent',
         copy: !user.deniedPermissions.includes('copy'),

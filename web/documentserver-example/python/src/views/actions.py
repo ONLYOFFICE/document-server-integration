@@ -272,7 +272,7 @@ def edit(request):
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment') \
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",

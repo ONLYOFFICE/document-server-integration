@@ -1,5 +1,6 @@
 # Change Log
 
+- fill permission in embedded mode
 - nodejs: wopi formsubmit icon
 - nodejs: close editor
 
