@@ -19,13 +19,25 @@
 var language;
 var userid;
 var directUrl;
-var Formats;
+var formatManager;
 
 window.onload = function () {
     fetch('formats')
         .then((response) => response.json())
         .then((data) => {
-            Formats = data;
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
         })
 }
 
@@ -125,7 +137,7 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (ConverExtList.indexOf(posExt) == -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -215,10 +227,7 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});
-        var checkFilled = FilledExtList.split(",").filter(function(ext) { return ext == posExt;});
-
-        if (checkEdited != "" || checkFilled != "") {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -369,10 +378,14 @@ if (typeof jQuery != "undefined") {
         jq("#convertFileName").removeClass("word slide cell");
         jq("#convertFileName").addClass(type);
         jq("#convTypes").empty();
-        let convExtensions = Formats.find(format => {return format.name == fileName.split('.').pop()}).convert;
-        convExtensions.forEach(ext => {
-            jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
-        });
+
+        let format = formatManager.findByExtension(fileName.split('.').pop());
+        if (format) {
+            format.convert.forEach(ext => {
+                jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
+            });
+        }
+
         jq("#hiddenFileName").val(fileName);
         jq("#convertStep1").addClass("done");
         jq("#convertStep2").addClass("waiting");
