@@ -78,6 +78,7 @@ def processError(error):
     prefix = 'Error occurred in the ConvertService: '
 
     mapping = {
+        '-9': f'{prefix}Error conversion output format',
         '-8': f'{prefix}Error document VKey',
         '-7': f'{prefix}Error document request',
         '-6': f'{prefix}Error database',

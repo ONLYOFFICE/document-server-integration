@@ -304,6 +304,15 @@
                 <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                 <span id="step1" class="step">1. Loading the file.</span>
                 <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                <div id="select-file-type" class="invisible">
+                    <br />
+                    <span class="step">Please select the current document type</span>
+                    <div class="buttonsMobile indent">
+                        <div class="button file-type document" data="docx">Document</div>
+                        <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                        <div class="button file-type presentation" data="pptx">Presentation</div>
+                    </div>
+                </div>
                 <br />
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>

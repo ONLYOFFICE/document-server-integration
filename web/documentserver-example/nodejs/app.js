@@ -688,7 +688,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
-        response.write('{"error":1}');
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -700,7 +700,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file saving process
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"save uri is empty"}');
         response.end();
         return;
       }
@@ -811,7 +811,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
       } catch (ex) {
-        response.write('{"error":1}');
+        console.log(ex);
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -823,7 +824,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file force saving process
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"forcesave uri is empty"}');
         response.end();
         return;
       }
@@ -915,7 +916,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
     }
     if (!body) {
-      res.write('{"error":1}');
+      res.write('{"error":1,"message":"body is empty"}');
       res.end();
       return;
     }
@@ -1093,6 +1094,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
         goback: user.goback != null ? user.goback : '',
+        close: user.close,
       },
       dataInsertImage: {
         fileType: 'svg',

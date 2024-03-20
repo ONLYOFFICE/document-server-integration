@@ -1,13 +1,13 @@
 # Change Log
 
 - delete all files
+- handling conversion -9 error
 - nodejs: wopi formsubmit icon
-- php: handling conversion -9 error
 - nodejs: tabs menu
 - change insert image
-- nodejs: handling conversion -9 error
 - different goback for users
 - nodejs: converting function on index page
+- nodejs: close editor
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType

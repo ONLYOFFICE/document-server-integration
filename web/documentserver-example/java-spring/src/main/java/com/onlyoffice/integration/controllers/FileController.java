@@ -248,15 +248,15 @@ public class FileController {
         // get document type (word, cell or slide)
         DocumentType type = fileUtility.getDocumentType(fileName);
 
-        // convert to .ooxml
-        String internalFileExt = "ooxml";
+        // get an auto-conversion extension from the request body or set it to the ooxml extension
+        String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
 
         try {
             // check if the file with such an extension can be converted
             if (fileUtility.getConvertExts().contains(fileExt)) {
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
                 ConvertedData response = serviceConverter  // get the URL to the converted file
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
 
                 String newFileUri = response.getUri();
                 String newFileType = "." + response.getFileType();
@@ -291,9 +291,10 @@ public class FileController {
             return createUserMetadata(uid, fileName);
         } catch (Exception e) {
             e.printStackTrace();
+
+            // if the operation of file converting is unsuccessful, an error occurs
+            return "{ \"error\": \"" + e.getMessage() + "\"}";
         }
-        // if the operation of file converting is unsuccessful, an error occurs
-        return "{ \"error\": \"" + "The file can't be converted.\"}";
     }
 
     @PostMapping("/delete")
