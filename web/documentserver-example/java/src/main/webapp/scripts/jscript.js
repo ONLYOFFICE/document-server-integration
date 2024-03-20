@@ -305,6 +305,21 @@ if (typeof jQuery !== "undefined") {
         });
     });
 
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                url: "IndexServlet?type=remove",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
+    });
+
         function showUserTooltip (isMobile) {
         if ( jq("div#portal-info").is(":hidden") ) {
             jq("div#portal-info").show();

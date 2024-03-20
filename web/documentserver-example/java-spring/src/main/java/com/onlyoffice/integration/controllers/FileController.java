@@ -301,15 +301,23 @@ public class FileController {
     @ResponseBody
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
-            String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
+            String filename = body.getFileName();
+            boolean success = false;
 
-            // delete a file from the storage and return the status of this operation (true or false)
-            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+            if (filename != null) {
+                String fullFileName = fileUtility.getFileName(filename);  // get full file name
 
-            // delete file history and return the status of this operation (true or false)
-            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                // delete a file from the storage and return the status of this operation (true or false)
+                boolean fileSuccess = storageMutator.deleteFile(fullFileName);
 
-            return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
+                // delete file history and return the status of this operation (true or false)
+                boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                success = fileSuccess && historySuccess;
+            } else {
+                // delete the user's folder and return the boolean status
+                success = storageMutator.deleteUserFolder();
+            }
+            return "{ \"success\": \"" + (success) + "\"}";
         } catch (Exception e) {
             // if the operation of file deleting is unsuccessful, an error occurs
             return "{ \"error\": \"" + e.getMessage() + "\"}";

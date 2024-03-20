@@ -399,8 +399,17 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                Remove(fileName);  // remove a file and its history if it exists
+                string fileName = context.Request["fileName"];
+
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(context.Request["fileName"]);
+                    Remove(fileName);  // remove a file and its history if it exists
+                }
+                else
+                {
+                    RemoveUserDirectory(); // remove the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }
@@ -418,6 +427,14 @@ namespace OnlineEditorsExampleMVC
 
             if (File.Exists(path)) File.Delete(path);
             if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+        }
+
+        // remove the user's directory
+        private static void RemoveUserDirectory()
+        {
+            var path = DocManagerHelper.StoragePath("", null);  // get the path to the user directory
+
+            if (Directory.Exists(path)) Directory.Delete(path, true);
         }
 
         // get files information

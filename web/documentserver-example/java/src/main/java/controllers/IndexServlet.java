@@ -417,17 +417,23 @@ public class IndexServlet extends HttpServlet {
                                final HttpServletResponse response,
                                final PrintWriter writer) {
         try {
-            String fileName = FileUtility.getFileName(request.getParameter("filename"));
-            String path = DocumentManager.storagePath(fileName, null);
+            String fileName = request.getParameter("filename");
+            if (fileName != null && !fileName.isEmpty()) {
+                fileName = FileUtility.getFileName(fileName);
+                String path = DocumentManager.storagePath(fileName, null);
 
-            // delete file
-            File f = new File(path);
-            delete(f);
+                // delete file
+                File f = new File(path);
+                delete(f);
 
-            // delete file history
-            File hist = new File(DocumentManager.historyDir(path));
-            delete(hist);
-
+                // delete file history
+                File hist = new File(DocumentManager.historyDir(path));
+                delete(hist);
+            } else {
+                // delete the user's folder and all the containing files
+                File userFolder = new File(DocumentManager.storagePath(null, null));
+                delete(userFolder);
+            }
             writer.write("{ \"success\": true }");
         } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");

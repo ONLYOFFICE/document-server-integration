@@ -222,12 +222,22 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
-                var histDir = _Default.HistoryDir(path);
+                string fileName = context.Request["fileName"];
+                string userAddress = HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
 
-                if (File.Exists(path)) File.Delete(path);  // delete file
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(fileName);
+                    var path = _Default.StoragePath(fileName, userAddress);
+                    var histDir = _Default.HistoryDir(path);
+
+                    if (File.Exists(path)) File.Delete(path);  // delete file
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                } else
+                {
+                    string userDir = _Default.StoragePath("", userAddress);
+                    if (Directory.Exists(userDir)) Directory.Delete(userDir, true);  // delete the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }

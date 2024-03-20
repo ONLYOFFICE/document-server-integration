@@ -1,9 +1,9 @@
 # Change Log
 
+- delete all files
 - handling conversion -9 error
 - nodejs: wopi formsubmit icon
 - nodejs: tabs menu
-- nodejs: delete all files
 - change insert image
 - different goback for users
 - nodejs: converting function on index page

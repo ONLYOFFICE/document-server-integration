@@ -202,6 +202,11 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         return historyDeleted || historyWithoutExtDeleted;
     }
 
+    // delete the user's folder recursively
+    public boolean deleteUserFolder() {
+        return FileSystemUtils.deleteRecursively(new File(getStorageLocation()));
+    }
+
     // update a file
     public String updateFile(final String fileName, final byte[] bytes) {
         Path path = fileUtility

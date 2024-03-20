@@ -314,6 +314,24 @@ if (typeof jQuery !== "undefined") {
         });
     });
 
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "application/json",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({filename: null, filePass: null}),
+                url: "/delete",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
+    });
+
     function showUserTooltip (isMobile) {
         if ( jq("div#portal-info").is(":hidden") ) {
             jq("div#portal-info").show();
