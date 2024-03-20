@@ -283,7 +283,8 @@ public class IndexServlet extends HttpServlet {
             String fileUri = DocumentManager.getDownloadUrl(fileName, true);
             String fileExt = FileUtility.getFileExtension(fileName);
             FileType fileType = FileUtility.getFileType(fileName);
-            String internalFileExt = "ooxml";
+            // get an auto-conversion extension from the request body or set it to the ooxml extension
+            String conversionExtension = body.get("fileExt") != null ? (String) body.get("fileExt") : "ooxml";
 
             // check if the file with such an extension can be converted
             if (DocumentManager.getConvertExts().contains(fileExt)) {
@@ -292,7 +293,7 @@ public class IndexServlet extends HttpServlet {
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
                 String newFileUri = newFileData.get("fileUrl");
                 String newFileType = "." + newFileData.get("fileType");
 

@@ -240,7 +240,13 @@ namespace OnlineEditorsExampleMVC
                 var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
 
                 var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
-                var internalExtension = "ooxml";
+                string conversionExtension = "ooxml";
+                object fileExt;
+
+                if (body.TryGetValue("fileExt", out fileExt) && !String.IsNullOrEmpty(fileExt.ToString()))
+                {
+                    conversionExtension = fileExt.ToString();
+                }
 
                 // check if the file with such an extension can be converted
                 if (DocManagerHelper.ConvertExts.Contains("." + extension))
@@ -258,7 +264,7 @@ namespace OnlineEditorsExampleMVC
 
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
-                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, internalExtension, key, true, out newFileData, filePass, lang);
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");

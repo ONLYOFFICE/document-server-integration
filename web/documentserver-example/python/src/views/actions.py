@@ -75,13 +75,16 @@ def convert(request):
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
-        newExt = 'ooxml'  # convert to .ooxml
+        # get an auto-conversion extension from the request body or set it to the ooxml extension
+        conversionExtension = body.get('fileExt') or 'ooxml'
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
-            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)
+            convertedData = serviceConverter.getConvertedData(
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                )
 
             # if the converter url is not received, the original file name is passed to the response
             if not convertedData:
