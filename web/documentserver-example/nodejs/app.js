@@ -984,7 +984,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
       // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
       + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
