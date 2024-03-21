@@ -1,11 +1,11 @@
 [submodule "web/documentserver-example/nodejs/public/assets/document-templates"]
 	path = web/documentserver-example/nodejs/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/en
+	branch = main/en-8.1
 [submodule "web/documentserver-example/nodejs/public/assets/document-formats"]
 	path = web/documentserver-example/nodejs/public/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = feature/v8.0
+	branch = feature/v8.1
 [submodule "web/documentserver-example/csharp-mvc/assets/document-templates"]
 	path = web/documentserver-example/csharp-mvc/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
