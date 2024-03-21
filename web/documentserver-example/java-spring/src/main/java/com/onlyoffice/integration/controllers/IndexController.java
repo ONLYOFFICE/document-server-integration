@@ -22,6 +22,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.documentserver.util.service.FormatService;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +63,9 @@ public class IndexController {
 
     @Autowired
     private UserServices userService;
+
+    @Autowired
+    private FormatService formatService;
 
     @Value("${files.docservice.url.site}")
     private String docserviceSite;
@@ -140,5 +146,13 @@ public class IndexController {
         configuration.put("UrlEditor", urlEditor);
 
         return configuration;
+    }
+
+    @GetMapping("/formats")
+    @ResponseBody
+    public ResponseEntity<JSONObject> formats() {  // return all the supported formats
+        JSONObject result = new JSONObject();
+        result.put("formats", formatService.getFormats());
+        return ResponseEntity.ok(result);
     }
 }
