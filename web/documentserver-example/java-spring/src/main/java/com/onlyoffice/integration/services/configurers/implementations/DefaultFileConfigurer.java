@@ -120,7 +120,6 @@ public class DefaultFileConfigurer implements FileConfigurer<DefaultFileWrapper>
         userPermissions.setFillForms(
                 !action.equals(Action.view)
                         && !action.equals(Action.comment)
-                        && !action.equals(Action.embedded)
                         && !action.equals(Action.blockcontent)
         );
 

@@ -1,5 +1,6 @@
 # Change Log
 
+- fill permission in embedded mode
 - delete all files
 - handling conversion -9 error
 - nodejs: wopi formsubmit icon
