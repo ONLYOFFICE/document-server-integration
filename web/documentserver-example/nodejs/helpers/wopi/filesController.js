@@ -187,13 +187,12 @@ const putFile = function putFile(wopi, req, res, userHost) {
 
   const userAddress = req.DocManager.curUserHostAddress(userHost);
   const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
+  const fileSize = fileSystem.statSync(storagePath).size;
 
-  if (!lockManager.hasLock(storagePath)) {
-    // ToDo: if body length is 0 bytes => handle document creation
-
+  if (!lockManager.hasLock(storagePath) && fileSize !== 0) {
     // file isn't locked => mismatch
     returnLockMismatch(res, '', 'File isn\'t locked');
-  } else if (lockManager.getLock(storagePath) === requestLock) {
+  } else if (lockManager.getLock(storagePath) === requestLock || fileSize === 0) {
     // lock matches current lock => put file
     saveFileFromBody(req, wopi.id, userAddress, true, (err, version) => {
       if (!err) {
