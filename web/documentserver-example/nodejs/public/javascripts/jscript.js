@@ -407,7 +407,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt},
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt, keepOriginal: true},
                 url: UrlConverter,
                 complete: function (data) {
                     try {

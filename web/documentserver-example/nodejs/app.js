@@ -334,6 +334,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
   const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const keepOriginal = req.body.keepOriginal;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -388,14 +389,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
         return;
       }
       // remove file with the origin extension
-      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      if (!('fileExt' in req.body)) {
+      if (!keepOriginal) {
         fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
         fileSystem.renameSync(
