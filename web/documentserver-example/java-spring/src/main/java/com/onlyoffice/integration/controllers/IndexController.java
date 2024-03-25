@@ -25,6 +25,7 @@ import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.documentserver.util.service.FormatService;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.dto.FormatsList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.ResponseEntity;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -150,9 +150,8 @@ public class IndexController {
 
     @GetMapping("/formats")
     @ResponseBody
-    public ResponseEntity<JSONObject> formats() {  // return all the supported formats
-        JSONObject result = new JSONObject();
-        result.put("formats", formatService.getFormats());
-        return ResponseEntity.ok(result);
+    public ResponseEntity<FormatsList> formats() {  // return all the supported formats
+        FormatsList list = new FormatsList(formatService.getFormats());
+        return ResponseEntity.ok(list);
     }
 }
