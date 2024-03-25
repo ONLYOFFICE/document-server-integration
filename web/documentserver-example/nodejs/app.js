@@ -332,8 +332,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const lang = req.body.lang ? req.body.lang : null;
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
-  const internalFileExt = 'ooxml';
-  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const conversionExtension = req.body.fileExt ? req.body.fileExt : 'ooxml';
   const keepOriginal = req.body.keepOriginal;
   const response = res;
 
@@ -425,7 +424,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       key = documentService.generateRevisionId(key); // get document key
       // get the url to the converted file
-      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang);
+      documentService.getConvertedUri(fileUri, fileExt, conversionExtension, key, true, callback, filePass, lang);
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);
