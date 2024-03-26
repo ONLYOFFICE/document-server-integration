@@ -23,24 +23,22 @@ class FormatManager {
         if(Array.isArray(formats)) this.formats = formats;
     }
 
+    findByExtension(extension) {
+        return this.formats.find(format => format.name == extension);
+    }
+
     isAutoConvertible(extension) {
-        let index = this.formats.findIndex(format => {
-            return format.name == extension && format.isAutoConvertible();
-        })
-        return index !== -1;
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isAutoConvertible();
     }
 
     isEditable(extension) {
-        let index = this.formats.findIndex(format => {
-            return format.name == extension && format.isEditable();
-        })
-        return index !== -1;
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isEditable();
     }
 
     isFillable(extension) {
-        let index = this.formats.findIndex(format => {
-            return format.name == extension && format.isFillable();
-        })
-        return index !== -1;
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isFillable();
     }
 }
