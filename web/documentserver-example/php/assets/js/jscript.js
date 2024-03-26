@@ -37,6 +37,24 @@ window.onload = function () {
                 formatManager = new FormatManager(formats);
             }
         })
+    loadFilesList();
+}
+
+function loadFilesList() {
+    fetch('/files')
+    .then(response => response.json())
+    .then(files => {
+        files.forEach((file) => {
+            let format = this.formatManager.findByExtension(file.title.split('.').pop());
+            file.editable = format.isEditable();
+            file.fillable = format.isFillable();
+            file.type = format.type;
+        })
+        let list = document.querySelector("files-list");
+        list.dataset["files"] = JSON.stringify(files);
+        list.dataset["user"] = user;
+        list.dataset["directUrls"] = directUrl;
+    });
 }
 
 if (typeof jQuery != "undefined") {
