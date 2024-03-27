@@ -295,26 +295,30 @@ class FilesList extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["data-files"];
+        return ["data"];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if(name === "data-files") {
+        if(name === "data") {
             this.container.innerHTML = "";
             this.render();
         }
     }
 
+    get data() {
+        return JSON.parse(this.getAttribute("data")) || {}
+    }
+
     get files() {
-        return JSON.parse(this.dataset.files);
+        return this.data.files;
     }
 
     get user() {
-        return this.dataset.user;
+        return this.data.user;
     }
 
-    get directUrlArg() {
-        return this.dataset.directUrlArg;
+    get directUrl() {
+        return this.data.directUrl;
     }
 }
 

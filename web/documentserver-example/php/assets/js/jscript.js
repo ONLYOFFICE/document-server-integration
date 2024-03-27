@@ -51,9 +51,11 @@ function loadFilesList() {
             file.type = format.type;
         })
         let list = document.querySelector("files-list");
-        list.dataset["files"] = JSON.stringify(files);
-        list.dataset["user"] = user;
-        list.dataset["directUrls"] = directUrl;
+        list.setAttribute("data", JSON.stringify({
+            user,
+            directUrl,
+            files
+        }));
     });
 }
 
