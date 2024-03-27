@@ -70,6 +70,29 @@
         frameholder.appendChild(office_frame);
 
         document.getElementById('office_form').submit();
+
+        var _onMessage = function(msg) {
+            var data = msg.data;
+            if (Object.prototype.toString.apply(data) !== '[object String]' || !window.JSON) {
+                return;
+            }
+
+            var cmd = JSON.parse(data);
+            if (cmd) {
+                if ( cmd.MessageId == 'App_LoadingStatus' ) {
+                    var fixSize = function() {
+                        document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
+                    }
+
+                    fixSize();
+                    window.addEventListener("orientationchange", fixSize);
+                }
+            }
+        };
+
+        window.addEventListener('message', function (e) {
+            _onMessage(e);
+        });
     </script>
 
 </body>
