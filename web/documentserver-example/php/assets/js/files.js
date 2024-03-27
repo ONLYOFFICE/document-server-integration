@@ -26,10 +26,10 @@ class FilesList extends HTMLElement {
     }
 
     render() {
+        let encodedUser = encodeURIComponent(this.user);
+        let encodedDirectUrl = encodeURIComponent(this.directUrlArg);
         this.files.forEach(file => {
-            let encodedUser = encodeURIComponent(this.user);
             let encodedTitle = encodeURIComponent(file.title);
-            let encodedDirectUrl = encodeURIComponent(this.directUrlArg);
             let editorUrl = `editor?fileID=${encodedTitle}&user=${encodedUser}&directUrl=${encodedDirectUrl}`;
             
             const row = this.createElement("tr", {
