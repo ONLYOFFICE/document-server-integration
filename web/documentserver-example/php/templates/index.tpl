@@ -126,38 +126,6 @@
                             {userDescr}
                             </div>
                             <files-list></files-list>
-                            <template id="files-list-template">
-                                <div class="stored-list">
-                                    <span class="header-list">Your documents</span>
-                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                        <thead>
-                                        <tr>
-                                            <td class="tableHeaderCell tableHeaderCellFileName">
-                                                Filename
-                                            </td>
-                                            <td class="tableHeaderCell tableHeaderCellEditors
-                                                                                        contentCells-shift">
-                                                Editors
-                                            </td>
-                                            <td class="tableHeaderCell tableHeaderCellViewers">
-                                                Viewers
-                                            </td>
-                                            <td class="tableHeaderCell tableHeaderCellDownload">
-                                                Download
-                                            </td>
-                                            <td class="tableHeaderCell tableHeaderCellRemove">
-                                                Remove
-                                            </td>
-                                        </tr>
-                                        </thead>
-                                    </table>
-                                    <div class="scroll-table-body">
-                                        <table cellspacing="0" cellpadding="0" width="100%">
-                                            <tbody><tbody>
-                                        </table>
-                                    </div>
-                                </div>   
-                            </template>
                         </div>
                 </td>
             </tr>
@@ -254,7 +222,7 @@
 <script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
 <script type="text/javascript" src="assets/js/format.js"></script>
 <script type="text/javascript" src="assets/js/format-manager.js"></script>
-<script type="text/javascript" src="assets/js/files.js"></script>
+<script type="text/javascript" src="assets/components/files/files.js"></script>
 <script type="text/javascript" src="assets/js/jscript.js"></script>
 </body>
 </html>
