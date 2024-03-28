@@ -56,6 +56,11 @@ function loadFilesList() {
             directUrl,
             files
         }));
+        if (Array.isArray(files) && files.length) {
+            list.style.display = "block";
+        } else {
+            list.style.display = "none";
+        }
     });
 }
 
