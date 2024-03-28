@@ -204,7 +204,7 @@ public class FileController {
             }
 
             // check if file extension is supported by the editor
-            if (documentManager.getDocumentType(fullFileName) != null) {
+            if (documentManager.getDocumentType(fullFileName) == null) {
 
                 // if not, write an error message to the response
                 return "{ \"error\": \"File type is not supported\"}";
