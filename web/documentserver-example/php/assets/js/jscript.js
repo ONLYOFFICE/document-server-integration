@@ -19,8 +19,8 @@
 var directUrl;
 var formatManager;
 
-window.onload = function () {
-    fetch('formats')
+window.onload = async function () {
+    await fetch('formats')
         .then((response) => response.json())
         .then((data) => {
             if (data.formats) {
@@ -37,11 +37,12 @@ window.onload = function () {
                 formatManager = new FormatManager(formats);
             }
         })
-    loadFilesList();
+    let files = await fetchFilesList();
+    displayFilesList(files);
 }
 
-function loadFilesList() {
-    fetch('/files')
+function fetchFilesList() {
+    return fetch('/files')
     .then(response => response.json())
     .then(files => {
         files.forEach((file) => {
@@ -49,19 +50,23 @@ function loadFilesList() {
             file.editable = format.isEditable();
             file.fillable = format.isFillable();
             file.type = format.type;
-        })
-        let list = document.querySelector("files-list");
+        });
+        files = Array.isArray(files) && files.length ? files : null;
+        return files;
+    });
+}
+
+function displayFilesList(files) {
+    let list = document.querySelector("files-list");
+    if (files) {
         list.setAttribute("data", JSON.stringify({
             user,
             directUrl,
             files
         }));
-        if (Array.isArray(files) && files.length) {
-            list.style.display = "block";
-        } else {
-            list.style.display = "none";
-        }
-    });
+    } else {
+        list.style.display = "none";
+    }   
 }
 
 if (typeof jQuery != "undefined") {
