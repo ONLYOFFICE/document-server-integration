@@ -13,7 +13,7 @@ CMD ["make", "server-dev"]
 
 FROM example-base AS example-prod
 RUN make prod
-CMD ["make", "server-prod"]
+CMD ["make", "server-dev"]
 
 FROM nginx:1.23.4-alpine3.17 AS proxy
 COPY proxy/nginx.conf /etc/nginx/nginx.conf
