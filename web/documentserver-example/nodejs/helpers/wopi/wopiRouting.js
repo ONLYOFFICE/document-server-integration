@@ -46,7 +46,7 @@ exports.registerRoutes = function registerRoutes(app) {
     req.DocManager = new DocManager(req, res);
 
     // get the wopi discovery information
-    const actions = await utils.getDiscoveryInfo();
+    const actions = await utils.getDiscoveryInfo(req.DocManager);
     const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
 
@@ -67,9 +67,9 @@ exports.registerRoutes = function registerRoutes(app) {
       for (const file of files) {
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
         // eslint-disable-next-line no-await-in-loop
-        file.actions = await utils.getActions(ext); // get actions of the specified extension
+        file.actions = await utils.getActions(req.DocManager, ext); // get actions of the specified extension
         // eslint-disable-next-line no-await-in-loop
-        file.defaultAction = await utils.getDefaultAction(ext);// get the default action of the specified extension
+        file.defaultAction = await utils.getDefaultAction(req.DocManager, ext);// get the default action of the specified extension
       }
 
       // render wopiIndex template with the parameters specified
@@ -114,7 +114,7 @@ exports.registerRoutes = function registerRoutes(app) {
       const user = users.getUser(req.query.userid); // get a user by the id
 
       // get an action for the specified extension and name
-      const action = await utils.getAction(fileExt, req.query.action);
+      const action = await utils.getAction(req.DocManager, fileExt, req.query.action);
 
       if (action && req.query.action === 'editnew') {
         fileName = req.DocManager.requestEditnew(req, fileName, user);
