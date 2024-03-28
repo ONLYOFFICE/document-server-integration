@@ -80,7 +80,8 @@ def routers():
         path('restore', actions.restore),
         path('saveas', actions.saveAs),
         path('track', actions.track),
-        path('upload', actions.upload)
+        path('upload', actions.upload),
+        path('formats', actions.formats)
     ]
     main += static(
         settings.STATIC_URL,

@@ -46,5 +46,6 @@ class Application < Rails::Application
     match '/saveas', to: 'home#saveas', via: 'post'
     match '/track', to: 'home#track', via: 'post'
     match '/upload', to: 'home#upload', via: 'post'
+    match '/formats', to: 'home#formats', via: 'get'
   end
 end

@@ -16,13 +16,24 @@
  *
  */
 
-var UrlConverter;
-var UrlEditor;
+class Format {
+    constructor(name, type, actions, convert, mime) {
+        this.name = name;
+        this.type = type;
+        this.actions = actions;
+        this.convert = convert;
+        this.mime = mime;
+    }
 
-if (typeof jQuery !== "undefined") {
-    jQuery.post('/config',
-        function(data) {
-            UrlConverter = data.UrlConverter;
-            UrlEditor = data.UrlEditor;
-    });
+    isAutoConvertible() {
+        return this.actions.includes('auto-convert');
+    }
+
+    isEditable() {
+        return this.actions.includes('edit') || this.actions.includes('lossy-edit');
+    }
+
+    isFillable() {
+        return this.actions.includes('fill');
+    }
 }

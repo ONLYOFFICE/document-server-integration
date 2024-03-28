@@ -143,6 +143,11 @@ function routers()
         echo json_encode($response);
         return;
     }
+    if (str_starts_with($path, '/formats')) {
+        $response = formats();
+        echo json_encode($response);
+        return;
+    }
 
     http_response_code(HTTPStatus::NotFound->value);
 }

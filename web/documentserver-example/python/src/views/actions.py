@@ -30,6 +30,8 @@ from src.configuration import ConfigurationManager
 from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
 from urllib.parse import urlparse, parse_qs
+from src.format import FormatManager
+import msgspec
 
 config_manager = ConfigurationManager()
 
@@ -667,3 +669,12 @@ def restore(request: HttpRequest) -> HttpResponse:
             message=f'{type(error)}: {error}',
             status=HTTPStatus.INTERNAL_SERVER_ERROR
         )
+
+
+@http.GET()
+def formats(request: HttpRequest) -> HttpResponse:
+    data = {
+        'formats': [msgspec.to_builtins(format) for format in FormatManager().all()]
+    }
+
+    return HttpResponse(json.dumps(data), content_type='application/json')
